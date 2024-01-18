@@ -236,6 +236,14 @@ class Project:
         self.generator_linuxcnc = LinuxCNC(self)
         self.generator_gateware = Gateware(self)
 
+    def get_path(self, path):
+        if os.path.exists(path):
+            return path
+        elif os.path.exists(f"{riocore_path}/{path}"):
+            return f"{riocore_path}/{path}"
+        print(f"can not find path: {path}")
+        exit(1)
+
     def load_config(self, configuration):
         project = {}
         # project["config"] = configuration
@@ -272,7 +280,8 @@ class Project:
         board = project["jdata"].get("boardcfg")
         if board:
             print(f"loading board setup: {board}")
-            bdata = open(f"{riocore_path}/boards/{board}.json", "r").read()
+            board_file = self.get_path(f"boards/{board}.json")
+            bdata = open(board_file, "r").read()
             project["board_data"] = json.loads(bdata)
             if "name" in project["board_data"]:
                 project["board"] = project["board_data"]["name"]
@@ -282,7 +291,8 @@ class Project:
 
         # loading modules
         project["modules"] = {}
-        for path in glob.glob(f"{riocore_path}/modules/*.json"):
+        modules_path = self.get_path(f"modules")
+        for path in glob.glob(f"{modules_path}/*.json"):
             module = path.split("/")[-1].split(".")[0]
             mdata = open(path, "r").read()
             project["modules"][module] = json.loads(mdata)
