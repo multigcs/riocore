@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+#
+#
+
+import argparse
+import os
+
+import riocore
+
+riocore_path = os.path.dirname(riocore.__file__)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("config", help="config", nargs="?", type=str, default=None)
+args = parser.parse_args()
+
+if args.config:
+    if args.config.endswith(".json"):
+        if os.path.isfile(args.config):
+            config_file = args.config
+        elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
+            config_file = f"{riocore_path}/configs/{args.config}"
+        else:
+            print(f"can not load: {args.config}")
+            exit(1)
+        print(f"loading: {config_file}")
+        project = riocore.Project(config_file)
+        project.generator()
+    elif args.config.startswith("plugininfo:"):
+        plugin = args.config.split(":")[-1]
+        plugins = riocore.Plugins()
+        plugins.list()
+        plugins.info(plugin)

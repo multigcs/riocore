@@ -1,0 +1,59 @@
+{
+  "name": "Verilator",
+  "description": "Verilator test",
+  "boardcfg": "Verilator",
+  "plugins": [
+    {
+      "joint": "0",
+      "name": "DIN0",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "C2",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "DOUT0",
+      "type": "bitout",
+      "pins": {
+        "bit": {
+          "pin": "A6"
+        }
+      }
+    },
+    {
+      "name": "DOUT1",
+      "type": "bitout",
+      "pins": {
+        "bit": {
+          "pin": "A7"
+        }
+      }
+    },
+    {
+      "type": "spi",
+      "max": "4000000",
+      "pins": {
+        "mosi": {
+          "pin": "G6"
+        },
+        "miso": {
+          "pin": "H7"
+        },
+        "sclk": {
+          "pin": "G7"
+        },
+        "sel": {
+          "pin": "G1"
+        }
+      }
+    }
+  ]
+}

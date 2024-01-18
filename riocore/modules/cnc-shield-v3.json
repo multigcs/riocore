@@ -1,0 +1,141 @@
+{
+  "comment": "Arduino CNC-Shield v3",
+  "plugins": [
+    {
+      "type": "bitout",
+      "name": "enable",
+      "pins": {
+        "bit": {
+          "pin": "D8",
+          "modifier": [
+              {
+                  "type": "invert"
+              },
+              {
+                  "type": "onerror"
+              },
+              {
+                  "type": "invert"
+              }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-x",
+      "net": "joint.0.home-sw-in",
+      "pins": {
+        "bit": {
+          "pullup": true,
+          "pin": "D9"
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-y",
+      "net": "joint.1.home-sw-in",
+      "pins": {
+        "bit": {
+          "pullup": true,
+          "pin": "D10"
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-z",
+      "net": "joint.2.home-sw-in",
+      "pins": {
+        "bit": {
+          "pullup": true,
+          "pin": "D11"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "spindle-enable",
+      "net": "spindle.0.on",
+      "pins": {
+        "bit": {
+          "pin": "D12",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "spindle-dir",
+      "pins": {
+        "bit": {
+          "pin": "D13"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "coolant",
+      "pins": {
+        "bit": {
+          "pin": "A3",
+          "invert": true
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "e-stop",
+      "pins": {
+        "bit": {
+          "pullup": true,
+          "pin": "RST"
+        }
+      }
+    },
+    {
+      "name": "joint-0",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "D2"
+        },
+        "dir": {
+          "pin": "D5"
+        }
+      },
+      "joint": true
+    },
+    {
+      "name": "joint-1",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "D3"
+        },
+        "dir": {
+          "pin": "D6"
+        }
+      },
+      "joint": true
+    },
+    {
+      "name": "joint-2",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "D4"
+        },
+        "dir": {
+          "pin": "D7"
+        }
+      },
+      "joint": true
+    }
+  ]
+}

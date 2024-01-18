@@ -1,0 +1,263 @@
+{
+  "name": "Arty-a7-35t",
+  "description": "Arty a7-35t - testing",
+  "boardcfg": "Arty-a7-35t",
+  "modules": [
+    {
+      "slot": "ChipKit",
+      "module": "cnc-shield-v3",
+      "setup": {}
+    }
+  ],
+  "plugins": [
+    {
+      "name": "SW0",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "A8",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SW1",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "C11",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SW2",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "C10",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "SW3",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "A10",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "BTN0",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "D9",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "BTN1",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "C9",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "BTN2",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "B9",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "BTN3",
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "B8",
+          "modifier": [
+            {
+              "type": "debounce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD0_R",
+      "pins": {
+        "bit": {
+          "pin": "G6"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD0_G",
+      "pins": {
+        "bit": {
+          "pin": "F6"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD0_B",
+      "pins": {
+        "bit": {
+          "pin": "E1"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD1_R",
+      "pins": {
+        "bit": {
+          "pin": "G3"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD1_G",
+      "pins": {
+        "bit": {
+          "pin": "J4"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD1_B",
+      "pins": {
+        "bit": {
+          "pin": "G4"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD2_R",
+      "pins": {
+        "bit": {
+          "pin": "J3"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD2_G",
+      "pins": {
+        "bit": {
+          "pin": "J2"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD2_B",
+      "pins": {
+        "bit": {
+          "pin": "H4"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD3_R",
+      "pins": {
+        "bit": {
+          "pin": "K1"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD3_G",
+      "pins": {
+        "bit": {
+          "pin": "H6"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD3_B",
+      "pins": {
+        "bit": {
+          "pin": "K2"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD4",
+      "pins": {
+        "bit": {
+          "pin": "H5"
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "LD5",
+      "pins": {
+        "bit": {
+          "pin": "J5"
+        }
+      }
+    },
+    {
+      "type": "uart",
+      "pins": {
+        "rx": {
+          "pin": "A9"
+        },
+        "tx": {
+          "pin": "D10"
+        }
+      }
+    }
+  ]
+}

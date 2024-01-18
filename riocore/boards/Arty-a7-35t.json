@@ -1,0 +1,97 @@
+{
+    "name": "Arty-a7-35t",
+    "description": "Arty a7-35t - testing",
+    "toolchain": "vivado",
+    "family": "xc7",
+    "type": "xc7a35ticsg324-1l",
+    "package": "csg324",
+    "clock": {
+        "speed": "100000000",
+        "pin": "E3"
+    },
+    "slots": [
+        {
+            "name": "ChipKit",
+            "comment": "ChipKit/Arduino Header",
+            "pins": {
+                "D0": "V15",
+                "D1": "U16",
+                "D2": "P14",
+                "D3": "T11",
+                "D4": "R12",
+                "D5": "T14",
+                "D6": "T15",
+                "D7": "T16",
+                "D8": "N15",
+                "D9": "M16",
+                "D10": "V17",
+                "D11": "U18",
+                "D12": "R17",
+                "D13": "P17",
+                "A0": "F5",
+                "A1": "D8",
+                "A2": "C7",
+                "A3": "E7",
+                "A4": "D7",
+                "A5": "D5",
+                "RST": "C2"
+            }
+        },
+        {
+            "name": "PMOD_JA",
+            "comment": "PMOD JA",
+            "pins": {
+                "P1": "G13",
+                "P2": "B11",
+                "P3": "A11",
+                "P4": "D12",
+                "P7": "D13",
+                "P8": "B18",
+                "P9": "A18",
+                "P10": "K16"
+            }
+        },
+        {
+            "name": "PMOD_JB",
+            "comment": "PMOD JB",
+            "pins": {
+                "P1": "E15",
+                "P2": "E16",
+                "P3": "D15",
+                "P4": "C15",
+                "P7": "J17",
+                "P8": "J18",
+                "P9": "K15",
+                "P10": "J15"
+            }
+        },
+        {
+            "name": "PMOD_JC",
+            "comment": "PMOD JC",
+            "pins": {
+                "P1": "U12",
+                "P2": "V12",
+                "P3": "V10",
+                "P4": "V11",
+                "P7": "U14",
+                "P8": "V14",
+                "P9": "T13",
+                "P10": "U13"
+            }
+        },
+        {
+            "name": "PMOD_JD",
+            "comment": "PMOD JD",
+            "pins": {
+                "P1": "D4",
+                "P2": "D3",
+                "P3": "F4",
+                "P4": "F3",
+                "P7": "E2",
+                "P8": "D2",
+                "P9": "H2",
+                "P10": "G2"
+            }
+        }
+    ]
+}

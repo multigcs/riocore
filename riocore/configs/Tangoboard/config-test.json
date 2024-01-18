@@ -1,0 +1,314 @@
+{
+  "name": "Tangoboard",
+  "description": "Tangoboard with TangNano9K over SPI",
+  "boardcfg": "TangNano9K",
+  "transport": "SPI",
+  "plugins": [
+    {
+      "type": "bitout",
+      "name": "spindle-enable",
+      "net": "spindle.0.on",
+      "pins": {
+        "bit": {
+          "pin": "38",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "pins": {
+        "bit": {
+          "pin": "36",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "pins": {
+        "bit": {
+          "pin": "39",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitout",
+      "pins": {
+        "bit": {
+          "pin": "25",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-x",
+      "net": "joint.0.home-sw-in",
+      "pins": {
+        "bit": {
+          "pin": "26",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-y",
+      "net": "joint.1.home-sw-in",
+      "pins": {
+        "bit": {
+          "pin": "27",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-z",
+      "net": "joint.2.home-sw-in",
+      "pins": {
+        "bit": {
+          "pin": "28",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "tool-probe",
+      "net": "motion.probe-input",
+      "pins": {
+        "bit": {
+          "pin": "29",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "53",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "54",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "55",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "pins": {
+        "bit": {
+          "pin": "56",
+          "pullup": true,
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "spindle-speed",
+      "net": "spindle.0.speed-out",
+      "min": 0,
+      "max": 10000,
+      "type": "pwmout",
+      "pins": {
+        "pwm": {
+          "pin": "76",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "pwmout",
+      "pins": {
+        "pwm": {
+          "pin": "75",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        },
+        "dir": {
+          "pin": "74",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "pwmout",
+      "frequency": "1500",
+      "pins": {
+        "pwm": {
+          "pin": "37",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "stepdir",
+      "scale": -800,
+      "pins": {
+        "step": {
+          "pin": "63"
+        },
+        "dir": {
+          "pin": "86"
+        }
+      },
+      "joint": true
+    },
+    {
+      "type": "stepdir",
+      "scale": -800,
+      "pins": {
+        "step": {
+          "pin": "85"
+        },
+        "dir": {
+          "pin": "84"
+        }
+      },
+      "joint": true
+    },
+    {
+      "type": "stepdir",
+      "scale": -1600,
+      "pins": {
+        "step": {
+          "pin": "83"
+        },
+        "dir": {
+          "pin": "82"
+        }
+      },
+      "joint": true
+    },
+    {
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "81"
+        },
+        "dir": {
+          "pin": "80"
+        }
+      },
+      "joint": true
+    },
+    {
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "79"
+        },
+        "dir": {
+          "pin": "77"
+        }
+      },
+      "joint": true
+    },
+    {
+      "type": "spi",
+      "pins": {
+        "mosi": {
+          "pin": "48"
+        },
+        "miso": {
+          "pin": "49"
+        },
+        "sclk": {
+          "pin": "31"
+        },
+        "sel": {
+          "pin": "32"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+    "name": "Altera10M08Eval",
+    "description": "Altera10M08Eval",
+    "boardcfg": "Altera10M08Eval",
+    "transport": "UDP",
+    "modules": [
+        {
+            "slot": "ChipKit",
+            "module": "cnc-shield-v3",
+            "setup": {
+                "home-x": {
+                    "type": "bitin",
+                    "name": "home-x",
+                    "net": "joint.0.home-sw-in",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "home-y": {
+                    "type": "bitin",
+                    "name": "home-y",
+                    "net": "joint.1.home-sw-in",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "home-z": {
+                    "type": "bitin",
+                    "name": "home-z",
+                    "net": "joint.2.home-sw-in",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "spindle-enable": {
+                    "type": "bitout",
+                    "name": "spindle-enable",
+                    "net": "spindle.0.on",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "coolant": {
+                    "type": "bitout",
+                    "name": "coolant",
+                    "pins": {
+                        "bit": {
+                            "invert": true
+                        }
+                    }
+                },
+                "e-stop": {
+                    "type": "bitin",
+                    "name": "e-stop",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "joint-0": {
+                    "scale": "6400",
+                    "name": "joint-0",
+                    "type": "stepdir",
+                    "pins": {
+                        "step": {},
+                        "dir": {}
+                    },
+                    "joint": true
+                },
+                "joint-1": {
+                    "scale": "6400",
+                    "name": "joint-1",
+                    "type": "stepdir",
+                    "pins": {
+                        "step": {},
+                        "dir": {}
+                    },
+                    "joint": true
+                },
+                "joint-2": {
+                    "scale": "400",
+                    "name": "joint-2",
+                    "type": "stepdir",
+                    "pins": {
+                        "step": {},
+                        "dir": {}
+                    },
+                    "joint": true
+                },
+                "spindle-dir": {
+                    "type": "bitout",
+                    "name": "spindle-dir",
+                    "pins": {
+                        "bit": {}
+                    }
+                },
+                "enable": {
+                    "type": "bitout",
+                    "name": "enable",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                },
+                                {
+                                    "type": "onerror"
+                                },
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "PIN_132",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED3",
+            "pins": {
+                "bit": {
+                    "pin": "PIN_135",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED4",
+            "pins": {
+                "bit": {
+                    "pin": "PIN_140",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED5",
+            "pins": {
+                "bit": {
+                    "pin": "PIN_141",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "w5500",
+            "mac": "AA:AF:FA:CC:E3:1C",
+            "ip": "192.168.10.194",
+            "port": 2390,
+            "pins": {
+                "mosi": {
+                    "pin": "PIN_96"
+                },
+                "miso": {
+                    "pin": "PIN_91",
+                    "modifier": []
+                },
+                "sclk": {
+                    "pin": "PIN_90"
+                },
+                "sel": {
+                    "pin": "PIN_97"
+                }
+            }
+        },
+        {
+            "type": "max7219",
+            "pins": {
+                "mosi": {
+                    "pin": "PIN_60"
+                },
+                "sclk": {
+                    "pin": "PIN_59"
+                },
+                "sel": {
+                    "pin": "PIN_56"
+                }
+            },
+            "name": "display"
+        }
+    ],
+    "axis": 3
+}
