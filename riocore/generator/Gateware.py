@@ -4,6 +4,7 @@ import os
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
+
 class Gateware:
     def __init__(self, project):
         self.project = project
@@ -335,4 +336,3 @@ class Gateware:
         output.append("")
         print(f"writing gateware to: {self.gateware_path}")
         open(f"{self.gateware_path}/rio.v", "w").write("\n".join(output))
-

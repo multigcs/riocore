@@ -11,6 +11,7 @@ from .generator.LinuxCNC import LinuxCNC
 
 riocore_path = os.path.dirname(__file__)
 
+
 class Plugins:
     def __init__(self):
         self.plugin_modules = {}

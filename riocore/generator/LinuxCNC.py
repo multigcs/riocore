@@ -3,6 +3,7 @@ import os
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
+
 class LinuxCNC:
     AXIS_NAMES = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
 

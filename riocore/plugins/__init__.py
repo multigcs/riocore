@@ -136,105 +136,112 @@ class PluginBase:
             defines.append(f"wire [{bits-1}:0] {self.expansion_prefix}_OUTPUT;")
         return defines
 
+    def pin_modifier_debounce_input(self, instances, modifier_num, pin_name, pin_varname):
+        width = modifier.get("delay", 16)
+        instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "debouncer",
+            "parameter": {"WIDTH": width},
+            "arguments": {
+                "clk": "sysclk",
+                "din": pin_varname,
+                "dout": f"{pin_varname}_DEBOUNCED",
+            },
+            "predefines": [f"wire {pin_varname}_DEBOUNCED;"],
+        }
+        pin_varname = f"{pin_varname}_DEBOUNCED"
+        return pin_varname
+
+    def pin_modifier_toggle_input(self, instances, modifier_num, pin_name, pin_varname):
+        instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "toggle",
+            "arguments": {
+                "clk": "sysclk",
+                "din": pin_varname,
+                "dout": f"{pin_varname}_TOGGLED",
+            },
+            "predefines": [f"wire {pin_varname}_TOGGLED;"],
+        }
+        pin_varname = f"{pin_varname}_TOGGLED"
+        return pin_varname
+
+    def pin_modifier_invert_input(self, instances, modifier_num, pin_name, pin_varname):
+        instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "predefines": [
+                f"wire {pin_varname}_INVERTED;",
+                f"assign {pin_varname}_INVERTED = ~{pin_varname};",
+            ],
+        }
+        pin_varname = f"{pin_varname}_INVERTED"
+        return pin_varname
+
+    def pin_modifier_onerror_input(self, instances, modifier_num, pin_name, pin_varname):
+        instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "predefines": [
+                f"wire {pin_varname}_ONERROR;",
+                f"assign {pin_varname}_ONERROR = {pin_varname} & ~ERROR;",
+            ],
+        }
+        pin_varname = f"{pin_varname}_ONERROR"
+        return pin_varname
+
+    def pin_modifier_debounce_output(self, instances, modifier_num, pin_name, pin_varname):
+        width = modifier.get("delay", 16)
+        instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "debouncer",
+            "parameter": {"WIDTH": width},
+            "arguments": {
+                "clk": "sysclk",
+                "din": f"{pin_varname}_DEBOUNCE",
+                "dout": pin_varname,
+            },
+            "predefines": [f"wire {pin_varname}_DEBOUNCE;"],
+        }
+        pin_varname = f"{pin_varname}_DEBOUNCE"
+        return pin_varname
+
+    def pin_modifier_toggle_output(self, instances, modifier_num, pin_name, pin_varname):
+        instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "toggle",
+            "arguments": {
+                "clk": "sysclk",
+                "din": f"{pin_varname}_TOGGLE",
+                "dout": pin_varname,
+            },
+            "predefines": [f"wire {pin_varname}_TOGGLE;"],
+        }
+        pin_varname = f"{pin_varname}_TOGGLE"
+        return pin_varname
+
+    def pin_modifier_invert_output(self, instances, modifier_num, pin_name, pin_varname):
+        instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "predefines": [
+                f"wire {pin_varname}_INVERT;",
+                f"assign {pin_varname} = ~{pin_varname}_INVERT;",
+            ],
+        }
+        pin_varname = f"{pin_varname}_INVERT"
+        return pin_varname
+
+    def pin_modifier_onerror_output(self, instances, modifier_num, pin_name, pin_varname):
+        instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "predefines": [
+                f"wire {pin_varname}_ONERROR;",
+                f"assign {pin_varname} = {pin_varname}_ONERROR & ~ERROR;",
+            ],
+        }
+        pin_varname = f"{pin_varname}_ONERROR"
+        return pin_varname
+
     def gateware_pin_modifier(self, instances, instance, pin_name, pin_config, pin_varname):
         instance_predefines = instance["predefines"]
         instance_arguments = instance["arguments"]
-
-        if pin_config["direction"] == "input":
+        for direction in ("input", "output"):
             for modifier_num, modifier in enumerate(pin_config.get("modifier", [])):
                 if modifier:
                     modifier_type = modifier["type"]
-                    if modifier_type == "debounce":
-                        width = modifier.get("delay", 16)
-                        instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "module": "debouncer",
-                            "parameter": {"WIDTH": width},
-                            "arguments": {
-                                "clk": "sysclk",
-                                "din": pin_varname,
-                                "dout": f"{pin_varname}_DEBOUNCED",
-                            },
-                            "predefines": [f"wire {pin_varname}_DEBOUNCED;"],
-                        }
-                        pin_varname = f"{pin_varname}_DEBOUNCED"
-
-                    if modifier_type == "toggle":
-                        instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "module": "toggle",
-                            "arguments": {
-                                "clk": "sysclk",
-                                "din": pin_varname,
-                                "dout": f"{pin_varname}_TOGGLED",
-                            },
-                            "predefines": [f"wire {pin_varname}_TOGGLED;"],
-                        }
-                        pin_varname = f"{pin_varname}_TOGGLED"
-
-                    if modifier_type == "invert":
-                        instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "predefines": [
-                                f"wire {pin_varname}_INVERTED;",
-                                f"assign {pin_varname}_INVERTED = ~{pin_varname};",
-                            ],
-                        }
-                        pin_varname = f"{pin_varname}_INVERTED"
-
-                    if modifier_type == "onerror":
-                        instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "predefines": [
-                                f"wire {pin_varname}_ONERROR;",
-                                f"assign {pin_varname}_ONERROR = {pin_varname} & ~ERROR;",
-                            ],
-                        }
-                        pin_varname = f"{pin_varname}_ONERROR"
-
-        elif pin_config["direction"] == "output":
-            for modifier_num, modifier in enumerate(reversed(pin_config.get("modifier", []))):
-                if modifier:
-                    modifier_type = modifier["type"]
-                    if modifier_type == "debounce":
-                        width = modifier.get("delay", 16)
-                        instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "module": "debouncer",
-                            "parameter": {"WIDTH": width},
-                            "arguments": {
-                                "clk": "sysclk",
-                                "din": f"{pin_varname}_DEBOUNCE",
-                                "dout": pin_varname,
-                            },
-                            "predefines": [f"wire {pin_varname}_DEBOUNCE;"],
-                        }
-                        pin_varname = f"{pin_varname}_DEBOUNCE"
-
-                    if modifier_type == "toggle":
-                        instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "module": "toggle",
-                            "arguments": {
-                                "clk": "sysclk",
-                                "din": f"{pin_varname}_TOGGLE",
-                                "dout": pin_varname,
-                            },
-                            "predefines": [f"wire {pin_varname}_TOGGLE;"],
-                        }
-                        pin_varname = f"{pin_varname}_TOGGLE"
-
-                    if modifier_type == "invert":
-                        instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "predefines": [
-                                f"wire {pin_varname}_INVERT;",
-                                f"assign {pin_varname} = ~{pin_varname}_INVERT;",
-                            ],
-                        }
-                        pin_varname = f"{pin_varname}_INVERT"
-
-                    if modifier_type == "onerror":
-                        instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
-                            "predefines": [
-                                f"wire {pin_varname}_ONERROR;",
-                                f"assign {pin_varname} = {pin_varname}_ONERROR & ~ERROR;",
-                            ],
-                        }
-                        pin_varname = f"{pin_varname}_ONERROR"
+                    modifier_function = getattr(self, f"pin_modifier_{modifier_type}_{direction}")
+                    if modifier_function:
+                        pin_varname = modifier_function(instances, modifier_num, pin_name, pin_varname)
 
         return pin_varname
 

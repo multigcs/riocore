@@ -2,11 +2,12 @@
 #
 #
 
-import os
 import glob
-from setuptools import setup
-from riocore.VERSION import VERSION
+import os
 
+from setuptools import setup
+
+from riocore.VERSION import VERSION
 
 scripts = []
 package_data = {
@@ -46,4 +47,3 @@ setup(
     install_requires=[],
     include_package_data=True,
 )
-
