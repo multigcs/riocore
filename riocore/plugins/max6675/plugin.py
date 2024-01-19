@@ -31,6 +31,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "temperature": {
                 "direction": "input",
+                "unit": "°C",
             },
         }
 
@@ -46,3 +47,12 @@ class Plugin(PluginBase):
         # instance_parameter["DIVIDER"] = divider
         # instance_parameter["DIVIDER"] = self.plugin_setup.get("divider", "1000")
         return instances
+
+    def convert(self, signal_name, signal_setup, value):
+        value = value * 0.25
+        return value
+
+    def convert_c(self, signal_name, signal_setup):
+        return """
+        value = value * 0.25;
+        """

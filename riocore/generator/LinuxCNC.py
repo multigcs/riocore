@@ -667,13 +667,13 @@ class LinuxCNC:
                             source = parameter.split()[-1].strip("*")
                             if not boolean:
                                 output.append(f"    float value = data->{source};")
-                                output.append(f"    value = value + *data->{varname}_OFFSET;")
-                                output.append(f"    value = value / *data->{varname}_SCALE;")
                             else:
                                 output.append(f"    bool value = data->{source};")
                             output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
 
                             if not boolean and direction == "input" and hal_type == "float":
+                                output.append(f"    value = value + *data->{varname}_OFFSET;")
+                                output.append(f"    value = value / *data->{varname}_SCALE;")
                                 output.append(f"    *data->{varname}_S32 = value;")
                             output.append(f"    *data->{varname} = value;")
 
