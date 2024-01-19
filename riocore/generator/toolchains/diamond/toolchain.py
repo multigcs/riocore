@@ -1,5 +1,5 @@
-import shutil
 import importlib
+import shutil
 
 
 class Toolchain:
@@ -10,7 +10,7 @@ class Toolchain:
         pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.lpf")
         pins_generator.Pins(self.config).generate(path)
 
-        diamondc = shutil.which('diamondc')
+        diamondc = shutil.which("diamondc")
         if diamondc is None:
             print("WARNING: can not found toolchain installation in PATH: diamondc")
 

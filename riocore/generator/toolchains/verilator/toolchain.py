@@ -1,5 +1,5 @@
-import shutil
 import importlib
+import shutil
 
 
 class Toolchain:
@@ -9,7 +9,7 @@ class Toolchain:
     def generate(self, path):
         pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
-        verilator = shutil.which('verilator')
+        verilator = shutil.which("verilator")
         if verilator is None:
             print("WARNING: can not found toolchain installation in PATH: verilator")
 

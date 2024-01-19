@@ -622,10 +622,7 @@ class LinuxCNC:
                             convert_parameter.append(f"volatile hal_float_t *{varname}")
                         else:
                             convert_parameter.append(f"volatile hal_bit_t *{varname}")
-                    if variable_size > 1:
-                        output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
-                    else:
-                        output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
+                    output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
                     for parameter in convert_parameter:
                         if data_name.upper() == parameter.split("_")[-1].strip():
                             source = parameter.split()[-1].strip("*")
@@ -661,6 +658,33 @@ class LinuxCNC:
                     direction = signal_config.get("direction")
                     boolean = signal_config.get("bool")
                     hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+
+                    signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
+                    if signal_setup:
+                        for signal_filter in signal_setup.get("filters", []):
+                            if signal_filter.get("type") == "avg":
+                                depth = signal_filter.get("depth", 16)
+                                output.append(f"void filter_avg_{varname.lower()}(data_t *data) {{")
+                                output.append(f"    static float values[{depth}];")
+                                for parameter in convert_parameter:
+                                    if signal_name.upper() == parameter.split("_")[-1].strip():
+                                        source = parameter.split()[-1].strip("*")
+                                        output.append(f"    float value = data->{source};")
+                                        output.append("    int n = 0;")
+                                        output.append("    float avg_value = 0.0;")
+                                        output.append(f"    for (n = 0; n < {depth} - 1; n++) {{")
+                                        output.append("        values[n] = values[n + 1];")
+                                        output.append("        avg_value += values[n];")
+                                        output.append("    }")
+                                        output.append(f"    values[{depth-1}] = value;")
+                                        output.append(f"    avg_value += values[{depth-1}];")
+                                        output.append(f"    avg_value /= {depth};")
+                                        output.append("")
+                                        output.append(f"    data->{source} = avg_value;")
+
+                                output.append("}")
+                                output.append("")
+
                     output.append(f"void convert_{varname.lower()}(data_t *data) {{")
                     for parameter in convert_parameter:
                         if signal_name.upper() == parameter.split("_")[-1].strip():
@@ -701,6 +725,12 @@ class LinuxCNC:
                 varname = signal_config["varname"]
                 if signal_config["direction"] == "input":
                     output.append(f"    convert_{varname.lower()}(data);")
+                    signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
+                    if signal_setup:
+                        for signal_filter in signal_setup.get("filters", []):
+                            if signal_filter.get("type") == "avg":
+                                output.append(f"    filter_avg_{varname.lower()}(data);")
+
         output.append("}")
         output.append("")
         return output

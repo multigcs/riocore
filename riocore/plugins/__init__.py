@@ -1,6 +1,6 @@
 class Modifiers:
     def pin_modifier_debounce_input(self, instances, modifier_num, pin_name, pin_varname):
-        #width = modifier.get("delay", 16)
+        # width = modifier.get("delay", 16)
         width = 16
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",
@@ -49,7 +49,7 @@ class Modifiers:
         return pin_varname
 
     def pin_modifier_debounce_output(self, instances, modifier_num, pin_name, pin_varname):
-        #width = modifier.get("delay", 16)
+        # width = modifier.get("delay", 16)
         width = 16
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",

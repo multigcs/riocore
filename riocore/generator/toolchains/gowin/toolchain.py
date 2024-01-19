@@ -1,6 +1,6 @@
-import shutil
 import importlib
 import os
+import shutil
 
 
 class Toolchain:
@@ -11,7 +11,7 @@ class Toolchain:
         pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)
 
-        gw_sh = shutil.which('gw_sh')
+        gw_sh = shutil.which("gw_sh")
         if gw_sh is None:
             print("WARNING: can not found toolchain installation in PATH: gowin (gw_sh)")
 

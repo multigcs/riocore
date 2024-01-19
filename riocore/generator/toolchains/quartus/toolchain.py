@@ -1,5 +1,5 @@
-import shutil
 import importlib
+import shutil
 
 
 class Toolchain:
@@ -9,7 +9,7 @@ class Toolchain:
     def generate(self, path):
         pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
-        quartus_sh = shutil.which('quartus_sh')
+        quartus_sh = shutil.which("quartus_sh")
         if quartus_sh is None:
             print("WARNING: can not found toolchain installation in PATH: quartus")
 

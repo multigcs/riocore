@@ -207,9 +207,13 @@
             }
         },
         {
-            "type": "max7219",
+            "type": "max6675",
+
+            "signals": {
+                "temperature": {"filters": [{"type": "avg", "depth": 128}]}
+            },
             "pins": {
-                "mosi": {
+                "miso": {
                     "pin": "PIN_60"
                 },
                 "sclk": {
@@ -219,7 +223,7 @@
                     "pin": "PIN_56"
                 }
             },
-            "name": "display"
+            "name": "temp"
         }
     ],
     "axis": 3
