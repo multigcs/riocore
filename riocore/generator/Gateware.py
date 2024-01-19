@@ -17,7 +17,6 @@ class Gateware:
         self.makefile()
 
     def makefile(self):
-        self.verilogs = []
         for plugin_instance in self.project.plugin_instances:
             for verilog in plugin_instance.gateware_files():
                 if verilog in self.verilogs:

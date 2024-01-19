@@ -8,14 +8,9 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "rx": {
                 "direction": "input",
-                "invert": False,
-                "pullup": False,
             },
             "tx": {
                 "direction": "output",
-                "invert": False,
-                "pullup": False,
-                "optional": True,
             },
         }
         self.TYPE = "interface"

@@ -8,8 +8,14 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "led": {
                 "direction": "output",
-                "invert": False,
-                "pullup": False,
+            },
+        }
+        self.OPTIONS = {
+            "frequency": {
+                "default": 1.0,
+                "type": float,
+                "unit": "Hz",
+                "help": "blink frequency in Hz",
             },
         }
 

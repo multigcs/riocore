@@ -348,7 +348,7 @@ class Project:
 
         self.config = project
         self.config["speed"] = int(project["jdata"]["clock"]["speed"])
-        self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc_clock", 0))
+        self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc", 0))
         self.config["sysclk_pin"] = project["jdata"]["clock"]["pin"]
         self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
         self.config["output_path"] = f"Output/{project['jdata']['name']}"

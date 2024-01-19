@@ -126,16 +126,19 @@ class PluginBase:
         if "name" not in self.OPTIONS:
             self.OPTIONS["name"] = {
                 "type": str,
+                "help": "name of this plugin instance",
             }
 
         if self.INTERFACE and "net" not in self.OPTIONS:
             self.OPTIONS["net"] = {
                 "type": str,
+                "help": "target net in LinuxCNC",
             }
 
         if self.TYPE == "joint" and "scale" not in self.OPTIONS:
             self.OPTIONS["scale"] = {
                 "type": float,
+                "help": "scale factor",
             }
 
         self.instances_name = f"{self.NAME}{self.plugin_id}"
