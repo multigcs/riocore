@@ -1,0 +1,31 @@
+{
+  "name": "ICEBreakerV1.0e",
+  "description": "Small and low cost FPGA educational and development board",
+  "boardcfg": "ICEBreakerV1.0e",
+  "plugins": [
+    {
+        "type": "uart",
+        "pins": {
+            "rx": {
+                "pin": "UART:RX"
+            },
+            "tx": {
+                "pin": "UART:TX"
+            }
+        }
+    },
+    {
+        "type": "blink",
+        "pins": {
+            "led": {
+                "pin": "LED:G",
+                "modifier": [
+                    {
+                        "type": "onerror"
+                    }
+                ]
+            }
+        }
+    }
+  ]
+}

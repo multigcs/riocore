@@ -138,9 +138,6 @@
                     "modifier": [
                         {
                             "type": "onerror"
-                        },
-                        {
-                            "type": "invert"
                         }
                     ]
                 }
