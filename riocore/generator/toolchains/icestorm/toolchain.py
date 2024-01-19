@@ -1,3 +1,4 @@
+import shutil
 import importlib
 
 
@@ -7,6 +8,10 @@ class Toolchain:
 
     def generate(self, path):
         verilogs = " ".join(self.config["verilog_files"])
+
+        nextpnr = shutil.which(f"nextpnr-{self.config['family']}")
+        if nextpnr is None:
+            print(f"WARNING: can not found toolchain installation in PATH: nextpnr (nextpnr-{self.config['family']})")
 
         if self.config["family"] == "ecp5":
             pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.lpf")

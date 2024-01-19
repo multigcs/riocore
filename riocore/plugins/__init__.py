@@ -1,6 +1,7 @@
 class Modifiers:
     def pin_modifier_debounce_input(self, instances, modifier_num, pin_name, pin_varname):
-        width = modifier.get("delay", 16)
+        #width = modifier.get("delay", 16)
+        width = 16
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",
             "parameter": {"WIDTH": width},
@@ -48,7 +49,8 @@ class Modifiers:
         return pin_varname
 
     def pin_modifier_debounce_output(self, instances, modifier_num, pin_name, pin_varname):
-        width = modifier.get("delay", 16)
+        #width = modifier.get("delay", 16)
+        width = 16
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",
             "parameter": {"WIDTH": width},
@@ -244,13 +246,13 @@ class PluginBase:
     def gateware_pin_modifiers(self, instances, instance, pin_name, pin_config, pin_varname):
         instance_predefines = instance["predefines"]
         instance_arguments = instance["arguments"]
-        for direction in ("input", "output"):
-            for modifier_num, modifier in enumerate(pin_config.get("modifier", [])):
-                if modifier:
-                    modifier_type = modifier["type"]
-                    modifier_function = getattr(Modifiers, f"pin_modifier_{modifier_type}_{direction}")
-                    if modifier_function:
-                        pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname)
+        direction = pin_config["direction"]
+        for modifier_num, modifier in enumerate(pin_config.get("modifier", [])):
+            if modifier:
+                modifier_type = modifier["type"]
+                modifier_function = getattr(Modifiers, f"pin_modifier_{modifier_type}_{direction}")
+                if modifier_function:
+                    pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname)
 
         return pin_varname
 

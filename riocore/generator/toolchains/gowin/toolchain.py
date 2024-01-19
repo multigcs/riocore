@@ -1,3 +1,4 @@
+import shutil
 import importlib
 import os
 
@@ -9,6 +10,10 @@ class Toolchain:
     def generate(self, path):
         pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)
+
+        gw_sh = shutil.which('gw_sh')
+        if gw_sh is None:
+            print("WARNING: can not found toolchain installation in PATH: gowin (gw_sh)")
 
         verilogs = " ".join(self.config["verilog_files"])
 

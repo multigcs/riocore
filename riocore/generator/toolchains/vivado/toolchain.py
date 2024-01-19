@@ -1,3 +1,4 @@
+import shutil
 import importlib
 
 
@@ -8,6 +9,10 @@ class Toolchain:
     def generate(self, path):
         pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.xdc")
         pins_generator.Pins(self.config).generate(path)
+
+        vivado = shutil.which('vivado')
+        if vivado is None:
+            print("WARNING: can not found toolchain installation in PATH: vivado")
 
         verilogs = " ".join(self.config["verilog_files"])
         makefile_data = []
