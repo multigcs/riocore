@@ -50,9 +50,15 @@ class Plugin(PluginBase):
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
 
-        instance_parameter["IP_ADDR"] = "{8'd192, 8'd168, 8'd10, 8'd193}"
-        instance_parameter["MAC_ADDR"] = "{8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C}"
-        instance_parameter["PORT"] = "2390"
+        ip = self.plugin_setup.get("ip", self.option_default("ip"))
+        mac = self.plugin_setup.get("mac", self.option_default("mac"))
+        port = self.plugin_setup.get("port", self.option_default("port"))
+
+        ipl = ip.split(".")
+        macl = mac.split(":")
+        instance_parameter["IP_ADDR"] = f"{{8'd{ipl[0]}, 8'd{ipl[1]}, 8'd{ipl[2]}, 8'd{ipl[3]}}}"
+        instance_parameter["MAC_ADDR"] = f"{{8'h{macl[0]}, 8'h{macl[1]}, 8'h{macl[2]}, 8'h{macl[3]}, 8'h{macl[4]}, 8'h{macl[5]}}}"
+        instance_parameter["PORT"] = port
 
         instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"

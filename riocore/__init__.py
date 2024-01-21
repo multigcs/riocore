@@ -323,8 +323,8 @@ class Project:
             for modulesetup in modules:
                 if modulesetup.get("slot") != slotname:
                     continue
-                module = modulesetup.get("module")
-                ssetup = modulesetup.get("setup")
+                module = modulesetup.get("module", [])
+                ssetup = modulesetup.get("setup", {})
                 if module in project["modules"]:
                     module_data = copy.deepcopy(project["modules"][module])
                     if "enable" in module_data:
@@ -335,8 +335,10 @@ class Project:
                             msetup_name = msetup.get("name")
                             if msetup_name and msetup_name in ssetup:
                                 self.setup_merge(ssetup[msetup_name], msetup)
+                            else:
+                                ssetup[msetup_name] = copy.deepcopy(msetup)
                             # rewrite pins
-                            for pname, pin in ssetup[msetup_name].get("pins", {}).items():
+                            for pname, pin in ssetup.get(msetup_name, {}).get("pins", {}).items():
                                 realpin = spins[pin["pin"]]
                                 ssetup[msetup_name]["pins"][pname]["pin"] = realpin
                             module_data["plugins"][jn] = ssetup[msetup_name]

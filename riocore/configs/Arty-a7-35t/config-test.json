@@ -1,263 +1,384 @@
 {
-  "name": "Arty-a7-35t",
-  "description": "Arty a7-35t - testing",
-  "boardcfg": "Arty-a7-35t",
-  "modules": [
-    {
-      "slot": "ChipKit",
-      "module": "cnc-shield-v3",
-      "setup": {}
-    }
-  ],
-  "plugins": [
-    {
-      "name": "SW0",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "A8",
-          "modifier": [
-            {
-              "type": "debounce"
+    "name": "Arty-a7-35t",
+    "description": "Arty a7-35t - testing",
+    "boardcfg": "Arty-a7-35t",
+    "machine": "lathe",
+    "modules": [
+        {
+            "slot": "ChipKit",
+            "module": "cnc-shield-v3",
+            "setup": {
+                "enable": {
+                    "type": "bitout",
+                    "name": "enable",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                },
+                                {
+                                    "type": "onerror"
+                                },
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "home-x": {
+                    "type": "bitin",
+                    "name": "home-x",
+                    "net": "joint.0.home-sw-in",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "home-y": {
+                    "type": "bitin",
+                    "name": "home-y",
+                    "net": "joint.1.home-sw-in",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "home-z": {
+                    "type": "bitin",
+                    "name": "home-z",
+                    "net": "joint.2.home-sw-in",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "spindle-enable": {
+                    "type": "bitout",
+                    "name": "spindle-enable",
+                    "net": "spindle.0.on",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "spindle-dir": {
+                    "type": "bitout",
+                    "name": "spindle-dir",
+                    "pins": {
+                        "bit": {}
+                    }
+                },
+                "coolant": {
+                    "type": "bitout",
+                    "name": "coolant",
+                    "pins": {
+                        "bit": {
+                            "invert": true
+                        }
+                    }
+                },
+                "e-stop": {
+                    "type": "bitin",
+                    "name": "e-stop",
+                    "pins": {
+                        "bit": {
+                            "pullup": true
+                        }
+                    }
+                },
+                "joint-0": {
+                    "name": "joint-0",
+                    "type": "stepdir",
+                    "pins": {
+                        "step": {},
+                        "dir": {}
+                    },
+                    "joint": true
+                },
+                "joint-1": {
+                    "name": "joint-1",
+                    "type": "stepdir",
+                    "pins": {
+                        "step": {},
+                        "dir": {}
+                    },
+                    "joint": true
+                },
+                "joint-2": {
+                    "name": "joint-2",
+                    "type": "stepdir",
+                    "pins": {
+                        "step": {},
+                        "dir": {}
+                    },
+                    "joint": true
+                }
             }
-          ]
-        }
-      }
-    },
-    {
-      "name": "SW1",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "C11",
-          "modifier": [
-            {
-              "type": "debounce"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "SW2",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "C10",
-          "modifier": [
-            {
-              "type": "debounce"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "SW3",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "A10",
-          "modifier": [
-            {
-              "type": "debounce"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "BTN0",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "D9",
-          "modifier": [
-            {
-              "type": "debounce"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "BTN1",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "C9",
-          "modifier": [
-            {
-              "type": "debounce"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "BTN2",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "B9",
-          "modifier": [
-            {
-              "type": "debounce"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "BTN3",
-      "type": "bitin",
-      "pins": {
-        "bit": {
-          "pin": "B8",
-          "modifier": [
-            {
-              "type": "debounce"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD0_R",
-      "pins": {
-        "bit": {
-          "pin": "G6"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD0_G",
-      "pins": {
-        "bit": {
-          "pin": "F6"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD0_B",
-      "pins": {
-        "bit": {
-          "pin": "E1"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD1_R",
-      "pins": {
-        "bit": {
-          "pin": "G3"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD1_G",
-      "pins": {
-        "bit": {
-          "pin": "J4"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD1_B",
-      "pins": {
-        "bit": {
-          "pin": "G4"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD2_R",
-      "pins": {
-        "bit": {
-          "pin": "J3"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD2_G",
-      "pins": {
-        "bit": {
-          "pin": "J2"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD2_B",
-      "pins": {
-        "bit": {
-          "pin": "H4"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD3_R",
-      "pins": {
-        "bit": {
-          "pin": "K1"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD3_G",
-      "pins": {
-        "bit": {
-          "pin": "H6"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD3_B",
-      "pins": {
-        "bit": {
-          "pin": "K2"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD4",
-      "pins": {
-        "bit": {
-          "pin": "H5"
-        }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "LD5",
-      "pins": {
-        "bit": {
-          "pin": "J5"
-        }
-      }
-    },
-    {
-      "type": "uart",
-      "pins": {
-        "rx": {
-          "pin": "A9"
         },
-        "tx": {
-          "pin": "D10"
+        {
+            "slot": "PMOD_JA",
+            "module": "w5500"
+        },
+        {
+            "slot": "PMOD_JB",
+            "module": "quadencoderz",
+            "setup": {
+                "quadencoderz": {
+                    "scale": 600
+                }
+            }
         }
-      }
-    }
-  ]
+    ],
+    "plugins": [
+        {
+            "name": "SW0",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "A8",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "SW1",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C11",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "SW2",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C10",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "SW3",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "A10",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "BTN0",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "D9",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "BTN1",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C9",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "BTN2",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "B9",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "BTN3",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "B8",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD0_R",
+            "pins": {
+                "bit": {
+                    "pin": "G6"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD0_G",
+            "pins": {
+                "bit": {
+                    "pin": "F6"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD0_B",
+            "pins": {
+                "bit": {
+                    "pin": "E1"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD1_R",
+            "pins": {
+                "bit": {
+                    "pin": "G3"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD1_G",
+            "pins": {
+                "bit": {
+                    "pin": "J4"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD1_B",
+            "pins": {
+                "bit": {
+                    "pin": "G4"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD2_R",
+            "pins": {
+                "bit": {
+                    "pin": "J3"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD2_G",
+            "pins": {
+                "bit": {
+                    "pin": "J2"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD2_B",
+            "pins": {
+                "bit": {
+                    "pin": "H4"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD3_R",
+            "pins": {
+                "bit": {
+                    "pin": "K1"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD3_G",
+            "pins": {
+                "bit": {
+                    "pin": "H6"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD3_B",
+            "pins": {
+                "bit": {
+                    "pin": "K2"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD4",
+            "pins": {
+                "bit": {
+                    "pin": "H5"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LD5",
+            "pins": {
+                "bit": {
+                    "pin": "J5"
+                }
+            }
+        }
+    ],
+    "transport": "UDP",
+    "axis": 3
 }

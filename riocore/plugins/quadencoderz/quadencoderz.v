@@ -9,8 +9,8 @@ module quadencoderz
          input a,
          input b,
          input z,
-         input index_enable,
-         output reg index_out = 0,
+         input indexenable,
+         output reg indexout = 0,
          output signed [BITS-1:0] position
      );
     reg [2:0] quadA_delayed = 0;
@@ -22,18 +22,18 @@ module quadencoderz
     wire count_enable = quadA_delayed[1] ^ quadA_delayed[2] ^ quadB_delayed[1] ^ quadB_delayed[2];
     wire count_direction = quadA_delayed[1] ^ quadB_delayed[2];
     reg signed [BITS-1:0] count = 0;
-    reg index_wait = 0;
+    reg indexwait = 0;
     assign position = $signed(count>>>QUAD_TYPE);
     always @(posedge clk) begin
-        if (index_enable == 1 && index_out == 1 && quadZ_delayed == 1) begin
-            index_out <= 0;
+        if (indexenable == 1 && indexout == 1 && quadZ_delayed == 1) begin
+            indexout <= 0;
             count <= 0;
-            index_wait <= 1;
+            indexwait <= 1;
         end else begin
-            if (index_enable == 1 && index_wait == 0 && index_out == 0) begin
-                index_out <= 1;
-            end else if (index_enable == 0 && index_wait == 1) begin
-                index_wait <= 0;
+            if (indexenable == 1 && indexwait == 0 && indexout == 0) begin
+                indexout <= 1;
+            end else if (indexenable == 0 && indexwait == 1) begin
+                indexwait <= 0;
             end
             if (count_enable) begin
                 if(count_direction) begin

@@ -23,11 +23,11 @@ class Plugin(PluginBase):
             },
         }
         self.INTERFACE = {
-            "index_enable": {
+            "indexenable": {
                 "size": 1,
                 "direction": "output",
             },
-            "index_out": {
+            "indexout": {
                 "size": 1,
                 "direction": "input",
             },
@@ -37,15 +37,18 @@ class Plugin(PluginBase):
             },
         }
         self.SIGNALS = {
-            "index_enable": {
+            "indexenable": {
+                "is_index_enable_": True,
                 "direction": "output",
                 "bool": True,
             },
-            "index_out": {
+            "indexout": {
+                "is_index_out_": True,
                 "direction": "input",
                 "bool": True,
             },
             "position": {
+                "is_index_position_": True,
                 "direction": "input",
             },
         }

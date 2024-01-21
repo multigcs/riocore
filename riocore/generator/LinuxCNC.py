@@ -750,12 +750,13 @@ class LinuxCNC:
 
         output_pos = self.project.buffer_size - self.project.header_size
 
-        output.append("    // copy next multiplexed value")
-        output.append(f"    if (data->MULTIPLEXER_OUTPUT_ID < {self.project.multiplexed_output}) {{;")
-        output.append("        data->MULTIPLEXER_OUTPUT_ID += 1;")
-        output.append("    } else {")
-        output.append("        data->MULTIPLEXER_OUTPUT_ID = 0;")
-        output.append("    };")
+        if self.project.multiplexed_output:
+            output.append("    // copy next multiplexed value")
+            output.append(f"    if (data->MULTIPLEXER_OUTPUT_ID < {self.project.multiplexed_output}) {{;")
+            output.append("        data->MULTIPLEXER_OUTPUT_ID += 1;")
+            output.append("    } else {")
+            output.append("        data->MULTIPLEXER_OUTPUT_ID = 0;")
+            output.append("    };")
         mpid = 0
         for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
@@ -862,6 +863,14 @@ class LinuxCNC:
             "LICENSE": "GPL v2",
         }
 
+        ip = ""
+        port = 0
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE == "interface":
+                ip = plugin_instance.plugin_setup.get("ip")
+                port = plugin_instance.plugin_setup.get("port")
+
+
         defines = {
             "MODNAME": '"rio"',
             "PREFIX": '"rio"',
@@ -869,8 +878,8 @@ class LinuxCNC:
             "BUFFER_SIZE": self.project.buffer_bytes,
             "SERIAL_PORT": '"/dev/ttyUSB0"',
             "SERIAL_BAUD": "B1000000",
-            "UDP_IP": '"192.168.10.193"',
-            "UDP_PORT": 2390,
+            "UDP_IP": f"\"{ip}\"",
+            "UDP_PORT": port,
             "OSC_CLOCK": self.project.config["speed"],
         }
 
@@ -898,7 +907,7 @@ class LinuxCNC:
         output.append("")
 
         output += self.component_variables()
-        for ppath in glob.glob(f"{os.path.dirname(__file__)}/interfaces/*/*.c"):
+        for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c"):
             output.append("/*")
             output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
             output.append("*/")
