@@ -172,6 +172,13 @@ class LinuxCNC:
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
 
+        for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini").items():
+            print(section, section_options)
+            if section not in ini_setup:
+                ini_setup[section] = {}
+            for key, value in section_options.items():
+                ini_setup[section][key] = value
+
         output = []
         for section, setup in ini_setup.items():
             output.append(f"[{section}]")
@@ -376,7 +383,8 @@ class LinuxCNC:
                     if halname in self.used_signals:
                         continue
                     if direction == "input" and not netname:
-                        custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
+                        if not signal_config.get("is_index_eneble") and not signal_config.get("is_index_position"):
+                            custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
                         if not boolean:
                             vmin = signal_config.get("min", 0)
                             vmax = signal_config.get("max", 1000)
@@ -472,6 +480,22 @@ class LinuxCNC:
                         elif direction == "output":
                             output.append(f"net rios.{halname} <= {netname}")
                             output.append(f"net rios.{halname} => rio.{halname}")
+
+
+
+                    if signal_config.get("is_index_position"):
+                        self.used_signals[halname] = "XXX"
+                        scale = float(plugin_instance.plugin_setup.get("scale", 1.0))
+                        output.append(f"setp rio.{halname}-scale {scale}")
+                        output.append(f"net spindle-position rio.{halname} => spindle.0.revs")
+
+                    if signal_config.get("is_index_enable"):
+                        self.used_signals[halname] = "XXX"
+                        output.append(f"net spindle-index-enable rio.{halname} <=> spindle.0.index-enable")
+                        #output.append("")
+                        #output.append(f"net rios.{halname}-get-speed spindle.0.speed-in <= rio.{halname}")
+                        output.append("")
+
 
         output.append("")
 
@@ -599,7 +623,11 @@ class LinuxCNC:
                         output.append(f'    if (retval = hal_pin_s32_newf(HAL_{hal_direction}, &(data->{varname}_S32), comp_id, "%s.{halname}-s32", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_S32 = 0;")
                 else:
-                    output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
+
+                    if signal_config.get("is_index_enable"):
+                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_IO, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
+                    else:
+                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
 
         output.append("}")
@@ -615,26 +643,33 @@ class LinuxCNC:
                 variable_size = data_config["size"]
                 if data_config["direction"] == "output":
                     convert_parameter = []
+
+                    output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
+
                     for signal_name, signal_config in plugin_instance.signals().items():
                         varname = signal_config["varname"]
                         boolean = signal_config.get("bool")
-                        if not boolean:
-                            convert_parameter.append(f"volatile hal_float_t *{varname}")
-                        else:
-                            convert_parameter.append(f"volatile hal_bit_t *{varname}")
-                    output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
-                    for parameter in convert_parameter:
-                        if data_name.upper() == parameter.split("_")[-1].strip():
-                            source = parameter.split()[-1].strip("*")
+
+                        if data_name.upper() == varname.split("_")[-1].strip():
+                            source = varname.split()[-1].strip("*")
                             if variable_size > 1:
                                 output.append(f"    float value = *data->{source};")
                                 output.append(f"    value = value * *data->{source}_SCALE;")
                                 output.append(f"    value = value + *data->{source}_OFFSET;")
+                                output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
                             else:
                                 output.append(f"    bool value = *data->{source};")
-                            data_config["plugin_instance"] = plugin_instance
-                            output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
+                                output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
+                                if signal_config.get("is_index_enable"):
+                                    output.append(f"    if (data->{variable_name} != value) {{")
+                                    output.append("        if (value == 1) {")
+                                    output.append(f"            //printf(\"index enable change: %i\\n\", value);")
+                                    output.append(f"            data->{variable_name} = value;")
+                                    output.append("        }")
+                                    output.append("    }")
+
                             output.append(f"    data->{variable_name} = value;")
+                            data_config["plugin_instance"] = plugin_instance
                     output.append("}")
                     output.append("")
         output.append("")
@@ -655,6 +690,7 @@ class LinuxCNC:
                             convert_parameter.append(f"{vtype} *{variable_name}")
                         else:
                             convert_parameter.append(f"bool *{variable_name}")
+
                     direction = signal_config.get("direction")
                     boolean = signal_config.get("bool")
                     hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
@@ -686,13 +722,31 @@ class LinuxCNC:
                                 output.append("")
 
                     output.append(f"void convert_{varname.lower()}(data_t *data) {{")
-                    for parameter in convert_parameter:
-                        if signal_name.upper() == parameter.split("_")[-1].strip():
-                            source = parameter.split()[-1].strip("*")
+                    for data_name, data_config in plugin_instance.interface_data().items():
+                        variable_name = data_config["variable"]
+                        variable_size = data_config["size"]
+                        
+                        var_prefix = signal_config["var_prefix"]
+                        
+                        varname = signal_config["varname"]
+                        
+                        if signal_name.upper() == variable_name.split("_")[-1].strip():
+                            source = variable_name.split()[-1].strip("*")
                             if not boolean:
                                 output.append(f"    float value = data->{source};")
                             else:
                                 output.append(f"    bool value = data->{source};")
+
+                            if signal_config.get("is_index_out"):
+                                output.append(f"    if (*data->{varname} != value) {{")
+                                output.append(f"        *data->{varname} = value;")
+                                output.append("        //printf(\"index out change: %i\\n\", value);")
+                                output.append("        if (value == 0) {")
+                                output.append(f"            *data->SIGOUT_{var_prefix}_INDEXENABLE = value;")
+                                #output.append(f"            data->VAROUT1_{var_prefix}_INDEXENABLE = 0;")
+                                output.append("        }")
+                                output.append("    }")
+
                             output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
 
                             if not boolean and direction == "input" and hal_type == "float":

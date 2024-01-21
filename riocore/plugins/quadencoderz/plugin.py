@@ -38,17 +38,17 @@ class Plugin(PluginBase):
         }
         self.SIGNALS = {
             "indexenable": {
-                "is_index_enable_": True,
+                "is_index_enable": True,
                 "direction": "output",
                 "bool": True,
             },
             "indexout": {
-                "is_index_out_": True,
+                "is_index_out": True,
                 "direction": "input",
                 "bool": True,
             },
             "position": {
-                "is_index_position_": True,
+                "is_index_position": True,
                 "direction": "input",
             },
         }

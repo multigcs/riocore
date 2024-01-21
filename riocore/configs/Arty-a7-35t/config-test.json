@@ -3,6 +3,16 @@
     "description": "Arty a7-35t - testing",
     "boardcfg": "Arty-a7-35t",
     "machine": "lathe",
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "DEFAULT_LINEAR_VELOCITY": 20.0
+            },
+            "TRJ": {
+                "DEFAULT_LINEAR_VELOCITY": 20.0
+            }
+        }
+    },
     "modules": [
         {
             "slot": "ChipKit",
