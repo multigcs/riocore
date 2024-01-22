@@ -23,6 +23,8 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "1Wire Temperature sensor"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -172,7 +172,7 @@ class LinuxCNC:
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
 
-        for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini").items():
+        for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
             print(section, section_options)
             if section not in ini_setup:
                 ini_setup[section] = {}

@@ -65,3 +65,5 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "MAX10 ADC inputs"
+        self.DESCRIPTION = ""

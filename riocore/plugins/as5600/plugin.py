@@ -28,3 +28,5 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "magnetic absolute encoder"
+        self.DESCRIPTION = ""

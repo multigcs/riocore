@@ -14,6 +14,8 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
+        self.INFO = "uart interface for host cominucation"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -33,6 +33,8 @@ class Plugin(PluginBase):
                     "direction": "output",
                     "bool": True,
                 }
+        self.INFO = "ws2812b interface"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

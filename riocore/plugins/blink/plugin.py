@@ -18,6 +18,8 @@ class Plugin(PluginBase):
                 "help": "blink frequency in Hz",
             },
         }
+        self.INFO = "blinking output pin"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

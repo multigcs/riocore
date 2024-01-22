@@ -23,6 +23,8 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "IR-Remote input"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

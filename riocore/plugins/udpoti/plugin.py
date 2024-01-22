@@ -28,6 +28,8 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
+        self.INFO = "digital-poti with up/down+dir interface"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

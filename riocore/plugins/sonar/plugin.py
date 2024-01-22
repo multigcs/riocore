@@ -30,6 +30,8 @@ class Plugin(PluginBase):
                 "unit": "cm",
             },
         }
+        self.INFO = "sonar sensor for distance measurement"
+        self.DESCRIPTION = ""
 
     def convert(self, signal_name, signal_setup, value):
         if value != 0:

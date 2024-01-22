@@ -23,6 +23,8 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
+        self.INFO = "single input pin"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)

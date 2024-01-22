@@ -34,6 +34,8 @@ class Plugin(PluginBase):
                 "unit": "°C",
             },
         }
+        self.INFO = "SPI temperature sensor"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

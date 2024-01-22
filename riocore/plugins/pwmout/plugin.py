@@ -43,6 +43,8 @@ class Plugin(PluginBase):
         }
         if "dir" in self.plugin_setup["pins"]:
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
+        self.INFO = "pwm output"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

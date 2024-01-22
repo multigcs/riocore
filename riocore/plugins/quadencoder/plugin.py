@@ -28,6 +28,8 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "quadencoder"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

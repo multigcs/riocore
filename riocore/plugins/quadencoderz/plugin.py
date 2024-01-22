@@ -52,6 +52,8 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "quadencoder with index pin"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
