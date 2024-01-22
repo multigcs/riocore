@@ -135,11 +135,28 @@ class PluginBase:
                 "help": "target net in LinuxCNC",
             }
 
-        if self.TYPE == "joint" and "scale" not in self.OPTIONS:
-            self.OPTIONS["scale"] = {
-                "type": float,
-                "help": "scale factor",
-            }
+        if self.TYPE == "joint":
+            if "scale" not in self.OPTIONS:
+                self.OPTIONS["scale"] = {
+                    "type": float,
+                    "help": "scale factor",
+                    "default": 320.0,
+                }
+                self.OPTIONS["max_velocity"] = {
+                    "type": float,
+                    "help": "max velocity",
+                    "default": 20.0,
+                }
+                self.OPTIONS["max_acceleration"] = {
+                    "type": float,
+                    "help": "max acceleration",
+                    "default": 500.0,
+                }
+                self.OPTIONS["axis"] = {
+                    "type": "select",
+                    "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
+                    "help": "axis name",
+                }
 
         self.instances_name = f"{self.NAME}{self.plugin_id}"
         self.title = plugin_setup.get("name") or self.instances_name

@@ -202,12 +202,14 @@ class LinuxCNC:
                 enable_halname = joint_setup["enable_halname"]
                 position_scale = joint_setup["position_scale"]
                 feedback_scale = joint_setup["feedback_scale"]
+                max_velocity = joint_setup["max_velocity"]
                 pin_num = joint_setup["pin_num"]
                 joint_setup = JOINT_DEFAULTS.copy()
 
                 # TODO: set scales
                 joint_setup["SCALE_OUT"] = position_scale
                 joint_setup["SCALE_IN"] = feedback_scale
+                joint_setup["MAX_VELOCITY"] = max_velocity
 
                 output.append(f"[JOINT_{joint}]")
                 if position_mode == "absolute":
@@ -480,8 +482,6 @@ class LinuxCNC:
                         elif direction == "output":
                             output.append(f"net rios.{halname} <= {netname}")
                             output.append(f"net rios.{halname} => rio.{halname}")
-
-
 
                     if signal_config.get("is_index_position"):
                         self.used_signals[halname] = "XXX"
@@ -1058,6 +1058,7 @@ class LinuxCNC:
                 enable_halname = None
                 position_mode = None
                 position_scale = float(joint_setup["plugin_instance"].plugin_setup.get("scale", 320.0))
+                max_velocity = float(joint_setup["plugin_instance"].plugin_setup.get("max_velocity", 40.0))
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
@@ -1103,6 +1104,7 @@ class LinuxCNC:
                 joint_setup["position_mode"] = position_mode
                 joint_setup["position_halname"] = position_halname
                 joint_setup["position_scale"] = position_scale
+                joint_setup["max_velocity"] = max_velocity
                 joint_setup["feedback_halname"] = feedback_halname
                 joint_setup["feedback_scale"] = feedback_scale
                 joint_setup["enable_halname"] = enable_halname
