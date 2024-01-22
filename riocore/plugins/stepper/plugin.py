@@ -53,6 +53,8 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
+        self.INFO = "stepper driver output for H-Bridges like L298"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

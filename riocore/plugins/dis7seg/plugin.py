@@ -83,3 +83,5 @@ class Plugin(PluginBase):
                 "max": 9999,
             },
         }
+        self.INFO = "7segment display with buttons"
+        self.DESCRIPTION = ""

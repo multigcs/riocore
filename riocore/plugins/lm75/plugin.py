@@ -28,3 +28,5 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "I2C Temperature-Sensor"
+        self.DESCRIPTION = ""

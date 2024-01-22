@@ -28,6 +28,8 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
+        self.INFO = "spi interface for host comunication"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

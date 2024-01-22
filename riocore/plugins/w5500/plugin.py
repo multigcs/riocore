@@ -42,6 +42,8 @@ class Plugin(PluginBase):
                 "type": int,
             },
         }
+        self.INFO = "udp interface for host cominucation"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

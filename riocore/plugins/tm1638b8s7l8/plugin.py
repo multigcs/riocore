@@ -175,6 +175,8 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
+        self.INFO = "7segment display with buttons"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

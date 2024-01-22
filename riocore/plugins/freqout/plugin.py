@@ -25,6 +25,8 @@ class Plugin(PluginBase):
                 "max": 1000000,
             },
         }
+        self.INFO = "frequency output"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -51,6 +51,8 @@ class Plugin(PluginBase):
                 "absolute": False,
             },
         }
+        self.INFO = "step/dir output for stepper drivers"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -33,6 +33,8 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
+        self.INFO = "spi analog-poti"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

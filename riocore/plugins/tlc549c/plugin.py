@@ -36,6 +36,8 @@ class Plugin(PluginBase):
                 "unit": "Volt",
             },
         }
+        self.INFO = "spi adc input"
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

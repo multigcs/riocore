@@ -36,3 +36,5 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.INFO = "pulse counter input"
+        self.DESCRIPTION = ""

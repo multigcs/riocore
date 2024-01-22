@@ -61,6 +61,8 @@ class Plugin(PluginBase):
                 "unit": "Volt",
             },
         }
+        self.INFO = "4-chanel adc via I2C"
+        self.DESCRIPTION = ""
 
     def convert(self, signal_name, signal_setup, value):
         value /= 1000.0
