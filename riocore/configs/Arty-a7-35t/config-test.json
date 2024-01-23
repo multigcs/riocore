@@ -2,7 +2,7 @@
     "name": "Arty-a7-35t",
     "description": "Arty a7-35t - testing",
     "boardcfg": "Arty-a7-35t",
-    "machine": "lathe",
+    "machinetype": "lathe",
     "linuxcnc": {
         "ini": {
             "DISPLAY": {
@@ -427,7 +427,12 @@
                     "pullup": true
                 }
             },
-            "name": "jogencoder"
+            "name": "jogencoder",
+            "signals": {
+                "position": {
+                    "function": "jog.wheel"
+                }
+            }
         }
     ],
     "transport": "UDP",

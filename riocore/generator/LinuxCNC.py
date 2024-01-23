@@ -162,6 +162,10 @@ class LinuxCNC:
 
         ini_setup = INI_DEFAULTS.copy()
 
+        machinetype = self.project.config["jdata"].get("machinetype")
+        if machinetype == "lathe":
+            ini_setup["DISPLAY"]["LATHE"] = 1
+
         coordinates = []
         for axis_name, joints in self.axis_dict.items():
             for joint, joint_setup in joints.items():
@@ -310,10 +314,14 @@ class LinuxCNC:
             axis_selector = False
             axis_leds = False
             axis_move = False
+            wheel = False
             position_display = False
             for function, halname in self.rio_functions["jog"].items():
                 self.used_signals[halname] = f"riof.jog.{function}"
-                custom.append(f"net {self.used_signals[halname]:16s} <= rio.{halname}")
+                if function in {"wheel"}:
+                    custom.append(f"net {self.used_signals[halname]:16s} <= rio.{halname}-s32")
+                else:
+                    custom.append(f"net {self.used_signals[halname]:16s} <= rio.{halname}")
                 if function.startswith("select-"):
                     axis_selector = True
                 elif function.startswith("selected-"):
@@ -324,7 +332,22 @@ class LinuxCNC:
                     speed_selector = True
                 elif function in {"position"}:
                     position_display = True
+                elif function in {"wheel"}:
+                    wheel = True
 
+            if wheel:
+                for axis_name, joints in self.axis_dict.items():
+                    laxis = axis_name.lower()
+                    custom.append(f"setp axis.{laxis}.jog-vel-mode 1")
+                    custom.append(f"setp axis.{laxis}.jog-scale 0.05")
+                    custom.append(f"net riof.jog.wheel => axis.{laxis}.jog-counts")
+                    custom.append(f"net jog_en{laxis} axis.{laxis}.jog-enable <= axisui.jog.{laxis}")
+                    for joint, joint_setup in joints.items():
+                        custom.append(f"setp joint.{joint}.jog-vel-mode 1")
+                        custom.append(f"setp joint.{joint}.jog-scale 0.05")
+                        custom.append(f"net riof.jog.wheel => joint.{joint}.jog-counts")
+                        custom.append(f"net jog_en{laxis} joint.{joint}.jog-enable <= axisui.jog.{laxis}")
+                custom.append("")
             if speed_selector:
                 custom.append("loadrt mux2 names=riof.jog.speed_mux")
                 custom.append("addf riof.jog.speed_mux servo-thread")
@@ -336,38 +359,18 @@ class LinuxCNC:
                 cfgxml_data_status += gui_gen.draw_number("Jogspeed", "jogspeed")
                 custom.append("net riof.jog.speed => halui.axis.jog-speed")
                 custom.append("net riof.jog.speed => halui.joint.jog-speed")
-            else:
-                custom.append("sets halui.axis.jog-speed 500")
-                custom.append("sets halui.joint.jog-speed 500")
+            #else:
+            #    custom.append("sets halui.axis.jog-speed 500")
+            #    custom.append("sets halui.joint.jog-speed 500")
             custom.append("")
 
-            """
-            setp joint.0.jog-scale 0.1
-            setp joint.0.jog-vel-mode 1
-            setp joint.1.jog-scale 0.1
-            setp joint.1.jog-vel-mode 1
-
-            #setp joint.0.jog-enable 1
-            #setp joint.1.jog-enable 1
-
-            net jogpos <= rio.jogencoder.position-s32
-
-            net jogpos => joint.1.jog-counts
-            net jogpos => axis.z.jog-counts
-            net jogpos => joint.0.jog-counts
-            net jogpos => axis.x.jog-counts
-
-            net jog_enx joint.0.jog-enable <= axisui.jog.x
-            net jog_enz joint.1.jog-enable <= axisui.jog.z
-
-            """
-
-            if axis_move:
+            if axis_move and not wheel:
                 custom.append("net riof.jog.minus => halui.joint.selected.minus")
                 custom.append("net riof.jog.minus => halui.axis.selected.minus")
                 custom.append("net riof.jog.plus  => halui.joint.selected.plus")
                 custom.append("net riof.jog.plus  => halui.axis.selected.plus")
                 custom.append("")
+
             if axis_selector:
                 joint_n = 0
                 for function, halname in self.rio_functions["jog"].items():
@@ -378,6 +381,12 @@ class LinuxCNC:
                         custom.append(f"net riof.jog.selected-{axis_name} => pyvcp.{halname}")
                         cfgxml_data_status += gui_gen.draw_led(f"Jog:{axis_name}", halname)
                         joint_n += 1
+            else:
+                for axis_name, joints in self.axis_dict.items():
+                    laxis = axis_name.lower()
+                    custom.append(f"net jog_en{laxis} halui.axis.{laxis}.select <= axisui.jog.{laxis}")
+                    for joint, joint_setup in joints.items():
+                        custom.append(f"net jog_en{laxis} halui.joint.{joint}.select <= axisui.jog.{laxis}")
 
             if axis_selector and position_display:
                 custom.append("# display position")
@@ -597,6 +606,7 @@ class LinuxCNC:
         output.append(f"    hal_bit_t   *enable;")
         output.append(f"    hal_bit_t   *enable_request;")
         output.append(f"    hal_bit_t   *status;")
+        output.append(f"    hal_float_t *duration;")
 
         if self.project.multiplexed_output:
             output.append(f"    float MULTIPLEXER_OUTPUT_VALUE;")
@@ -616,6 +626,9 @@ class LinuxCNC:
                     output.append(f"    hal_{hal_type}_t *{varname};")
                     if direction == "input" and hal_type == "float":
                         output.append(f"    hal_s32_t *{varname}_S32;")
+                        if signal_config.get("is_index_position"):
+                            output.append(f"    hal_float_t *{varname}_VELOCITY;")
+
                     output.append(f"    hal_float_t *{varname}_SCALE;")
                     output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
@@ -646,9 +659,11 @@ class LinuxCNC:
                 output.append(f"    data->{variable_name} = 0;")
         output.append("")
 
-        output.append(f'    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->status), comp_id, "%s.status", prefix) != 0) error_handler(retval);')
-        output.append(f'    if (retval = hal_pin_bit_newf(HAL_IN,  &(data->enable), comp_id, "%s.enable", prefix) != 0) error_handler(retval);')
-        output.append(f'    if (retval = hal_pin_bit_newf(HAL_IN,  &(data->enable_request), comp_id, "%s.enable-request", prefix) != 0) error_handler(retval);')
+        output.append('    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->status), comp_id, "%s.status", prefix) != 0) error_handler(retval);')
+        output.append('    if (retval = hal_pin_bit_newf(HAL_IN,  &(data->enable), comp_id, "%s.enable", prefix) != 0) error_handler(retval);')
+        output.append('    if (retval = hal_pin_bit_newf(HAL_IN,  &(data->enable_request), comp_id, "%s.enable-request", prefix) != 0) error_handler(retval);')
+        output.append('    if (retval = hal_pin_float_newf(HAL_OUT,  &(data->duration), comp_id, "%s.duration", prefix) != 0) error_handler(retval);')
+        output.append('    *data->duration = rtapi_get_time();')
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
@@ -668,6 +683,9 @@ class LinuxCNC:
                     if direction == "input" and hal_type == "float":
                         output.append(f'    if (retval = hal_pin_s32_newf(HAL_{hal_direction}, &(data->{varname}_S32), comp_id, "%s.{halname}-s32", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_S32 = 0;")
+                        if signal_config.get("is_index_position"):
+                            output.append(f'    if (retval = hal_pin_float_newf(HAL_{hal_direction}, &(data->{varname}_VELOCITY), comp_id, "%s.{halname}-velocity", prefix) != 0) error_handler(retval);')
+                            output.append(f"    *data->{varname}_VELOCITY = 0;")
                 else:
 
                     if signal_config.get("is_index_enable"):
@@ -709,7 +727,6 @@ class LinuxCNC:
                                 if signal_config.get("is_index_enable"):
                                     output.append(f"    if (data->{variable_name} != value) {{")
                                     output.append("        if (value == 1) {")
-                                    output.append(f"            //printf(\"index enable change: %i\\n\", value);")
                                     output.append(f"            data->{variable_name} = value;")
                                     output.append("        }")
                                     output.append("    }")
@@ -786,10 +803,8 @@ class LinuxCNC:
                             if signal_config.get("is_index_out"):
                                 output.append(f"    if (*data->{varname} != value) {{")
                                 output.append(f"        *data->{varname} = value;")
-                                output.append("        //printf(\"index out change: %i\\n\", value);")
                                 output.append("        if (value == 0) {")
                                 output.append(f"            *data->SIGOUT_{var_prefix}_INDEXENABLE = value;")
-                                #output.append(f"            data->VAROUT1_{var_prefix}_INDEXENABLE = 0;")
                                 output.append("        }")
                                 output.append("    }")
 
@@ -799,6 +814,14 @@ class LinuxCNC:
                                 output.append(f"    value = value + *data->{varname}_OFFSET;")
                                 output.append(f"    value = value / *data->{varname}_SCALE;")
                                 output.append(f"    *data->{varname}_S32 = value;")
+
+                                if signal_config.get("is_index_position"):
+                                    # TODO: fix calculation and/or static value !?!?!
+                                    output.append("    static float position_last = 0;")
+                                    output.append("    float velocity = (value - position_last) * 1000.0 / *data->duration;")
+                                    output.append("    position_last = value;")
+                                    output.append(f"    *data->{varname}_VELOCITY = velocity;")
+
                             output.append(f"    *data->{varname} = value;")
 
                     output.append("}")
@@ -1002,6 +1025,8 @@ class LinuxCNC:
         output.append("uint32_t pkg_counter = 0;")
         output.append("uint32_t err_counter = 0;")
         output.append("")
+        output.append("long stamp_last = 0;")
+        output.append("")
         output.append("void rio_readwrite();")
         output.append("int error_handler(int retval);")
         output.append("")
@@ -1035,6 +1060,9 @@ class LinuxCNC:
         output.append("    if (*data->enable_request == 1) {")
         output.append("        *data->status = 1;")
         output.append("    }")
+        output.append("    long stamp_new = rtapi_get_time();")
+        output.append("    *data->duration = (stamp_new - stamp_last) / 1000000.0;")
+        output.append("    stamp_last = stamp_new;")
         output.append("    if (*data->enable == 1 && *data->status == 1) {")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
