@@ -147,6 +147,11 @@ class PluginBase:
                     "help": "max velocity",
                     "default": 20.0,
                 }
+                self.OPTIONS["backlash"] = {
+                    "type": float,
+                    "help": "backlash size",
+                    "default": 0.0,
+                }
                 self.OPTIONS["max_acceleration"] = {
                     "type": float,
                     "help": "max acceleration",

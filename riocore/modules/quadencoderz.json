@@ -1,0 +1,20 @@
+{
+  "comment": "Quadencoder with Index",
+  "plugins": [
+        {
+            "type": "quadencoderz",
+            "name": "quadencoderz",
+            "pins": {
+                "a": {
+                    "pin": "P9"
+                },
+                "b": {
+                    "pin": "P8"
+                },
+                "z": {
+                    "pin": "P10"
+                }
+            }
+        }
+    ]
+}

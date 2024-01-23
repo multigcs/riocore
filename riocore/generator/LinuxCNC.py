@@ -1,4 +1,5 @@
 import glob
+import copy
 import os
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -32,6 +33,7 @@ class LinuxCNC:
             "MAX_LIMIT": 150,
             "MIN_FERROR": 0.01,
             "FERROR": 1.0,
+            "BACKLASH": 0.0,
         }
         PID_DEFAULTS = {
             "P": 50.0,
@@ -41,7 +43,7 @@ class LinuxCNC:
             "FF0": 0.0,
             "FF1": 0.0,
             "FF2": 0.0,
-            "DEADBAND": 0,
+            "DEADBAND": 0.01,
             "MAXOUTPUT": 300,
         }
         JOINT_DEFAULTS = {
@@ -192,7 +194,24 @@ class LinuxCNC:
 
         for axis_name, joints in self.axis_dict.items():
             output.append(f"[AXIS_{axis_name}]")
-            for key, value in AXIS_DEFAULTS.items():
+            axis_setup = copy.deepcopy(AXIS_DEFAULTS)
+            axis_max_velocity = 10000.0
+            axis_max_acceleration = 10000.0
+            for joint, joint_setup in joints.items():
+                max_velocity = joint_setup["max_velocity"]
+                max_acceleration = joint_setup["max_acceleration"]
+
+                if axis_max_velocity > max_velocity:
+                    axis_max_velocity = max_velocity
+
+                if axis_max_acceleration > max_acceleration:
+                    axis_max_acceleration = max_acceleration
+
+                axis_setup["MAX_VELOCITY"] = axis_max_velocity
+                axis_setup["MAX_ACCELERATION"] = axis_max_acceleration
+
+
+            for key, value in axis_setup.items():
                 output.append(f"{key:18s} = {value}")
             output.append("")
             for joint, joint_setup in joints.items():
@@ -203,13 +222,17 @@ class LinuxCNC:
                 position_scale = joint_setup["position_scale"]
                 feedback_scale = joint_setup["feedback_scale"]
                 max_velocity = joint_setup["max_velocity"]
+                max_acceleration = joint_setup["max_acceleration"]
+                backlash = joint_setup["backlash"]
                 pin_num = joint_setup["pin_num"]
-                joint_setup = JOINT_DEFAULTS.copy()
+                joint_setup = copy.deepcopy(JOINT_DEFAULTS)
 
                 # TODO: set scales
                 joint_setup["SCALE_OUT"] = position_scale
                 joint_setup["SCALE_IN"] = feedback_scale
                 joint_setup["MAX_VELOCITY"] = max_velocity
+                joint_setup["MAX_ACCELERATION"] = max_acceleration
+                joint_setup["BACKLASH"] = backlash
 
                 output.append(f"[JOINT_{joint}]")
                 if position_mode == "absolute":
@@ -311,11 +334,34 @@ class LinuxCNC:
                 custom.append("net riof.jog.speed <= riof.jog.speed_mux.out")
                 custom.append(f"net riof.jog.speed => pyvcp.jogspeed")
                 cfgxml_data_status += gui_gen.draw_number("Jogspeed", "jogspeed")
+                custom.append("net riof.jog.speed => halui.axis.jog-speed")
+                custom.append("net riof.jog.speed => halui.joint.jog-speed")
             else:
-                custom.append("setp riof.jog.speed 500")
-            custom.append("net riof.jog.speed => halui.axis.jog-speed")
-            custom.append("net riof.jog.speed => halui.joint.jog-speed")
+                custom.append("sets halui.axis.jog-speed 500")
+                custom.append("sets halui.joint.jog-speed 500")
             custom.append("")
+
+            """
+            setp joint.0.jog-scale 0.1
+            setp joint.0.jog-vel-mode 1
+            setp joint.1.jog-scale 0.1
+            setp joint.1.jog-vel-mode 1
+
+            #setp joint.0.jog-enable 1
+            #setp joint.1.jog-enable 1
+
+            net jogpos <= rio.jogencoder.position-s32
+
+            net jogpos => joint.1.jog-counts
+            net jogpos => axis.z.jog-counts
+            net jogpos => joint.0.jog-counts
+            net jogpos => axis.x.jog-counts
+
+            net jog_enx joint.0.jog-enable <= axisui.jog.x
+            net jog_enz joint.1.jog-enable <= axisui.jog.z
+
+            """
+
             if axis_move:
                 custom.append("net riof.jog.minus => halui.joint.selected.minus")
                 custom.append("net riof.jog.minus => halui.axis.selected.minus")
@@ -1059,6 +1105,8 @@ class LinuxCNC:
                 position_mode = None
                 position_scale = float(joint_setup["plugin_instance"].plugin_setup.get("scale", 320.0))
                 max_velocity = float(joint_setup["plugin_instance"].plugin_setup.get("max_velocity", 40.0))
+                max_acceleration = float(joint_setup["plugin_instance"].plugin_setup.get("max_acceleration", 500.0))
+                backlash = float(joint_setup["plugin_instance"].plugin_setup.get("backlash", 0.0))
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
@@ -1105,6 +1153,8 @@ class LinuxCNC:
                 joint_setup["position_halname"] = position_halname
                 joint_setup["position_scale"] = position_scale
                 joint_setup["max_velocity"] = max_velocity
+                joint_setup["max_acceleration"] = max_acceleration
+                joint_setup["backlash"] = backlash
                 joint_setup["feedback_halname"] = feedback_halname
                 joint_setup["feedback_scale"] = feedback_scale
                 joint_setup["enable_halname"] = enable_halname

@@ -49,7 +49,7 @@
                 },
                 "home-y": {
                     "type": "bitin",
-                    "name": "home-y",
+                    "name": "home-z",
                     "net": "joint.1.home-sw-in",
                     "pins": {
                         "bit": {
@@ -59,8 +59,8 @@
                 },
                 "home-z": {
                     "type": "bitin",
-                    "name": "home-z",
-                    "net": "joint.2.home-sw-in",
+                    "name": "home-none",
+                    "net": "",
                     "pins": {
                         "bit": {
                             "pullup": true
@@ -113,7 +113,12 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true
+                    "joint": true,
+                    "scale": 3200.0,
+                    "max_velocity": 5.0,
+                    "max_acceleration": 500.0,
+                    "backlash": 0.1,
+                    "axis": "X"
                 },
                 "joint-1": {
                     "name": "joint-1",
@@ -122,7 +127,12 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true
+                    "joint": true,
+                    "scale": 820.0,
+                    "max_velocity": 10.0,
+                    "max_acceleration": 500.0,
+                    "axis": "Z",
+                    "backlash": 0.0
                 },
                 "joint-2": {
                     "name": "joint-2",
@@ -131,7 +141,11 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true
+                    "joint": false,
+                    "scale": 320.0,
+                    "max_velocity": 20.0,
+                    "max_acceleration": 500.0,
+                    "backlash": 0.0
                 }
             }
         },
@@ -144,7 +158,14 @@
             "module": "quadencoderz",
             "setup": {
                 "quadencoderz": {
-                    "scale": 600
+                    "scale": 600,
+                    "type": "quadencoderz",
+                    "name": "quadencoderz",
+                    "pins": {
+                        "a": {},
+                        "b": {},
+                        "z": {}
+                    }
                 }
             }
         }
@@ -372,21 +393,41 @@
         },
         {
             "type": "bitout",
-            "name": "LD4",
-            "pins": {
-                "bit": {
-                    "pin": "H5"
-                }
-            }
-        },
-        {
-            "type": "bitout",
             "name": "LD5",
             "pins": {
                 "bit": {
                     "pin": "J5"
                 }
             }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "H5",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            },
+            "frequency": 1.0,
+            "name": "status"
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "PMOD_JD:P10",
+                    "pullup": true
+                },
+                "b": {
+                    "pin": "PMOD_JD:P9",
+                    "pullup": true
+                }
+            },
+            "name": "jogencoder"
         }
     ],
     "transport": "UDP",
