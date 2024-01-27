@@ -6,7 +6,8 @@
     "type": "xc7a35ticsg324-1l",
     "package": "csg324",
     "clock": {
-        "speed": "100000000",
+        "osc": "100000000",
+        "speed": "125000000",
         "pin": "E3"
     },
     "slots": [

@@ -148,7 +148,7 @@ class Plugins:
             else:
                 initfile = []
                 initfile.append("")
-                initfile.append("from riocore.plugins.PluginBase import PluginBase")
+                initfile.append("from riocore.plugins import PluginBase")
                 initfile.append("")
                 initfile.append("class Plugin(PluginBase):")
                 initfile.append("")

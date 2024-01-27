@@ -184,6 +184,12 @@ class Gateware:
                 os.system(f"python3 {riocore_path}/files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}")
             elif self.project.config["jdata"]["family"] == "MAX 10":
                 os.system(f"{riocore_path}/files/quartus-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'")
+            elif self.project.config["jdata"]["family"] == "xc7":
+                if float(speed) == 125000000.0 and float(osc_clock) == 100000000.0:
+                    os.system(f"{riocore_path}/files/vivado-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'")
+                else:
+                    print("ERROR: can not generate pll for this platform")
+                    exit(1)
             else:
                 os.system(f"icepll -q -m -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}")
             self.verilogs.append("pll.v")
@@ -191,6 +197,10 @@ class Gateware:
             output.append("    wire locked;")
             if self.project.config["jdata"]["family"] == "MAX 10":
                 output.append("    pll mypll(.inclk0(sysclk_in), .c0(sysclk), .locked(locked));")
+            elif self.project.config["jdata"]["family"] == "xc7":
+                output.append("    wire sysclk25;")
+                output.append("    wire reset;")
+                output.append("    pll mypll(.clock_in(sysclk_in), .clock_out(sysclk), .clock25_out(sysclk25), .locked(locked), .reset(reset));")
             else:
                 output.append("    pll mypll(sysclk_in, sysclk, locked);")
         else:
