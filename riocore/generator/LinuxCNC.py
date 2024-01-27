@@ -1,5 +1,5 @@
-import glob
 import copy
+import glob
 import os
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -214,7 +214,6 @@ class LinuxCNC:
                 axis_setup["MAX_VELOCITY"] = axis_max_velocity
                 axis_setup["MAX_ACCELERATION"] = axis_max_acceleration
 
-
             for key, value in axis_setup.items():
                 output.append(f"{key:18s} = {value}")
             output.append("")
@@ -359,7 +358,7 @@ class LinuxCNC:
                 cfgxml_data_status += gui_gen.draw_number("Jogspeed", "jogspeed")
                 custom.append("net riof.jog.speed => halui.axis.jog-speed")
                 custom.append("net riof.jog.speed => halui.joint.jog-speed")
-            #else:
+            # else:
             #    custom.append("sets halui.axis.jog-speed 500")
             #    custom.append("sets halui.joint.jog-speed 500")
             custom.append("")
@@ -547,10 +546,9 @@ class LinuxCNC:
                     if signal_config.get("is_index_enable"):
                         self.used_signals[halname] = "XXX"
                         output.append(f"net spindle-index-enable rio.{halname} <=> spindle.0.index-enable")
-                        #output.append("")
-                        #output.append(f"net rios.{halname}-get-speed spindle.0.speed-in <= rio.{halname}")
+                        # output.append("")
+                        # output.append(f"net rios.{halname}-get-speed spindle.0.speed-in <= rio.{halname}")
                         output.append("")
-
 
         output.append("")
 
@@ -663,7 +661,7 @@ class LinuxCNC:
         output.append('    if (retval = hal_pin_bit_newf(HAL_IN,  &(data->enable), comp_id, "%s.enable", prefix) != 0) error_handler(retval);')
         output.append('    if (retval = hal_pin_bit_newf(HAL_IN,  &(data->enable_request), comp_id, "%s.enable-request", prefix) != 0) error_handler(retval);')
         output.append('    if (retval = hal_pin_float_newf(HAL_OUT,  &(data->duration), comp_id, "%s.duration", prefix) != 0) error_handler(retval);')
-        output.append('    *data->duration = rtapi_get_time();')
+        output.append("    *data->duration = rtapi_get_time();")
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
@@ -684,7 +682,9 @@ class LinuxCNC:
                         output.append(f'    if (retval = hal_pin_s32_newf(HAL_{hal_direction}, &(data->{varname}_S32), comp_id, "%s.{halname}-s32", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_S32 = 0;")
                         if signal_config.get("is_index_position"):
-                            output.append(f'    if (retval = hal_pin_float_newf(HAL_{hal_direction}, &(data->{varname}_VELOCITY), comp_id, "%s.{halname}-velocity", prefix) != 0) error_handler(retval);')
+                            output.append(
+                                f'    if (retval = hal_pin_float_newf(HAL_{hal_direction}, &(data->{varname}_VELOCITY), comp_id, "%s.{halname}-velocity", prefix) != 0) error_handler(retval);'
+                            )
                             output.append(f"    *data->{varname}_VELOCITY = 0;")
                 else:
 
@@ -788,11 +788,11 @@ class LinuxCNC:
                     for data_name, data_config in plugin_instance.interface_data().items():
                         variable_name = data_config["variable"]
                         variable_size = data_config["size"]
-                        
+
                         var_prefix = signal_config["var_prefix"]
-                        
+
                         varname = signal_config["varname"]
-                        
+
                         if signal_name.upper() == variable_name.split("_")[-1].strip():
                             source = variable_name.split()[-1].strip("*")
                             if not boolean:
@@ -993,7 +993,6 @@ class LinuxCNC:
                 ip = plugin_instance.plugin_setup.get("ip")
                 port = plugin_instance.plugin_setup.get("port")
 
-
         defines = {
             "MODNAME": '"rio"',
             "PREFIX": '"rio"',
@@ -1001,7 +1000,7 @@ class LinuxCNC:
             "BUFFER_SIZE": self.project.buffer_bytes,
             "SERIAL_PORT": '"/dev/ttyUSB0"',
             "SERIAL_BAUD": "B1000000",
-            "UDP_IP": f"\"{ip}\"",
+            "UDP_IP": f'"{ip}"',
             "UDP_PORT": port,
             "OSC_CLOCK": self.project.config["speed"],
         }

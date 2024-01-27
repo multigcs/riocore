@@ -239,7 +239,7 @@ class PluginBase:
             halname = f"{signal_prefix}.{name}"
             direction_short = setup["direction"].upper().replace("PUT", "")
             signals[name]["signal_prefix"] = signal_prefix
-            signals[name]["var_prefix"] = signal_prefix.replace('.', '_').replace('-', '_').upper()
+            signals[name]["var_prefix"] = signal_prefix.replace(".", "_").replace("-", "_").upper()
             signals[name]["plugin_instance"] = self
             signals[name]["halname"] = halname
             signals[name]["varname"] = f"SIG{direction_short}_{halname.replace('.', '_').replace('-', '_').upper()}"
