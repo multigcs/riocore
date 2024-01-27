@@ -432,6 +432,9 @@
         },
         {
             "type": "arty_mii",
+            "mac": "AA:AF:FA:CC:E3:1C",
+            "ip": "192.168.10.195",
+            "port": 2390,
             "pins": {
                 "phy_ref_clk": {
                     "pin": "G18"
@@ -484,10 +487,7 @@
                 "phy_reset_n": {
                     "pin": "C16"
                 }
-            },
-            "mac": "AA:AF:FA:CC:E3:1C",
-            "ip": "192.168.10.195",
-            "port": 2390
+            }
         }
     ],
     "transport": "UDP",
