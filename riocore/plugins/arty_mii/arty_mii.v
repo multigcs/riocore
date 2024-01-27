@@ -297,9 +297,9 @@ eth_mac_mii_fifo #(
     .CLOCK_INPUT_STYLE("BUFR"),
     .ENABLE_PADDING(1),
     .MIN_FRAME_LENGTH(64),
-    .TX_FIFO_DEPTH(512),
+    .TX_FIFO_DEPTH(1024),
     .TX_FRAME_FIFO(1),
-    .RX_FIFO_DEPTH(512),
+    .RX_FIFO_DEPTH(1024),
     .RX_FRAME_FIFO(1)
 )
 eth_mac_inst (
@@ -526,7 +526,7 @@ udp_complete_inst (
 );
 
 axis_fifo #(
-    .DEPTH(1024),
+    .DEPTH(2048),
     .DATA_WIDTH(8),
     .KEEP_ENABLE(0),
     .ID_ENABLE(0),
