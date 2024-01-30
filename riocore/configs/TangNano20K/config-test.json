@@ -1,0 +1,164 @@
+{
+    "name": "TangNano20K",
+    "description": "TangNano20K test setup",
+    "boardcfg": "TangNano20K",
+    "transport": "UDP",
+    "axis": 3,
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "15",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            },
+            "frequency": 1.0,
+            "name": "status"
+        },
+        {
+            "type": "uart",
+            "pins": {
+                "rx": {
+                    "pin": "70"
+                },
+                "tx": {
+                    "pin": "69"
+                }
+            }
+        },
+        {
+            "type": "wled",
+            "pins": {
+                "data": {
+                    "pin": "79",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "leds": 1,
+            "level": 127,
+            "signals": {
+                "0_green": {},
+                "0_blue": {},
+                "0_red": {}
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED1",
+            "pins": {
+                "bit": {
+                    "pin": "16",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {}
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED2",
+            "pins": {
+                "bit": {
+                    "pin": "17",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {}
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED3",
+            "pins": {
+                "bit": {
+                    "pin": "18",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {}
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED4",
+            "pins": {
+                "bit": {
+                    "pin": "19",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {}
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED5",
+            "pins": {
+                "bit": {
+                    "pin": "20",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {}
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "S1",
+            "pins": {
+                "bit": {
+                    "pin": "88"
+                }
+            },
+            "signals": {
+                "bit": {}
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "S2",
+            "pins": {
+                "bit": {
+                    "pin": "87"
+                }
+            },
+            "signals": {
+                "bit": {}
+            }
+        }
+    ]
+}

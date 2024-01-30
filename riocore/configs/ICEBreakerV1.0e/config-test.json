@@ -2,18 +2,17 @@
   "name": "ICEBreakerV1.0e",
   "description": "Small and low cost FPGA educational and development board",
   "boardcfg": "ICEBreakerV1.0e",
-  "plugins": [
-    {
-        "type": "uart",
-        "pins": {
-            "rx": {
-                "pin": "UART:RX"
-            },
-            "tx": {
-                "pin": "UART:TX"
-            }
+    "modules": [
+        {
+            "slot": "PMOD_2",
+            "module": "w5500"
+        },
+        {
+            "slot": "DSUB25",
+            "module": "chinabob5x"
         }
-    },
+    ],
+  "plugins": [
     {
         "type": "blink",
         "pins": {

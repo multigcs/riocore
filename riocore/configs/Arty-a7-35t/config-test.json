@@ -3,6 +3,8 @@
     "description": "Arty a7-35t - testing",
     "boardcfg": "Arty-a7-35t",
     "machinetype": "lathe",
+    "transport": "UDP",
+    "axis": 2,
     "linuxcnc": {
         "ini": {
             "DISPLAY": {
@@ -40,7 +42,7 @@
                 "home-x": {
                     "type": "bitin",
                     "name": "home-x",
-                    "net": "joint.0.home-sw-in",
+                    "net": "joint.1.home-sw-in",
                     "pins": {
                         "bit": {
                             "pullup": true
@@ -50,7 +52,7 @@
                 "home-y": {
                     "type": "bitin",
                     "name": "home-z",
-                    "net": "joint.1.home-sw-in",
+                    "net": "joint.0.home-sw-in",
                     "pins": {
                         "bit": {
                             "pullup": true
@@ -114,11 +116,11 @@
                         "dir": {}
                     },
                     "joint": true,
-                    "scale": 3200.0,
-                    "max_velocity": 5.0,
-                    "max_acceleration": 500.0,
+                    "scale": -800.0,
+                    "max_velocity": 40.0,
+                    "max_acceleration": 1200.0,
                     "backlash": 0.1,
-                    "axis": "X"
+                    "axis": "Z"
                 },
                 "joint-1": {
                     "name": "joint-1",
@@ -129,9 +131,9 @@
                     },
                     "joint": true,
                     "scale": 820.0,
-                    "max_velocity": 10.0,
+                    "max_velocity": 20.0,
                     "max_acceleration": 500.0,
-                    "axis": "Z",
+                    "axis": "X",
                     "backlash": 0.0
                 },
                 "joint-2": {
@@ -489,7 +491,5 @@
                 }
             }
         }
-    ],
-    "transport": "UDP",
-    "axis": 3
+    ]
 }

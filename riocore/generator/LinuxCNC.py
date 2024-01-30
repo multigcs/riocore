@@ -61,9 +61,9 @@ class LinuxCNC:
             "HOME_FINAL_VEL": -20,
             "HOME_IGNORE_LIMITS": "YES",
             "HOME_USE_INDEX": "NO",
-            "HOME_OFFSET": 6.5,
+            "HOME_OFFSET": 1.0,
             "HOME": 0.0,
-            "HOME_SEQUENCE": 3,
+            "HOME_SEQUENCE": -1,
         }
 
         INI_DEFAULTS = {
@@ -139,8 +139,10 @@ class LinuxCNC:
             },
             "HALUI": {
                 "MDI_COMMAND": [
-                    "G92 X0 Y0",
+                    "G92 X0",
+                    "G92 Y0",
                     "G92 Z0",
+                    "G92 X0 Y0",
                     "o<z_touch> call",
                 ],
             },
@@ -227,15 +229,22 @@ class LinuxCNC:
                 max_velocity = joint_setup["max_velocity"]
                 max_acceleration = joint_setup["max_acceleration"]
                 backlash = joint_setup["backlash"]
+                home_sequence = joint_setup["home_sequence"]
                 pin_num = joint_setup["pin_num"]
                 joint_setup = copy.deepcopy(JOINT_DEFAULTS)
 
-                # TODO: set scales
                 joint_setup["SCALE_OUT"] = position_scale
                 joint_setup["SCALE_IN"] = feedback_scale
                 joint_setup["MAX_VELOCITY"] = max_velocity
                 joint_setup["MAX_ACCELERATION"] = max_acceleration
                 joint_setup["BACKLASH"] = backlash
+                joint_setup["HOME_SEQUENCE"] = home_sequence
+
+                if position_scale < 0.0:
+                    joint_setup["HOME_SEARCH_VEL"] *= -1.0
+                    joint_setup["HOME_LATCH_VEL"] *= -1.0
+                    joint_setup["HOME_FINAL_VEL"] *= -1.0
+                    joint_setup["HOME_OFFSET"] *= -1.0
 
                 output.append(f"[JOINT_{joint}]")
                 if position_mode == "absolute":
@@ -264,12 +273,37 @@ class LinuxCNC:
         open(f"{self.configuration_path}/tool.tbl", "w").write("\n".join(tooltbl))
 
     def gui(self):
+        machinetype = self.project.config["jdata"].get("machinetype")
         os.system(f"mkdir -p {self.configuration_path}/")
         gui_gen = axis()
         custom = []
         cfgxml_data_status = []
         cfgxml_data_inputs = []
         cfgxml_data_outputs = []
+
+        # buttons
+        cfgxml_data_status.append('  <labelframe text="MDI-Commands">')
+        cfgxml_data_status.append("    <relief>RAISED</relief>")
+        cfgxml_data_status.append('    <font>("Helvetica", 10)</font>')
+        cfgxml_data_status.append("    <hbox>")
+        cfgxml_data_status.append("      <relief>RIDGE</relief>")
+        cfgxml_data_status.append("      <bd>2</bd>")
+        if machinetype == "lathe":
+            if "X":
+                custom.append(f"net zerox halui.mdi-command-00 <= pyvcp.zerox")
+                cfgxml_data_status += gui_gen.draw_button("zero-x", "zerox")
+            if "Z":
+                custom.append(f"net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
+                cfgxml_data_status += gui_gen.draw_button("zero-z", "zeroz")
+        else:
+            if "X" in self.axis_dict and "Y" in self.axis_dict:
+                custom.append(f"net zeroxy halui.mdi-command-03 <= pyvcp.zeroxy")
+                cfgxml_data_status += gui_gen.draw_button("zero-xy", "zeroxy")
+            if "Z":
+                custom.append(f"net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
+                cfgxml_data_status += gui_gen.draw_button("zero-z", "zeroz")
+        cfgxml_data_status.append("    </hbox>")
+        cfgxml_data_status.append("  </labelframe>")
 
         # scale and offset
         for plugin_instance in self.project.plugin_instances:
@@ -1098,6 +1132,7 @@ class LinuxCNC:
         open(f"{self.component_path}/rio.c", "w").write("\n".join(output))
 
     def create_axis_config(self):
+        machinetype = self.project.config["jdata"].get("machinetype")
         pin_num = 0
         self.num_joints = 0
         self.num_axis = 0
@@ -1134,6 +1169,15 @@ class LinuxCNC:
                 max_velocity = float(joint_setup["plugin_instance"].plugin_setup.get("max_velocity", 40.0))
                 max_acceleration = float(joint_setup["plugin_instance"].plugin_setup.get("max_acceleration", 500.0))
                 backlash = float(joint_setup["plugin_instance"].plugin_setup.get("backlash", 0.0))
+                if machinetype == "lathe":
+                    home_sequence_default = 2
+                    if axis_name == "X":
+                        home_sequence_default = 1
+                else:
+                    home_sequence_default = 2
+                    if axis_name == "Z":
+                        home_sequence_default = 1
+                home_sequence = int(joint_setup["plugin_instance"].plugin_setup.get("home_sequence", home_sequence_default))
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
@@ -1182,6 +1226,7 @@ class LinuxCNC:
                 joint_setup["max_velocity"] = max_velocity
                 joint_setup["max_acceleration"] = max_acceleration
                 joint_setup["backlash"] = backlash
+                joint_setup["home_sequence"] = home_sequence
                 joint_setup["feedback_halname"] = feedback_halname
                 joint_setup["feedback_scale"] = feedback_scale
                 joint_setup["enable_halname"] = enable_halname
@@ -1701,4 +1746,14 @@ class axis:
         cfgxml_data.append(f'      <text>"{name}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_button(self, name, halpin):
+        cfgxml_data = []
+        cfgxml_data.append("  <button>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>3</bd>")
+        cfgxml_data.append(f"    <halpin>\"{halpin}\"</halpin><text>\"{name}\"</text>")
+        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append("  </button>")
         return cfgxml_data
