@@ -651,6 +651,7 @@ class LinuxCNC:
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
+                var_prefix = signal_config["var_prefix"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
@@ -665,6 +666,8 @@ class LinuxCNC:
                     output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
                     output.append(f"    hal_bit_t   *{varname};")
+                    if signal_config.get("is_index_out"):
+                        output.append(f"    hal_bit_t   *{var_prefix}_INDEX_RESET;")
 
         output.append("    // raw variables")
         for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
@@ -701,6 +704,7 @@ class LinuxCNC:
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
                 varname = signal_config["varname"]
+                var_prefix = signal_config["var_prefix"]
                 boolean = signal_config.get("bool")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
                 mapping = {"output": "IN", "input": "OUT"}
@@ -721,12 +725,15 @@ class LinuxCNC:
                             )
                             output.append(f"    *data->{varname}_VELOCITY = 0;")
                 else:
-
                     if signal_config.get("is_index_enable"):
                         output.append(f'    if (retval = hal_pin_bit_newf  (HAL_IO, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     else:
                         output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
+
+                    if signal_config.get("is_index_out"):
+                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_RESET), comp_id, "%s.{halname}-reset", prefix) != 0) error_handler(retval);')
+                        output.append(f"    *data->{var_prefix}_INDEX_RESET = 0;")
 
         output.append("}")
         output.append("")
@@ -746,6 +753,7 @@ class LinuxCNC:
 
                     for signal_name, signal_config in plugin_instance.signals().items():
                         varname = signal_config["varname"]
+                        var_prefix = signal_config["var_prefix"]
                         boolean = signal_config.get("bool")
 
                         if data_name.upper() == varname.split("_")[-1].strip():
@@ -758,11 +766,12 @@ class LinuxCNC:
                             else:
                                 output.append(f"    bool value = *data->{source};")
                                 output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
+
                                 if signal_config.get("is_index_enable"):
-                                    output.append(f"    if (data->{variable_name} != value) {{")
-                                    output.append("        if (value == 1) {")
-                                    output.append(f"            data->{variable_name} = value;")
-                                    output.append("        }")
+                                    output.append("    // force resetting index pin")
+                                    output.append(f"    if (*data->{var_prefix}_INDEX_RESET == 1) {{")
+                                    output.append(f"       value = 0;")
+                                    output.append(f"       *data->{var_prefix}_INDEX_RESET = 0;")
                                     output.append("    }")
 
                             output.append(f"    data->{variable_name} = value;")
@@ -822,9 +831,7 @@ class LinuxCNC:
                     for data_name, data_config in plugin_instance.interface_data().items():
                         variable_name = data_config["variable"]
                         variable_size = data_config["size"]
-
                         var_prefix = signal_config["var_prefix"]
-
                         varname = signal_config["varname"]
 
                         if signal_name.upper() == variable_name.split("_")[-1].strip():
@@ -839,6 +846,7 @@ class LinuxCNC:
                                 output.append(f"        *data->{varname} = value;")
                                 output.append("        if (value == 0) {")
                                 output.append(f"            *data->SIGOUT_{var_prefix}_INDEXENABLE = value;")
+                                output.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
                                 output.append("        }")
                                 output.append("    }")
 
