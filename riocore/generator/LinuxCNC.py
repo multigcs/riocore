@@ -453,13 +453,7 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     if netname:
-                        if signal_config.get("is_index_position"):
-                            continue
-                        elif signal_config.get("is_index_out"):
-                            continue
-                        elif signal_config.get("is_index_enable"):
-                            continue
-                        elif direction in {"input", "output"}:
+                        if direction in {"input", "output", "inout"}:
                             if not boolean:
                                 custom.append(f"net rios.{halname} => pyvcp.{halname}")
                                 cfgxml_data_status += gui_gen.draw_number(netname, halname, hal_type)
@@ -478,8 +472,7 @@ class LinuxCNC:
                     if halname in self.used_signals:
                         continue
                     if direction == "input" and not netname:
-                        if not signal_config.get("is_index_eneble") and not signal_config.get("is_index_position"):
-                            custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
+                        custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
                         if not boolean:
                             vmin = signal_config.get("min", 0)
                             vmax = signal_config.get("max", 1000)
@@ -568,18 +561,13 @@ class LinuxCNC:
                     netname = signal_config["netname"]
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
+                    print(netname)
                     if netname:
-                        if signal_config.get("is_index_position"):
-                            self.used_signals[halname] = "spindle-position"
-                            scale = float(plugin_instance.plugin_setup.get("scale", 1.0))
+                        if netname.endswith(".revs"):
+                            scale = plugin_instance.plugin_setup.get("scale", 1.0)
                             output.append(f"setp rio.{halname}-scale {scale}")
-                            output.append(f"net spindle-position rio.{halname} => spindle.0.revs")
-                        elif signal_config.get("is_index_out"):
-                            self.used_signals[halname] = "none"
-                        elif signal_config.get("is_index_enable"):
-                            self.used_signals[halname] = "spindle-index-enable"
-                            output.append(f"net spindle-index-enable rio.{halname} <=> spindle.0.index-enable")
-                            output.append("")
+                        if direction == "inout":
+                            output.append(f"net rios.{halname} rio.{halname} <=> {netname}")
                         elif direction == "input":
                             output.append(f"net rios.{halname} <= rio.{halname}")
                             output.append(f"net rios.{halname} => {netname}")
@@ -663,9 +651,6 @@ class LinuxCNC:
                     output.append(f"    hal_{hal_type}_t *{varname};")
                     if direction == "input" and hal_type == "float":
                         output.append(f"    hal_s32_t *{varname}_S32;")
-                        if signal_config.get("is_index_position"):
-                            output.append(f"    hal_float_t *{varname}_VELOCITY;")
-
                     output.append(f"    hal_float_t *{varname}_SCALE;")
                     output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
@@ -711,7 +696,7 @@ class LinuxCNC:
                 var_prefix = signal_config["var_prefix"]
                 boolean = signal_config.get("bool")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
-                mapping = {"output": "IN", "input": "OUT"}
+                mapping = {"output": "IN", "input": "OUT", "inout": "IO"}
                 hal_direction = mapping[direction]
                 if not boolean:
                     output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_SCALE), comp_id, "%s.{halname}-scale", prefix) != 0) error_handler(retval);')
@@ -723,18 +708,9 @@ class LinuxCNC:
                     if direction == "input" and hal_type == "float":
                         output.append(f'    if (retval = hal_pin_s32_newf(HAL_{hal_direction}, &(data->{varname}_S32), comp_id, "%s.{halname}-s32", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_S32 = 0;")
-                        if signal_config.get("is_index_position"):
-                            output.append(
-                                f'    if (retval = hal_pin_float_newf(HAL_{hal_direction}, &(data->{varname}_VELOCITY), comp_id, "%s.{halname}-velocity", prefix) != 0) error_handler(retval);'
-                            )
-                            output.append(f"    *data->{varname}_VELOCITY = 0;")
                 else:
-                    if signal_config.get("is_index_enable"):
-                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_IO, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
-                    else:
-                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
+                    output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
-
                     if signal_config.get("is_index_out"):
                         output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_RESET), comp_id, "%s.{halname}-reset", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{var_prefix}_INDEX_RESET = 0;")
@@ -770,7 +746,6 @@ class LinuxCNC:
                             else:
                                 output.append(f"    bool value = *data->{source};")
                                 output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
-
                                 if signal_config.get("is_index_enable"):
                                     output.append("    // force resetting index pin")
                                     output.append(f"    if (*data->{var_prefix}_INDEX_RESET == 1) {{")
@@ -849,7 +824,7 @@ class LinuxCNC:
                                 output.append(f"    if (*data->{varname} != value) {{")
                                 output.append(f"        *data->{varname} = value;")
                                 output.append("        if (value == 0) {")
-                                output.append(f"            *data->SIGOUT_{var_prefix}_INDEXENABLE = value;")
+                                output.append(f"            *data->SIGINOUT_{var_prefix}_INDEXENABLE = value;")
                                 output.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
                                 output.append("        }")
                                 output.append("    }")
@@ -860,14 +835,6 @@ class LinuxCNC:
                                 output.append(f"    value = value + *data->{varname}_OFFSET;")
                                 output.append(f"    value = value / *data->{varname}_SCALE;")
                                 output.append(f"    *data->{varname}_S32 = value;")
-
-                                if signal_config.get("is_index_position"):
-                                    # TODO: fix calculation and/or static value !?!?!
-                                    output.append("    static float position_last = 0;")
-                                    output.append("    float velocity = (value - position_last) * 1000.0 / *data->duration;")
-                                    output.append("    position_last = value;")
-                                    output.append(f"    *data->{varname}_VELOCITY = velocity;")
-
                             output.append(f"    *data->{varname} = value;")
 
                     output.append("}")
