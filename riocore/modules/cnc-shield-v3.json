@@ -109,7 +109,7 @@
           "pin": "D5"
         }
       },
-      "joint": true
+      "is_joint": true
     },
     {
       "name": "joint-1",
@@ -122,7 +122,7 @@
           "pin": "D6"
         }
       },
-      "joint": true
+      "is_joint": true
     },
     {
       "name": "joint-2",
@@ -135,7 +135,7 @@
           "pin": "D7"
         }
       },
-      "joint": true
+      "is_joint": true
     }
   ]
 }

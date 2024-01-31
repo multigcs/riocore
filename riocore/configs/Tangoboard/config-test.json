@@ -241,7 +241,7 @@
           "pin": "86"
         }
       },
-      "joint": true
+      "is_joint": true
     },
     {
       "type": "stepdir",
@@ -254,7 +254,7 @@
           "pin": "84"
         }
       },
-      "joint": true
+      "is_joint": true
     },
     {
       "type": "stepdir",
@@ -267,7 +267,7 @@
           "pin": "82"
         }
       },
-      "joint": true
+      "is_joint": true
     },
     {
       "type": "stepdir",
@@ -279,7 +279,7 @@
           "pin": "80"
         }
       },
-      "joint": true
+      "is_joint": true
     },
     {
       "type": "stepdir",
@@ -291,7 +291,7 @@
           "pin": "77"
         }
       },
-      "joint": true
+      "is_joint": true
     },
     {
       "type": "spi",

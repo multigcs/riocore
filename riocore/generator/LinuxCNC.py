@@ -7,6 +7,141 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 class LinuxCNC:
     AXIS_NAMES = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
+    AXIS_DEFAULTS = {
+        "MAX_VELOCITY": 40.0,
+        "MAX_ACCELERATION": 500.0,
+        "MIN_LIMIT": -150,
+        "MAX_LIMIT": 150,
+        "MIN_FERROR": 0.01,
+        "FERROR": 1.0,
+        "BACKLASH": 0.0,
+    }
+    PID_DEFAULTS = {
+        "P": 50.0,
+        "I": 0.0,
+        "D": 0.0,
+        "BIAS": 0.0,
+        "FF0": 0.0,
+        "FF1": 0.0,
+        "FF2": 0.0,
+        "DEADBAND": 0.01,
+        "MAXOUTPUT": 300,
+    }
+    JOINT_DEFAULTS = {
+        "TYPE": "LINEAR",
+        "HOME": 0.0,
+        "MIN_LIMIT": -200.0,
+        "MAX_LIMIT": 150.0,
+        "MAX_VELOCITY": 40.0,
+        "MAX_ACCELERATION": 500.0,
+        "STEPGEN_MAXACCEL": 2000.0,
+        "SCALE_OUT": 1600.0,
+        "SCALE_IN": 1600.0,
+        "HOME_SEARCH_VEL": 20.0,
+        "HOME_LATCH_VEL": 3.0,
+        "HOME_FINAL_VEL": -20,
+        "HOME_IGNORE_LIMITS": "YES",
+        "HOME_USE_INDEX": "NO",
+        "HOME_OFFSET": 1.0,
+        "HOME": 0.0,
+        "HOME_SEQUENCE": -1,
+    }
+
+    INI_DEFAULTS = {
+        "EMC": {
+            "MACHINE": "Rio",
+            "DEBUG": 0,
+            "VERSION": 1.1,
+        },
+        "DISPLAY": {
+            "DISPLAY": "axis",
+            "TITLE": "LinuxCNC - RIO",
+            "ICON": None,
+            "EDITOR": "gedit",
+            "POSITION_OFFSET": "RELATIVE",
+            "POSITION_FEEDBACK": "ACTUAL",
+            "PYVCP": "rio-gui.xml",
+            "PREFERENCE_FILE_PATH": None,
+            "ARCDIVISION": 64,
+            "GRIDS": "10mm 20mm 50mm 100mm",
+            "INTRO_GRAPHIC": "linuxcnc.gif",
+            "INTRO_TIME": 2,
+            "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
+            "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
+            "SPINDLES": 1,
+            "MAX_FEED_OVERRIDE": 5.0,
+            "MIN_SPINDLE_0_OVERRIDE": 0.5,
+            "MAX_SPINDLE_0_OVERRIDE": 1.2,
+            "MIN_SPINDLE_0_SPEED": 1000,
+            "DEFAULT_SPINDLE_0_SPEED": 6000,
+            "MAX_SPINDLE_0_SPEED": 20000,
+            "MIN_LINEAR_VELOCITY": 0.0,
+            "DEFAULT_LINEAR_VELOCITY": 40.0,
+            "MAX_LINEAR_VELOCITY": 80.0,
+            "MIN_ANGULAR_VELOCITY": 0.0,
+            "DEFAULT_ANGULAR_VELOCITY": 2.5,
+            "MAX_ANGULAR_VELOCITY": 5.0,
+            "SPINDLE_INCREMENT": 200,
+            "MAX_SPINDLE_POWER": 2000,
+        },
+        "KINS": {
+            "JOINTS": None,
+            "KINEMATICS": None,
+        },
+        "FILTER": {
+            "PROGRAM_EXTENSION": [
+                ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
+                ".py Python Script",
+            ],
+            "py": "python",
+        },
+        "TASK": {
+            "TASK": "milltask",
+            "CYCLE_TIME": 0.010,
+        },
+        "RS274NGC": {
+            "PARAMETER_FILE": "linuxcnc.var",
+            "SUBROUTINE_PATH": "./subroutines/",
+            "USER_M_PATH": "./mcodes/",
+        },
+        "EMCMOT": {
+            "EMCMOT": "motmod",
+            "COMM_TIMEOUT": 1.0,
+            "COMM_WAIT": 0.010,
+            "BASE_PERIOD": 0,
+            "SERVO_PERIOD": 1000000,
+            "NUM_DIO": None,
+            "NUM_AIO": None,
+        },
+        "HAL": {
+            "HALFILE": "rio.hal",
+            "POSTGUI_HALFILE": "postgui_call_list.hal",
+            "HALUI": "halui",
+        },
+        "HALUI": {
+            "MDI_COMMAND": [
+                "G92 X0",
+                "G92 Y0",
+                "G92 Z0",
+                "G92 X0 Y0",
+                "o<z_touch> call",
+            ],
+        },
+        "TRAJ": {
+            "COORDINATES": None,
+            "LINEAR_UNITS": "mm",
+            "ANGULAR_UNITS": "degree",
+            "CYCLE_TIME": 0.010,
+            "DEFAULT_LINEAR_VELOCITY": 50.00,
+            "MAX_LINEAR_VELOCITY": 50.00,
+            "NO_FORCE_HOMING": 1,
+        },
+        "EMCIO": {
+            "EMCIO": "io",
+            "CYCLE_TIME": 0.100,
+            "TOOL_TABLE": "tool.tbl",
+        },
+    }
 
     def __init__(self, project):
         self.used_signals = {}
@@ -26,143 +161,7 @@ class LinuxCNC:
 
     def ini(self):
 
-        AXIS_DEFAULTS = {
-            "MAX_VELOCITY": 40.0,
-            "MAX_ACCELERATION": 500.0,
-            "MIN_LIMIT": -150,
-            "MAX_LIMIT": 150,
-            "MIN_FERROR": 0.01,
-            "FERROR": 1.0,
-            "BACKLASH": 0.0,
-        }
-        PID_DEFAULTS = {
-            "P": 50.0,
-            "I": 0.0,
-            "D": 0.0,
-            "BIAS": 0.0,
-            "FF0": 0.0,
-            "FF1": 0.0,
-            "FF2": 0.0,
-            "DEADBAND": 0.01,
-            "MAXOUTPUT": 300,
-        }
-        JOINT_DEFAULTS = {
-            "TYPE": "LINEAR",
-            "HOME": 0.0,
-            "MIN_LIMIT": -200.0,
-            "MAX_LIMIT": 150.0,
-            "MAX_VELOCITY": 40.0,
-            "MAX_ACCELERATION": 500.0,
-            "STEPGEN_MAXACCEL": 2000.0,
-            "SCALE_OUT": 1600.0,
-            "SCALE_IN": 1600.0,
-            "HOME_SEARCH_VEL": 20.0,
-            "HOME_LATCH_VEL": 3.0,
-            "HOME_FINAL_VEL": -20,
-            "HOME_IGNORE_LIMITS": "YES",
-            "HOME_USE_INDEX": "NO",
-            "HOME_OFFSET": 1.0,
-            "HOME": 0.0,
-            "HOME_SEQUENCE": -1,
-        }
-
-        INI_DEFAULTS = {
-            "EMC": {
-                "MACHINE": "Rio",
-                "DEBUG": 0,
-                "VERSION": 1.1,
-            },
-            "DISPLAY": {
-                "DISPLAY": "axis",
-                "TITLE": "LinuxCNC - RIO",
-                "ICON": None,
-                "EDITOR": "gedit",
-                "POSITION_OFFSET": "RELATIVE",
-                "POSITION_FEEDBACK": "ACTUAL",
-                "PYVCP": "rio-gui.xml",
-                "PREFERENCE_FILE_PATH": None,
-                "ARCDIVISION": 64,
-                "GRIDS": "10mm 20mm 50mm 100mm",
-                "INTRO_GRAPHIC": "linuxcnc.gif",
-                "INTRO_TIME": 2,
-                "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
-                "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
-                "SPINDLES": 1,
-                "MAX_FEED_OVERRIDE": 5.0,
-                "MIN_SPINDLE_0_OVERRIDE": 0.5,
-                "MAX_SPINDLE_0_OVERRIDE": 1.2,
-                "MIN_SPINDLE_0_SPEED": 1000,
-                "DEFAULT_SPINDLE_0_SPEED": 6000,
-                "MAX_SPINDLE_0_SPEED": 20000,
-                "MIN_LINEAR_VELOCITY": 0.0,
-                "DEFAULT_LINEAR_VELOCITY": 40.0,
-                "MAX_LINEAR_VELOCITY": 80.0,
-                "MIN_ANGULAR_VELOCITY": 0.0,
-                "DEFAULT_ANGULAR_VELOCITY": 2.5,
-                "MAX_ANGULAR_VELOCITY": 5.0,
-                "SPINDLE_INCREMENT": 200,
-                "MAX_SPINDLE_POWER": 2000,
-            },
-            "KINS": {
-                "JOINTS": None,
-                "KINEMATICS": None,
-            },
-            "FILTER": {
-                "PROGRAM_EXTENSION": [
-                    ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
-                    ".py Python Script",
-                ],
-                "py": "python",
-            },
-            "TASK": {
-                "TASK": "milltask",
-                "CYCLE_TIME": 0.010,
-            },
-            "RS274NGC": {
-                "PARAMETER_FILE": "linuxcnc.var",
-                "SUBROUTINE_PATH": "./subroutines/",
-                "USER_M_PATH": "./mcodes/",
-            },
-            "EMCMOT": {
-                "EMCMOT": "motmod",
-                "COMM_TIMEOUT": 1.0,
-                "COMM_WAIT": 0.010,
-                "BASE_PERIOD": 0,
-                "SERVO_PERIOD": 1000000,
-                "NUM_DIO": None,
-                "NUM_AIO": None,
-            },
-            "HAL": {
-                "HALFILE": "rio.hal",
-                "POSTGUI_HALFILE": "postgui_call_list.hal",
-                "HALUI": "halui",
-            },
-            "HALUI": {
-                "MDI_COMMAND": [
-                    "G92 X0",
-                    "G92 Y0",
-                    "G92 Z0",
-                    "G92 X0 Y0",
-                    "o<z_touch> call",
-                ],
-            },
-            "TRAJ": {
-                "COORDINATES": None,
-                "LINEAR_UNITS": "mm",
-                "ANGULAR_UNITS": "degree",
-                "CYCLE_TIME": 0.010,
-                "DEFAULT_LINEAR_VELOCITY": 50.00,
-                "MAX_LINEAR_VELOCITY": 50.00,
-                "NO_FORCE_HOMING": 1,
-            },
-            "EMCIO": {
-                "EMCIO": "io",
-                "CYCLE_TIME": 0.100,
-                "TOOL_TABLE": "tool.tbl",
-            },
-        }
-
-        ini_setup = INI_DEFAULTS.copy()
+        ini_setup = self.INI_DEFAULTS.copy()
 
         machinetype = self.project.config["jdata"].get("machinetype")
         if machinetype == "lathe":
@@ -199,64 +198,60 @@ class LinuxCNC:
 
         for axis_name, joints in self.axis_dict.items():
             output.append(f"[AXIS_{axis_name}]")
-            axis_setup = copy.deepcopy(AXIS_DEFAULTS)
+            axis_setup = copy.deepcopy(self.AXIS_DEFAULTS)
             axis_max_velocity = 10000.0
             axis_max_acceleration = 10000.0
+            axis_min_limit = 100000.0
+            axis_max_limit = -100000.0
+            axis_backlash = 0.0
             for joint, joint_setup in joints.items():
-                max_velocity = joint_setup["max_velocity"]
-                max_acceleration = joint_setup["max_acceleration"]
-
+                max_velocity = joint_setup["MAX_VELOCITY"]
+                max_acceleration = joint_setup["MAX_ACCELERATION"]
+                min_limit = joint_setup["MIN_LIMIT"]
+                max_limit = joint_setup["MAX_LIMIT"]
+                backlash = joint_setup.get("BACKLASH", 0.0)
                 if axis_max_velocity > max_velocity:
                     axis_max_velocity = max_velocity
-
                 if axis_max_acceleration > max_acceleration:
                     axis_max_acceleration = max_acceleration
+                if axis_min_limit > min_limit:
+                    axis_min_limit = min_limit
+                if axis_max_limit < max_limit:
+                    axis_max_limit = max_limit
+
+                if axis_backlash < backlash:
+                    axis_backlash = backlash
 
                 axis_setup["MAX_VELOCITY"] = axis_max_velocity
                 axis_setup["MAX_ACCELERATION"] = axis_max_acceleration
+                axis_setup["MIN_LIMIT"] = axis_min_limit
+                axis_setup["MAX_LIMIT"] = axis_max_limit
+                axis_setup["BACKLASH"] = backlash
 
             for key, value in axis_setup.items():
                 output.append(f"{key:18s} = {value}")
             output.append("")
-            for joint, joint_setup in joints.items():
-                position_mode = joint_setup["position_mode"]
-                position_halname = joint_setup["position_halname"]
-                feedback_halname = joint_setup["feedback_halname"]
-                enable_halname = joint_setup["enable_halname"]
-                position_scale = joint_setup["position_scale"]
-                feedback_scale = joint_setup["feedback_scale"]
-                max_velocity = joint_setup["max_velocity"]
-                max_acceleration = joint_setup["max_acceleration"]
-                backlash = joint_setup["backlash"]
-                home_sequence = joint_setup["home_sequence"]
-                pin_num = joint_setup["pin_num"]
-                joint_setup = copy.deepcopy(JOINT_DEFAULTS)
-
-                joint_setup["SCALE_OUT"] = position_scale
-                joint_setup["SCALE_IN"] = feedback_scale
-                joint_setup["MAX_VELOCITY"] = max_velocity
-                joint_setup["MAX_ACCELERATION"] = max_acceleration
-                joint_setup["BACKLASH"] = backlash
-                joint_setup["HOME_SEQUENCE"] = home_sequence
-
-                if position_scale < 0.0:
-                    joint_setup["HOME_SEARCH_VEL"] *= -1.0
-                    joint_setup["HOME_LATCH_VEL"] *= -1.0
-                    joint_setup["HOME_FINAL_VEL"] *= -1.0
-                    joint_setup["HOME_OFFSET"] *= -1.0
+            for joint, joint_config in joints.items():
+                position_mode = joint_config["position_mode"]
+                position_halname = joint_config["position_halname"]
+                feedback_halname = joint_config["feedback_halname"]
+                enable_halname = joint_config["enable_halname"]
+                pin_num = joint_config["pin_num"]
 
                 output.append(f"[JOINT_{joint}]")
                 if position_mode == "absolute":
                     for key, value in joint_setup.items():
-                        output.append(f"{key:18s} = {value}")
+                        if key in self.JOINT_DEFAULTS:
+                            output.append(f"{key:18s} = {value}")
 
                 elif position_halname and feedback_halname:
-                    pid_setup = PID_DEFAULTS.copy()
+                    pid_setup = self.PID_DEFAULTS.copy()
                     for key, value in pid_setup.items():
                         output.append(f"{key:18s} = {value}")
                     output.append("")
                     for key, value in joint_setup.items():
-                        output.append(f"{key:18s} = {value}")
+                        if key in self.JOINT_DEFAULTS:
+                            output.append(f"{key:18s} = {value}")
                 output.append("")
 
         os.system(f"mkdir -p {self.configuration_path}/")
@@ -306,7 +301,7 @@ class LinuxCNC:
 
         # scale and offset
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("joint", False) is False:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
@@ -325,7 +320,7 @@ class LinuxCNC:
         # rio-functions
         self.rio_functions = {}
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("joint", False) is False:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
@@ -444,7 +439,7 @@ class LinuxCNC:
                 custom.append("")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("joint", False) is False:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
@@ -462,7 +457,7 @@ class LinuxCNC:
                                 cfgxml_data_status += gui_gen.draw_led(netname, halname)
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("joint", False) is False:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
@@ -481,7 +476,7 @@ class LinuxCNC:
                             cfgxml_data_inputs += gui_gen.draw_led(halname, halname)
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("joint", False) is False:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
@@ -554,14 +549,13 @@ class LinuxCNC:
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("joint", False) is False:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
                     netname = signal_config["netname"]
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
-                    print(netname)
                     if netname:
                         if netname.endswith(".revs"):
                             scale = plugin_instance.plugin_setup.get("scale", 1.0)
@@ -1117,7 +1111,7 @@ class LinuxCNC:
         self.num_axis = 0
         self.axis_dict = {}
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("joint"):
+            if plugin_instance.plugin_setup.get("is_joint"):
                 axis_num = len(self.axis_dict)
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if not axis_name:
@@ -1144,10 +1138,9 @@ class LinuxCNC:
                 position_halname = None
                 enable_halname = None
                 position_mode = None
-                position_scale = float(joint_setup["plugin_instance"].plugin_setup.get("scale", 320.0))
-                max_velocity = float(joint_setup["plugin_instance"].plugin_setup.get("max_velocity", 40.0))
-                max_acceleration = float(joint_setup["plugin_instance"].plugin_setup.get("max_acceleration", 500.0))
-                backlash = float(joint_setup["plugin_instance"].plugin_setup.get("backlash", 0.0))
+                joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
+                position_scale = float(joint_config.get("scale", 320.0))
+                max_velocity = float(joint_config.get("max_velocity", 40.0))
                 if machinetype == "lathe":
                     home_sequence_default = 2
                     if axis_name == "X":
@@ -1156,7 +1149,7 @@ class LinuxCNC:
                     home_sequence_default = 2
                     if axis_name == "Z":
                         home_sequence_default = 1
-                home_sequence = int(joint_setup["plugin_instance"].plugin_setup.get("home_sequence", home_sequence_default))
+                home_sequence = int(joint_config.get("home_sequence", home_sequence_default))
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
@@ -1176,7 +1169,7 @@ class LinuxCNC:
                     position_mode = "relative"
                 feedback_scale = position_scale
                 feedback_halname = None
-                feedback = joint_setup["plugin_instance"].plugin_setup.get("feedback")
+                feedback = joint_config.get("feedback")
                 if position_mode == "relative" and not feedback:
                     feedback_halname = f"rio.{position['halname']}"
                     feedback_scale = position_scale
@@ -1194,28 +1187,37 @@ class LinuxCNC:
 
                                 feedback_halname = f"rio.{sub_signal_config['halname']}"
                                 feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("scale", 320.0))
-
                                 print("feedback", feedback, feedback_halname, feedback_scale)
-
                                 break
 
                 joint_setup["position_mode"] = position_mode
                 joint_setup["position_halname"] = position_halname
-                joint_setup["position_scale"] = position_scale
-                joint_setup["max_velocity"] = max_velocity
-                joint_setup["max_acceleration"] = max_acceleration
-                joint_setup["backlash"] = backlash
-                joint_setup["home_sequence"] = home_sequence
                 joint_setup["feedback_halname"] = feedback_halname
-                joint_setup["feedback_scale"] = feedback_scale
                 joint_setup["enable_halname"] = enable_halname
                 joint_setup["pin_num"] = pin_num
                 if position_mode != "absolute":
                     pin_num += 1
 
-        # print("num_joints", self.num_joints)
-        # print("num_axis", self.num_axis)
-        # print("")
+                # copy defaults
+                for key, value in self.JOINT_DEFAULTS.items():
+                    joint_setup[key.upper()] = value
+
+                # update defaults
+                if position_scale < 0.0:
+                    joint_setup["HOME_SEARCH_VEL"] *= -1.0
+                    joint_setup["HOME_LATCH_VEL"] *= -1.0
+                    joint_setup["HOME_FINAL_VEL"] *= -1.0
+                    joint_setup["HOME_OFFSET"] *= -1.0
+
+                # set autogen values
+                joint_setup["SCALE_OUT"] = position_scale
+                joint_setup["SCALE_IN"] = feedback_scale
+                joint_setup["HOME_SEQUENCE"] = home_sequence
+
+                # overwrite with user configuration
+                for key, value in joint_config.items():
+                    key = key.upper()
+                    joint_setup[key] = value
 
 
 class qtdragon:

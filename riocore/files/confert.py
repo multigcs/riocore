@@ -202,7 +202,7 @@ for plugin in data["plugins"].copy():
         plugin["type"] = plugin_mapping[plugin["type"]]
 
     if old_type.startswith("joint_"):
-        plugin["joint"] = True
+        plugin["is_joint"] = True
 
     if "pin" in plugin:
         plugin["pins"] = {
@@ -210,7 +210,7 @@ for plugin in data["plugins"].copy():
         }
         del plugin["pin"]
 
-    is_joint = plugin.get("joint")
+    is_joint = plugin.get("is_joint")
 
     if is_joint:
 

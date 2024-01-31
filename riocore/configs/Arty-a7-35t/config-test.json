@@ -115,12 +115,14 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true,
-                    "scale": -800.0,
-                    "max_velocity": 40.0,
-                    "max_acceleration": 1200.0,
-                    "backlash": 0.0,
-                    "axis": "Z"
+                    "is_joint": true,
+                    "axis": "Z",
+                    "joint": {
+                        "scale": -800.0,
+                        "max_velocity": 40.0,
+                        "max_acceleration": 1200.0,
+                        "backlash": 0.0
+                    }
                 },
                 "joint-1": {
                     "name": "joint-1",
@@ -129,12 +131,14 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true,
-                    "scale": 820.0,
-                    "max_velocity": 20.0,
-                    "max_acceleration": 500.0,
+                    "is_joint": true,
                     "axis": "X",
-                    "backlash": 0.1
+                    "joint": {
+                        "scale": 820.0,
+                        "max_velocity": 20.0,
+                        "max_acceleration": 500.0,
+                        "backlash": 0.1
+                    }
                 },
                 "joint-2": {
                     "name": "joint-2",
@@ -143,11 +147,13 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": false,
-                    "scale": 320.0,
-                    "max_velocity": 20.0,
-                    "max_acceleration": 500.0,
-                    "backlash": 0.0
+                    "is_joint": false,
+                    "joint": {
+                        "scale": 320.0,
+                        "max_velocity": 20.0,
+                        "max_acceleration": 500.0,
+                        "backlash": 0.0
+                    }
                 }
             }
         },

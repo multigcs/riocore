@@ -4,7 +4,6 @@
   "boardcfg": "Verilator",
   "plugins": [
     {
-      "joint": "0",
       "name": "DIN0",
       "type": "bitin",
       "pins": {

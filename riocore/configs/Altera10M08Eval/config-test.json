@@ -78,7 +78,7 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true
+                    "is_joint": true
                 },
                 "joint-1": {
                     "scale": "6400",
@@ -88,7 +88,7 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true
+                    "is_joint": true
                 },
                 "joint-2": {
                     "scale": "400",
@@ -98,7 +98,7 @@
                         "step": {},
                         "dir": {}
                     },
-                    "joint": true
+                    "is_joint": true
                 },
                 "spindle-dir": {
                     "type": "bitout",
