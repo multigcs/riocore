@@ -136,31 +136,17 @@ class PluginBase:
             }
 
         if self.TYPE == "joint":
-            if "scale" not in self.OPTIONS:
-                self.OPTIONS["scale"] = {
-                    "type": float,
-                    "help": "scale factor",
-                    "default": 320.0,
-                }
-                self.OPTIONS["max_velocity"] = {
-                    "type": float,
-                    "help": "max velocity",
-                    "default": 20.0,
-                }
-                self.OPTIONS["backlash"] = {
-                    "type": float,
-                    "help": "backlash size",
-                    "default": 0.0,
-                }
-                self.OPTIONS["max_acceleration"] = {
-                    "type": float,
-                    "help": "max acceleration",
-                    "default": 500.0,
-                }
+            if "axis" not in self.OPTIONS:
                 self.OPTIONS["axis"] = {
                     "type": "select",
                     "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
                     "help": "axis name",
+                }
+            if "is_joint" not in self.OPTIONS:
+                self.OPTIONS["is_joint"] = {
+                    "type": bool,
+                    "default": True,
+                    "help": "configure as joint",
                 }
 
         self.instances_name = f"{self.NAME}{self.plugin_id}"
