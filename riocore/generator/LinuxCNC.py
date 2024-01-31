@@ -181,7 +181,6 @@ class LinuxCNC:
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
 
         for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
-            print(section, section_options)
             if section not in ini_setup:
                 ini_setup[section] = {}
             for key, value in section_options.items():
@@ -454,7 +453,13 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     if netname:
-                        if direction in {"input", "output"}:
+                        if signal_config.get("is_index_position"):
+                            continue
+                        elif signal_config.get("is_index_out"):
+                            continue
+                        elif signal_config.get("is_index_enable"):
+                            continue
+                        elif direction in {"input", "output"}:
                             if not boolean:
                                 custom.append(f"net rios.{halname} => pyvcp.{halname}")
                                 cfgxml_data_status += gui_gen.draw_number(netname, halname, hal_type)
@@ -564,25 +569,24 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     if netname:
-                        if direction == "input":
+                        if signal_config.get("is_index_position"):
+                            self.used_signals[halname] = "spindle-position"
+                            scale = float(plugin_instance.plugin_setup.get("scale", 1.0))
+                            output.append(f"setp rio.{halname}-scale {scale}")
+                            output.append(f"net spindle-position rio.{halname} => spindle.0.revs")
+                        elif signal_config.get("is_index_out"):
+                            self.used_signals[halname] = "none"
+                        elif signal_config.get("is_index_enable"):
+                            self.used_signals[halname] = "spindle-index-enable"
+                            output.append(f"net spindle-index-enable rio.{halname} <=> spindle.0.index-enable")
+                            output.append("")
+                        elif direction == "input":
                             output.append(f"net rios.{halname} <= rio.{halname}")
                             output.append(f"net rios.{halname} => {netname}")
                         elif direction == "output":
                             output.append(f"net rios.{halname} <= {netname}")
                             output.append(f"net rios.{halname} => rio.{halname}")
 
-                    if signal_config.get("is_index_position"):
-                        self.used_signals[halname] = "XXX"
-                        scale = float(plugin_instance.plugin_setup.get("scale", 1.0))
-                        output.append(f"setp rio.{halname}-scale {scale}")
-                        output.append(f"net spindle-position rio.{halname} => spindle.0.revs")
-
-                    if signal_config.get("is_index_enable"):
-                        self.used_signals[halname] = "XXX"
-                        output.append(f"net spindle-index-enable rio.{halname} <=> spindle.0.index-enable")
-                        # output.append("")
-                        # output.append(f"net rios.{halname}-get-speed spindle.0.speed-in <= rio.{halname}")
-                        output.append("")
 
         output.append("")
 

@@ -163,6 +163,14 @@
                         "a": {},
                         "b": {},
                         "z": {}
+                    },
+                    "signals": {
+                        "indexenable": {
+                            "net": "spindle.0.index-enable"
+                        },
+                        "position": {
+                            "net": "spindle.0.revs"
+                        }
                     }
                 }
             }
