@@ -258,46 +258,57 @@ class LinuxCNC:
         open(f"{self.configuration_path}/rio.ini", "w").write("\n".join(output))
 
     def misc(self):
-        tooltbl = []
-        tooltbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
-        tooltbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
-        tooltbl.append("T3 P3 D0.201000 Z+1.273000 ;#7 tap drill")
-        # TODO: do not overwrite existing
-        os.system(f"mkdir -p {self.configuration_path}/")
-        open(f"{self.configuration_path}/tool.tbl", "w").write("\n".join(tooltbl))
+        if not os.path.isfile(f"{self.configuration_path}/tool.tbl"):
+            tooltbl = []
+            tooltbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
+            tooltbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
+            tooltbl.append("T3 P3 D0.201000 Z+1.273000 ;#7 tap drill")
+            os.system(f"mkdir -p {self.configuration_path}/")
+            open(f"{self.configuration_path}/tool.tbl", "w").write("\n".join(tooltbl))
 
     def gui(self):
         machinetype = self.project.config["jdata"].get("machinetype")
         os.system(f"mkdir -p {self.configuration_path}/")
         gui_gen = axis()
         custom = []
-        cfgxml_data_status = []
-        cfgxml_data_inputs = []
-        cfgxml_data_outputs = []
+        cfgxml_data = {
+            "status": [],
+        }
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    userconfig = signal_config.get("userconfig", {})
+                    displayconfig = userconfig.get("display", {})
+                    section = displayconfig.get("section")
+                    if section and section not in cfgxml_data:
+                        cfgxml_data[section] = []
+
+        cfgxml_data["inputs"] = []
+        cfgxml_data["outputs"] = []
 
         # buttons
-        cfgxml_data_status.append('  <labelframe text="MDI-Commands">')
-        cfgxml_data_status.append("    <relief>RAISED</relief>")
-        cfgxml_data_status.append('    <font>("Helvetica", 10)</font>')
-        cfgxml_data_status.append("    <hbox>")
-        cfgxml_data_status.append("      <relief>RIDGE</relief>")
-        cfgxml_data_status.append("      <bd>2</bd>")
+        cfgxml_data["status"].append('  <labelframe text="MDI-Commands">')
+        cfgxml_data["status"].append("    <relief>RAISED</relief>")
+        cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
+        cfgxml_data["status"].append("    <hbox>")
+        cfgxml_data["status"].append("      <relief>RIDGE</relief>")
+        cfgxml_data["status"].append("      <bd>2</bd>")
         if machinetype == "lathe":
             if "X":
                 custom.append(f"net zerox halui.mdi-command-00 <= pyvcp.zerox")
-                cfgxml_data_status += gui_gen.draw_button("zero-x", "zerox")
+                cfgxml_data["status"] += gui_gen.draw_button("zero-x", "zerox")
             if "Z":
                 custom.append(f"net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
-                cfgxml_data_status += gui_gen.draw_button("zero-z", "zeroz")
+                cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
         else:
             if "X" in self.axis_dict and "Y" in self.axis_dict:
                 custom.append(f"net zeroxy halui.mdi-command-03 <= pyvcp.zeroxy")
-                cfgxml_data_status += gui_gen.draw_button("zero-xy", "zeroxy")
+                cfgxml_data["status"] += gui_gen.draw_button("zero-xy", "zeroxy")
             if "Z":
                 custom.append(f"net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
-                cfgxml_data_status += gui_gen.draw_button("zero-z", "zeroz")
-        cfgxml_data_status.append("    </hbox>")
-        cfgxml_data_status.append("  </labelframe>")
+                cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
+        cfgxml_data["status"].append("    </hbox>")
+        cfgxml_data["status"].append("  </labelframe>")
 
         # scale and offset
         for plugin_instance in self.project.plugin_instances:
@@ -312,10 +323,11 @@ class LinuxCNC:
                     userconfig = signal_config.get("userconfig")
                     scale = userconfig.get("scale")
                     offset = userconfig.get("offset")
-                    if scale:
-                        custom.append(f"setp rio.{halname}-scale {scale}")
-                    if offset:
-                        custom.append(f"setp rio.{halname}-offset {offset}")
+                    if not netname:
+                        if scale:
+                            custom.append(f"setp rio.{halname}-scale {scale}")
+                        if offset:
+                            custom.append(f"setp rio.{halname}-offset {offset}")
 
         # rio-functions
         self.rio_functions = {}
@@ -383,7 +395,7 @@ class LinuxCNC:
                 custom.append("net riof.jog.fast => riof.jog.speed_mux.sel")
                 custom.append("net riof.jog.speed <= riof.jog.speed_mux.out")
                 custom.append(f"net riof.jog.speed => pyvcp.jogspeed")
-                cfgxml_data_status += gui_gen.draw_number("Jogspeed", "jogspeed")
+                cfgxml_data["status"] += gui_gen.draw_number("Jogspeed", "jogspeed")
                 custom.append("net riof.jog.speed => halui.axis.jog-speed")
                 custom.append("net riof.jog.speed => halui.joint.jog-speed")
             # else:
@@ -406,7 +418,7 @@ class LinuxCNC:
                         custom.append(f"net riof.jog.{function} => halui.axis.{axis_name}.select")
                         custom.append(f"net riof.jog.{function} => halui.joint.{joint_n}.select")
                         custom.append(f"net riof.jog.selected-{axis_name} => pyvcp.{halname}")
-                        cfgxml_data_status += gui_gen.draw_led(f"Jog:{axis_name}", halname)
+                        cfgxml_data["status"] += gui_gen.draw_led(f"Jog:{axis_name}", halname)
                         joint_n += 1
             else:
                 for axis_name, joints in self.axis_dict.items():
@@ -444,76 +456,69 @@ class LinuxCNC:
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
                     netname = signal_config["netname"]
-                    hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
                     direction = signal_config["direction"]
+                    userconfig = signal_config.get("userconfig", {})
                     boolean = signal_config.get("bool")
+                    displayconfig = userconfig.get("display", {})
+                    vmin = signal_config.get("min", -1000)
+                    vmax = signal_config.get("max", 1000)
+                    if "min" not in displayconfig:
+                        displayconfig["min"] = vmin
+                    if "max" not in displayconfig:
+                        displayconfig["max"] = vmax
+
                     if netname:
-                        if direction in {"input", "output", "inout"}:
-                            if not boolean:
-                                custom.append(f"net rios.{halname} => pyvcp.{halname}")
-                                cfgxml_data_status += gui_gen.draw_number(netname, halname, hal_type)
-                            else:
-                                custom.append(f"net rios.{halname} => pyvcp.{halname}")
-                                cfgxml_data_status += gui_gen.draw_led(netname, halname)
-
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
-                    varname = signal_config["varname"]
-                    netname = signal_config["netname"]
-                    direction = signal_config["direction"]
-                    boolean = signal_config.get("bool")
-                    if halname in self.used_signals:
-                        continue
-                    if direction == "input" and not netname:
+                        section = displayconfig.get("section", "status")
+                        if not boolean:
+                            dtype = displayconfig.get("type", "number")
+                        else:
+                            dtype = displayconfig.get("type", "led")
+                        custom.append(f"net rios.{halname} => pyvcp.{halname}")
+                    elif direction == "input":
+                        section = displayconfig.get("section", "inputs")
+                        if not boolean:
+                            dtype = displayconfig.get("type", "number")
+                        else:
+                            dtype = displayconfig.get("type", "led")
                         custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
+                    elif direction == "output":
+                        section = displayconfig.get("section", "outputs")
                         if not boolean:
-                            vmin = signal_config.get("min", 0)
-                            vmax = signal_config.get("max", 1000)
-                            cfgxml_data_inputs += gui_gen.draw_number(halname, halname)
+                            dtype = displayconfig.get("type", "scale")
+                            if dtype == "scale":
+                                custom.append(f"net rios.{halname} <= pyvcp.{halname}-f => rio.{halname}")
+                            else:
+                                custom.append(f"net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
                         else:
-                            cfgxml_data_inputs += gui_gen.draw_led(halname, halname)
-
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
-                    varname = signal_config["varname"]
-                    netname = signal_config["netname"]
-                    direction = signal_config["direction"]
-                    boolean = signal_config.get("bool")
-                    if halname in self.used_signals:
-                        continue
-                    if direction == "output" and not netname:
-                        if not boolean:
-                            custom.append(f"net rios.{halname} <= pyvcp.{halname}-f => rio.{halname}")
-                            vmin = signal_config.get("min", 0)
-                            vmax = signal_config.get("max", 1000)
-                            cfgxml_data_outputs += gui_gen.draw_scale(halname, halname, vmin, vmax)
-                        else:
+                            dtype = displayconfig.get("type", "checkbutton")
                             custom.append(f"net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
-                            cfgxml_data_outputs += gui_gen.draw_checkbutton(halname, halname)
 
-        cfgxml_data = []
-        cfgxml_data += gui_gen.draw_begin()
-        cfgxml_data += gui_gen.draw_tabs_begin(["Status", "Outputs", "Inputs"])
-        cfgxml_data += gui_gen.draw_tab_begin("Status")
-        cfgxml_data += cfgxml_data_status
-        cfgxml_data += gui_gen.draw_tab_end()
-        cfgxml_data += gui_gen.draw_tab_begin("Outputs")
-        cfgxml_data += cfgxml_data_outputs
-        cfgxml_data += gui_gen.draw_tab_end()
-        cfgxml_data += gui_gen.draw_tab_begin("Inputs")
-        cfgxml_data += cfgxml_data_inputs
-        cfgxml_data += gui_gen.draw_tab_end()
-        cfgxml_data += gui_gen.draw_tabs_end()
-        cfgxml_data += gui_gen.draw_end()
+                    if hasattr(gui_gen, f"draw_{dtype}"):
+                        cfgxml_data[section] += getattr(gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                    elif dtype != "none":
+                        print(f"WARNING: 'draw_{dtype}' not found")
 
+
+
+
+        titles = []
+        for section in cfgxml_data:
+            if cfgxml_data[section]:
+                titles.append(section.title())
+        cfgxml_adata = []
+        cfgxml_adata += gui_gen.draw_begin()
+        cfgxml_adata += gui_gen.draw_tabs_begin(titles)
+        for section in cfgxml_data:
+            if cfgxml_data[section]:
+                cfgxml_adata += gui_gen.draw_tab_begin(section.title())
+                cfgxml_adata += cfgxml_data[section]
+                cfgxml_adata += gui_gen.draw_tab_end()
+        cfgxml_adata += gui_gen.draw_tabs_end()
+        cfgxml_adata += gui_gen.draw_end()
         custom.append("")
         open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(custom))
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(["source custom_postgui.hal"]))
-        open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_data))
+        open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
 
     def hal(self):
         output = []
@@ -554,12 +559,16 @@ class LinuxCNC:
                     halname = signal_config["halname"]
                     varname = signal_config["varname"]
                     netname = signal_config["netname"]
+                    userconfig = signal_config.get("userconfig", {})
+                    scale = userconfig.get("scale")
+                    offset = userconfig.get("offset")
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     if netname:
-                        if netname.endswith(".revs"):
-                            scale = plugin_instance.plugin_setup.get("scale", 1.0)
+                        if scale:
                             output.append(f"setp rio.{halname}-scale {scale}")
+                        if offset:
+                            output.append(f"setp rio.{halname}-offset {offset}")
                         if direction == "inout":
                             output.append(f"net rios.{halname} rio.{halname} <=> {netname}")
                         elif direction == "input":
@@ -1366,7 +1375,7 @@ class qtdragon:
         cfgxml_data.append("                      </widget>")
         return cfgxml_data
 
-    def draw_scale(self, name, halpin, vmin, vmax):
+    def draw_scale(self, name, halpin, vmin, vmax, setup={}):
         cfgxml_data = []
         cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
@@ -1491,7 +1500,7 @@ class qtdragon:
         cfgxml_data.append("  </item>")
         return cfgxml_data
 
-    def draw_checkbutton(self, name, halpin):
+    def draw_checkbutton(self, name, halpin, setup={}):
         cfgxml_data = []
         cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
@@ -1518,7 +1527,7 @@ class qtdragon:
         cfgxml_data.append("  </item>")
         return cfgxml_data
 
-    def draw_led(self, name, halpin):
+    def draw_led(self, name, halpin, setup={}):
         cfgxml_data = []
         cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
@@ -1608,27 +1617,103 @@ class axis:
         cfgxml_data.append("    </vbox>")
         return cfgxml_data
 
-    def draw_scale(self, name, halpin, vmin, vmax):
+    def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        resolution = setup.get("resolution", 0.1)
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("    <scale>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append("      <resolution>0.1</resolution>")
+        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
         cfgxml_data.append("      <orient>HORIZONTAL</orient>")
         cfgxml_data.append("      <initval>0</initval>")
-        cfgxml_data.append(f"      <min_>{vmin}</min_>")
-        cfgxml_data.append(f"      <max_>{vmax}</max_>")
+        cfgxml_data.append(f"      <min_>{display_min}</min_>")
+        cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </scale>")
         cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
+    def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        resolution = setup.get("resolution", 0.1)
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <spinbox>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
+        cfgxml_data.append("      <initval>0</initval>")
+        cfgxml_data.append(f"      <min_>{display_min}</min_>")
+        cfgxml_data.append(f"      <max_>{display_max}</max_>")
+        cfgxml_data.append("      <param_pin>1</param_pin>")
+        cfgxml_data.append("    </spinbox>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{title}"</text>')
+        cfgxml_data.append("    </label>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_jogwheel(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        resolution = setup.get("resolution", 0.1)
+        size = setup.get("size", 200)
+        cpr = setup.get("cpr", 50)
+        cfgxml_data = []
+        cfgxml_data.append("    <jogwheel>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
+        cfgxml_data.append(f"      <size>{size}</size>")
+        cfgxml_data.append(f"      <cpr>{cpr}</cpr>")
+        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
+        cfgxml_data.append("      <initval>0</initval>")
+        cfgxml_data.append(f"      <min_>{display_min}</min_>")
+        cfgxml_data.append(f"      <max_>{display_max}</max_>")
+        cfgxml_data.append("      <param_pin>1</param_pin>")
+        cfgxml_data.append("    </jogwheel>")
+        return cfgxml_data
+
+    def draw_dial(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        resolution = setup.get("resolution", 0.1)
+        dialcolor = setup.get("dialcolor", "yellow")
+        edgecolor = setup.get("edgecolor", "green")
+        dotcolor = setup.get("dotcolor", "black")
+        size = setup.get("size", 200)
+        cpr = setup.get("cpr", 50)
+        cfgxml_data = []
+        cfgxml_data.append("    <dial>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
+        cfgxml_data.append(f"      <size>{size}</size>")
+        cfgxml_data.append(f"      <cpr>{cpr}</cpr>")
+        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
+        cfgxml_data.append(f"      <dialcolor>\"{dialcolor}\"</dialcolor>")
+        cfgxml_data.append(f"      <edgecolor>\"{edgecolor}\"</edgecolor>")
+        cfgxml_data.append(f"      <dotcolor>\"{dotcolor}\"</dotcolor>")
+        cfgxml_data.append("      <initval>0</initval>")
+        cfgxml_data.append(f"      <min_>{display_min}</min_>")
+        cfgxml_data.append(f"      <max_>{display_max}</max_>")
+        cfgxml_data.append("      <param_pin>1</param_pin>")
+        cfgxml_data.append("    </dial>")
+        return cfgxml_data
+
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_subtext = setup.get("subtext", "")
@@ -1640,7 +1725,7 @@ class axis:
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("  <meter>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append(f'      <subtext>"{display_subtext}"</subtext>')
         cfgxml_data.append(f"      <size>{display_size}</size>")
         cfgxml_data.append(f"      <min_>{display_min}</min_>")
@@ -1652,6 +1737,7 @@ class axis:
         return cfgxml_data
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_range = setup.get("range", [])
@@ -1663,7 +1749,7 @@ class axis:
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("    <bar>")
         cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
@@ -1679,6 +1765,7 @@ class axis:
         return cfgxml_data
 
     def draw_number(self, name, halpin, hal_type="float", setup={}):
+        title = setup.get("title", name)
         display_format = setup.get("size", "05.2f")
         element = "number"
         if hal_type != "float":
@@ -1689,7 +1776,7 @@ class axis:
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append(f"    <{element}>")
         cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
@@ -1699,25 +1786,27 @@ class axis:
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
-    def draw_checkbutton(self, name, halpin):
+    def draw_checkbutton(self, name, halpin, setup={}):
+        title = setup.get("title", name)
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
-    def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r):
+    def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup={}):
+        title = setup.get("title", name)
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f'      <halpin>"{halpin_g}"</halpin>')
@@ -1734,15 +1823,20 @@ class axis:
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
-    def draw_led(self, name, halpin):
+    def draw_led(self, name, halpin, setup={}):
+        title = setup.get("title", name)
+        size = setup.get("size", 16)
+        color = setup.get("color")
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("    <led>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append("      <size>16</size>")
-        if halpin.endswith(".R"):
+        cfgxml_data.append(f"      <size>{size}</size>")
+        if color:
+            cfgxml_data.append(f'      <on_color>"{color}"</on_color>')
+        elif halpin.endswith(".R"):
             cfgxml_data.append('      <on_color>"red"</on_color>')
         elif halpin.endswith(".B"):
             cfgxml_data.append('      <on_color>"blue"</on_color>')
@@ -1751,17 +1845,47 @@ class axis:
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
-    def draw_button(self, name, halpin):
+    def draw_rectled(self, name, halpin, setup={}):
+        title = setup.get("title", name)
+        width = setup.get("width", 16)
+        height = setup.get("height", 16)
+        color = setup.get("color")
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <led>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f"      <width>{width}</width>")
+        cfgxml_data.append(f"      <height>{height}</height>")
+        if color:
+            cfgxml_data.append(f'      <on_color>"{color}"</on_color>')
+        elif halpin.endswith(".R"):
+            cfgxml_data.append('      <on_color>"red"</on_color>')
+        elif halpin.endswith(".B"):
+            cfgxml_data.append('      <on_color>"blue"</on_color>')
+        else:
+            cfgxml_data.append('      <on_color>"green"</on_color>')
+        cfgxml_data.append('      <off_color>"black"</off_color>')
+        cfgxml_data.append("    </led>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{title}"</text>')
+        cfgxml_data.append("    </label>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_button(self, name, halpin, setup={}):
+        title = setup.get("title", name)
         cfgxml_data = []
         cfgxml_data.append("  <button>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>3</bd>")
-        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin><text>"{name}"</text>')
+        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin><text>"{title}"</text>')
         cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("  </button>")
         return cfgxml_data

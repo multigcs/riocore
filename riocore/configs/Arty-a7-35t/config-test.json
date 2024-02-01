@@ -162,7 +162,6 @@
             "module": "quadencoderz",
             "setup": {
                 "quadencoderz": {
-                    "scale": 600,
                     "type": "quadencoderz",
                     "name": "quadencoderz",
                     "pins": {
@@ -175,7 +174,8 @@
                             "net": "spindle.0.index-enable"
                         },
                         "position": {
-                            "net": "spindle.0.revs"
+                            "net": "spindle.0.revs",
+                            "scale": 600
                         },
                         "rps": {
                             "net": "spindle.0.speed-in"
@@ -445,7 +445,12 @@
             "name": "jogencoder",
             "signals": {
                 "position": {
-                    "function": "jog.wheel"
+                    "function": "jog.wheel",
+                    "display": {
+                        "section": "status",
+                        "title": "jog",
+                        "type": "bar"
+                    }
                 }
             }
         },

@@ -26,6 +26,18 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "position": {
                 "direction": "input",
+                "targets": {
+                    "rps": "value_rps = (raw_value - last_raw_value) * *data->duration / scale;",
+                    "rpm": "value_rpm = (raw_value - last_raw_value) * *data->duration * 60.0 / scale;",
+                },
+            },
+            "rps": {
+                "direction": "input",
+                "source": "position",
+            },
+            "rpm": {
+                "direction": "input",
+                "source": "position",
             },
         }
         self.INFO = "quadencoder"
