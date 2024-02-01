@@ -569,7 +569,6 @@ class LinuxCNC:
                             output.append(f"net rios.{halname} <= {netname}")
                             output.append(f"net rios.{halname} => rio.{halname}")
 
-
         output.append("")
 
         for axis_name, joints in self.axis_dict.items():
@@ -640,13 +639,15 @@ class LinuxCNC:
                 var_prefix = signal_config["var_prefix"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
+                signal_source = signal_config.get("source")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
                 if not boolean:
                     output.append(f"    hal_{hal_type}_t *{varname};")
-                    if direction == "input" and hal_type == "float":
-                        output.append(f"    hal_s32_t *{varname}_S32;")
-                    output.append(f"    hal_float_t *{varname}_SCALE;")
-                    output.append(f"    hal_float_t *{varname}_OFFSET;")
+                    if not signal_source:
+                        if direction == "input" and hal_type == "float":
+                            output.append(f"    hal_s32_t *{varname}_S32;")
+                        output.append(f"    hal_float_t *{varname}_SCALE;")
+                        output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
                     output.append(f"    hal_bit_t   *{varname};")
                     if signal_config.get("is_index_out"):
@@ -690,23 +691,27 @@ class LinuxCNC:
                 var_prefix = signal_config["var_prefix"]
                 boolean = signal_config.get("bool")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                signal_source = signal_config.get("source")
                 mapping = {"output": "IN", "input": "OUT", "inout": "IO"}
                 hal_direction = mapping[direction]
                 if not boolean:
-                    output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_SCALE), comp_id, "%s.{halname}-scale", prefix) != 0) error_handler(retval);')
-                    output.append(f"    *data->{varname}_SCALE = 1.0;")
-                    output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_OFFSET), comp_id, "%s.{halname}-offset", prefix) != 0) error_handler(retval);')
-                    output.append(f"    *data->{varname}_OFFSET = 0.0;")
+                    if not signal_source:
+                        output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_SCALE), comp_id, "%s.{halname}-scale", prefix) != 0) error_handler(retval);')
+                        output.append(f"    *data->{varname}_SCALE = 1.0;")
+                        output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_OFFSET), comp_id, "%s.{halname}-offset", prefix) != 0) error_handler(retval);')
+                        output.append(f"    *data->{varname}_OFFSET = 0.0;")
                     output.append(f'    if (retval = hal_pin_{hal_type}_newf(HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
-                    if direction == "input" and hal_type == "float":
+                    if direction == "input" and hal_type == "float" and not signal_source:
                         output.append(f'    if (retval = hal_pin_s32_newf(HAL_{hal_direction}, &(data->{varname}_S32), comp_id, "%s.{halname}-s32", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_S32 = 0;")
                 else:
                     output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
                     if signal_config.get("is_index_out"):
-                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_RESET), comp_id, "%s.{halname}-reset", prefix) != 0) error_handler(retval);')
+                        output.append(
+                            f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_RESET), comp_id, "%s.{halname}-reset", prefix) != 0) error_handler(retval);'
+                        )
                         output.append(f"    *data->{var_prefix}_INDEX_RESET = 0;")
 
         output.append("}")
@@ -757,7 +762,9 @@ class LinuxCNC:
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 varname = signal_config["varname"]
-                if signal_config["direction"] == "input":
+                signal_source = signal_config.get("source")
+                signal_targets = signal_config.get("targets", {})
+                if signal_config["direction"] == "input" and not signal_source:
                     convert_parameter = []
                     for data_name, data_config in plugin_instance.interface_data().items():
                         variable_name = data_config["variable"]
@@ -823,13 +830,32 @@ class LinuxCNC:
                                 output.append("        }")
                                 output.append("    }")
 
-                            output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+                            convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
+                            if convert_c:
+                                output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
 
                             if not boolean and direction == "input" and hal_type == "float":
-                                output.append(f"    value = value + *data->{varname}_OFFSET;")
-                                output.append(f"    value = value / *data->{varname}_SCALE;")
+                                output.append(f"    float offset = *data->{varname}_OFFSET;")
+                                output.append(f"    float scale = *data->{varname}_SCALE;")
+                                output.append(f"    float last_value = *data->{varname};")
+                                output.append(f"    static float last_raw_value = 0.0;")
+                                output.append(f"    float raw_value = value;")
+                                output.append(f"    value = value + offset;")
+                                output.append(f"    value = value / scale;")
                                 output.append(f"    *data->{varname}_S32 = value;")
                             output.append(f"    *data->{varname} = value;")
+
+                            for target, calc in signal_targets.items():
+                                tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
+                                output.append("")
+                                output.append(f"    // calc {target}")
+                                output.append(f"    float value_{target} = *data->{tvarname};")
+                                output.append(f"    {calc.strip()}")
+                                output.append(f"    *data->{tvarname} = value_{target};")
+
+                            if not boolean and direction == "input" and hal_type == "float":
+                                output.append("")
+                                output.append(f"    last_raw_value = raw_value;")
 
                     output.append("}")
                     output.append("")
@@ -853,7 +879,8 @@ class LinuxCNC:
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 varname = signal_config["varname"]
-                if signal_config["direction"] == "input":
+                signal_source = signal_config.get("source")
+                if signal_config["direction"] == "input" and not signal_source:
                     output.append(f"    convert_{varname.lower()}(data);")
                     signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
                     if signal_setup:
@@ -1067,7 +1094,7 @@ class LinuxCNC:
         output.append("        *data->status = 1;")
         output.append("    }")
         output.append("    long stamp_new = rtapi_get_time();")
-        output.append("    *data->duration = (stamp_new - stamp_last) / 1000000.0;")
+        output.append("    *data->duration = (stamp_new - stamp_last) / 1000.0;")
         output.append("    stamp_last = stamp_new;")
         output.append("    if (*data->enable == 1 && *data->status == 1) {")
         output.append("        pkg_counter += 1;")
@@ -1734,7 +1761,7 @@ class axis:
         cfgxml_data.append("  <button>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>3</bd>")
-        cfgxml_data.append(f"    <halpin>\"{halpin}\"</halpin><text>\"{name}\"</text>")
-        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin><text>"{name}"</text>')
+        cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("  </button>")
         return cfgxml_data
