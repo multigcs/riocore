@@ -4,6 +4,20 @@
     "boardcfg": "Arty-a7-35t",
     "machinetype": "lathe",
     "transport": "UDP",
+    "joypad": {
+        "enable": true,
+        "name": "Microntek",
+        "axis": {
+            "x": {
+                "input": "y",
+                "reverse": false
+            },
+            "z": {
+                "input": "x",
+                "reverse": false
+            }
+        }
+    },
     "axis": 2,
     "linuxcnc": {
         "ini": {
