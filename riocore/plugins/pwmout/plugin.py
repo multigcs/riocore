@@ -19,6 +19,16 @@ class Plugin(PluginBase):
                 "optional": True,
             },
         }
+        self.OPTIONS = {
+            "frequency": {
+                "default": 10000,
+                "type": int,
+                "min": 10,
+                "max": 1000000,
+                "unit": "Hz",
+                "description": "PWM frequency",
+            },
+        }
         self.INTERFACE = {
             "dty": {
                 "size": 32,
@@ -35,6 +45,7 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "min": 0,
                 "max": 100,
+                "unit": "%",
                 "absolute": False,
             },
             "enable": {
@@ -53,14 +64,14 @@ class Plugin(PluginBase):
         instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
-        freq = int(self.plugin_setup.get("frequency", 10000))
+        freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // freq
         instance_parameter["DIVIDER"] = divider
         return instances
 
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "dty":
-            freq = int(self.plugin_setup.get("frequency", 10000))
+            freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
             vmin = int(signal_setup.get("min", 0))
             vmax = int(signal_setup.get("max", 100))
             if "dir" in signal_setup:
@@ -71,7 +82,7 @@ class Plugin(PluginBase):
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "dty":
-            freq = int(self.plugin_setup.get("frequency", 10000))
+            freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
             vmin = int(signal_setup.get("min", 0))
             vmax = int(signal_setup.get("max", 100))
             if "dir" in signal_setup:

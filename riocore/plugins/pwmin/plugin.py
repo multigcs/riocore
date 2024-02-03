@@ -12,6 +12,16 @@ class Plugin(PluginBase):
                 "pullup": False,
             },
         }
+        self.OPTIONS = {
+            "freq_min": {
+                "default": 10,
+                "type": int,
+                "min": 1,
+                "max": 10000,
+                "unit": "Hz",
+                "description": "minimum measured frequency (for faster updates)",
+            },
+        }
         self.INTERFACE = {
             "width": {
                 "size": 32,
@@ -42,7 +52,7 @@ class Plugin(PluginBase):
         instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
-        freq_min = int(self.plugin_setup.get("freq_min", 10))
+        freq_min = int(self.plugin_setup.get("freq_min", self.OPTIONS["freq_min"]["default"]))
         instance_parameter["RESET_CNT"] = self.system_setup["speed"] // freq_min
         return instances
 

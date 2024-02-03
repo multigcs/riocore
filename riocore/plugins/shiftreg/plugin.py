@@ -20,6 +20,22 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "expansion"
+        self.OPTIONS = {
+            "speed": {
+                "default": 1000000,
+                "type": int,
+                "min": 100000,
+                "max": 10000000,
+                "description": "interface clock",
+            },
+            "bits": {
+                "default": 8,
+                "type": int,
+                "min": 8,
+                "max": 1024,
+                "description": "number of bits (IO's)",
+            },
+        }
         self.INFO = "Expansion to add I/O's via shiftregister's"
         self.DESCRIPTION = """
 do not use this for high frequency signals !!!
@@ -27,22 +43,6 @@ do not use this for high frequency signals !!!
 jitter measured with a EPM240 as 40bit Shiftreg:
 ```
 @10Mhz clock and 5 byte data ~= 3.7us jitter
-```
-
-you can use this extra IO's in other plugins like this:
-```
-{
-    "type": "dout_bit",
-    "name": "LED0",
-    "invert": "true",
-    "pin": "EXPANSION0_OUTPUT[0]"
-},
-{
-    "type": "dout_bit",
-    "name": "LED1",
-    "invert": "true",
-    "pin": "EXPANSION0_OUTPUT[0]"
-},
 ```
 
 ## Output-Expansion with 74HC595:
@@ -76,8 +76,8 @@ you can use this extra IO's in other plugins like this:
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
 
-        speed = int(self.plugin_setup.get("speed", 10000000))
-        bits = int(self.plugin_setup.get("bits", 8))
+        speed = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
+        bits = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))
         divider = self.system_setup["speed"] // speed
         instance_parameter["DIVIDER"] = divider
         instance_parameter["WIDTH"] = bits

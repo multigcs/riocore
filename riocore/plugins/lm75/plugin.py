@@ -26,6 +26,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "temperature": {
                 "direction": "input",
+                "unit": "°C",
             },
         }
         self.INFO = "I2C Temperature-Sensor"

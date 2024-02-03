@@ -23,6 +23,15 @@ class Plugin(PluginBase):
                 "pullup": False,
             },
         }
+        self.OPTIONS = {
+            "quad_type": {
+                "default": 2,
+                "type": int,
+                "min": 1,
+                "max": 4,
+                "description": "encoder type",
+            },
+        }
         self.INTERFACE = {
             "indexenable": {
                 "size": 1,
@@ -55,14 +64,17 @@ class Plugin(PluginBase):
                     "rps": "value_rps = (raw_value - last_raw_value) * *data->duration / scale;",
                     "rpm": "value_rpm = (raw_value - last_raw_value) * *data->duration * 60.0 / scale;",
                 },
+                "description": "position feedback in steps",
             },
             "rps": {
                 "direction": "input",
                 "source": "position",
+                "description": "calculates revolutions per second",
             },
             "rpm": {
                 "direction": "input",
                 "source": "position",
+                "description": "calculates revolutions per minute",
             },
         }
         self.INFO = "quadencoder with index pin"
@@ -74,6 +86,6 @@ class Plugin(PluginBase):
         instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
-        quad_type = self.plugin_setup.get("quad_type", 2)
+        quad_type = self.plugin_setup.get("quad_type", self.OPTIONS["quad_type"]["default"])
         instance_parameter["QUAD_TYPE"] = quad_type
         return instances

@@ -13,6 +13,16 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
+        self.OPTIONS = {
+            "baud": {
+                "default": 1000000,
+                "type": int,
+                "min": 9600,
+                "max": 10000000,
+                "unit": "bit/s",
+                "description": "serial baud rate",
+            },
+        }
         self.TYPE = "interface"
         self.INFO = "uart interface for host cominucation"
         self.DESCRIPTION = ""
@@ -25,7 +35,7 @@ class Plugin(PluginBase):
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
 
-        baud = int(self.system_setup.get("baud", 1000000))
+        baud = int(self.system_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["BUFFER_SIZE"] = self.system_setup["buffer_size"]
         instance_parameter["MSGID"] = "32'h74697277"
         instance_parameter["TIMEOUT"] = f"32'd{self.system_setup['speed'] // 4}"

@@ -29,7 +29,7 @@ class Plugin(PluginBase):
         }
         self.TYPE = "interface"
         self.INFO = "spi interface for host comunication"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "for direct connection to Raspberry-PI or over UDB2SPI-Bridges"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

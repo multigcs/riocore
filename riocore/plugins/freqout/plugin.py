@@ -23,6 +23,8 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "min": 0,
                 "max": 1000000,
+                "unit": "Hz",
+                "description": "output frequency",
             },
         }
         self.INFO = "frequency output"

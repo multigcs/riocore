@@ -43,61 +43,78 @@ class Plugin(PluginBase):
             "phy_rx_clk": {
                 "direction": "input",
                 "create_clock": "-period 40.000",
+                "default": "F15",
             },
             "phy_rxd0": {
                 "direction": "input",
+                "default": "D18",
             },
             "phy_rxd1": {
                 "direction": "input",
+                "default": "E17",
             },
             "phy_rxd2": {
                 "direction": "input",
+                "default": "E18",
             },
             "phy_rxd3": {
                 "direction": "input",
+                "default": "G17",
             },
             "phy_rx_dv": {
                 "direction": "input",
+                "default": "G16",
             },
             "phy_rx_er": {
                 "direction": "input",
+                "default": "C17",
             },
             "phy_tx_clk": {
                 "direction": "input",
                 "create_clock": "-period 40.000",
+                "default": "H16",
             },
             "phy_txd0": {
                 "direction": "output",
                 "set_property": "IOSTANDARD LVCMOS33 SLEW SLOW DRIVE 12",
+                "default": "H14",
             },
             "phy_txd1": {
                 "direction": "output",
                 "set_property": "IOSTANDARD LVCMOS33 SLEW SLOW DRIVE 12",
+                "default": "J14",
             },
             "phy_txd2": {
                 "direction": "output",
                 "set_property": "IOSTANDARD LVCMOS33 SLEW SLOW DRIVE 12",
+                "default": "J13",
             },
             "phy_txd3": {
                 "direction": "output",
                 "set_property": "IOSTANDARD LVCMOS33 SLEW SLOW DRIVE 12",
+                "default": "H17",
             },
             "phy_tx_en": {
                 "direction": "output",
+                "default": "H15",
             },
             "phy_col": {
                 "direction": "input",
+                "default": "D17",
             },
             "phy_crs": {
                 "direction": "input",
+                "default": "G14",
             },
             "phy_ref_clk": {
                 "direction": "output",
                 "set_property": "IOSTANDARD LVCMOS33 SLEW SLOW DRIVE 12",
+                "default": "G18",
             },
             "phy_reset_n": {
                 "direction": "output",
                 "set_property": "IOSTANDARD LVCMOS33 SLEW SLOW DRIVE 12",
+                "default": "C16",
             },
         }
         self.TYPE = "interface"
@@ -105,80 +122,21 @@ class Plugin(PluginBase):
             "mac": {
                 "default": "AA:AF:FA:CC:E3:1C",
                 "type": str,
+                "description": "MAC-Address",
             },
             "ip": {
                 "default": "192.168.10.194",
                 "type": str,
+                "description": "IP-Address",
             },
             "port": {
                 "default": 2390,
                 "type": int,
+                "description": "UDP-Port",
             },
         }
         self.INFO = "udp interface for host comunication - experimental - Arty7-35t only"
-        self.DESCRIPTION = """
-```
-{
-    "type": "arty_mii",
-    "mac": "AA:AF:FA:CC:E3:1C",
-    "ip": "192.168.10.195",
-    "port": 2390,
-    "pins": {
-        "phy_ref_clk": {
-            "pin": "G18"
-        },
-        "phy_rx_clk": {
-            "pin": "F15"
-        },
-        "phy_rxd0": {
-            "pin": "D18"
-        },
-        "phy_rxd1": {
-            "pin": "E17"
-        },
-        "phy_rxd2": {
-            "pin": "E18"
-        },
-        "phy_rxd3": {
-            "pin": "G17"
-        },
-        "phy_rx_dv": {
-            "pin": "G16"
-        },
-        "phy_rx_er": {
-            "pin": "C17"
-        },
-        "phy_tx_clk": {
-            "pin": "H16"
-        },
-        "phy_txd0": {
-            "pin": "H14"
-        },
-        "phy_txd1": {
-            "pin": "J14"
-        },
-        "phy_txd2": {
-            "pin": "J13"
-        },
-        "phy_txd3": {
-            "pin": "H17"
-        },
-        "phy_tx_en": {
-            "pin": "H15"
-        },
-        "phy_col": {
-            "pin": "D17"
-        },
-        "phy_crs": {
-            "pin": "G14"
-        },
-        "phy_reset_n": {
-            "pin": "C16"
-        }
-    }
-}
-```
-        """
+        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

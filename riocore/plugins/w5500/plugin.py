@@ -32,14 +32,17 @@ class Plugin(PluginBase):
             "mac": {
                 "default": "AA:AF:FA:CC:E3:1C",
                 "type": str,
+                "description": "MAC-Address",
             },
             "ip": {
                 "default": "192.168.10.194",
                 "type": str,
+                "description": "IP-Address",
             },
             "port": {
                 "default": 2390,
                 "type": int,
+                "description": "UDP-Port",
             },
         }
         self.INFO = "udp interface for host comunication - experimental"

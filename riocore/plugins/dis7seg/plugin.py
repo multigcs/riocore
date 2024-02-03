@@ -81,6 +81,7 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "min": 0,
                 "max": 9999,
+                "description": "number to display",
             },
         }
         self.INFO = "7segment display with buttons"

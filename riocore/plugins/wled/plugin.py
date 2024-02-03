@@ -8,18 +8,22 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "data": {
                 "direction": "output",
-                "invert": False,
-                "pullup": False,
             },
         }
         self.OPTIONS = {
             "leds": {
                 "default": 1,
                 "type": int,
+                "min": 0,
+                "max": 100,
+                "description": "number of LED's",
             },
             "level": {
                 "default": 127,
                 "type": int,
+                "min": 0,
+                "max": 255,
+                "description": "LED brighness",
             },
         }
         num_leds = self.plugin_setup.get("leds", 1)

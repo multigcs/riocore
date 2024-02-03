@@ -337,7 +337,11 @@ class PluginBase:
         }
         pn = 0
         for pin_name, pin_setup in self.PINDEFAULTS.items():
-            basic_config["pins"][pin_name] = {"pin": f"{pn}"}
+            default = pin_setup.get("default")
+            if default is not None:
+                basic_config["pins"][pin_name] = {"pin": f"{default}"}
+            else:
+                basic_config["pins"][pin_name] = {"pin": f"{pn}"}
             pn += 1
         return basic_config
 
@@ -359,7 +363,11 @@ class PluginBase:
         pn = 0
         full_config["pins"] = {}
         for pin_name, pin_setup in self.PINDEFAULTS.items():
-            full_config["pins"][pin_name] = {"pin": f"{pn}", "modifiers": []}
+            default = pin_setup.get("default")
+            if default is not None:
+                full_config["pins"][pin_name] = {"pin": f"{default}", "modifiers": []}
+            else:
+                full_config["pins"][pin_name] = {"pin": f"{pn}", "modifiers": []}
             if pin_setup["direction"] == "input":
                 full_config["pins"][pin_name]["modifiers"].append({"type": "debounce"})
                 if pn > 0:
@@ -403,6 +411,7 @@ class PluginBase:
             direction = pin_setup.get("direction")
             pullup = pin_setup.get("pullup", False)
             description = pin_setup.get("description")
+            default = pin_setup.get("default")
 
             output.append(f"### {pin_name}:")
             if description:
@@ -411,6 +420,8 @@ class PluginBase:
 
             output.append(f" * direction: {direction}")
             output.append(f" * pullup: {pullup}")
+            if default is not None:
+                output.append(f" * default: {default}")
 
             output.append("")
         return "\n".join(output)

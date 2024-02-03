@@ -28,6 +28,7 @@ class Plugin(PluginBase):
                 "direction": "input",
                 "format": "0.2f",
                 "unit": "cm",
+                "description": "distance between sensor and object",
             },
         }
         self.INFO = "sonar sensor for distance measurement"

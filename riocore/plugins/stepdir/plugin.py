@@ -36,19 +36,21 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "velocity": {
                 "direction": "output",
-                "min": -10000,
-                "max": 10000,
+                "min": -1000000,
+                "max": 1000000,
                 "unit": "Hz",
                 "absolute": False,
-            },
-            "enable": {
-                "direction": "output",
-                "bool": True,
+                "description": "speed in steps per second",
             },
             "position": {
                 "direction": "input",
                 "unit": "steps",
                 "absolute": False,
+                "description": "position feedback",
+            },
+            "enable": {
+                "direction": "output",
+                "bool": True,
             },
         }
         self.INFO = "step/dir output for stepper drivers"

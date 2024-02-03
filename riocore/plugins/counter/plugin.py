@@ -11,18 +11,21 @@ class Plugin(PluginBase):
                 "invert": False,
                 "pullup": False,
                 "optional": True,
+                "description": "increment pin",
             },
             "down": {
                 "direction": "input",
                 "invert": False,
                 "pullup": False,
                 "optional": True,
+                "description": "decrement pin",
             },
             "reset": {
                 "direction": "input",
                 "invert": False,
                 "pullup": False,
                 "optional": True,
+                "description": "reset to zero pin",
             },
         }
         self.INTERFACE = {

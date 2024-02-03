@@ -13,6 +13,15 @@ class Plugin(PluginBase):
                 "pullup": False,
             },
         }
+        self.OPTIONS = {
+            "frequency": {
+                "default": 100,
+                "type": int,
+                "min": 20,
+                "max": 150,
+                "description": "update frequency",
+            },
+        }
         self.INTERFACE = {
             "position": {
                 "size": 32,
@@ -29,6 +38,7 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "min": -100,
                 "max": 100,
+                "description": "absolute position (-100 = 1ms / 100 = 2ms)",
             },
             "enable": {
                 "direction": "output",
@@ -44,7 +54,7 @@ class Plugin(PluginBase):
         instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
-        freq = int(self.plugin_setup.get("frequency", 100))
+        freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // freq
         instance_parameter["DIVIDER"] = divider
         return instances

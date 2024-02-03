@@ -17,6 +17,23 @@ class Plugin(PluginBase):
                 "pullup": False,
             },
         }
+        self.OPTIONS = {
+            "resolution": {
+                "default": 100,
+                "type": int,
+                "min": 0,
+                "max": 255,
+                "description": "number of steps from min to maximum value",
+            },
+            "frequency": {
+                "default": 100,
+                "type": int,
+                "min": 0,
+                "max": 100000,
+                "unit": "Hz",
+                "description": "interface frequency",
+            },
+        }
         self.INTERFACE = {
             "value": {
                 "size": 32,
@@ -37,8 +54,8 @@ class Plugin(PluginBase):
         instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
-        instance_parameter["RESOLUTION"] = self.plugin_setup.get("resolution", "100")
-        frequency = int(self.plugin_setup.get("frequency", 100))
+        instance_parameter["RESOLUTION"] = self.plugin_setup.get("resolution", self.OPTIONS["resolution"]["default"])
+        frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // frequency
         instance_parameter["DIVIDER"] = divider
         return instances

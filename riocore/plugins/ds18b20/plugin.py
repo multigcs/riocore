@@ -21,6 +21,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "temperature": {
                 "direction": "input",
+                "unit": "Hz",
             },
         }
         self.INFO = "1Wire Temperature sensor"

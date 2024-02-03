@@ -16,10 +16,16 @@ class Plugin(PluginBase):
             "leds": {
                 "default": 12,
                 "type": int,
+                "min": 0,
+                "max": 100,
+                "description": "number of LED's",
             },
             "level": {
                 "default": 127,
                 "type": int,
+                "min": 0,
+                "max": 255,
+                "description": "LED brighness",
             },
         }
         self.INTERFACE = {

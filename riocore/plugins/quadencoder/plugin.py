@@ -30,14 +30,17 @@ class Plugin(PluginBase):
                     "rps": "value_rps = (raw_value - last_raw_value) * *data->duration / scale;",
                     "rpm": "value_rpm = (raw_value - last_raw_value) * *data->duration * 60.0 / scale;",
                 },
+                "description": "position feedback in steps",
             },
             "rps": {
                 "direction": "input",
                 "source": "position",
+                "description": "calculates revolutions per second",
             },
             "rpm": {
                 "direction": "input",
                 "source": "position",
+                "description": "calculates revolutions per minute",
             },
         }
         self.INFO = "quadencoder"

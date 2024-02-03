@@ -34,6 +34,7 @@ class Plugin(PluginBase):
             "value": {
                 "direction": "input",
                 "unit": "Volt",
+                "description": "measured voltage",
             },
         }
         self.INFO = "spi adc input"
