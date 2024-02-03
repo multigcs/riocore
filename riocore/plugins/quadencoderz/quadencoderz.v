@@ -30,7 +30,7 @@ module quadencoderz
             count <= 0;
             indexwait <= 1;
         end else begin
-            if (indexenable == 1 && indexwait == 0 && indexout == 0) begin
+            if (indexenable == 1 && indexwait == 0 && indexout == 0 && quadZ_delayed == 0) begin
                 indexout <= 1;
             end else if (indexenable == 0 && indexwait == 1) begin
                 indexwait <= 0;
