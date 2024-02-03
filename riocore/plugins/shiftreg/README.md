@@ -1,101 +1,119 @@
-# ads1115
+# shiftreg
 
+do not use this for high frequency signals !!!
 
-4-chanel adc via I2C
+jitter measured with a EPM240 as 40bit Shiftreg:
+```
+@10Mhz clock and 5 byte data ~= 3.7us jitter
+```
+
+## Output-Expansion with 74HC595:
+
+| EXP | 74HC595 | FUNC |
+| --- | --- | --- |
+| out | 14 | DS |
+| in |  | |
+| sclk | 11 | SH_CP / SRCLK |
+| load | 12 | ST_CP / RCLK |
+
+## Input-Expansion with 74HC165:
+
+| EXP | 74HC165 | FUNC |
+| --- | --- | --- |
+| out |  | |
+| in |  | SER |
+| sclk | 2 | CLK |
+| load |  | SH/LD |
+
+### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
+[![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
+
+        
+
+Expansion to add I/O's via shiftregister's
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "shiftreg",
     "pins": {
-        "sda": {
+        "out": {
             "pin": "0"
         },
-        "scl": {
+        "in": {
             "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "load": {
+            "pin": "3"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### out:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### in:
+
+ * direction: input
+ * pullup: False
+
+### sclk:
+
+ * direction: output
+ * pullup: False
+
+### load:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
+### speed:
+interface clock
+
+ * type: int
+ * min: 100000
+ * max: 10000000
+ * default: 1000000
+
+### bits:
+number of bits (IO's)
+
+ * type: int
+ * min: 8
+ * max: 1024
+ * default: 8
+
 ### name:
 name of this plugin instance
 
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
 
 
 ## Interfaces:
-### adc0:
-
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "shiftreg",
+    "speed": 1000000,
+    "bits": 8,
     "name": "",
-    "net": "",
     "pins": {
-        "sda": {
+        "out": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,8 +121,27 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "in": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "sclk": {
+            "pin": "2",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "load": {
+            "pin": "3",
             "modifiers": [
                 {
                     "type": "invert"
@@ -112,54 +149,9 @@ target net in LinuxCNC
             ]
         }
     },
-    "signals": {
-        "adc0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
+    "signals": {}
 }
 ```
 
 ## Verilogs:
- * ads1115.v
+ * shiftreg.v

@@ -1,36 +1,36 @@
-# ads1115
+# rcservo
 
 
-4-chanel adc via I2C
+rc-servo output
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "rcservo",
     "pins": {
-        "sda": {
+        "pwm": {
             "pin": "0"
-        },
-        "scl": {
-            "pin": "1"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### pwm:
 
  * direction: output
- * pullup: True
+ * pullup: False
 
 
 ## Options:
+### frequency:
+update frequency
+
+ * type: int
+ * min: 20
+ * max: 150
+ * default: 100
+
 ### name:
 name of this plugin instance
 
@@ -43,68 +43,58 @@ target net in LinuxCNC
  * type: str
  * default: None
 
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: True
+
 
 ## Signals:
-### adc0:
+### position:
+absolute position (-100 = 1ms / 100 = 2ms)
 
  * type: float
- * direction: input
+ * direction: output
+ * min: -100
+ * max: 100
 
-### adc1:
+### enable:
 
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * type: bit
+ * direction: output
 
 
 ## Interfaces:
-### adc0:
+### position:
 
- * size: 16 bit
- * direction: input
+ * size: 32 bit
+ * direction: output
 
-### adc1:
+### enable:
 
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * size: 1 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "rcservo",
+    "frequency": 100,
     "name": "",
     "net": "",
+    "axis": "",
+    "is_joint": true,
     "pins": {
-        "sda": {
+        "pwm": {
             "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "scl": {
-            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +103,24 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "position": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
+                "title": "position",
+                "section": "outputs",
+                "type": "scale"
             }
         },
-        "adc1": {
+        "enable": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "enable",
+                "section": "outputs",
+                "type": "checkbox"
             }
         }
     }
@@ -162,4 +128,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * rcservo.v

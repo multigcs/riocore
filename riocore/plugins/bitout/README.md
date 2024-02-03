@@ -1,33 +1,25 @@
-# ads1115
+# bitout
 
 
-4-chanel adc via I2C
+singe bit output pin
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "bitout",
     "pins": {
-        "sda": {
+        "bit": {
             "pin": "0"
-        },
-        "scl": {
-            "pin": "1"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### bit:
 
  * direction: output
- * pullup: True
+ * pullup: False
 
 
 ## Options:
@@ -45,66 +37,28 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### bit:
 
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * type: bit
+ * direction: output
 
 
 ## Interfaces:
-### adc0:
+### bit:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * size: 1 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "bitout",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "bit": {
             "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "scl": {
-            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,53 +67,15 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "bit": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "bit",
+                "section": "outputs",
+                "type": "checkbox"
             }
         }
     }
 }
 ```
-
-## Verilogs:
- * ads1115.v

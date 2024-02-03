@@ -1,17 +1,17 @@
-# ads1115
+# uart
 
 
-4-chanel adc via I2C
+uart interface for host cominucation
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "uart",
     "pins": {
-        "sda": {
+        "rx": {
             "pin": "0"
         },
-        "scl": {
+        "tx": {
             "pin": "1"
         }
     }
@@ -19,91 +19,56 @@
 ```
 
 ## Pins:
-### sda:
+### rx:
 
- * direction: inout
- * pullup: True
+ * direction: input
+ * pullup: False
 
-### scl:
+### tx:
 
  * direction: output
- * pullup: True
+ * pullup: False
 
 
 ## Options:
+### baud:
+serial baud rate
+
+ * type: int
+ * min: 9600
+ * max: 10000000
+ * default: 1000000
+ * unit: bit/s
+
 ### name:
 name of this plugin instance
 
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
 
 
 ## Interfaces:
-### adc0:
-
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "uart",
+    "baud": 1000000,
     "name": "",
-    "net": "",
     "pins": {
-        "sda": {
+        "rx": {
             "pin": "0",
             "modifiers": [
                 {
-                    "type": "invert"
+                    "type": "debounce"
                 }
             ]
         },
-        "scl": {
+        "tx": {
             "pin": "1",
             "modifiers": [
                 {
@@ -112,54 +77,12 @@ target net in LinuxCNC
             ]
         }
     },
-    "signals": {
-        "adc0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
+    "signals": {}
 }
 ```
 
 ## Verilogs:
- * ads1115.v
+ * uart.v
+ * uart_baud.v
+ * uart_rx.v
+ * uart_tx.v

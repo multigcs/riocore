@@ -1,33 +1,105 @@
-# ads1115
+# dis7seg
 
 
-4-chanel adc via I2C
+7segment display with buttons
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "dis7seg",
     "pins": {
-        "sda": {
+        "en1": {
             "pin": "0"
         },
-        "scl": {
+        "en2": {
             "pin": "1"
+        },
+        "en3": {
+            "pin": "2"
+        },
+        "en4": {
+            "pin": "3"
+        },
+        "seg_a": {
+            "pin": "4"
+        },
+        "seg_b": {
+            "pin": "5"
+        },
+        "seg_c": {
+            "pin": "6"
+        },
+        "seg_d": {
+            "pin": "7"
+        },
+        "seg_e": {
+            "pin": "8"
+        },
+        "seg_f": {
+            "pin": "9"
+        },
+        "seg_g": {
+            "pin": "10"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### en1:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### en2:
+
+ * direction: output
+ * pullup: False
+
+### en3:
+
+ * direction: output
+ * pullup: False
+
+### en4:
+
+ * direction: output
+ * pullup: False
+
+### seg_a:
+
+ * direction: output
+ * pullup: False
+
+### seg_b:
+
+ * direction: output
+ * pullup: False
+
+### seg_c:
+
+ * direction: output
+ * pullup: False
+
+### seg_d:
+
+ * direction: output
+ * pullup: False
+
+### seg_e:
+
+ * direction: output
+ * pullup: False
+
+### seg_f:
+
+ * direction: output
+ * pullup: False
+
+### seg_g:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
@@ -45,57 +117,30 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### value:
+number to display
 
  * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * direction: output
+ * min: 0
+ * max: 9999
 
 
 ## Interfaces:
-### adc0:
+### value:
 
  * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "dis7seg",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "en1": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,8 +148,80 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "en2": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "en3": {
+            "pin": "2",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "en4": {
+            "pin": "3",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "seg_a": {
+            "pin": "4",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "seg_b": {
+            "pin": "5",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "seg_c": {
+            "pin": "6",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "seg_d": {
+            "pin": "7",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "seg_e": {
+            "pin": "8",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "seg_f": {
+            "pin": "9",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "seg_g": {
+            "pin": "10",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +230,15 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "value": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "value",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }
@@ -162,4 +246,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * dis7seg.v

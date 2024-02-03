@@ -1,33 +1,17 @@
-# ads1115
+# max10adc
 
 
-4-chanel adc via I2C
+MAX10 ADC inputs
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
-    "pins": {
-        "sda": {
-            "pin": "0"
-        },
-        "scl": {
-            "pin": "1"
-        }
-    }
+    "type": "max10adc",
+    "pins": {}
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
-
- * direction: output
- * pullup: True
 
 
 ## Options:
@@ -65,6 +49,26 @@ target net in LinuxCNC
  * type: float
  * direction: input
 
+### adc4:
+
+ * type: float
+ * direction: input
+
+### adc5:
+
+ * type: float
+ * direction: input
+
+### adc6:
+
+ * type: float
+ * direction: input
+
+### adc7:
+
+ * type: float
+ * direction: input
+
 
 ## Interfaces:
 ### adc0:
@@ -87,31 +91,34 @@ target net in LinuxCNC
  * size: 16 bit
  * direction: input
 
+### adc4:
+
+ * size: 16 bit
+ * direction: input
+
+### adc5:
+
+ * size: 16 bit
+ * direction: input
+
+### adc6:
+
+ * size: 16 bit
+ * direction: input
+
+### adc7:
+
+ * size: 16 bit
+ * direction: input
+
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "max10adc",
     "name": "",
     "net": "",
-    "pins": {
-        "sda": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "scl": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
+    "pins": {},
     "signals": {
         "adc0": {
             "net": "xxx.yyy.zzz",
@@ -156,10 +163,54 @@ target net in LinuxCNC
                 "section": "inputs",
                 "type": "meter"
             }
+        },
+        "adc4": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "adc4",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "adc5": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "adc5",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "adc6": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "adc6",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "adc7": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "adc7",
+                "section": "inputs",
+                "type": "meter"
+            }
         }
     }
 }
 ```
 
 ## Verilogs:
- * ads1115.v
+ * max10adc.v

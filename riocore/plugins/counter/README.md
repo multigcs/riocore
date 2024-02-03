@@ -1,33 +1,44 @@
-# ads1115
+# counter
 
 
-4-chanel adc via I2C
+pulse counter input
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "counter",
     "pins": {
-        "sda": {
+        "up": {
             "pin": "0"
         },
-        "scl": {
+        "down": {
             "pin": "1"
+        },
+        "reset": {
+            "pin": "2"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
+### up:
+increment pin
 
- * direction: inout
- * pullup: True
+ * direction: input
+ * pullup: False
 
-### scl:
+### down:
+decrement pin
 
- * direction: output
- * pullup: True
+ * direction: input
+ * pullup: False
+
+### reset:
+reset to zero pin
+
+ * direction: input
+ * pullup: False
 
 
 ## Options:
@@ -45,67 +56,51 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
+### counter:
 
  * type: float
  * direction: input
 
 
 ## Interfaces:
-### adc0:
+### counter:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
+ * size: 32 bit
  * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "counter",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "up": {
             "pin": "0",
             "modifiers": [
+                {
+                    "type": "debounce"
+                }
+            ]
+        },
+        "down": {
+            "pin": "1",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
             ]
         },
-        "scl": {
-            "pin": "1",
+        "reset": {
+            "pin": "2",
             "modifiers": [
+                {
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
@@ -113,46 +108,13 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "counter": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
+                "title": "counter",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -162,4 +124,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * counter.v

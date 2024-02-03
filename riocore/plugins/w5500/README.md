@@ -1,101 +1,93 @@
-# ads1115
+# w5500
 
 
-4-chanel adc via I2C
+udp interface for host comunication - experimental
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "w5500",
     "pins": {
-        "sda": {
+        "mosi": {
             "pin": "0"
         },
-        "scl": {
+        "miso": {
             "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "sel": {
+            "pin": "3"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### mosi:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### miso:
+
+ * direction: input
+ * pullup: False
+
+### sclk:
+
+ * direction: output
+ * pullup: False
+
+### sel:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
+### mac:
+MAC-Address
+
+ * type: str
+ * default: AA:AF:FA:CC:E3:1C
+
+### ip:
+IP-Address
+
+ * type: str
+ * default: 192.168.10.194
+
+### port:
+UDP-Port
+
+ * type: int
+ * default: 2390
+
 ### name:
 name of this plugin instance
 
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
 
 
 ## Interfaces:
-### adc0:
-
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "w5500",
+    "mac": "AA:AF:FA:CC:E3:1C",
+    "ip": "192.168.10.194",
+    "port": 2390,
     "name": "",
-    "net": "",
     "pins": {
-        "sda": {
+        "mosi": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,8 +95,27 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "miso": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "sclk": {
+            "pin": "2",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "sel": {
+            "pin": "3",
             "modifiers": [
                 {
                     "type": "invert"
@@ -112,54 +123,9 @@ target net in LinuxCNC
             ]
         }
     },
-    "signals": {
-        "adc0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
+    "signals": {}
 }
 ```
 
 ## Verilogs:
- * ads1115.v
+ * w5500.v

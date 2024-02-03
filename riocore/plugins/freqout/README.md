@@ -1,33 +1,25 @@
-# ads1115
+# freqout
 
 
-4-chanel adc via I2C
+frequency output
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "freqout",
     "pins": {
-        "sda": {
+        "freq": {
             "pin": "0"
-        },
-        "scl": {
-            "pin": "1"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### freq:
 
  * direction: output
- * pullup: True
+ * pullup: False
 
 
 ## Options:
@@ -45,66 +37,31 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### frequency:
+output frequency
 
  * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * direction: output
+ * min: 0
+ * max: 1000000
 
 
 ## Interfaces:
-### adc0:
+### frequency:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * size: 32 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "freqout",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "freq": {
             "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "scl": {
-            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +70,15 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "frequency": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "frequency",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }
@@ -162,4 +86,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * freqout.v

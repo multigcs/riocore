@@ -1,33 +1,41 @@
-# ads1115
+# stepdir
 
 
-4-chanel adc via I2C
+step/dir output for stepper drivers
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "stepdir",
     "pins": {
-        "sda": {
+        "step": {
             "pin": "0"
         },
-        "scl": {
+        "dir": {
             "pin": "1"
+        },
+        "en": {
+            "pin": "2"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### step:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### dir:
+
+ * direction: output
+ * pullup: False
+
+### en:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
@@ -43,59 +51,67 @@ target net in LinuxCNC
  * type: str
  * default: None
 
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: True
+
 
 ## Signals:
-### adc0:
+### velocity:
+speed in steps per second
+
+ * type: float
+ * direction: output
+ * min: -1000000
+ * max: 1000000
+
+### position:
+position feedback
 
  * type: float
  * direction: input
 
-### adc1:
+### enable:
 
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * type: bit
+ * direction: output
 
 
 ## Interfaces:
-### adc0:
+### velocity:
 
- * size: 16 bit
- * direction: input
+ * size: 32 bit
+ * direction: output
 
-### adc1:
+### enable:
 
- * size: 16 bit
- * direction: input
+ * size: 1 bit
+ * direction: output
 
-### adc2:
+### position:
 
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
+ * size: 32 bit
  * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "stepdir",
     "name": "",
     "net": "",
+    "axis": "",
+    "is_joint": true,
     "pins": {
-        "sda": {
+        "step": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,8 +119,16 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "dir": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "en": {
+            "pin": "2",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +137,35 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "velocity": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
+                "title": "velocity",
+                "section": "outputs",
+                "type": "scale"
+            }
+        },
+        "position": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "position",
                 "section": "inputs",
                 "type": "meter"
             }
         },
-        "adc1": {
+        "enable": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "enable",
+                "section": "outputs",
+                "type": "checkbox"
             }
         }
     }
@@ -162,4 +173,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * stepdir.v

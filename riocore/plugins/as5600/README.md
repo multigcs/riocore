@@ -1,12 +1,12 @@
-# ads1115
+# as5600
 
 
-4-chanel adc via I2C
+magnetic absolute encoder
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "as5600",
     "pins": {
         "sda": {
             "pin": "0"
@@ -22,12 +22,12 @@
 ### sda:
 
  * direction: inout
- * pullup: True
+ * pullup: False
 
 ### scl:
 
  * direction: output
- * pullup: True
+ * pullup: False
 
 
 ## Options:
@@ -45,53 +45,23 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
+### position:
 
  * type: float
  * direction: input
 
 
 ## Interfaces:
-### adc0:
+### position:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
+ * size: 32 bit
  * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "as5600",
     "name": "",
     "net": "",
     "pins": {
@@ -113,46 +83,13 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "position": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
+                "title": "position",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -162,4 +99,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * as5600.v

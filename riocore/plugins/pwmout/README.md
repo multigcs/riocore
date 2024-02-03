@@ -1,36 +1,53 @@
-# ads1115
+# pwmout
 
 
-4-chanel adc via I2C
+pwm output
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "pwmout",
     "pins": {
-        "sda": {
+        "pwm": {
             "pin": "0"
         },
-        "scl": {
+        "dir": {
             "pin": "1"
+        },
+        "en": {
+            "pin": "2"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### pwm:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### dir:
+
+ * direction: output
+ * pullup: False
+
+### en:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
+### frequency:
+PWM frequency
+
+ * type: int
+ * min: 10
+ * max: 1000000
+ * default: 10000
+ * unit: Hz
+
 ### name:
 name of this plugin instance
 
@@ -43,59 +60,56 @@ target net in LinuxCNC
  * type: str
  * default: None
 
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: True
+
 
 ## Signals:
-### adc0:
+### dty:
 
  * type: float
- * direction: input
+ * direction: output
+ * min: -100
+ * max: 100
 
-### adc1:
+### enable:
 
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * type: bit
+ * direction: output
 
 
 ## Interfaces:
-### adc0:
+### dty:
 
- * size: 16 bit
- * direction: input
+ * size: 32 bit
+ * direction: output
 
-### adc1:
+### enable:
 
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * size: 1 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "pwmout",
+    "frequency": 10000,
     "name": "",
     "net": "",
+    "axis": "",
+    "is_joint": true,
     "pins": {
-        "sda": {
+        "pwm": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,8 +117,16 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "dir": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "en": {
+            "pin": "2",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +135,24 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "dty": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
+                "title": "dty",
+                "section": "outputs",
+                "type": "scale"
             }
         },
-        "adc1": {
+        "enable": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "enable",
+                "section": "outputs",
+                "type": "checkbox"
             }
         }
     }
@@ -162,4 +160,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * pwmout.v

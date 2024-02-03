@@ -1,33 +1,41 @@
-# ads1115
+# tm1638b8s7l8
 
 
-4-chanel adc via I2C
+7segment display with buttons
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "tm1638b8s7l8",
     "pins": {
-        "sda": {
+        "sel": {
             "pin": "0"
         },
-        "scl": {
+        "sclk": {
             "pin": "1"
+        },
+        "data": {
+            "pin": "2"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### sel:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### sclk:
+
+ * direction: output
+ * pullup: False
+
+### data:
+
+ * direction: inout
+ * pullup: False
 
 
 ## Options:
@@ -45,57 +53,201 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### sw0:
 
- * type: float
+ * type: bit
  * direction: input
 
-### adc1:
+### sw1:
 
- * type: float
+ * type: bit
  * direction: input
 
-### adc2:
+### sw2:
 
- * type: float
+ * type: bit
  * direction: input
 
-### adc3:
+### sw3:
+
+ * type: bit
+ * direction: input
+
+### sw4:
+
+ * type: bit
+ * direction: input
+
+### sw5:
+
+ * type: bit
+ * direction: input
+
+### sw6:
+
+ * type: bit
+ * direction: input
+
+### sw7:
+
+ * type: bit
+ * direction: input
+
+### led0:
+
+ * type: bit
+ * direction: output
+
+### led1:
+
+ * type: bit
+ * direction: output
+
+### led2:
+
+ * type: bit
+ * direction: output
+
+### led3:
+
+ * type: bit
+ * direction: output
+
+### led4:
+
+ * type: bit
+ * direction: output
+
+### led5:
+
+ * type: bit
+ * direction: output
+
+### led6:
+
+ * type: bit
+ * direction: output
+
+### led7:
+
+ * type: bit
+ * direction: output
+
+### number1:
 
  * type: float
- * direction: input
+ * direction: output
+ * min: -65000
+ * max: 65000
+
+### number2:
+
+ * type: float
+ * direction: output
+ * min: 0
+ * max: 99
 
 
 ## Interfaces:
-### adc0:
+### sw0:
 
- * size: 16 bit
+ * size: 1 bit
  * direction: input
 
-### adc1:
+### sw1:
 
- * size: 16 bit
+ * size: 1 bit
  * direction: input
 
-### adc2:
+### sw2:
 
- * size: 16 bit
+ * size: 1 bit
  * direction: input
 
-### adc3:
+### sw3:
 
- * size: 16 bit
+ * size: 1 bit
  * direction: input
+
+### sw4:
+
+ * size: 1 bit
+ * direction: input
+
+### sw5:
+
+ * size: 1 bit
+ * direction: input
+
+### sw6:
+
+ * size: 1 bit
+ * direction: input
+
+### sw7:
+
+ * size: 1 bit
+ * direction: input
+
+### led0:
+
+ * size: 1 bit
+ * direction: output
+
+### led1:
+
+ * size: 1 bit
+ * direction: output
+
+### led2:
+
+ * size: 1 bit
+ * direction: output
+
+### led3:
+
+ * size: 1 bit
+ * direction: output
+
+### led4:
+
+ * size: 1 bit
+ * direction: output
+
+### led5:
+
+ * size: 1 bit
+ * direction: output
+
+### led6:
+
+ * size: 1 bit
+ * direction: output
+
+### led7:
+
+ * size: 1 bit
+ * direction: output
+
+### number1:
+
+ * size: 24 bit
+ * direction: output
+
+### number2:
+
+ * size: 8 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "tm1638b8s7l8",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "sel": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,8 +255,16 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "sclk": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "data": {
+            "pin": "2",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +273,170 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "sw0": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "adc0",
+                "title": "sw0",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
-        "adc1": {
+        "sw1": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "adc1",
+                "title": "sw1",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
-        "adc2": {
+        "sw2": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "adc2",
+                "title": "sw2",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
-        "adc3": {
+        "sw3": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "sw3",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "sw4": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "sw4",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "sw5": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "sw5",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "sw6": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "sw6",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "sw7": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "sw7",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "led0": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led0",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "led1": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led1",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "led2": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led2",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "led3": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led3",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "led4": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led4",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "led5": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led5",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "led6": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led6",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "led7": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "led7",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "number1": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "number1",
+                "section": "outputs",
+                "type": "scale"
+            }
+        },
+        "number2": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "number2",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }
@@ -162,4 +444,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * tm1638b8s7l8.v

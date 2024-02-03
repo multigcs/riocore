@@ -1,33 +1,41 @@
-# ads1115
+# max6675
 
 
-4-chanel adc via I2C
+SPI temperature sensor
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "max6675",
     "pins": {
-        "sda": {
+        "miso": {
             "pin": "0"
         },
-        "scl": {
+        "sclk": {
             "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
+### miso:
 
- * direction: inout
- * pullup: True
+ * direction: input
+ * pullup: False
 
-### scl:
+### sclk:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### sel:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
@@ -45,44 +53,14 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
+### temperature:
 
  * type: float
  * direction: input
 
 
 ## Interfaces:
-### adc0:
-
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
+### temperature:
 
  * size: 16 bit
  * direction: input
@@ -91,20 +69,28 @@ target net in LinuxCNC
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "max6675",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "miso": {
             "pin": "0",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                }
+            ]
+        },
+        "sclk": {
+            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
                 }
             ]
         },
-        "scl": {
-            "pin": "1",
+        "sel": {
+            "pin": "2",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,46 +99,13 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "temperature": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
+                "title": "temperature",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -162,4 +115,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * max6675.v

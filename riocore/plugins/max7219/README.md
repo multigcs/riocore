@@ -1,36 +1,60 @@
-# ads1115
+# max7219
 
 
-4-chanel adc via I2C
+7segment display based on max7219
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "max7219",
     "pins": {
-        "sda": {
+        "mosi": {
             "pin": "0"
         },
-        "scl": {
+        "sclk": {
             "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### mosi:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### sclk:
+
+ * direction: output
+ * pullup: False
+
+### sel:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
+### brightness:
+display brightness
+
+ * type: int
+ * min: 0
+ * max: 15
+ * default: 15
+
+### frequency:
+interface clock frequency
+
+ * type: int
+ * min: 100000
+ * max: 10000000
+ * default: 1000000
+
 ### name:
 name of this plugin instance
 
@@ -45,57 +69,31 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### value:
 
  * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * direction: output
+ * min: -999999
+ * max: 999999
 
 
 ## Interfaces:
-### adc0:
+### value:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * size: 24 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "max7219",
+    "brightness": 15,
+    "frequency": 1000000,
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "mosi": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,8 +101,16 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "sclk": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "sel": {
+            "pin": "2",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +119,15 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "value": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "value",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }
@@ -162,4 +135,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * max7219.v

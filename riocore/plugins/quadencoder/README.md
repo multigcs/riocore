@@ -1,17 +1,17 @@
-# ads1115
+# quadencoder
 
 
-4-chanel adc via I2C
+quadencoder
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "quadencoder",
     "pins": {
-        "sda": {
+        "a": {
             "pin": "0"
         },
-        "scl": {
+        "b": {
             "pin": "1"
         }
     }
@@ -19,14 +19,14 @@
 ```
 
 ## Pins:
-### sda:
+### a:
 
- * direction: inout
+ * direction: input
  * pullup: True
 
-### scl:
+### b:
 
- * direction: output
+ * direction: input
  * pullup: True
 
 
@@ -45,67 +45,53 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### position:
+position feedback in steps
 
  * type: float
  * direction: input
 
-### adc1:
+### rps:
+calculates revolutions per second
 
  * type: float
  * direction: input
 
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
+### rpm:
+calculates revolutions per minute
 
  * type: float
  * direction: input
 
 
 ## Interfaces:
-### adc0:
+### position:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
+ * size: 32 bit
  * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "quadencoder",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "a": {
             "pin": "0",
             "modifiers": [
                 {
-                    "type": "invert"
+                    "type": "debounce"
                 }
             ]
         },
-        "scl": {
+        "b": {
             "pin": "1",
             "modifiers": [
+                {
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
@@ -113,46 +99,35 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "position": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
+                "title": "position",
                 "section": "inputs",
                 "type": "meter"
             }
         },
-        "adc1": {
+        "rps": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc1",
+                "title": "rps",
                 "section": "inputs",
                 "type": "meter"
             }
         },
-        "adc2": {
+        "rpm": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
+                "title": "rpm",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -162,4 +137,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * quadencoder.v

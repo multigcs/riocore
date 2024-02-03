@@ -1,17 +1,17 @@
-# ads1115
+# sonar
 
 
-4-chanel adc via I2C
+sonar sensor for distance measurement
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "sonar",
     "pins": {
-        "sda": {
+        "trigger": {
             "pin": "0"
         },
-        "scl": {
+        "echo": {
             "pin": "1"
         }
     }
@@ -19,15 +19,15 @@
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### trigger:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### echo:
+
+ * direction: input
+ * pullup: False
 
 
 ## Options:
@@ -45,57 +45,28 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
+### distance:
+distance between sensor and object
 
  * type: float
  * direction: input
 
 
 ## Interfaces:
-### adc0:
+### distance:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
+ * size: 32 bit
  * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "sonar",
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "trigger": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,9 +74,12 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "echo": {
             "pin": "1",
             "modifiers": [
+                {
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
@@ -113,46 +87,13 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "distance": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
+                "title": "distance",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -162,4 +103,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * sonar.v

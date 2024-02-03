@@ -27,7 +27,7 @@ class Plugins:
     def info(self, plugin_name):
         output = []
         self.load_plugins({"plugins": [{"type": plugin_name}]})
-        plugin = self.plugin_instances[0]
+        plugin = self.plugin_instances[-1]
 
         output.append(f"# {plugin.NAME}")
         output.append(plugin.DESCRIPTION)

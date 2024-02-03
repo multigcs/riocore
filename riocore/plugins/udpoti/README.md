@@ -1,17 +1,17 @@
-# ads1115
+# udpoti
 
 
-4-chanel adc via I2C
+digital-poti with up/down+dir interface
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "udpoti",
     "pins": {
-        "sda": {
+        "updown": {
             "pin": "0"
         },
-        "scl": {
+        "increment": {
             "pin": "1"
         }
     }
@@ -19,18 +19,35 @@
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### updown:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### increment:
+
+ * direction: output
+ * pullup: False
 
 
 ## Options:
+### resolution:
+number of steps from min to maximum value
+
+ * type: int
+ * min: 0
+ * max: 255
+ * default: 100
+
+### frequency:
+interface frequency
+
+ * type: int
+ * min: 0
+ * max: 100000
+ * default: 100
+ * unit: Hz
+
 ### name:
 name of this plugin instance
 
@@ -45,57 +62,29 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### value:
 
  * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * direction: output
 
 
 ## Interfaces:
-### adc0:
+### value:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * size: 32 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "udpoti",
+    "resolution": 100,
+    "frequency": 100,
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "updown": {
             "pin": "0",
             "modifiers": [
                 {
@@ -103,7 +92,7 @@ target net in LinuxCNC
                 }
             ]
         },
-        "scl": {
+        "increment": {
             "pin": "1",
             "modifiers": [
                 {
@@ -113,48 +102,15 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "value": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "value",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }
@@ -162,4 +118,4 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * udpoti.v

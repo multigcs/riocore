@@ -1,33 +1,49 @@
-# ads1115
+# spi
+for direct connection to Raspberry-PI or over UDB2SPI-Bridges
 
-
-4-chanel adc via I2C
+spi interface for host comunication
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "spi",
     "pins": {
-        "sda": {
+        "mosi": {
             "pin": "0"
         },
-        "scl": {
+        "miso": {
             "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "sel": {
+            "pin": "3"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
+### mosi:
 
- * direction: inout
- * pullup: True
+ * direction: input
+ * pullup: False
 
-### scl:
+### miso:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### sclk:
+
+ * direction: input
+ * pullup: False
+
+### sel:
+
+ * direction: input
+ * pullup: False
 
 
 ## Options:
@@ -37,129 +53,61 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
 
 
 ## Interfaces:
-### adc0:
-
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "spi",
     "name": "",
-    "net": "",
     "pins": {
-        "sda": {
+        "mosi": {
             "pin": "0",
             "modifiers": [
                 {
-                    "type": "invert"
+                    "type": "debounce"
                 }
             ]
         },
-        "scl": {
+        "miso": {
             "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
                 }
             ]
+        },
+        "sclk": {
+            "pin": "2",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "sel": {
+            "pin": "3",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
         }
     },
-    "signals": {
-        "adc0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
+    "signals": {}
 }
 ```
 
 ## Verilogs:
- * ads1115.v
+ * spi.v

@@ -1,36 +1,44 @@
-# ads1115
+# wled_bar
 
 
-4-chanel adc via I2C
+ws2812b interface for bar-displays
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "wled_bar",
     "pins": {
-        "sda": {
+        "data": {
             "pin": "0"
-        },
-        "scl": {
-            "pin": "1"
         }
     }
 }
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### data:
 
  * direction: output
- * pullup: True
+ * pullup: False
 
 
 ## Options:
+### leds:
+number of LED's
+
+ * type: int
+ * min: 0
+ * max: 100
+ * default: 12
+
+### level:
+LED brighness
+
+ * type: int
+ * min: 0
+ * max: 255
+ * default: 127
+
 ### name:
 name of this plugin instance
 
@@ -45,66 +53,30 @@ target net in LinuxCNC
 
 
 ## Signals:
-### adc0:
+### value:
 
  * type: float
- * direction: input
-
-### adc1:
-
- * type: float
- * direction: input
-
-### adc2:
-
- * type: float
- * direction: input
-
-### adc3:
-
- * type: float
- * direction: input
+ * direction: output
 
 
 ## Interfaces:
-### adc0:
+### value:
 
- * size: 16 bit
- * direction: input
-
-### adc1:
-
- * size: 16 bit
- * direction: input
-
-### adc2:
-
- * size: 16 bit
- * direction: input
-
-### adc3:
-
- * size: 16 bit
- * direction: input
+ * size: 8 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "wled_bar",
+    "leds": 12,
+    "level": 127,
     "name": "",
     "net": "",
     "pins": {
-        "sda": {
+        "data": {
             "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "scl": {
-            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
@@ -113,48 +85,15 @@ target net in LinuxCNC
         }
     },
     "signals": {
-        "adc0": {
+        "value": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
+                "title": "value",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }
@@ -162,4 +101,5 @@ target net in LinuxCNC
 ```
 
 ## Verilogs:
- * ads1115.v
+ * ws2812.v
+ * wled_bar.v
