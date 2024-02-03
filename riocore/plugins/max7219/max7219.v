@@ -1,7 +1,10 @@
 /* verilator lint_off WIDTH */
 
 module max7219
-    #(parameter DIVIDER = 22)
+    #(
+        parameter DIVIDER = 22,
+        parameter BRIGHTNESS = 8'h04,
+     )
      (
          input clk,
          output reg mosi = 0,
@@ -20,7 +23,7 @@ module max7219
     reg [15:0] cmddata = 0;
 
     localparam INIT_DECODEMODE_NONE = {8'h09, 8'h00};
-    localparam INIT_INTENSE         = {8'h0a, 8'h04};
+    localparam INIT_INTENSE         = {8'h0a, BRIGHTNESS};
     localparam INIT_SCANLIMIT       = {8'h0b, 8'h07};
     localparam INIT_SD_NORMALOP     = {8'h0c, 8'h01};
     localparam INIT_DT_NORMALOP     = {8'h0f, 8'h01};

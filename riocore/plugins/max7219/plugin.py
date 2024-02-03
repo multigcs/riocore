@@ -35,7 +35,21 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
-        self.INFO = "7segment display"
+        self.OPTIONS = {
+            "brightness": {
+                "min": 0,
+                "max": 15,
+                "default": 15,
+                "type": int,
+            },
+            "frequency": {
+                "min": 100000,
+                "max": 10000000,
+                "default": 1000000,
+                "type": int,
+            },
+        }
+        self.INFO = "7segment display based on max7219"
         self.DESCRIPTION = ""
 
     def gateware_instances(self):
@@ -44,10 +58,9 @@ class Plugin(PluginBase):
         instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
-        # instance_parameter["WIDTH"] = self.plugin_setup.get("width", "8")
-        # example
-        # frequency = int(self.plugin_setup.get("frequency", 100))
-        # divider = self.system_setup["speed"] // frequency
-        # instance_parameter["DIVIDER"] = divider
-        # instance_parameter["DIVIDER"] = self.plugin_setup.get("divider", "100000")
+        brightness = self.plugin_setup.get("brightness", self.OPTIONS["brightness"]["default"])
+        instance_parameter["BRIGHTNESS"] = f"8'h0{brightness:x}"
+        frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
+        divider = self.system_setup["speed"] // frequency // 5
+        instance_parameter["DIVIDER"] = divider
         return instances
