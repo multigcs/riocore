@@ -40,6 +40,7 @@ class Plugin(PluginBase):
             "indexenable": {
                 "is_index_enable": True,
                 "direction": "inout",
+                # "direction": "output",
                 "bool": True,
             },
             "indexout": {

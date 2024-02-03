@@ -24,12 +24,14 @@ class Plugin(PluginBase):
         }
         self.INTERFACE = {
             "value": {
-                "size": 8,
+                "size": 24,
                 "direction": "output",
             },
         }
         self.SIGNALS = {
             "value": {
+                "min": -999999,
+                "max": 999999,
                 "direction": "output",
             },
         }

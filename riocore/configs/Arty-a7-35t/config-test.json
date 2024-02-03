@@ -31,6 +31,51 @@
     },
     "modules": [
         {
+            "slot": "PMOD_JB",
+            "module": "quadencoderz",
+            "setup": {
+                "quadencoderz": {
+                    "type": "quadencoderz",
+                    "name": "quadencoderz",
+                    "pins": {
+                        "a": {},
+                        "b": {},
+                        "z": {}
+                    },
+                    "signals": {
+                        "indexenable": {
+                            "net": "spindle.0.index-enable",
+                            "display": {
+                                "type": "none"
+                            }
+                        },
+                        "position": {
+                            "net": "spindle.0.revs",
+                            "scale": 600,
+                            "display": {
+                                "title": "REV"
+                            }
+                        },
+                        "rps": {
+                            "net": "spindle.0.speed-in",
+                            "display": {
+                                "type": "none"
+                            }
+                        },
+                        "rpm": {
+                            "display": {
+                                "section": "status",
+                                "type": "meter",
+                                "title": "RPM",
+                                "min": "0",
+                                "max": "3600"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
             "slot": "ChipKit",
             "module": "cnc-shield-v3",
             "setup": {
@@ -84,16 +129,26 @@
                     }
                 },
                 "spindle-enable": {
-                    "type": "bitout",
-                    "name": "spindle-enable",
-                    "net": "spindle.0.on",
+                    "type": "rcservo",
+                    "name": "spindle",
+                    "net": "",
                     "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                }
-                            ]
+                        "pwm": {
+                            "pin": "D12"
+                        }
+                    },
+                    "signals": {
+                        "position": {
+                            "net": "spindle.0.speed-out",
+                            "offset": -200,
+                            "scale": 0.1,
+                            "max_limit": 120,
+                            "display": {
+                                "type": "none"
+                            }
+                        },
+                        "enable": {
+                            "setp": "1"
                         }
                     }
                 },
@@ -148,8 +203,8 @@
                     "is_joint": true,
                     "axis": "X",
                     "joint": {
-                        "scale": 820.0,
-                        "max_velocity": 20.0,
+                        "scale": 3200.0,
+                        "max_velocity": 5.0,
                         "max_acceleration": 500.0,
                         "backlash": 0.1
                     }
@@ -170,265 +225,9 @@
                     }
                 }
             }
-        },
-        {
-            "slot": "PMOD_JB",
-            "module": "quadencoderz",
-            "setup": {
-                "quadencoderz": {
-                    "type": "quadencoderz",
-                    "name": "quadencoderz",
-                    "pins": {
-                        "a": {},
-                        "b": {},
-                        "z": {}
-                    },
-                    "signals": {
-                        "indexenable": {
-                            "net": "spindle.0.index-enable"
-                        },
-                        "position": {
-                            "net": "spindle.0.revs",
-                            "scale": 600
-                        },
-                        "rps": {
-                            "net": "spindle.0.speed-in"
-                        }
-                    }
-                }
-            }
         }
     ],
     "plugins": [
-        {
-            "name": "SW0",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "A8",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "SW1",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "C11",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "SW2",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "C10",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "SW3",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "A10",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "BTN0",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "D9",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "BTN1",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "C9",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "BTN2",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "B9",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "name": "BTN3",
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "B8",
-                    "modifier": [
-                        {
-                            "type": "debounce"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD0_R",
-            "pins": {
-                "bit": {
-                    "pin": "G6"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD0_G",
-            "pins": {
-                "bit": {
-                    "pin": "F6"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD0_B",
-            "pins": {
-                "bit": {
-                    "pin": "E1"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD1_R",
-            "pins": {
-                "bit": {
-                    "pin": "G3"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD1_G",
-            "pins": {
-                "bit": {
-                    "pin": "J4"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD1_B",
-            "pins": {
-                "bit": {
-                    "pin": "G4"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD2_R",
-            "pins": {
-                "bit": {
-                    "pin": "J3"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD2_G",
-            "pins": {
-                "bit": {
-                    "pin": "J2"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD2_B",
-            "pins": {
-                "bit": {
-                    "pin": "H4"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD3_R",
-            "pins": {
-                "bit": {
-                    "pin": "K1"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD3_G",
-            "pins": {
-                "bit": {
-                    "pin": "H6"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD3_B",
-            "pins": {
-                "bit": {
-                    "pin": "K2"
-                }
-            }
-        },
-        {
-            "type": "bitout",
-            "name": "LD5",
-            "pins": {
-                "bit": {
-                    "pin": "J5"
-                }
-            }
-        },
         {
             "type": "blink",
             "pins": {
@@ -456,18 +255,70 @@
                     "pullup": true
                 }
             },
-            "name": "jogencoder",
+            "name": "jog_z",
             "signals": {
                 "position": {
-                    "function": "jog.wheel",
+                    "function": "jog.wheel_z",
                     "display": {
-                        "section": "status",
-                        "title": "jog",
-                        "type": "bar"
+                        "type": "none"
                     }
                 }
             }
         },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "PMOD_JD:P4",
+                    "pullup": true
+                },
+                "b": {
+                    "pin": "PMOD_JD:P3",
+                    "pullup": true
+                }
+            },
+            "name": "jog_x",
+            "signals": {
+                "position": {
+                    "function": "jog.wheel_x",
+                    "display": {
+                        "type": "none"
+                    }
+                }
+            }
+        },
+        {
+            "name": "probe",
+            "type": "bitin",
+            "net": "motion.probe-input",
+            "pins": {
+                "bit": {
+                    "pin": "PMOD_JC:P10",
+                    "modifier": [
+                        {
+                            "type": "debounce"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+
+        {
+            "type": "uart_",
+            "pins": {
+                "rx": {
+                    "pin": "A9"
+                },
+                "tx": {
+                    "pin": "D10"
+                }
+            }
+        },
+
+
         {
             "type": "arty_mii",
             "mac": "AA:AF:FA:CC:E3:1C",

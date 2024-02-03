@@ -166,7 +166,7 @@ class PluginBase:
     def convert2interface(self):
         interface_data = self.interface_data()
         for signal_name, signal_setup in self.signals().items():
-            if signal_setup["direction"] == "output" and signal_name in interface_data:
+            if signal_setup["direction"] in {"output", "input", "inout"} and signal_name in interface_data:
                 interface_data[signal_name]["value"] = self.convert(signal_name, signal_setup, signal_setup["value"])
 
     def convert2signals(self):
@@ -312,7 +312,7 @@ class PluginBase:
 
         elif direct is True:
             for interface_name, interface_setup in self.interface_data().items():
-                if interface_setup["direction"] == "output":
+                if interface_setup["direction"] in {"output", "input", "inout"}:
                     instance_predefines.append(f"assign {pin_varname} = {interface_setup['variable']};")
                 else:
                     instance_predefines.append(f"assign {interface_setup['variable']} = {pin_varname};")

@@ -137,7 +137,7 @@ class Plugins:
                     }
                     signals[argument_name] = {
                         "size": argument_size,
-                        "direction": {"input": "output", "output": "input"}.get(argument_direction),
+                        "direction": {"input": "output", "output": "input", "input": "input"}.get(argument_direction),
                     }
             if not has_clock:
                 print("FAILED: can not find clock pin")
@@ -443,7 +443,8 @@ class Project:
             for signal_name, signal_config in plugin_instance.signals().items():
                 direction = signal_config["direction"]
                 halname = signal_config["halname"]
-                if direction == "output" and name == halname:
+                if direction in {"output", "inout"} and name == halname:
+                    print("####_", name, direction, value)
                     signal_config["value"] = value
 
     def interface_value_set(self, name, value):
@@ -451,7 +452,8 @@ class Project:
             for interface_name, interface_config in plugin_instance.interface_data().items():
                 direction = interface_config["direction"]
                 variable = interface_config["variable"]
-                if direction == "output" and name == variable:
+                if direction in {"output", "inout"} and name == variable:
+                    print("####_##", name, direction, value)
                     interface_config["value"] = value
 
     def haldata(self):
@@ -460,6 +462,7 @@ class Project:
             haldata[plugin_instance] = {
                 "input": {},
                 "output": {},
+                "inout": {},
             }
             for signal_name, signal_config in plugin_instance.signals().items():
                 direction = signal_config["direction"]
@@ -490,7 +493,7 @@ class Project:
                 variable_name = data_config["variable"]
                 variable_size = data_config["size"]
                 value = data_config["value"]
-                if data_config["direction"] == "output":
+                if data_config["direction"] in {"output", "input", "input"}:
                     if self.multiplexed_output_id == mpxid:
                         mpx_value = value
                     mpxid += 1
@@ -522,12 +525,18 @@ class Project:
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
             value = data_config["value"]
-            if data_config["direction"] == "output":
+
+            print("#", data_name, value)
+
+            if data_config["direction"] == "output" or data_config["direction"] == "inout":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
                 byte_start = self.buffer_bytes - 1 - byte_start
                 if variable_size > 1:
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = joint = list(pack("<i", int(value)))[0:byte_size]
                 else:
+
+                    print(variable_name, data_config["direction"], value)
+
                     if value == 1:
                         txdata[byte_start] |= 1 << bit_offset
                 output_pos -= variable_size

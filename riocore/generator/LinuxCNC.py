@@ -70,19 +70,24 @@ class LinuxCNC:
             "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
             "SPINDLES": 1,
             "MAX_FEED_OVERRIDE": 5.0,
+            "MIN_SPINDLE_OVERRIDE": 0.5,
+            "MAX_SPINDLE_OVERRIDE": 1.2,
+            "MIN_SPINDLE_SPEED": 120,
+            "DEFAULT_SPINDLE_SPEED": 1250,
+            "MAX_SPINDLE_SPEED": 3600,
             "MIN_SPINDLE_0_OVERRIDE": 0.5,
             "MAX_SPINDLE_0_OVERRIDE": 1.2,
-            "MIN_SPINDLE_0_SPEED": 1000,
-            "DEFAULT_SPINDLE_0_SPEED": 6000,
-            "MAX_SPINDLE_0_SPEED": 20000,
+            "MIN_SPINDLE_0_SPEED": 0,
+            "DEFAULT_SPINDLE_0_SPEED": 200,
+            "SPINDLE_INCREMENT": 10,
+            "MAX_SPINDLE_0_SPEED": 300,
+            "MAX_SPINDLE_POWER": 300,
             "MIN_LINEAR_VELOCITY": 0.0,
             "DEFAULT_LINEAR_VELOCITY": 40.0,
             "MAX_LINEAR_VELOCITY": 80.0,
             "MIN_ANGULAR_VELOCITY": 0.0,
             "DEFAULT_ANGULAR_VELOCITY": 2.5,
             "MAX_ANGULAR_VELOCITY": 5.0,
-            "SPINDLE_INCREMENT": 200,
-            "MAX_SPINDLE_POWER": 2000,
         },
         "KINS": {
             "JOINTS": None,
@@ -125,6 +130,7 @@ class LinuxCNC:
                 "G92 Z0",
                 "G92 X0 Y0",
                 "o<z_touch> call",
+                "o<x_touch> call",
             ],
         },
         "TRAJ": {
@@ -297,12 +303,17 @@ class LinuxCNC:
         cfgxml_data["status"].append("      <relief>RIDGE</relief>")
         cfgxml_data["status"].append("      <bd>2</bd>")
         if machinetype == "lathe":
-            if "X":
-                custom.append(f"net zerox halui.mdi-command-00 <= pyvcp.zerox")
-                cfgxml_data["status"] += gui_gen.draw_button("zero-x", "zerox")
             if "Z":
                 custom.append(f"net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
                 cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
+
+            if "X":
+                custom.append(f"net zerox halui.mdi-command-00 <= pyvcp.zerox")
+                cfgxml_data["status"] += gui_gen.draw_button("zero-x", "zerox")
+
+                custom.append(f"net touchx halui.mdi-command-05 <= pyvcp.touchx")
+                cfgxml_data["status"] += gui_gen.draw_button("touch-x", "touchx")
+
         else:
             if "X" in self.axis_dict and "Y" in self.axis_dict:
                 custom.append(f"net zeroxy halui.mdi-command-03 <= pyvcp.zeroxy")
@@ -326,7 +337,8 @@ class LinuxCNC:
                     userconfig = signal_config.get("userconfig")
                     scale = userconfig.get("scale")
                     offset = userconfig.get("offset")
-                    if not netname:
+                    setp = userconfig.get("setp")
+                    if not netname and setp is not None:
                         if scale:
                             custom.append(f"setp rio.{halname}-scale {scale}")
                         if offset:
@@ -351,6 +363,7 @@ class LinuxCNC:
                         self.rio_functions[rio_function[0]][rio_function[1]] = halname
 
         if "jog" in self.rio_functions:
+            custom.append("")
             custom.append("# Jogging")
             speed_selector = False
             axis_selector = False
@@ -360,7 +373,7 @@ class LinuxCNC:
             position_display = False
             for function, halname in self.rio_functions["jog"].items():
                 self.used_signals[halname] = f"riof.jog.{function}"
-                if function in {"wheel"}:
+                if function.startswith("wheel"):
                     custom.append(f"net {self.used_signals[halname]:16s} <= rio.{halname}-s32")
                 else:
                     custom.append(f"net {self.used_signals[halname]:16s} <= rio.{halname}")
@@ -390,6 +403,21 @@ class LinuxCNC:
                         custom.append(f"net riof.jog.wheel => joint.{joint}.jog-counts")
                         custom.append(f"net jog_en{laxis} joint.{joint}.jog-enable <= axisui.jog.{laxis}")
                 custom.append("")
+            else:
+                for axis_name, joints in self.axis_dict.items():
+                    laxis = axis_name.lower()
+                    fname = f"wheel_{laxis}"
+                    if fname in self.rio_functions["jog"]:
+                        custom.append(f"setp axis.{laxis}.jog-vel-mode 1")
+                        custom.append(f"setp axis.{laxis}.jog-scale 0.05")
+                        custom.append(f"setp axis.{laxis}.jog-enable 1")
+                        custom.append(f"net riof.jog.{fname} => axis.{laxis}.jog-counts")
+                        for joint, joint_setup in joints.items():
+                            custom.append(f"setp joint.{joint}.jog-vel-mode 1")
+                            custom.append(f"setp joint.{joint}.jog-scale 0.05")
+                            custom.append(f"setp joint.{joint}.jog-enable 1")
+                            custom.append(f"net riof.jog.{fname} => joint.{joint}.jog-counts")
+
             if speed_selector:
                 custom.append("loadrt mux2 names=riof.jog.speed_mux")
                 custom.append("addf riof.jog.speed_mux servo-thread")
@@ -462,6 +490,7 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     userconfig = signal_config.get("userconfig", {})
                     boolean = signal_config.get("bool")
+                    setp = userconfig.get("setp")
                     displayconfig = userconfig.get("display", {})
                     vmin = signal_config.get("min", -1000)
                     vmax = signal_config.get("max", 1000)
@@ -470,31 +499,34 @@ class LinuxCNC:
                     if "max" not in displayconfig:
                         displayconfig["max"] = vmax
 
-                    if netname:
+                    if netname or setp:
                         section = displayconfig.get("section", "status")
                         if not boolean:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
-                        custom.append(f"net rios.{halname} => pyvcp.{halname}")
+                        if dtype != "none":
+                            custom.append(f"net rios.{halname} => pyvcp.{halname}")
                     elif direction == "input":
                         section = displayconfig.get("section", "inputs")
                         if not boolean:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
-                        custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
+                        if dtype != "none":
+                            custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
                     elif direction == "output":
                         section = displayconfig.get("section", "outputs")
                         if not boolean:
                             dtype = displayconfig.get("type", "scale")
                             if dtype == "scale":
                                 custom.append(f"net rios.{halname} <= pyvcp.{halname}-f => rio.{halname}")
-                            else:
+                            elif dtype != "none":
                                 custom.append(f"net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
                         else:
                             dtype = displayconfig.get("type", "checkbutton")
-                            custom.append(f"net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
+                            if dtype != "none":
+                                custom.append(f"net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
 
                     if hasattr(gui_gen, f"draw_{dtype}"):
                         cfgxml_data[section] += getattr(gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
@@ -643,6 +675,7 @@ class LinuxCNC:
                     userconfig = signal_config.get("userconfig", {})
                     scale = userconfig.get("scale")
                     offset = userconfig.get("offset")
+                    setp = userconfig.get("setp")
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     if netname:
@@ -658,6 +691,9 @@ class LinuxCNC:
                         elif direction == "output":
                             output.append(f"net rios.{halname} <= {netname}")
                             output.append(f"net rios.{halname} => rio.{halname}")
+                    elif setp is not None:
+                        print("setp", setp)
+                        output.append(f"setp rio.{halname} {setp}")
 
         output.append("")
 
@@ -817,13 +853,14 @@ class LinuxCNC:
                 variable_size = data_config["size"]
                 if data_config["direction"] == "output":
                     convert_parameter = []
-
                     output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
-
                     for signal_name, signal_config in plugin_instance.signals().items():
                         varname = signal_config["varname"]
                         var_prefix = signal_config["var_prefix"]
                         boolean = signal_config.get("bool")
+                        userconfig = signal_config.get("userconfig", {})
+                        min_limit = userconfig.get("min_limit")
+                        max_limit = userconfig.get("max_limit")
 
                         if data_name.upper() == varname.split("_")[-1].strip():
                             source = varname.split()[-1].strip("*")
@@ -831,6 +868,14 @@ class LinuxCNC:
                                 output.append(f"    float value = *data->{source};")
                                 output.append(f"    value = value * *data->{source}_SCALE;")
                                 output.append(f"    value = value + *data->{source}_OFFSET;")
+                                if min_limit is not None:
+                                    output.append(f"    if (value < {min_limit}) {{")
+                                    output.append(f"        value = {min_limit};")
+                                    output.append("    }")
+                                if max_limit is not None:
+                                    output.append(f"    if (value > {max_limit}) {{")
+                                    output.append(f"        value = {max_limit};")
+                                    output.append("    }")
                                 output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
                             else:
                                 output.append(f"    bool value = *data->{source};")
@@ -841,7 +886,6 @@ class LinuxCNC:
                                     output.append(f"       value = 0;")
                                     output.append(f"       *data->{var_prefix}_INDEX_RESET = 0;")
                                     output.append("    }")
-
                             output.append(f"    data->{variable_name} = value;")
                             data_config["plugin_instance"] = plugin_instance
                     output.append("}")
