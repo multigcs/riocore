@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+#
+#
+
+import argparse
+import os
+
+import riocore
+
+riocore_path = os.path.dirname(riocore.__file__)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--list', "-l", help="list all plugins", default=False, action='store_true')
+parser.add_argument("plugin", help="plugin", nargs="?", type=str, default=None)
+args = parser.parse_args()
+
+if args.list:
+    plugins = riocore.Plugins()
+    for plugin in plugins.list():
+        plugins.load_plugins({"plugins": [{"type": plugin["name"]}]})
+
+    print("Interfaces:")
+    print("")
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "interface":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print("")
+
+    print("Expansions:")
+    print("")
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "expansion":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print("")
+
+    print("Joints:")
+    print("")
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "joint":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print("")
+
+    print("IO:")
+    print("")
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "io":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print("")
+
+elif args.plugin:
+    plugins = riocore.Plugins()
+    plugins.info(args.plugin)

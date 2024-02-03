@@ -4,6 +4,7 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "stepper"
+        self.TYPE = "joint"
         self.VERILOGS = ["stepper.v"]
         self.PINDEFAULTS = {
             "a1": {

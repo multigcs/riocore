@@ -17,6 +17,7 @@ class Plugin(PluginBase):
                 "pullup": False,
             },
             "z": {
+                "description": "index pin",
                 "direction": "input",
                 "invert": False,
                 "pullup": False,
@@ -40,7 +41,6 @@ class Plugin(PluginBase):
             "indexenable": {
                 "is_index_enable": True,
                 "direction": "inout",
-                # "direction": "output",
                 "bool": True,
             },
             "indexout": {

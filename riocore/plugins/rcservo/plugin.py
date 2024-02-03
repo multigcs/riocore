@@ -4,6 +4,7 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rcservo"
+        self.TYPE = "joint"
         self.VERILOGS = ["rcservo.v"]
         self.PINDEFAULTS = {
             "pwm": {

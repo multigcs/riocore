@@ -4,6 +4,7 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "w5500"
+        self.TYPE = "interface"
         self.VERILOGS = ["w5500.v"]
         self.PINDEFAULTS = {
             "mosi": {
@@ -27,7 +28,6 @@ class Plugin(PluginBase):
                 "pullup": False,
             },
         }
-        self.TYPE = "interface"
         self.OPTIONS = {
             "mac": {
                 "default": "AA:AF:FA:CC:E3:1C",

@@ -126,27 +126,27 @@ class PluginBase:
         if "name" not in self.OPTIONS:
             self.OPTIONS["name"] = {
                 "type": str,
-                "help": "name of this plugin instance",
+                "description": "name of this plugin instance",
             }
 
         if self.INTERFACE and "net" not in self.OPTIONS:
             self.OPTIONS["net"] = {
                 "type": str,
-                "help": "target net in LinuxCNC",
+                "description": "target net in LinuxCNC",
             }
 
         if self.TYPE == "joint":
             if "axis" not in self.OPTIONS:
                 self.OPTIONS["axis"] = {
                     "type": "select",
+                    "description": "axis name (X,Y,Z,...)",
                     "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
-                    "help": "axis name",
                 }
             if "is_joint" not in self.OPTIONS:
                 self.OPTIONS["is_joint"] = {
                     "type": bool,
                     "default": True,
-                    "help": "configure as joint",
+                    "description": "configure as joint",
                 }
 
         self.instances_name = f"{self.NAME}{self.plugin_id}"
@@ -340,3 +340,151 @@ class PluginBase:
             basic_config["pins"][pin_name] = {"pin": f"{pn}"}
             pn += 1
         return basic_config
+
+    def full_config(self):
+        full_config = {
+            "type": self.NAME,
+        }
+
+        for option_name, option_setup in self.OPTIONS.items():
+            default = ""
+            if option_setup["type"] == int:
+                default = 0
+            elif option_setup["type"] == float:
+                default = 0.0
+            elif option_setup["type"] == bool:
+                default = False
+            full_config[option_name] = option_setup.get("default", default)
+
+        pn = 0
+        full_config["pins"] = {}
+        for pin_name, pin_setup in self.PINDEFAULTS.items():
+            full_config["pins"][pin_name] = {"pin": f"{pn}", "modifiers": []}
+            if pin_setup["direction"] == "input":
+                full_config["pins"][pin_name]["modifiers"].append({"type": "debounce"})
+                if pn > 0:
+                    full_config["pins"][pin_name]["modifiers"].append({"type": "invert"})
+            else:
+                full_config["pins"][pin_name]["modifiers"].append({"type": "invert"})
+            pn += 1
+
+        full_config["signals"] = {}
+        for signal_name, signal_setup in self.SIGNALS.items():
+            full_config["signals"][signal_name] = {
+                "net": "xxx.yyy.zzz",
+                "function": "rio.xxx",
+            }
+            if signal_setup.get("bool", False) is False:
+                full_config["signals"][signal_name]["scale"] = 100.0
+                full_config["signals"][signal_name]["offset"] = 0.0
+
+            full_config["signals"][signal_name]["display"] = {
+                "title": signal_name,
+                "section": "status",
+                "type": "meter",
+            }
+
+            if signal_setup["direction"] == "input":
+                full_config["signals"][signal_name]["display"]["section"] = "inputs"
+                if signal_setup.get("bool", False) is True:
+                    full_config["signals"][signal_name]["display"]["type"] = "led"
+            elif signal_setup["direction"] == "output":
+                full_config["signals"][signal_name]["display"]["section"] = "outputs"
+                if signal_setup.get("bool", False) is True:
+                    full_config["signals"][signal_name]["display"]["type"] = "checkbox"
+                else:
+                    full_config["signals"][signal_name]["display"]["type"] = "scale"
+
+        return full_config
+
+    def show_pins(self):
+        output = []
+        for pin_name, pin_setup in self.PINDEFAULTS.items():
+            direction = pin_setup.get("direction")
+            pullup = pin_setup.get("pullup", False)
+            description = pin_setup.get("description")
+
+            output.append(f"### {pin_name}:")
+            if description:
+                output.append(description)
+            output.append("")
+
+            output.append(f" * direction: {direction}")
+            output.append(f" * pullup: {pullup}")
+
+            output.append("")
+        return "\n".join(output)
+
+    def show_options(self):
+        output = []
+        for option_name, option_setup in self.OPTIONS.items():
+            vtype = option_setup.get("type")
+            description = option_setup.get("description")
+            vmin = option_setup.get("min")
+            vmax = option_setup.get("max")
+            unit = option_setup.get("unit")
+            if not isinstance(vtype, str):
+                vtype = vtype.__name__
+
+            output.append(f"### {option_name}:")
+            if description:
+                output.append(description)
+            output.append("")
+
+            output.append(f" * type: {vtype}")
+            if vmin is not None:
+                output.append(f" * min: {vmin}")
+            if vmax is not None:
+                output.append(f" * max: {vmax}")
+            output.append(f" * default: {option_setup.get('default')}")
+            if unit is not None:
+                output.append(f" * unit: {unit}")
+
+            output.append("")
+        return "\n".join(output)
+
+    def show_signals(self):
+        output = []
+        for signal_name, signal_setup in self.SIGNALS.items():
+            isbool = signal_setup.get("bool", False)
+            direction = signal_setup.get("direction")
+            description = signal_setup.get("description")
+            vmin = signal_setup.get("min")
+            vmax = signal_setup.get("max")
+
+            output.append(f"### {signal_name}:")
+            if description:
+                output.append(description)
+            output.append("")
+
+            if isbool:
+                output.append(f" * type: bit")
+            else:
+                output.append(f" * type: float")
+            output.append(f" * direction: {direction}")
+            if vmin is not None:
+                output.append(f" * min: {vmin}")
+            if vmax is not None:
+                output.append(f" * max: {vmax}")
+
+            output.append("")
+
+        return "\n".join(output)
+
+    def show_interfaces(self):
+        output = []
+        for interface_name, interface_setup in self.INTERFACE.items():
+            size = interface_setup.get("size")
+            direction = interface_setup.get("direction")
+            description = interface_setup.get("description")
+
+            output.append(f"### {interface_name}:")
+            if description:
+                output.append(description)
+            output.append("")
+
+            output.append(f" * size: {size} bit")
+            output.append(f" * direction: {direction}")
+
+            output.append("")
+        return "\n".join(output)

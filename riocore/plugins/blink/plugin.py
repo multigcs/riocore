@@ -15,7 +15,7 @@ class Plugin(PluginBase):
                 "default": 1.0,
                 "type": float,
                 "unit": "Hz",
-                "help": "blink frequency in Hz",
+                "description": "blink frequency in Hz",
             },
         }
         self.INFO = "blinking output pin"

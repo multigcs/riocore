@@ -4,6 +4,7 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "pwmout"
+        self.TYPE = "joint"
         self.VERILOGS = ["pwmout.v"]
         self.PINDEFAULTS = {
             "pwm": {
@@ -41,7 +42,7 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        if "dir" in self.plugin_setup["pins"]:
+        if "dir" in self.plugin_setup.get("pins", {"dir": {}}):
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
         self.INFO = "pwm output"
         self.DESCRIPTION = ""

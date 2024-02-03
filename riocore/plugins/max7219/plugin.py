@@ -8,17 +8,14 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "mosi": {
                 "direction": "output",
-                "invert": False,
                 "pullup": False,
             },
             "sclk": {
                 "direction": "output",
-                "invert": False,
                 "pullup": False,
             },
             "sel": {
                 "direction": "output",
-                "invert": False,
                 "pullup": False,
             },
         }
@@ -41,12 +38,14 @@ class Plugin(PluginBase):
                 "max": 15,
                 "default": 15,
                 "type": int,
+                "description": "display brightness",
             },
             "frequency": {
                 "min": 100000,
                 "max": 10000000,
                 "default": 1000000,
                 "type": int,
+                "description": "interface clock frequency",
             },
         }
         self.INFO = "7segment display based on max7219"

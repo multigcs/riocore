@@ -25,21 +25,42 @@ class Plugins:
         return plugins
 
     def info(self, plugin_name):
-        print(plugin_name)
         self.load_plugins({"plugins": [{"type": plugin_name}]})
         plugin = self.plugin_instances[0]
-        print(plugin.NAME)
-        print(plugin.VERILOGS)
-        print(plugin.PINDEFAULTS)
+
+        print(f"# {plugin.NAME}")
+        print(plugin.DESCRIPTION)
         print("")
-        print(plugin.INFO)
-        print("")
-        print("## basic example:")
+        if plugin.INFO:
+            print(plugin.INFO)
+            print("")
+        print("## Basic-Example:")
         print("```")
         print(json.dumps(plugin.basic_config(), indent=4))
         print("```")
         print("")
-        print(plugin.DESCRIPTION)
+        print("## Pins:")
+        print(plugin.show_pins())
+        print("")
+        print("## Options:")
+        print(plugin.show_options())
+        print("")
+        print("## Signals:")
+        print(plugin.show_signals())
+        print("")
+        print("## Interfaces:")
+        print(plugin.show_interfaces())
+        print("")
+        print("## Full-Example:")
+        print("```")
+        print(json.dumps(plugin.full_config(), indent=4))
+        print("```")
+        print("")
+        if plugin.VERILOGS:
+            print("## Verilogs:")
+            for vfile in plugin.VERILOGS:
+                print(f" * {vfile}")
+            print("")
 
     def load_plugin(self, plugin_id, plugin_config, system_setup=None):
         plugin_type = plugin_config["type"]
