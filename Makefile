@@ -13,6 +13,9 @@ check:
 verilator:
 	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only
 
+plugin_docs:
+	PYTHONPATH=. bin/rio-plugininfo -g
+
 dist:
 	python3 setup.py sdist
 
