@@ -101,37 +101,48 @@
                 "home-x": {
                     "type": "bitin",
                     "name": "home-x",
-                    "net": "joint.1.home-sw-in",
                     "pins": {
                         "bit": {
                             "pullup": true
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                          "net": "joint.1.home-sw-in"
                         }
                     }
                 },
                 "home-y": {
                     "type": "bitin",
                     "name": "home-z",
-                    "net": "joint.0.home-sw-in",
                     "pins": {
                         "bit": {
                             "pullup": true
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                          "net": "joint.0.home-sw-in"
                         }
                     }
                 },
                 "home-z": {
                     "type": "bitin",
                     "name": "home-none",
-                    "net": "",
                     "pins": {
                         "bit": {
                             "pullup": true
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                          "net": ""
                         }
                     }
                 },
                 "spindle-enable": {
                     "type": "rcservo",
                     "name": "spindle",
-                    "net": "",
                     "pins": {
                         "pwm": {
                             "pin": "D12"
@@ -290,7 +301,6 @@
         {
             "name": "probe",
             "type": "bitin",
-            "net": "motion.probe-input",
             "pins": {
                 "bit": {
                     "pin": "PMOD_JC:P10",
@@ -302,6 +312,11 @@
                             "type": "invert"
                         }
                     ]
+                }
+            },
+            "signals": {
+                "bit": {
+                  "net": "motion.probe-input"
                 }
             }
         },

@@ -24,40 +24,51 @@
     {
       "type": "bitin",
       "name": "home-x",
-      "net": "joint.0.home-sw-in",
       "pins": {
         "bit": {
           "pullup": true,
           "pin": "D9"
         }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.0.home-sw-in"
+          }
       }
     },
     {
       "type": "bitin",
       "name": "home-y",
-      "net": "joint.1.home-sw-in",
       "pins": {
         "bit": {
           "pullup": true,
           "pin": "D10"
         }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.1.home-sw-in"
+          }
       }
     },
     {
       "type": "bitin",
       "name": "home-z",
-      "net": "joint.2.home-sw-in",
       "pins": {
         "bit": {
           "pullup": true,
           "pin": "D11"
         }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.2.home-sw-in"
+          }
       }
     },
     {
       "type": "bitout",
       "name": "spindle-enable",
-      "net": "spindle.0.on",
       "pins": {
         "bit": {
           "pin": "D12",
@@ -67,6 +78,11 @@
             }
           ]
         }
+      },
+      "signals": {
+          "bit": {
+            "net": "spindle.0.on"
+          }
       }
     },
     {
