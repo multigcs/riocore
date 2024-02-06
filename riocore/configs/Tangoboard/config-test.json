@@ -7,7 +7,6 @@
     {
       "type": "bitout",
       "name": "spindle-enable",
-      "net": "spindle.0.on",
       "pins": {
         "bit": {
           "pin": "38",
@@ -16,6 +15,11 @@
               "type": "invert"
             }
           ]
+        }
+      },
+      "signals": {
+        "bit": {
+          "net": "spindle.0.on"
         }
       }
     },
@@ -61,7 +65,6 @@
     {
       "type": "bitin",
       "name": "home-x",
-      "net": "joint.0.home-sw-in",
       "pins": {
         "bit": {
           "pin": "26",
@@ -72,12 +75,16 @@
             }
           ]
         }
+      },
+      "signals": {
+        "bit": {
+          "net": "joint.0.home-sw-in"
+        }
       }
     },
     {
       "type": "bitin",
       "name": "home-y",
-      "net": "joint.1.home-sw-in",
       "pins": {
         "bit": {
           "pin": "27",
@@ -88,12 +95,16 @@
             }
           ]
         }
+      },
+      "signals": {
+        "bit": {
+          "net": "joint.1.home-sw-in"
+        }
       }
     },
     {
       "type": "bitin",
       "name": "home-z",
-      "net": "joint.2.home-sw-in",
       "pins": {
         "bit": {
           "pin": "28",
@@ -104,12 +115,16 @@
             }
           ]
         }
+      },
+      "signals": {
+        "bit": {
+          "net": "joint.2.home-sw-in"
+        }
       }
     },
     {
       "type": "bitin",
       "name": "tool-probe",
-      "net": "motion.probe-input",
       "pins": {
         "bit": {
           "pin": "29",
@@ -119,6 +134,11 @@
               "type": "invert"
             }
           ]
+        }
+      },
+      "signals": {
+        "bit": {
+          "net": "motion.probe-input"
         }
       }
     },
@@ -180,7 +200,6 @@
     },
     {
       "name": "spindle-speed",
-      "net": "spindle.0.speed-out",
       "min": 0,
       "max": 10000,
       "type": "pwmout",
@@ -192,6 +211,11 @@
               "type": "invert"
             }
           ]
+        }
+      },
+      "signals": {
+        "dty": {
+          "net": "spindle.0.speed-out"
         }
       }
     },
