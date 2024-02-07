@@ -322,6 +322,33 @@
         },
 
         {
+            "type": "multi_7seg_display",
+            "pins": {
+                "tx": {
+                    "pin": "PMOD_JA:P4"
+                }
+            },
+            "signals": {
+                "value1": {
+                  "net": "spindle.0.speed-in",
+                  "scale": 6000
+                },
+                "value2": {
+                  "net": "spindle.0.revs",
+                  "scale": 100
+                },
+                "value3": {
+                  "net": "halui.axis.z.pos-relative",
+                  "scale": 100
+                },
+                "value4": {
+                  "net": "halui.axis.x.pos-relative",
+                  "scale": 100
+                }
+            }
+        },
+
+        {
             "type": "uart_",
             "pins": {
                 "rx": {

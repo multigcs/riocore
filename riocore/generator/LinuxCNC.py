@@ -151,6 +151,7 @@ class LinuxCNC:
 
     def __init__(self, project):
         self.used_signals = {}
+        self.networks = {}
         self.project = project
         self.base_path = f"{self.project.config['output_path']}/LinuxCNC"
         self.component_path = f"{self.base_path}/Component"
@@ -679,6 +680,12 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     if netname:
+                        network = f"rios.{netname.replace('.', '_')}"
+                        if network not in self.networks:
+                            self.networks[network] = {
+                                "in": "",
+                                "out": [],
+                            }
                         if scale:
                             output.append(f"setp rio.{halname}-scale {scale}")
                         if offset:
@@ -686,14 +693,20 @@ class LinuxCNC:
                         if direction == "inout":
                             output.append(f"net rios.{halname} rio.{halname} <=> {netname}")
                         elif direction == "input":
-                            output.append(f"net rios.{halname} <= rio.{halname}")
-                            output.append(f"net rios.{halname} => {netname}")
+                            self.networks[network]["in"] = f"rio.{halname}"
+                            self.networks[network]["out"].append(netname)
                         elif direction == "output":
-                            output.append(f"net rios.{halname} <= {netname}")
-                            output.append(f"net rios.{halname} => rio.{halname}")
+                            self.networks[network]["in"] = netname
+                            self.networks[network]["out"].append(f"rio.{halname}")
                     elif setp is not None:
                         print("setp", setp)
                         output.append(f"setp rio.{halname} {setp}")
+
+        for network, net in self.networks.items():
+            if net["in"] and net["out"]:
+                output.append(f"net {network} <= {net['in']}")
+                for out in net["out"]:
+                    output.append(f"net {network} => {out}")
 
         output.append("")
 

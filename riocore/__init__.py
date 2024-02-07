@@ -467,7 +467,6 @@ class Project:
                 direction = signal_config["direction"]
                 halname = signal_config["halname"]
                 if direction in {"output", "inout"} and name == halname:
-                    print("####_", name, direction, value)
                     signal_config["value"] = value
 
     def interface_value_set(self, name, value):
@@ -476,7 +475,6 @@ class Project:
                 direction = interface_config["direction"]
                 variable = interface_config["variable"]
                 if direction in {"output", "inout"} and name == variable:
-                    print("####_##", name, direction, value)
                     interface_config["value"] = value
 
     def haldata(self):
