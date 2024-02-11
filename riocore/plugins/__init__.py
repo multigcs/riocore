@@ -123,6 +123,16 @@ class PluginBase:
         self.plugin_setup = plugin_setup
         self.setup()
 
+        if self.TYPE == "frameio":
+            self.timeout = 100
+            self.send_counter = 255
+            self.rxframe_len = 0
+            self.rxframe_id = 0
+            self.txframe_id_ack = 0
+            self.txframe_id = 0
+            self.txdata = 0
+            self.frame = b""
+
         if "name" not in self.OPTIONS:
             self.OPTIONS["name"] = {
                 "type": str,
@@ -164,16 +174,51 @@ class PluginBase:
         return self.VERILOGS
 
     def convert2interface(self):
-        interface_data = self.interface_data()
-        for signal_name, signal_setup in self.signals().items():
-            if signal_setup["direction"] in {"output", "input", "inout"} and signal_name in interface_data:
-                interface_data[signal_name]["value"] = self.convert(signal_name, signal_setup, signal_setup["value"])
+        if self.TYPE == "frameio":
+            frame_ack = False
+            frame_timeout = False
+            if self.txframe_id_ack == self.txframe_id:
+                frame_ack = True
+            if self.send_counter >= self.timeout:
+                frame_timeout = True
+            else:
+                self.send_counter += 1
+            if frame_ack or frame_timeout:
+                self.send_counter = 0
+                if self.txframe_id < 255:
+                    self.txframe_id += 1
+                else:
+                    self.txframe_id = 0
+                txdata = self.frameio_tx(frame_ack, frame_timeout)
+                if txdata is not None:
+                    frame_len = len(txdata) + 1
+                    data = [0] * (self.system_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]) // 8)
+                    for n, val in enumerate(txdata):
+                        data[n + 2] = val
+                    self.frame = bytes([self.txframe_id, frame_len] + data)
+
+            self.INTERFACE["txdata"]["value"] = self.frame
+        else:
+            interface_data = self.interface_data()
+            for signal_name, signal_setup in self.signals().items():
+                if signal_setup["direction"] in {"output", "input", "inout"} and signal_name in interface_data:
+                    interface_data[signal_name]["value"] = self.convert(signal_name, signal_setup, signal_setup["value"])
 
     def convert2signals(self):
-        interface_data = self.interface_data()
-        for signal_name, signal_setup in self.signals().items():
-            if signal_setup["direction"] == "input" and signal_name in interface_data:
-                signal_setup["value"] = self.convert(signal_name, signal_setup, interface_data[signal_name]["value"])
+        if self.TYPE == "frameio":
+            self.txframe_id_ack = self.INTERFACE["rxdata"]["value"][0]
+            rxframe_id = self.INTERFACE["rxdata"]["value"][1]
+            rxframe_len = self.INTERFACE["rxdata"]["value"][2]
+            if rxframe_id != self.rxframe_id:
+                self.rxframe_id = rxframe_id
+                self.rxframe_len = rxframe_len
+                rxdata = list(reversed(self.INTERFACE["rxdata"]["value"][3 : rxframe_len + 3]))
+                self.frameio_rx(rxframe_id, rxframe_len, rxdata)
+        else:
+            interface_data = self.interface_data()
+            for signal_name, signal_setup in self.signals().items():
+                if signal_setup["direction"] == "input" and signal_name in interface_data:
+                    signal_setup["value"] = self.convert(signal_name, signal_setup, interface_data[signal_name]["value"])
 
     def convert(self, signal_name, signal_setup, value):
         return value
@@ -323,9 +368,6 @@ class PluginBase:
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         return instances
-
-    def convert_c(self, signal_name, signal_setup):
-        return ""
 
     def option_default(self, name):
         return self.OPTIONS[name]["default"]

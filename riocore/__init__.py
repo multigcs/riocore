@@ -524,7 +524,7 @@ class Project:
             value = mpx_value
             byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
             byte_start = self.buffer_bytes - 1 - byte_start
-            txdata[byte_start - (byte_size - 1) : byte_start + 1] = joint = list(pack("<i", int(value)))[0:byte_size]
+            txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
             output_pos -= variable_size
 
             variable_name = "MULTIPLEXER_OUTPUT_ID"
@@ -532,7 +532,7 @@ class Project:
             value = self.multiplexed_output_id
             byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
             byte_start = self.buffer_bytes - 1 - byte_start
-            txdata[byte_start - (byte_size - 1) : byte_start + 1] = joint = list(pack("<i", int(value)))[0:byte_size]
+            txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
             output_pos -= variable_size
             if self.multiplexed_output_id < self.multiplexed_output - 1:
                 self.multiplexed_output_id += 1
@@ -546,18 +546,14 @@ class Project:
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
             value = data_config["value"]
-
-            print("#", data_name, value)
-
             if data_config["direction"] == "output" or data_config["direction"] == "inout":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
                 byte_start = self.buffer_bytes - 1 - byte_start
-                if variable_size > 1:
-                    txdata[byte_start - (byte_size - 1) : byte_start + 1] = joint = list(pack("<i", int(value)))[0:byte_size]
+                if plugin_instance.TYPE == "frameio":
+                    txdata[byte_start - (byte_size - 1) : byte_start + 1] = value
+                elif variable_size > 1:
+                    txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
                 else:
-
-                    print(variable_name, data_config["direction"], value)
-
                     if value == 1:
                         txdata[byte_start] |= 1 << bit_offset
                 output_pos -= variable_size
@@ -609,7 +605,11 @@ class Project:
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
                 byte_start = self.buffer_bytes - 1 - byte_start
-                if variable_size > 1:
+
+                if plugin_instance.TYPE == "frameio":
+                    value = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+                    # print(value)
+                elif variable_size > 1:
                     byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
                     if len(byte_pack) < 4:
                         byte_pack += [0] * (4 - len(byte_pack))

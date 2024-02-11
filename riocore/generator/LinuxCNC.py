@@ -853,9 +853,7 @@ class LinuxCNC:
                             f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_RESET), comp_id, "%s.{halname}-reset", prefix) != 0) error_handler(retval);'
                         )
                         output.append(f"    *data->{var_prefix}_INDEX_RESET = 0;")
-                        output.append(
-                            f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_WAIT), comp_id, "%s.{halname}-wait", prefix) != 0) error_handler(retval);'
-                        )
+                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_WAIT), comp_id, "%s.{halname}-wait", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{var_prefix}_INDEX_WAIT = 0;")
 
         output.append("}")
