@@ -797,7 +797,10 @@ class LinuxCNC:
         for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
-            if variable_size > 1:
+            variable_bytesize = variable_size // 8
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"    uint8_t {variable_name}[{variable_bytesize}];")
+            elif variable_size > 1:
                 output.append(f"    int{variable_size if variable_size != 24 else 32}_t {variable_name};")
             else:
                 output.append(f"    bool {variable_name};")
@@ -812,7 +815,10 @@ class LinuxCNC:
         for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
-            if variable_size > 1:
+            variable_bytesize = variable_size // 8
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"    memset(&data->{variable_name}, 0, {variable_bytesize});")
+            elif variable_size > 1:
                 output.append(f"    data->{variable_name} = 0;")
             else:
                 output.append(f"    data->{variable_name} = 0;")
@@ -864,158 +870,225 @@ class LinuxCNC:
         output = []
         output.append("// output: SIGOUT -> calc -> VAROUT -> txBuffer")
         for plugin_instance in self.project.plugin_instances:
+
+            invar = None
+            for data_name, data_config in plugin_instance.interface_data().items():
+                if data_config["direction"] == "input":
+                    variable_name = data_config["variable"]
+                    invar = variable_name
+
             for data_name, data_config in plugin_instance.interface_data().items():
                 variable_name = data_config["variable"]
                 variable_size = data_config["size"]
+                variable_bytesize = variable_size // 8
                 if data_config["direction"] == "output":
                     convert_parameter = []
-                    output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
-                    for signal_name, signal_config in plugin_instance.signals().items():
-                        varname = signal_config["varname"]
-                        var_prefix = signal_config["var_prefix"]
-                        boolean = signal_config.get("bool")
-                        userconfig = signal_config.get("userconfig", {})
-                        min_limit = userconfig.get("min_limit")
-                        max_limit = userconfig.get("max_limit")
 
-                        if data_name.upper() == varname.split("_")[-1].strip():
-                            source = varname.split()[-1].strip("*")
-                            if variable_size > 1:
-                                output.append(f"    float value = *data->{source};")
-                                output.append(f"    value = value * *data->{source}_SCALE;")
-                                output.append(f"    value = value + *data->{source}_OFFSET;")
-                                if min_limit is not None:
-                                    output.append(f"    if (value < {min_limit}) {{")
-                                    output.append(f"        value = {min_limit};")
-                                    output.append("    }")
-                                if max_limit is not None:
-                                    output.append(f"    if (value > {max_limit}) {{")
-                                    output.append(f"        value = {max_limit};")
-                                    output.append("    }")
-                                output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
-                            else:
-                                output.append(f"    bool value = *data->{source};")
-                                output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
-                                if signal_config.get("is_index_enable"):
-                                    output.append("    // force resetting index pin")
-                                    output.append(f"    if (data->{variable_name} != value && value == 1) {{")
-                                    output.append(f"        *data->{var_prefix}_INDEX_WAIT = 1;")
-                                    output.append("    }")
-                                    output.append(f"    if (*data->{var_prefix}_INDEX_RESET == 1) {{")
-                                    output.append("       value = 0;")
-                                    output.append(f"       *data->{var_prefix}_INDEX_RESET = 0;")
-                                    output.append("    }")
-                            output.append(f"    data->{variable_name} = value;")
-                            data_config["plugin_instance"] = plugin_instance
-                    output.append("}")
-                    output.append("")
+                    if plugin_instance.TYPE == "frameio":
+                        output.append(f"void convert_frame_{plugin_instance.instances_name}_output(data_t *data) {{")
+                        output.append(f"    static float timeout = {plugin_instance.TIMEOUT};")
+                        output.append("    static long frame_stamp_last = 0;")
+                        output.append("    static uint8_t frame_id = 0;")
+                        output.append(f"    static uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
+                        output.append("    float frame_time = 0.0;")
+                        output.append("    uint8_t frame_id_ack = 0;")
+                        output.append("    uint8_t frame_timeout = 0;")
+                        output.append("    uint8_t frame_ack = 0;")
+                        output.append("    uint8_t frame_len = 0;")
+                        output.append("")
+                        output.append("    frame_time = (float)(stamp_last - frame_stamp_last) / 1000000.0;")
+                        output.append("    if (frame_time > timeout) {")
+                        output.append("        frame_timeout = 1;")
+                        output.append("    }")
+                        output.append("")
+                        output.append(f"    frame_id_ack = data->{invar}[0];")
+                        output.append("    if (frame_id_ack == frame_id) {")
+                        output.append("        frame_ack = 1;")
+                        output.append("    }")
+                        output.append("")
+                        output.append("    if (frame_timeout == 1 || frame_ack == 1) {")
+                        output.append("        frame_id += 1;")
+                        output.append("        " + plugin_instance.frameio_tx_c().strip())
+                        output.append("")
+                        output.append("        frame_data[0] = frame_id;")
+                        output.append("        frame_data[1] = frame_len;")
+                        output.append("        frame_stamp_last = stamp_last;")
+                        output.append("    }")
+                        output.append("")
+                        output.append(f"    memcpy(&data->{variable_name}, &frame_data, {variable_bytesize});")
+                        output.append("}")
+                        output.append("")
+
+                    else:
+                        output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
+                        for signal_name, signal_config in plugin_instance.signals().items():
+                            varname = signal_config["varname"]
+                            var_prefix = signal_config["var_prefix"]
+                            boolean = signal_config.get("bool")
+                            userconfig = signal_config.get("userconfig", {})
+                            min_limit = userconfig.get("min_limit")
+                            max_limit = userconfig.get("max_limit")
+
+                            if data_name.upper() == varname.split("_")[-1].strip():
+                                source = varname.split()[-1].strip("*")
+                                if variable_size > 1:
+                                    output.append(f"    float value = *data->{source};")
+                                    output.append(f"    value = value * *data->{source}_SCALE;")
+                                    output.append(f"    value = value + *data->{source}_OFFSET;")
+                                    if min_limit is not None:
+                                        output.append(f"    if (value < {min_limit}) {{")
+                                        output.append(f"        value = {min_limit};")
+                                        output.append("    }")
+                                    if max_limit is not None:
+                                        output.append(f"    if (value > {max_limit}) {{")
+                                        output.append(f"        value = {max_limit};")
+                                        output.append("    }")
+                                    output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
+                                else:
+                                    output.append(f"    bool value = *data->{source};")
+                                    output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
+                                    if signal_config.get("is_index_enable"):
+                                        output.append("    // force resetting index pin")
+                                        output.append(f"    if (data->{variable_name} != value && value == 1) {{")
+                                        output.append(f"        *data->{var_prefix}_INDEX_WAIT = 1;")
+                                        output.append("    }")
+                                        output.append(f"    if (*data->{var_prefix}_INDEX_RESET == 1) {{")
+                                        output.append("       value = 0;")
+                                        output.append(f"       *data->{var_prefix}_INDEX_RESET = 0;")
+                                        output.append("    }")
+                                output.append(f"    data->{variable_name} = value;")
+                                data_config["plugin_instance"] = plugin_instance
+                        output.append("}")
+                        output.append("")
         output.append("")
 
         output.append("// input: rxBuffer -> VAROUT -> calc -> SIGOUT")
         for plugin_instance in self.project.plugin_instances:
-            for signal_name, signal_config in plugin_instance.signals().items():
-                varname = signal_config["varname"]
-                signal_source = signal_config.get("source")
-                signal_targets = signal_config.get("targets", {})
-                if signal_config["direction"] == "input" and not signal_source:
-                    convert_parameter = []
-                    for data_name, data_config in plugin_instance.interface_data().items():
-                        variable_name = data_config["variable"]
-                        variable_size = data_config["size"]
-                        if variable_size > 1:
-                            vtype = f"int{variable_size if variable_size != 24 else 32}_t"
-                            if variable_size == 8:
-                                vtype = f"uint8_t"
-                            convert_parameter.append(f"{vtype} *{variable_name}")
-                        else:
-                            convert_parameter.append(f"bool *{variable_name}")
-
-                    direction = signal_config.get("direction")
-                    boolean = signal_config.get("bool")
-                    hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
-
-                    signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
-                    if signal_setup:
-                        for signal_filter in signal_setup.get("filters", []):
-                            if signal_filter.get("type") == "avg":
-                                depth = signal_filter.get("depth", 16)
-                                output.append(f"void filter_avg_{varname.lower()}(data_t *data) {{")
-                                output.append(f"    static float values[{depth}];")
-                                for parameter in convert_parameter:
-                                    if signal_name.upper() == parameter.split("_")[-1].strip():
-                                        source = parameter.split()[-1].strip("*")
-                                        output.append(f"    float value = data->{source};")
-                                        output.append("    int n = 0;")
-                                        output.append("    float avg_value = 0.0;")
-                                        output.append(f"    for (n = 0; n < {depth} - 1; n++) {{")
-                                        output.append("        values[n] = values[n + 1];")
-                                        output.append("        avg_value += values[n];")
-                                        output.append("    }")
-                                        output.append(f"    values[{depth-1}] = value;")
-                                        output.append(f"    avg_value += values[{depth-1}];")
-                                        output.append(f"    avg_value /= {depth};")
-                                        output.append("")
-                                        output.append(f"    data->{source} = avg_value;")
-
-                                output.append("}")
-                                output.append("")
-
-                    output.append(f"void convert_{varname.lower()}(data_t *data) {{")
-                    for data_name, data_config in plugin_instance.interface_data().items():
-                        variable_name = data_config["variable"]
-                        variable_size = data_config["size"]
-                        var_prefix = signal_config["var_prefix"]
-                        varname = signal_config["varname"]
-
-                        if signal_name.upper() == variable_name.split("_")[-1].strip():
-                            source = variable_name.split()[-1].strip("*")
-                            if not boolean:
-                                output.append(f"    float value = data->{source};")
+            if plugin_instance.TYPE == "frameio":
+                for data_name, data_config in plugin_instance.interface_data().items():
+                    variable_name = data_config["variable"]
+                    variable_size = data_config["size"]
+                    variable_bytesize = variable_size // 8
+                    if data_config["direction"] == "input":
+                        output.append(f"void convert_frame_{plugin_instance.instances_name}_input(data_t *data) {{")
+                        output.append("    static uint8_t frame_id_last = 0;")
+                        output.append(f"    uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
+                        output.append("    uint8_t frame_new = 0;")
+                        output.append("    uint8_t frame_id = 0;")
+                        output.append("    uint8_t frame_len = 0;")
+                        output.append(f"    frame_id = data->{variable_name}[1];")
+                        output.append(f"    frame_len = data->{variable_name}[2];")
+                        output.append("    if (frame_id_last != frame_id) {")
+                        output.append("        frame_id_last = frame_id;")
+                        output.append("        frame_new = 1;")
+                        output.append("    }")
+                        output.append(f"    memcpy(&frame_data, &data->{variable_name}[3], {variable_bytesize} - 3);")
+                        output.append("    " + plugin_instance.frameio_rx_c().strip())
+                        output.append("}")
+                        output.append("")
+            else:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    varname = signal_config["varname"]
+                    signal_source = signal_config.get("source")
+                    signal_targets = signal_config.get("targets", {})
+                    if signal_config["direction"] == "input" and not signal_source:
+                        convert_parameter = []
+                        for data_name, data_config in plugin_instance.interface_data().items():
+                            variable_name = data_config["variable"]
+                            variable_size = data_config["size"]
+                            if variable_size > 1:
+                                vtype = f"int{variable_size if variable_size != 24 else 32}_t"
+                                if variable_size == 8:
+                                    vtype = f"uint8_t"
+                                convert_parameter.append(f"{vtype} *{variable_name}")
                             else:
-                                output.append(f"    bool value = data->{source};")
+                                convert_parameter.append(f"bool *{variable_name}")
 
-                            if signal_config.get("is_index_out"):
-                                output.append(f"    if (*data->{var_prefix}_INDEX_WAIT == 1) {{")
-                                output.append(f"        *data->{var_prefix}_INDEX_WAIT = 0;")
-                                output.append("        value = 1;")
-                                output.append("    }")
-                                output.append(f"    if (*data->{varname} != value) {{")
-                                output.append(f"        *data->{varname} = value;")
-                                output.append("        if (value == 0) {")
-                                output.append(f"            *data->SIGINOUT_{var_prefix}_INDEXENABLE = value;")
-                                output.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
-                                output.append("        }")
-                                output.append("    }")
+                        direction = signal_config.get("direction")
+                        boolean = signal_config.get("bool")
+                        hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
 
-                            convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
-                            if convert_c:
-                                output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+                        signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
+                        if signal_setup:
+                            for signal_filter in signal_setup.get("filters", []):
+                                if signal_filter.get("type") == "avg":
+                                    depth = signal_filter.get("depth", 16)
+                                    output.append(f"void filter_avg_{varname.lower()}(data_t *data) {{")
+                                    output.append(f"    static float values[{depth}];")
+                                    for parameter in convert_parameter:
+                                        if signal_name.upper() == parameter.split("_")[-1].strip():
+                                            source = parameter.split()[-1].strip("*")
+                                            output.append(f"    float value = data->{source};")
+                                            output.append("    int n = 0;")
+                                            output.append("    float avg_value = 0.0;")
+                                            output.append(f"    for (n = 0; n < {depth} - 1; n++) {{")
+                                            output.append("        values[n] = values[n + 1];")
+                                            output.append("        avg_value += values[n];")
+                                            output.append("    }")
+                                            output.append(f"    values[{depth-1}] = value;")
+                                            output.append(f"    avg_value += values[{depth-1}];")
+                                            output.append(f"    avg_value /= {depth};")
+                                            output.append("")
+                                            output.append(f"    data->{source} = avg_value;")
 
-                            if not boolean and direction == "input" and hal_type == "float":
-                                output.append(f"    float offset = *data->{varname}_OFFSET;")
-                                output.append(f"    float scale = *data->{varname}_SCALE;")
-                                output.append(f"    float last_value = *data->{varname};")
-                                output.append(f"    static float last_raw_value = 0.0;")
-                                output.append(f"    float raw_value = value;")
-                                output.append(f"    value = value + offset;")
-                                output.append(f"    value = value / scale;")
-                                output.append(f"    *data->{varname}_S32 = value;")
-                            output.append(f"    *data->{varname} = value;")
+                                    output.append("}")
+                                    output.append("")
 
-                            for target, calc in signal_targets.items():
-                                tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
-                                output.append("")
-                                output.append(f"    // calc {target}")
-                                output.append(f"    float value_{target} = *data->{tvarname};")
-                                output.append(f"    {calc.strip()}")
-                                output.append(f"    *data->{tvarname} = value_{target};")
+                        output.append(f"void convert_{varname.lower()}(data_t *data) {{")
+                        for data_name, data_config in plugin_instance.interface_data().items():
+                            variable_name = data_config["variable"]
+                            variable_size = data_config["size"]
+                            var_prefix = signal_config["var_prefix"]
+                            varname = signal_config["varname"]
 
-                            if not boolean and direction == "input" and hal_type == "float":
-                                output.append("")
-                                output.append(f"    last_raw_value = raw_value;")
+                            if signal_name.upper() == variable_name.split("_")[-1].strip():
+                                source = variable_name.split()[-1].strip("*")
+                                if not boolean:
+                                    output.append(f"    float value = data->{source};")
+                                else:
+                                    output.append(f"    bool value = data->{source};")
 
-                    output.append("}")
-                    output.append("")
+                                if signal_config.get("is_index_out"):
+                                    output.append(f"    if (*data->{var_prefix}_INDEX_WAIT == 1) {{")
+                                    output.append(f"        *data->{var_prefix}_INDEX_WAIT = 0;")
+                                    output.append("        value = 1;")
+                                    output.append("    }")
+                                    output.append(f"    if (*data->{varname} != value) {{")
+                                    output.append(f"        *data->{varname} = value;")
+                                    output.append("        if (value == 0) {")
+                                    output.append(f"            *data->SIGINOUT_{var_prefix}_INDEXENABLE = value;")
+                                    output.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
+                                    output.append("        }")
+                                    output.append("    }")
+
+                                convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
+                                if convert_c:
+                                    output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+
+                                if not boolean and direction == "input" and hal_type == "float":
+                                    output.append(f"    float offset = *data->{varname}_OFFSET;")
+                                    output.append(f"    float scale = *data->{varname}_SCALE;")
+                                    output.append(f"    float last_value = *data->{varname};")
+                                    output.append(f"    static float last_raw_value = 0.0;")
+                                    output.append(f"    float raw_value = value;")
+                                    output.append(f"    value = value + offset;")
+                                    output.append(f"    value = value / scale;")
+                                    output.append(f"    *data->{varname}_S32 = value;")
+                                output.append(f"    *data->{varname} = value;")
+
+                                for target, calc in signal_targets.items():
+                                    tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
+                                    output.append("")
+                                    output.append(f"    // calc {target}")
+                                    output.append(f"    float value_{target} = *data->{tvarname};")
+                                    output.append(f"    {calc.strip()}")
+                                    output.append(f"    *data->{tvarname} = value_{target};")
+
+                                if not boolean and direction == "input" and hal_type == "float":
+                                    output.append("")
+                                    output.append(f"    last_raw_value = raw_value;")
+                        output.append("}")
+                        output.append("")
         output.append("")
         output.append("")
         return output
@@ -1025,25 +1098,31 @@ class LinuxCNC:
         output.append("void convert_outputs(void) {")
         output.append("    // output loop: SIGOUT -> calc -> VAROUT -> txBuffer")
         for plugin_instance in self.project.plugin_instances:
-            for data_name, data_config in plugin_instance.interface_data().items():
-                variable_name = data_config["variable"]
-                if data_config["direction"] == "output":
-                    output.append(f"    convert_{variable_name.lower()}(data);")
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"    convert_frame_{plugin_instance.instances_name}_output(data);")
+            else:
+                for data_name, data_config in plugin_instance.interface_data().items():
+                    variable_name = data_config["variable"]
+                    if data_config["direction"] == "output":
+                        output.append(f"    convert_{variable_name.lower()}(data);")
         output.append("}")
         output.append("")
         output.append("void convert_inputs(void) {")
         output.append("    // input: rxBuffer -> VAROUT -> calc -> SIGOUT")
         for plugin_instance in self.project.plugin_instances:
-            for signal_name, signal_config in plugin_instance.signals().items():
-                varname = signal_config["varname"]
-                signal_source = signal_config.get("source")
-                if signal_config["direction"] == "input" and not signal_source:
-                    output.append(f"    convert_{varname.lower()}(data);")
-                    signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
-                    if signal_setup:
-                        for signal_filter in signal_setup.get("filters", []):
-                            if signal_filter.get("type") == "avg":
-                                output.append(f"    filter_avg_{varname.lower()}(data);")
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"    convert_frame_{plugin_instance.instances_name}_input(data);")
+            else:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    varname = signal_config["varname"]
+                    signal_source = signal_config.get("source")
+                    if signal_config["direction"] == "input" and not signal_source:
+                        output.append(f"    convert_{varname.lower()}(data);")
+                        signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
+                        if signal_setup:
+                            for signal_filter in signal_setup.get("filters", []):
+                                if signal_filter.get("type") == "avg":
+                                    output.append(f"    filter_avg_{varname.lower()}(data);")
 
         output.append("}")
         output.append("")
@@ -1189,12 +1268,14 @@ class LinuxCNC:
             "PREFIX": '"rio"',
             "JOINTS": "3",
             "BUFFER_SIZE": self.project.buffer_bytes,
-            "SERIAL_PORT": '"/dev/ttyUSB0"',
-            "SERIAL_BAUD": "B1000000",
-            "UDP_IP": f'"{ip}"',
-            "UDP_PORT": port,
             "OSC_CLOCK": self.project.config["speed"],
         }
+        if port and ip:
+            defines["UDP_IP"] = f'"{ip}"'
+            defines["UDP_PORT"] = port
+        if True:
+            defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
+            defines["SERIAL_BAUD"] = "B1000000"
 
         for header in header_list:
             output.append(f"#include <{header}>")
@@ -1223,14 +1304,17 @@ class LinuxCNC:
 
         output += self.component_variables()
         for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c"):
-            output.append("/*")
-            output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-            output.append("*/")
-            output.append(open(ppath, "r").read())
+            if self.project.config["jdata"].get("protocol") == ppath.split("/")[-2]:
+                output.append("/*")
+                output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                output.append("*/")
+                output.append(open(ppath, "r").read())
 
         output.append("int interface_init(void) {")
-        output.append("    //uart_init();")
-        output.append("    udp_init();")
+        if self.project.config["jdata"].get("protocol") == "UART":
+            output.append("    uart_init();")
+        else:
+            output.append("    udp_init();")
         output.append("}")
         output.append("")
 
@@ -1257,8 +1341,12 @@ class LinuxCNC:
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         output.append("        write_txbuffer(txBuffer);")
-        output.append("        //uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
-        output.append("        udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+
+        if self.project.config["jdata"].get("protocol") == "UART":
+            output.append("        uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+        else:
+            output.append("        udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+
         output.append("        if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         output.append("            if (err_counter > 0) {")
         output.append("                err_counter = 0;")

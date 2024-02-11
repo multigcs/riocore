@@ -124,7 +124,7 @@ class PluginBase:
         self.setup()
 
         if self.TYPE == "frameio":
-            self.timeout = 100
+            self.timeout = self.TIMEOUT
             self.send_counter = 255
             self.rxframe_len = 0
             self.rxframe_id = 0
@@ -209,11 +209,13 @@ class PluginBase:
             self.txframe_id_ack = self.INTERFACE["rxdata"]["value"][0]
             rxframe_id = self.INTERFACE["rxdata"]["value"][1]
             rxframe_len = self.INTERFACE["rxdata"]["value"][2]
+            rxframe_new = False
             if rxframe_id != self.rxframe_id:
-                self.rxframe_id = rxframe_id
-                self.rxframe_len = rxframe_len
-                rxdata = list(reversed(self.INTERFACE["rxdata"]["value"][3 : rxframe_len + 3]))
-                self.frameio_rx(rxframe_id, rxframe_len, rxdata)
+                rxframe_new = True
+            self.rxframe_id = rxframe_id
+            self.rxframe_len = rxframe_len
+            rxdata = list(reversed(self.INTERFACE["rxdata"]["value"][3 : rxframe_len + 3]))
+            self.frameio_rx(rxframe_new, rxframe_id, rxframe_len, rxdata)
         else:
             interface_data = self.interface_data()
             for signal_name, signal_setup in self.signals().items():
@@ -222,6 +224,9 @@ class PluginBase:
 
     def convert(self, signal_name, signal_setup, value):
         return value
+
+    def convert_c(self, signal_name, signal_setup):
+        return ""
 
     def pins(self):
         pins = {}

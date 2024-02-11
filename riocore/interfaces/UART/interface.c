@@ -43,13 +43,13 @@ int uart_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
     int n = 0;
     int cnt = 0;
     int rec = 0;
-    
+    /*
     printf("tx:");
     for (n = 0; n < size; n++) {
         printf(" %d,", txBuffer[n]);
     }
     printf("\n");
-
+    */
     int ret = write(uart_serial_fd, txBuffer, BUFFER_SIZE);
     tcdrain(uart_serial_fd);
     tcflush(uart_serial_fd, TCIFLUSH);
@@ -59,14 +59,13 @@ int uart_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
         usleep(1000);
     }
 
-    printf("########################\n");
-    printf("rec %d %d \n", rec, cnt);
-
+    /*
     printf("rx:");
     for (n = 0; n < rec; n++) {
         printf(" %d,", rxBuffer[n]);
     }
     printf("\n");
+    */
 
 
     return 1;
