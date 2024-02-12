@@ -52,21 +52,14 @@ class Plugin(PluginBase):
                 "description": "rx frame format",
             },
         }
-        self.INTERFACE = {
-            "rxdata": {
-                "size": self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"]),
-                "direction": "input",
-            },
-            "txdata": {
-                "size": self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]),
-                "direction": "output",
-            },
-        }
         self.SIGNALS = {}
         self.TYPE = "frameio"
         self.TIMEOUT = 1000.0
         self.INFO = "uart bridge"
         self.DESCRIPTION = ""
+
+        default_rx_buffersize = 2 * 8
+        default_tx_buffersize = 3 * 8
 
         self.tx_frame = self.plugin_setup.get("tx_frame", self.OPTIONS["tx_frame"]["default"])
         self.rx_frame = self.plugin_setup.get("rx_frame", self.OPTIONS["rx_frame"]["default"])
@@ -77,6 +70,10 @@ class Plugin(PluginBase):
                     "direction": "input",
                     "csum": part[1:],
                 }
+                if part[1:] == "crc8":
+                    default_tx_buffersize += 8
+                elif part[1:] == "crc16":
+                    default_tx_buffersize += 16
                 continue
 
             signal_name, signal_type = part.split(":")
@@ -93,6 +90,8 @@ class Plugin(PluginBase):
                 signal_type = signal_type[:-1]
                 signal_bfmt = "lsb"
             signal_size = int(signal_type)
+
+            default_tx_buffersize += signal_size
 
             vmin = 0
             vmax = 2**signal_size - 1
@@ -115,6 +114,10 @@ class Plugin(PluginBase):
                     "direction": "input",
                     "csum": part[1:],
                 }
+                if part[1:] == "crc8":
+                    default_rx_buffersize += 8
+                elif part[1:] == "crc16":
+                    default_rx_buffersize += 16
                 continue
 
             signal_name, signal_type = part.split(":")
@@ -135,12 +138,46 @@ class Plugin(PluginBase):
                 signal_bfmt = "msb"
             signal_size = int(signal_type)
 
+            default_rx_buffersize += signal_size
+
             self.SIGNALS[signal_name] = {
                 "direction": "input",
                 "signal_size": signal_size,
                 "signal_bfmt": signal_bfmt,
                 "signal_signed": signal_signed,
             }
+
+        self.OPTIONS["rx_buffersize"]["default"] = default_rx_buffersize
+        self.OPTIONS["tx_buffersize"]["default"] = default_tx_buffersize
+
+        rx_buffersize = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
+        tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
+
+        if rx_buffersize < default_rx_buffersize:
+            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {default_rx_buffersize}")
+            exit(1)
+        if tx_buffersize < default_tx_buffersize:
+            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {default_tx_buffersize}")
+            exit(1)
+
+        if (rx_buffersize % 8) != 0:
+            print(f"ERROR: {self.NAME}: rx_buffersize must be a multiple of 8: {rx_buffersize}")
+            exit(1)
+
+        if (tx_buffersize % 8) != 0:
+            print(f"ERROR: {self.NAME}: tx_buffersize must be a multiple of 8: {tx_buffersize}")
+            exit(1)
+
+        self.INTERFACE = {
+            "rxdata": {
+                "size": rx_buffersize,
+                "direction": "input",
+            },
+            "txdata": {
+                "size": tx_buffersize,
+                "direction": "output",
+            },
+        }
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -162,6 +199,10 @@ class Plugin(PluginBase):
         if frame_new:
             # print(f"rx frame {frame_id} {frame_len}: {frame_data}")
             frame_check = True
+
+            if frame_len == 0:
+                return
+
             if "rx_csum" in self.signals():
                 csum_type = self.signals()["rx_csum"]["csum"]
                 if csum_type == "crc8":
@@ -182,7 +223,7 @@ class Plugin(PluginBase):
                                 print("ERROR: CSUM: ", csum_calc, csum_org)
                             csum_val = 0
                             for part in csum_calc:
-                                csum_val = csum_val<<8
+                                csum_val = csum_val << 8
                                 csum_val += part
                             signal_setup["value"] = csum_val
 
@@ -238,7 +279,7 @@ class Plugin(PluginBase):
 
                 csum_val = 0
                 for part in csum.intdigest():
-                    csum_val = csum_val<<8
+                    csum_val = csum_val << 8
                     csum_val += part
                 signal_setup["value"] = csum_val
 

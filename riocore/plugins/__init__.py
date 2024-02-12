@@ -192,7 +192,7 @@ class PluginBase:
                 txdata = self.frameio_tx(frame_ack, frame_timeout)
                 if txdata is not None:
                     frame_len = len(txdata)
-                    data = [0] * (self.system_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]) // 8)
+                    data = [0] * (self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]) // 8)
                     for n, val in enumerate(txdata):
                         data[n] = val
                     self.frame = bytes([self.txframe_id, frame_len] + data)

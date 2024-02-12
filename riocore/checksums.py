@@ -1,6 +1,4 @@
-
 class crc16(object):
-
     def __init__(self):
         self.crc = 0xFFFF
 
@@ -13,12 +11,7 @@ class crc16(object):
             data = bytearray([data])
 
         length = len(data) - offset
-        if (
-            data is None
-            or offset < 0
-            or offset > len(data) - 1
-            and offset + length > len(data)
-        ):
+        if data is None or offset < 0 or offset > len(data) - 1 and offset + length > len(data):
             return 0
         for i in range(length):
             self.crc ^= data[offset + i]
@@ -30,21 +23,16 @@ class crc16(object):
 
     def digest(self):
         csum = self.crc & 0xFFFF
-        return bytes([(csum>>8)&0xFF, csum&0xFF])
+        return bytes([(csum >> 8) & 0xFF, csum & 0xFF])
 
     def intdigest(self):
         csum = self.crc & 0xFFFF
-        return [(csum>>8)&0xFF, csum&0xFF]
+        return [(csum >> 8) & 0xFF, csum & 0xFF]
 
     def crc16(self, data: bytearray, offset=0, length=None):
         if length is None:
             length = len(data) - offset
-        if (
-            data is None
-            or offset < 0
-            or offset > len(data) - 1
-            and offset + length > len(data)
-        ):
+        if data is None or offset < 0 or offset > len(data) - 1 and offset + length > len(data):
             return 0
         crc = 0xFFFF
         for i in range(length):
@@ -55,6 +43,7 @@ class crc16(object):
                 else:
                     crc = int(crc / 2)
         return crc & 0xFFFF
+
 
 class crc8(object):
 
