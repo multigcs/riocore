@@ -152,6 +152,7 @@ class LinuxCNC:
     def __init__(self, project):
         self.used_signals = {}
         self.networks = {}
+        self.cnetworks = {}
         self.project = project
         self.base_path = f"{self.project.config['output_path']}/LinuxCNC"
         self.component_path = f"{self.base_path}/Component"
@@ -276,6 +277,68 @@ class LinuxCNC:
             os.system(f"mkdir -p {self.configuration_path}/")
             open(f"{self.configuration_path}/tool.tbl", "w").write("\n".join(tooltbl))
 
+    def hal_net_add(self, input_name, output_name):
+        network = None
+        for net_name, net_nodes in self.networks.items():
+            if input_name == net_nodes["in"]:
+                network = net_name
+            elif input_name in net_nodes["out"]:
+                network = net_name
+            elif output_name in net_nodes["out"]:
+                network = net_name
+        if not network:
+            if not input_name.startswith("rio."):
+                network = input_name.replace(".", "_")
+            else:
+                network = output_name.replace(".", "_")
+            if network not in self.networks:
+                self.networks[network] = {
+                    "in": input_name,
+                    "out": [],
+                }
+            else:
+                print(f"ERROR: network {network} already exsit")
+        if output_name not in self.networks[network]["out"]:
+            self.networks[network]["out"].append(output_name)
+
+    def custom_net_add(self, input_name, output_name):
+        network = None
+        for net_name, net_nodes in self.cnetworks.items():
+            if input_name == net_nodes["in"]:
+                network = net_name
+            elif input_name in net_nodes["out"]:
+                network = net_name
+            elif output_name in net_nodes["out"]:
+                network = net_name
+        if not network:
+            for net_name, net_nodes in self.networks.items():
+                if input_name == net_nodes["in"]:
+                    network = net_name
+                elif input_name in net_nodes["out"]:
+                    network = net_name
+                elif output_name in net_nodes["out"]:
+                    network = net_name
+            if network:
+                self.cnetworks[network] = {
+                    "in": None,
+                    "out": [],
+                }
+
+        if not network:
+            if not input_name.startswith("rio."):
+                network = input_name.replace(".", "_")
+            else:
+                network = output_name.replace(".", "_")
+            if network not in self.cnetworks:
+                self.cnetworks[network] = {
+                    "in": input_name,
+                    "out": [],
+                }
+            else:
+                print(f"ERROR: custom network {network} already exsit")
+        if output_name not in self.cnetworks[network]["out"]:
+            self.cnetworks[network]["out"].append(output_name)
+
     def gui(self):
         machinetype = self.project.config["jdata"].get("machinetype")
         os.system(f"mkdir -p {self.configuration_path}/")
@@ -305,22 +368,36 @@ class LinuxCNC:
         cfgxml_data["status"].append("      <bd>2</bd>")
         if machinetype == "lathe":
             if "Z":
-                custom.append(f"net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
+
+                self.custom_net_add("pyvcp.zeroz", "halui.mdi-command-02")
+
+                custom.append(f"#net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
                 cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
 
             if "X":
-                custom.append(f"net zerox halui.mdi-command-00 <= pyvcp.zerox")
+
+                self.custom_net_add("pyvcp.zerox", "halui.mdi-command-00")
+
+                custom.append(f"#net zerox halui.mdi-command-00 <= pyvcp.zerox")
                 cfgxml_data["status"] += gui_gen.draw_button("zero-x", "zerox")
 
-                custom.append(f"net touchx halui.mdi-command-05 <= pyvcp.touchx")
+                self.custom_net_add("pyvcp.touchx", "halui.mdi-command-05")
+
+                custom.append(f"#net touchx halui.mdi-command-05 <= pyvcp.touchx")
                 cfgxml_data["status"] += gui_gen.draw_button("touch-x", "touchx")
 
         else:
             if "X" in self.axis_dict and "Y" in self.axis_dict:
-                custom.append(f"net zeroxy halui.mdi-command-03 <= pyvcp.zeroxy")
+
+                self.custom_net_add("pyvcp.zeroxy", "halui.mdi-command-03")
+
+                custom.append(f"#net zeroxy halui.mdi-command-03 <= pyvcp.zeroxy")
                 cfgxml_data["status"] += gui_gen.draw_button("zero-xy", "zeroxy")
             if "Z":
-                custom.append(f"net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
+
+                self.custom_net_add("pyvcp.zeroz", "halui.mdi-command-02")
+
+                custom.append(f"#net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
                 cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
         cfgxml_data["status"].append("    </hbox>")
         cfgxml_data["status"].append("  </labelframe>")
@@ -375,9 +452,15 @@ class LinuxCNC:
             for function, halname in self.rio_functions["jog"].items():
                 self.used_signals[halname] = f"riof.jog.{function}"
                 if function.startswith("wheel"):
-                    custom.append(f"net {self.used_signals[halname]:16s} <= rio.{halname}-s32")
+                    self.custom_net_add(f"rio.{halname}-s32", self.used_signals[halname])
+                    custom.append(f"#net {self.used_signals[halname]:16s} <= rio.{halname}-s32")
+
+                    self.custom_net_add(f"rio.{halname}-s32", self.used_signals[halname])
                 else:
-                    custom.append(f"net {self.used_signals[halname]:16s} <= rio.{halname}")
+                    self.custom_net_add(f"rio.{halname}", self.used_signals[halname])
+                    custom.append(f"#net {self.used_signals[halname]:16s} <= rio.{halname}")
+
+                    self.custom_net_add(f"rio.{halname}", self.used_signals[halname])
                 if function.startswith("select-"):
                     axis_selector = True
                 elif function.startswith("selected-"):
@@ -396,13 +479,17 @@ class LinuxCNC:
                     laxis = axis_name.lower()
                     custom.append(f"setp axis.{laxis}.jog-vel-mode 1")
                     custom.append(f"setp axis.{laxis}.jog-scale 0.05")
-                    custom.append(f"net riof.jog.wheel => axis.{laxis}.jog-counts")
-                    custom.append(f"net jog_en{laxis} axis.{laxis}.jog-enable <= axisui.jog.{laxis}")
+                    custom.append(f"#net riof.jog.wheel => axis.{laxis}.jog-counts")
+                    custom.append(f"#net jog_en{laxis} axis.{laxis}.jog-enable <= axisui.jog.{laxis}")
                     for joint, joint_setup in joints.items():
                         custom.append(f"setp joint.{joint}.jog-vel-mode 1")
                         custom.append(f"setp joint.{joint}.jog-scale 0.05")
-                        custom.append(f"net riof.jog.wheel => joint.{joint}.jog-counts")
-                        custom.append(f"net jog_en{laxis} joint.{joint}.jog-enable <= axisui.jog.{laxis}")
+                        custom.append(f"#net riof.jog.wheel => joint.{joint}.jog-counts")
+                        custom.append(f"#net jog_en{laxis} joint.{joint}.jog-enable <= axisui.jog.{laxis}")
+
+                        self.custom_net_add(f"axis.{laxis}.jog-counts", f"joint.{joint}.jog-counts")
+                        self.custom_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable")
+
                 custom.append("")
             else:
                 for axis_name, joints in self.axis_dict.items():
@@ -412,12 +499,14 @@ class LinuxCNC:
                         custom.append(f"setp axis.{laxis}.jog-vel-mode 1")
                         custom.append(f"setp axis.{laxis}.jog-scale 0.05")
                         custom.append(f"setp axis.{laxis}.jog-enable 1")
-                        custom.append(f"net riof.jog.{fname} => axis.{laxis}.jog-counts")
+                        custom.append(f"#net riof.jog.{fname} => axis.{laxis}.jog-counts")
+                        self.custom_net_add(f"riof.jog.{fname}", f"axis.{laxis}.jog-counts")
                         for joint, joint_setup in joints.items():
                             custom.append(f"setp joint.{joint}.jog-vel-mode 1")
                             custom.append(f"setp joint.{joint}.jog-scale 0.05")
                             custom.append(f"setp joint.{joint}.jog-enable 1")
-                            custom.append(f"net riof.jog.{fname} => joint.{joint}.jog-counts")
+                            custom.append(f"#net riof.jog.{fname} => joint.{joint}.jog-counts")
+                            self.custom_net_add(f"riof.jog.{fname}", f"joint.{joint}.jog-counts")
 
             if speed_selector:
                 custom.append("loadrt mux2 names=riof.jog.speed_mux")
@@ -426,10 +515,16 @@ class LinuxCNC:
                 custom.append("setp riof.jog.speed_mux.in1 1000.0")
                 custom.append("net riof.jog.fast => riof.jog.speed_mux.sel")
                 custom.append("net riof.jog.speed <= riof.jog.speed_mux.out")
-                custom.append(f"net riof.jog.speed => pyvcp.jogspeed")
-                cfgxml_data["status"] += gui_gen.draw_number("Jogspeed", "jogspeed")
+                custom.append("net riof.jog.speed => pyvcp.jogspeed")
+
                 custom.append("net riof.jog.speed => halui.axis.jog-speed")
                 custom.append("net riof.jog.speed => halui.joint.jog-speed")
+
+                self.custom_net_add("riof.jog.speed", "halui.axis.jog-speed")
+                self.custom_net_add("riof.jog.speed", "halui.joint.jog-speed")
+
+                cfgxml_data["status"] += gui_gen.draw_number("Jogspeed", "jogspeed")
+
             # else:
             #    custom.append("sets halui.axis.jog-speed 500")
             #    custom.append("sets halui.joint.jog-speed 500")
@@ -442,28 +537,43 @@ class LinuxCNC:
                 custom.append("net riof.jog.plus  => halui.axis.selected.plus")
                 custom.append("")
 
+                self.custom_net_add("riof.jog.minus", "halui.joint.selected.minus")
+                self.custom_net_add("riof.jog.minus", "halui.axis.selected.minus")
+                self.custom_net_add("riof.jog.plus", "halui.joint.selected.plus")
+                self.custom_net_add("riof.jog.plus", "halui.axis.selected.plus")
+
             if axis_selector:
                 joint_n = 0
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        custom.append(f"net riof.jog.{function} => halui.axis.{axis_name}.select")
-                        custom.append(f"net riof.jog.{function} => halui.joint.{joint_n}.select")
-                        custom.append(f"net riof.jog.selected-{axis_name} => pyvcp.{halname}")
+                        custom.append(f"#net riof.jog.{function} => halui.axis.{axis_name}.select")
+                        custom.append(f"#net riof.jog.{function} => halui.joint.{joint_n}.select")
+                        custom.append(f"#net riof.jog.selected-{axis_name} => pyvcp.{halname}")
+
+                        self.custom_net_add(f"riof.jog.{function}", f"halui.axis.{axis_name}.select")
+                        self.custom_net_add(f"riof.jog.{function}", f"halui.joint.{joint_n}.select")
+                        self.custom_net_add(f"riof.jog.selected-{axis_name}", f"pyvcp.{halname}")
+
                         cfgxml_data["status"] += gui_gen.draw_led(f"Jog:{axis_name}", halname)
                         joint_n += 1
             else:
                 for axis_name, joints in self.axis_dict.items():
                     laxis = axis_name.lower()
-                    custom.append(f"net jog_en{laxis} halui.axis.{laxis}.select <= axisui.jog.{laxis}")
+                    custom.append(f"#net jog_en{laxis} halui.axis.{laxis}.select <= axisui.jog.{laxis}")
+
+                    self.custom_net_add(f"axisui.jog.{laxis}", f"halui.axis.{laxis}.select")
+
                     for joint, joint_setup in joints.items():
-                        custom.append(f"net jog_en{laxis} halui.joint.{joint}.select <= axisui.jog.{laxis}")
+                        custom.append(f"#net jog_en{laxis} halui.joint.{joint}.select <= axisui.jog.{laxis}")
+
+                        self.custom_net_add(f"axisui.jog.{laxis}", f"halui.joint.{joint}.select")
 
             if axis_selector and position_display:
                 custom.append("# display position")
                 custom.append(f"loadrt mux16 names=riof.jog.position_mux")
                 custom.append(f"addf riof.jog.position_mux servo-thread")
-                custom.append(f"net riof.jog.position <= riof.jog.position_mux.out-f")
+                custom.append(f"#net riof.jog.position <= riof.jog.position_mux.out-f")
                 mux_select = 0
                 mux_input = 1
                 for function, halname in self.rio_functions["jog"].items():
@@ -473,13 +583,15 @@ class LinuxCNC:
                         custom.append(f"net riof.jog.pos-{axis_name} halui.axis.{axis_name}.pos-feedback => riof.jog.position_mux.in{mux_input:02d}")
                         mux_select += 1
                         mux_input = mux_input * 2
-
                 custom.append("")
             if axis_leds:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("selected-"):
                         axis_name = function.split("-")[-1]
-                        custom.append(f"net riof.jog.{function} <= halui.axis.{axis_name}.is-selected")
+                        custom.append(f"#net riof.jog.{function} <= halui.axis.{axis_name}.is-selected")
+
+                        self.custom_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.{function}")
+
                 custom.append("")
 
         for plugin_instance in self.project.plugin_instances:
@@ -507,7 +619,10 @@ class LinuxCNC:
                         else:
                             dtype = displayconfig.get("type", "led")
                         if dtype != "none":
-                            custom.append(f"net rios.{halname} => pyvcp.{halname}")
+                            custom.append(f"#net rios.{halname} => pyvcp.{halname}")
+
+                            self.custom_net_add(f"rio.{halname}", f"pyvcp.{halname}")
+
                     elif direction == "input":
                         section = displayconfig.get("section", "inputs")
                         if not boolean:
@@ -515,24 +630,45 @@ class LinuxCNC:
                         else:
                             dtype = displayconfig.get("type", "led")
                         if dtype != "none":
-                            custom.append(f"net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
+                            custom.append(f"#net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
+
+                            self.custom_net_add(f"rio.{halname}", f"pyvcp.{halname}")
+
                     elif direction == "output":
                         section = displayconfig.get("section", "outputs")
                         if not boolean:
                             dtype = displayconfig.get("type", "scale")
                             if dtype == "scale":
-                                custom.append(f"net rios.{halname} <= pyvcp.{halname}-f => rio.{halname}")
+                                custom.append(f"#net rios.{halname} <= pyvcp.{halname}-f => rio.{halname}")
+
+                                self.custom_net_add(f"pyvcp.{halname}-f", f"rio.{halname}")
+
                             elif dtype != "none":
-                                custom.append(f"net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
+                                custom.append(f"#net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
+
+                                self.custom_net_add(f"pyvcp.{halname}", f"rio.{halname}")
+
                         else:
                             dtype = displayconfig.get("type", "checkbutton")
                             if dtype != "none":
-                                custom.append(f"net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
+                                custom.append(f"#net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
+
+                                self.custom_net_add(f"pyvcp.{halname}", f"rio.{halname}")
 
                     if hasattr(gui_gen, f"draw_{dtype}"):
                         cfgxml_data[section] += getattr(gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
                     elif dtype != "none":
                         print(f"WARNING: 'draw_{dtype}' not found")
+
+        for network, net in self.cnetworks.items():
+            if net["out"]:
+                custom.append(f"")
+                custom.append(f"# {network.replace('pyvcp_', '')}")
+                if net["in"]:
+                    custom.append(f"net rios.{network} <= {net['in']}")
+                for out in net["out"]:
+                    custom.append(f"net rios.{network} => {out}")
+        custom.append("")
 
         titles = []
         for section in cfgxml_data:
@@ -680,12 +816,6 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     if netname:
-                        network = f"rios.{netname.replace('.', '_')}"
-                        if network not in self.networks:
-                            self.networks[network] = {
-                                "in": "",
-                                "out": [],
-                            }
                         if scale:
                             output.append(f"setp rio.{halname}-scale {scale}")
                         if offset:
@@ -693,21 +823,21 @@ class LinuxCNC:
                         if direction == "inout":
                             output.append(f"net rios.{halname} rio.{halname} <=> {netname}")
                         elif direction == "input":
-                            self.networks[network]["in"] = f"rio.{halname}"
-                            self.networks[network]["out"].append(netname)
+                            self.hal_net_add(f"rio.{halname}", netname)
+
                         elif direction == "output":
-                            self.networks[network]["in"] = netname
-                            self.networks[network]["out"].append(f"rio.{halname}")
+                            self.hal_net_add(netname, f"rio.{halname}")
                     elif setp is not None:
                         print("setp", setp)
                         output.append(f"setp rio.{halname} {setp}")
 
         for network, net in self.networks.items():
             if net["in"] and net["out"]:
-                output.append(f"net {network} <= {net['in']}")
+                output.append(f"")
+                output.append(f"# {network}")
+                output.append(f"net rios.{network} <= {net['in']}")
                 for out in net["out"]:
-                    output.append(f"net {network} => {out}")
-
+                    output.append(f"net rios.{network} => {out}")
         output.append("")
 
         for axis_name, joints in self.axis_dict.items():
