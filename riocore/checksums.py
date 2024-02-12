@@ -1,4 +1,61 @@
 
+class crc16(object):
+
+    def __init__(self):
+        self.crc = 0xFFFF
+
+    def update(self, data):
+        offset = 0
+
+        if isinstance(data, (list)):
+            data = bytearray(data)
+        elif isinstance(data, (int)):
+            data = bytearray([data])
+
+        length = len(data) - offset
+        if (
+            data is None
+            or offset < 0
+            or offset > len(data) - 1
+            and offset + length > len(data)
+        ):
+            return 0
+        for i in range(length):
+            self.crc ^= data[offset + i]
+            for j in range(8):
+                if (self.crc & 0x1) == 1:
+                    self.crc = int((self.crc / 2)) ^ 40961
+                else:
+                    self.crc = int(self.crc / 2)
+
+    def digest(self):
+        csum = self.crc & 0xFFFF
+        return bytes([(csum>>8)&0xFF, csum&0xFF])
+
+    def intdigest(self):
+        csum = self.crc & 0xFFFF
+        return [(csum>>8)&0xFF, csum&0xFF]
+
+    def crc16(self, data: bytearray, offset=0, length=None):
+        if length is None:
+            length = len(data) - offset
+        if (
+            data is None
+            or offset < 0
+            or offset > len(data) - 1
+            and offset + length > len(data)
+        ):
+            return 0
+        crc = 0xFFFF
+        for i in range(length):
+            crc ^= data[offset + i]
+            for j in range(8):
+                if (crc & 0x1) == 1:
+                    crc = int((crc / 2)) ^ 40961
+                else:
+                    crc = int(crc / 2)
+        return crc & 0xFFFF
+
 class crc8(object):
 
     digest_size = 1
@@ -285,7 +342,7 @@ class crc8(object):
         length, containing only hexadecimal digits. This may be used to
         exchange the value safely in email or other non-binary environments.
         """
-        return int(self._sum)
+        return [int(self._sum)]
 
     def update(self, bytes_):
         if isinstance(bytes_, str):
@@ -321,4 +378,3 @@ class crc8(object):
     def reset(self):
         """Resets the hash object to its initial state."""
         self._sum = self._initial_start
-

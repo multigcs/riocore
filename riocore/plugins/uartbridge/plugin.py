@@ -1,7 +1,8 @@
 from struct import *
 
-from riocore.checksums import crc8
+from riocore.checksums import crc8, crc16
 from riocore.plugins import PluginBase
+
 
 class Plugin(PluginBase):
     def setup(self):
@@ -17,7 +18,7 @@ class Plugin(PluginBase):
         }
         self.OPTIONS = {
             "baud": {
-                "default": 300,
+                "default": 9600,
                 "type": int,
                 "min": 300,
                 "max": 10000000,
@@ -165,6 +166,8 @@ class Plugin(PluginBase):
                 csum_type = self.signals()["rx_csum"]["csum"]
                 if csum_type == "crc8":
                     csum = crc8()
+                elif csum_type == "crc16":
+                    csum = crc16()
 
                 frame_check = False
                 frame_data_csum = frame_data.copy()
@@ -172,12 +175,17 @@ class Plugin(PluginBase):
                     if signal_setup["direction"] == "input" and signal_name != "tx_csum":
                         if signal_name == "rx_csum":
                             csum_calc = csum.intdigest()
-                            csum_org = frame_data_csum.pop(0)
+                            csum_org = frame_data_csum
                             if csum_calc == csum_org:
                                 frame_check = True
                             else:
                                 print("ERROR: CSUM: ", csum_calc, csum_org)
-                            signal_setup["value"] = csum_calc
+                            csum_val = 0
+                            for part in csum_calc:
+                                csum_val = csum_val<<8
+                                csum_val += part
+                            signal_setup["value"] = csum_val
+
                         else:
                             value = 0
                             signal_size = signal_setup["signal_size"]
@@ -220,25 +228,34 @@ class Plugin(PluginBase):
         frame_data = []
         for signal_name, signal_setup in self.signals().items():
             if signal_name == "tx_csum":
-                if signal_setup["csum"] == "crc8":
+                csum_type = signal_setup["csum"]
+                if csum_type == "crc8":
                     csum = crc8()
-                    csum.update(frame_data)
-                    frame_data.append(csum.intdigest())
-                    signal_setup["value"] = csum.intdigest()
+                elif csum_type == "crc16":
+                    csum = crc16()
+                csum.update(frame_data)
+                frame_data += csum.intdigest()
+
+                csum_val = 0
+                for part in csum.intdigest():
+                    csum_val = csum_val<<8
+                    csum_val += part
+                signal_setup["value"] = csum_val
+
             elif signal_setup["direction"] == "output":
-                    value = signal_setup["value"]
-                    signal_size = signal_setup["signal_size"]
-                    signal_bfmt = signal_setup["signal_bfmt"]
-                    signal_signed = signal_setup["signal_signed"]
-                    bytesize = signal_size // 8
-                    if signal_bfmt == "lsb":
-                        for byte in range(0, bytesize):
-                            byte_value = (value >> (8 * byte)) & 0xFF
-                            frame_data.append(byte_value)
-                    else:
-                        for byte in range(0, signal_size // 8):
-                            byte_value = (value >> (8 * (bytesize - byte - 1))) & 0xFF
-                            frame_data.append(byte_value)
+                value = signal_setup["value"]
+                signal_size = signal_setup["signal_size"]
+                signal_bfmt = signal_setup["signal_bfmt"]
+                signal_signed = signal_setup["signal_signed"]
+                bytesize = signal_size // 8
+                if signal_bfmt == "lsb":
+                    for byte in range(0, bytesize):
+                        byte_value = (value >> (8 * byte)) & 0xFF
+                        frame_data.append(byte_value)
+                else:
+                    for byte in range(0, signal_size // 8):
+                        byte_value = (value >> (8 * (bytesize - byte - 1))) & 0xFF
+                        frame_data.append(byte_value)
 
         # print(f"tx frame 00 {len(frame_data)}: {frame_data}")
         return frame_data
