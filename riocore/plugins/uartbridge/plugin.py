@@ -58,8 +58,8 @@ class Plugin(PluginBase):
         self.INFO = "uart bridge"
         self.DESCRIPTION = ""
 
-        default_rx_buffersize = 2 * 8
-        default_tx_buffersize = 3 * 8
+        self.rx_buffersize = 3 * 8
+        self.tx_buffersize = 2 * 8
 
         self.tx_frame = self.plugin_setup.get("tx_frame", self.OPTIONS["tx_frame"]["default"])
         self.rx_frame = self.plugin_setup.get("rx_frame", self.OPTIONS["rx_frame"]["default"])
@@ -71,9 +71,9 @@ class Plugin(PluginBase):
                     "csum": part[1:],
                 }
                 if part[1:] == "crc8":
-                    default_tx_buffersize += 8
+                    self.tx_buffersize += 8
                 elif part[1:] == "crc16":
-                    default_tx_buffersize += 16
+                    self.tx_buffersize += 16
                 continue
 
             signal_name, signal_type = part.split(":")
@@ -91,7 +91,7 @@ class Plugin(PluginBase):
                 signal_bfmt = "lsb"
             signal_size = int(signal_type)
 
-            default_tx_buffersize += signal_size
+            self.tx_buffersize += signal_size
 
             vmin = 0
             vmax = 2**signal_size - 1
@@ -115,9 +115,9 @@ class Plugin(PluginBase):
                     "csum": part[1:],
                 }
                 if part[1:] == "crc8":
-                    default_rx_buffersize += 8
+                    self.rx_buffersize += 8
                 elif part[1:] == "crc16":
-                    default_rx_buffersize += 16
+                    self.rx_buffersize += 16
                 continue
 
             signal_name, signal_type = part.split(":")
@@ -138,7 +138,7 @@ class Plugin(PluginBase):
                 signal_bfmt = "msb"
             signal_size = int(signal_type)
 
-            default_rx_buffersize += signal_size
+            self.rx_buffersize += signal_size
 
             self.SIGNALS[signal_name] = {
                 "direction": "input",
@@ -147,17 +147,17 @@ class Plugin(PluginBase):
                 "signal_signed": signal_signed,
             }
 
-        self.OPTIONS["rx_buffersize"]["default"] = default_rx_buffersize
-        self.OPTIONS["tx_buffersize"]["default"] = default_tx_buffersize
+        self.OPTIONS["rx_buffersize"]["default"] = self.rx_buffersize
+        self.OPTIONS["tx_buffersize"]["default"] = self.tx_buffersize
 
         rx_buffersize = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
         tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
 
-        if rx_buffersize < default_rx_buffersize:
-            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {default_rx_buffersize}")
+        if rx_buffersize < self.rx_buffersize:
+            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {self.rx_buffersize}")
             exit(1)
-        if tx_buffersize < default_tx_buffersize:
-            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {default_tx_buffersize}")
+        if tx_buffersize < self.tx_buffersize:
+            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {self.tx_buffersize}")
             exit(1)
 
         if (rx_buffersize % 8) != 0:
@@ -200,7 +200,11 @@ class Plugin(PluginBase):
             # print(f"rx frame {frame_id} {frame_len}: {frame_data}")
             frame_check = True
 
-            if frame_len == 0:
+            if frame_len != self.rx_buffersize // 8 - 3:
+                print(f"ERROR: {self.NAME}: wrong frame size: {frame_len} != {self.rx_buffersize // 8 - 3}")
+                return
+            if len(frame_data) != self.rx_buffersize // 8 - 3:
+                print(f"ERROR: {self.NAME}: wrong frame size: {frame_len} != {self.rx_buffersize // 8 - 3}")
                 return
 
             if "rx_csum" in self.signals():
@@ -220,7 +224,7 @@ class Plugin(PluginBase):
                             if csum_calc == csum_org:
                                 frame_check = True
                             else:
-                                print("ERROR: CSUM: ", csum_calc, csum_org)
+                                print(f"ERROR: {self.NAME}: CSUM: {csum_calc} != {csum_org}")
                             csum_val = 0
                             for part in csum_calc:
                                 csum_val = csum_val << 8

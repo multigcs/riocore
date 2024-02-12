@@ -24,7 +24,7 @@ module uartbridge
     assign tx_frame_len = txdata[15:8];
 
     reg [7:0] rxlen = 0;
-    reg [RX_BUFFERSIZE-17:0] rxbuffer = 0;
+    reg [RX_BUFFERSIZE-25:0] rxbuffer = 0;
     reg [7:0] rx_frame_id = 0;
     reg [7:0] rx_frame_len = 0;
 
@@ -32,8 +32,6 @@ module uartbridge
     wire RxD_data_ready;
     wire RxD_idle;
     wire RxD_endofpacket;
-    wire [7:0] rxlen_m1;
-    assign rxlen_m1 = rxlen - 1;
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
         .clk (clk),
@@ -48,7 +46,7 @@ module uartbridge
         //rxdata[7:0] <= tx_frame_id_ack;
 
         if (RxD_endofpacket == 1) begin
-            rxdata <= {rxbuffer[RX_BUFFERSIZE-17:8], rxlen_m1, rx_frame_id, tx_frame_id_ack};
+            rxdata <= {rxbuffer[RX_BUFFERSIZE-25:0], rxlen, rx_frame_id, tx_frame_id_ack};
             rxbuffer <= 0;
 
             rx_frame_id <= rx_frame_id + 1;
@@ -56,7 +54,7 @@ module uartbridge
 
         end else if (RxD_data_ready == 1) begin
             if (rxlen < (RX_BUFFERSIZE / 8) - 3) begin
-                rxbuffer <= {rxbuffer[RX_BUFFERSIZE-17-8:0], RxD_data};
+                rxbuffer <= {rxbuffer[RX_BUFFERSIZE-25-8:0], RxD_data};
                 //rxbuffer <= {RxD_data, rxbuffer[RX_BUFFERSIZE-17:8]};
                 rxlen <= rxlen + 1;
             end
@@ -91,7 +89,7 @@ module uartbridge
         if (tx_state == 1) begin
             if (TxD_busy == 0 && TxD_start == 0) begin
 
-                if (txlen > 0) begin
+                if (txlen > 1) begin
                     tx_counter <= tx_counter + 1;
                     TxD_data <= txbuffer[7:0];
                     
