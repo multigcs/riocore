@@ -59,6 +59,7 @@ class Plugin(PluginBase):
         }
         self.SIGNALS = {}
         self.TYPE = "frameio"
+        self.DYNAMIC_SIGNALS = True
         self.TIMEOUT = 1000.0
         self.INFO = "uart bridge"
         self.DESCRIPTION = ""
