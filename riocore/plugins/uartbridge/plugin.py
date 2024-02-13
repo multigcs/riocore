@@ -97,6 +97,9 @@ class Plugin(PluginBase):
             if signal_type[-1] == "l":
                 signal_type = signal_type[:-1]
                 signal_bfmt = "lsb"
+            elif signal_type[-1] == "m":
+                signal_type = signal_type[:-1]
+                signal_bfmt = "msb"
             signal_size = int(signal_type)
 
             self.tx_buffersize += signal_size
@@ -281,7 +284,7 @@ class Plugin(PluginBase):
         # if frame_ack:
         #    print("ACK")
         # if frame_timeout:
-        #    print("TIMEOUT")
+        #   print("TIMEOUT")
         frame_data = []
         for signal_name, signal_setup in self.signals().items():
             if signal_name == "tx_csum":

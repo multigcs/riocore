@@ -27,7 +27,7 @@ class crc16(object):
 
     def intdigest(self):
         csum = self.crc & 0xFFFF
-        return [(csum >> 8) & 0xFF, csum & 0xFF]
+        return [csum & 0xFF, (csum >> 8) & 0xFF]
 
     def crc16(self, data: bytearray, offset=0, length=None):
         if length is None:

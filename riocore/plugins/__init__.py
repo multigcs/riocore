@@ -183,6 +183,7 @@ class PluginBase:
                 frame_timeout = True
             else:
                 self.send_counter += 1
+            # print("frame_ack or frame_timeout", frame_ack, frame_timeout, self.timeout, self.send_counter)
             if frame_ack or frame_timeout:
                 self.send_counter = 0
                 if self.txframe_id < 255:
