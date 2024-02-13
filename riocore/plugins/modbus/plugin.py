@@ -79,17 +79,35 @@ class Plugin(PluginBase):
             exit(1)
 
         for signal_name, signal_config in self.plugin_setup.get("signals", {}).items():
-            self.SIGNALS[signal_name] = {
-                "direction": signal_config["direction"],
-                "unit": signal_config.get("unit", ""),
-                "scale": signal_config.get("scale"),
-                "format": signal_config.get("format"),
-            }
-            self.SIGNALS[f"{signal_name}_valid"] = {
-                "direction": "input",
-                "bool": True,
-                "validation": True,
-            }
+            n_values = signal_config.get("values", 0)
+            if n_values > 1:
+                for vn in range(0, n_values):
+                    value_name = f"{signal_name}_{vn}"
+                    self.SIGNALS[value_name] = {
+                        "direction": signal_config["direction"],
+                        "unit": signal_config.get("unit", ""),
+                        "scale": signal_config.get("scale"),
+                        "format": signal_config.get("format"),
+                        "_userconfig": signal_config,
+                    }
+                    self.SIGNALS[f"{value_name}_valid"] = {
+                        "direction": "input",
+                        "bool": True,
+                        "validation": True,
+                    }
+            else:
+
+                self.SIGNALS[signal_name] = {
+                    "direction": signal_config["direction"],
+                    "unit": signal_config.get("unit", ""),
+                    "scale": signal_config.get("scale"),
+                    "format": signal_config.get("format"),
+                }
+                self.SIGNALS[f"{signal_name}_valid"] = {
+                    "direction": "input",
+                    "bool": True,
+                    "validation": True,
+                }
 
         self.INTERFACE = {
             "rxdata": {
@@ -109,6 +127,7 @@ class Plugin(PluginBase):
             }
 
         self.signal_active = 0
+        self.signal_values = 0
         self.signal_name = None
 
     def gateware_instances(self):
@@ -144,18 +163,34 @@ class Plugin(PluginBase):
                 csum.update(frame_data[:-2])
                 csum_calc = csum.intdigest()
                 if csum_calc != frame_data[-2:]:
-                    print("ERROR: modbus CSUM failed {csum_calc} != {frame_data[-2:]}")
+                    print(f"ERROR: modbus CSUM failed {csum_calc} != {frame_data[-2:]}")
                 else:
-                    if self.signal_name not in self.SIGNALS:
-                        print("ERROR: no signal_config: {self.signal_name}")
+                    if self.signal_values > 1:
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            if value_name not in self.SIGNALS:
+                                print(f"ERROR: no signal_config: {value_name}")
+                            else:
+                                signal_config = self.SIGNALS[value_name].get("_userconfig", {})
+                                signal_address = signal_config.get("address")
+                                if address != signal_address:
+                                    print(f"ERROR: wrong address {address} != {signal_address}")
+                                else:
+                                    start_pos = 3 + vn * 2
+                                    self.SIGNALS[value_name]["value"] = self.list2int(frame_data[start_pos : start_pos + 2])
+                                    self.SIGNALS[f"{value_name}_valid"]["value"] = 1
+
                     else:
-                        signal_config = self.SIGNALS[self.signal_name].get("userconfig", {})
-                        signal_address = signal_config.get("address")
-                        if address != signal_address:
-                            print(f"ERROR: wrong address {address} != {signal_address}")
+                        if self.signal_name not in self.SIGNALS:
+                            print(f"ERROR: no signal_config: {self.signal_name}")
                         else:
-                            self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
-                            self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
+                            signal_config = self.SIGNALS[self.signal_name].get("userconfig", {})
+                            signal_address = signal_config.get("address")
+                            if address != signal_address:
+                                print(f"ERROR: wrong address {address} != {signal_address}")
+                            else:
+                                self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
+                                self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
 
             # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
 
@@ -163,7 +198,13 @@ class Plugin(PluginBase):
         # if frame_ack:
         #    print("ACK")
         if frame_timeout:
-            if f"{self.signal_name}_valid" in self.SIGNALS:
+
+            if self.signal_values > 1:
+                for vn in range(0, self.signal_values):
+                    value_name = f"{self.signal_name}_{vn}"
+                    if f"{value_name}_valid" in self.SIGNALS:
+                        self.SIGNALS[f"{value_name}_valid"]["value"] = 0
+            elif f"{self.signal_name}_valid" in self.SIGNALS:
                 self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 0
 
         if self.signal_active < len(self.plugin_setup.get("signals", {})) - 1:
@@ -179,8 +220,9 @@ class Plugin(PluginBase):
             if sn == self.signal_active:
                 address = signal_config["address"]
                 ctype = signal_config["type"]
+                self.signal_values = signal_config.get("values", 1)
                 register = self.int2list(signal_config["register"])
-                n_values = self.int2list(1)
+                n_values = self.int2list(self.signal_values)
                 self.signal_name = signal_name
                 self.signal_address = address
                 cmd = [address, ctype] + register + n_values
