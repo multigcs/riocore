@@ -49,8 +49,9 @@ class Plugin(PluginBase):
         }
         self.SIGNALS = {}
         self.TYPE = "frameio"
+        self.DYNAMIC_SIGNALS = True
         self.TIMEOUT = 10.0
-        self.INFO = "uart bridge"
+        self.INFO = "generic modbus plugin"
         self.DESCRIPTION = ""
 
         self.rx_buffersize = 128
@@ -100,6 +101,13 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
+
+        # add signals for the documentation if nothing is configured
+        if not self.SIGNALS:
+            self.SIGNALS = {
+                "temperature": {"direction": "input", "unit": "°C", "scale": 0.1, "format": "0.1f"},
+            }
+
         self.signal_active = 0
         self.signal_name = None
 

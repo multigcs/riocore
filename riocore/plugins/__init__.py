@@ -112,6 +112,7 @@ class PluginBase:
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.SIGNALS = {}
+        self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []
         self.NAME = ""
         self.TYPE = "io"
@@ -504,29 +505,32 @@ class PluginBase:
 
     def show_signals(self):
         output = []
-        for signal_name, signal_setup in self.SIGNALS.items():
-            isbool = signal_setup.get("bool", False)
-            direction = signal_setup.get("direction")
-            description = signal_setup.get("description")
-            vmin = signal_setup.get("min")
-            vmax = signal_setup.get("max")
-
-            output.append(f"### {signal_name}:")
-            if description:
-                output.append(description)
+        if self.DYNAMIC_SIGNALS:
+            output.append("the signals of this plugin are user configurable")
             output.append("")
+        else:
+            for signal_name, signal_setup in self.SIGNALS.items():
+                isbool = signal_setup.get("bool", False)
+                direction = signal_setup.get("direction")
+                description = signal_setup.get("description")
+                vmin = signal_setup.get("min")
+                vmax = signal_setup.get("max")
+                output.append(f"### {signal_name}:")
+                if description:
+                    output.append(description)
+                output.append("")
 
-            if isbool:
-                output.append(f" * type: bit")
-            else:
-                output.append(f" * type: float")
-            output.append(f" * direction: {direction}")
-            if vmin is not None:
-                output.append(f" * min: {vmin}")
-            if vmax is not None:
-                output.append(f" * max: {vmax}")
+                if isbool:
+                    output.append(f" * type: bit")
+                else:
+                    output.append(f" * type: float")
+                output.append(f" * direction: {direction}")
+                if vmin is not None:
+                    output.append(f" * min: {vmin}")
+                if vmax is not None:
+                    output.append(f" * max: {vmax}")
 
-            output.append("")
+                output.append("")
 
         return "\n".join(output)
 
