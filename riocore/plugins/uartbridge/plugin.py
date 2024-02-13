@@ -16,6 +16,10 @@ class Plugin(PluginBase):
             "rx": {
                 "direction": "input",
             },
+            "tx_enable": {
+                "direction": "output",
+                "optional": True,
+            },
         }
         self.OPTIONS = {
             "baud": {

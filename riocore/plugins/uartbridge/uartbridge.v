@@ -5,6 +5,7 @@ module uartbridge
         input clk,
         input rx,
         output tx,
+        output wire tx_enable,
         output reg [RX_BUFFERSIZE-1:0] rxdata,
         input [TX_BUFFERSIZE-1:0] txdata
     );
@@ -75,6 +76,7 @@ module uartbridge
     );
 
     reg tx_state = 0;
+    assign tx_enable = tx_state;
     reg [7:0] tx_counter = 0;
 
     always @(posedge clk) begin
