@@ -81,6 +81,9 @@ class Plugin(PluginBase):
                     self.tx_buffersize += 16
                 continue
 
+            if ":" not in part:
+                continue
+
             signal_name, signal_type = part.split(":")
             signal_size = 8
             signal_bfmt = "lsb"
@@ -123,6 +126,9 @@ class Plugin(PluginBase):
                     self.rx_buffersize += 8
                 elif part[1:] == "crc16":
                     self.rx_buffersize += 16
+                continue
+
+            if ":" not in part:
                 continue
 
             signal_name, signal_type = part.split(":")
