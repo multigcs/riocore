@@ -1,3 +1,4 @@
+import os
 from struct import *
 
 from riocore.checksums import crc8, crc16
@@ -193,6 +194,7 @@ class Plugin(PluginBase):
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
 
+        self.arduino_example()
         return instances
 
     def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
@@ -326,3 +328,117 @@ class Plugin(PluginBase):
         frame_data[5] = 'D';
         frame_data[6] = 10;
         """
+
+    def arduino_example(self):
+        output = []
+        baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+
+        output.append("")
+        output.append("#include <LiquidCrystal_I2C.h>")
+        output.append("#include <CRC8.h>")
+        output.append("#include <CRC.h>")
+        output.append("")
+        output.append("LiquidCrystal_I2C lcd(0x27, 20, 4);")
+        output.append("CRC8 crc;")
+        output.append("")
+        output.append(f"#define RX_LEN {self.rx_buffersize // 8 - 3}")
+        output.append(f"#define TX_LEN {self.tx_buffersize // 8 - 2}")
+        output.append("")
+        output.append("typedef struct rx_data_t {")
+        for signal_name, signal_setup in self.signals().items():
+            if signal_setup["direction"] == "output":
+                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                    signal_size = signal_setup["signal_size"]
+                    signal_bfmt = signal_setup["signal_bfmt"]
+                    signal_signed = signal_setup["signal_signed"]
+                    bytesize = signal_size // 8
+                    output.append(f"    uint{signal_size}_t {signal_name};")
+        output.append(f"    uint8_t csum;")
+        output.append("};")
+        output.append("")
+        output.append("typedef struct tx_data_t {")
+        for signal_name, signal_setup in self.signals().items():
+            if signal_setup["direction"] == "input":
+                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                    signal_size = signal_setup["signal_size"]
+                    signal_bfmt = signal_setup["signal_bfmt"]
+                    signal_signed = signal_setup["signal_signed"]
+                    bytesize = signal_size // 8
+                    output.append(f"    uint{signal_size}_t {signal_name};")
+        output.append(f"    uint8_t csum;")
+        output.append("};")
+        output.append("")
+        output.append("typedef union rx_frame_t {")
+        output.append("    rx_data_t data;")
+        output.append("    uint8_t buffer[RX_LEN];")
+        output.append("};")
+        output.append("")
+        output.append("typedef union tx_frame_t {")
+        output.append("    tx_data_t data;")
+        output.append("    uint8_t buffer[TX_LEN];")
+        output.append("};")
+        output.append("")
+        output.append("rx_frame_t rx_frame;")
+        output.append("tx_frame_t tx_frame;")
+        output.append("")
+        output.append("char tmp_str[24];")
+        output.append("int32_t value = 0;")
+        output.append("")
+        output.append("void setup() {")
+        output.append(f"    Serial.begin({baud});")
+        output.append("    lcd.init();")
+        output.append("    lcd.backlight();")
+        output.append("    lcd.setCursor(0, 0);")
+        output.append('    lcd.print("LinuxCNC - RIO");')
+        output.append("}")
+        output.append("")
+        output.append("void loop() {")
+        output.append("    // rx")
+        output.append("    Serial.readBytes(rx_frame.buffer, RX_LEN);")
+        output.append("    crc.restart();")
+        output.append("    uint8_t csum = calcCRC8(rx_frame.buffer, RX_LEN-1);")
+        output.append("")
+        output.append("    if (csum == rx_frame.data.csum) {")
+        line_n = 0
+        for signal_name, signal_setup in self.signals().items():
+            if signal_setup["direction"] == "output":
+                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                    signal_size = signal_setup["signal_size"]
+                    signal_bfmt = signal_setup["signal_bfmt"]
+                    signal_signed = signal_setup["signal_signed"]
+                    bytesize = signal_size // 8
+                    output.append(f'        sprintf(tmp_str, "{signal_name:10} %9d", rx_frame.data.{signal_name});')
+                    output.append(f"        lcd.setCursor(0, {line_n});")
+                    output.append("        lcd.print(tmp_str);")
+                    output.append("")
+                    line_n += 1
+        output.append("    } else {")
+        output.append('        sprintf(tmp_str, "CSUMERROR %03d != %03d   ", csum, rx_frame.data.csum);')
+        output.append("        lcd.setCursor(0, 3);")
+        output.append("        lcd.print(tmp_str);")
+        output.append("    }")
+        output.append("")
+        output.append("    // tx")
+        value_n = 0
+        for signal_name, signal_setup in self.signals().items():
+            if signal_setup["direction"] == "input":
+                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                    signal_size = signal_setup["signal_size"]
+                    signal_bfmt = signal_setup["signal_bfmt"]
+                    signal_signed = signal_setup["signal_signed"]
+                    bytesize = signal_size // 8
+                    output.append(f"    tx_frame.data.{signal_name} = {value_n + 1};")
+                    value_n += 1
+        output.append("    crc.restart();")
+        output.append("    uint8_t tx_csum = calcCRC8(tx_frame.buffer, TX_LEN-1);")
+        output.append("    tx_frame.data.csum = tx_csum;")
+        output.append("    Serial.write(tx_frame.buffer, TX_LEN);")
+        output.append("")
+        output.append("}")
+        output.append("")
+
+        # print("\n".join(output))
+
+        folder = f"{self.system_setup['output_path']}/arduino_example_{self.instances_name}"
+        os.system(f"mkdir -p {folder}/src/")
+        open(f"{folder}/src/main.ino", "w").write("\n".join(output))
