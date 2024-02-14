@@ -1019,6 +1019,7 @@ class LinuxCNC:
                         output.append(f"    static float timeout = {plugin_instance.TIMEOUT};")
                         output.append("    static long frame_stamp_last = 0;")
                         output.append("    static uint8_t frame_id = 0;")
+                        output.append(f"    static uint8_t frame_io[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append(f"    static uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append("    float frame_time = 0.0;")
                         output.append("    uint8_t frame_id_ack = 0;")
@@ -1038,14 +1039,48 @@ class LinuxCNC:
                         output.append("")
                         output.append("    if (frame_timeout == 1 || frame_ack == 1) {")
                         output.append("        frame_id += 1;")
+
+                        output.append("")
+                        output.append("        /*** get plugin vars ***/")
+                        output.append("")
+                        for signal_name, signal_config in plugin_instance.signals().items():
+                            varname = signal_config["varname"]
+                            signal_values = signal_config.get("values", 1)
+                            direction = signal_config["direction"]
+                            boolean = signal_config.get("bool")
+                            ctype = "float"
+                            if boolean:
+                                ctype = "bool"
+                            output.append(f"        {ctype} value_{signal_name} = *data->{varname};")
+                        output.append("")
+                        output.append("        /***********************/")
+                        output.append("")
+
+                        output.append("        /*** plugin code ***/")
+                        output.append("")
                         output.append("        " + plugin_instance.frameio_tx_c().strip())
                         output.append("")
-                        output.append("        frame_data[0] = frame_id;")
-                        output.append("        frame_data[1] = frame_len;")
+                        output.append("        /*******************/")
+                        output.append("")
+                        output.append("        /*** update plugin vars ***/")
+                        output.append("")
+                        for signal_name, signal_config in plugin_instance.signals().items():
+                            varname = signal_config["varname"]
+                            signal_values = signal_config.get("values", 1)
+                            direction = signal_config["direction"]
+                            boolean = signal_config.get("bool")
+                            if direction == "input":
+                                output.append(f"        *data->{varname} = value_{signal_name};")
+                        output.append("")
+                        output.append("        /**************************/")
+                        output.append("")
+                        output.append("        frame_io[0] = frame_id;")
+                        output.append("        frame_io[1] = frame_len;")
                         output.append("        frame_stamp_last = stamp_last;")
+                        output.append(f"        memcpy(&frame_io[2], &frame_data, {variable_bytesize - 2});")
                         output.append("    }")
                         output.append("")
-                        output.append(f"    memcpy(&data->{variable_name}, &frame_data, {variable_bytesize});")
+                        output.append(f"    memcpy(&data->{variable_name}, &frame_io, {variable_bytesize});")
                         output.append("}")
                         output.append("")
 
@@ -1103,6 +1138,7 @@ class LinuxCNC:
                         output.append(f"void convert_frame_{plugin_instance.instances_name}_input(data_t *data) {{")
                         output.append("    static uint8_t frame_id_last = 0;")
                         output.append(f"    uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
+                        output.append("    uint8_t cn = 0;")
                         output.append("    uint8_t frame_new = 0;")
                         output.append("    uint8_t frame_id = 0;")
                         output.append("    uint8_t frame_len = 0;")
@@ -1112,8 +1148,47 @@ class LinuxCNC:
                         output.append("        frame_id_last = frame_id;")
                         output.append("        frame_new = 1;")
                         output.append("    }")
-                        output.append(f"    memcpy(&frame_data, &data->{variable_name}[3], {variable_bytesize} - 3);")
+                        output.append("    for (cn = 0; cn < frame_len; cn++) {")
+                        output.append(f"        frame_data[cn] = data->{variable_name}[frame_len - cn + 2];")
+                        output.append("    }")
+
+                        output.append("")
+                        output.append("    /*** get plugin vars ***/")
+                        output.append("")
+                        for signal_name, signal_config in plugin_instance.signals().items():
+                            varname = signal_config["varname"]
+                            signal_values = signal_config.get("values", 1)
+                            direction = signal_config["direction"]
+                            boolean = signal_config.get("bool")
+                            if direction == "input":
+                                ctype = "float"
+                                if boolean:
+                                    ctype = "bool"
+                                output.append(f"    {ctype} value_{signal_name} = *data->{varname};")
+                        output.append("")
+                        output.append("    /***********************/")
+                        output.append("")
+                        output.append("    /*** plugin code ***/")
+                        output.append("")
                         output.append("    " + plugin_instance.frameio_rx_c().strip())
+                        output.append("")
+                        output.append("    /*******************/")
+                        output.append("")
+
+                        output.append("    /*** update plugin vars ***/")
+                        output.append("")
+                        for signal_name, signal_config in plugin_instance.signals().items():
+                            varname = signal_config["varname"]
+                            signal_values = signal_config.get("values", 1)
+                            direction = signal_config["direction"]
+                            boolean = signal_config.get("bool")
+                            if direction == "input":
+                                ctype = "float"
+                                if boolean:
+                                    ctype = "bool"
+                                output.append(f"    *data->{varname} = value_{signal_name};")
+                        output.append("")
+                        output.append("    /**************************/")
                         output.append("}")
                         output.append("")
             else:
@@ -1454,6 +1529,20 @@ class LinuxCNC:
         output.append("*/")
 
         output.append(open(f"{riocore_path}/files/hal_functions.c", "r").read())
+
+        output.append("")
+        output.append("/***********************************************************************")
+        output.append("*                         PLUGIN GLOBALS                               *")
+        output.append("************************************************************************/")
+        output.append("")
+        for plugin_instance in self.project.plugin_instances:
+            for line in plugin_instance.globals_c().strip().split("\n"):
+                if line.strip():
+                    output.append(line.strip())
+        output.append("")
+        output.append("/***********************************************************************/")
+        output.append("")
+
         output += self.component_signal_converter()
         output += self.component_buffer_converter()
         output += self.component_buffer()

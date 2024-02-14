@@ -224,6 +224,9 @@ class PluginBase:
                 if signal_setup["direction"] == "input" and signal_name in interface_data:
                     signal_setup["value"] = self.convert(signal_name, signal_setup, interface_data[signal_name]["value"])
 
+    def globals_c(self):
+        return ""
+
     def convert(self, signal_name, signal_setup, value):
         return value
 
