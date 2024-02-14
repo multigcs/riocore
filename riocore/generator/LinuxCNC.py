@@ -1017,11 +1017,13 @@ class LinuxCNC:
                     if plugin_instance.TYPE == "frameio":
                         output.append(f"void convert_frame_{plugin_instance.instances_name}_output(data_t *data) {{")
                         output.append(f"    static float timeout = {plugin_instance.TIMEOUT};")
+                        output.append(f"    static float delay = 0;")
                         output.append("    static long frame_stamp_last = 0;")
                         output.append("    static uint8_t frame_id = 0;")
                         output.append(f"    static uint8_t frame_io[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append(f"    static uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append("    float frame_time = 0.0;")
+                        output.append("    uint8_t frame_id_last = 0;")
                         output.append("    uint8_t frame_id_ack = 0;")
                         output.append("    uint8_t frame_timeout = 0;")
                         output.append("    uint8_t frame_ack = 0;")
@@ -1037,7 +1039,8 @@ class LinuxCNC:
                         output.append("        frame_ack = 1;")
                         output.append("    }")
                         output.append("")
-                        output.append("    if (frame_timeout == 1 || frame_ack == 1) {")
+                        output.append(f"    if (frame_timeout == 1 || (frame_ack == 1 && (float)(stamp_last - {plugin_instance.instances_name}_last_rx) / 1000000.0 > delay)) {{")
+                        output.append("        frame_id_last = frame_id;")
                         output.append("        frame_id += 1;")
 
                         output.append("")
@@ -1147,6 +1150,7 @@ class LinuxCNC:
                         output.append("    if (frame_id_last != frame_id) {")
                         output.append("        frame_id_last = frame_id;")
                         output.append("        frame_new = 1;")
+                        output.append(f"        {plugin_instance.instances_name}_last_rx = stamp_last;")
                         output.append("    }")
                         output.append("    for (cn = 0; cn < frame_len; cn++) {")
                         output.append(f"        frame_data[cn] = data->{variable_name}[frame_len - cn + 2];")
@@ -1536,6 +1540,8 @@ class LinuxCNC:
         output.append("************************************************************************/")
         output.append("")
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"long {plugin_instance.instances_name}_last_rx = 0;")
             for line in plugin_instance.globals_c().strip().split("\n"):
                 if line.strip():
                     output.append(line.strip())

@@ -1,3 +1,5 @@
+import time
+
 class Modifiers:
     def pin_modifier_debounce_input(self, instances, modifier_num, pin_name, pin_varname):
         # width = modifier.get("delay", 16)
@@ -126,7 +128,7 @@ class PluginBase:
 
         if self.TYPE == "frameio":
             self.timeout = self.TIMEOUT
-            self.send_counter = 255
+            self.timestamp = time.time() * 1000.0
             self.rxframe_len = 0
             self.rxframe_id = 0
             self.txframe_id_ack = 0
@@ -180,13 +182,13 @@ class PluginBase:
             frame_timeout = False
             if self.txframe_id_ack == self.txframe_id:
                 frame_ack = True
-            if self.send_counter >= self.timeout:
+            timestamp = time.time() * 1000.0
+            self.time_diff = timestamp - self.timestamp
+            if self.time_diff >= self.timeout:
                 frame_timeout = True
-            else:
-                self.send_counter += 1
             # print("frame_ack or frame_timeout", frame_ack, frame_timeout, self.timeout, self.send_counter)
             if frame_ack or frame_timeout:
-                self.send_counter = 0
+                self.timestamp = timestamp
                 if self.txframe_id < 255:
                     self.txframe_id += 1
                 else:

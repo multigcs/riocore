@@ -50,7 +50,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {}
         self.TYPE = "frameio"
         self.DYNAMIC_SIGNALS = True
-        self.TIMEOUT = 1000.0
+        self.TIMEOUT = 500.0
         self.INFO = "generic modbus plugin"
         self.DESCRIPTION = ""
 
@@ -80,7 +80,7 @@ class Plugin(PluginBase):
 
         vmin = 0
         vmax = 65535
-        for signal_name, signal_config in self.plugin_setup.get("signals", {}).items():
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             n_values = signal_config.get("values", 0)
             if n_values > 1:
                 for vn in range(0, n_values):
@@ -88,9 +88,9 @@ class Plugin(PluginBase):
                     self.SIGNALS[value_name] = {
                         "direction": signal_config["direction"],
                         "unit": signal_config.get("unit", ""),
-                        "scale": signal_config.get("scale"),
+                        "scale": signal_config.get("scale", 1.0),
                         "format": signal_config.get("format", "d"),
-                        "_userconfig": signal_config,
+                        "plugin_setup": signal_config,
                         "min": vmin,
                         "max": vmax,
                     }
@@ -104,8 +104,9 @@ class Plugin(PluginBase):
                 self.SIGNALS[signal_name] = {
                     "direction": signal_config["direction"],
                     "unit": signal_config.get("unit", ""),
-                    "scale": signal_config.get("scale"),
+                    "scale": signal_config.get("scale", 1.0),
                     "format": signal_config.get("format", "d"),
+                    "plugin_setup": signal_config,
                     "min": vmin,
                     "max": vmax,
                 }
@@ -178,7 +179,7 @@ class Plugin(PluginBase):
                             if value_name not in self.SIGNALS:
                                 print(f"ERROR: no signal_config: {value_name}")
                             else:
-                                signal_config = self.SIGNALS[value_name].get("_userconfig", {})
+                                signal_config = self.SIGNALS[value_name].get("plugin_setup", {})
                                 signal_address = signal_config.get("address")
                                 if address != signal_address:
                                     print(f"ERROR: wrong address {address} != {signal_address}")
@@ -186,7 +187,10 @@ class Plugin(PluginBase):
                                     start_pos = 3 + vn * 2
                                     value_list = frame_data[start_pos : start_pos + 2]
                                     if value_list:
+                                        vscale = self.SIGNALS[value_name]["scale"]
                                         self.SIGNALS[value_name]["value"] = self.list2int(value_list)
+                                        if vscale:
+                                            self.SIGNALS[value_name]["value"] *= vscale
                                         if signal_config["direction"] == "input":
                                             self.SIGNALS[f"{value_name}_valid"]["value"] = 1
 
@@ -194,12 +198,16 @@ class Plugin(PluginBase):
                         if self.signal_name not in self.SIGNALS:
                             print(f"ERROR: no signal_config: {self.signal_name}")
                         else:
-                            signal_config = self.SIGNALS[self.signal_name].get("userconfig", {})
+                            signal_config = self.SIGNALS[self.signal_name].get("plugin_setup", {})
                             signal_address = signal_config.get("address")
                             if address != signal_address:
                                 print(f"ERROR: wrong address {address} != {signal_address}")
+                                print(frame_data, signal_config, self.signal_name)
                             else:
+                                vscale = self.SIGNALS[self.signal_name]["scale"]
                                 self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
+                                if vscale:
+                                    self.SIGNALS[self.signal_name]["value"] *= vscale
                                 self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
 
             # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
@@ -215,8 +223,7 @@ class Plugin(PluginBase):
                         self.SIGNALS[f"{value_name}_valid"]["value"] = 0
             elif f"{self.signal_name}_valid" in self.SIGNALS:
                 self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 0
-
-        if self.signal_active < len(self.plugin_setup.get("signals", {})) - 1:
+        if self.signal_active < len(self.plugin_setup.get("config", {})) - 1:
             self.signal_active += 1
         else:
             self.signal_active = 0
@@ -225,7 +232,7 @@ class Plugin(PluginBase):
         cmd = []
 
         sn = 0
-        for signal_name, signal_config in self.plugin_setup.get("signals", {}).items():
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             if sn == self.signal_active:
                 direction = signal_config["direction"]
                 address = signal_config["address"]
@@ -276,10 +283,11 @@ class Plugin(PluginBase):
         output.append("        if ((crc & 0xFF) == frame_data[frame_len - 2] && (crc>>8 & 0xFF) == frame_data[frame_len - 1]) {")
 
         sn = 0
-        for signal_name, signal_config in self.plugin_setup.get("signals", {}).items():
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]
             address = signal_config["address"]
             ctype = signal_config["type"]
+            vscale = signal_config["scale"]
             self.signal_values = signal_config.get("values", 1)
             register = self.int2list(signal_config["register"])
             n_values = self.int2list(self.signal_values)
@@ -294,12 +302,17 @@ class Plugin(PluginBase):
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
                         output.append(f"                    {value_name} = (frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF);")
+                        if vscale:
+                            output.append(f"                    {value_name} *= {vscale};")
                         output.append(f"                    {value_name}_valid = 1;")
                     output.append("                }")
                     output.append("            }")
                 else:
-                    output.append(f"            // get sine 16bit value")
+                    output.append(f"            // get single 16bit value")
                     output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
+                    output.append(f"                value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
+                    if vscale:
+                        output.append(f"                value_{self.signal_name} *= {vscale};")
                     output.append("            }")
             sn += 1
 
@@ -319,10 +332,11 @@ class Plugin(PluginBase):
 
         output.append("    if (frame_timeout == 1) {")
         sn = 0
-        for signal_name, signal_config in self.plugin_setup.get("signals", {}).items():
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]
             address = signal_config["address"]
             ctype = signal_config["type"]
+            vscale = signal_config["scale"]
             self.signal_values = signal_config.get("values", 1)
             register = self.int2list(signal_config["register"])
             n_values = self.int2list(self.signal_values)
@@ -336,7 +350,7 @@ class Plugin(PluginBase):
                         output.append(f"                {value_name}_valid = 0;")
                     output.append("            }")
                 else:
-                    output.append(f"            // get sine 16bit value")
+                    output.append(f"            // get single 16bit value")
                     output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
                     output.append(f"                    value_{signal_name}_valid = 0;")
                     output.append("            }")
@@ -345,16 +359,20 @@ class Plugin(PluginBase):
         output.append("        }")
         output.append("")
 
-        output.append(f"        if ({self.instances_name}_signal_active < {len(self.plugin_setup.get('signals', {})) - 1}) {{")
+        output.append(f"        if ({self.instances_name}_signal_active < {len(self.plugin_setup.get('config', {})) - 1}) {{")
         output.append(f"            {self.instances_name}_signal_active++;")
         output.append("        } else {")
         output.append(f"            {self.instances_name}_signal_active = 0;")
         output.append("        }")
         output.append("")
 
+
+        output.append(f"        switch({self.instances_name}_signal_active) {{")
         sn = 0
-        for signal_name, signal_config in self.plugin_setup.get("signals", {}).items():
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]
+            timeout = signal_config.get("timeout", self.TIMEOUT)
+            delay = signal_config.get("delay", 0)
             address = signal_config["address"]
             ctype = signal_config["type"]
             self.signal_values = signal_config.get("values", 1)
@@ -362,45 +380,51 @@ class Plugin(PluginBase):
             n_values = self.int2list(self.signal_values)
             self.signal_name = signal_name
             self.signal_address = address
+
+            output.append(f"            case {sn}: {{")
+            output.append(f"                // set timing for {signal_name}")
+            output.append(f"                delay = {delay};")
+            output.append(f"                timeout = {timeout};")
+
             if direction == "output":
                 if self.signal_values > 1:
-                    output.append(f"        // set 16bit value")
-                    output.append(f"        if ({self.instances_name}_signal_active == {sn}) {{")
-                    output.append(f"            frame_data[0] = {address};")
-                    output.append(f"            frame_data[1] = {ctype};")
-                    output.append(f"            frame_data[2] = {register[0]};")
-                    output.append(f"            frame_data[3] = {register[1]};")
-                    output.append(f"            frame_data[4] = {n_values[0]};")
-                    output.append(f"            frame_data[5] = {n_values[1]};")
+                    output.append(f"                // set 16bit value")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    output.append(f"                frame_data[4] = {n_values[0]};")
+                    output.append(f"                frame_data[5] = {n_values[1]};")
                     for vn in range(0, self.signal_values):
                         value_name = f"{self.signal_name}_{vn}"
-                        output.append(f"            frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
-                        output.append(f"            frame_data[{7 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
-                    output.append(f"            frame_len = {8 + vn * 2};")
-                    output.append("        }")
+                        output.append(f"                frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
+                        output.append(f"                frame_data[{7 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
+                    output.append(f"                frame_len = {8 + vn * 2};")
                 else:
-                    output.append(f"        // set 16bit value")
-                    output.append(f"        if ({self.instances_name}_signal_active == {sn}) {{")
-                    output.append(f"            frame_data[0] = {address};")
-                    output.append(f"            frame_data[1] = {ctype};")
-                    output.append(f"            frame_data[2] = {register[0]};")
-                    output.append(f"            frame_data[3] = {register[1]};")
-                    output.append(f"            frame_data[4] = (uint16_t)value_{signal_name}>>8 & 0xFF;")
-                    output.append(f"            frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
-                    output.append(f"            frame_len = 6;")
-                    output.append("        }")
+                    output.append(f"                // set 16bit value")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    output.append(f"                frame_data[4] = (uint16_t)value_{signal_name}>>8 & 0xFF;")
+                    output.append(f"                frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
+                    output.append(f"                frame_len = 6;")
             else:
-                output.append(f"        // request 16bit value")
-                output.append(f"        if ({self.instances_name}_signal_active == {sn}) {{")
-                output.append(f"            frame_data[0] = {address};")
-                output.append(f"            frame_data[1] = {ctype};")
-                output.append(f"            frame_data[2] = {register[0]};")
-                output.append(f"            frame_data[3] = {register[1]};")
-                output.append(f"            frame_data[4] = {n_values[0]};")
-                output.append(f"            frame_data[5] = {n_values[1]};")
-                output.append(f"            frame_len = 6;")
-                output.append("        }")
+                output.append(f"                // request 16bit value")
+                output.append(f"                frame_data[0] = {address};")
+                output.append(f"                frame_data[1] = {ctype};")
+                output.append(f"                frame_data[2] = {register[0]};")
+                output.append(f"                frame_data[3] = {register[1]};")
+                output.append(f"                frame_data[4] = {n_values[0]};")
+                output.append(f"                frame_data[5] = {n_values[1]};")
+                output.append(f"                frame_len = 6;")
+
+            output.append("                break;")
+            output.append("            }")
+
             sn += 1
+        output.append("        }")
+        output.append("")
 
         output.append("")
         output.append("        uint8_t i = 0;")
@@ -411,4 +435,5 @@ class Plugin(PluginBase):
         output.append("        frame_data[frame_len] = crc & 0xFF;")
         output.append("        frame_data[frame_len + 1] = crc>>8 & 0xFF;")
         output.append("        frame_len += 2;")
+
         return "\n".join(output)
