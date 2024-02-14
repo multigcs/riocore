@@ -187,7 +187,8 @@ class Plugin(PluginBase):
                                     value_list = frame_data[start_pos : start_pos + 2]
                                     if value_list:
                                         self.SIGNALS[value_name]["value"] = self.list2int(value_list)
-                                        self.SIGNALS[f"{value_name}_valid"]["value"] = 1
+                                        if signal_config["direction"] == "input":
+                                            self.SIGNALS[f"{value_name}_valid"]["value"] = 1
 
                     else:
                         if self.signal_name not in self.SIGNALS:
