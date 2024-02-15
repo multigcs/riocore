@@ -83,6 +83,11 @@ class Plugin(PluginBase):
         vmax = 65535
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             n_values = signal_config.get("values", 0)
+            ctype = signal_config["type"]
+            is_bool = False
+            if ctype in {5, 15}:
+                is_bool = True
+
             if n_values > 1:
                 for vn in range(0, n_values):
                     value_name = f"{signal_name}_{vn}"
@@ -94,6 +99,7 @@ class Plugin(PluginBase):
                         "plugin_setup": signal_config,
                         "min": vmin,
                         "max": vmax,
+                        "bool": is_bool,
                     }
                     if signal_config["direction"] == "input":
                         self.SIGNALS[f"{value_name}_valid"] = {
@@ -115,6 +121,7 @@ class Plugin(PluginBase):
                     "plugin_setup": signal_config,
                     "min": vmin,
                     "max": vmax,
+                    "bool": is_bool,
                 }
                 if signal_config["direction"] == "input":
                     self.SIGNALS[f"{signal_name}_valid"] = {
@@ -191,18 +198,22 @@ class Plugin(PluginBase):
                                 print(f"ERROR: no signal_config: {value_name}")
                             else:
                                 signal_config = self.SIGNALS[value_name].get("plugin_setup", {})
+                                direction = signal_config.get("direction")
                                 signal_address = signal_config.get("address")
                                 if address != signal_address:
                                     print(f"ERROR: wrong address {address} != {signal_address}")
-                                else:
+                                elif direction == "input":
                                     start_pos = 3 + vn * 2
                                     value_list = frame_data[start_pos : start_pos + 2]
-                                    if value_list:
+
+                                    if value_list and len(value_list) == 2:
                                         vscale = self.SIGNALS[value_name]["scale"]
+                                        direction = self.SIGNALS[value_name]["direction"]
                                         self.SIGNALS[value_name]["value"] = self.list2int(value_list)
                                         if vscale:
                                             self.SIGNALS[value_name]["value"] *= vscale
-                                        self.SIGNALS[f"{value_name}_valid"]["value"] = 1
+                                        if direction == "input":
+                                            self.SIGNALS[f"{value_name}_valid"]["value"] = 1
                     else:
                         if self.signal_name not in self.SIGNALS:
                             print(f"ERROR: no signal_config: {self.signal_name}")
@@ -214,10 +225,12 @@ class Plugin(PluginBase):
                                 print(frame_data, signal_config, self.signal_name)
                             else:
                                 vscale = self.SIGNALS[self.signal_name]["scale"]
+                                direction = self.SIGNALS[self.signal_name]["direction"]
                                 self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
                                 if vscale:
                                     self.SIGNALS[self.signal_name]["value"] *= vscale
-                                self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
+                                if direction == "input":
+                                    self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
 
             # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
 
@@ -255,17 +268,28 @@ class Plugin(PluginBase):
                 self.signal_address = address
                 if direction == "output":
                     if self.signal_values > 1:
-                        cmd = [address, ctype] + register + n_values
-                        for vn in range(0, self.signal_values):
-                            value_name = f"{self.signal_name}_{vn}"
-                            value = self.SIGNALS[value_name]["value"]
-                            cmd += self.int2list(value)
+                        if ctype == 15:
+                            cmd = [address, ctype] + register + n_values + [1]
+                            bitvalues = 0
+                            for vn in range(0, self.signal_values):
+                                value_name = f"{self.signal_name}_{vn}"
+                                value = self.SIGNALS[value_name]["value"]
+                                if value == 1:
+                                    bitvalues = bitvalues | (1<<vn)
+                            cmd.append(bitvalues)
+                        else:
+                            cmd = [address, ctype] + register + n_values
+                            for vn in range(0, self.signal_values):
+                                value_name = f"{self.signal_name}_{vn}"
+                                value = self.SIGNALS[value_name]["value"]
+                                cmd += self.int2list(value)
                     else:
                         value = self.SIGNALS[signal_name]["value"]
+                        if ctype == 5:
+                            value *= 65280
                         cmd = [address, ctype] + register + self.int2list(value)
                 else:
                     cmd = [address, ctype] + register + n_values
-
             sn += 1
 
         csum.update(cmd)
