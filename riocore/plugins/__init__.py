@@ -144,12 +144,6 @@ class PluginBase:
                 "description": "name of this plugin instance",
             }
 
-        if self.INTERFACE and "net" not in self.OPTIONS:
-            self.OPTIONS["net"] = {
-                "type": str,
-                "description": "target net in LinuxCNC",
-            }
-
         if self.TYPE == "joint":
             if "axis" not in self.OPTIONS:
                 self.OPTIONS["axis"] = {
