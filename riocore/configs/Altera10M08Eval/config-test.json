@@ -2,7 +2,7 @@
     "name": "Altera10M08Eval",
     "description": "Altera10M08Eval",
     "boardcfg": "Altera10M08Eval",
-    "transport": "UDP",
+    "protocol": "UDP",
     "modules": [
         {
             "slot": "ChipKit",

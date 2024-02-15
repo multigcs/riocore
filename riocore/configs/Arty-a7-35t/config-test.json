@@ -3,7 +3,7 @@
     "description": "Arty a7-35t - testing",
     "boardcfg": "Arty-a7-35t",
     "machinetype": "lathe",
-    "transport": "UDP",
+    "protocol": "UDP",
     "joypad": {
         "enable": true,
         "name": "Microntek",

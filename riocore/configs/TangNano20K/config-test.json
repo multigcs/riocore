@@ -2,7 +2,7 @@
     "name": "TangNano20K",
     "description": "TangNano20K test setup",
     "boardcfg": "TangNano20K",
-    "transport": "UDP",
+    "protocol": "UDP",
     "axis": 3,
     "plugins": [
         {

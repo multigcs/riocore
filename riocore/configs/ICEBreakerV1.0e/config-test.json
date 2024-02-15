@@ -46,6 +46,6 @@
             }
         }
     ],
-    "transport": "UDP",
+    "protocol": "UDP",
     "axis": 3
 }
