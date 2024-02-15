@@ -1,5 +1,6 @@
 import time
 
+
 class Modifiers:
     def pin_modifier_debounce_input(self, instances, modifier_num, pin_name, pin_varname):
         # width = modifier.get("delay", 16)

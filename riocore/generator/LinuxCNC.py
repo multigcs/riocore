@@ -1072,8 +1072,7 @@ class LinuxCNC:
                             signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
-                            if direction == "input":
-                                output.append(f"        *data->{varname} = value_{signal_name};")
+                            output.append(f"        *data->{varname} = value_{signal_name};")
                         output.append("")
                         output.append("        /**************************/")
                         output.append("")
@@ -1164,11 +1163,10 @@ class LinuxCNC:
                             signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
-                            if direction == "input":
-                                ctype = "float"
-                                if boolean:
-                                    ctype = "bool"
-                                output.append(f"    {ctype} value_{signal_name} = *data->{varname};")
+                            ctype = "float"
+                            if boolean:
+                                ctype = "bool"
+                            output.append(f"    {ctype} value_{signal_name} = *data->{varname};")
                         output.append("")
                         output.append("    /***********************/")
                         output.append("")
@@ -1186,11 +1184,10 @@ class LinuxCNC:
                             signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
-                            if direction == "input":
-                                ctype = "float"
-                                if boolean:
-                                    ctype = "bool"
-                                output.append(f"    *data->{varname} = value_{signal_name};")
+                            ctype = "float"
+                            if boolean:
+                                ctype = "bool"
+                            output.append(f"    *data->{varname} = value_{signal_name};")
                         output.append("")
                         output.append("    /**************************/")
                         output.append("}")
