@@ -68,8 +68,8 @@ class config:
             "register": {
                 "description": "start register",
                 "type": int,
-                "min": 1,
-                "max": 65535,
+                "min": 0,
+                "max": 65534,
                 "default": 0,
             },
             "values": {
@@ -89,6 +89,7 @@ class config:
             "scale": {
                 "description": "Value-Scale",
                 "type": float,
+                "decimals": 6,
                 "default": 1.0,
             },
             "unit": {
@@ -234,6 +235,7 @@ class config:
             elif data["type"] == float:
                 data["widget"] = QDoubleSpinBox()
                 data["widget"].setValue(data["default"])
+                data["widget"].setDecimals(data["decimals"])
             else:
                 data["widget"] = QLineEdit(data["default"])
             data["widget"].setToolTip(data["description"])
