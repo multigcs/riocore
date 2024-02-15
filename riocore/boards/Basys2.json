@@ -1,0 +1,94 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "toolchain": "ise",
+    "family": "xc3",
+    "type": "xc3s100e-4-cp132",
+    "package": "vq100",
+    "flashcmd": "djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit",
+    "clock": {
+        "speed": "25000000",
+        "pin": "B8"
+    },
+    "slots": [
+        {
+            "name": "LEDS",
+            "comment": "LEDS",
+            "pins": {
+                "LED1": "M5",
+                "LED2": "M11",
+                "LED3": "P7",
+                "LED4": "P6",
+                "LED5": "N5",
+                "LED6": "N4",
+                "LED7": "P4",
+                "LED8": "G1"
+            }
+        },
+        {
+            "name": "BUTTONS",
+            "comment": "BUTTONS",
+            "pins": {
+                "BTN1": "G12",
+                "BTN2": "C11",
+                "BTN3": "M4",
+                "BTN4": "A7"
+            }
+        },
+        {
+            "name": "SWITCHES",
+            "comment": "SWITCHES",
+            "pins": {
+                "SW1": "P11",
+                "SW1": "L3",
+                "SW1": "K3",
+                "SW1": "B4",
+                "SW1": "G3",
+                "SW1": "F3",
+                "SW1": "E2",
+                "SW1": "N3"
+            }
+        },
+        {
+            "name": "PMOD_JA",
+            "comment": "PMOD JA",
+            "pins": {
+                "P1": "B2",
+                "P2": "A3",
+                "P3": "J3",
+                "P4": "B5"
+            }
+        },
+        {
+            "name": "PMOD_JB",
+            "comment": "PMOD JB",
+            "pins": {
+                "P1": "C6",
+                "P2": "B6",
+                "P3": "C5",
+                "P4": "B7"
+            }
+        },
+        {
+            "name": "PMOD_JC",
+            "comment": "PMOD JC",
+            "pins": {
+                "P1": "A9",
+                "P2": "B9",
+                "P3": "A10",
+                "P4": "C9"
+            }
+        },
+        {
+            "name": "PMOD_JD",
+            "comment": "PMOD JD",
+            "pins": {
+                "P1": "C12",
+                "P2": "A13",
+                "P3": "C13",
+                "P4": "D12"
+            }
+        }
+    ]
+}
+

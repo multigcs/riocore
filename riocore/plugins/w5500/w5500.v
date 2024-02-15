@@ -69,7 +69,7 @@ module w5500
                         counter <= counter + 1'b1;
                     end else begin
                         flush_requested <= 1'b1;
-                        counter = 0;
+                        counter <= 0;
                     end
                 end else begin
                     data_out_valid <= 1'b0;

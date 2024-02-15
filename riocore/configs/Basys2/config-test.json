@@ -1,0 +1,21 @@
+{
+  "name": "Basys2",
+  "description": "Basys2 - test configuration",
+  "boardcfg": "Basys2",
+    "modules": [
+        {
+            "slot": "PMOD_JA",
+            "module": "w5500-hpmod"
+        }
+    ],
+  "plugins": [
+    {
+        "type": "blink",
+        "pins": {
+            "led": {
+                "pin": "LEDS:LED1"
+            }
+        }
+    }
+  ]
+}
