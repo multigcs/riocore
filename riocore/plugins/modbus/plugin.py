@@ -50,6 +50,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {}
         self.TYPE = "frameio"
         self.DYNAMIC_SIGNALS = True
+        self.PLUGIN_CONFIG = True
         self.TIMEOUT = 500.0
         self.INFO = "generic modbus plugin"
         self.DESCRIPTION = ""

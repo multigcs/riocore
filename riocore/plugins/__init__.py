@@ -122,6 +122,7 @@ class PluginBase:
         self.INFO = ""
         self.DESCRIPTION = ""
         self.OPTIONS = {}
+        self.PLUGIN_CONFIG = False
         self.system_setup = system_setup
         self.plugin_id = plugin_id
         self.plugin_setup = plugin_setup
