@@ -7,7 +7,7 @@
     "package": "vq100",
     "flashcmd": "djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit",
     "clock": {
-        "speed": "25000000",
+        "speed": "50000000",
         "pin": "B8"
     },
     "slots": [
@@ -87,6 +87,32 @@
                 "P2": "A13",
                 "P3": "C13",
                 "P4": "D12"
+            }
+        },
+        {
+            "name": "7SEG",
+            "comment": "7segment Display",
+            "pins": {
+                "EN1": "F12",
+                "EN2": "J12",
+                "EN3": "M13",
+                "EN4": "K14",
+                "A": "L14",
+                "B": "H12",
+                "C": "N14",
+                "D": "N11",
+                "E": "P12",
+                "F": "L13",
+                "G": "M12",
+                "DP": "N13"
+            }
+        },
+        {
+            "name": "PS2",
+            "comment": "PS2",
+            "pins": {
+                "CLOCK": "B1",
+                "DATA": "C3"
             }
         }
     ]
