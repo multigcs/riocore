@@ -10,8 +10,8 @@ for chip in ["LFE5U-12F", "LFE5U-45F", "LFE5UM-25F", "LFE5UM5G-25F", "LFE5UM5G-8
     source = json.loads(open(f"/opt/oss-cad-suite/share/trellis/database/ECP5/{chip}/iodb.json").read())
     packages[chip] = {}
     for package in source["packages"]:
-        packages[chip][package] = []
+        packages[chip][package] = {}
         for pin in source["packages"][package]:
-            packages[chip][package].append(pin)
+            packages[chip][package][pin] = {"source": f"trellis/database/ECP5/{chip}/iodb.json"}
 
 print(json.dumps(packages, indent=4))

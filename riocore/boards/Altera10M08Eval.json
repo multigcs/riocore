@@ -4,7 +4,7 @@
     "toolchain": "quartus",
     "family": "MAX 10",
     "type": "10M08SAE144C8G",
-    "package": "csg324",
+    "package": "E144",
     "clock": {
         "speed": "50000000",
         "pin": "PIN_27"
