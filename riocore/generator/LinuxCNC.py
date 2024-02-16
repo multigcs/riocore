@@ -2060,7 +2060,7 @@ class axis:
 
     def draw_end(self):
         cfgxml_data = []
-        cfgxml_data.append("<label><text>\"\"</text><width>40</width></label>")
+        cfgxml_data.append("<label><text>\"\"</text><width>30</width></label>")
         cfgxml_data.append("</pyvcp>")
         return cfgxml_data
 
