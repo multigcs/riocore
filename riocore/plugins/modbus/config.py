@@ -86,6 +86,13 @@ class config:
                 "max": 1000,
                 "default": 0,
             },
+            "timeout": {
+                "description": "response timeout",
+                "type": int,
+                "min": 100,
+                "max": 100000,
+                "default": 500,
+            },
             "scale": {
                 "description": "Value-Scale",
                 "type": float,
@@ -185,7 +192,7 @@ class config:
             if name == "name":
                 value = config_name
             else:
-                value = self.config[config_name].get(name)
+                value = self.config[config_name].get(name, data["default"])
             if data["type"] == "combo":
                 for n in range(0, data["widget"].count()):
                     if data["widget"].itemText(n).startswith(f"{value} "):

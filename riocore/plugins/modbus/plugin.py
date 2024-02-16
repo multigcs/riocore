@@ -106,11 +106,13 @@ class Plugin(PluginBase):
                             "direction": "input",
                             "bool": True,
                             "validation": True,
+                            "helper": True,
                         }
                         self.SIGNALS[f"{value_name}_errors"] = {
                             "direction": "input",
                             "validation_counter": True,
                             "format": "d",
+                            "helper": True,
                         }
             else:
                 self.SIGNALS[signal_name] = {
@@ -128,11 +130,13 @@ class Plugin(PluginBase):
                         "direction": "input",
                         "bool": True,
                         "validation": True,
+                        "helper": True,
                     }
                     self.SIGNALS[f"{signal_name}_errors"] = {
                         "direction": "input",
                         "validation_counter": True,
                         "format": "d",
+                        "helper": True,
                     }
 
         self.INTERFACE = {
@@ -323,7 +327,7 @@ class Plugin(PluginBase):
             direction = signal_config["direction"]
             address = signal_config["address"]
             ctype = signal_config["type"]
-            vscale = signal_config["scale"]
+            vscale = signal_config.get("scale", 1.0)
             self.signal_values = signal_config.get("values", 1)
             register = self.int2list(signal_config["register"])
             n_values = self.int2list(self.signal_values)
@@ -345,6 +349,7 @@ class Plugin(PluginBase):
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
                         output.append(f"                        {value_name}_errors += 1;")
+                        output.append(f"                        {value_name}_valid = 0;")
                     output.append("                    }")
                 else:
                     output.append(f"                    // get single 16bit value")
@@ -356,7 +361,9 @@ class Plugin(PluginBase):
                     output.append(f"                        value_{self.signal_name}_valid = 1;")
                     output.append("                    } else {")
                     output.append(f"                        value_{self.signal_name}_errors += 1;")
+                    output.append(f"                        value_{self.signal_name}_valid = 0;")
                     output.append("                    }")
+                output.append("                    break;")
                 output.append("                }")
             sn += 1
         output.append("            }")
@@ -381,7 +388,7 @@ class Plugin(PluginBase):
             direction = signal_config["direction"]
             address = signal_config["address"]
             ctype = signal_config["type"]
-            vscale = signal_config["scale"]
+            vscale = signal_config.get("scale", 1.0)
             self.signal_values = signal_config.get("values", 1)
             register = self.int2list(signal_config["register"])
             n_values = self.int2list(self.signal_values)
@@ -433,26 +440,53 @@ class Plugin(PluginBase):
             output.append(f"                timeout = {timeout};")
             if direction == "output":
                 if self.signal_values > 1:
-                    output.append(f"                // set 16bit value")
+                    if ctype == 15:
+                        output.append(f"                // set 1bit values")
+                    else:
+                        output.append(f"                // set 16bit values")
                     output.append(f"                frame_data[0] = {address};")
                     output.append(f"                frame_data[1] = {ctype};")
                     output.append(f"                frame_data[2] = {register[0]};")
                     output.append(f"                frame_data[3] = {register[1]};")
                     output.append(f"                frame_data[4] = {n_values[0]};")
                     output.append(f"                frame_data[5] = {n_values[1]};")
-                    for vn in range(0, self.signal_values):
-                        value_name = f"{self.signal_name}_{vn}"
-                        output.append(f"                frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
-                        output.append(f"                frame_data[{7 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
-                    output.append(f"                frame_len = {8 + vn * 2};")
+                    output.append(f"                frame_data[6] = 1;")
+                    if ctype == 15:
+                        output.append(f"                uint8_t bitvalues = 0;")
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            output.append(f"                if (value_{value_name} == 1) {{")
+                            output.append(f"                    bitvalues |= (1<<{vn});")
+                            output.append("                }")
+                        output.append("                frame_data[7] = bitvalues;")
+                        output.append("                frame_len = 8;")
+
+                    else:
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            output.append(f"                frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
+                            output.append(f"                frame_data[{7 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
+                        output.append(f"                frame_len = {8 + vn * 2};")
                 else:
-                    output.append(f"                // set 16bit value")
+                    if ctype == 5:
+                        output.append(f"                // set coil value")
+                    else:
+                        output.append(f"                // set 16bit value")
                     output.append(f"                frame_data[0] = {address};")
                     output.append(f"                frame_data[1] = {ctype};")
                     output.append(f"                frame_data[2] = {register[0]};")
                     output.append(f"                frame_data[3] = {register[1]};")
-                    output.append(f"                frame_data[4] = (uint16_t)value_{signal_name}>>8 & 0xFF;")
-                    output.append(f"                frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
+                    if ctype == 5:
+                        output.append(f"                if (value_{signal_name} == 1) {{")
+                        output.append(f"                    frame_data[4] = 255;")
+                        output.append(f"                    frame_data[5] = 0;")
+                        output.append("                } else {")
+                        output.append(f"                    frame_data[4] = 0;")
+                        output.append(f"                    frame_data[5] = 0;")
+                        output.append("                }")
+                    else:
+                        output.append(f"                frame_data[4] = (uint16_t)value_{signal_name}>>8 & 0xFF;")
+                        output.append(f"                frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
                     output.append(f"                frame_len = 6;")
             else:
                 output.append(f"                // request 16bit value")

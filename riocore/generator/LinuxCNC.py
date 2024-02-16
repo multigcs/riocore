@@ -605,12 +605,18 @@ class LinuxCNC:
                     boolean = signal_config.get("bool")
                     setp = userconfig.get("setp")
                     displayconfig = userconfig.get("display", {})
+                    if signal_config.get("helper", False) and not displayconfig:
+                        continue
+
                     vmin = signal_config.get("min", -1000)
                     vmax = signal_config.get("max", 1000)
+                    vformat = signal_config.get("format")
                     if "min" not in displayconfig:
                         displayconfig["min"] = vmin
                     if "max" not in displayconfig:
                         displayconfig["max"] = vmax
+                    if vformat and "format" not in displayconfig:
+                        displayconfig["format"] = vformat
 
                     if netname or setp:
                         section = displayconfig.get("section", "status")
@@ -2224,7 +2230,7 @@ class axis:
 
     def draw_number(self, name, halpin, hal_type="float", setup={}):
         title = setup.get("title", name)
-        display_format = setup.get("size", "05.2f")
+        display_format = setup.get("format", "05.2f")
         element = "number"
         if hal_type != "float":
             display_format = "d"
