@@ -362,7 +362,8 @@ class Project:
                                 ssetup[msetup_name] = copy.deepcopy(msetup)
                             # rewrite pins
                             for pname, pin in ssetup.get(msetup_name, {}).get("pins", {}).items():
-                                realpin = spins[pin["pin"]]
+                                if "pin" in pin:
+                                    realpin = spins[pin["pin"]]
                                 ssetup[msetup_name]["pins"][pname]["pin"] = realpin
                             module_data["plugins"][jn] = ssetup[msetup_name]
                         # merge into jdata
