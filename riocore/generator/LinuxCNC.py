@@ -2057,6 +2057,7 @@ class axis:
 
     def draw_end(self):
         cfgxml_data = []
+        cfgxml_data.append("<label><text>\"LinuxCNC-RIO - Signals\"</text></label>")
         cfgxml_data.append("</pyvcp>")
         return cfgxml_data
 
