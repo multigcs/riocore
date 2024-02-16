@@ -1,6 +1,8 @@
 import glob
+import hashlib
 import importlib
 import os
+
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -345,3 +347,24 @@ class Gateware:
         output.append("")
         print(f"writing gateware to: {self.gateware_path}")
         open(f"{self.gateware_path}/rio.v", "w").write("\n".join(output))
+
+        # write hash of rio.v to filesystem
+        hash_file = f"{self.gateware_path}/hash.txt"
+        hash_old = ""
+        if os.path.isfile(hash_file):
+            hash_old = open(hash_file, "r").read()
+
+        hash_md5 = hashlib.md5()
+        with open(f"{self.gateware_path}/rio.v", "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        hash_new = hash_md5.hexdigest()
+
+        if hash_old != hash_new:
+            print("!!! gateware changed: needs to be build and flash |||")
+        hash_file_new = f"{self.gateware_path}/hash_new.txt"
+        open(hash_file_new, "w").write(hash_new)
+
+
+
+

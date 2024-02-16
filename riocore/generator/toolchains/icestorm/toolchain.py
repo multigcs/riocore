@@ -86,6 +86,7 @@ class Toolchain:
         else:
             makefile_data.append(f"load: {bitfileName}")
             makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
+        makefile_data.append("	mv -v hash_new.txt hash.txt")
         makefile_data.append("")
         makefile_data.append("")
         open(f"{path}/Makefile", "w").write("\n".join(makefile_data))

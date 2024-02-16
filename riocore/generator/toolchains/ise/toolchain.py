@@ -51,6 +51,7 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("load: $(PROJECT).bit")
         makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit")
+        makefile_data.append("	mv -v hash_new.txt hash.txt")
         makefile_data.append("")
         makefile_data.append("")
         open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
