@@ -611,12 +611,15 @@ class LinuxCNC:
                     vmin = signal_config.get("min", -1000)
                     vmax = signal_config.get("max", 1000)
                     vformat = signal_config.get("format")
+                    vunit = signal_config.get("unit")
                     if "min" not in displayconfig:
                         displayconfig["min"] = vmin
                     if "max" not in displayconfig:
                         displayconfig["max"] = vmax
                     if vformat and "format" not in displayconfig:
                         displayconfig["format"] = vformat
+                    if vunit and "unit" not in displayconfig:
+                        displayconfig["unit"] = vunit
 
                     if netname or setp:
                         section = displayconfig.get("section", "status")
@@ -2057,7 +2060,7 @@ class axis:
 
     def draw_end(self):
         cfgxml_data = []
-        cfgxml_data.append("<label><text>\"LinuxCNC-RIO - Signals\"</text></label>")
+        cfgxml_data.append("<label><text>\"\"</text><width>30</width></label>")
         cfgxml_data.append("</pyvcp>")
         return cfgxml_data
 
@@ -2232,6 +2235,7 @@ class axis:
     def draw_number(self, name, halpin, hal_type="float", setup={}):
         title = setup.get("title", name)
         display_format = setup.get("format", "05.2f")
+        unit = setup.get("unit")
         element = "number"
         if hal_type != "float":
             display_format = "d"
@@ -2248,6 +2252,11 @@ class axis:
         cfgxml_data.append('        <font>("Helvetica",14)</font>')
         cfgxml_data.append(f'        <format>"{display_format}"</format>')
         cfgxml_data.append(f"    </{element}>")
+        if unit:
+            cfgxml_data.append("    <label>")
+            cfgxml_data.append(f'      <text>"{unit}"</text>')
+            cfgxml_data.append("    </label>")
+
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
