@@ -95,7 +95,7 @@ class Plugin(PluginBase):
                         "direction": signal_config["direction"],
                         "unit": signal_config.get("unit", ""),
                         "scale": signal_config.get("scale", 1.0),
-                        "format": signal_config.get("format", "d"),
+                        "format": signal_config.get("format", "07d"),
                         "plugin_setup": signal_config,
                         "min": vmin,
                         "max": vmax,
@@ -111,7 +111,7 @@ class Plugin(PluginBase):
                         self.SIGNALS[f"{value_name}_errors"] = {
                             "direction": "input",
                             "validation_counter": True,
-                            "format": "d",
+                            "format": "03d",
                             "helper": True,
                         }
             else:
@@ -119,7 +119,7 @@ class Plugin(PluginBase):
                     "direction": signal_config["direction"],
                     "unit": signal_config.get("unit", ""),
                     "scale": signal_config.get("scale", 1.0),
-                    "format": signal_config.get("format", "d"),
+                    "format": signal_config.get("format", "07d"),
                     "plugin_setup": signal_config,
                     "min": vmin,
                     "max": vmax,
@@ -135,7 +135,7 @@ class Plugin(PluginBase):
                     self.SIGNALS[f"{signal_name}_errors"] = {
                         "direction": "input",
                         "validation_counter": True,
-                        "format": "d",
+                        "format": "03d",
                         "helper": True,
                     }
 

@@ -2060,7 +2060,7 @@ class axis:
 
     def draw_end(self):
         cfgxml_data = []
-        cfgxml_data.append("<label><text>\"\"</text><width>30</width></label>")
+        cfgxml_data.append("<label><text>\"\"</text><width>40</width></label>")
         cfgxml_data.append("</pyvcp>")
         return cfgxml_data
 
@@ -2234,28 +2234,35 @@ class axis:
 
     def draw_number(self, name, halpin, hal_type="float", setup={}):
         title = setup.get("title", name)
-        display_format = setup.get("format", "05.2f")
+        display_format = setup.get("format")
         unit = setup.get("unit")
         element = "number"
-        if hal_type != "float":
-            display_format = "d"
-            element = hal_type
+        if not display_format:
+            if hal_type != "float":
+                display_format = "d"
+                element = hal_type
+            else:
+                display_format = "07.2f"
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </label>")
         cfgxml_data.append(f"    <{element}>")
         cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
         cfgxml_data.append('        <font>("Helvetica",14)</font>')
         cfgxml_data.append(f'        <format>"{display_format}"</format>')
+        #cfgxml_data.append(f'        <width>10</width>')
+        cfgxml_data.append(f'      <justify>RIGHT</justify>')
         cfgxml_data.append(f"    </{element}>")
         if unit:
             cfgxml_data.append("    <label>")
+            cfgxml_data.append('        <font>("Helvetica",14)</font>')
             cfgxml_data.append(f'      <text>"{unit}"</text>')
             cfgxml_data.append("    </label>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"({title})"</text>')
+        cfgxml_data.append('      <font>("Helvetica",9)</font>')
+        cfgxml_data.append("    </label>")
 
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
