@@ -154,7 +154,7 @@ class PluginBase:
             if "is_joint" not in self.OPTIONS:
                 self.OPTIONS["is_joint"] = {
                     "type": bool,
-                    "default": True,
+                    "default": False,
                     "description": "configure as joint",
                 }
 
