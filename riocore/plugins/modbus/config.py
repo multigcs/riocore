@@ -72,6 +72,7 @@ class config:
                 "min": 0,
                 "max": 65534,
                 "default": 0,
+                "on_special": False,
             },
             "values": {
                 "description": "number of values",
@@ -79,6 +80,26 @@ class config:
                 "min": 1,
                 "max": 16,
                 "default": 1,
+                "on_special": False,
+            },
+            "scale": {
+                "description": "Value-Scale",
+                "type": float,
+                "decimals": 6,
+                "default": 1.0,
+                "on_special": False,
+            },
+            "unit": {
+                "description": "Unit-String",
+                "type": str,
+                "default": "",
+                "on_special": False,
+            },
+            "format": {
+                "description": "Display-Format",
+                "type": str,
+                "default": "d",
+                "on_special": False,
             },
             "delay": {
                 "description": "Delay after receive (free bus)",
@@ -93,22 +114,6 @@ class config:
                 "min": 100,
                 "max": 100000,
                 "default": 500,
-            },
-            "scale": {
-                "description": "Value-Scale",
-                "type": float,
-                "decimals": 6,
-                "default": 1.0,
-            },
-            "unit": {
-                "description": "Unit-String",
-                "type": str,
-                "default": "",
-            },
-            "format": {
-                "description": "Display-Format",
-                "type": str,
-                "default": "d",
             },
         }
 
@@ -163,7 +168,6 @@ class config:
                 self.config[config_name][name] = value
 
         self.config[config_name]["direction"] = self.fc_mapping[self.config[config_name]["type"]][1]
-
         self.table_load()
 
     def table_load(self):
@@ -203,6 +207,22 @@ class config:
             else:
                 data["widget"].setText(str(value))
 
+        is_special = (self.config[config_name].get("type", self.widgets["type"]["default"]) > 100)
+        for name, data in self.widgets.items():
+            if is_special and not data.get("on_special", True):
+                data["widget"].setEnabled(False)
+            else:
+                data["widget"].setEnabled(True)
+
+    def on_type_change(self, item):
+        ctype = self.widgets["type"]["widget"].currentText().split()[0]
+        is_special = (int(ctype) > 100)
+        for name, data in self.widgets.items():
+            if is_special and not data.get("on_special", True):
+                data["widget"].setEnabled(False)
+            else:
+                data["widget"].setEnabled(True)
+
     def run(self):
         dialog = QDialog()
         dialog.setWindowTitle("Modbus-Configuration")
@@ -233,6 +253,8 @@ class config:
                 data["widget"] = QComboBox()
                 for option in data["options"]:
                     data["widget"].addItem(option)
+                if name == "type":
+                    data["widget"].activated.connect(self.on_type_change)
             elif data["type"] == int:
                 data["widget"] = QSpinBox()
                 data["widget"].setValue(data["default"])
