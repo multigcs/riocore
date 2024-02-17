@@ -40,6 +40,7 @@ class config:
         6: ("Force Single Register", "output"),
         15: ("Force Multiple Coils", "output"),
         16: ("Preset Multiple Registers", "output"),
+        101: ("Huanyang VFD", "output"),
     }
 
     def __init__(self, instance):
