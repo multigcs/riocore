@@ -1579,8 +1579,7 @@ class LinuxCNC:
             if plugin_instance.TYPE == "frameio":
                 output.append(f"long {plugin_instance.instances_name}_last_rx = 0;")
             for line in plugin_instance.globals_c().strip().split("\n"):
-                if line.strip():
-                    output.append(line.strip())
+                output.append(line)
         output.append("")
         output.append("/***********************************************************************/")
         output.append("")

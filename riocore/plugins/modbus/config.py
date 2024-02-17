@@ -207,7 +207,7 @@ class config:
             else:
                 data["widget"].setText(str(value))
 
-        is_special = (self.config[config_name].get("type", self.widgets["type"]["default"]) > 100)
+        is_special = self.config[config_name].get("type", self.widgets["type"]["default"]) > 100
         for name, data in self.widgets.items():
             if is_special and not data.get("on_special", True):
                 data["widget"].setEnabled(False)
@@ -216,7 +216,7 @@ class config:
 
     def on_type_change(self, item):
         ctype = self.widgets["type"]["widget"].currentText().split()[0]
-        is_special = (int(ctype) > 100)
+        is_special = int(ctype) > 100
         for name, data in self.widgets.items():
             if is_special and not data.get("on_special", True):
                 data["widget"].setEnabled(False)
