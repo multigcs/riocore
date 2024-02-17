@@ -173,10 +173,6 @@ class LinuxCNC:
 
     def ini(self):
         gui = self.project.config["jdata"].get("gui")
-        if gui == "qtdragon":
-            pass
-        else:
-            pass
 
         ini_setup = self.INI_DEFAULTS.copy()
 
@@ -198,7 +194,7 @@ class LinuxCNC:
 
 
 
-        if gui in {"tklinuxcnc", "touchy"}:
+        if gui in {"tklinuxcnc", "touchy", "probe_basic"}:
             ini_setup["DISPLAY"]["DISPLAY"] = gui
         elif gui == "qtdragon":
             qtdragon_setup = {
@@ -725,7 +721,7 @@ class LinuxCNC:
             open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
             open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(custom))
 
-        if gui != "touchy":
+        if gui not in {"touchy", "probe_basic"}:
             self.postgui_call_list.append("source custom_postgui.hal")
 
 
