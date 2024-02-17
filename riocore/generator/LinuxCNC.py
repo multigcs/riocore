@@ -170,8 +170,8 @@ class LinuxCNC:
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(self.postgui_call_list))
         print(f"writing linuxcnc files to: {self.base_path}")
 
-    def ini(self):
 
+    def ini(self):
         gui = self.project.config["jdata"].get("gui")
         if gui == "qtdragon":
             pass
@@ -198,8 +198,9 @@ class LinuxCNC:
 
 
 
-
-        if gui == "qtdragon":
+        if gui in {"tklinuxcnc", "touchy"}:
+            ini_setup["DISPLAY"]["DISPLAY"] = gui
+        elif gui == "qtdragon":
             qtdragon_setup = {
                 "DISPLAY": {
                     "DISPLAY": "qtvcp -d rio_hd",
@@ -724,8 +725,8 @@ class LinuxCNC:
             open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
             open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(custom))
 
-
-        self.postgui_call_list.append("source custom_postgui.hal")
+        if gui != "touchy":
+            self.postgui_call_list.append("source custom_postgui.hal")
 
 
     def joypad(self):

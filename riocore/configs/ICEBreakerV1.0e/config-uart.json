@@ -2,7 +2,7 @@
     "name": "ICEBreakerV1.0e",
     "description": "Small and low cost FPGA educational and development board",
     "boardcfg": "ICEBreakerV1.0e",
-    "gui": "qtdragon",
+    "gui": "touchy",
     "protocol": "UART",
     "plugins": [
         {
