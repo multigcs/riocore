@@ -18,11 +18,9 @@ class modbus_hy_vfd:
         "speed_fb_rps": {"scale": 1.0, "unit": "RPS"},
         "at_speed": {"scale": 1.0},
     }
-
     HYVFD_OUTPUTS = {
-        "speed": {},
+        "speed": {"unit": "RPM"},
     }
-
     HYVFD_REGISTER_SETUP = True
     HYVFD_STATUS_READ = False
     HYVFD_DATA = {}
