@@ -39,14 +39,14 @@ class modbus_hy_vfd:
     HYVFD_COMMAND = 0
     HYVFD_STATUS_REGISTER_ACTIVE = 0
     HYVFD_STATUS_REGISTER = {
-        0: {"done": False, "value": 0, "name": "frq_set", "scale": 0.001},
-        1: {"done": False, "value": 0, "name": "frq_get", "scale": 0.001},
-        2: {"done": False, "value": 0, "name": "ampere", "scale": 0.01},
-        3: {"done": False, "value": 0, "name": "rpm", "scale": 1.0},
-        4: {"done": False, "value": 0, "name": "dc_volt", "scale": 0.1},
-        5: {"done": False, "value": 0, "name": "ac_volt", "scale": 0.1},
-        6: {"done": False, "value": 0, "name": "condition", "scale": 1.0},
-        7: {"done": False, "value": 0, "name": "temp", "scale": 1.0},
+        0: {"done": False, "value": 0, "name": "frq_set", "scale": 0.001, "unit": "Hz"},
+        1: {"done": False, "value": 0, "name": "frq_get", "scale": 0.001, "unit": "Hz"},
+        2: {"done": False, "value": 0, "name": "ampere", "scale": 0.01, "unit": "A"},
+        3: {"done": False, "value": 0, "name": "rpm", "scale": 1.0, "unit": "RPM"},
+        4: {"done": False, "value": 0, "name": "dc_volt", "scale": 0.1, "unit": "V"},
+        5: {"done": False, "value": 0, "name": "ac_volt", "scale": 0.1, "unit": "V"},
+        # 6: {"done": False, "value": 0, "name": "condition", "scale": 1.0, "unit": ""},
+        # 7: {"done": False, "value": 0, "name": "temp", "scale": 1.0, "unit": ""},
     }
 
     def __init__(self, signals, signal_name, config):
@@ -58,7 +58,7 @@ class modbus_hy_vfd:
             value_name = f"{signal_name}_{data['name']}"
             self.signals[value_name] = {
                 "direction": "input",
-                "unit": "",
+                "unit": data.get("unit", ""),
                 "scale": 1.0,
                 "format": "7.2f",
                 "plugin_setup": {},
@@ -76,7 +76,7 @@ class modbus_hy_vfd:
             value_name = f"{signal_name}_{name}"
             self.signals[value_name] = {
                 "direction": "output",
-                "unit": "",
+                "unit": data.get("unit", ""),
                 "scale": 1.0,
                 "format": "7.2f",
                 "plugin_setup": {},
