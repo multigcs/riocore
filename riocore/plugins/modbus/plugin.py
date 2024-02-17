@@ -105,7 +105,7 @@ class modbus_hy_vfd:
     def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
         config = self.config
         if frame_new:
-            print(f"rx frame  {frame_id} {frame_len}: {frame_data}")
+            print(f"hy rx frame  {frame_id} {frame_len}: {frame_data}")
             if frame_len > 4:
                 address = frame_data[0]
                 ctype = frame_data[1]
@@ -277,8 +277,6 @@ class modbus_hy_vfd:
 
         output.append(f"    if (data_addr == {address}) {{")
         output.append(f"        if (frame_data[1] == 0x01 && frame_data[2] == 0x03) {{")
-        output.append('            printf("REC1  \\n");')
-
         num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
         output.append(f"            for (n = 0; n < {num_config_registers}; n++) {{")
         output.append(f"                if (frame_data[3] == {self.instances_name}_{self.signal_name}_config_register[n].num) {{")
@@ -288,8 +286,6 @@ class modbus_hy_vfd:
         output.append("                }")
         output.append("            }")
         output.append(f"        }} else if (frame_data[1] == 0x04 && frame_data[2] == 0x03) {{")
-        output.append('            printf("REC 2 \\n");')
-
         num_status_registers = len(self.HYVFD_STATUS_REGISTER)
         output.append(f"            for (n = 0; n < {num_status_registers}; n++) {{")
         output.append(f"                if (frame_data[3] == {self.instances_name}_{self.signal_name}_status_register[n].num) {{")
@@ -303,26 +299,9 @@ class modbus_hy_vfd:
         output.append("                    break;")
         output.append("                }")
         output.append("            }")
-
         output.append("        }")
-
-        output.append("")
-        output.append("")
-        output.append('    printf("rx frame %i %i: ", frame_id, frame_len);')
-        output.append("    for (n = 0; n < frame_len; n++) {")
-        output.append('        printf("%i, ", frame_data[n]);')
         output.append("    }")
-        output.append('    printf("\\n");')
         output.append("")
-        output.append("")
-
-        output.append("    }")
-
-        output.append("")
-        output.append("")
-        output.append("")
-        output.append("")
-
         return output
 
     def frameio_tx_c(self):
@@ -352,12 +331,12 @@ class modbus_hy_vfd:
 
         output.append("} else {")
 
-        output.append(f"    value_{self.signal_name}_base_freq = modbus3_vfd_config_register[0].value * {self.HYVFD_CALC_KEYS['base_freq']['scale']};")
-        output.append(f"    value_{self.signal_name}_max_freq = modbus3_vfd_config_register[1].value * {self.HYVFD_CALC_KEYS['max_freq']['scale']};")
-        output.append(f"    value_{self.signal_name}_freq_lower_limit = modbus3_vfd_config_register[2].value * {self.HYVFD_CALC_KEYS['freq_lower_limit']['scale']};")
-        output.append(f"    value_{self.signal_name}_rated_motor_voltage = modbus3_vfd_config_register[3].value * {self.HYVFD_CALC_KEYS['rated_motor_voltage']['scale']};")
-        output.append(f"    value_{self.signal_name}_rated_motor_current = modbus3_vfd_config_register[4].value * {self.HYVFD_CALC_KEYS['rated_motor_current']['scale']};")
-        output.append(f"    value_{self.signal_name}_rpm_at_50hz = modbus3_vfd_config_register[5].value * {self.HYVFD_CALC_KEYS['rpm_at_50hz']['scale']};")
+        output.append(f"    value_{self.signal_name}_base_freq = {self.instances_name}_{self.signal_name}_config_register[0].value * {self.HYVFD_CALC_KEYS['base_freq']['scale']};")
+        output.append(f"    value_{self.signal_name}_max_freq = {self.instances_name}_{self.signal_name}_config_register[1].value * {self.HYVFD_CALC_KEYS['max_freq']['scale']};")
+        output.append(f"    value_{self.signal_name}_freq_lower_limit = {self.instances_name}_{self.signal_name}_config_register[2].value * {self.HYVFD_CALC_KEYS['freq_lower_limit']['scale']};")
+        output.append(f"    value_{self.signal_name}_rated_motor_voltage = {self.instances_name}_{self.signal_name}_config_register[3].value * {self.HYVFD_CALC_KEYS['rated_motor_voltage']['scale']};")
+        output.append(f"    value_{self.signal_name}_rated_motor_current = {self.instances_name}_{self.signal_name}_config_register[4].value * {self.HYVFD_CALC_KEYS['rated_motor_current']['scale']};")
+        output.append(f"    value_{self.signal_name}_rpm_at_50hz = {self.instances_name}_{self.signal_name}_config_register[5].value * {self.HYVFD_CALC_KEYS['rpm_at_50hz']['scale']};")
         output.append(f"    value_{self.signal_name}_rated_motor_rev = (value_{self.signal_name}_rpm_at_50hz / 50.0) * value_{self.signal_name}_max_freq;")
 
         output.append(f"    if ({self.instances_name}_{self.signal_name}_status_register_active < {num_config_registers - 2}) {{")
@@ -434,26 +413,8 @@ class modbus_hy_vfd:
         output.append("        }")
         output.append("        frame_len = 4;")
         output.append("    }")
-
         output.append("}")
-
         output.append("")
-        output.append("")
-        output.append('    printf("###tx frame %i %i: ", frame_id, frame_len);')
-        output.append("    for (n = 0; n < frame_len; n++) {")
-        output.append('        printf("%i, ", frame_data[n]);')
-        output.append("    }")
-        output.append('    printf("\\n");')
-        output.append("")
-        output.append("")
-
-        output.append("")
-        output.append("")
-        output.append("")
-        output.append("")
-        output.append("")
-        output.append("")
-
         return output
 
 
@@ -503,7 +464,8 @@ class Plugin(PluginBase):
         self.TYPE = "frameio"
         self.DYNAMIC_SIGNALS = True
         self.PLUGIN_CONFIG = True
-        self.TIMEOUT = 500.0
+        self.TIMEOUT = 100.0
+        self.DELAY = 60.0
         self.INFO = "generic modbus plugin"
         self.DESCRIPTION = ""
 
@@ -643,7 +605,9 @@ class Plugin(PluginBase):
         if config["type"] == 101:
             config["instance"].frameio_rx(frame_new, frame_id, frame_len, frame_data)
         elif frame_new:
+
             print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
+
             if frame_len > 4:
                 address = frame_data[0]
                 ctype = frame_data[1]
@@ -758,6 +722,7 @@ class Plugin(PluginBase):
         csum_calc = csum.intdigest()
         frame_data = cmd + csum_calc
 
+        print("")
         print(f"tx frame -- {len(frame_data)}: {frame_data}")
         return frame_data
 
@@ -814,6 +779,7 @@ class Plugin(PluginBase):
                     output.append("                    } else {")
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
+                        output.append(f"                        rtapi_print(\"rx error: addr or len\");")
                         output.append(f"                        {value_name}_errors += 1;")
                         output.append(f"                        {value_name}_valid = 0;")
                     output.append("                    }")
@@ -826,6 +792,7 @@ class Plugin(PluginBase):
                         output.append(f"                        value_{self.signal_name} *= {vscale};")
                     output.append(f"                        value_{self.signal_name}_valid = 1;")
                     output.append("                    } else {")
+                    output.append(f"                        rtapi_print(\"rx error: addr or len\");")
                     output.append(f"                        value_{self.signal_name}_errors += 1;")
                     output.append(f"                        value_{self.signal_name}_valid = 0;")
                     output.append("                    }")
@@ -834,13 +801,13 @@ class Plugin(PluginBase):
             sn += 1
         output.append("            }")
         output.append("        } else {")
-        output.append('            printf("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
+        output.append('            rtapi_print("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
         output.append("        }")
-        output.append('        // printf("rx frame %i %i: ", frame_id, frame_len);')
+        output.append('        // rtapi_print("rx frame %i %i: ", frame_id, frame_len);')
         output.append("        // for (n = 0; n < frame_len; n++) {")
-        output.append('        //     printf("%i, ", frame_data[n]);')
+        output.append('        //     rtapi_print("%i, ", frame_data[n]);')
         output.append("        // }")
-        output.append('        // printf("\\n");')
+        output.append('        // rtapi_print("\\n");')
         output.append("    }")
         return "\n".join(output)
 
@@ -867,12 +834,14 @@ class Plugin(PluginBase):
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
                         output.append(f"                {value_name}_valid = 0;")
+                        output.append(f"                rtapi_print(\"rx error: timeout\");")
                         output.append(f"                {value_name}_errors += 1;")
                     output.append("            }")
                 else:
                     output.append(f"            // get single 16bit value")
                     output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
                     output.append(f"                value_{signal_name}_valid = 0;")
+                    output.append(f"                rtapi_print(\"rx error: timeout\");")
                     output.append(f"                value_{signal_name}_errors += 1;")
                     output.append("            }")
             sn += 1

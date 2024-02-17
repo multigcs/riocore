@@ -130,6 +130,7 @@ class PluginBase:
 
         if self.TYPE == "frameio":
             self.timeout = self.TIMEOUT
+            self.delay = self.DELAY
             self.timestamp = time.time() * 1000.0
             self.rxframe_len = 0
             self.rxframe_id = 0
@@ -183,7 +184,8 @@ class PluginBase:
             if self.time_diff >= self.timeout:
                 frame_timeout = True
             # print("frame_ack or frame_timeout", frame_ack, frame_timeout, self.timeout, self.send_counter)
-            if frame_ack or frame_timeout:
+
+            if (frame_ack or frame_timeout) and self.time_diff > self.delay:
                 self.timestamp = timestamp
                 if self.txframe_id < 255:
                     self.txframe_id += 1
