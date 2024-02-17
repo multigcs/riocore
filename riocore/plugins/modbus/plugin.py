@@ -18,8 +18,12 @@ class modbus_hy_vfd:
         "speed_fb_rps": {"scale": 1.0, "unit": "RPS"},
         "at_speed": {"scale": 1.0},
     }
+
     HYVFD_OUTPUTS = {
-        "speed": {"unit": "RPM"},
+        "speed": {"unit": "RPM", "net": "spindle.0.speed-out-abs"},
+        "spindle_forward": {"bool": True, "net": "spindle0_forward spindle.0.forward"},
+        "spindle_reverse": {"bool": True, "net": "spindle0_reverse spindle.0.reverse"},
+        "spindle_on": {"bool": True, "net": "spindle0_on spindle.0.on"},
     }
     HYVFD_DATA = {}
     HYVFD_CONFIG_REGISTER = {
@@ -56,6 +60,7 @@ class modbus_hy_vfd:
             value_name = f"{signal_name}_{data['name']}"
             self.signals[value_name] = {
                 "direction": "input",
+                "net": data.get("net", ""),
                 "unit": data.get("unit", ""),
                 "scale": 1.0,
                 "format": "7.2f",
@@ -65,6 +70,7 @@ class modbus_hy_vfd:
             value_name = f"{signal_name}_{name}"
             self.signals[value_name] = {
                 "direction": "input",
+                "net": data.get("net", ""),
                 "unit": data.get("unit", ""),
                 "scale": 1.0,
                 "format": ".2f",
@@ -72,16 +78,24 @@ class modbus_hy_vfd:
             }
         for name, data in self.HYVFD_OUTPUTS.items():
             value_name = f"{signal_name}_{name}"
-            self.signals[value_name] = {
-                "direction": "output",
-                "unit": data.get("unit", ""),
-                "scale": 1.0,
-                "format": "7.2f",
-                "plugin_setup": {},
-                "min": -24000,
-                "max": 24000,
-            }
-
+            if data.get("bool", False) is True:
+                self.signals[value_name] = {
+                    "direction": "output",
+                    "net": data.get("net", ""),
+                    "unit": data.get("unit", ""),
+                    "bool": True,
+                }
+            else:
+                self.signals[value_name] = {
+                    "direction": "output",
+                    "net": data.get("net", ""),
+                    "unit": data.get("unit", ""),
+                    "scale": 1.0,
+                    "format": "7.2f",
+                    "plugin_setup": {},
+                    "min": -24000,
+                    "max": 24000,
+                }
     def int2list(self, value):
         return [(value >> 8) & 0xFF, value & 0xFF]
 
@@ -407,15 +421,16 @@ class modbus_hy_vfd:
         output.append(f"        frame_data[0] = {address};")
         output.append("        frame_data[1] = 0x03;")
         output.append("        frame_data[2] = 0x01;")
-        output.append(f"        if (value_{self.signal_name}_speed > 0.0) {{")
-        output.append("            // FWD;")
-        output.append("            frame_data[3] = 0x01;")
-        output.append(f"        }} else if (value_{self.signal_name}_speed < 0.0) {{")
-        output.append("            // REV;")
-        output.append("            frame_data[3] = 0x11;")
-        output.append("        } else {")
+
+        output.append(f"        if (value_{self.signal_name}_spindle_on == 0) {{")
         output.append("            // STOP;")
         output.append("            frame_data[3] = 0x08;")
+        output.append(f"        }} else if (value_{self.signal_name}_spindle_forward == 1) {{")
+        output.append("            // FWD;")
+        output.append("            frame_data[3] = 0x01;")
+        output.append(f"        }} else if (value_{self.signal_name}_spindle_reverse == 1) {{")
+        output.append("            // REV;")
+        output.append("            frame_data[3] = 0x11;")
         output.append("        }")
         output.append("        frame_len = 4;")
         output.append("    }")

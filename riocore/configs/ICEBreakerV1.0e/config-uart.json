@@ -77,6 +77,33 @@
                 "tx_enable": {
                     "pin": "PMOD_1A:P2"
                 }
+            },
+            "signals": {
+                "vfd_speed_fb": {
+                    "display": {}
+                },
+                "vfd_speed_fb_rps": {
+                    "display": {}
+                },
+                "vfd_at_speed": {
+                    "display": {}
+                },
+                "vfd_speed": {
+                    "net": "spindle.0.speed-out-abs",
+                    "display": {}
+                },
+                "vfd_spindle_forward": {
+                    "net": "spindle.0.forward",
+                    "display": {}
+                },
+                "vfd_spindle_reverse": {
+                    "net": "spindle.0.reverse",
+                    "display": {}
+                },
+                "vfd_spindle_on": {
+                    "net": "spindle.0.on",
+                    "display": {}
+                }
             }
         },
         {

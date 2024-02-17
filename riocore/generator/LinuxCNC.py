@@ -863,7 +863,6 @@ class LinuxCNC:
                             output.append(f"net rios.{halname} rio.{halname} <=> {netname}")
                         elif direction == "input":
                             self.hal_net_add(f"rio.{halname}", netname)
-
                         elif direction == "output":
                             self.hal_net_add(netname, f"rio.{halname}")
                     elif setp is not None:
