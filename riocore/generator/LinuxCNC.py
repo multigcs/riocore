@@ -172,6 +172,12 @@ class LinuxCNC:
 
     def ini(self):
 
+        gui = self.project.config["jdata"].get("gui")
+        if gui == "qtdragon":
+            pass
+        else:
+            pass
+
         ini_setup = self.INI_DEFAULTS.copy()
 
         machinetype = self.project.config["jdata"].get("machinetype")
@@ -189,6 +195,62 @@ class LinuxCNC:
         ini_setup["TRAJ"]["COORDINATES"] = "".join(coordinates)
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
+
+
+
+
+        if gui == "qtdragon":
+            qtdragon_setup = {
+                "DISPLAY": {
+                    "DISPLAY": "qtvcp -d rio_hd",
+                    "ICON": "silver_dragon.png",
+                    "EDITOR": None,
+                    "PYVCP": None,
+                    "PREFERENCE_FILE_PATH": "WORKINGFOLDER/qtdragon_hd.pref",
+                    "INTRO_GRAPHIC": "silver_dragon.png",
+                    "CYCLE_TIME": 100,
+                    "NGCGUI_SUBFILE_PATH": "../../../nc_files/ngcgui_lib/",
+                    "NGCGUI_SUBFILE": "qpocket.ngc",
+                    "MDI_HISTORY_FILE": "mdi_history.dat",
+                    "LOG_FILE": "qtdragon_hd.log",
+                },
+                "MDI_COMMAND_LIST": {
+                    "MDI_COMMAND": [
+                        "G0 Z25 X0 Y0;Z0,Goto\\nZero",
+                        "G53 G0 Z0;G53 G0 X0 Y0,Goto\\nMach\\nZero",
+                    ],
+                },
+                "FILTER": {
+                    "PROGRAM_EXTENSION": [
+                        ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
+                        ".png,.gif,.jpg Greyscale Depth Image",
+                        ".py Python Script",
+                    ],
+                    "png": "image-to-gcode",
+                    "gif": "image-to-gcode",
+                    "jpg": "image-to-gcode",
+                    "py": "python3",
+                },
+                "RS274NGC": {
+                    "PARAMETER_FILE": "linuxcnc.var",
+                    "RS274NGC_STARTUP_CODE": "G17 G21 G40 G43H0 G54 G64P0.0127 G80 G90 G94 G97 M5 M9",
+                    "SUBROUTINE_PATH": "./subroutines/",
+                    "USER_M_PATH": "./mcodes/",
+                    "ON_ABORT_COMMAND": "O <on_abort> call",
+                },
+                "HALUI": {},
+                "PROBE": {
+                    "USE_PROBE": "basicprobe",
+                },
+            }
+            for section, sdata in qtdragon_setup.items():
+                if section not in ini_setup:
+                    ini_setup[section] = {}
+                for key, value in sdata.items():
+                    ini_setup[section][key] = value
+
+
+
 
         for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
             if section not in ini_setup:
@@ -340,9 +402,16 @@ class LinuxCNC:
             self.cnetworks[network]["out"].append(output_name)
 
     def gui(self):
-        machinetype = self.project.config["jdata"].get("machinetype")
         os.system(f"mkdir -p {self.configuration_path}/")
-        gui_gen = axis()
+        machinetype = self.project.config["jdata"].get("machinetype")
+        gui = self.project.config["jdata"].get("gui")
+        if gui == "qtdragon":
+            gui_gen = qtdragon()
+            prefix = "qtdragon"
+        else:
+            gui_gen = axis()
+            prefix = "pyvcp"
+
         custom = []
         cfgxml_data = {
             "status": [],
@@ -360,47 +429,31 @@ class LinuxCNC:
         cfgxml_data["outputs"] = []
 
         # buttons
-        cfgxml_data["status"].append('  <labelframe text="MDI-Commands">')
-        cfgxml_data["status"].append("    <relief>RAISED</relief>")
-        cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
-        cfgxml_data["status"].append("    <hbox>")
-        cfgxml_data["status"].append("      <relief>RIDGE</relief>")
-        cfgxml_data["status"].append("      <bd>2</bd>")
-        if machinetype == "lathe":
-            if "Z":
-
-                self.custom_net_add("pyvcp.zeroz", "halui.mdi-command-02")
-
-                custom.append(f"#net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
-                cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
-
-            if "X":
-
-                self.custom_net_add("pyvcp.zerox", "halui.mdi-command-00")
-
-                custom.append(f"#net zerox halui.mdi-command-00 <= pyvcp.zerox")
-                cfgxml_data["status"] += gui_gen.draw_button("zero-x", "zerox")
-
-                self.custom_net_add("pyvcp.touchx", "halui.mdi-command-05")
-
-                custom.append(f"#net touchx halui.mdi-command-05 <= pyvcp.touchx")
-                cfgxml_data["status"] += gui_gen.draw_button("touch-x", "touchx")
-
-        else:
-            if "X" in self.axis_dict and "Y" in self.axis_dict:
-
-                self.custom_net_add("pyvcp.zeroxy", "halui.mdi-command-03")
-
-                custom.append(f"#net zeroxy halui.mdi-command-03 <= pyvcp.zeroxy")
-                cfgxml_data["status"] += gui_gen.draw_button("zero-xy", "zeroxy")
-            if "Z":
-
-                self.custom_net_add("pyvcp.zeroz", "halui.mdi-command-02")
-
-                custom.append(f"#net zeroz halui.mdi-command-02 <= pyvcp.zeroz")
-                cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
-        cfgxml_data["status"].append("    </hbox>")
-        cfgxml_data["status"].append("  </labelframe>")
+        if gui != "qtdragon":
+            cfgxml_data["status"].append('  <labelframe text="MDI-Commands">')
+            cfgxml_data["status"].append("    <relief>RAISED</relief>")
+            cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
+            cfgxml_data["status"].append("    <hbox>")
+            cfgxml_data["status"].append("      <relief>RIDGE</relief>")
+            cfgxml_data["status"].append("      <bd>2</bd>")
+            if machinetype == "lathe":
+                if "Z":
+                    self.custom_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
+                    cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
+                if "X":
+                    self.custom_net_add(f"{prefix}.zerox", "halui.mdi-command-00")
+                    cfgxml_data["status"] += gui_gen.draw_button("zero-x", "zerox")
+                    self.custom_net_add(f"{prefix}.touchx", "halui.mdi-command-05")
+                    cfgxml_data["status"] += gui_gen.draw_button("touch-x", "touchx")
+            else:
+                if "X" in self.axis_dict and "Y" in self.axis_dict:
+                    self.custom_net_add(f"{prefix}.zeroxy", "halui.mdi-command-03")
+                    cfgxml_data["status"] += gui_gen.draw_button("zero-xy", "zeroxy")
+                if "Z":
+                    self.custom_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
+                    cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
+            cfgxml_data["status"].append("    </hbox>")
+            cfgxml_data["status"].append("  </labelframe>")
 
         # scale and offset
         for plugin_instance in self.project.plugin_instances:
@@ -453,13 +506,9 @@ class LinuxCNC:
                 self.used_signals[halname] = f"riof.jog.{function}"
                 if function.startswith("wheel"):
                     self.custom_net_add(f"rio.{halname}-s32", self.used_signals[halname])
-                    custom.append(f"#net {self.used_signals[halname]:16s} <= rio.{halname}-s32")
-
                     self.custom_net_add(f"rio.{halname}-s32", self.used_signals[halname])
                 else:
                     self.custom_net_add(f"rio.{halname}", self.used_signals[halname])
-                    custom.append(f"#net {self.used_signals[halname]:16s} <= rio.{halname}")
-
                     self.custom_net_add(f"rio.{halname}", self.used_signals[halname])
                 if function.startswith("select-"):
                     axis_selector = True
@@ -479,14 +528,9 @@ class LinuxCNC:
                     laxis = axis_name.lower()
                     custom.append(f"setp axis.{laxis}.jog-vel-mode 1")
                     custom.append(f"setp axis.{laxis}.jog-scale 0.05")
-                    custom.append(f"#net riof.jog.wheel => axis.{laxis}.jog-counts")
-                    custom.append(f"#net jog_en{laxis} axis.{laxis}.jog-enable <= axisui.jog.{laxis}")
                     for joint, joint_setup in joints.items():
                         custom.append(f"setp joint.{joint}.jog-vel-mode 1")
                         custom.append(f"setp joint.{joint}.jog-scale 0.05")
-                        custom.append(f"#net riof.jog.wheel => joint.{joint}.jog-counts")
-                        custom.append(f"#net jog_en{laxis} joint.{joint}.jog-enable <= axisui.jog.{laxis}")
-
                         self.custom_net_add(f"axis.{laxis}.jog-counts", f"joint.{joint}.jog-counts")
                         self.custom_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable")
 
@@ -499,13 +543,11 @@ class LinuxCNC:
                         custom.append(f"setp axis.{laxis}.jog-vel-mode 1")
                         custom.append(f"setp axis.{laxis}.jog-scale 0.05")
                         custom.append(f"setp axis.{laxis}.jog-enable 1")
-                        custom.append(f"#net riof.jog.{fname} => axis.{laxis}.jog-counts")
                         self.custom_net_add(f"riof.jog.{fname}", f"axis.{laxis}.jog-counts")
                         for joint, joint_setup in joints.items():
                             custom.append(f"setp joint.{joint}.jog-vel-mode 1")
                             custom.append(f"setp joint.{joint}.jog-scale 0.05")
                             custom.append(f"setp joint.{joint}.jog-enable 1")
-                            custom.append(f"#net riof.jog.{fname} => joint.{joint}.jog-counts")
                             self.custom_net_add(f"riof.jog.{fname}", f"joint.{joint}.jog-counts")
 
             if speed_selector:
@@ -515,7 +557,7 @@ class LinuxCNC:
                 custom.append("setp riof.jog.speed_mux.in1 1000.0")
                 custom.append("net riof.jog.fast => riof.jog.speed_mux.sel")
                 custom.append("net riof.jog.speed <= riof.jog.speed_mux.out")
-                custom.append("net riof.jog.speed => pyvcp.jogspeed")
+                custom.append(f"net riof.jog.speed => {prefix}.jogspeed")
 
                 custom.append("net riof.jog.speed => halui.axis.jog-speed")
                 custom.append("net riof.jog.speed => halui.joint.jog-speed")
@@ -547,33 +589,23 @@ class LinuxCNC:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        custom.append(f"#net riof.jog.{function} => halui.axis.{axis_name}.select")
-                        custom.append(f"#net riof.jog.{function} => halui.joint.{joint_n}.select")
-                        custom.append(f"#net riof.jog.selected-{axis_name} => pyvcp.{halname}")
-
                         self.custom_net_add(f"riof.jog.{function}", f"halui.axis.{axis_name}.select")
                         self.custom_net_add(f"riof.jog.{function}", f"halui.joint.{joint_n}.select")
-                        self.custom_net_add(f"riof.jog.selected-{axis_name}", f"pyvcp.{halname}")
+                        self.custom_net_add(f"riof.jog.selected-{axis_name}", f"{prefix}.{halname}")
 
                         cfgxml_data["status"] += gui_gen.draw_led(f"Jog:{axis_name}", halname)
                         joint_n += 1
             else:
                 for axis_name, joints in self.axis_dict.items():
                     laxis = axis_name.lower()
-                    custom.append(f"#net jog_en{laxis} halui.axis.{laxis}.select <= axisui.jog.{laxis}")
-
                     self.custom_net_add(f"axisui.jog.{laxis}", f"halui.axis.{laxis}.select")
-
                     for joint, joint_setup in joints.items():
-                        custom.append(f"#net jog_en{laxis} halui.joint.{joint}.select <= axisui.jog.{laxis}")
-
                         self.custom_net_add(f"axisui.jog.{laxis}", f"halui.joint.{joint}.select")
 
             if axis_selector and position_display:
                 custom.append("# display position")
                 custom.append(f"loadrt mux16 names=riof.jog.position_mux")
                 custom.append(f"addf riof.jog.position_mux servo-thread")
-                custom.append(f"#net riof.jog.position <= riof.jog.position_mux.out-f")
                 mux_select = 0
                 mux_input = 1
                 for function, halname in self.rio_functions["jog"].items():
@@ -588,8 +620,6 @@ class LinuxCNC:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("selected-"):
                         axis_name = function.split("-")[-1]
-                        custom.append(f"#net riof.jog.{function} <= halui.axis.{axis_name}.is-selected")
-
                         self.custom_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.{function}")
 
                 custom.append("")
@@ -628,9 +658,7 @@ class LinuxCNC:
                         else:
                             dtype = displayconfig.get("type", "led")
                         if dtype != "none":
-                            custom.append(f"#net rios.{halname} => pyvcp.{halname}")
-
-                            self.custom_net_add(f"rio.{halname}", f"pyvcp.{halname}")
+                            self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}")
 
                     elif direction == "input":
                         section = displayconfig.get("section", "inputs")
@@ -639,30 +667,21 @@ class LinuxCNC:
                         else:
                             dtype = displayconfig.get("type", "led")
                         if dtype != "none":
-                            custom.append(f"#net rios.{halname} <= rio.{halname} => pyvcp.{halname}")
-
-                            self.custom_net_add(f"rio.{halname}", f"pyvcp.{halname}")
+                            self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}")
 
                     elif direction == "output":
                         section = displayconfig.get("section", "outputs")
                         if not boolean:
                             dtype = displayconfig.get("type", "scale")
                             if dtype == "scale":
-                                custom.append(f"#net rios.{halname} <= pyvcp.{halname}-f => rio.{halname}")
-
-                                self.custom_net_add(f"pyvcp.{halname}-f", f"rio.{halname}")
-
+                                self.custom_net_add(f"{prefix}.{halname}-f", f"rio.{halname}")
                             elif dtype != "none":
-                                custom.append(f"#net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
-
-                                self.custom_net_add(f"pyvcp.{halname}", f"rio.{halname}")
+                                self.custom_net_add(f"{prefix}.{halname}", f"rio.{halname}")
 
                         else:
                             dtype = displayconfig.get("type", "checkbutton")
                             if dtype != "none":
-                                custom.append(f"#net rios.{halname} <= pyvcp.{halname} => rio.{halname}")
-
-                                self.custom_net_add(f"pyvcp.{halname}", f"rio.{halname}")
+                                self.custom_net_add(f"{prefix}.{halname}", f"rio.{halname}")
 
                     if hasattr(gui_gen, f"draw_{dtype}"):
                         cfgxml_data[section] += getattr(gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
@@ -672,7 +691,6 @@ class LinuxCNC:
         for network, net in self.cnetworks.items():
             if net["out"]:
                 custom.append(f"")
-                custom.append(f"# {network.replace('pyvcp_', '')}")
                 if net["in"]:
                     custom.append(f"net rios.{network} <= {net['in']}")
                 for out in net["out"]:
@@ -694,10 +712,21 @@ class LinuxCNC:
         cfgxml_adata += gui_gen.draw_tabs_end()
         cfgxml_adata += gui_gen.draw_end()
         custom.append("")
+        
+        if gui == "qtdragon":
+            os.system(f"mkdir -p {self.configuration_path}/rio_hd")
+            os.system(f"cp -a {riocore_path}/files/rio_hd/* {self.configuration_path}/rio_hd/")
+            os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.pre > {self.configuration_path}/rio_hd/rio_hd.ui")
+            open(f"{self.configuration_path}/rio_hd/rio_hd.ui", "a").write("\n".join(cfgxml_adata))
+            os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.post >> {self.configuration_path}/rio_hd/rio_hd.ui")
+            open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(custom))
+        else:
+            open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
+            open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(custom))
 
-        open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
-        open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(custom))
+
         self.postgui_call_list.append("source custom_postgui.hal")
+
 
     def joypad(self):
         joypad = self.project.config["jdata"].get("joypad", {})
@@ -1842,6 +1871,9 @@ class qtdragon:
         cfgxml_data.append("                      </widget>")
         return cfgxml_data
 
+    def draw_button(self, name, halpin, setup={}):
+        return []
+
     def draw_scale(self, name, halpin, vmin, vmax, setup={}):
         cfgxml_data = []
         cfgxml_data.append("  <item>")
@@ -1884,10 +1916,10 @@ class qtdragon:
         cfgxml_data.append("         </size>")
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_value" stdset="0">')
-        cfgxml_data.append(f"         <number>{display_max}</number>")
+        cfgxml_data.append(f"         <number>{int(display_max)}</number>")
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_reading" stdset="0">')
-        cfgxml_data.append(f"         <number>{display_max}</number>")
+        cfgxml_data.append(f"         <number>{int(display_max)}</number>")
         cfgxml_data.append("        </property>")
         if display_threshold:
             cfgxml_data.append('        <property name="threshold" stdset="0">')
@@ -1926,7 +1958,7 @@ class qtdragon:
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
 
-    def draw_number(self, name, halpin, hal_type, setup={}):
+    def draw_number(self, name, halpin, hal_type="float", setup={}):
         display_format = setup.get("format", "%0.2f")
         cfgxml_data = []
         cfgxml_data.append("  <item>")
