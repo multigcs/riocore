@@ -1,0 +1,196 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "boardcfg": "ICEBreakerV1.0e",
+    "gui": "qtdragon",
+    "protocol": "UART",
+    "plugins": [
+        {
+            "type": "uart",
+            "pins": {
+                "rx": {
+                    "pin": "UART:RX"
+                },
+                "tx": {
+                    "pin": "UART:TX"
+                }
+            },
+            "baud": 1000000
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            },
+            "frequency": 1.0
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:R"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "display": {}
+                }
+            }
+        },
+        {
+            "type": "modbus",
+            "baud": 9600,
+            "tx_buffersize": 128,
+            "rx_buffersize": 128,
+            "config": {
+                "temp": {
+                    "direction": "input",
+                    "type": 3,
+                    "address": 1,
+                    "register": 0,
+                    "values": 2,
+                    "delay": 100,
+                    "unit": "\u00b0C",
+                    "scale": 0.1,
+                    "format": "04.1f"
+                },
+                "io": {
+                    "direction": "output",
+                    "type": 15,
+                    "address": 32,
+                    "register": 0,
+                    "values": 4,
+                    "delay": 100,
+                    "unit": "",
+                    "scale": 1,
+                    "format": "d"
+                },
+                "ain": {
+                    "address": 32,
+                    "type": 4,
+                    "register": 0,
+                    "values": 4,
+                    "delay": 100,
+                    "scale": 0.0061,
+                    "unit": "mA",
+                    "format": "04.1f",
+                    "direction": "input"
+                }
+            },
+            "pins": {
+                "tx": {
+                    "pin": "PMOD_1A:P4"
+                },
+                "rx": {
+                    "pin": "PMOD_1A:P3"
+                },
+                "tx_enable": {
+                    "pin": "PMOD_1A:P2"
+                }
+            },
+            "signals": {
+                "temp_0": {
+                    "display": {}
+                },
+                "temp_0_valid": {
+                    "display": {}
+                },
+                "temp_0_errors": {
+                    "display": {}
+                },
+                "temp_1": {
+                    "display": {}
+                },
+                "temp_1_valid": {
+                    "display": {}
+                },
+                "temp_1_errors": {
+                    "display": {}
+                },
+                "io_0": {
+                    "display": {}
+                },
+                "io_1": {
+                    "display": {}
+                },
+                "io_2": {
+                    "display": {}
+                },
+                "io_3": {
+                    "display": {}
+                },
+                "ain": {
+                    "display": {}
+                },
+                "ain_valid": {
+                    "display": {}
+                },
+                "ain_errors": {
+                    "display": {}
+                },
+                "ain_0": {
+                    "display": {}
+                },
+                "ain_0_valid": {
+                    "display": {}
+                },
+                "ain_0_errors": {
+                    "display": {}
+                },
+                "ain_1": {
+                    "display": {}
+                },
+                "ain_1_valid": {
+                    "display": {}
+                },
+                "ain_1_errors": {
+                    "display": {}
+                },
+                "ain_2": {
+                    "display": {}
+                },
+                "ain_2_valid": {
+                    "display": {}
+                },
+                "ain_2_errors": {
+                    "display": {}
+                },
+                "ain_3": {
+                    "display": {}
+                },
+                "ain_3_valid": {
+                    "display": {}
+                },
+                "ain_3_errors": {
+                    "display": {}
+                },
+                "io": {
+                    "display": {}
+                }
+            }
+        },
+        {
+            "name": "joint-0",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD_1B:P4"
+                },
+                "dir": {
+                    "pin": "PMOD_1B:P3"
+                }
+            },
+            "is_joint": true,
+            "joint": {}
+        }
+    ],
+    "transport": "UDP",
+    "axis": 3
+}
