@@ -5,7 +5,7 @@ from riocore.checksums import crc8, crc16
 from riocore.plugins import PluginBase
 
 
-class Plugin(PluginBase):
+class modbus_hy_vfd:
     HYVFD_CALC_KEYS = {
         "max_freq": {"scale": 0.001, "unit": "Hz"},
         "base_freq": {"scale": 0.001, "unit": "Hz"},
@@ -49,6 +49,172 @@ class Plugin(PluginBase):
         7: {"done": False, "value": 0, "name": "temp", "scale": 1.0},
     }
 
+    def __init__(self, signals, signal_name, config):
+        self.signals = signals
+        self.signal_name = signal_name
+        self.config = config
+
+        for register, data in self.HYVFD_STATUS_REGISTER.items():
+            value_name = f"{signal_name}_{data['name']}"
+            self.signals[value_name] = {
+                "direction": "input",
+                "unit": "",
+                "scale": 1.0,
+                "format": "7.2f",
+                "plugin_setup": {},
+            }
+        for name, data in self.HYVFD_CALC_KEYS.items():
+            value_name = f"{signal_name}_{name}"
+            self.signals[value_name] = {
+                "direction": "input",
+                "unit": data.get("unit", ""),
+                "scale": 1.0,
+                "format": ".2f",
+                "plugin_setup": {},
+            }
+        for name, data in self.HYVFD_OUTPUTS.items():
+            value_name = f"{signal_name}_{name}"
+            self.signals[value_name] = {
+                "direction": "output",
+                "unit": "",
+                "scale": 1.0,
+                "format": "7.2f",
+                "plugin_setup": {},
+                "min": -24000,
+                "max": 24000,
+            }
+
+    def int2list(self, value):
+        return [(value >> 8) & 0xFF, value & 0xFF]
+
+    def list2int(self, data):
+        return (data[0] << 8) + data[1]
+
+    def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
+        config = self.config
+        if frame_new:
+            # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
+            if frame_len > 4:
+                address = frame_data[0]
+                ctype = frame_data[1]
+                data_len = frame_data[2]
+                csum = crc16()
+                cmd = []
+                csum.update(frame_data[:-2])
+                csum_calc = csum.intdigest()
+                if csum_calc != frame_data[-2:]:
+                    print(f"ERROR: modbus CSUM failed {csum_calc} != {frame_data[-2:]}")
+                else:
+                    if frame_data[0] == config["address"]:
+                        if frame_data[1] == 0x01 and frame_data[2] == 0x03:
+                            register = frame_data[3]
+                            value = self.list2int(frame_data[4:-2])
+                            self.HYVFD_REGISTER[register]["value"] = value
+                            self.HYVFD_REGISTER[register]["done"] = True
+
+                        elif frame_data[1] == 0x04 and frame_data[2] == 0x03:
+
+                            status_register = frame_data[3]
+                            status_name = self.HYVFD_STATUS_REGISTER[status_register]["name"]
+                            status_scale = self.HYVFD_STATUS_REGISTER[status_register]["scale"]
+                            value = self.list2int(frame_data[4:-2])
+
+                            self.HYVFD_STATUS_REGISTER[status_register]["done"] = True
+
+                            if status_register == 1:
+                                self.HYVFD_DATA[status_name] = value * status_scale
+
+                                self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
+                                self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
+                                set_speed = self.signals[f"{self.signal_name}_speed"]["value"]
+
+                                tolerance = 10
+                                diff = self.HYVFD_DATA["speed_fb"] - set_speed
+                                if diff < tolerance:
+                                    self.HYVFD_DATA["at_speed"] = 1
+                                else:
+                                    self.HYVFD_DATA["at_speed"] = 0
+                            else:
+                                self.HYVFD_DATA[status_name] = value * status_scale
+
+                    for name, value in self.HYVFD_DATA.items():
+                        value_name = f"{self.signal_name}_{name}"
+                        if value_name in self.signals:
+                            self.signals[value_name]["value"] = value
+
+    def frameio_tx(self, frame_ack, frame_timeout):
+        cmd = []
+        sn = 0
+        config = self.config
+
+        direction = config["direction"]
+        address = config["address"]
+        ctype = config["type"]
+        signal_name = self.signal_name
+        self.signal_address = address
+
+        if self.HYVFD_REGISTER_SETUP:
+            self.HYVFD_REGISTER_SETUP = False
+            for register, reg_data in self.HYVFD_REGISTER.items():
+                if not reg_data["done"] and reg_data["try"] < 5:
+                    self.HYVFD_REGISTER_SETUP = True
+                    cmd = [address, 0x01, 0x03, register, 0x00, 0x00]
+                    reg_data["try"] += 1
+                    break
+        else:
+            if self.HYVFD_COMMAND < 2:
+                self.HYVFD_COMMAND += 1
+            else:
+                self.HYVFD_COMMAND = 0
+
+            if self.HYVFD_COMMAND == 0 or self.HYVFD_STATUS_READ == False:
+                # calculate setup values
+                self.HYVFD_DATA["max_freq"] = self.HYVFD_REGISTER[5]["value"] * self.HYVFD_CALC_KEYS["max_freq"]["scale"]
+                self.HYVFD_DATA["base_freq"] = self.HYVFD_REGISTER[4]["value"] * self.HYVFD_CALC_KEYS["base_freq"]["scale"]
+                self.HYVFD_DATA["freq_lower_limit"] = self.HYVFD_REGISTER[11]["value"] * self.HYVFD_CALC_KEYS["freq_lower_limit"]["scale"]
+                self.HYVFD_DATA["rated_motor_voltage"] = self.HYVFD_REGISTER[141]["value"] * self.HYVFD_CALC_KEYS["rated_motor_voltage"]["scale"]
+                self.HYVFD_DATA["rated_motor_current"] = self.HYVFD_REGISTER[142]["value"] * self.HYVFD_CALC_KEYS["rated_motor_current"]["scale"]
+                self.HYVFD_DATA["rpm_at_50hz"] = self.HYVFD_REGISTER[144]["value"] * self.HYVFD_CALC_KEYS["rpm_at_50hz"]["scale"]
+                self.HYVFD_DATA["rated_motor_rev"] = (self.HYVFD_DATA["rpm_at_50hz"] / 50.0) * self.HYVFD_DATA["max_freq"]
+
+                # get status data
+                if self.HYVFD_STATUS_REGISTER_ACTIVE < len(self.HYVFD_STATUS_REGISTER) - 1:
+                    self.HYVFD_STATUS_REGISTER_ACTIVE += 1
+                else:
+                    self.HYVFD_STATUS_REGISTER_ACTIVE = 0
+                    self.HYVFD_STATUS_READ = True
+                status_register = list(self.HYVFD_STATUS_REGISTER)[self.HYVFD_STATUS_REGISTER_ACTIVE]
+                status_name = self.HYVFD_STATUS_REGISTER[status_register]["name"]
+                if status_name not in self.HYVFD_DATA:
+                    self.HYVFD_DATA[status_name] = 0.0
+                cmd = [address, 0x04, 0x03, status_register, 0x00, 0x00]
+
+            elif self.HYVFD_COMMAND == 1:
+                set_speed = self.signals[f"{self.signal_name}_speed"]["value"]
+                freq_comp = 0
+                hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rated_motor_rev"]
+                value = abs((set_speed + freq_comp) * hz_per_rpm)
+                if value > self.HYVFD_DATA["max_freq"]:
+                    value = self.HYVFD_DATA["max_freq"]
+                if value < self.HYVFD_DATA["freq_lower_limit"]:
+                    value = self.HYVFD_DATA["freq_lower_limit"]
+                cmd = [address, 0x05, 0x02] + self.int2list(int(value * 1000))
+
+            elif self.HYVFD_COMMAND == 2:
+                set_speed = self.signals[f"{self.signal_name}_speed"]["value"]
+                if set_speed > 0.0:
+                    # FWD
+                    cmd = [address, 0x03, 0x01, 0x1]
+                elif set_speed < 0.0:
+                    # REV
+                    cmd = [address, 0x03, 0x01, 0x11]
+                else:
+                    # STOP
+                    cmd = [address, 0x03, 0x01, 0x8]
+        return cmd
+
+
+class Plugin(PluginBase):
     def setup(self):
         self.NAME = "modbus"
         self.VERILOGS = ["modbus.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
@@ -124,42 +290,12 @@ class Plugin(PluginBase):
 
         vmin = 0
         vmax = 65535
-        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
-            n_values = signal_config.get("values", 0)
-            ctype = signal_config["type"]
+        for signal_name, config in self.plugin_setup.get("config", {}).items():
+            n_values = config.get("values", 0)
+            ctype = config["type"]
 
             if ctype == 101:
-                for register, data in self.HYVFD_STATUS_REGISTER.items():
-                    value_name = f"{signal_name}_{data['name']}"
-                    self.SIGNALS[value_name] = {
-                        "direction": "input",
-                        "unit": "",
-                        "scale": 1.0,
-                        "format": "7.2f",
-                        "plugin_setup": {},
-                    }
-
-                for name, data in self.HYVFD_CALC_KEYS.items():
-                    value_name = f"{signal_name}_{name}"
-                    self.SIGNALS[value_name] = {
-                        "direction": "input",
-                        "unit": data.get("unit", ""),
-                        "scale": 1.0,
-                        "format": ".2f",
-                        "plugin_setup": {},
-                    }
-
-                for name, data in self.HYVFD_OUTPUTS.items():
-                    value_name = f"{signal_name}_{name}"
-                    self.SIGNALS[value_name] = {
-                        "direction": "output",
-                        "unit": "",
-                        "scale": 1.0,
-                        "format": "7.2f",
-                        "plugin_setup": {},
-                        "min": -20000,
-                        "max": 20000,
-                    }
+                config["instance"] = modbus_hy_vfd(self.SIGNALS, signal_name, config)
 
             else:
                 is_bool = False
@@ -170,16 +306,16 @@ class Plugin(PluginBase):
                     for vn in range(0, n_values):
                         value_name = f"{signal_name}_{vn}"
                         self.SIGNALS[value_name] = {
-                            "direction": signal_config["direction"],
-                            "unit": signal_config.get("unit", ""),
-                            "scale": signal_config.get("scale", 1.0),
-                            "format": signal_config.get("format", "07d"),
-                            "plugin_setup": signal_config,
+                            "direction": config["direction"],
+                            "unit": config.get("unit", ""),
+                            "scale": config.get("scale", 1.0),
+                            "format": config.get("format", "07d"),
+                            "plugin_setup": config,
                             "min": vmin,
                             "max": vmax,
                             "bool": is_bool,
                         }
-                        if signal_config["direction"] == "input":
+                        if config["direction"] == "input":
                             self.SIGNALS[f"{value_name}_valid"] = {
                                 "direction": "input",
                                 "bool": True,
@@ -194,16 +330,16 @@ class Plugin(PluginBase):
                             }
                 else:
                     self.SIGNALS[signal_name] = {
-                        "direction": signal_config["direction"],
-                        "unit": signal_config.get("unit", ""),
-                        "scale": signal_config.get("scale", 1.0),
-                        "format": signal_config.get("format", "07d"),
-                        "plugin_setup": signal_config,
+                        "direction": config["direction"],
+                        "unit": config.get("unit", ""),
+                        "scale": config.get("scale", 1.0),
+                        "format": config.get("format", "07d"),
+                        "plugin_setup": config,
                         "min": vmin,
                         "max": vmax,
                         "bool": is_bool,
                     }
-                    if signal_config["direction"] == "input":
+                    if config["direction"] == "input":
                         self.SIGNALS[f"{signal_name}_valid"] = {
                             "direction": "input",
                             "bool": True,
@@ -261,10 +397,13 @@ class Plugin(PluginBase):
         return (data[0] << 8) + data[1]
 
     def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
-        if frame_new:
+        signal_name = list(self.plugin_setup["config"])[self.signal_active]
+        config = self.plugin_setup["config"][signal_name]
+        if config["type"] == 101:
+            config["instance"].frameio_rx(frame_new, frame_id, frame_len, frame_data)
 
+        elif frame_new:
             # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
-
             if frame_len > 4:
                 address = frame_data[0]
                 ctype = frame_data[1]
@@ -276,90 +415,45 @@ class Plugin(PluginBase):
                 if csum_calc != frame_data[-2:]:
                     print(f"ERROR: modbus CSUM failed {csum_calc} != {frame_data[-2:]}")
                 else:
-
-                    config = self.plugin_setup["config"][list(self.plugin_setup["config"])[self.signal_active]]
-                    if config["type"] == 101:
-
-                        if frame_data[0] == config["address"]:
-                            if frame_data[1] == 0x01 and frame_data[2] == 0x03:
-                                register = frame_data[3]
-                                value = self.list2int(frame_data[4:-2])
-                                self.HYVFD_REGISTER[register]["value"] = value
-                                self.HYVFD_REGISTER[register]["done"] = True
-
-                            elif frame_data[1] == 0x04 and frame_data[2] == 0x03:
-
-                                status_register = frame_data[3]
-                                status_name = self.HYVFD_STATUS_REGISTER[status_register]["name"]
-                                status_scale = self.HYVFD_STATUS_REGISTER[status_register]["scale"]
-                                value = self.list2int(frame_data[4:-2])
-
-                                self.HYVFD_STATUS_REGISTER[status_register]["done"] = True
-
-                                if status_register == 1:
-                                    self.HYVFD_DATA[status_name] = value * status_scale
-
-                                    self.HYVFD_DATA["speed_fb"] = (
-                                        self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
-                                    )
-                                    self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
-                                    set_speed = self.SIGNALS[f"{self.signal_name}_speed"]["value"]
-
-                                    tolerance = 10
-                                    diff = self.HYVFD_DATA["speed_fb"] - set_speed
-                                    if diff < tolerance:
-                                        self.HYVFD_DATA["at_speed"] = 1
-                                    else:
-                                        self.HYVFD_DATA["at_speed"] = 0
-
-                                else:
-                                    self.HYVFD_DATA[status_name] = value * status_scale
-
-                        for name, value in self.HYVFD_DATA.items():
-                            value_name = f"{self.signal_name}_{name}"
-                            if value_name in self.SIGNALS:
-                                self.SIGNALS[value_name]["value"] = value
-
-                    else:
-                        if self.signal_values > 1:
-                            for vn in range(0, self.signal_values):
-                                value_name = f"{self.signal_name}_{vn}"
-                                if value_name not in self.SIGNALS:
-                                    print(f"ERROR: no signal_config: {value_name}")
-                                else:
-                                    signal_config = self.SIGNALS[value_name].get("plugin_setup", {})
-                                    direction = signal_config.get("direction")
-                                    signal_address = signal_config.get("address")
-                                    if address != signal_address:
-                                        print(f"ERROR: wrong address {address} != {signal_address}")
-                                    elif direction == "input":
-                                        start_pos = 3 + vn * 2
-                                        value_list = frame_data[start_pos : start_pos + 2]
-
-                                        if value_list and len(value_list) == 2:
-                                            vscale = self.SIGNALS[value_name]["scale"]
-                                            direction = self.SIGNALS[value_name]["direction"]
-                                            self.SIGNALS[value_name]["value"] = self.list2int(value_list)
-                                            if vscale:
-                                                self.SIGNALS[value_name]["value"] *= vscale
-                                            if direction == "input":
-                                                self.SIGNALS[f"{value_name}_valid"]["value"] = 1
-                        else:
-                            if self.signal_name not in self.SIGNALS:
-                                print(f"ERROR: no signal_config: {self.signal_name}")
+                    if self.signal_values > 1:
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            if value_name not in self.SIGNALS:
+                                print(f"ERROR: no config: {value_name}")
                             else:
-                                signal_config = self.SIGNALS[self.signal_name].get("plugin_setup", {})
+                                signal_config = self.SIGNALS[value_name].get("plugin_setup", {})
+                                direction = signal_config.get("direction")
                                 signal_address = signal_config.get("address")
                                 if address != signal_address:
                                     print(f"ERROR: wrong address {address} != {signal_address}")
-                                else:
-                                    vscale = self.SIGNALS[self.signal_name]["scale"]
-                                    direction = self.SIGNALS[self.signal_name]["direction"]
-                                    self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
-                                    if vscale:
-                                        self.SIGNALS[self.signal_name]["value"] *= vscale
-                                    if direction == "input":
-                                        self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
+                                elif direction == "input":
+                                    start_pos = 3 + vn * 2
+                                    value_list = frame_data[start_pos : start_pos + 2]
+
+                                    if value_list and len(value_list) == 2:
+                                        vscale = self.SIGNALS[value_name]["scale"]
+                                        direction = self.SIGNALS[value_name]["direction"]
+                                        self.SIGNALS[value_name]["value"] = self.list2int(value_list)
+                                        if vscale:
+                                            self.SIGNALS[value_name]["value"] *= vscale
+                                        if direction == "input":
+                                            self.SIGNALS[f"{value_name}_valid"]["value"] = 1
+                    else:
+                        if self.signal_name not in self.SIGNALS:
+                            print(f"ERROR: no signal_config: {self.signal_name}")
+                        else:
+                            signal_config = self.SIGNALS[self.signal_name].get("plugin_setup", {})
+                            signal_address = signal_config.get("address")
+                            if address != signal_address:
+                                print(f"ERROR: wrong address {address} != {signal_address}")
+                            else:
+                                vscale = self.SIGNALS[self.signal_name]["scale"]
+                                direction = self.SIGNALS[self.signal_name]["direction"]
+                                self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
+                                if vscale:
+                                    self.SIGNALS[self.signal_name]["value"] *= vscale
+                                if direction == "input":
+                                    self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
 
     def frameio_tx(self, frame_ack, frame_timeout):
         # if frame_ack:
@@ -379,110 +473,47 @@ class Plugin(PluginBase):
         else:
             self.signal_active = 0
 
-        csum = crc16()
-        cmd = []
+        signal_name = list(self.plugin_setup["config"])[self.signal_active]
+        config = self.plugin_setup["config"][signal_name]
+        if config["type"] == 101:
+            cmd = config["instance"].frameio_tx(frame_ack, frame_timeout)
+        else:
+            cmd = []
+            direction = config["direction"]
+            address = config["address"]
+            ctype = config["type"]
+            self.signal_name = signal_name
+            self.signal_address = address
 
-        sn = 0
-        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
-            if sn == self.signal_active:
-                direction = signal_config["direction"]
-                address = signal_config["address"]
-                ctype = signal_config["type"]
-                self.signal_name = signal_name
-                self.signal_address = address
-
-                if ctype == 101:
-                    if self.HYVFD_REGISTER_SETUP:
-                        self.HYVFD_REGISTER_SETUP = False
-                        for register, reg_data in self.HYVFD_REGISTER.items():
-                            if not reg_data["done"] and reg_data["try"] < 5:
-                                self.HYVFD_REGISTER_SETUP = True
-                                cmd = [address, 0x01, 0x03, register, 0x00, 0x00]
-                                reg_data["try"] += 1
-                                break
-                    else:
-                        if self.HYVFD_COMMAND < 2:
-                            self.HYVFD_COMMAND += 1
-                        else:
-                            self.HYVFD_COMMAND = 0
-
-                        if self.HYVFD_COMMAND == 0 or self.HYVFD_STATUS_READ == False:
-                            # calculate setup values
-                            self.HYVFD_DATA["max_freq"] = self.HYVFD_REGISTER[5]["value"] * self.HYVFD_CALC_KEYS["max_freq"]["scale"]
-                            self.HYVFD_DATA["base_freq"] = self.HYVFD_REGISTER[4]["value"] * self.HYVFD_CALC_KEYS["base_freq"]["scale"]
-                            self.HYVFD_DATA["freq_lower_limit"] = self.HYVFD_REGISTER[11]["value"] * self.HYVFD_CALC_KEYS["freq_lower_limit"]["scale"]
-                            self.HYVFD_DATA["rated_motor_voltage"] = self.HYVFD_REGISTER[141]["value"] * self.HYVFD_CALC_KEYS["rated_motor_voltage"]["scale"]
-                            self.HYVFD_DATA["rated_motor_current"] = self.HYVFD_REGISTER[142]["value"] * self.HYVFD_CALC_KEYS["rated_motor_current"]["scale"]
-                            # self.HYVFD_DATA["motor_poles"] = self.HYVFD_REGISTER[143]["value"]
-                            self.HYVFD_DATA["rpm_at_50hz"] = self.HYVFD_REGISTER[144]["value"] * self.HYVFD_CALC_KEYS["rpm_at_50hz"]["scale"]
-                            self.HYVFD_DATA["rated_motor_rev"] = (self.HYVFD_DATA["rpm_at_50hz"] / 50.0) * self.HYVFD_DATA["max_freq"]
-
-                            # get status data
-                            if self.HYVFD_STATUS_REGISTER_ACTIVE < len(self.HYVFD_STATUS_REGISTER) - 1:
-                                self.HYVFD_STATUS_REGISTER_ACTIVE += 1
-                            else:
-                                self.HYVFD_STATUS_REGISTER_ACTIVE = 0
-                                self.HYVFD_STATUS_READ = True
-                            status_register = list(self.HYVFD_STATUS_REGISTER)[self.HYVFD_STATUS_REGISTER_ACTIVE]
-                            status_name = self.HYVFD_STATUS_REGISTER[status_register]["name"]
-                            if status_name not in self.HYVFD_DATA:
-                                self.HYVFD_DATA[status_name] = 0.0
-                            # print(self.HYVFD_STATUS_REGISTER_ACTIVE, status_register, status_name)
-                            cmd = [address, 0x04, 0x03, status_register, 0x00, 0x00]
-
-                        elif self.HYVFD_COMMAND == 1:
-                            set_speed = self.SIGNALS[f"{self.signal_name}_speed"]["value"]
-                            freq_comp = 0
-                            hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rated_motor_rev"]
-                            value = abs((set_speed + freq_comp) * hz_per_rpm)
-                            if value > self.HYVFD_DATA["max_freq"]:
-                                value = self.HYVFD_DATA["max_freq"]
-                            if value < self.HYVFD_DATA["freq_lower_limit"]:
-                                value = self.HYVFD_DATA["freq_lower_limit"]
-                            cmd = [address, 0x05, 0x02] + self.int2list(int(value * 1000))
-
-                        elif self.HYVFD_COMMAND == 2:
-                            set_speed = self.SIGNALS[f"{self.signal_name}_speed"]["value"]
-                            if set_speed > 0.0:
-                                # FWD
-                                cmd = [address, 0x03, 0x01, 0x1]
-                            elif set_speed < 0.0:
-                                # REV
-                                cmd = [address, 0x03, 0x01, 0x11]
-                            else:
-                                # STOP
-                                cmd = [address, 0x03, 0x01, 0x8]
-
-                else:
-                    self.signal_values = signal_config.get("values", 1)
-                    register = self.int2list(signal_config["register"])
-                    n_values = self.int2list(self.signal_values)
-                    if direction == "output":
-                        if self.signal_values > 1:
-                            if ctype == 15:
-                                cmd = [address, ctype] + register + n_values + [1]
-                                bitvalues = 0
-                                for vn in range(0, self.signal_values):
-                                    value_name = f"{self.signal_name}_{vn}"
-                                    value = self.SIGNALS[value_name]["value"]
-                                    if value == 1:
-                                        bitvalues = bitvalues | (1 << vn)
-                                cmd.append(bitvalues)
-                            else:
-                                cmd = [address, ctype] + register + n_values
-                                for vn in range(0, self.signal_values):
-                                    value_name = f"{self.signal_name}_{vn}"
-                                    value = self.SIGNALS[value_name]["value"]
-                                    cmd += self.int2list(value)
-                        else:
-                            value = self.SIGNALS[signal_name]["value"]
-                            if ctype == 5:
-                                value *= 65280
-                            cmd = [address, ctype] + register + self.int2list(value)
+            self.signal_values = config.get("values", 1)
+            register = self.int2list(config["register"])
+            n_values = self.int2list(self.signal_values)
+            if direction == "output":
+                if self.signal_values > 1:
+                    if ctype == 15:
+                        cmd = [address, ctype] + register + n_values + [1]
+                        bitvalues = 0
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            value = self.SIGNALS[value_name]["value"]
+                            if value == 1:
+                                bitvalues = bitvalues | (1 << vn)
+                        cmd.append(bitvalues)
                     else:
                         cmd = [address, ctype] + register + n_values
-            sn += 1
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            value = self.SIGNALS[value_name]["value"]
+                            cmd += self.int2list(value)
+                else:
+                    value = self.SIGNALS[signal_name]["value"]
+                    if ctype == 5:
+                        value *= 65280
+                    cmd = [address, ctype] + register + self.int2list(value)
+            else:
+                cmd = [address, ctype] + register + n_values
 
+        csum = crc16()
         csum.update(cmd)
         csum_calc = csum.intdigest()
         frame_data = cmd + csum_calc
