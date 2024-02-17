@@ -3,7 +3,6 @@ import hashlib
 import importlib
 import os
 
-
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -364,7 +363,3 @@ class Gateware:
             print("!!! gateware changed: needs to be build and flash |||")
         hash_file_new = f"{self.gateware_path}/hash_new.txt"
         open(hash_file_new, "w").write(hash_new)
-
-
-
-

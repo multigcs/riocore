@@ -161,9 +161,7 @@ class config:
             if name != "name":
                 self.config[config_name][name] = value
 
-        self.config[config_name]["direction"] = self.fc_mapping[
-            self.config[config_name]["type"]
-        ][1]
+        self.config[config_name]["direction"] = self.fc_mapping[self.config[config_name]["type"]][1]
 
         self.table_load()
 

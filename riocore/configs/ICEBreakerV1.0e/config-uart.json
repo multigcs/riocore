@@ -2,8 +2,12 @@
     "name": "ICEBreakerV1.0e",
     "description": "Small and low cost FPGA educational and development board",
     "boardcfg": "ICEBreakerV1.0e",
-    "gui": "probe_basic",
+    "gui": "axis",
     "protocol": "UART",
+    "hy_vfd": {
+        "device": "/dev/ttyUSB2",
+        "address": 9
+    },
     "plugins": [
         {
             "type": "uart",
@@ -50,37 +54,16 @@
             "tx_buffersize": 128,
             "rx_buffersize": 128,
             "config": {
-                "temp": {
-                    "direction": "input",
-                    "type": 3,
-                    "address": 1,
+                "vfd": {
+                    "address": 9,
+                    "type": 101,
                     "register": 0,
-                    "values": 2,
-                    "delay": 100,
-                    "unit": "\u00b0C",
-                    "scale": 0.1,
-                    "format": "04.1f"
-                },
-                "io": {
-                    "direction": "output",
-                    "type": 15,
-                    "address": 32,
-                    "register": 0,
-                    "values": 4,
-                    "delay": 100,
+                    "values": 0,
+                    "delay": 400,
+                    "timeout": 1400,
+                    "scale": 1.0,
                     "unit": "",
-                    "scale": 1,
-                    "format": "d"
-                },
-                "ain": {
-                    "address": 32,
-                    "type": 4,
-                    "register": 0,
-                    "values": 4,
-                    "delay": 100,
-                    "scale": 0.0061,
-                    "unit": "mA",
-                    "format": "04.1f",
+                    "format": "d",
                     "direction": "input"
                 }
             },

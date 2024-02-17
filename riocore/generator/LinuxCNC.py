@@ -170,7 +170,6 @@ class LinuxCNC:
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(self.postgui_call_list))
         print(f"writing linuxcnc files to: {self.base_path}")
 
-
     def ini(self):
         gui = self.project.config["jdata"].get("gui")
 
@@ -191,8 +190,6 @@ class LinuxCNC:
         ini_setup["TRAJ"]["COORDINATES"] = "".join(coordinates)
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
-
-
 
         if gui in {"tklinuxcnc", "touchy", "probe_basic"}:
             ini_setup["DISPLAY"]["DISPLAY"] = gui
@@ -245,9 +242,6 @@ class LinuxCNC:
                     ini_setup[section] = {}
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
-
-
-
 
         for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
             if section not in ini_setup:
@@ -709,7 +703,7 @@ class LinuxCNC:
         cfgxml_adata += gui_gen.draw_tabs_end()
         cfgxml_adata += gui_gen.draw_end()
         custom.append("")
-        
+
         if gui == "qtdragon":
             os.system(f"mkdir -p {self.configuration_path}/rio_hd")
             os.system(f"cp -a {riocore_path}/files/rio_hd/* {self.configuration_path}/rio_hd/")
@@ -723,7 +717,6 @@ class LinuxCNC:
 
         if gui not in {"touchy", "probe_basic"}:
             self.postgui_call_list.append("source custom_postgui.hal")
-
 
     def joypad(self):
         joypad = self.project.config["jdata"].get("joypad", {})
@@ -837,6 +830,17 @@ class LinuxCNC:
         output.append("")
         output.append("net rio.machine-is-on <= halui.machine.is-on")
         output.append("")
+
+        hy_vfd_dev = self.project.config["jdata"].get("hy_vfd", {}).get("device")
+        if hy_vfd_dev:
+            hy_vfd_address = self.project.config["jdata"]["hy_vfd"].get("address", 1)
+            output.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600 -t {hy_vfd_address}")
+            output.append("setp vfd.enable 1")
+            output.append("net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command")
+            output.append("net spindle0_forward spindle.0.forward => vfd.spindle-forward")
+            output.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
+            output.append("net spindle0_on spindle.0.on => vfd.spindle-on")
+            output.append("")
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
@@ -2089,7 +2093,7 @@ class axis:
 
     def draw_end(self):
         cfgxml_data = []
-        cfgxml_data.append("<label><text>\"\"</text><width>30</width></label>")
+        cfgxml_data.append('<label><text>""</text><width>30</width></label>')
         cfgxml_data.append("</pyvcp>")
         return cfgxml_data
 
@@ -2280,8 +2284,8 @@ class axis:
         cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
         cfgxml_data.append('        <font>("Helvetica",14)</font>')
         cfgxml_data.append(f'        <format>"{display_format}"</format>')
-        #cfgxml_data.append(f'        <width>10</width>')
-        cfgxml_data.append(f'      <justify>RIGHT</justify>')
+        # cfgxml_data.append(f'        <width>10</width>')
+        cfgxml_data.append(f"      <justify>RIGHT</justify>")
         cfgxml_data.append(f"    </{element}>")
         if unit:
             cfgxml_data.append("    <label>")
