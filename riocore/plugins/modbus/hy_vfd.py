@@ -7,12 +7,12 @@ class hy_vfd:
         [0x03, 0x01, 0x8],  # stop spindle on error
     ]
     HYVFD_CALC_KEYS = {
-        "max_freq": {"scale": 0.001, "unit": "Hz"},
-        "base_freq": {"scale": 0.001, "unit": "Hz"},
-        "freq_lower_limit": {"scale": 0.001, "unit": "Hz"},
+        "max_freq": {"scale": 0.01, "unit": "Hz"},
+        "base_freq": {"scale": 0.01, "unit": "Hz"},
+        "freq_lower_limit": {"scale": 0.01, "unit": "Hz"},
         "rated_motor_voltage": {"scale": 0.1, "unit": "V"},
         "rated_motor_current": {"scale": 0.1, "unit": "A"},
-        "rpm_at_50hz": {"scale": 10.0, "unit": "RPM"},
+        "rpm_at_50hz": {"scale": 1.0, "unit": "RPM"},
         "rated_motor_rev": {"scale": 1.0, "unit": "RPM"},
         "speed_fb": {"scale": 1.0, "unit": "RPM", "helper": False},
         "speed_fb_rps": {"scale": 1.0, "unit": "RPS"},
@@ -43,8 +43,8 @@ class hy_vfd:
     HYVFD_COMMAND = 0
     HYVFD_STATUS_REGISTER_ACTIVE = 0
     HYVFD_STATUS_REGISTER = {
-        0: {"done": False, "value": 0, "name": "frq_set", "scale": 0.001, "unit": "Hz"},
-        1: {"done": False, "value": 0, "name": "frq_get", "scale": 0.001, "unit": "Hz"},
+        0: {"done": False, "value": 0, "name": "frq_set", "scale": 0.01, "unit": "Hz"},
+        1: {"done": False, "value": 0, "name": "frq_get", "scale": 0.01, "unit": "Hz"},
         2: {"done": False, "value": 0, "name": "ampere", "scale": 0.01, "unit": "A"},
         3: {"done": False, "value": 0, "name": "rpm", "scale": 1.0, "unit": "RPM"},
         4: {"done": False, "value": 0, "name": "dc_volt", "scale": 0.1, "unit": "V"},
@@ -216,7 +216,7 @@ class hy_vfd:
                     value = self.HYVFD_DATA["max_freq"]
                 if value < self.HYVFD_DATA["freq_lower_limit"]:
                     value = self.HYVFD_DATA["freq_lower_limit"]
-                cmd = [address, 0x05, 0x02] + self.int2list(int(value * 1000))
+                cmd = [address, 0x05, 0x02] + self.int2list(int(value * 100))
             elif self.HYVFD_COMMAND == 2:
                 set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
                 if set_speed > 0.0:
@@ -392,7 +392,7 @@ class hy_vfd:
         output.append(f"        if (value < value_{self.signal_name}_freq_lower_limit) {{")
         output.append(f"            value = value_{self.signal_name}_freq_lower_limit;")
         output.append("        }")
-        output.append("        uint16_t value_int = value * 1000.0;")
+        output.append("        uint16_t value_int = value * 100.0;")
         output.append(f"        frame_data[0] = {address};")
         output.append("        frame_data[1] = 0x05;")
         output.append("        frame_data[2] = 0x02;")
