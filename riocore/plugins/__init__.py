@@ -183,7 +183,6 @@ class PluginBase:
             self.time_diff = timestamp - self.timestamp
             if self.time_diff >= self.timeout:
                 frame_timeout = True
-            # print("frame_ack or frame_timeout", frame_ack, frame_timeout, self.timeout, self.send_counter)
 
             if (frame_ack or frame_timeout) and self.time_diff > self.delay:
                 self.timestamp = timestamp

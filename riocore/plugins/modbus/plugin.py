@@ -96,6 +96,7 @@ class modbus_hy_vfd:
                     "min": -24000,
                     "max": 24000,
                 }
+
     def int2list(self, value):
         return [(value >> 8) & 0xFF, value & 0xFF]
 
@@ -105,7 +106,7 @@ class modbus_hy_vfd:
     def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
         config = self.config
         if frame_new:
-            print(f"hy rx frame  {frame_id} {frame_len}: {frame_data}")
+            # print(f"hy rx frame  {frame_id} {frame_len}: {frame_data}")
             if frame_len > 4:
                 address = frame_data[0]
                 ctype = frame_data[1]
@@ -606,7 +607,7 @@ class Plugin(PluginBase):
             config["instance"].frameio_rx(frame_new, frame_id, frame_len, frame_data)
         elif frame_new:
 
-            print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
+            # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
 
             if frame_len > 4:
                 address = frame_data[0]
@@ -684,6 +685,8 @@ class Plugin(PluginBase):
         else:
             cmd = []
             direction = config["direction"]
+            self.timeout = config.get("timeout", self.TIMEOUT)
+            self.delay = config.get("delay", self.DELAY)
             address = config["address"]
             ctype = config["type"]
             self.signal_name = signal_name
@@ -722,8 +725,7 @@ class Plugin(PluginBase):
         csum_calc = csum.intdigest()
         frame_data = cmd + csum_calc
 
-        print("")
-        print(f"tx frame -- {len(frame_data)}: {frame_data}")
+        # print(f"tx frame -- {len(frame_data)}: {frame_data}")
         return frame_data
 
     def globals_c(self):
@@ -751,6 +753,8 @@ class Plugin(PluginBase):
         sn = 0
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]
+            timeout = signal_config.get("timeout", self.TIMEOUT)
+            delay = signal_config.get("delay", self.DELAY)
             address = signal_config["address"]
             ctype = signal_config["type"]
             vscale = signal_config.get("scale", 1.0)
@@ -779,7 +783,7 @@ class Plugin(PluginBase):
                     output.append("                    } else {")
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
-                        output.append(f"                        rtapi_print(\"rx error: addr or len\");")
+                        output.append(f'                        rtapi_print("rx error: addr or len");')
                         output.append(f"                        {value_name}_errors += 1;")
                         output.append(f"                        {value_name}_valid = 0;")
                     output.append("                    }")
@@ -792,7 +796,7 @@ class Plugin(PluginBase):
                         output.append(f"                        value_{self.signal_name} *= {vscale};")
                     output.append(f"                        value_{self.signal_name}_valid = 1;")
                     output.append("                    } else {")
-                    output.append(f"                        rtapi_print(\"rx error: addr or len\");")
+                    output.append(f'                        rtapi_print("rx error: addr or len");')
                     output.append(f"                        value_{self.signal_name}_errors += 1;")
                     output.append(f"                        value_{self.signal_name}_valid = 0;")
                     output.append("                    }")
@@ -817,6 +821,8 @@ class Plugin(PluginBase):
         sn = 0
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]
+            timeout = signal_config.get("timeout", self.TIMEOUT)
+            delay = signal_config.get("delay", self.DELAY)
             address = signal_config["address"]
             ctype = signal_config["type"]
             vscale = signal_config.get("scale", 1.0)
@@ -834,14 +840,14 @@ class Plugin(PluginBase):
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
                         output.append(f"                {value_name}_valid = 0;")
-                        output.append(f"                rtapi_print(\"rx error: timeout\");")
+                        output.append(f'                rtapi_print("rx error: timeout");')
                         output.append(f"                {value_name}_errors += 1;")
                     output.append("            }")
                 else:
                     output.append(f"            // get single 16bit value")
                     output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
                     output.append(f"                value_{signal_name}_valid = 0;")
-                    output.append(f"                rtapi_print(\"rx error: timeout\");")
+                    output.append(f'                rtapi_print("rx error: timeout");')
                     output.append(f"                value_{signal_name}_errors += 1;")
                     output.append("            }")
             sn += 1
@@ -859,7 +865,7 @@ class Plugin(PluginBase):
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]
             timeout = signal_config.get("timeout", self.TIMEOUT)
-            delay = signal_config.get("delay", 0)
+            delay = signal_config.get("delay", self.DELAY)
             address = signal_config["address"]
             ctype = signal_config["type"]
             self.signal_values = signal_config.get("values", 1)

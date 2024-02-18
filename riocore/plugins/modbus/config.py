@@ -101,19 +101,19 @@ class config:
                 "default": "d",
                 "on_special": False,
             },
-            "delay": {
-                "description": "Delay after receive (free bus)",
-                "type": int,
-                "min": 0,
-                "max": 1000,
-                "default": 0,
-            },
             "timeout": {
                 "description": "response timeout",
                 "type": int,
                 "min": 100,
                 "max": 100000,
-                "default": 500,
+                "default": 100,
+            },
+            "delay": {
+                "description": "Delay after receive (free bus)",
+                "type": int,
+                "min": 0,
+                "max": 1000,
+                "default": 60,
             },
         }
 
