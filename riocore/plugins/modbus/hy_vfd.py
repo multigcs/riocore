@@ -2,6 +2,10 @@ from riocore.checksums import crc8, crc16
 
 
 class hy_vfd:
+    HYVFD_MAX_TRYS = 100
+    HYVFD_ON_ERROR_CMDS = [
+        [0x03, 0x01, 0x8],
+    ]
     HYVFD_CALC_KEYS = {
         "max_freq": {"scale": 0.001, "unit": "Hz"},
         "base_freq": {"scale": 0.001, "unit": "Hz"},
@@ -10,15 +14,18 @@ class hy_vfd:
         "rated_motor_current": {"scale": 0.1, "unit": "A"},
         "rpm_at_50hz": {"scale": 10.0, "unit": "RPM"},
         "rated_motor_rev": {"scale": 1.0, "unit": "RPM"},
-        "speed_fb": {"scale": 1.0, "unit": "RPM"},
+        "speed_fb": {"scale": 1.0, "unit": "RPM", "helper": False},
         "speed_fb_rps": {"scale": 1.0, "unit": "RPS"},
-        "at_speed": {"scale": 1.0},
+        "at_speed": {"scale": 1.0, "bool": True, "helper": False},
+        "error_count": {"scale": 1.0},
+        "hycomm_ok": {"scale": 1.0, "bool": True},
     }
-    HYVFD_OUTPUTS = {
-        "speed": {"unit": "RPM", "net": "spindle.0.speed-out-abs"},
-        "spindle_forward": {"bool": True, "net": "spindle0_forward spindle.0.forward"},
-        "spindle_reverse": {"bool": True, "net": "spindle0_reverse spindle.0.reverse"},
-        "spindle_on": {"bool": True, "net": "spindle0_on spindle.0.on"},
+    HYVFD_SIGNALS = {
+        "speed_command": {"direction": "output", "unit": "RPM", "net": "spindle.0.speed-out-abs"},
+        "spindle_at_speed_tolerance": {"direction": "output", "unit": "", "net": "", "helper": True},
+        "spindle_forward": {"direction": "output", "bool": True, "net": "spindle0_forward spindle.0.forward"},
+        "spindle_reverse": {"direction": "output", "bool": True, "net": "spindle0_reverse spindle.0.reverse"},
+        "spindle_on": {"direction": "output", "bool": True, "net": "spindle0_on spindle.0.on"},
     }
     HYVFD_DATA = {}
     HYVFD_CONFIG_REGISTER = {
@@ -59,24 +66,29 @@ class hy_vfd:
                 "scale": 1.0,
                 "format": "7.2f",
                 "plugin_setup": {},
+                "helper": True,
             }
         for name, data in self.HYVFD_CALC_KEYS.items():
+            self.HYVFD_DATA[name] = 0
             value_name = f"{signal_name}_{name}"
             self.signals[value_name] = {
                 "direction": "input",
                 "net": data.get("net", ""),
                 "unit": data.get("unit", ""),
+                "bool": data.get("bool", False),
+                "helper": data.get("helper", True),
                 "scale": 1.0,
                 "format": ".2f",
                 "plugin_setup": {},
             }
-        for name, data in self.HYVFD_OUTPUTS.items():
+        for name, data in self.HYVFD_SIGNALS.items():
             value_name = f"{signal_name}_{name}"
             if data.get("bool", False) is True:
                 self.signals[value_name] = {
                     "direction": "output",
                     "net": data.get("net", ""),
                     "unit": data.get("unit", ""),
+                    "helper": data.get("helper", False),
                     "bool": True,
                 }
             else:
@@ -87,6 +99,7 @@ class hy_vfd:
                     "scale": 1.0,
                     "format": "7.2f",
                     "plugin_setup": {},
+                    "helper": data.get("helper", False),
                     "min": -24000,
                     "max": 24000,
                 }
@@ -128,15 +141,25 @@ class hy_vfd:
                                 self.HYVFD_DATA[status_name] = value * status_scale
                                 self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
                                 self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
-                                set_speed = self.signals[f"{self.signal_name}_speed"]["value"]
-                                tolerance = 10
+                                set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
+                                tolerance = set_speed * self.signals[f"{self.signal_name}_spindle_at_speed_tolerance"]["value"]
                                 diff = self.HYVFD_DATA["speed_fb"] - set_speed
-                                if diff < tolerance:
+                                if diff <= tolerance:
                                     self.HYVFD_DATA["at_speed"] = 1
                                 else:
                                     self.HYVFD_DATA["at_speed"] = 0
                             else:
                                 self.HYVFD_DATA[status_name] = value * status_scale
+                            self.HYVFD_DATA["hycomm_ok"] = 1
+                        elif frame_data[1] == 0x05 and frame_data[2] == 0x02:
+                            pass
+                            self.HYVFD_DATA["hycomm_ok"] = 1
+                        elif frame_data[1] == 0x03 and frame_data[2] == 0x01:
+                            pass
+                            self.HYVFD_DATA["hycomm_ok"] = 1
+                        else:
+                            self.HYVFD_DATA["error_count"] += 1
+                            self.HYVFD_DATA["hycomm_ok"] = 0
                     for name, value in self.HYVFD_DATA.items():
                         value_name = f"{self.signal_name}_{name}"
                         if value_name in self.signals:
@@ -154,7 +177,7 @@ class hy_vfd:
         if self.HYVFD_CONFIG_REGISTER_SETUP:
             self.HYVFD_CONFIG_REGISTER_SETUP = False
             for register, reg_data in self.HYVFD_CONFIG_REGISTER.items():
-                if not reg_data["done"] and reg_data["try"] < 5:
+                if not reg_data["done"] and reg_data["try"] < self.HYVFD_MAX_TRYS:
                     self.HYVFD_CONFIG_REGISTER_SETUP = True
                     cmd = [address, 0x01, 0x03, register, 0x00, 0x00]
                     reg_data["try"] += 1
@@ -185,7 +208,7 @@ class hy_vfd:
                     self.HYVFD_DATA[status_name] = 0.0
                 cmd = [address, 0x04, 0x03, status_register, 0x00, 0x00]
             elif self.HYVFD_COMMAND == 1:
-                set_speed = self.signals[f"{self.signal_name}_speed"]["value"]
+                set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
                 freq_comp = 0
                 hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rated_motor_rev"]
                 value = abs((set_speed + freq_comp) * hz_per_rpm)
@@ -195,7 +218,7 @@ class hy_vfd:
                     value = self.HYVFD_DATA["freq_lower_limit"]
                 cmd = [address, 0x05, 0x02] + self.int2list(int(value * 1000))
             elif self.HYVFD_COMMAND == 2:
-                set_speed = self.signals[f"{self.signal_name}_speed"]["value"]
+                set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
                 if set_speed > 0.0:
                     # FWD
                     cmd = [address, 0x03, 0x01, 0x1]
@@ -257,6 +280,7 @@ class hy_vfd:
         output.append("                    break;")
         output.append("                }")
         output.append("            }")
+        output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
         output.append(f"        }} else if (frame_data[1] == 0x04 && frame_data[2] == 0x03) {{")
         num_status_registers = len(self.HYVFD_STATUS_REGISTER)
         output.append(f"            for (n = 0; n < {num_status_registers}; n++) {{")
@@ -271,6 +295,26 @@ class hy_vfd:
         output.append("                    break;")
         output.append("                }")
         output.append("            }")
+        output.append(
+            f"            value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};"
+        )
+        output.append(f"            value_{self.signal_name}_speed_fb_rps = value_{self.signal_name}_speed_fb / 60.0;")
+        output.append(f"            float tolerance = value_{self.signal_name}_speed_command * value_{self.signal_name}_spindle_at_speed_tolerance;")
+        output.append(f"            float diff = abs(value_{self.signal_name}_speed_fb - value_{self.signal_name}_speed_command);")
+        output.append(f"            if (diff <= tolerance) {{")
+        output.append(f"                value_{self.signal_name}_at_speed = 1;")
+        output.append("            } else {")
+        output.append(f"                value_{self.signal_name}_at_speed = 0;")
+        output.append("            }")
+        output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
+        output.append(f"        }} else if (frame_data[1] == 0x05 && frame_data[2] == 0x02) {{")
+        output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
+        output.append(f"        }} else if (frame_data[1] == 0x03 && frame_data[2] == 0x01) {{")
+        output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
+        output.append(f"        }} else {{")
+        output.append("            /// ERROR")
+        output.append(f"            value_{self.signal_name}_error_count += 1;")
+        output.append(f"            value_{self.signal_name}_hycomm_ok = 0;")
         output.append("        }")
         output.append("    }")
         output.append("")
@@ -340,7 +384,7 @@ class hy_vfd:
         output.append("        // set speed")
         output.append("        float freq_comp = 0;")
         output.append(f"        float hz_per_rpm = value_{self.signal_name}_max_freq / value_{self.signal_name}_rated_motor_rev;")
-        output.append(f"        float value = abs((value_{self.signal_name}_speed + freq_comp) * hz_per_rpm);")
+        output.append(f"        float value = abs((value_{self.signal_name}_speed_command + freq_comp) * hz_per_rpm);")
         output.append(f"        if (value > value_{self.signal_name}_max_freq) {{")
         output.append(f"            value = value_{self.signal_name}_max_freq;")
         output.append("        }")
@@ -373,3 +417,14 @@ class hy_vfd:
         output.append("}")
         output.append("")
         return output
+
+    def on_error(self):
+        cmds = []
+        address = self.config["address"]
+        for cmd in self.HYVFD_ON_ERROR_CMDS:
+            frame = [address] + cmd
+            csum = crc16()
+            csum.update(frame)
+            frame += csum.intdigest()
+            cmds.append(frame)
+        return cmds

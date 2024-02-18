@@ -95,6 +95,12 @@ class config:
                 "default": "",
                 "on_special": False,
             },
+            "error_values": {
+                "description": "default values on connection error",
+                "type": str,
+                "default": "",
+                "on_special": False,
+            },
             "format": {
                 "description": "Display-Format",
                 "type": str,
@@ -268,7 +274,7 @@ class config:
                 data["widget"] = QLineEdit(data["default"])
             data["widget"].setToolTip(data["description"])
 
-            edit_layout.addWidget(QLabel(f"{name.title()}:"), row_n, 1)
+            edit_layout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"), row_n, 1)
             edit_layout.addWidget(data["widget"], row_n, 2)
             row_n += 1
 

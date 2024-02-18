@@ -7,6 +7,8 @@ from riocore.plugins.modbus import hy_vfd
 
 
 class Plugin(PluginBase):
+    ON_ERROR_CMDS = []
+
     def setup(self):
         self.NAME = "modbus"
         self.VERILOGS = ["modbus.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
@@ -83,6 +85,8 @@ class Plugin(PluginBase):
             ctype = config["type"]
             if ctype == 101:
                 config["instance"] = hy_vfd.hy_vfd(self.SIGNALS, signal_name, config)
+                if hasattr(config["instance"], "on_error"):
+                    self.ON_ERROR_CMDS += config["instance"].on_error()
             else:
                 is_bool = False
                 if ctype in {5, 15}:
@@ -149,6 +153,41 @@ class Plugin(PluginBase):
             },
         }
 
+        for signal_name, config in self.plugin_setup.get("config", {}).items():
+            n_values = config.get("values", 0)
+            ctype = config["type"]
+            address = config["address"]
+            register = self.int2list(config["register"])
+            error_values = config.get("error_values", "").strip().split()
+            n_values = self.int2list(len(error_values))
+            direction = config["direction"]
+            cmd = []
+            if ctype == 101:
+                pass
+            elif direction == "output" and error_values:
+                if config["values"] > 1:
+                    if ctype == 15:
+                        cmd = [address, ctype] + register + n_values + [1]
+                        bitvalues = 0
+                        for value in error_values:
+                            if int(value) == 1:
+                                bitvalues = bitvalues | (1 << vn)
+                        cmd.append(bitvalues)
+                    else:
+                        cmd = [address, ctype] + register + n_values
+                        for value in error_values:
+                            cmd += self.int2list(int(value))
+                else:
+                    value = int(error_values[0])
+                    if ctype == 5:
+                        value *= 65280
+                    cmd = [address, ctype] + register + self.int2list(value)
+
+                csum = crc16()
+                csum.update(cmd)
+                cmd += csum.intdigest()
+                self.ON_ERROR_CMDS.append(cmd)
+
         # add signals for the documentation if nothing is configured
         if not self.SIGNALS:
             self.SIGNALS = {
@@ -170,6 +209,41 @@ class Plugin(PluginBase):
         instance_parameter["TX_BUFFERSIZE"] = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
+
+        num_on_error_cmds = len(self.ON_ERROR_CMDS)
+        original_name = instance["arguments"]["txdata"]
+        instance["arguments"]["txdata"] = f"{original_name}_TMP"
+        instance["predefines"].append(f"reg [{self.tx_buffersize - 1}:0] {original_name}_TMP;")
+        instance["predefines"].append(f"reg [7:0] {self.instances_name}_cmd_num = 0;")
+        instance["predefines"].append(f"reg [7:0] {self.instances_name}_frame_counter = 0;")
+        instance["predefines"].append(f"reg [31:0] {self.instances_name}_cmd_counter = 0;")
+
+        instance["predefines"].append("always @(posedge sysclk) begin")
+        instance["predefines"].append("    if (ERROR) begin")
+        instance["predefines"].append(f"        if ({self.instances_name}_cmd_counter < {self.system_setup['speed'] // 5}) begin")
+        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= {self.instances_name}_cmd_counter + 1;")
+        instance["predefines"].append("        end else begin")
+        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= 0;")
+        instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 1;")
+        instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
+        for cn, cmd in enumerate(self.ON_ERROR_CMDS):
+            frame = []
+            for cbyte in reversed(cmd):
+                frame.append(f"8'd{cbyte}")
+            instance["predefines"].append(f"                {cn}: begin")
+            if cn == num_on_error_cmds - 1:
+                instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= 0;")
+            else:
+                instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
+            offset = ((2 + len(cmd)) * 8) - 1
+            instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}};")
+            instance["predefines"].append("                end")
+        instance["predefines"].append("            endcase")
+        instance["predefines"].append("        end")
+        instance["predefines"].append("    end else begin")
+        instance["predefines"].append(f"        {original_name}_TMP <= {original_name};")
+        instance["predefines"].append("    end")
+        instance["predefines"].append("end")
         return instances
 
     def int2list(self, value):

@@ -99,7 +99,7 @@ class Toolchain:
         makefile_data.append("prog: $(PROJECT).sof")
         makefile_data.append('	$(Q)$(ECHO) "Programming."')
         makefile_data.append('	$(QP) --no_banner --mode=jtag -o "P;$(PROJECT).sof"')
-        makefile_data.append("	mv -v hash_new.txt hash.txt")
+        makefile_data.append("	cp -v hash_new.txt hash.txt")
         makefile_data.append("")
         makefile_data.append("")
         open(f"{path}/Makefile", "w").write("\n".join(makefile_data))

@@ -54,7 +54,7 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("load:")
         makefile_data.append("	openFPGALoader -c usb-blaster build/$(PROJECT)_build.bit")
-        makefile_data.append("	mv -v hash_new.txt hash.txt")
+        makefile_data.append("	cp -v hash_new.txt hash.txt")
         makefile_data.append("")
         makefile_data.append("clean:")
         makefile_data.append("	rm -rf build $(PROJECT).ldf $(PROJECT).tcl syn.tcl")

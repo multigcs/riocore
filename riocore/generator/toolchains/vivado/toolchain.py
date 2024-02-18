@@ -70,7 +70,7 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("load: build/$(PROJECT).bit")
         makefile_data.append("	openFPGALoader -b arty -f build/$(PROJECT).bit")
-        makefile_data.append("	mv -v hash_new.txt hash.txt")
+        makefile_data.append("	cp -v hash_new.txt hash.txt")
         makefile_data.append("")
         makefile_data.append("")
         open(f"{path}/Makefile", "w").write("\n".join(makefile_data))

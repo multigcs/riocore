@@ -628,7 +628,6 @@ class LinuxCNC:
                     displayconfig = userconfig.get("display", {})
                     if signal_config.get("helper", False) and not displayconfig:
                         continue
-
                     vmin = signal_config.get("min", -1000)
                     vmax = signal_config.get("max", 1000)
                     vformat = signal_config.get("format")
@@ -950,7 +949,7 @@ class LinuxCNC:
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
                 if not boolean:
                     output.append(f"    hal_{hal_type}_t *{varname};")
-                    if not signal_source:
+                    if not signal_source and not signal_config.get("helper", False):
                         if direction == "input" and hal_type == "float":
                             output.append(f"    hal_s32_t *{varname}_S32;")
                         output.append(f"    hal_float_t *{varname}_SCALE;")
@@ -1009,14 +1008,14 @@ class LinuxCNC:
                 mapping = {"output": "IN", "input": "OUT", "inout": "IO"}
                 hal_direction = mapping[direction]
                 if not boolean:
-                    if not signal_source:
+                    if not signal_source and not signal_config.get("helper", False):
                         output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_SCALE), comp_id, "%s.{halname}-scale", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_SCALE = 1.0;")
                         output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_OFFSET), comp_id, "%s.{halname}-offset", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_OFFSET = 0.0;")
                     output.append(f'    if (retval = hal_pin_{hal_type}_newf(HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
-                    if direction == "input" and hal_type == "float" and not signal_source:
+                    if direction == "input" and hal_type == "float" and not signal_source and not signal_config.get("helper", False):
                         output.append(f'    if (retval = hal_pin_s32_newf(HAL_{hal_direction}, &(data->{varname}_S32), comp_id, "%s.{halname}-s32", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_S32 = 0;")
                 else:
@@ -1235,7 +1234,7 @@ class LinuxCNC:
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
                     signal_targets = signal_config.get("targets", {})
-                    if signal_config["direction"] == "input" and not signal_source:
+                    if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
                         convert_parameter = []
                         for data_name, data_config in plugin_instance.interface_data().items():
                             variable_name = data_config["variable"]
@@ -1360,7 +1359,7 @@ class LinuxCNC:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
-                    if signal_config["direction"] == "input" and not signal_source:
+                    if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
                         output.append(f"    convert_{varname.lower()}(data);")
                         signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
                         if signal_setup:
