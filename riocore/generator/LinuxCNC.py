@@ -1068,6 +1068,7 @@ class LinuxCNC:
                         output.append("")
                         output.append("    frame_time = (float)(stamp_last - frame_stamp_last) / 1000000.0;")
                         output.append("    if (frame_time > timeout) {")
+                        output.append("        rtapi_print(\"timeout: %f\\n\", frame_time);")
                         output.append("        frame_timeout = 1;")
                         output.append("    }")
                         output.append("")

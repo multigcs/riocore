@@ -4,7 +4,7 @@ from riocore.checksums import crc8, crc16
 class hy_vfd:
     HYVFD_MAX_TRYS = 100
     HYVFD_ON_ERROR_CMDS = [
-        [0x03, 0x01, 0x8],
+        [0x03, 0x01, 0x8],  # stop spindle on error
     ]
     HYVFD_CALC_KEYS = {
         "max_freq": {"scale": 0.001, "unit": "Hz"},
@@ -317,6 +317,7 @@ class hy_vfd:
         output.append(f"            value_{self.signal_name}_hycomm_ok = 0;")
         output.append("        }")
         output.append("    }")
+        output.append("    break;")
         output.append("")
         return output
 
