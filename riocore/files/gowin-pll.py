@@ -243,6 +243,9 @@ endmodule
 
 """
     if args.filename:
+        print(f" * Given input frequency:        {args.input_freq_mhz:0.3f} MHz")
+        print(f" * Requested output frequency:   {args.output_freq_mhz:0.3f} MHz")
+        print(f" * Achieved output frequency:    {setup['CLKOUT']:0.3f} MHz")
         open(args.filename, "w").write(pll_v)
     else:
         print(pll_v)
