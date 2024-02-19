@@ -411,11 +411,10 @@ class LinuxCNC:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     userconfig = signal_config.get("userconfig", {})
-                    displayconfig = userconfig.get("display", {})
+                    displayconfig = userconfig.get("display", signal_config.get("display", {}))
                     section = displayconfig.get("section")
                     if section and section not in cfgxml_data:
                         cfgxml_data[section] = []
-
         cfgxml_data["inputs"] = []
         cfgxml_data["outputs"] = []
 
@@ -625,7 +624,7 @@ class LinuxCNC:
                     userconfig = signal_config.get("userconfig", {})
                     boolean = signal_config.get("bool")
                     setp = userconfig.get("setp")
-                    displayconfig = userconfig.get("display", {})
+                    displayconfig = userconfig.get("display", signal_config.get("display", {}))
                     if signal_config.get("helper", False) and not displayconfig:
                         continue
                     vmin = signal_config.get("min", -1000)
@@ -647,7 +646,9 @@ class LinuxCNC:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
-                        if dtype != "none":
+                        if dtype == "meter" and gui == "qtdragon":
+                            self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}_value")
+                        elif dtype != "none":
                             self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}")
 
                     elif direction == "input":
@@ -656,7 +657,10 @@ class LinuxCNC:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
-                        if dtype != "none":
+
+                        if dtype == "meter" and gui == "qtdragon":
+                            self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}_value")
+                        elif dtype != "none":
                             self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}")
 
                     elif direction == "output":
@@ -1067,7 +1071,7 @@ class LinuxCNC:
                         output.append("    uint8_t frame_len = 0;")
                         output.append("")
                         output.append("    frame_time = (float)(stamp_last - frame_stamp_last) / 1000000.0;")
-                        output.append("    if (frame_time > timeout) {")
+                        output.append("    if (timeout > 0 && frame_time > timeout) {")
                         output.append("        rtapi_print(\"timeout: %f\\n\", frame_time);")
                         output.append("        frame_timeout = 1;")
                         output.append("    }")
@@ -1077,7 +1081,7 @@ class LinuxCNC:
                         output.append("        frame_ack = 1;")
                         output.append("    }")
                         output.append("")
-                        output.append(f"    if (frame_timeout == 1 || (frame_ack == 1 && (float)(stamp_last - {plugin_instance.instances_name}_last_rx) / 1000000.0 > delay)) {{")
+                        output.append(f"    if (timeout == 0 || frame_timeout == 1 || (frame_ack == 1 && (float)(stamp_last - {plugin_instance.instances_name}_last_rx) / 1000000.0 > delay)) {{")
                         output.append("        frame_id_last = frame_id;")
                         output.append("        frame_id += 1;")
 
@@ -1114,10 +1118,12 @@ class LinuxCNC:
                         output.append("")
                         output.append("        /**************************/")
                         output.append("")
-                        output.append("        frame_io[0] = frame_id;")
-                        output.append("        frame_io[1] = frame_len;")
-                        output.append("        frame_stamp_last = stamp_last;")
-                        output.append(f"        memcpy(&frame_io[2], &frame_data, {variable_bytesize - 2});")
+                        output.append("        if (frame_len > 0) {")
+                        output.append("            frame_io[0] = frame_id;")
+                        output.append("            frame_io[1] = frame_len;")
+                        output.append("            frame_stamp_last = stamp_last;")
+                        output.append(f"            memcpy(&frame_io[2], &frame_data, {variable_bytesize - 2});")
+                        output.append("        }")
                         output.append("    }")
                         output.append("")
                         output.append(f"    memcpy(&data->{variable_name}, &frame_io, {variable_bytesize});")
@@ -2278,23 +2284,23 @@ class axis:
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
+        cfgxml_data.append('      <font>("Helvetica",9)</font>')
+        cfgxml_data.append('      <width>13</width>')
+        cfgxml_data.append("    </label>")
         cfgxml_data.append(f"    <{element}>")
         cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
         cfgxml_data.append('        <font>("Helvetica",14)</font>')
         cfgxml_data.append(f'        <format>"{display_format}"</format>')
-        # cfgxml_data.append(f'        <width>10</width>')
-        cfgxml_data.append(f"      <justify>RIGHT</justify>")
+        #cfgxml_data.append(f'        <width>13</width>')
+        cfgxml_data.append('      <justify>LEFT</justify>')
         cfgxml_data.append(f"    </{element}>")
         if unit:
             cfgxml_data.append("    <label>")
             cfgxml_data.append('        <font>("Helvetica",14)</font>')
             cfgxml_data.append(f'      <text>"{unit}"</text>')
             cfgxml_data.append("    </label>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"({title})"</text>')
-        cfgxml_data.append('      <font>("Helvetica",9)</font>')
-        cfgxml_data.append("    </label>")
-
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
@@ -2304,9 +2310,14 @@ class axis:
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
+        cfgxml_data.append('      <font>("Helvetica",9)</font>')
+        cfgxml_data.append('      <width>13</width>')
+        cfgxml_data.append("    </label>")
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f'      <text>"{title}"</text>')
+        #cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
@@ -2343,6 +2354,11 @@ class axis:
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
+        cfgxml_data.append('      <font>("Helvetica",9)</font>')
+        cfgxml_data.append('      <width>13</width>')
+        cfgxml_data.append("    </label>")
         cfgxml_data.append("    <led>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
         cfgxml_data.append(f"      <size>{size}</size>")
@@ -2356,9 +2372,6 @@ class axis:
             cfgxml_data.append('      <on_color>"green"</on_color>')
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
@@ -2371,6 +2384,11 @@ class axis:
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
+        cfgxml_data.append('      <font>("Helvetica",9)</font>')
+        cfgxml_data.append('      <width>13</width>')
+        cfgxml_data.append("    </label>")
         cfgxml_data.append("    <led>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
         cfgxml_data.append(f"      <width>{width}</width>")
@@ -2385,9 +2403,6 @@ class axis:
             cfgxml_data.append('      <on_color>"green"</on_color>')
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 

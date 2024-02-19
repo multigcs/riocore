@@ -103,6 +103,7 @@ class Plugin(PluginBase):
                             "min": vmin,
                             "max": vmax,
                             "bool": is_bool,
+                            "display": {"section": "modbus", "title": value_name.title()},
                         }
                         if config["direction"] == "input":
                             self.SIGNALS[f"{value_name}_valid"] = {
@@ -587,12 +588,17 @@ class Plugin(PluginBase):
         output.append("        }")
         output.append("")
         output.append("")
-        output.append("        uint8_t i = 0;")
-        output.append("        uint16_t crc = 0xFFFF;")
-        output.append("        for (i = 0; i < frame_len; i++) {")
-        output.append("            crc = crc16_update(crc, frame_data[i]);")
+        output.append("        if (frame_len == 0) {")
+        output.append("            delay = 0;")
+        output.append("            timeout = 0;")
+        output.append("        } else {")
+        output.append("            uint8_t i = 0;")
+        output.append("            uint16_t crc = 0xFFFF;")
+        output.append("            for (i = 0; i < frame_len; i++) {")
+        output.append("                crc = crc16_update(crc, frame_data[i]);")
+        output.append("            }")
+        output.append("            frame_data[frame_len] = crc & 0xFF;")
+        output.append("            frame_data[frame_len + 1] = crc>>8 & 0xFF;")
+        output.append("            frame_len += 2;")
         output.append("        }")
-        output.append("        frame_data[frame_len] = crc & 0xFF;")
-        output.append("        frame_data[frame_len + 1] = crc>>8 & 0xFF;")
-        output.append("        frame_len += 2;")
         return "\n".join(output)
