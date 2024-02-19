@@ -46,7 +46,6 @@ class LinuxCNC:
         "HOME": 0.0,
         "HOME_SEQUENCE": -1,
     }
-
     INI_DEFAULTS = {
         "EMC": {
             "MACHINE": "Rio",
@@ -120,6 +119,7 @@ class LinuxCNC:
         },
         "HAL": {
             "HALFILE": "rio.hal",
+            "TWOPASS": "OFF",
             "POSTGUI_HALFILE": "postgui_call_list.hal",
             "HALUI": "halui",
         },
@@ -170,22 +170,20 @@ class LinuxCNC:
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(self.postgui_call_list))
         print(f"writing linuxcnc files to: {self.base_path}")
 
-    def ini(self):
-        gui = self.project.config["jdata"].get("gui")
+    @classmethod
+    def ini_defaults(cls, gui, machinetype, num_joints=5, axis_dict={}):
+        ini_setup = cls.INI_DEFAULTS.copy()
 
-        ini_setup = self.INI_DEFAULTS.copy()
-
-        machinetype = self.project.config["jdata"].get("machinetype")
         if machinetype == "lathe":
             ini_setup["DISPLAY"]["LATHE"] = 1
 
         coordinates = []
-        for axis_name, joints in self.axis_dict.items():
+        for axis_name, joints in axis_dict.items():
             for joint, joint_setup in joints.items():
                 coordinates.append(axis_name)
 
         kinematics = "trivkins"
-        ini_setup["KINS"]["JOINTS"] = self.num_joints
+        ini_setup["KINS"]["JOINTS"] = num_joints
         ini_setup["KINS"]["KINEMATICS"] = f"{kinematics} coordinates={''.join(coordinates)}"
         ini_setup["TRAJ"]["COORDINATES"] = "".join(coordinates)
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
@@ -242,6 +240,12 @@ class LinuxCNC:
                     ini_setup[section] = {}
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
+        return ini_setup
+
+    def ini(self):
+        gui = self.project.config["jdata"].get("gui")
+        machinetype = self.project.config["jdata"].get("machinetype")
+        ini_setup = self.ini_defaults(gui, machinetype, self.num_joints, self.axis_dict)
 
         for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
             if section not in ini_setup:
