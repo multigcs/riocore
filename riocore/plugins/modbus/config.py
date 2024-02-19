@@ -43,7 +43,8 @@ class config:
         101: ("Huanyang VFD", "output"),
     }
 
-    def __init__(self, instance):
+    def __init__(self, instance, styleSheet=None):
+        self.styleSheet = styleSheet
         self.instance = instance
         self.config = self.instance.plugin_setup.get("config", {})
         self.config_selected = None
@@ -231,6 +232,8 @@ class config:
 
     def run(self):
         dialog = QDialog()
+        if self.styleSheet:
+            dialog.setStyleSheet(self.styleSheet)
         dialog.setWindowTitle("Modbus-Configuration")
         dialog.setMinimumWidth(800)
         dialog.setMinimumHeight(600)
