@@ -190,7 +190,9 @@ class Gateware:
                         print(f"WARNING: achieved PLL frequency is: {new_speed}")
                         self.project.config["speed"] = new_speed
             elif self.project.config["jdata"]["family"] == "GW1N-9C":
-                result = subprocess.check_output(f"python3 {riocore_path}/files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}", shell=True)
+                result = subprocess.check_output(
+                    f"python3 {riocore_path}/files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}", shell=True
+                )
                 achieved = re.findall(r"Achieved output frequency:\s*(\d*\.\d*)\s*MHz", result.decode())
                 if achieved:
                     new_speed = int(float(achieved[0]) * 1000000)
@@ -198,7 +200,9 @@ class Gateware:
                         print(f"WARNING: achieved PLL frequency is: {new_speed}")
                         self.project.config["speed"] = new_speed
             elif self.project.config["jdata"]["family"] == "MAX 10":
-                result = subprocess.check_output(f"{riocore_path}/files/quartus-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'", shell=True)
+                result = subprocess.check_output(
+                    f"{riocore_path}/files/quartus-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'", shell=True
+                )
                 achieved = re.findall(r"OUTPUT FREQ:\s*(\d*\.\d*)", result.decode())
                 if achieved:
                     new_speed = int(achieved[0].replace(".", ""))
@@ -207,7 +211,10 @@ class Gateware:
                         self.project.config["speed"] = new_speed
             elif self.project.config["jdata"]["family"] == "xc7":
                 if float(speed) == 125000000.0 and float(osc_clock) == 100000000.0:
-                    result = subprocess.check_output(f"{riocore_path}/files/vivado-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'", shell=True)
+                    result = subprocess.check_output(
+                        f"{riocore_path}/files/vivado-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'",
+                        shell=True,
+                    )
                     print(result.decode())
                 else:
                     print("ERROR: can not generate pll for this platform")

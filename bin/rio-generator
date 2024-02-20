@@ -10,7 +10,8 @@ import riocore
 riocore_path = os.path.dirname(riocore.__file__)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("config", help="config", nargs="?", type=str, default=None)
+parser.add_argument("config", help="json config file", nargs="?", type=str, default=None)
+parser.add_argument("output", help="output directory", nargs="?", type=str, default=None)
 args = parser.parse_args()
 
 if args.config:
@@ -23,7 +24,7 @@ if args.config:
             print(f"can not load: {args.config}")
             exit(1)
         print(f"loading: {config_file}")
-        project = riocore.Project(config_file)
+        project = riocore.Project(config_file, args.output)
         project.generator()
     elif args.config.startswith("plugininfo:"):
         plugin = args.config.split(":")[-1]

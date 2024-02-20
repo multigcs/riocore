@@ -252,9 +252,9 @@ class Plugins:
 
 
 class Project:
-    def __init__(self, configuration):
+    def __init__(self, configuration, output_path=None):
         plugins = Plugins()
-        self.load_config(configuration)
+        self.load_config(configuration, output_path)
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
@@ -265,11 +265,15 @@ class Project:
             return path
         elif os.path.exists(f"{riocore_path}/{path}"):
             return f"{riocore_path}/{path}"
-        print(f"can not find path: {path}")
+        print(f"path not found : {path}")
         exit(1)
 
-    def load_config(self, configuration):
+    def load_config(self, configuration, output_path=None):
         project = {}
+
+        if output_path is None:
+            output_path = "Output"
+
         # project["config"] = configuration
         if isinstance(configuration, str) and configuration[0] == "{":
             project = {"jdata": json.loads(configuration)}
@@ -377,7 +381,7 @@ class Project:
         self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc", 0))
         self.config["sysclk_pin"] = project["jdata"]["clock"]["pin"]
         self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
-        self.config["output_path"] = f"Output/{project['jdata']['name']}"
+        self.config["output_path"] = f"{output_path}/{project['jdata']['name']}"
         self.config["name"] = project["jdata"]["name"]
         self.config["toolchain"] = project["jdata"]["toolchain"]
         self.config["family"] = project["jdata"].get("family", "UNKNOWN")

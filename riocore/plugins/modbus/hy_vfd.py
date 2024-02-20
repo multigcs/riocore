@@ -14,7 +14,12 @@ class hy_vfd:
         "rated_motor_current": {"scale": 0.1, "unit": "A"},
         "rpm_at_50hz": {"scale": 1.0, "unit": "RPM"},
         "rated_motor_rev": {"scale": 1.0, "unit": "RPM"},
-        "speed_fb": {"scale": 1.0, "unit": "RPM", "helper": False, "display": {"section": "status", "title": "RPM", "type": "meter", "min": 0, "max": 24000, "size": 250, "region": [[0, 6000, "gray"], [6000, 20000, "green"], [20000, 24000, "red"]]}},
+        "speed_fb": {
+            "scale": 1.0,
+            "unit": "RPM",
+            "helper": False,
+            "display": {"section": "status", "title": "RPM", "type": "meter", "min": 0, "max": 24000, "size": 250, "region": [[0, 6000, "gray"], [6000, 20000, "green"], [20000, 24000, "red"]]},
+        },
         "speed_fb_rps": {"scale": 1.0, "unit": "RPS"},
         "at_speed": {"scale": 1.0, "bool": True, "helper": False, "display": {"section": "status", "title": "AT-Speed"}},
         "error_count": {"scale": 1.0, "display": {"section": "vfd", "title": "Errors", "format": "d"}},
@@ -335,8 +340,12 @@ class hy_vfd:
         output.append(f"        value_{self.signal_name}_base_freq = {self.instances_name}_{self.signal_name}_config_register[0].value * {self.HYVFD_CALC_KEYS['base_freq']['scale']};")
         output.append(f"        value_{self.signal_name}_max_freq = {self.instances_name}_{self.signal_name}_config_register[1].value * {self.HYVFD_CALC_KEYS['max_freq']['scale']};")
         output.append(f"        value_{self.signal_name}_freq_lower_limit = {self.instances_name}_{self.signal_name}_config_register[2].value * {self.HYVFD_CALC_KEYS['freq_lower_limit']['scale']};")
-        output.append(f"        value_{self.signal_name}_rated_motor_voltage = {self.instances_name}_{self.signal_name}_config_register[3].value * {self.HYVFD_CALC_KEYS['rated_motor_voltage']['scale']};")
-        output.append(f"        value_{self.signal_name}_rated_motor_current = {self.instances_name}_{self.signal_name}_config_register[4].value * {self.HYVFD_CALC_KEYS['rated_motor_current']['scale']};")
+        output.append(
+            f"        value_{self.signal_name}_rated_motor_voltage = {self.instances_name}_{self.signal_name}_config_register[3].value * {self.HYVFD_CALC_KEYS['rated_motor_voltage']['scale']};"
+        )
+        output.append(
+            f"        value_{self.signal_name}_rated_motor_current = {self.instances_name}_{self.signal_name}_config_register[4].value * {self.HYVFD_CALC_KEYS['rated_motor_current']['scale']};"
+        )
         output.append(f"        value_{self.signal_name}_rpm_at_50hz = {self.instances_name}_{self.signal_name}_config_register[5].value * {self.HYVFD_CALC_KEYS['rpm_at_50hz']['scale']};")
         output.append(f"        value_{self.signal_name}_rated_motor_rev = (value_{self.signal_name}_rpm_at_50hz / 50.0) * value_{self.signal_name}_max_freq;")
         output.append("    }")
