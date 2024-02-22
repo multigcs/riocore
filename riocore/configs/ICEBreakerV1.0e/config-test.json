@@ -3,13 +3,6 @@
     "description": "Small and low cost FPGA educational and development board",
     "boardcfg": "ICEBreakerV1.0e",
     "machinetype": "lathe",
-    "linuxcnc": {
-        "ini": {
-            "KINS": {
-                "KINEMATICS": "blaaaa"
-            }
-        }
-    },
     "modules": [
         {
             "slot": "PMOD_2",

@@ -692,7 +692,8 @@ class LinuxCNC:
                 if net["in"]:
                     custom.append(f"net rios.{network} <= {net['in']}")
                 for out in net["out"]:
-                    custom.append(f"net rios.{network} => {out}")
+                    if not out.startswith("riof."):
+                        custom.append(f"net rios.{network} => {out}")
         custom.append("")
 
         titles = []
