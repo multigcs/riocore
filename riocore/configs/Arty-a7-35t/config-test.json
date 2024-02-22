@@ -22,7 +22,11 @@
         {
             "enable": true,
             "device": "/dev/video0",
-            "tabname": "Camera"
+            "tabname": "Camera",
+            "offset": {
+                "Y": 100,
+                "X": 200
+            }
         }
     ],
     "axis": 2,

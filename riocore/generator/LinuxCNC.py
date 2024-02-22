@@ -93,8 +93,8 @@ class LinuxCNC:
             "KINEMATICS": None,
         },
         "FILTER": {
-            "PROGRAM_EXTENSION#1": ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
-            "PROGRAM_EXTENSION#2": ".py Python Script",
+            "PROGRAM_EXTENSION|1": ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
+            "PROGRAM_EXTENSION|2": ".py Python Script",
             "py": "python",
         },
         "TASK": {
@@ -122,12 +122,13 @@ class LinuxCNC:
             "HALUI": "halui",
         },
         "HALUI": {
-            "MDI_COMMAND#1": "G92 X0",
-            "MDI_COMMAND#2": "G92 Y0",
-            "MDI_COMMAND#3": "G92 Z0",
-            "MDI_COMMAND#4": "G92 X0 Y0",
-            "MDI_COMMAND#5": "o<z_touch> call",
-            "MDI_COMMAND#6": "o<x_touch> call",
+            "MDI_COMMAND|00": "G92 X0",
+            "MDI_COMMAND|01": "G92 Y0",
+            "MDI_COMMAND|02": "G92 Z0",
+            "MDI_COMMAND|03": "G92 X0 Y0",
+            "MDI_COMMAND|04": "o<z_touch> call",
+            "MDI_COMMAND|05": "o<x_touch> call",
+            "MDI_COMMAND|06": "G92 X0 Y0",
         },
         "TRAJ": {
             "COORDINATES": None,
@@ -169,7 +170,7 @@ class LinuxCNC:
     @classmethod
     def ini_defaults(cls, jdata, num_joints=5, axis_dict={}):
         ini_setup = cls.INI_DEFAULTS.copy()
-        gui = jdata.get("gui")
+        gui = jdata.get("gui", "axis")
         machinetype = jdata.get("machinetype")
 
         if machinetype == "lathe":
@@ -239,11 +240,31 @@ class LinuxCNC:
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
 
+        offset_num = 0
+        for camera_num, camera in enumerate(jdata.get("camera", [])):
+            if camera and camera.get("enable"):
+                camera_device = camera.get("device", f"/dev/video{camera_num}")
+                tabname = camera.get("tabname", f"Camera-{camera_num}")
+                tablocation = camera.get("tablocation", "Pyngcgui")
+                offsets = camera.get("offset")
+                ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAM{camera_num}"] = tabname
+                if gui != "axis":
+                    ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAM{camera_num}"] = tablocation
+                ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAM{camera_num}"] = f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet"
+                if offsets and offset_num == 0:
+                    mdi_command = ["G92"]
+                    for axis, diff in offsets.items():
+                        mdi_command.append(f"{axis}{diff}")
+                    ini_setup["HALUI"]["MDI_COMMAND|06"] = " ".join(mdi_command)
+                    offset_num += 1
+                elif offsets:
+                    print("WARNING: offset works only on one camera")
+
         return ini_setup
 
     def ini(self):
         jdata = self.project.config["jdata"]
-        gui = self.project.config["jdata"].get("gui")
+        gui = self.project.config["jdata"].get("gui", "axis")
         machinetype = self.project.config["jdata"].get("machinetype")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
 
@@ -261,19 +282,9 @@ class LinuxCNC:
                     for entry in value:
                         output.append(f"{key} = {entry}")
                 elif value is not None:
-                    if "#" in key:
-                        key = key.split("#")[0]
+                    if "|" in key:
+                        key = key.split("|")[0]
                     output.append(f"{key} = {value}")
-                        
-
-            if section == "DISPLAY":
-                for camera_num, camera in enumerate(jdata.get("camera", [])):
-                    if camera and camera.get("enable"):
-                        camera_device = camera.get("device", f"/dev/video{camera_num}")
-                        output.append(f"EMBED_TAB_NAME = {camera.get('tabname', f'Camera-{camera_num}')}")
-                        output.append(f"EMBED_TAB_LOCATION = {camera.get('tabname', f'Camera-{camera_num}')}")
-                        output.append(f"EMBED_TAB_COMMAND = mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet")
-
             output.append("")
 
         for axis_name, joints in self.axis_dict.items():
@@ -411,7 +422,7 @@ class LinuxCNC:
     def gui(self):
         os.system(f"mkdir -p {self.configuration_path}/")
         machinetype = self.project.config["jdata"].get("machinetype")
-        gui = self.project.config["jdata"].get("gui")
+        gui = self.project.config["jdata"].get("gui", "axis")
         if gui == "qtdragon":
             gui_gen = qtdragon()
             prefix = "qtdragon"
@@ -458,6 +469,16 @@ class LinuxCNC:
                 if "Z":
                     self.custom_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
                     cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
+
+            for camera_num, camera in enumerate(self.project.config["jdata"].get("camera", [])):
+                if camera and camera.get("enable"):
+                    tablocation = camera.get("tablocation", "Pyngcgui")
+                    offsets = camera.get("offset")
+                    if offsets:
+                        self.custom_net_add(f"{prefix}.zerocam", "halui.mdi-command-06")
+                        cfgxml_data["status"] += gui_gen.draw_button("zero-cam", "zerocam")
+                        break
+
             cfgxml_data["status"].append("    </hbox>")
             cfgxml_data["status"].append("  </labelframe>")
 
