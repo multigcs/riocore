@@ -272,7 +272,7 @@ class LinuxCNC:
                         camera_device = camera.get("device", f"/dev/video{camera_num}")
                         output.append(f"EMBED_TAB_NAME = {camera.get('tabname', f'Camera-{camera_num}')}")
                         output.append(f"EMBED_TAB_LOCATION = {camera.get('tabname', f'Camera-{camera_num}')}")
-                        output.append(f"EMBED_TAB_COMMAND = mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1")
+                        output.append(f"EMBED_TAB_COMMAND = mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet")
 
             output.append("")
 
