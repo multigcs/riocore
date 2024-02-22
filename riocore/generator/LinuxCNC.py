@@ -93,10 +93,8 @@ class LinuxCNC:
             "KINEMATICS": None,
         },
         "FILTER": {
-            "PROGRAM_EXTENSION": [
-                ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
-                ".py Python Script",
-            ],
+            "PROGRAM_EXTENSION#1": ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
+            "PROGRAM_EXTENSION#2": ".py Python Script",
             "py": "python",
         },
         "TASK": {
@@ -124,14 +122,12 @@ class LinuxCNC:
             "HALUI": "halui",
         },
         "HALUI": {
-            "MDI_COMMAND": [
-                "G92 X0",
-                "G92 Y0",
-                "G92 Z0",
-                "G92 X0 Y0",
-                "o<z_touch> call",
-                "o<x_touch> call",
-            ],
+            "MDI_COMMAND#1": "G92 X0",
+            "MDI_COMMAND#2": "G92 Y0",
+            "MDI_COMMAND#3": "G92 Z0",
+            "MDI_COMMAND#4": "G92 X0 Y0",
+            "MDI_COMMAND#5": "o<z_touch> call",
+            "MDI_COMMAND#6": "o<x_touch> call",
         },
         "TRAJ": {
             "COORDINATES": None,
@@ -265,7 +261,10 @@ class LinuxCNC:
                     for entry in value:
                         output.append(f"{key} = {entry}")
                 elif value is not None:
+                    if "#" in key:
+                        key = key.split("#")[0]
                     output.append(f"{key} = {value}")
+                        
 
             if section == "DISPLAY":
                 for camera_num, camera in enumerate(jdata.get("camera", [])):
