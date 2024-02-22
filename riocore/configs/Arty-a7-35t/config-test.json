@@ -18,6 +18,11 @@
             }
         }
     },
+    "camera": {
+        "enable": true,
+        "device": "/dev/video0",
+        "tabname": "Camera"
+    },
     "axis": 2,
     "linuxcnc": {
         "ini": {

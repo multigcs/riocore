@@ -171,8 +171,10 @@ class LinuxCNC:
         print(f"writing linuxcnc files to: {self.base_path}")
 
     @classmethod
-    def ini_defaults(cls, gui, machinetype, num_joints=5, axis_dict={}):
+    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}):
         ini_setup = cls.INI_DEFAULTS.copy()
+        gui = jdata.get("gui")
+        machinetype = jdata.get("machinetype")
 
         if machinetype == "lathe":
             ini_setup["DISPLAY"]["LATHE"] = 1
@@ -240,12 +242,20 @@ class LinuxCNC:
                     ini_setup[section] = {}
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
+
+        camera = jdata.get("camera", {})
+        if camera and camera.get("enable"):
+            camera_device = camera.get("device", "/dev/video0")
+            ini_setup["DISPLAY"]["EMBED_TAB_NAME"] = camera.get("tabname", "Camera")
+            ini_setup["DISPLAY"]["EMBED_TAB_LOCATION"] = "ntb_preview"
+            ini_setup["DISPLAY"]["EMBED_TAB_COMMAND"] = f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1"
+
         return ini_setup
 
     def ini(self):
         gui = self.project.config["jdata"].get("gui")
         machinetype = self.project.config["jdata"].get("machinetype")
-        ini_setup = self.ini_defaults(gui, machinetype, self.num_joints, self.axis_dict)
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
 
         for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
             if section not in ini_setup:
