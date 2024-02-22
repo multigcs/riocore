@@ -243,16 +243,10 @@ class LinuxCNC:
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
 
-        camera = jdata.get("camera", {})
-        if camera and camera.get("enable"):
-            camera_device = camera.get("device", "/dev/video0")
-            ini_setup["DISPLAY"]["EMBED_TAB_NAME"] = camera.get("tabname", "Camera")
-            ini_setup["DISPLAY"]["EMBED_TAB_LOCATION"] = "ntb_preview"
-            ini_setup["DISPLAY"]["EMBED_TAB_COMMAND"] = f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1"
-
         return ini_setup
 
     def ini(self):
+        jdata = self.project.config["jdata"]
         gui = self.project.config["jdata"].get("gui")
         machinetype = self.project.config["jdata"].get("machinetype")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
@@ -272,6 +266,15 @@ class LinuxCNC:
                         output.append(f"{key} = {entry}")
                 elif value is not None:
                     output.append(f"{key} = {value}")
+
+            if section == "DISPLAY":
+                for camera_num, camera in enumerate(jdata.get("camera", [])):
+                    if camera and camera.get("enable"):
+                        camera_device = camera.get("device", f"/dev/video{camera_num}")
+                        output.append(f"EMBED_TAB_NAME = {camera.get('tabname', f'Camera-{camera_num}')}")
+                        output.append(f"EMBED_TAB_LOCATION = {camera.get('tabname', f'Camera-{camera_num}')}")
+                        output.append(f"EMBED_TAB_COMMAND = mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1")
+
             output.append("")
 
         for axis_name, joints in self.axis_dict.items():
