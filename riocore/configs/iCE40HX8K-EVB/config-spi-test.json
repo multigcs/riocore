@@ -1,7 +1,7 @@
 {
     "name": "OLIMEX_iCE40HX8K-EVB",
     "description": "OLIMEX iCE40HX8K-EVB board over SPI",
-    "boardcfg": "iCE40HX8K-EVB",
+    "boardcfg": "iCE40HX8K-EVB_minimal",
     "protocol": "SPI",
     "plugins": [
         {
