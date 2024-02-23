@@ -3,6 +3,7 @@
     "description": "Small and low cost FPGA educational and development board",
     "boardcfg": "ICEBreakerV1.0e",
     "machinetype": "lathe",
+    "protocol": "SPI",
     "modules": [
         {
             "slot": "PMOD_2",
@@ -47,6 +48,5 @@
             }
         }
     ],
-    "protocol": "UDP",
     "axis": 3
 }

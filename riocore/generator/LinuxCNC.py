@@ -1,5 +1,6 @@
 import copy
 import glob
+import sys
 import os
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -1544,6 +1545,8 @@ class LinuxCNC:
             "LICENSE": "GPL v2",
         }
 
+        protocol = self.project.config["jdata"].get("protocol", "SPI")
+
         ip = ""
         port = 0
         for plugin_instance in self.project.plugin_instances:
@@ -1561,9 +1564,15 @@ class LinuxCNC:
         if port and ip:
             defines["UDP_IP"] = f'"{ip}"'
             defines["UDP_PORT"] = port
-        if True:
-            defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
-            defines["SERIAL_BAUD"] = "B1000000"
+        defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
+        defines["SERIAL_BAUD"] = "B1000000"
+
+        defines["SPI_PIN_MOSI"] = "10"
+        defines["SPI_PIN_MISO"] = "9"
+        defines["SPI_PIN_CLK"] = "11"
+        defines["SPI_PIN_CS"] = "7"
+        defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
+
 
         for header in header_list:
             output.append(f"#include <{header}>")
@@ -1592,17 +1601,22 @@ class LinuxCNC:
 
         output += self.component_variables()
         for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c"):
-            if self.project.config["jdata"].get("protocol") == ppath.split("/")[-2]:
+            if protocol == ppath.split("/")[-2]:
                 output.append("/*")
                 output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                 output.append("*/")
                 output.append(open(ppath, "r").read())
 
         output.append("int interface_init(void) {")
-        if self.project.config["jdata"].get("protocol") == "UART":
+        if protocol == "UART":
             output.append("    uart_init();")
-        else:
+        elif protocol == "SPI":
+            output.append("    spi_init();")
+        elif protocol == "UDP":
             output.append("    udp_init();")
+        else:
+            print("ERROR: unsupported interface")
+            sys.exit(1)
         output.append("}")
         output.append("")
 
@@ -1645,10 +1659,15 @@ class LinuxCNC:
         output.append("        convert_outputs();")
         output.append("        write_txbuffer(txBuffer);")
 
-        if self.project.config["jdata"].get("protocol") == "UART":
+        if protocol == "UART":
             output.append("        uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
-        else:
+        elif protocol == "SPI":
+            output.append("        spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+        elif protocol == "UDP":
             output.append("        udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+        else:
+            print("ERROR: unsupported interface")
+            sys.exit(1)
 
         output.append("        if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         output.append("            if (err_counter > 0) {")
