@@ -89,7 +89,7 @@ class Plugin(PluginBase):
                     self.ON_ERROR_CMDS += config["instance"].on_error()
             else:
                 is_bool = False
-                if ctype in {5, 15}:
+                if ctype in {2, 5, 15}:
                     is_bool = True
                 if n_values > 1:
                     for vn in range(0, n_values):
@@ -159,7 +159,7 @@ class Plugin(PluginBase):
             ctype = config["type"]
             address = config["address"]
             register = self.int2list(config["register"])
-            error_values = config.get("error_values", "").strip().split()
+            error_values = config.get("error_values", "").strip().replace(",", " ").split()
             n_values = self.int2list(len(error_values))
             direction = config["direction"]
             cmd = []
@@ -284,16 +284,25 @@ class Plugin(PluginBase):
                                     print(f"ERROR: wrong address {address} != {signal_address}")
                                 elif direction == "input":
                                     start_pos = 3 + vn * 2
-                                    value_list = frame_data[start_pos : start_pos + 2]
-
-                                    if value_list and len(value_list) == 2:
-                                        vscale = self.SIGNALS[value_name]["scale"]
-                                        direction = self.SIGNALS[value_name]["direction"]
-                                        self.SIGNALS[value_name]["value"] = self.list2int(value_list)
-                                        if vscale:
-                                            self.SIGNALS[value_name]["value"] *= vscale
-                                        if direction == "input":
-                                            self.SIGNALS[f"{value_name}_valid"]["value"] = 1
+                                    if ctype == 2:
+                                        if frame_data[3] & (1 << vn) != 0:
+                                            self.SIGNALS[value_name]["value"] = 1
+                                            if direction == "input":
+                                                self.SIGNALS[f"{value_name}_valid"]["value"] = 1
+                                        else:
+                                            self.SIGNALS[value_name]["value"] = 0
+                                            if direction == "input":
+                                                self.SIGNALS[f"{value_name}_valid"]["value"] = 1
+                                    else:
+                                        value_list = frame_data[start_pos : start_pos + 2]
+                                        if value_list and len(value_list) == 2:
+                                            vscale = self.SIGNALS[value_name]["scale"]
+                                            direction = self.SIGNALS[value_name]["direction"]
+                                            self.SIGNALS[value_name]["value"] = self.list2int(value_list)
+                                            if vscale:
+                                                self.SIGNALS[value_name]["value"] *= vscale
+                                            if direction == "input":
+                                                self.SIGNALS[f"{value_name}_valid"]["value"] = 1
                     else:
                         if self.signal_name not in self.SIGNALS:
                             print(f"ERROR: no signal_config: {self.signal_name}")
@@ -417,15 +426,32 @@ class Plugin(PluginBase):
             elif direction == "input":
                 output.append(f"                case {sn}: {{")
                 if self.signal_values > 1:
-                    output.append(f"                    // get {self.signal_values} 16bit values ({signal_name})")
                     output.append("                    data_len = frame_data[2];")
-                    output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
-                    for vn in range(0, self.signal_values):
-                        value_name = f"value_{self.signal_name}_{vn}"
-                        output.append(f"                        {value_name} = (frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF);")
-                        if vscale:
-                            output.append(f"                        {value_name} *= {vscale};")
-                        output.append(f"                        {value_name}_valid = 1;")
+
+                    if ctype == 2:
+
+                        output.append(f"                    // get {self.signal_values} 1bit values ({signal_name})")
+                        output.append(f"                    if (data_addr == {address} && data_len == 1) {{")
+                        for vn in range(0, self.signal_values):
+                            value_name = f"value_{self.signal_name}_{vn}"
+
+                            output.append(f"                        if ((frame_data[3] & (1<<{vn})) != 0) {{")
+                            output.append(f"                            {value_name} = 1;")
+                            output.append("                        } else {")
+                            output.append(f"                            {value_name} = 0;")
+                            output.append("                        }")
+                            output.append(f"                        {value_name}_valid = 1;")
+
+                    else:
+                        output.append(f"                    // get {self.signal_values} 16bit values ({signal_name})")
+                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
+                        for vn in range(0, self.signal_values):
+                            value_name = f"value_{self.signal_name}_{vn}"
+                            output.append(f"                        {value_name} = (frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF);")
+                            if vscale:
+                                output.append(f"                        {value_name} *= {vscale};")
+                            output.append(f"                        {value_name}_valid = 1;")
+
                     output.append("                    } else {")
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"

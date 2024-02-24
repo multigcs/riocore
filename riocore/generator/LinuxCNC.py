@@ -1,7 +1,7 @@
 import copy
 import glob
-import sys
 import os
+import sys
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -251,7 +251,9 @@ class LinuxCNC:
                 ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAM{camera_num}"] = tabname
                 if gui != "axis":
                     ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAM{camera_num}"] = tablocation
-                ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAM{camera_num}"] = f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet"
+                ini_setup["DISPLAY"][
+                    f"EMBED_TAB_COMMAND|CAM{camera_num}"
+                ] = f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet"
                 if offsets and offset_num == 0:
                     mdi_command = ["G92"]
                     for axis, diff in offsets.items():
@@ -1572,7 +1574,6 @@ class LinuxCNC:
         defines["SPI_PIN_CLK"] = "11"
         defines["SPI_PIN_CS"] = "7"
         defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
-
 
         for header in header_list:
             output.append(f"#include <{header}>")
