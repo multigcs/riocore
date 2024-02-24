@@ -628,6 +628,9 @@ class Project:
         for plugin_instance in self.plugin_instances:
             plugin_instance.convert2signals()
 
-    def generator(self):
-        self.generator_gateware.generator()
+    def generator(self, preview=False):
+        generate_pll = True
+        if preview:
+            generate_pll = False
+        self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
