@@ -55,8 +55,12 @@ class Gateware:
             self.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
-                    pin_config["pin"] = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
-                    self.config["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
+                    if pin_config["pin"] == "" or pin_config["pin"] is None:
+                        print(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
+                        del pin_config["pin"]
+                    else:
+                        pin_config["pin"] = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
+                        self.config["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
 
         toolchain = self.config["toolchain"]
         print(f"loading toolchain {toolchain}")
