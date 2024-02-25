@@ -277,6 +277,7 @@ class Project:
         # project["config"] = configuration
         if isinstance(configuration, str) and configuration[0] == "{":
             project = {"jdata": json.loads(configuration)}
+            project["json_file"] = None
         else:
             if not os.path.isfile(configuration):
                 print("")
@@ -300,6 +301,7 @@ class Project:
                 print("please check your json syntax")
                 print("")
                 exit(1)
+            project["json_file"] = configuration
 
         project["plugins"] = copy.deepcopy(project["jdata"].get("plugins"))
         project["board_data"] = {}
@@ -634,3 +636,4 @@ class Project:
             generate_pll = False
         self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
+        os.system(f"cp {self.config['json_file']} {self.config['output_path']}/.config.json")

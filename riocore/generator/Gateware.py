@@ -382,10 +382,15 @@ class Gateware:
         open(f"{self.gateware_path}/rio.v", "w").write("\n".join(output))
 
         # write hash of rio.v to filesystem
-        hash_file = f"{self.gateware_path}/hash.txt"
-        hash_old = ""
-        if os.path.isfile(hash_file):
-            hash_old = open(hash_file, "r").read()
+        hash_file_compiled = f"{self.gateware_path}/hash_compiled.txt"
+        hash_compiled = ""
+        if os.path.isfile(hash_file_compiled):
+            hash_compiled = open(hash_file_compiled, "r").read()
+
+        hash_file_flashed = f"{self.gateware_path}/hash_flashed.txt"
+        hash_flashed= ""
+        if os.path.isfile(hash_file_flashed):
+            hash_flashed = open(hash_file_flashed, "r").read()
 
         hash_md5 = hashlib.md5()
         with open(f"{self.gateware_path}/rio.v", "rb") as f:
@@ -393,7 +398,9 @@ class Gateware:
                 hash_md5.update(chunk)
         hash_new = hash_md5.hexdigest()
 
-        if hash_old != hash_new:
+        if hash_compiled != hash_new:
             print("!!! gateware changed: needs to be build and flash |||")
+        elif hash_flashed != hash_new:
+            print("!!! gateware changed: needs to flash |||")
         hash_file_new = f"{self.gateware_path}/hash_new.txt"
         open(hash_file_new, "w").write(hash_new)
