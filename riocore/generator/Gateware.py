@@ -159,9 +159,9 @@ class Gateware:
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
                     pullup = "PULLUP" if pin_config.get("pullup", False) else ""
-                    if pin_config['direction'] == "input":
+                    if pin_config["direction"] == "input":
                         output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pullup}")
-                    elif pin_config['direction'] == "output":
+                    elif pin_config["direction"] == "output":
                         output.append(f"    {pin_config['varname']} -> {pin_config['pin']} {pullup}")
                     else:
                         output.append(f"    {pin_config['varname']} <> {pin_config['pin']} {pullup}")
@@ -211,7 +211,8 @@ class Gateware:
                             self.project.config["speed"] = new_speed
                 elif self.project.config["jdata"]["family"] == "MAX 10":
                     result = subprocess.check_output(
-                        f"{riocore_path}/files/quartus-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'", shell=True
+                        f"{riocore_path}/files/quartus-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'",
+                        shell=True,
                     )
                     achieved = re.findall(r"OUTPUT FREQ:\s*(\d*\.\d*)", result.decode())
                     if achieved:
@@ -396,7 +397,7 @@ class Gateware:
             hash_compiled = open(hash_file_compiled, "r").read()
 
         hash_file_flashed = f"{self.gateware_path}/hash_flashed.txt"
-        hash_flashed= ""
+        hash_flashed = ""
         if os.path.isfile(hash_file_flashed):
             hash_flashed = open(hash_file_flashed, "r").read()
 
