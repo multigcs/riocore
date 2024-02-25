@@ -688,7 +688,7 @@ class LinuxCNC:
                             dtype = displayconfig.get("type", "led")
                         if dtype == "meter" and gui == "qtdragon":
                             self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}_value")
-                        elif dtype != "none":
+                        elif dtype != "none" and direction != "inout":
                             self.custom_net_add(f"rio.{halname}", f"{prefix}.{halname}")
 
                     elif direction == "input":
