@@ -55,9 +55,7 @@ class Gateware:
             self.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
-
                     pin_config["pin"] = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
-
                     self.config["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
 
         toolchain = self.config["toolchain"]
@@ -147,16 +145,26 @@ class Gateware:
                 if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
                     arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
 
-        # arguments_list.append(f"output ERROR_OUT")
-
         output_name = ""
         output.append("/*")
         output.append(f"    ######### {self.project.config['name']} #########")
+        output.append("")
         output.append("")
         for key in ("toolchain", "family", "type", "package"):
             value = self.project.config[key]
             output.append(f"    {key.title():10}: {value}")
         output.append(f"    Clock     : {(self.project.config['speed'] / 1000000)} Mhz")
+        output.append("")
+        for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
+                    pullup = "PULLUP" if pin_config.get("pullup", False) else ""
+                    if pin_config['direction'] == "input":
+                        output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pullup}")
+                    elif pin_config['direction'] == "output":
+                        output.append(f"    {pin_config['varname']} -> {pin_config['pin']} {pullup}")
+                    else:
+                        output.append(f"    {pin_config['varname']} <> {pin_config['pin']} {pullup}")
         output.append("")
         output.append("*/")
         output.append("")
