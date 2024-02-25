@@ -77,6 +77,15 @@ class Plugins:
                 print(f"WARNING: plugin not found: {plugin_type}")
         if plugin_type in self.plugin_modules:
             plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
+
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
+                    if pin_config["pin"] == "" or pin_config["pin"] is None:
+                        print(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
+                        del pin_config["pin"]
+
+
+
             self.plugin_instances.append(plugin_instance)
             return plugin_instance
 
