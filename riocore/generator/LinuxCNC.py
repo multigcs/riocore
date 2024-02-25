@@ -384,8 +384,6 @@ class LinuxCNC:
                     "in": input_name,
                     "out": [],
                 }
-            else:
-                print(f"ERROR: network {network} already exsit")
         if output_name not in self.networks[network]["out"]:
             self.networks[network]["out"].append(output_name)
 
