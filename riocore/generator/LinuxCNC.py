@@ -170,6 +170,7 @@ class LinuxCNC:
 
     @classmethod
     def ini_defaults(cls, jdata, num_joints=5, axis_dict={}):
+        linuxcnc_config = jdata.get("linuxcnc", {})
         ini_setup = cls.INI_DEFAULTS.copy()
         gui = jdata.get("gui", "axis")
         machinetype = jdata.get("machinetype")
@@ -241,8 +242,23 @@ class LinuxCNC:
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
 
+        return ini_setup
+
+    def ini(self):
+        jdata = self.project.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        gui = self.project.config["jdata"].get("gui", "axis")
+        machinetype = self.project.config["jdata"].get("machinetype")
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
+
+        for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
+            if section not in ini_setup:
+                ini_setup[section] = {}
+            for key, value in section_options.items():
+                ini_setup[section][key] = value
+
         offset_num = 0
-        for camera_num, camera in enumerate(jdata.get("camera", [])):
+        for camera_num, camera in enumerate(linuxcnc_config.get("camera", [])):
             if camera and camera.get("enable"):
                 camera_device = camera.get("device", f"/dev/video{camera_num}")
                 tabname = camera.get("tabname", f"Camera-{camera_num}")
@@ -256,26 +272,15 @@ class LinuxCNC:
                 ] = f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet"
                 if offsets and offset_num == 0:
                     mdi_command = ["G92"]
-                    for axis, diff in offsets.items():
-                        mdi_command.append(f"{axis}{diff}")
+                    for axis_name, joints in self.axis_dict.items():
+                        diff = 0
+                        if axis_name in offsets:
+                            diff = offsets[axis_name]
+                        mdi_command.append(f"{axis_name}{diff}")
                     ini_setup["HALUI"]["MDI_COMMAND|06"] = " ".join(mdi_command)
                     offset_num += 1
                 elif offsets:
                     print("WARNING: offset works only on one camera")
-
-        return ini_setup
-
-    def ini(self):
-        jdata = self.project.config["jdata"]
-        gui = self.project.config["jdata"].get("gui", "axis")
-        machinetype = self.project.config["jdata"].get("machinetype")
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
-
-        for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
-            if section not in ini_setup:
-                ini_setup[section] = {}
-            for key, value in section_options.items():
-                ini_setup[section][key] = value
 
         output = []
         for section, setup in ini_setup.items():
@@ -763,7 +768,8 @@ class LinuxCNC:
             self.postgui_call_list.append("source custom_postgui.hal")
 
     def joypad(self):
-        joypad = self.project.config["jdata"].get("joypad", {})
+        linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        joypad = linuxcnc_config.get("joypad", {})
         if not joypad or not joypad.get("enable"):
             return
 
@@ -843,6 +849,7 @@ class LinuxCNC:
 
     def hal(self):
         output = []
+        linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
 
         output.append("# load the realtime components")
         output.append("loadrt [KINS]KINEMATICS")
@@ -874,10 +881,9 @@ class LinuxCNC:
         output.append("")
         output.append("net rio.machine-is-on <= halui.machine.is-on")
         output.append("")
-
-        hy_vfd_dev = self.project.config["jdata"].get("hy_vfd", {}).get("device")
+        hy_vfd_dev = linuxcnc_config.get("hy_vfd", {}).get("device")
         if hy_vfd_dev:
-            hy_vfd_address = self.project.config["jdata"]["hy_vfd"].get("address", 1)
+            hy_vfd_address = linuxcnc_config["hy_vfd"].get("address", 1)
             output.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600 -t {hy_vfd_address}")
             output.append("setp vfd.enable 1")
             output.append("net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command")
