@@ -254,6 +254,8 @@ class Plugin(PluginBase):
         return (data[0] << 8) + data[1]
 
     def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
+        if "config" not in self.plugin_setup:
+            return
         signal_name = list(self.plugin_setup["config"])[self.signal_active]
         config = self.plugin_setup["config"][signal_name]
         if config["type"] == 101:
@@ -321,6 +323,8 @@ class Plugin(PluginBase):
                                     self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
 
     def frameio_tx(self, frame_ack, frame_timeout):
+        if "config" not in self.plugin_setup:
+            return
         # if frame_ack:
         #    print("ACK")
         if frame_timeout:

@@ -4,7 +4,7 @@ module arty_mii
          parameter BUFFER_SIZE=16'd64,
          parameter MSGID=32'h74697277,
          parameter TIMEOUT=32'd4800000,
-         parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd193},
+         parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd194},
          parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1D},
          parameter PORT=2390
     )

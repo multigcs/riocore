@@ -562,6 +562,8 @@ class Project:
                 byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
                 byte_start = self.buffer_bytes - 1 - byte_start
                 if plugin_instance.TYPE == "frameio":
+                    if not value:
+                        value = [0] * byte_size
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
                 elif variable_size > 1:
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
