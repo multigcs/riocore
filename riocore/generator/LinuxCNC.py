@@ -1561,12 +1561,12 @@ class LinuxCNC:
 
         protocol = self.project.config["jdata"].get("protocol", "SPI")
 
-        ip = ""
-        port = 0
+        ip = "192.168.10.194"
+        port = 2390
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE == "interface":
-                ip = plugin_instance.plugin_setup.get("ip")
-                port = plugin_instance.plugin_setup.get("port")
+                ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip"))
+                port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port"))
 
         defines = {
             "MODNAME": '"rio"',
