@@ -38,7 +38,14 @@
             "TRJ": {
                 "DEFAULT_LINEAR_VELOCITY": 20.0
             }
-        }
+        },
+        "camera": [
+            {
+                "enable": true,
+                "device": "/dev/video0",
+                "tabname": "Camera-0"
+            }
+        ]
     },
     "modules": [
         {
@@ -48,11 +55,6 @@
                 "quadencoderz": {
                     "type": "quadencoderz",
                     "name": "quadencoderz",
-                    "pins": {
-                        "a": {},
-                        "b": {},
-                        "z": {}
-                    },
                     "signals": {
                         "indexenable": {
                             "net": "spindle.0.index-enable",
@@ -119,7 +121,7 @@
                     },
                     "signals": {
                         "bit": {
-                          "net": "joint.1.home-sw-in"
+                            "net": "joint.1.home-sw-in"
                         }
                     }
                 },
@@ -133,7 +135,7 @@
                     },
                     "signals": {
                         "bit": {
-                          "net": "joint.0.home-sw-in"
+                            "net": "joint.0.home-sw-in"
                         }
                     }
                 },
@@ -147,7 +149,7 @@
                     },
                     "signals": {
                         "bit": {
-                          "net": ""
+                            "net": ""
                         }
                     }
                 },
@@ -155,8 +157,12 @@
                     "type": "rcservo",
                     "name": "spindle",
                     "pins": {
-                        "pwm": {
-                            "pin": "D12"
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
                         }
                     },
                     "signals": {
@@ -171,15 +177,15 @@
                         },
                         "enable": {
                             "setp": "1"
+                        },
+                        "bit": {
+                            "net": "spindle.0.on"
                         }
                     }
                 },
                 "spindle-dir": {
                     "type": "bitout",
-                    "name": "spindle-dir",
-                    "pins": {
-                        "bit": {}
-                    }
+                    "name": "spindle-dir"
                 },
                 "coolant": {
                     "type": "bitout",
@@ -202,10 +208,6 @@
                 "joint-0": {
                     "name": "joint-0",
                     "type": "stepdir",
-                    "pins": {
-                        "step": {},
-                        "dir": {}
-                    },
                     "is_joint": true,
                     "axis": "Z",
                     "joint": {
@@ -218,10 +220,6 @@
                 "joint-1": {
                     "name": "joint-1",
                     "type": "stepdir",
-                    "pins": {
-                        "step": {},
-                        "dir": {}
-                    },
                     "is_joint": true,
                     "axis": "X",
                     "joint": {
@@ -234,10 +232,6 @@
                 "joint-2": {
                     "name": "joint-2",
                     "type": "stepdir",
-                    "pins": {
-                        "step": {},
-                        "dir": {}
-                    },
                     "is_joint": false,
                     "joint": {
                         "scale": 320.0,
@@ -327,11 +321,10 @@
             },
             "signals": {
                 "bit": {
-                  "net": "motion.probe-input"
+                    "net": "motion.probe-input"
                 }
             }
         },
-
         {
             "type": "multi_7seg_display",
             "pins": {
@@ -341,24 +334,23 @@
             },
             "signals": {
                 "value1": {
-                  "net": "spindle.0.speed-in",
-                  "scale": 6000
+                    "net": "spindle.0.speed-in",
+                    "scale": 6000
                 },
                 "value2": {
-                  "net": "spindle.0.revs",
-                  "scale": 100
+                    "net": "spindle.0.revs",
+                    "scale": 100
                 },
                 "value3": {
-                  "net": "halui.axis.z.pos-relative",
-                  "scale": 100
+                    "net": "halui.axis.z.pos-relative",
+                    "scale": 100
                 },
                 "value4": {
-                  "net": "halui.axis.x.pos-relative",
-                  "scale": 100
+                    "net": "halui.axis.x.pos-relative",
+                    "scale": 100
                 }
             }
         },
-
         {
             "type": "uart_",
             "pins": {
@@ -370,8 +362,6 @@
                 }
             }
         },
-
-
         {
             "type": "arty_mii",
             "mac": "AA:AF:FA:CC:E3:1C",
