@@ -380,7 +380,7 @@ class PluginBase:
         return instances
 
     def option_default(self, name):
-        return self.OPTIONS[name]["default"]
+        return self.OPTIONS.get(name, {}).get("default")
 
     def basic_config(self):
         basic_config = {
