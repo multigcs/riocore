@@ -336,6 +336,7 @@ class PluginBase:
             if "pin" in pin_config:
 
                 pin_varname = self.gateware_pin_modifiers(instances, instance, pin_name, pin_config, pin_varname)
+
                 instance_arguments[pin_name] = pin_varname
 
             elif pin_config["direction"] == "input":
@@ -366,7 +367,7 @@ class PluginBase:
 
         elif direct is True:
             for interface_name, interface_setup in self.interface_data().items():
-                if interface_setup["direction"] in {"output", "input", "inout"}:
+                if interface_setup["direction"] in {"output", "inout"}:
                     instance_predefines.append(f"assign {pin_varname} = {interface_setup['variable']};")
                 else:
                     instance_predefines.append(f"assign {interface_setup['variable']} = {pin_varname};")
