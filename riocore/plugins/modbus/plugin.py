@@ -459,7 +459,7 @@ class Plugin(PluginBase):
                     output.append("                    } else {")
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
-                        output.append(f'                        rtapi_print("rx error: addr or len\\n");')
+                        output.append(f'                        // rtapi_print("rx error: addr or len\\n");')
                         output.append(f"                        {value_name}_errors += 1;")
                         output.append(f"                        {value_name}_valid = 0;")
                     output.append("                    }")
@@ -472,7 +472,7 @@ class Plugin(PluginBase):
                         output.append(f"                        value_{self.signal_name} *= {vscale};")
                     output.append(f"                        value_{self.signal_name}_valid = 1;")
                     output.append("                    } else {")
-                    output.append(f'                        rtapi_print("rx error: addr or len\\n");')
+                    output.append(f'                        // rtapi_print("rx error: addr or len\\n");')
                     output.append(f"                        value_{self.signal_name}_errors += 1;")
                     output.append(f"                        value_{self.signal_name}_valid = 0;")
                     output.append("                    }")
@@ -481,7 +481,7 @@ class Plugin(PluginBase):
             sn += 1
         output.append("            }")
         output.append("        } else {")
-        output.append('            rtapi_print("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
+        output.append('            // rtapi_print("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
         output.append("        }")
         output.append('        // rtapi_print("rx frame %i %i: ", frame_id, frame_len);')
         output.append("        // for (n = 0; n < frame_len; n++) {")
@@ -494,7 +494,7 @@ class Plugin(PluginBase):
     def frameio_tx_c(self):
         output = []
         output.append("    if (frame_timeout == 1) {")
-        output.append(f'            rtapi_print("rx error: timeout: %d\\n", {self.instances_name}_signal_active);')
+        output.append(f'            // rtapi_print("rx error: timeout: %d\\n", {self.instances_name}_signal_active);')
         sn = 0
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]

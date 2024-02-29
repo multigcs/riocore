@@ -374,9 +374,16 @@ class LinuxCNC:
             open(f"{self.configuration_path}/tool.tbl", "w").write("\n".join(tooltbl))
 
     def hal_net_add(self, input_name, output_name):
+        ctype = "SINGLE"
+        if output_name[0] == "&":
+            ctype = "AND"
+            output_name = output_name[1:]
+        elif output_name[0] == "|":
+            ctype = "OR"
+            output_name = output_name[1:]
         network = None
         for net_name, net_nodes in self.networks.items():
-            if input_name == net_nodes["in"]:
+            if input_name in net_nodes["in"]:
                 network = net_name
             elif input_name in net_nodes["out"]:
                 network = net_name
@@ -389,11 +396,20 @@ class LinuxCNC:
                 network = output_name.replace(".", "_")
             if network not in self.networks:
                 self.networks[network] = {
-                    "in": input_name,
+                    "in": [input_name],
                     "out": [],
+                    "type": ctype,
                 }
         if output_name not in self.networks[network]["out"]:
             self.networks[network]["out"].append(output_name)
+        else:
+            if ctype == self.networks[network]["type"]:
+                if ctype != "SINGLE":
+                    self.networks[network]["in"].append(input_name)
+                else:
+                    print(f"###ERROR: net target already exist and type SINGLE ({network}): {input_name} -> {output_name}")
+            else:
+                print(f"###ERROR: net target already exist and incompatible type ({network}): {input_name} -> {output_name} ({ctype} != {self.networks[network]['type']})")
 
     def custom_net_add(self, input_name, output_name):
         network = None
@@ -406,7 +422,7 @@ class LinuxCNC:
                 network = net_name
         if not network:
             for net_name, net_nodes in self.networks.items():
-                if input_name == net_nodes["in"]:
+                if input_name in net_nodes["in"]:
                     network = net_name
                 elif input_name in net_nodes["out"]:
                     network = net_name
@@ -874,10 +890,21 @@ class LinuxCNC:
         output.append("addf motion-controller servo-thread")
         output.append("addf rio.readwrite servo-thread")
         output.append("")
-        output.append("# estop loopback")
-        output.append("net user-enable-out     <= iocontrol.0.user-enable-out     => rio.sys-enable")
-        output.append("net user-request-enable <= iocontrol.0.user-request-enable => rio.sys-enable-request")
-        output.append("net rio-status          <= rio.sys-status                      => iocontrol.0.emc-enable-in")
+        self.hal_net_add(f"iocontrol.0.user-enable-out", "rio.sys-enable")
+        self.hal_net_add(f"iocontrol.0.user-request-enable", "rio.sys-enable-request")
+
+        has_estop = False
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    direction = signal_config["direction"]
+                    netname = signal_config["netname"]
+                    if netname == "iocontrol.0.emc-enable-in" and direction == "input":
+                        has_estop = True
+                        break
+        if not has_estop:
+            self.hal_net_add(f"rio.sys-status", "iocontrol.0.emc-enable-in")
+
         output.append("")
         output.append("loadusr -W hal_manualtoolchange")
         output.append("net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change")
@@ -929,7 +956,20 @@ class LinuxCNC:
             if net["in"] and net["out"]:
                 output.append(f"")
                 output.append(f"# {network}")
-                output.append(f"net rios.{network} <= {net['in']}")
+                
+                if len(net['in']) == 1:
+                    output.append(f"net rios.{network} <= {net['in'][0]}")
+                elif net["type"] == "AND":
+                    output.append(f"loadrt and2 names=and.{network}")
+                    output.append(f"net rios.{network}-in0 and.{network}.in0 <= {net['in'][0]}")
+                    output.append(f"net rios.{network}-in1 and.{network}.in1 <= {net['in'][1]}")
+                    output.append(f"net rios.{network} <= and.{network}.out")
+                elif net["type"] == "OR":
+                    output.append(f"loadrt or2 names=or.{network}")
+                    output.append(f"net rios.{network}-in0 or.{network}.in0 <= {net['in'][0]}")
+                    output.append(f"net rios.{network}-in1 or.{network}.in1 <= {net['in'][1]}")
+                    output.append(f"net rios.{network} <= or.{network}.out")
+
                 for out in net["out"]:
                     output.append(f"net rios.{network} => {out}")
         output.append("")
@@ -1013,6 +1053,7 @@ class LinuxCNC:
                         output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
                     output.append(f"    hal_bit_t   *{varname};")
+                    output.append(f"    hal_bit_t   *{varname}_not;")
                     if signal_config.get("is_index_out"):
                         output.append(f"    hal_bit_t   *{var_prefix}_INDEX_RESET;")
                         output.append(f"    hal_bit_t   *{var_prefix}_INDEX_WAIT;")
@@ -1078,6 +1119,8 @@ class LinuxCNC:
                 else:
                     output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
+                    output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}_not), comp_id, "%s.{halname}-not", prefix) != 0) error_handler(retval);')
+                    output.append(f"    *data->{varname}_not = 1 - *data->{varname};")
                     if signal_config.get("is_index_out"):
                         output.append(
                             f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_RESET), comp_id, "%s.{halname}-reset", prefix) != 0) error_handler(retval);'
@@ -1125,7 +1168,7 @@ class LinuxCNC:
                         output.append("")
                         output.append("    frame_time = (float)(stamp_last - frame_stamp_last) / 1000000.0;")
                         output.append("    if (timeout > 0 && frame_time > timeout) {")
-                        output.append('        rtapi_print("timeout: %f\\n", frame_time);')
+                        output.append('        // rtapi_print("timeout: %f\\n", frame_time);')
                         output.append("        frame_timeout = 1;")
                         output.append("    }")
                         output.append("")
@@ -1281,9 +1324,6 @@ class LinuxCNC:
                             signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
-                            ctype = "float"
-                            if boolean:
-                                ctype = "bool"
                             output.append(f"    *data->{varname} = value_{signal_name};")
                         output.append("")
                         output.append("    /**************************/")
@@ -1378,6 +1418,8 @@ class LinuxCNC:
                                     output.append(f"    value = value / scale;")
                                     output.append(f"    *data->{varname}_S32 = value;")
                                 output.append(f"    *data->{varname} = value;")
+                                if boolean:
+                                    output.append(f"    *data->{varname}_not = 1 - value;")
 
                                 for target, calc in signal_targets.items():
                                     tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
