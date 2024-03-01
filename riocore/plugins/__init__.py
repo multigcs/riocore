@@ -260,7 +260,7 @@ class PluginBase:
                 pins[pin_name]["varname"] = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
             elif pin_config.get("optional") is not True:
                 print(f"ERROR: MISSING PIN CONFIGURATION for '{pin_name}' ({self.NAME})")
-                #exit(1)
+                # exit(1)
             else:
                 pins[pin_name] = pin_config.copy()
                 pins[pin_name]["varname"] = f"UNUSED_PIN_{self.instances_name}_{pin_name}".upper()
@@ -334,7 +334,6 @@ class PluginBase:
         for pin_name, pin_config in self.pins().items():
             pin_varname = pin_config["varname"]
             if "pin" in pin_config:
-
                 pin_varname = self.gateware_pin_modifiers(instances, instance, pin_name, pin_config, pin_varname)
 
                 instance_arguments[pin_name] = pin_varname

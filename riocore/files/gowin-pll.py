@@ -204,7 +204,6 @@ for IDIV_SEL in range(64):
                 }
 
 if setup:
-
     extra_options = ""
     if limits["pll_name"] == "PLLVR":
         extra_options = ".VREN(1'b1),"

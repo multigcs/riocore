@@ -61,7 +61,7 @@ class Plugin(PluginBase):
 
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "position":
-            value = int(((value + 300)) * self.system_setup["speed"] / 200000)
+            value = int((value + 300) * self.system_setup["speed"] / 200000)
         return value
 
     def convert_c(self, signal_name, signal_setup):

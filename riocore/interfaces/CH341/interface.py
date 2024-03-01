@@ -1,5 +1,4 @@
 class Interface:
-
     DEFAULT_TIMEOUT = 1000  # 1000mS for USB timeouts
     BULK_WRITE_ENDPOINT = 0x02
     BULK_READ_ENDPOINT = 0x82

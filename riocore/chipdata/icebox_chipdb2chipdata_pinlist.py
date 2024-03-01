@@ -8,7 +8,6 @@ import json
 packages = {}
 
 for chip in ["1k", "384", "5k", "8k", "lm4k", "u4k"]:
-
     source = open(f"/opt/oss-cad-suite/share/icebox/chipdb-{chip}.txt").read()
 
     packages[chip] = {}

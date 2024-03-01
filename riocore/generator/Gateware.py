@@ -107,7 +107,7 @@ class Gateware:
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
 
-        for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -323,7 +323,7 @@ class Gateware:
             output.append(f"                MULTIPLEXED_INPUT_ID = 0;")
             output.append("            end")
             mpid = 0
-            for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+            for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
@@ -340,7 +340,7 @@ class Gateware:
         if self.project.multiplexed_output:
             output.append("    always @(posedge sysclk) begin")
             mpid = 0
-            for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+            for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue

@@ -1,6 +1,5 @@
 class Interface:
     def __init__(self, cstr):
-
         if not cstr:
             cstr = "ftdi://ftdi:2232h/2"
 

@@ -213,7 +213,6 @@ for plugin in data["plugins"].copy():
     is_joint = plugin.get("is_joint")
 
     if is_joint:
-
         if "cl" in plugin:
             del plugin["cl"]
 

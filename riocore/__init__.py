@@ -519,7 +519,7 @@ class Project:
         if self.multiplexed_output:
             mpx_value = 0
             mpxid = 0
-            for (size, plugin_instance, data_name, data_config) in self.get_interface_data():
+            for size, plugin_instance, data_name, data_config in self.get_interface_data():
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
@@ -551,7 +551,7 @@ class Project:
             else:
                 self.multiplexed_output_id = 0
 
-        for (size, plugin_instance, data_name, data_config) in self.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -599,7 +599,7 @@ class Project:
 
         if self.multiplexed_input:
             mpxid = 0
-            for (size, plugin_instance, data_name, data_config) in self.get_interface_data():
+            for size, plugin_instance, data_name, data_config in self.get_interface_data():
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
@@ -610,7 +610,7 @@ class Project:
                         data_config["value"] = self.multiplexed_input_value
                     mpxid += 1
 
-        for (size, plugin_instance, data_name, data_config) in self.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue

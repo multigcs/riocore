@@ -46,7 +46,6 @@ class crc16(object):
 
 
 class crc8(object):
-
     digest_size = 1
     block_size = 1
 
@@ -337,7 +336,6 @@ class crc8(object):
         if isinstance(bytes_, str):
             raise TypeError("Unicode-objects must be encoded before" " hashing")
         elif not isinstance(bytes_, (bytes, bytearray)):
-
             if isinstance(bytes_, (list)):
                 bytes_ = bytearray(bytes_)
             elif isinstance(bytes_, (int)):

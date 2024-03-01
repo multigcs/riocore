@@ -267,20 +267,19 @@ class LinuxCNC:
                 ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAM{camera_num}"] = tabname
                 if gui != "axis":
                     ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAM{camera_num}"] = tablocation
-                ini_setup["DISPLAY"][
-                    f"EMBED_TAB_COMMAND|CAM{camera_num}"
-                ] = f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet"
+                ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAM{camera_num}"] = (
+                    f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet"
+                )
                 if not offsets and offset_num == 0:
                     offsets = {}
                     for axis_name, joints in self.axis_dict.items():
                         offsets[axis_name] = 0
-                
+
                 if offset_num == 0:
                     mdi_command = ["G92"]
                     for axis_name, joints in self.axis_dict.items():
-                        
                         print(self.axis_dict)
-                        
+
                         diff = 0
                         if axis_name in offsets:
                             diff = offsets[axis_name]
@@ -956,8 +955,8 @@ class LinuxCNC:
             if net["in"] and net["out"]:
                 output.append(f"")
                 output.append(f"# {network}")
-                
-                if len(net['in']) == 1:
+
+                if len(net["in"]) == 1:
                     output.append(f"net rios.{network} <= {net['in'][0]}")
                 elif net["type"] == "AND":
                     output.append(f"loadrt and2 names=and.{network}")
@@ -1059,7 +1058,7 @@ class LinuxCNC:
                         output.append(f"    hal_bit_t   *{var_prefix}_INDEX_WAIT;")
 
         output.append("    // raw variables")
-        for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
             variable_bytesize = variable_size // 8
@@ -1077,7 +1076,7 @@ class LinuxCNC:
         output.append("void register_signals(void) {")
         output.append("    int retval = 0;")
 
-        for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
             variable_bytesize = variable_size // 8
@@ -1137,7 +1136,6 @@ class LinuxCNC:
         output = []
         output.append("// output: SIGOUT -> calc -> VAROUT -> txBuffer")
         for plugin_instance in self.project.plugin_instances:
-
             invar = None
             for data_name, data_config in plugin_instance.interface_data().items():
                 if data_config["direction"] == "input":
@@ -1496,7 +1494,7 @@ class LinuxCNC:
             output.append("        data->MULTIPLEXER_OUTPUT_ID = 0;")
             output.append("    };")
         mpid = 0
-        for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             if not multiplexed:
                 continue
@@ -1522,7 +1520,7 @@ class LinuxCNC:
             output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &data->MULTIPLEXER_OUTPUT_ID, {byte_size});")
             output_pos -= variable_size
 
-        for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -1555,7 +1553,7 @@ class LinuxCNC:
             output.append(f"    memcpy(&data->MULTIPLEXER_INPUT_ID, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
             input_pos -= variable_size
 
-        for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -1571,7 +1569,7 @@ class LinuxCNC:
                 input_pos -= variable_size
 
         mpid = 0
-        for (size, plugin_instance, data_name, data_config) in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             if not multiplexed:
                 continue

@@ -433,7 +433,6 @@ class Plugin(PluginBase):
                     output.append("                    data_len = frame_data[2];")
 
                     if ctype == 2:
-
                         output.append(f"                    // get {self.signal_values} 1bit values ({signal_name})")
                         output.append(f"                    if (data_addr == {address} && data_len == 1) {{")
                         for vn in range(0, self.signal_values):
