@@ -1,4 +1,4 @@
-from riocore.checksums import crc8, crc16
+from riocore.checksums import crc16
 
 
 class hy_vfd:
@@ -124,11 +124,10 @@ class hy_vfd:
         if frame_new:
             # print(f"hy rx frame  {frame_id} {frame_len}: {frame_data}")
             if frame_len > 4:
-                address = frame_data[0]
-                ctype = frame_data[1]
-                data_len = frame_data[2]
+                frame_data[0]
+                frame_data[1]
+                frame_data[2]
                 csum = crc16()
-                cmd = []
                 csum.update(frame_data[:-2])
                 csum_calc = csum.intdigest()
                 if csum_calc != frame_data[-2:]:
@@ -176,12 +175,10 @@ class hy_vfd:
 
     def frameio_tx(self, frame_ack, frame_timeout):
         cmd = []
-        sn = 0
         config = self.config
-        direction = config["direction"]
+        config["direction"]
         address = config["address"]
-        ctype = config["type"]
-        signal_name = self.signal_name
+        config["type"]
         self.signal_address = address
         if self.HYVFD_CONFIG_REGISTER_SETUP:
             self.HYVFD_CONFIG_REGISTER_SETUP = False
@@ -196,7 +193,7 @@ class hy_vfd:
                 self.HYVFD_COMMAND += 1
             else:
                 self.HYVFD_COMMAND = 0
-            if self.HYVFD_COMMAND == 0 or self.HYVFD_STATUS_READ == False:
+            if self.HYVFD_COMMAND == 0 or self.HYVFD_STATUS_READ is False:
                 # calculate setup values
                 self.HYVFD_DATA["max_freq"] = self.HYVFD_CONFIG_REGISTER[5]["value"] * self.HYVFD_CALC_KEYS["max_freq"]["scale"]
                 self.HYVFD_DATA["base_freq"] = self.HYVFD_CONFIG_REGISTER[4]["value"] * self.HYVFD_CALC_KEYS["base_freq"]["scale"]
@@ -282,7 +279,7 @@ class hy_vfd:
         address = self.config["address"]
         output = []
         output.append(f"    if (data_addr == {address}) {{")
-        output.append(f"        if (frame_data[1] == 0x01 && frame_data[2] == 0x03) {{")
+        output.append("        if (frame_data[1] == 0x01 && frame_data[2] == 0x03) {")
         num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
         output.append(f"            for (n = 0; n < {num_config_registers}; n++) {{")
         output.append(f"                if (frame_data[3] == {self.instances_name}_{self.signal_name}_config_register[n].num) {{")
@@ -292,7 +289,7 @@ class hy_vfd:
         output.append("                }")
         output.append("            }")
         output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
-        output.append(f"        }} else if (frame_data[1] == 0x04 && frame_data[2] == 0x03) {{")
+        output.append("        } else if (frame_data[1] == 0x04 && frame_data[2] == 0x03) {")
         num_status_registers = len(self.HYVFD_STATUS_REGISTER)
         output.append(f"            for (n = 0; n < {num_status_registers}; n++) {{")
         output.append(f"                if (frame_data[3] == {self.instances_name}_{self.signal_name}_status_register[n].num) {{")
@@ -312,16 +309,16 @@ class hy_vfd:
         output.append(f"            value_{self.signal_name}_speed_fb_rps = value_{self.signal_name}_speed_fb / 60.0;")
         output.append(f"            float tolerance = value_{self.signal_name}_speed_command * value_{self.signal_name}_spindle_at_speed_tolerance;")
         output.append(f"            float diff = abs(value_{self.signal_name}_speed_fb - value_{self.signal_name}_speed_command);")
-        output.append(f"            if (diff <= tolerance) {{")
+        output.append("            if (diff <= tolerance) {")
         output.append(f"                value_{self.signal_name}_at_speed = 1;")
         output.append("            } else {")
         output.append(f"                value_{self.signal_name}_at_speed = 0;")
         output.append("            }")
         output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
-        output.append(f"        }} else if (frame_data[1] == 0x05 && frame_data[2] == 0x02) {{")
+        output.append("        } else if (frame_data[1] == 0x05 && frame_data[2] == 0x02) {")
         output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
         output.append(f"            {self.instances_name}_{self.signal_name}_speed_last = (frame_data[3]<<8) + (frame_data[4] & 0xFF);")
-        output.append(f"        }} else if (frame_data[1] == 0x03 && frame_data[2] == 0x01) {{")
+        output.append("        } else if (frame_data[1] == 0x03 && frame_data[2] == 0x01) {")
         output.append(f"            value_{self.signal_name}_hycomm_ok = 1;")
         output.append("            if (frame_data[3] == 0) {")
         output.append(f"                {self.instances_name}_{self.signal_name}_status_last = 8;")
@@ -332,7 +329,7 @@ class hy_vfd:
         output.append("            if (frame_data[3] == 45) {")
         output.append(f"                {self.instances_name}_{self.signal_name}_status_last = 11;")
         output.append("            }")
-        output.append(f"        }} else {{")
+        output.append("        } else {")
         output.append("            // ERROR")
         output.append(f"            value_{self.signal_name}_error_count += 1;")
         output.append(f"            value_{self.signal_name}_hycomm_ok = 0;")
@@ -419,7 +416,7 @@ class hy_vfd:
         output.append("        }")
         output.append("        uint16_t value_int = value * 100.0;")
         output.append(f"        if (value_int != {self.instances_name}_{self.signal_name}_speed_last) {{")
-        output.append(f"            value_vfd_at_speed = 0;")
+        output.append("            value_vfd_at_speed = 0;")
         output.append(f"            frame_data[0] = {address};")
         output.append("            frame_data[1] = 0x05;")
         output.append("            frame_data[2] = 0x02;")
@@ -442,7 +439,7 @@ class hy_vfd:
         output.append("            frame_data[3] = 0x11;")
         output.append("        }")
         output.append(f"        if (frame_data[3] != {self.instances_name}_{self.signal_name}_status_last) {{")
-        output.append(f"            value_vfd_at_speed = 0;")
+        output.append("            value_vfd_at_speed = 0;")
         output.append("            frame_len = 4;")
         output.append("        }")
         output.append("    }")
