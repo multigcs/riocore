@@ -1,32 +1,17 @@
-from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QDateTime, QSize, Qt, QTimer
-from PyQt5.QtGui import QColor, QFont, QStandardItem, QStandardItemModel
 from PyQt5.QtWidgets import (
-    QAbstractItemView,
-    QApplication,
-    QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
     QDoubleSpinBox,
-    QFileDialog,
     QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QListWidget,
-    QMessageBox,
-    QPlainTextEdit,
     QPushButton,
-    QScrollArea,
-    QSlider,
     QSpinBox,
     QTableWidget,
     QTableWidgetItem,
-    QTabWidget,
-    QTreeView,
     QVBoxLayout,
-    QWidget,
 )
 
 
