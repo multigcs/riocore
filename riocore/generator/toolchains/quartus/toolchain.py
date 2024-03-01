@@ -7,7 +7,7 @@ class Toolchain:
         self.config = config
 
     def generate(self, path):
-        pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.qdf")
+        pins_generator = importlib.import_module(".pins", "riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
         quartus_sh = shutil.which("quartus_sh")
         if quartus_sh is None:

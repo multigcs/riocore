@@ -8,7 +8,7 @@ class Toolchain:
         self.config = config
 
     def generate(self, path):
-        pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.cst")
+        pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)
 
         gw_sh = shutil.which("gw_sh")
@@ -38,7 +38,7 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("all: $(PROJECT).fs")
         makefile_data.append("")
-        makefile_data.append(f"$(PROJECT).json: $(VERILOGS)")
+        makefile_data.append("$(PROJECT).json: $(VERILOGS)")
         makefile_data.append("	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         makefile_data.append("")
         makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")

@@ -7,7 +7,7 @@ class Toolchain:
         self.config = config
 
     def generate(self, path):
-        pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.ucf")
+        pins_generator = importlib.import_module(".pins", "riocore.generator.pins.ucf")
         pins_generator.Pins(self.config).generate(path)
 
         ngdbuild = shutil.which("ngdbuild")

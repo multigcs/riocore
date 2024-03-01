@@ -14,10 +14,10 @@ class Toolchain:
             print(f"WARNING: can not found toolchain installation in PATH: nextpnr (nextpnr-{self.config['family']})")
 
         if self.config["family"] == "ecp5":
-            pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.lpf")
+            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
             bitfileName = "$(PROJECT).bit"
         else:
-            pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.pcf")
+            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.pcf")
             bitfileName = "$(PROJECT).bin"
 
         pins_generator.Pins(self.config).generate(path)
@@ -75,8 +75,8 @@ class Toolchain:
         makefile_data.append("check:")
         makefile_data.append("	verilator --top-module $(PROJECT) --lint-only -Wall *.v")
         makefile_data.append("")
-        makefile_data.append(f"sim: $(VERILOGS)")
-        makefile_data.append(f"	verilator --cc --exe --build -j 0 -Wall --top-module $(PROJECT) sim_main.cpp $(VERILOGS)")
+        makefile_data.append("sim: $(VERILOGS)")
+        makefile_data.append("	verilator --cc --exe --build -j 0 -Wall --top-module $(PROJECT) sim_main.cpp $(VERILOGS)")
         makefile_data.append("")
         makefile_data.append(f"tinyprog: {bitfileName}")
         makefile_data.append(f"	tinyprog -p {bitfileName}")

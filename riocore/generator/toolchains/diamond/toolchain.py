@@ -7,7 +7,7 @@ class Toolchain:
         self.config = config
 
     def generate(self, path):
-        pins_generator = importlib.import_module(f".pins", f"riocore.generator.pins.lpf")
+        pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
         pins_generator.Pins(self.config).generate(path)
 
         diamondc = shutil.which("diamondc")

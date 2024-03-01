@@ -4,7 +4,7 @@ import importlib
 import json
 import os
 import re
-from struct import *
+from struct import pack, unpack
 
 from .generator.Gateware import Gateware
 from .generator.LinuxCNC import LinuxCNC
@@ -165,7 +165,7 @@ class Plugins:
                     }
                     signals[argument_name] = {
                         "size": argument_size,
-                        "direction": {"input": "output", "output": "input", "input": "input"}.get(argument_direction),
+                        "direction": {"input": "output", "output": "input"}.get(argument_direction),
                     }
             if not has_clock:
                 print("FAILED: can not find clock pin")
@@ -205,7 +205,7 @@ class Plugins:
                         initfile.append(f'            "{signal_name}": {{')
                         initfile.append(f"                \"direction\": \"{signal_setup['direction']}\",")
                         if signal_setup["size"] == 1:
-                            initfile.append(f'                "bool": True,')
+                            initfile.append('                "bool": True,')
                         initfile.append("            },")
                     initfile.append("        }")
                 if is_interface:
@@ -221,7 +221,7 @@ class Plugins:
                     for parameter_name, parameter_setup in parameter_dict.items():
                         if parameter_name in {"DIVIDER"}:
                             initfile.append("        # example")
-                            initfile.append(f'        # frequency = int(self.plugin_setup.get("frequency", 100))')
+                            initfile.append('        # frequency = int(self.plugin_setup.get("frequency", 100))')
                             initfile.append(f'        # {parameter_name.lower()} = self.system_setup["speed"] // frequency')
                             initfile.append(f'        # instance_parameter["{parameter_name}"] = {parameter_name.lower()}')
                         initfile.append(f"        # instance_parameter[\"{parameter_name}\"] = self.plugin_setup.get(\"{parameter_name.lower()}\", \"{parameter_setup['default']}\")")
@@ -326,7 +326,7 @@ class Project:
 
         # loading modules
         project["modules"] = {}
-        modules_path = self.get_path(f"modules")
+        modules_path = self.get_path("modules")
         for path in glob.glob(f"{modules_path}/*.json"):
             module = path.split("/")[-1].split(".")[0]
             mdata = open(path, "r").read()
@@ -461,7 +461,7 @@ class Project:
         connection = None
         for ppath in glob.glob(f"{os.path.dirname(__file__)}/interfaces/*/*.py"):
             plugin = os.path.basename(os.path.dirname(ppath))
-            interface = importlib.import_module(f".interface", f"riocore.interfaces.{plugin}")
+            interface = importlib.import_module(".interface", f"riocore.interfaces.{plugin}")
             if interface.Interface.check(cstr):
                 print(f"connection via: {plugin}")
                 connection = interface.Interface(cstr)
@@ -523,7 +523,6 @@ class Project:
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
-                variable_name = data_config["variable"]
                 variable_size = data_config["size"]
                 value = data_config["value"]
                 if data_config["direction"] in {"output", "input", "input"}:
@@ -531,15 +530,12 @@ class Project:
                         mpx_value = value
                     mpxid += 1
 
-            variable_name = "MULTIPLEXER_OUTPUT_VALUE"
             variable_size = self.multiplexed_output_size
             value = mpx_value
             byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
             byte_start = self.buffer_bytes - 1 - byte_start
             txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
             output_pos -= variable_size
-
-            variable_name = "MULTIPLEXER_OUTPUT_ID"
             variable_size = 8
             value = self.multiplexed_output_id
             byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
@@ -555,7 +551,6 @@ class Project:
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
-            variable_name = data_config["variable"]
             variable_size = data_config["size"]
             value = data_config["value"]
             if data_config["direction"] == "output" or data_config["direction"] == "inout":
@@ -577,7 +572,6 @@ class Project:
         input_pos = self.buffer_size - self.header_size
 
         if self.multiplexed_input:
-            variable_name = "MULTIPLEXER_INPUT_VALUE"
             variable_size = self.multiplexed_input_size
             byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
             byte_start = self.buffer_bytes - 1 - byte_start
@@ -586,8 +580,6 @@ class Project:
                 byte_pack += [0] * (4 - len(byte_pack))
             self.multiplexed_input_value = unpack("<i", bytes(byte_pack))[0]
             input_pos -= variable_size
-
-            variable_name = "MULTIPLEXER_INPUT_ID"
             variable_size = 8
             byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
             byte_start = self.buffer_bytes - 1 - byte_start
@@ -603,7 +595,6 @@ class Project:
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
-                variable_name = data_config["variable"]
                 variable_size = data_config["size"]
                 if data_config["direction"] == "input":
                     if self.multiplexed_input_id == mpxid:
@@ -614,7 +605,6 @@ class Project:
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
-            variable_name = data_config["variable"]
             variable_size = data_config["size"]
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
