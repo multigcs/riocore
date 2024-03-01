@@ -523,9 +523,9 @@ class PluginBase:
                 output.append("")
 
                 if isbool:
-                    output.append(f" * type: bit")
+                    output.append(" * type: bit")
                 else:
-                    output.append(f" * type: float")
+                    output.append(" * type: float")
                 output.append(f" * direction: {direction}")
                 if vmin is not None:
                     output.append(f" * min: {vmin}")

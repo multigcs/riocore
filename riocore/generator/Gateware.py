@@ -1,4 +1,3 @@
-import glob
 import hashlib
 import importlib
 import os
@@ -60,7 +59,7 @@ class Gateware:
 
         toolchain = self.config["toolchain"]
         print(f"loading toolchain {toolchain}")
-        toolchain_generator = importlib.import_module(f".toolchain", f"riocore.generator.toolchains.{toolchain}")
+        toolchain_generator = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{toolchain}")
         toolchain_generator.Toolchain(self.config).generate(self.gateware_path)
 
     def top(self):
@@ -316,11 +315,11 @@ class Gateware:
 
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")
-            output.append(f"        if (INTERFACE_SYNC == 1) begin")
+            output.append("        if (INTERFACE_SYNC == 1) begin")
             output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.project.multiplexed_input-1}) begin")
             output.append("                MULTIPLEXED_INPUT_ID = MULTIPLEXED_INPUT_ID + 1;")
             output.append("            end else begin")
-            output.append(f"                MULTIPLEXED_INPUT_ID = 0;")
+            output.append("                MULTIPLEXED_INPUT_ID = 0;")
             output.append("            end")
             mpid = 0
             for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
@@ -332,7 +331,7 @@ class Gateware:
                 if direction == "input":
                     output.append(f"            if (MULTIPLEXED_INPUT_ID == {mpid}) begin")
                     output.append(f"                MULTIPLEXED_INPUT_VALUE <= {variable_name};")
-                    output.append(f"            end")
+                    output.append("            end")
                     mpid += 1
             output.append("        end")
             output.append("    end")
@@ -349,7 +348,7 @@ class Gateware:
                 if direction == "output":
                     output.append(f"        if (MULTIPLEXED_OUTPUT_ID == {mpid}) begin;")
                     output.append(f"            {variable_name} <= MULTIPLEXED_OUTPUT_VALUE;")
-                    output.append(f"        end;")
+                    output.append("        end;")
                     mpid += 1
             output.append("    end")
 

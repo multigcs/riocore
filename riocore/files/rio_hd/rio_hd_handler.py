@@ -530,7 +530,7 @@ class HandlerClass:
             if pc_power > 100:
                 pc_power = 100
             self.w.spindle_power.setValue(int(pc_power))
-        except Exception as e:
+        except Exception:
             # print(e)
             self.w.spindle_power.setValue(0)
 
@@ -1021,7 +1021,7 @@ class HandlerClass:
         if fname is None:
             return
         filename, file_extension = os.path.splitext(fname)
-        if not file_extension in (".html", ".pdf"):
+        if file_extension not in (".html", ".pdf"):
             if not (INFO.program_extension_valid(fname)):
                 self.add_status("Unknown or invalid filename extension {}".format(file_extension), WARNING)
                 return
@@ -1362,7 +1362,7 @@ class HandlerClass:
 
         # if indexes don't match then request is disallowed
         # give a warning and reset the button check
-        if main_index != requestedIndex and not main_index in (TAB_CAMVIEW, TAB_GCODES, TAB_SETUP):
+        if main_index != requestedIndex and main_index not in (TAB_CAMVIEW, TAB_GCODES, TAB_SETUP):
             self.add_status("Cannot switch pages while in AUTO mode", WARNING)
             self.w.stackedWidget_mainTab.setCurrentIndex(0)
             self.w.btn_main.setChecked(True)

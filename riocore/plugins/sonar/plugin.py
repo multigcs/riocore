@@ -40,6 +40,6 @@ class Plugin(PluginBase):
         return value
 
     def convert_c(self, signal_name, signal_setup):
-        return f"""
+        return """
         value = 1000 / OSC_CLOCK / 20 * value * 343.2;
         """

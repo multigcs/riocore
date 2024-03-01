@@ -1,7 +1,6 @@
-import os
 from struct import *
 
-from riocore.checksums import crc8, crc16
+from riocore.checksums import crc16
 from riocore.plugins import PluginBase
 from riocore.plugins.modbus import hy_vfd
 
@@ -458,12 +457,12 @@ class Plugin(PluginBase):
                     output.append("                    } else {")
                     for vn in range(0, self.signal_values):
                         value_name = f"value_{self.signal_name}_{vn}"
-                        output.append(f'                        // rtapi_print("rx error: addr or len\\n");')
+                        output.append('                        // rtapi_print("rx error: addr or len\\n");')
                         output.append(f"                        {value_name}_errors += 1;")
                         output.append(f"                        {value_name}_valid = 0;")
                     output.append("                    }")
                 else:
-                    output.append(f"                    // get single 16bit value")
+                    output.append("                    // get single 16bit value")
                     output.append("                    data_len = frame_data[2];")
                     output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
                     output.append(f"                        value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
@@ -471,7 +470,7 @@ class Plugin(PluginBase):
                         output.append(f"                        value_{self.signal_name} *= {vscale};")
                     output.append(f"                        value_{self.signal_name}_valid = 1;")
                     output.append("                    } else {")
-                    output.append(f'                        // rtapi_print("rx error: addr or len\\n");')
+                    output.append('                        // rtapi_print("rx error: addr or len\\n");')
                     output.append(f"                        value_{self.signal_name}_errors += 1;")
                     output.append(f"                        value_{self.signal_name}_valid = 0;")
                     output.append("                    }")
@@ -518,7 +517,7 @@ class Plugin(PluginBase):
                         output.append(f"                {value_name}_errors += 1;")
                     output.append("            }")
                 else:
-                    output.append(f"            // get single 16bit value")
+                    output.append("            // get single 16bit value")
                     output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
                     output.append(f"                value_{signal_name}_valid = 0;")
                     output.append(f"                value_{signal_name}_errors += 1;")
@@ -551,23 +550,23 @@ class Plugin(PluginBase):
             output.append(f"                timeout = {timeout};")
             if ctype == 101:
                 print("handle hy_vfd ...")
-                output.append(f"                // handle hy_vfd")
+                output.append("                // handle hy_vfd")
                 output += signal_config["instance"].frameio_tx_c()
             elif direction == "output":
                 if self.signal_values > 1:
                     if ctype == 15:
-                        output.append(f"                // set 1bit values")
+                        output.append("                // set 1bit values")
                     else:
-                        output.append(f"                // set 16bit values")
+                        output.append("                // set 16bit values")
                     output.append(f"                frame_data[0] = {address};")
                     output.append(f"                frame_data[1] = {ctype};")
                     output.append(f"                frame_data[2] = {register[0]};")
                     output.append(f"                frame_data[3] = {register[1]};")
                     output.append(f"                frame_data[4] = {n_values[0]};")
                     output.append(f"                frame_data[5] = {n_values[1]};")
-                    output.append(f"                frame_data[6] = 1;")
+                    output.append("                frame_data[6] = 1;")
                     if ctype == 15:
-                        output.append(f"                uint8_t bitvalues = 0;")
+                        output.append("                uint8_t bitvalues = 0;")
                         for vn in range(0, self.signal_values):
                             value_name = f"{self.signal_name}_{vn}"
                             output.append(f"                if (value_{value_name} == 1) {{")
@@ -583,34 +582,34 @@ class Plugin(PluginBase):
                         output.append(f"                frame_len = {8 + vn * 2};")
                 else:
                     if ctype == 5:
-                        output.append(f"                // set coil value")
+                        output.append("                // set coil value")
                     else:
-                        output.append(f"                // set 16bit value")
+                        output.append("                // set 16bit value")
                     output.append(f"                frame_data[0] = {address};")
                     output.append(f"                frame_data[1] = {ctype};")
                     output.append(f"                frame_data[2] = {register[0]};")
                     output.append(f"                frame_data[3] = {register[1]};")
                     if ctype == 5:
                         output.append(f"                if (value_{signal_name} == 1) {{")
-                        output.append(f"                    frame_data[4] = 255;")
-                        output.append(f"                    frame_data[5] = 0;")
+                        output.append("                    frame_data[4] = 255;")
+                        output.append("                    frame_data[5] = 0;")
                         output.append("                } else {")
-                        output.append(f"                    frame_data[4] = 0;")
-                        output.append(f"                    frame_data[5] = 0;")
+                        output.append("                    frame_data[4] = 0;")
+                        output.append("                    frame_data[5] = 0;")
                         output.append("                }")
                     else:
                         output.append(f"                frame_data[4] = (uint16_t)value_{signal_name}>>8 & 0xFF;")
                         output.append(f"                frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
-                    output.append(f"                frame_len = 6;")
+                    output.append("                frame_len = 6;")
             else:
-                output.append(f"                // request 16bit value")
+                output.append("                // request 16bit value")
                 output.append(f"                frame_data[0] = {address};")
                 output.append(f"                frame_data[1] = {ctype};")
                 output.append(f"                frame_data[2] = {register[0]};")
                 output.append(f"                frame_data[3] = {register[1]};")
                 output.append(f"                frame_data[4] = {n_values[0]};")
                 output.append(f"                frame_data[5] = {n_values[1]};")
-                output.append(f"                frame_len = 6;")
+                output.append("                frame_len = 6;")
             output.append("                break;")
             output.append("            }")
             sn += 1

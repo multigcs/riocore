@@ -66,7 +66,7 @@ class Plugin(PluginBase):
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "position":
-            return f"""
+            return """
             value = ((value + 300)) * OSC_CLOCK / 200000;
             """
         return ""

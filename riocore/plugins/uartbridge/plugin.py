@@ -367,7 +367,7 @@ class Plugin(PluginBase):
                     signal_signed = signal_setup["signal_signed"]
                     bytesize = signal_size // 8
                     output.append(f"    uint{signal_size}_t {signal_name};")
-        output.append(f"    uint8_t csum;")
+        output.append("    uint8_t csum;")
         output.append("};")
         output.append("")
         output.append("typedef struct tx_data_t {")
@@ -379,7 +379,7 @@ class Plugin(PluginBase):
                     signal_signed = signal_setup["signal_signed"]
                     bytesize = signal_size // 8
                     output.append(f"    uint{signal_size}_t {signal_name};")
-        output.append(f"    uint8_t csum;")
+        output.append("    uint8_t csum;")
         output.append("};")
         output.append("")
         output.append("typedef union rx_frame_t {")

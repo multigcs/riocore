@@ -660,8 +660,8 @@ class LinuxCNC:
 
             if axis_selector and position_display:
                 custom.append("# display position")
-                custom.append(f"loadrt mux16 names=riof.jog.position_mux")
-                custom.append(f"addf riof.jog.position_mux servo-thread")
+                custom.append("loadrt mux16 names=riof.jog.position_mux")
+                custom.append("addf riof.jog.position_mux servo-thread")
                 mux_select = 0
                 mux_input = 1
                 for function, halname in self.rio_functions["jog"].items():
@@ -750,7 +750,7 @@ class LinuxCNC:
 
         for network, net in self.cnetworks.items():
             if net["out"]:
-                custom.append(f"")
+                custom.append("")
                 if net["in"]:
                     custom.append(f"net rios.{network} <= {net['in']}")
                 for out in net["out"]:
@@ -889,8 +889,8 @@ class LinuxCNC:
         output.append("addf motion-controller servo-thread")
         output.append("addf rio.readwrite servo-thread")
         output.append("")
-        self.hal_net_add(f"iocontrol.0.user-enable-out", "rio.sys-enable")
-        self.hal_net_add(f"iocontrol.0.user-request-enable", "rio.sys-enable-request")
+        self.hal_net_add("iocontrol.0.user-enable-out", "rio.sys-enable")
+        self.hal_net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request")
 
         has_estop = False
         for plugin_instance in self.project.plugin_instances:
@@ -902,7 +902,7 @@ class LinuxCNC:
                         has_estop = True
                         break
         if not has_estop:
-            self.hal_net_add(f"rio.sys-status", "iocontrol.0.emc-enable-in")
+            self.hal_net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
 
         output.append("")
         output.append("loadusr -W hal_manualtoolchange")
@@ -953,7 +953,7 @@ class LinuxCNC:
 
         for network, net in self.networks.items():
             if net["in"] and net["out"]:
-                output.append(f"")
+                output.append("")
                 output.append(f"# {network}")
 
                 if len(net["in"]) == 1:
@@ -1022,17 +1022,17 @@ class LinuxCNC:
         output = []
         output.append("typedef struct {")
         output.append("    // hal variables")
-        output.append(f"    hal_bit_t   *sys_enable;")
-        output.append(f"    hal_bit_t   *sys_enable_request;")
-        output.append(f"    hal_bit_t   *sys_status;")
-        output.append(f"    hal_float_t *duration;")
+        output.append("    hal_bit_t   *sys_enable;")
+        output.append("    hal_bit_t   *sys_enable_request;")
+        output.append("    hal_bit_t   *sys_status;")
+        output.append("    hal_float_t *duration;")
 
         if self.project.multiplexed_output:
-            output.append(f"    float MULTIPLEXER_OUTPUT_VALUE;")
-            output.append(f"    uint8_t MULTIPLEXER_OUTPUT_ID;")
+            output.append("    float MULTIPLEXER_OUTPUT_VALUE;")
+            output.append("    uint8_t MULTIPLEXER_OUTPUT_ID;")
         if self.project.multiplexed_input:
-            output.append(f"    float MULTIPLEXER_INPUT_VALUE;")
-            output.append(f"    uint8_t MULTIPLEXER_INPUT_ID;")
+            output.append("    float MULTIPLEXER_INPUT_VALUE;")
+            output.append("    uint8_t MULTIPLEXER_INPUT_ID;")
 
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
@@ -1152,7 +1152,7 @@ class LinuxCNC:
                     if plugin_instance.TYPE == "frameio":
                         output.append(f"void convert_frame_{plugin_instance.instances_name}_output(data_t *data) {{")
                         output.append(f"    static float timeout = {plugin_instance.TIMEOUT};")
-                        output.append(f"    static float delay = 0;")
+                        output.append("    static float delay = 0;")
                         output.append("    static long frame_stamp_last = 0;")
                         output.append("    static uint8_t frame_id = 0;")
                         output.append(f"    static uint8_t frame_io[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
@@ -1340,7 +1340,7 @@ class LinuxCNC:
                             if variable_size > 1:
                                 vtype = f"int{variable_size if variable_size != 24 else 32}_t"
                                 if variable_size == 8:
-                                    vtype = f"uint8_t"
+                                    vtype = "uint8_t"
                                 convert_parameter.append(f"{vtype} *{variable_name}")
                             else:
                                 convert_parameter.append(f"bool *{variable_name}")
@@ -1410,10 +1410,10 @@ class LinuxCNC:
                                     output.append(f"    float offset = *data->{varname}_OFFSET;")
                                     output.append(f"    float scale = *data->{varname}_SCALE;")
                                     output.append(f"    float last_value = *data->{varname};")
-                                    output.append(f"    static float last_raw_value = 0.0;")
-                                    output.append(f"    float raw_value = value;")
-                                    output.append(f"    value = value + offset;")
-                                    output.append(f"    value = value / scale;")
+                                    output.append("    static float last_raw_value = 0.0;")
+                                    output.append("    float raw_value = value;")
+                                    output.append("    value = value + offset;")
+                                    output.append("    value = value / scale;")
                                     output.append(f"    *data->{varname}_S32 = value;")
                                 output.append(f"    *data->{varname} = value;")
                                 if boolean:
@@ -1429,7 +1429,7 @@ class LinuxCNC:
 
                                 if not boolean and direction == "input" and hal_type == "float":
                                     output.append("")
-                                    output.append(f"    last_raw_value = raw_value;")
+                                    output.append("    last_raw_value = raw_value;")
                         output.append("}")
                         output.append("")
         output.append("")
@@ -1675,7 +1675,7 @@ class LinuxCNC:
 
         output.append("")
         output.append("/*")
-        output.append(f"    hal functions")
+        output.append("    hal functions")
         output.append("*/")
 
         output.append(open(f"{riocore_path}/files/hal_functions.c", "r").read())
@@ -2443,15 +2443,15 @@ class axis:
         cfgxml_data.append("    </label>")
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f'      <halpin>"{halpin_g}"</halpin>')
-        cfgxml_data.append(f'      <text>"G"</text>')
+        cfgxml_data.append('      <text>"G"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f'      <halpin>"{halpin_b}"</halpin>')
-        cfgxml_data.append(f'      <text>"B"</text>')
+        cfgxml_data.append('      <text>"B"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f'      <halpin>"{halpin_r}"</halpin>')
-        cfgxml_data.append(f'      <text>"R"</text>')
+        cfgxml_data.append('      <text>"R"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
