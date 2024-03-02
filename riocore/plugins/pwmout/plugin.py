@@ -47,6 +47,24 @@ class Plugin(PluginBase):
                 "max": 100,
                 "unit": "%",
                 "absolute": False,
+                "setup": {
+                    "min": {
+                        "default": 0,
+                        "type": int,
+                        "min": -1000000,
+                        "max": 1000000,
+                        "unit": "",
+                        "description": "minimum value (0% dty)",
+                    },
+                    "max": {
+                        "default": 100,
+                        "type": int,
+                        "min": -1000000,
+                        "max": 1000000,
+                        "unit": "",
+                        "description": "maximum value (100% dty)",
+                    },
+                },
             },
             "enable": {
                 "direction": "output",
@@ -72,8 +90,8 @@ class Plugin(PluginBase):
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-            vmin = int(signal_setup.get("min", 0))
-            vmax = int(signal_setup.get("max", 100))
+            vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
+            vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
             if "dir" in signal_setup:
                 value = int((value) * (self.system_setup["speed"] / freq) / (vmax))
             else:
@@ -83,8 +101,8 @@ class Plugin(PluginBase):
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-            vmin = int(signal_setup.get("min", 0))
-            vmax = int(signal_setup.get("max", 100))
+            vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
+            vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
             if "dir" in signal_setup:
                 return f"value = value * (OSC_CLOCK / {freq}) / ({vmax});"
             else:

@@ -1608,6 +1608,9 @@ class LinuxCNC:
                 ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip"))
                 port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port"))
 
+        ip = self.project.config["jdata"].get("ip", ip)
+        port = self.project.config["jdata"].get("port", port)
+
         defines = {
             "MODNAME": '"rio"',
             "PREFIX": '"rio"',
