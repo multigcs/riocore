@@ -10,8 +10,8 @@ import riocore
 riocore_path = os.path.dirname(riocore.__file__)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--list', "-l", help="list all plugins", default=False, action='store_true')
-parser.add_argument('--generate', "-g", help="generate readme files for all plugins", default=False, action='store_true')
+parser.add_argument("--list", "-l", help="list all plugins", default=False, action="store_true")
+parser.add_argument("--generate", "-g", help="generate readme files for all plugins", default=False, action="store_true")
 parser.add_argument("plugin", help="plugin", nargs="?", type=str, default=None)
 args = parser.parse_args()
 
@@ -53,7 +53,7 @@ elif args.generate:
     for plugin in plugins.list():
         filename = f"riocore/plugins/{plugin['name']}/README.md"
         print(filename)
-        text = plugins.info(plugin['name'])
+        text = plugins.info(plugin["name"])
         open(filename, "w").write(text)
 
 elif args.plugin:
