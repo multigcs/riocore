@@ -38,6 +38,8 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "min": -100,
                 "max": 100,
+                "scale": 10.0,
+                "max_velocity": 1000.0,
                 "description": "absolute position (-100 = 1ms / 100 = 2ms)",
             },
             "enable": {

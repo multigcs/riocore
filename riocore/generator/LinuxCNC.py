@@ -11,8 +11,8 @@ class LinuxCNC:
     AXIS_DEFAULTS = {
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
-        "MIN_LIMIT": -150,
-        "MAX_LIMIT": 150,
+        "MIN_LIMIT": -500,
+        "MAX_LIMIT": 1500,
         "MIN_FERROR": 0.01,
         "FERROR": 1.0,
         "BACKLASH": 0.0,
@@ -31,8 +31,8 @@ class LinuxCNC:
     JOINT_DEFAULTS = {
         "TYPE": "LINEAR",
         "HOME": 0.0,
-        "MIN_LIMIT": -200.0,
-        "MAX_LIMIT": 150.0,
+        "MIN_LIMIT": -500.0,
+        "MAX_LIMIT": 1500.0,
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
         "STEPGEN_MAXACCEL": 2000.0,
@@ -984,6 +984,7 @@ class LinuxCNC:
                 pin_num = joint_setup["pin_num"]
                 if position_mode == "absolute":
                     output.append(f"# joint.{joint}: absolut positioning")
+                    output.append(f"setp {position_halname}-scale [JOINT_{joint}]SCALE_OUT")
                     output.append(f"net j{joint}pos-cmd        <= joint.{joint}.motor-pos-cmd  => {position_halname}")
                     output.append(f"net j{joint}pos-cmd        => joint.{joint}.motor-pos-fb")
                     if enable_halname:
@@ -1789,8 +1790,8 @@ class LinuxCNC:
                 enable_halname = None
                 position_mode = None
                 joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
-                position_scale = float(joint_config.get("scale", self.JOINT_DEFAULTS["SCALE_OUT"]))
-                max_velocity = float(joint_config.get("max_velocity", self.JOINT_DEFAULTS["MAX_VELOCITY"]))
+                position_scale = float(joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"]))
+                max_velocity = float(joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("max_velocity", self.JOINT_DEFAULTS["MAX_VELOCITY"]))
                 if machinetype == "lathe":
                     home_sequence_default = 2
                     if axis_name == "X":
@@ -1817,6 +1818,8 @@ class LinuxCNC:
                 elif dty:
                     position_halname = f"rio.{dty['halname']}"
                     position_mode = "relative"
+
+
                 feedback_scale = position_scale
                 feedback_halname = None
                 feedback = joint_config.get("feedback")
