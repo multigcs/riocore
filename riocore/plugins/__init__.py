@@ -164,7 +164,7 @@ class PluginBase:
 
         if self.TYPE == "expansion":
             expansion_id = len(self.expansions)
-            self.expansion_prefix = self.plugin_setup.get("name", f"EXPANSION{expansion_id}")
+            self.expansion_prefix = self.plugin_setup.get("name", f"EXPANSION{expansion_id}").upper()
             self.expansions.append(self.expansion_prefix)
 
     def setup(self):
@@ -301,6 +301,22 @@ class PluginBase:
             data[name] = setup
             data[name]["variable"] = f"VAR{direction}{size}_{self.instances_name}_{name}".upper()
         return data
+
+    def expansion_outputs(self):
+        expansion_pins = []
+        if self.TYPE == "expansion":
+            bits = self.plugin_setup.get("bits", 8)
+            for num in range(0, bits):
+                expansion_pins.append(f"{plugin_instance.expansion_prefix}_OUTPUT[{num}]")
+        return expansion_pins
+
+    def expansion_inputs(self):
+        expansion_pins = []
+        if self.TYPE == "expansion":
+            bits = self.plugin_setup.get("bits", 8)
+            for num in range(0, bits):
+                expansion_pins.append(f"{plugin_instance.expansion_prefix}_INPUT[{num}]")
+        return expansion_pins
 
     def gateware_defines(self, direct=False):
         defines = []

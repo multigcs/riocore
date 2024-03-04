@@ -14,6 +14,13 @@ class Gateware:
         os.system(f"mkdir -p {self.gateware_path}/")
 
     def generator(self, generate_pll=True):
+        self.expansion_pins = []
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE == "expansion":
+                for pin in plugin_instance.expansion_outputs():
+                    self.expansion_pins.append(pin)
+                for pin in plugin_instance.expansion_inputs():
+                    self.expansion_pins.append(pin)
         self.generate_pll = generate_pll
         self.verilogs = []
         self.top()
@@ -53,7 +60,7 @@ class Gateware:
         for plugin_instance in self.project.plugin_instances:
             self.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
+                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
                     pin_config["pin"] = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
                     self.config["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
 
@@ -141,7 +148,7 @@ class Gateware:
         arguments_list = ["input sysclk_in"]
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
+                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
                     arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
 
         output_name = ""
@@ -156,7 +163,7 @@ class Gateware:
         output.append("")
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and not pin_config["pin"].startswith("EXPANSION"):
+                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
                     pullup = "PULLUP" if pin_config.get("pullup", False) else ""
                     if pin_config["direction"] == "input":
                         output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pullup}")
@@ -303,15 +310,20 @@ class Gateware:
         output.append("")
 
         # expansion assignments
+        used_expansion_outputs = []
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config:
-                    if pin_config["pin"].startswith("EXPANSION"):
+                    if pin_config["pin"] in self.expansion_pins:
                         output.append(f"    wire {pin_config['varname']};")
                         if pin_config["direction"] == "input":
                             output.append(f"    assign {pin_config['varname']} = {pin_config['pin']};")
                         elif pin_config["direction"] == "output":
                             output.append(f"    assign {pin_config['pin']} = {pin_config['varname']};")
+                            used_expansion_outputs.append(pin_config["pin"])
+        for expansion_pin in self.expansion_pins:
+            if expansion_pin not in used_expansion_outputs:
+                output.append(f"    assign {expansion_pin} = 0;")
 
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")
