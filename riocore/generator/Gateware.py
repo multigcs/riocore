@@ -321,9 +321,6 @@ class Gateware:
                         elif pin_config["direction"] == "output":
                             output.append(f"    assign {pin_config['pin']} = {pin_config['varname']};")
                             used_expansion_outputs.append(pin_config["pin"])
-        for expansion_pin in self.expansion_pins:
-            if expansion_pin not in used_expansion_outputs:
-                output.append(f"    assign {expansion_pin} = 0;")
 
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")

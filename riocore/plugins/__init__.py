@@ -307,7 +307,7 @@ class PluginBase:
         if self.TYPE == "expansion":
             bits = self.plugin_setup.get("bits", 8)
             for num in range(0, bits):
-                expansion_pins.append(f"{plugin_instance.expansion_prefix}_OUTPUT[{num}]")
+                expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
         return expansion_pins
 
     def expansion_inputs(self):
@@ -315,7 +315,7 @@ class PluginBase:
         if self.TYPE == "expansion":
             bits = self.plugin_setup.get("bits", 8)
             for num in range(0, bits):
-                expansion_pins.append(f"{plugin_instance.expansion_prefix}_INPUT[{num}]")
+                expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
         return expansion_pins
 
     def gateware_defines(self, direct=False):
