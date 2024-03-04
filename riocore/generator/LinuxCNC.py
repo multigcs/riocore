@@ -342,9 +342,11 @@ class LinuxCNC:
                 position_halname = joint_config["position_halname"]
                 feedback_halname = joint_config["feedback_halname"]
                 enable_halname = joint_config["enable_halname"]
+                plugin_instance = joint_config["plugin_instance"]
                 pin_num = joint_config["pin_num"]
 
                 output.append(f"[JOINT_{joint}]")
+                output.append(f"# {plugin_instance.instances_name}")
                 if position_mode == "absolute":
                     for key, value in joint_setup.items():
                         if key in self.JOINT_DEFAULTS:
@@ -948,7 +950,6 @@ class LinuxCNC:
                         elif direction == "output":
                             self.hal_net_add(netname, f"rio.{halname}")
                     elif setp is not None:
-                        print("setp", setp)
                         output.append(f"setp rio.{halname} {setp}")
 
         for network, net in self.networks.items():
@@ -1761,13 +1762,22 @@ class LinuxCNC:
         self.num_joints = 0
         self.num_axis = 0
         self.axis_dict = {}
+
+        named_axis = []
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint"):
+                axis_name = plugin_instance.plugin_setup.get("axis")
+                if axis_name:
+                    named_axis.append(axis_name)
+
+
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint"):
                 axis_num = len(self.axis_dict)
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if not axis_name:
                     for name in self.AXIS_NAMES:
-                        if name not in self.axis_dict:
+                        if name not in self.axis_dict and name not in named_axis:
                             axis_name = name
                             break
                 if axis_name not in self.axis_dict:
