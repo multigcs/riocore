@@ -53,6 +53,7 @@ class Plugin(PluginBase):
             "position": {
                 "direction": "input",
                 "unit": "Steps",
+                "scale": 320.0,
                 "description": "position feedback",
             },
             "enable": {

@@ -1790,8 +1790,8 @@ class LinuxCNC:
                 enable_halname = None
                 position_mode = None
                 joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
-                position_scale = float(joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"]))
-                max_velocity = float(joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("max_velocity", self.JOINT_DEFAULTS["MAX_VELOCITY"]))
+                position_scale = float(joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"])))
+                max_velocity = float(joint_config.get("max_velocity", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("max_velocity", self.JOINT_DEFAULTS["MAX_VELOCITY"])))
                 if machinetype == "lathe":
                     home_sequence_default = 2
                     if axis_name == "X":
