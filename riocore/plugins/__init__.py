@@ -202,7 +202,7 @@ class PluginBase:
         else:
             interface_data = self.interface_data()
             for signal_name, signal_setup in self.signals().items():
-                if signal_setup["direction"] in {"output", "input", "inout"} and signal_name in interface_data:
+                if signal_setup["direction"] in {"output", "inout"} and signal_name in interface_data:
                     interface_data[signal_name]["value"] = self.convert(signal_name, signal_setup, signal_setup["value"])
 
     def convert2signals(self):
