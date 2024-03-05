@@ -9,13 +9,23 @@ class Toolchain:
     def generate(self, path):
         verilogs = " ".join(self.config["verilog_files"])
 
-        nextpnr = shutil.which(f"nextpnr-{self.config['family']}")
-        if nextpnr is None:
-            print(f"WARNING: can not found toolchain installation in PATH: nextpnr (nextpnr-{self.config['family']})")
+        family = self.config['family']
 
-        if self.config["family"] == "ecp5":
+        if family.startswith("GW"):
+            device_family = family
+            board = self.config.get("board")
+            family = "gowin"
+
+        nextpnr = shutil.which(f"nextpnr-{family}")
+        if nextpnr is None:
+            print(f"WARNING: can not found toolchain installation in PATH: nextpnr (nextpnr-{family})")
+
+        if family == "ecp5":
             pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
             bitfileName = "$(PROJECT).bit"
+        elif family == "gowin":
+            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
+            bitfileName = "$(PROJECT).fs"
         else:
             pins_generator = importlib.import_module(".pins", "riocore.generator.pins.pcf")
             bitfileName = "$(PROJECT).bin"
@@ -29,7 +39,8 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("PROJECT  := rio")
         makefile_data.append("TOP      := rio")
-        makefile_data.append(f"FAMILY   := {self.config['family']}")
+        makefile_data.append(f"FAMILY   := {family}")
+        makefile_data.append(f"DEVICE_FAMILY   := {device_family}")
         makefile_data.append(f"TYPE     := {self.config['type']}")
         makefile_data.append(f"PACKAGE  := {self.config['package']}")
         makefile_data.append(f"VERILOGS := {verilogs}")
@@ -39,10 +50,13 @@ class Toolchain:
         makefile_data.append("$(PROJECT).json: $(VERILOGS)")
         if self.config["type"] == "up5k":
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -dsp -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
+        elif family == "gowin":
+            OPTIONS:-noalu -nowidelut
+            makefile_data.append("	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         else:
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         makefile_data.append("")
-        if self.config["family"] == "ecp5":
+        if family == "ecp5":
             makefile_data.append("$(PROJECT).config: $(PROJECT).json pins.lpf")
             makefile_data.append("	nextpnr-${FAMILY} -q -l nextpnr.log --${TYPE} --package ${PACKAGE} --json $(PROJECT).json --lpf pins.lpf --textcfg $(PROJECT).config")
             makefile_data.append('	@echo ""')
@@ -57,6 +71,19 @@ class Toolchain:
             makefile_data.append("")
             makefile_data.append("clean:")
             makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            makefile_data.append("")
+        elif family == "gowin":
+            makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
+            makefile_data.append(
+                f"	nextpnr-gowin --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq {float(self.config['speed']) / 1000000} --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
+            )
+            makefile_data.append("")
+            makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
+            makefile_data.append("	gowin_pack -d ${DEVICE_FAMILY} -o $(PROJECT).fs $(PROJECT)_pnr.json")
+            makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
+            makefile_data.append("")
+            makefile_data.append("clean:")
+            makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log")
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
@@ -86,8 +113,15 @@ class Toolchain:
             makefile_data.append(f"load: {bitfileName}")
             makefile_data.append(f"	{flashcmd}")
         else:
-            makefile_data.append(f"load: {bitfileName}")
-            makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
+            if family == "gowin":
+                makefile_data.append("load: $(PROJECT).fs")
+                makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs -f")
+            else:
+                makefile_data.append(f"load: {bitfileName}")
+                makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
+
+
+
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
