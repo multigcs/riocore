@@ -1,5 +1,3 @@
-
-
 import riocore
 
 from PyQt5 import QtGui, QtSvg

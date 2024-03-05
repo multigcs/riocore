@@ -1,3 +1,24 @@
+RIO_FUNCTIONS = {
+    "inout": {},
+    "output": {
+        "jog.selected-x": {"help": "X is the selected axis", "type": bool},
+        "jog.selected-y": {"help": "Y is the selected axis", "type": bool},
+        "jog.selected-z": {"help": "Z is the selected axis", "type": bool},
+        "jog.position": {"help": "Position of selected axis", "type": float},
+    },
+    "input": {
+        "jog.wheel_x": {"help": "Jog-Wheel X-Axis", "type": float},
+        "jog.wheel_y": {"help": "Jog-Wheel Y-Axis", "type": float},
+        "jog.wheel_z": {"help": "Jog-Wheel Z-Axis", "type": float},
+        "jog.select-x": {"help": "Jog-Select X-Axis", "type": bool},
+        "jog.select-y": {"help": "Jog-Select Y-Axis", "type": bool},
+        "jog.select-z": {"help": "Jog-Select Z-Axis", "type": bool},
+        "jog.plus": {"help": "Jog selected axis plus", "type": bool},
+        "jog.minus": {"help": "Jog selected axis minus", "type": bool},
+        "jog.fast": {"help": "Jog set fast", "type": bool},
+    },
+}
+
 LINUXCNC_SIGNALS = {
     "inout": {"joint.0.index-enable": {"help": "Joint", "type": bool}, "spindle.0.index-enable": {"help": "", "type": bool}},
     "input": {

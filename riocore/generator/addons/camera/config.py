@@ -1,9 +1,9 @@
-
 from PyQt5.QtWidgets import (
     QPushButton,
 )
 
 from riocore.widgets import MyStandardItem
+
 
 def load_tree(parent, tree_lcnc):
     bitem = MyStandardItem()

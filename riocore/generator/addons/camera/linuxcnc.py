@@ -1,4 +1,3 @@
-
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
     gui = parent.project.config["jdata"].get("gui", "axis")
@@ -34,9 +33,7 @@ def ini(parent, ini_setup):
 
 
 def gui(parent):
-    cfgxml_data = {
-        "status": []
-    }
+    cfgxml_data = {"status": []}
     valid = False
     gui = parent.project.config["jdata"].get("gui", "axis")
     if gui != "qtdragon":
@@ -60,4 +57,3 @@ def gui(parent):
     if valid:
         return cfgxml_data
     return {}
-

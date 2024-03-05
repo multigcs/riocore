@@ -1,6 +1,5 @@
-
-
 from riocore.widgets import MyStandardItem
+
 
 def load_tree(parent, tree_lcnc):
     bitem = MyStandardItem()
@@ -31,4 +30,3 @@ def load_tree(parent, tree_lcnc):
                 ]
             )
             parent.treeview.setIndexWidget(aitem.index(), parent.edit_item(joypad_config, key, var_setup))
-

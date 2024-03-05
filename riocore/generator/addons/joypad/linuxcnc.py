@@ -1,4 +1,3 @@
-
 def generator(parent):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
     joypad = linuxcnc_config.get("joypad", {})

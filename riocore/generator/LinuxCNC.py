@@ -252,8 +252,6 @@ class LinuxCNC:
 
         return ini_setup
 
-
-
     def ini(self):
         jdata = self.project.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
@@ -538,13 +536,6 @@ class LinuxCNC:
             wheel = False
             position_display = False
             for function, halname in self.rio_functions["jog"].items():
-                self.used_signals[halname] = f"riof.jog.{function}"
-                if function.startswith("wheel"):
-                    self.custom_net_add(f"rio.{halname}-s32", self.used_signals[halname])
-                    self.custom_net_add(f"rio.{halname}-s32", self.used_signals[halname])
-                else:
-                    self.custom_net_add(f"rio.{halname}", self.used_signals[halname])
-                    self.custom_net_add(f"rio.{halname}", self.used_signals[halname])
                 if function.startswith("select-"):
                     axis_selector = True
                 elif function.startswith("selected-"):
@@ -568,8 +559,6 @@ class LinuxCNC:
                         custom.append(f"setp joint.{joint}.jog-scale 0.05")
                         self.custom_net_add(f"axis.{laxis}.jog-counts", f"joint.{joint}.jog-counts")
                         self.custom_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable")
-
-                custom.append("")
             else:
                 for axis_name, joints in self.axis_dict.items():
                     laxis = axis_name.lower()
@@ -590,45 +579,29 @@ class LinuxCNC:
                 custom.append("addf riof.jog.speed_mux servo-thread")
                 custom.append("setp riof.jog.speed_mux.in0 100.0")
                 custom.append("setp riof.jog.speed_mux.in1 1000.0")
-                custom.append("net riof.jog.fast => riof.jog.speed_mux.sel")
-                custom.append("net riof.jog.speed <= riof.jog.speed_mux.out")
-                custom.append(f"net riof.jog.speed => {prefix}.jogspeed")
-
-                custom.append("net riof.jog.speed => halui.axis.jog-speed")
-                custom.append("net riof.jog.speed => halui.joint.jog-speed")
-
-                self.custom_net_add("riof.jog.speed", "halui.axis.jog-speed")
-                self.custom_net_add("riof.jog.speed", "halui.joint.jog-speed")
-
+                for function, halname in self.rio_functions["jog"].items():
+                    if function == "fast":
+                        self.custom_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
+                self.custom_net_add("riof.jog.speed_mux.out", f"{prefix}.jogspeed")
+                self.custom_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
+                self.custom_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
                 cfgxml_data["status"] += gui_gen.draw_number("Jogspeed", "jogspeed")
 
-            # else:
-            #    custom.append("sets halui.axis.jog-speed 500")
-            #    custom.append("sets halui.joint.jog-speed 500")
-            custom.append("")
-
             if axis_move and not wheel:
-                custom.append("net riof.jog.minus => halui.joint.selected.minus")
-                custom.append("net riof.jog.minus => halui.axis.selected.minus")
-                custom.append("net riof.jog.plus  => halui.joint.selected.plus")
-                custom.append("net riof.jog.plus  => halui.axis.selected.plus")
-                custom.append("")
-
-                self.custom_net_add("riof.jog.minus", "halui.joint.selected.minus")
-                self.custom_net_add("riof.jog.minus", "halui.axis.selected.minus")
-                self.custom_net_add("riof.jog.plus", "halui.joint.selected.plus")
-                self.custom_net_add("riof.jog.plus", "halui.axis.selected.plus")
+                for function, halname in self.rio_functions["jog"].items():
+                    if function in {"plus", "minus"}:
+                        self.custom_net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
+                        self.custom_net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
 
             if axis_selector:
                 joint_n = 0
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        self.custom_net_add(f"riof.jog.{function}", f"halui.axis.{axis_name}.select")
-                        self.custom_net_add(f"riof.jog.{function}", f"halui.joint.{joint_n}.select")
-                        self.custom_net_add(f"riof.jog.selected-{axis_name}", f"{prefix}.{halname}")
-
-                        cfgxml_data["status"] += gui_gen.draw_led(f"Jog:{axis_name}", halname)
+                        self.custom_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
+                        self.custom_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
+                        self.custom_net_add(f"halui.axis.{axis_name}.is-selected", f"{prefix}.selected-{axis_name}")
+                        cfgxml_data["status"] += gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         joint_n += 1
             else:
                 for axis_name, joints in self.axis_dict.items():
@@ -638,6 +611,7 @@ class LinuxCNC:
                         self.custom_net_add(f"axisui.jog.{laxis}", f"halui.joint.{joint}.select")
 
             if axis_selector and position_display:
+                custom.append("")
                 custom.append("# display position")
                 custom.append("loadrt mux16 names=riof.jog.position_mux")
                 custom.append("addf riof.jog.position_mux servo-thread")
@@ -646,18 +620,18 @@ class LinuxCNC:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        custom.append(f"net riof.jog.selected-{axis_name} => riof.jog.position_mux.sel{mux_select}")
-                        custom.append(f"net riof.jog.pos-{axis_name} halui.axis.{axis_name}.pos-feedback => riof.jog.position_mux.in{mux_input:02d}")
+                        self.custom_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
+                        self.custom_net_add(f"halui.axis.{axis_name}.pos-feedback", f"riof.jog.position_mux.in{mux_input:02d}")
                         mux_select += 1
                         mux_input = mux_input * 2
-                custom.append("")
+                    elif function == "position":
+                        self.custom_net_add(f"riof.jog.position_mux.out-f", f"rio.{halname}")
+
             if axis_leds:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("selected-"):
                         axis_name = function.split("-")[-1]
-                        self.custom_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.{function}")
-
-                custom.append("")
+                        self.custom_net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
@@ -733,8 +707,8 @@ class LinuxCNC:
                 if net["in"]:
                     custom.append(f"net rios.{network} <= {net['in']}")
                 for out in net["out"]:
-                    if not out.startswith("riof."):
-                        custom.append(f"net rios.{network} => {out}")
+                    # if not out.startswith("riof."):
+                    custom.append(f"net rios.{network} => {out}")
         custom.append("")
 
         titles = []
