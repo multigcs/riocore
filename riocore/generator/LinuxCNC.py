@@ -278,8 +278,6 @@ class LinuxCNC:
                 if offset_num == 0:
                     mdi_command = ["G92"]
                     for axis_name, joints in self.axis_dict.items():
-                        print(self.axis_dict)
-
                         diff = 0
                         if axis_name in offsets:
                             diff = offsets[axis_name]
