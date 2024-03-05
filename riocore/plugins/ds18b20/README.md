@@ -29,12 +29,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### temperature:
@@ -55,7 +49,6 @@ target net in LinuxCNC
 {
     "type": "ds18b20",
     "name": "",
-    "net": "",
     "pins": {
         "one_wire": {
             "pin": "0",

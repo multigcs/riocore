@@ -45,12 +45,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### value:
@@ -71,7 +65,6 @@ target net in LinuxCNC
 {
     "type": "spipoti",
     "name": "",
-    "net": "",
     "pins": {
         "mosi": {
             "pin": "0",

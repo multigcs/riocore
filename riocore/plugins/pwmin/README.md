@@ -38,12 +38,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### width:
@@ -75,7 +69,6 @@ target net in LinuxCNC
     "type": "pwmin",
     "freq_min": 10,
     "name": "",
-    "net": "",
     "pins": {
         "pwm": {
             "pin": "0",

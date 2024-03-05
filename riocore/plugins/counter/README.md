@@ -48,12 +48,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### counter:
@@ -74,7 +68,6 @@ target net in LinuxCNC
 {
     "type": "counter",
     "name": "",
-    "net": "",
     "pins": {
         "up": {
             "pin": "0",

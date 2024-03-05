@@ -45,12 +45,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### temperature:
@@ -71,7 +65,6 @@ target net in LinuxCNC
 {
     "type": "max6675",
     "name": "",
-    "net": "",
     "pins": {
         "miso": {
             "pin": "0",

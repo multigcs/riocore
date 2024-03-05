@@ -1,20 +1,20 @@
-# tlc549c
+# modbus
 
 
-spi adc input
+generic modbus plugin
 
 ## Basic-Example:
 ```
 {
-    "type": "tlc549c",
+    "type": "modbus",
     "pins": {
-        "miso": {
+        "tx": {
             "pin": "0"
         },
-        "sclk": {
+        "rx": {
             "pin": "1"
         },
-        "sel": {
+        "tx_enable": {
             "pin": "2"
         }
     }
@@ -22,23 +22,50 @@ spi adc input
 ```
 
 ## Pins:
-### miso:
-
- * direction: input
- * pullup: False
-
-### sclk:
+### tx:
 
  * direction: output
  * pullup: False
 
-### sel:
+### rx:
+
+ * direction: input
+ * pullup: False
+
+### tx_enable:
 
  * direction: output
  * pullup: False
 
 
 ## Options:
+### baud:
+serial baud rate
+
+ * type: int
+ * min: 300
+ * max: 10000000
+ * default: 9600
+ * unit: bit/s
+
+### rx_buffersize:
+max rx buffer size
+
+ * type: int
+ * min: 32
+ * max: 255
+ * default: 128
+ * unit: bits
+
+### tx_buffersize:
+max tx buffer size
+
+ * type: int
+ * min: 32
+ * max: 255
+ * default: 128
+ * unit: bits
+
 ### name:
 name of this plugin instance
 
@@ -47,43 +74,50 @@ name of this plugin instance
 
 
 ## Signals:
-### value:
-measured voltage
-
- * type: float
- * direction: input
+the signals of this plugin are user configurable
 
 
 ## Interfaces:
-### value:
+### rxdata:
 
- * size: 8 bit
+ * size: 128 bit
  * direction: input
+
+### txdata:
+
+ * size: 128 bit
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "tlc549c",
+    "type": "modbus",
+    "baud": 9600,
+    "rx_buffersize": 128,
+    "tx_buffersize": 128,
     "name": "",
     "pins": {
-        "miso": {
+        "tx": {
             "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
                 }
             ]
         },
-        "sel": {
+        "rx": {
+            "pin": "1",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "tx_enable": {
             "pin": "2",
             "modifiers": [
                 {
@@ -93,13 +127,13 @@ measured voltage
         }
     },
     "signals": {
-        "value": {
+        "temperature": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "value",
+                "title": "temperature",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -109,4 +143,7 @@ measured voltage
 ```
 
 ## Verilogs:
- * tlc549c.v
+ * modbus.v
+ * uart_baud.v
+ * uart_rx.v
+ * uart_tx.v

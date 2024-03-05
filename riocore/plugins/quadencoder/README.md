@@ -37,12 +37,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### position:
@@ -76,7 +70,6 @@ calculates revolutions per minute
 {
     "type": "quadencoder",
     "name": "",
-    "net": "",
     "pins": {
         "a": {
             "pin": "0",

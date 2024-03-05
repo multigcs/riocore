@@ -45,12 +45,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### 0_green:
@@ -93,7 +87,6 @@ target net in LinuxCNC
     "leds": 1,
     "level": 127,
     "name": "",
-    "net": "",
     "pins": {
         "data": {
             "pin": "0",

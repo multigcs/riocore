@@ -37,12 +37,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### position:
@@ -63,7 +57,6 @@ target net in LinuxCNC
 {
     "type": "as5600",
     "name": "",
-    "net": "",
     "pins": {
         "sda": {
             "pin": "0",

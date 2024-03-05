@@ -37,12 +37,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### distance:
@@ -64,7 +58,6 @@ distance between sensor and object
 {
     "type": "sonar",
     "name": "",
-    "net": "",
     "pins": {
         "trigger": {
             "pin": "0",

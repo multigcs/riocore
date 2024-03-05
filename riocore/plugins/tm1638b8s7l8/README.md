@@ -45,12 +45,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### sw0:
@@ -245,7 +239,6 @@ target net in LinuxCNC
 {
     "type": "tm1638b8s7l8",
     "name": "",
-    "net": "",
     "pins": {
         "sel": {
             "pin": "0",

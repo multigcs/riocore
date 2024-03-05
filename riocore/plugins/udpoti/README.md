@@ -54,12 +54,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### value:
@@ -82,7 +76,6 @@ target net in LinuxCNC
     "resolution": 100,
     "frequency": 100,
     "name": "",
-    "net": "",
     "pins": {
         "updown": {
             "pin": "0",

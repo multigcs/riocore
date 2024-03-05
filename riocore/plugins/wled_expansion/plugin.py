@@ -27,7 +27,7 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "expansion"
-        self.INFO = "ws2812b interface acting as expansion port"
+        self.INFO = "ws2812b interface acting as an expansion port"
         self.DESCRIPTION = ""
 
     def gateware_defines(self, direct=False):

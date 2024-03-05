@@ -21,12 +21,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### adc0:
@@ -117,7 +111,6 @@ target net in LinuxCNC
 {
     "type": "max10adc",
     "name": "",
-    "net": "",
     "pins": {},
     "signals": {
         "adc0": {

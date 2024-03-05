@@ -37,12 +37,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### adc0:
@@ -93,7 +87,6 @@ target net in LinuxCNC
 {
     "type": "ads1115",
     "name": "",
-    "net": "",
     "pins": {
         "sda": {
             "pin": "0",

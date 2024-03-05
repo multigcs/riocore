@@ -38,12 +38,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### frequency:
@@ -75,7 +69,6 @@ target net in LinuxCNC
     "type": "freqin",
     "freq_min": 10,
     "name": "",
-    "net": "",
     "pins": {
         "freq": {
             "pin": "0",

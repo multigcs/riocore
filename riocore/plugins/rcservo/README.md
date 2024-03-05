@@ -37,12 +37,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 ### axis:
 axis name (X,Y,Z,...)
 
@@ -53,7 +47,7 @@ axis name (X,Y,Z,...)
 configure as joint
 
  * type: bool
- * default: True
+ * default: False
 
 
 ## Signals:
@@ -89,9 +83,8 @@ absolute position (-100 = 1ms / 100 = 2ms)
     "type": "rcservo",
     "frequency": 100,
     "name": "",
-    "net": "",
     "axis": "",
-    "is_joint": true,
+    "is_joint": false,
     "pins": {
         "pwm": {
             "pin": "0",

@@ -29,12 +29,6 @@ name of this plugin instance
  * type: str
  * default: None
 
-### net:
-target net in LinuxCNC
-
- * type: str
- * default: None
-
 
 ## Signals:
 ### code:
@@ -55,7 +49,6 @@ target net in LinuxCNC
 {
     "type": "irin",
     "name": "",
-    "net": "",
     "pins": {
         "ir": {
             "pin": "0",

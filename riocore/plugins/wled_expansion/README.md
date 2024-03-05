@@ -1,12 +1,12 @@
-# wled_bar
+# wled
 
 
-ws2812b interface for bar-displays
+ws2812b interface acting as an expansion port
 
 ## Basic-Example:
 ```
 {
-    "type": "wled_bar",
+    "type": "wled",
     "pins": {
         "data": {
             "pin": "0"
@@ -29,7 +29,7 @@ number of LED's
  * type: int
  * min: 0
  * max: 100
- * default: 12
+ * default: 1
 
 ### level:
 LED brighness
@@ -47,24 +47,16 @@ name of this plugin instance
 
 
 ## Signals:
-### value:
-
- * type: float
- * direction: output
 
 
 ## Interfaces:
-### value:
-
- * size: 8 bit
- * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "wled_bar",
-    "leds": 12,
+    "type": "wled",
+    "leds": 1,
     "level": 127,
     "name": "",
     "pins": {
@@ -77,22 +69,10 @@ name of this plugin instance
             ]
         }
     },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
+    "signals": {}
 }
 ```
 
 ## Verilogs:
  * ws2812.v
- * wled_bar.v
+ * wled.v
