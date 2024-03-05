@@ -4,6 +4,8 @@ import importlib
 import os
 import sys
 
+from riocore import halpins
+
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -567,12 +569,18 @@ class LinuxCNC:
                         custom.append(f"setp axis.{laxis}.jog-vel-mode 1")
                         custom.append(f"setp axis.{laxis}.jog-scale 0.05")
                         custom.append(f"setp axis.{laxis}.jog-enable 1")
-                        self.custom_net_add(f"riof.jog.{fname}", f"axis.{laxis}.jog-counts")
+
+                        for function, halname in self.rio_functions["jog"].items():
+                            if function == fname:
+                                self.custom_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts")
+
                         for joint, joint_setup in joints.items():
                             custom.append(f"setp joint.{joint}.jog-vel-mode 1")
                             custom.append(f"setp joint.{joint}.jog-scale 0.05")
                             custom.append(f"setp joint.{joint}.jog-enable 1")
-                            self.custom_net_add(f"riof.jog.{fname}", f"joint.{joint}.jog-counts")
+                            for function, halname in self.rio_functions["jog"].items():
+                                if function == fname:
+                                    self.custom_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts")
 
             if speed_selector:
                 custom.append("loadrt mux2 names=riof.jog.speed_mux")
@@ -707,7 +715,6 @@ class LinuxCNC:
                 if net["in"]:
                     custom.append(f"net rios.{network} <= {net['in']}")
                 for out in net["out"]:
-                    # if not out.startswith("riof."):
                     custom.append(f"net rios.{network} => {out}")
         custom.append("")
 
@@ -784,8 +791,6 @@ class LinuxCNC:
         output.append("net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number")
         output.append("net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared")
         output.append("")
-        output.append("net rio.machine-is-on <= halui.machine.is-on")
-        output.append("")
         hy_vfd_dev = linuxcnc_config.get("hy_vfd", {}).get("device")
         if hy_vfd_dev:
             hy_vfd_address = linuxcnc_config["hy_vfd"].get("address", 1)
@@ -817,7 +822,12 @@ class LinuxCNC:
                         if direction == "inout":
                             output.append(f"net rios.{halname} rio.{halname} <=> {netname}")
                         elif direction == "input":
-                            self.hal_net_add(f"rio.{halname}", netname)
+                            net_type = halpins.LINUXCNC_SIGNALS[direction].get(netname, {}).get("type", float)
+                            if net_type == int:
+                                self.hal_net_add(f"rio.{halname}-s32", netname)
+                            else:
+                                self.hal_net_add(f"rio.{halname}", netname)
+
                         elif direction == "output":
                             self.hal_net_add(netname, f"rio.{halname}")
                     elif setp is not None:
