@@ -2,9 +2,8 @@ import time
 
 
 class Modifiers:
-    def pin_modifier_debounce_input(self, instances, modifier_num, pin_name, pin_varname):
-        # width = modifier.get("delay", 16)
-        width = 16
+    def pin_modifier_debounce_input(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
+        width = modifier.get("delay", 16)
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",
             "parameter": {"WIDTH": width},
@@ -18,7 +17,7 @@ class Modifiers:
         pin_varname = f"{pin_varname}_DEBOUNCED"
         return pin_varname
 
-    def pin_modifier_toggle_input(self, instances, modifier_num, pin_name, pin_varname):
+    def pin_modifier_toggle_input(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "toggle",
             "arguments": {
@@ -31,7 +30,7 @@ class Modifiers:
         pin_varname = f"{pin_varname}_TOGGLED"
         return pin_varname
 
-    def pin_modifier_invert_input(self, instances, modifier_num, pin_name, pin_varname):
+    def pin_modifier_invert_input(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "predefines": [
                 f"wire {pin_varname}_INVERTED;",
@@ -41,7 +40,7 @@ class Modifiers:
         pin_varname = f"{pin_varname}_INVERTED"
         return pin_varname
 
-    def pin_modifier_onerror_input(self, instances, modifier_num, pin_name, pin_varname):
+    def pin_modifier_onerror_input(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "predefines": [
                 f"wire {pin_varname}_ONERROR;",
@@ -51,9 +50,8 @@ class Modifiers:
         pin_varname = f"{pin_varname}_ONERROR"
         return pin_varname
 
-    def pin_modifier_debounce_output(self, instances, modifier_num, pin_name, pin_varname):
-        # width = modifier.get("delay", 16)
-        width = 16
+    def pin_modifier_debounce_output(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
+        width = modifier.get("delay", 16)
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",
             "parameter": {"WIDTH": width},
@@ -67,7 +65,7 @@ class Modifiers:
         pin_varname = f"{pin_varname}_DEBOUNCE"
         return pin_varname
 
-    def pin_modifier_toggle_output(self, instances, modifier_num, pin_name, pin_varname):
+    def pin_modifier_toggle_output(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "toggle",
             "arguments": {
@@ -80,7 +78,7 @@ class Modifiers:
         pin_varname = f"{pin_varname}_TOGGLE"
         return pin_varname
 
-    def pin_modifier_invert_output(self, instances, modifier_num, pin_name, pin_varname):
+    def pin_modifier_invert_output(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "predefines": [
                 f"wire {pin_varname}_INVERT;",
@@ -90,7 +88,7 @@ class Modifiers:
         pin_varname = f"{pin_varname}_INVERT"
         return pin_varname
 
-    def pin_modifier_onerror_output(self, instances, modifier_num, pin_name, pin_varname):
+    def pin_modifier_onerror_output(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "predefines": [
                 f"wire {pin_varname}_ONERROR;",
@@ -98,6 +96,23 @@ class Modifiers:
             ],
         }
         pin_varname = f"{pin_varname}_ONERROR"
+        return pin_varname
+
+    def pin_modifier_pwm_output(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
+        frequency = modifier.get("frequency", 1)
+        dty = modifier.get("dty", 50)
+        frequency_divider = system_setup["speed"] // frequency
+        dty_divider = frequency_divider * dty // 100
+        instances[f"pwm{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "pwmmod",
+            "parameter": {"DIVIDER_FREQ": frequency_divider, "DIVIDER_DTY": dty_divider},
+            "arguments": {
+                "clk": "sysclk",
+                "din": f"{pin_varname}_PWM",
+                "dout": pin_varname,
+            },
+        }
+        pin_varname = f"{pin_varname}_PWM"
         return pin_varname
 
     def pin_modifier_list(self, direction=None):
@@ -335,7 +350,7 @@ class PluginBase:
                 modifier_type = modifier["type"]
                 modifier_function = getattr(Modifiers, f"pin_modifier_{modifier_type}_{direction}")
                 if modifier_function:
-                    pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname)
+                    pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname, modifier, self.system_setup)
 
         return pin_varname
 

@@ -35,7 +35,7 @@ class Gateware:
                 ipv_path = f"{riocore_path}/plugins/{plugin_instance.NAME}/{verilog}"
                 os.system(f"cp -a {ipv_path} {self.gateware_path}/{verilog}")
 
-        for extrafile in ("debouncer.v", "toggle.v"):
+        for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v"):
             self.verilogs.append(extrafile)
             os.system(f"cp -a {riocore_path}/files/{extrafile} {self.gateware_path}/{extrafile}")
         self.verilogs.append("rio.v")
