@@ -1,5 +1,6 @@
 import copy
 import glob
+import importlib
 import os
 import sys
 
@@ -156,6 +157,11 @@ class LinuxCNC:
         self.component_path = f"{self.base_path}/Component"
         self.configuration_path = f"{self.base_path}/Configuration"
         self.create_axis_config()
+        self.addons = {}
+        for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/linuxcnc.py"):
+            addon_name = addon_path.split("/")[-2]
+            print(f"loading addon: {addon_name}")
+            self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
     def generator(self):
         self.postgui_call_list = []
@@ -163,7 +169,9 @@ class LinuxCNC:
         self.ini()
         self.hal()
         self.gui()
-        self.joypad()
+        for addon_name, addon in self.addons.items():
+            if hasattr(addon, "generator"):
+                addon.generator(self)
         self.misc()
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(self.postgui_call_list))
         print(f"writing linuxcnc files to: {self.base_path}")
@@ -244,6 +252,8 @@ class LinuxCNC:
 
         return ini_setup
 
+
+
     def ini(self):
         jdata = self.project.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
@@ -257,35 +267,9 @@ class LinuxCNC:
             for key, value in section_options.items():
                 ini_setup[section][key] = value
 
-        offset_num = 0
-        for camera_num, camera in enumerate(linuxcnc_config.get("camera", [])):
-            if camera and camera.get("enable"):
-                camera_device = camera.get("device", f"/dev/video{camera_num}")
-                tabname = camera.get("tabname", f"Camera-{camera_num}")
-                tablocation = camera.get("tablocation", "Pyngcgui")
-                offsets = camera.get("offset", {})
-                ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAM{camera_num}"] = tabname
-                if gui != "axis":
-                    ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAM{camera_num}"] = tablocation
-                ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAM{camera_num}"] = (
-                    f"mplayer -wid {{XID}} tv:// -tv driver=v4l2:device={camera_device} -vf rectangle=-1:2:-1:240,rectangle=2:-1:320:-1 -really-quiet"
-                )
-                if not offsets and offset_num == 0:
-                    offsets = {}
-                    for axis_name, joints in self.axis_dict.items():
-                        offsets[axis_name] = 0
-
-                if offset_num == 0:
-                    mdi_command = ["G92"]
-                    for axis_name, joints in self.axis_dict.items():
-                        diff = 0
-                        if axis_name in offsets:
-                            diff = offsets[axis_name]
-                        mdi_command.append(f"{axis_name}{diff}")
-                    ini_setup["HALUI"]["MDI_COMMAND|06"] = " ".join(mdi_command)
-                    offset_num += 1
-                elif offsets:
-                    print("WARNING: offset works only on one camera")
+        for addon_name, addon in self.addons.items():
+            if hasattr(addon, "ini"):
+                addon.ini(self, ini_setup)
 
         output = []
         for section, setup in ini_setup.items():
@@ -499,17 +483,12 @@ class LinuxCNC:
                     self.custom_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
                     cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
 
-            for camera_num, camera in enumerate(self.project.config["jdata"].get("camera", [])):
-                if camera and camera.get("enable"):
-                    tablocation = camera.get("tablocation", "Pyngcgui")
-                    offsets = camera.get("offset")
-                    if offsets:
-                        self.custom_net_add(f"{prefix}.zerocam", "halui.mdi-command-06")
-                        cfgxml_data["status"] += gui_gen.draw_button("zero-cam", "zerocam")
-                        break
-
             cfgxml_data["status"].append("    </hbox>")
             cfgxml_data["status"].append("  </labelframe>")
+
+        for addon_name, addon in self.addons.items():
+            if hasattr(addon, "gui"):
+                addon.gui(self)
 
         # scale and offset
         for plugin_instance in self.project.plugin_instances:
@@ -787,86 +766,6 @@ class LinuxCNC:
 
         if gui not in {"touchy", "probe_basic"}:
             self.postgui_call_list.append("source custom_postgui.hal")
-
-    def joypad(self):
-        linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
-        joypad = linuxcnc_config.get("joypad", {})
-        if not joypad or not joypad.get("enable"):
-            return
-
-        joypad_type = joypad.get("name", "Microntek")
-        joypad_btn_slow = joypad.get("btn_slow", "btn-base")
-        joypad_btn_medium = joypad.get("btn_medium", "btn-base2")
-        joypad_btn_fast = joypad.get("btn_fast", "btn-top2")
-
-        joypad_axis = joypad.get(
-            "axis",
-            {
-                "x": {
-                    "input": "x",
-                },
-                "y": {
-                    "input": "x",
-                },
-                "z": {
-                    "input": "z",
-                },
-                "a": {
-                    "input": "rz",
-                },
-            },
-        )
-
-        muxes = []
-        for axis_name, joints in self.axis_dict.items():
-            axis_lower = axis_name.lower()
-            muxes.append(f"mux2_{axis_lower}")
-
-        output = []
-        output.append(f"loadusr -W hal_input -KRAL {joypad_type}")
-        output.append("loadrt or2 names=joy_or2_sel0,joy_or2_sel1")
-        output.append("loadrt mux4 names=joy_mux4")
-        output.append(f"loadrt mux2 names={','.join(muxes)}")
-        output.append("")
-        output.append("addf joy_or2_sel0 servo-thread")
-        output.append("addf joy_or2_sel1 servo-thread")
-        output.append("addf joy_mux4 servo-thread")
-        output.append("")
-        output.append("setp joy_mux4.in0 0.0    # Setting this input to 0 prevents motion unless one of the other buttons is pressed.")
-        output.append("setp joy_mux4.in1 50.0   # Max jog speed when first speed select button is pressed.")
-        output.append("setp joy_mux4.in2 500.0  # Max jog speed when second speed select button is pressed.")
-        output.append("setp joy_mux4.in3 2000.0 # Max jog speed when third speed select button is pressed.")
-        output.append("")
-        output.append(f"net slow   <= joy_or2_sel0.in0 <= input.0.{joypad_btn_slow}")
-        output.append(f"net medium <= joy_or2_sel1.in0 <= input.0.{joypad_btn_medium}")
-        output.append(f"net fast   <= joy_or2_sel0.in1 joy_or2_sel1.in1 <= input.0.{joypad_btn_fast}")
-        output.append("")
-        output.append("net joy-speed-sel0 <= joy_or2_sel0.out  => joy_mux4.sel0 ")
-        output.append("net joy-speed-sel1 <= joy_or2_sel1.out  => joy_mux4.sel1 ")
-        output.append("net jog-speed      <= joy_mux4.out => halui.axis.jog-speed halui.joint.jog-speed")
-        output.append("")
-
-        for axis_name, joints in self.axis_dict.items():
-            axis_lower = axis_name.lower()
-            jaxis = joypad_axis.get(axis_lower, {}).get("input", axis_lower)
-            reverse = joypad_axis.get(axis_lower, {}).get("reverse", False)
-            output.append(f"# {axis_name}-Axis")
-            if reverse:
-                output.append(f"setp input.0.abs-{jaxis}-scale -127.5")
-
-            output.append(f"addf mux2_{axis_lower} servo-thread")
-            output.append(f"net rio.machine-is-on => mux2_{axis_lower}.sel")
-
-            output.append(f"net jog-{axis_lower}-pre input.0.abs-{jaxis}-position => mux2_{axis_lower}.in1")
-
-            output.append(f"net jog-{axis_lower}-analog mux2_{axis_lower}.out => halui.axis.{axis_lower}.analog")
-            for joint, joint_setup in joints.items():
-                output.append(f"net jog-{axis_lower}-analog => halui.joint.{joint}.analog")
-            output.append("")
-        output.append("")
-
-        open(f"{self.configuration_path}/joypad.hal", "w").write("\n".join(output))
-        self.postgui_call_list.append("source joypad.hal")
 
     def hal(self):
         output = []
