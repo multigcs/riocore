@@ -1768,7 +1768,6 @@ class LinuxCNC:
                 if axis_name:
                     named_axis.append(axis_name)
 
-
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint"):
                 axis_num = len(self.axis_dict)
@@ -1826,7 +1825,6 @@ class LinuxCNC:
                 elif dty:
                     position_halname = f"rio.{dty['halname']}"
                     position_mode = "relative"
-
 
                 feedback_scale = position_scale
                 feedback_halname = None

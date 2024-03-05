@@ -9,7 +9,7 @@ class Toolchain:
     def generate(self, path):
         verilogs = " ".join(self.config["verilog_files"])
 
-        family = self.config['family']
+        family = self.config["family"]
 
         if family.startswith("GW"):
             device_family = family
@@ -51,7 +51,7 @@ class Toolchain:
         if self.config["type"] == "up5k":
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -dsp -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         elif family == "gowin":
-            OPTIONS:-noalu -nowidelut
+            OPTIONS: -noalu - nowidelut
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         else:
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
@@ -119,8 +119,6 @@ class Toolchain:
             else:
                 makefile_data.append(f"load: {bitfileName}")
                 makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
-
-
 
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
