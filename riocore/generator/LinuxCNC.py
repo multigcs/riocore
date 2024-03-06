@@ -488,7 +488,7 @@ class LinuxCNC:
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "gui"):
-                addon.gui(self)
+                cfgxml_data.update(addon.gui(self))
 
         # scale and offset
         for plugin_instance in self.project.plugin_instances:
@@ -791,16 +791,10 @@ class LinuxCNC:
         output.append("net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number")
         output.append("net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared")
         output.append("")
-        hy_vfd_dev = linuxcnc_config.get("hy_vfd", {}).get("device")
-        if hy_vfd_dev:
-            hy_vfd_address = linuxcnc_config["hy_vfd"].get("address", 1)
-            output.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600 -t {hy_vfd_address}")
-            output.append("setp vfd.enable 1")
-            output.append("net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command")
-            output.append("net spindle0_forward spindle.0.forward => vfd.spindle-forward")
-            output.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
-            output.append("net spindle0_on spindle.0.on => vfd.spindle-on")
-            output.append("")
+
+        for addon_name, addon in self.addons.items():
+            if hasattr(addon, "hal"):
+                output += addon.hal(self)
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:

@@ -342,6 +342,11 @@
                 "tabname": "Camera-0",
                 "enable": true
             }
-        ]
+        ],
+        "hy_vfd": {
+            "enable": true,
+            "address": 1,
+            "device": "/dev/ttyUSB0"
+        }
     }
 }
