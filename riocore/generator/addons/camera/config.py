@@ -6,7 +6,6 @@ from riocore.widgets import MyStandardItem
 
 
 def load_tree(parent, tree_lcnc):
-
     def add_camera(widget):
         if "camera" not in parent.config["linuxcnc"]:
             parent.config["linuxcnc"]["camera"] = []

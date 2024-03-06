@@ -6,7 +6,6 @@ from riocore.widgets import MyStandardItem
 
 
 def load_tree(parent, tree_lcnc):
-
     def add_joypad(widget):
         if not parent.config["linuxcnc"].get("joypad"):
             parent.config["linuxcnc"]["joypad"] = {
