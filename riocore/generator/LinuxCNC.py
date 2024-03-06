@@ -437,10 +437,10 @@ class LinuxCNC:
         machinetype = self.project.config["jdata"].get("machinetype")
         gui = self.project.config["jdata"].get("gui", "axis")
         if gui == "qtdragon":
-            gui_gen = qtdragon()
+            self.gui_gen = qtdragon()
             prefix = "qtdragon"
         else:
-            gui_gen = axis()
+            self.gui_gen = axis()
             prefix = "pyvcp"
 
         custom = []
@@ -469,19 +469,19 @@ class LinuxCNC:
             if machinetype == "lathe":
                 if "Z":
                     self.custom_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
-                    cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
+                    cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
                 if "X":
                     self.custom_net_add(f"{prefix}.zerox", "halui.mdi-command-00")
-                    cfgxml_data["status"] += gui_gen.draw_button("zero-x", "zerox")
+                    cfgxml_data["status"] += self.gui_gen.draw_button("zero-x", "zerox")
                     self.custom_net_add(f"{prefix}.touchx", "halui.mdi-command-05")
-                    cfgxml_data["status"] += gui_gen.draw_button("touch-x", "touchx")
+                    cfgxml_data["status"] += self.gui_gen.draw_button("touch-x", "touchx")
             else:
                 if "X" in self.axis_dict and "Y" in self.axis_dict:
                     self.custom_net_add(f"{prefix}.zeroxy", "halui.mdi-command-03")
-                    cfgxml_data["status"] += gui_gen.draw_button("zero-xy", "zeroxy")
+                    cfgxml_data["status"] += self.gui_gen.draw_button("zero-xy", "zeroxy")
                 if "Z":
                     self.custom_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
-                    cfgxml_data["status"] += gui_gen.draw_button("zero-z", "zeroz")
+                    cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
 
             cfgxml_data["status"].append("    </hbox>")
             cfgxml_data["status"].append("  </labelframe>")
@@ -593,7 +593,7 @@ class LinuxCNC:
                 self.custom_net_add("riof.jog.speed_mux.out", f"{prefix}.jogspeed")
                 self.custom_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
                 self.custom_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
-                cfgxml_data["status"] += gui_gen.draw_number("Jogspeed", "jogspeed")
+                cfgxml_data["status"] += self.gui_gen.draw_number("Jogspeed", "jogspeed")
 
             if axis_move and not wheel:
                 for function, halname in self.rio_functions["jog"].items():
@@ -609,7 +609,7 @@ class LinuxCNC:
                         self.custom_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
                         self.custom_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
                         self.custom_net_add(f"halui.axis.{axis_name}.is-selected", f"{prefix}.selected-{axis_name}")
-                        cfgxml_data["status"] += gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
+                        cfgxml_data["status"] += self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         joint_n += 1
             else:
                 for axis_name, joints in self.axis_dict.items():
@@ -704,8 +704,8 @@ class LinuxCNC:
                             if dtype != "none":
                                 self.custom_net_add(f"{prefix}.{halname}", f"rio.{halname}")
 
-                    if hasattr(gui_gen, f"draw_{dtype}"):
-                        cfgxml_data[section] += getattr(gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                    if hasattr(self.gui_gen, f"draw_{dtype}"):
+                        cfgxml_data[section] += getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
                     elif dtype != "none":
                         print(f"WARNING: 'draw_{dtype}' not found")
 
@@ -723,15 +723,15 @@ class LinuxCNC:
             if cfgxml_data[section]:
                 titles.append(section.title())
         cfgxml_adata = []
-        cfgxml_adata += gui_gen.draw_begin()
-        cfgxml_adata += gui_gen.draw_tabs_begin(titles)
+        cfgxml_adata += self.gui_gen.draw_begin()
+        cfgxml_adata += self.gui_gen.draw_tabs_begin(titles)
         for section in cfgxml_data:
             if cfgxml_data[section]:
-                cfgxml_adata += gui_gen.draw_tab_begin(section.title())
+                cfgxml_adata += self.gui_gen.draw_tab_begin(section.title())
                 cfgxml_adata += cfgxml_data[section]
-                cfgxml_adata += gui_gen.draw_tab_end()
-        cfgxml_adata += gui_gen.draw_tabs_end()
-        cfgxml_adata += gui_gen.draw_end()
+                cfgxml_adata += self.gui_gen.draw_tab_end()
+        cfgxml_adata += self.gui_gen.draw_tabs_end()
+        cfgxml_adata += self.gui_gen.draw_end()
         custom.append("")
 
         if gui == "qtdragon":
