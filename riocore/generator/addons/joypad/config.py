@@ -1,7 +1,24 @@
+from PyQt5.QtWidgets import (
+    QPushButton,
+)
+
 from riocore.widgets import MyStandardItem
 
 
 def load_tree(parent, tree_lcnc):
+
+    def add_joypad(widget):
+        if not parent.config["linuxcnc"].get("joypad"):
+            parent.config["linuxcnc"]["joypad"] = {
+                "enable": False,
+                "name": "Joypad",
+                "btn_slow": "btn-base",
+                "btn_medium": "btn-base2",
+                "btn_fast": "btn-top",
+            }
+            parent.load_tree()
+            parent.display()
+
     bitem = MyStandardItem()
     tree_lcnc.appendRow(
         [
@@ -9,6 +26,12 @@ def load_tree(parent, tree_lcnc):
             bitem,
         ]
     )
+
+    button = QPushButton("add joypad")
+    button.clicked.connect(add_joypad)
+    button.setMaximumSize(button.sizeHint())
+    parent.treeview.setIndexWidget(bitem.index(), button)
+
     tree_lcncjoypad = tree_lcnc.child(tree_lcnc.rowCount() - 1)
     if "joypad" not in parent.config["linuxcnc"]:
         parent.config["linuxcnc"]["joypad"] = {}

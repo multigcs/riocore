@@ -6,13 +6,6 @@ from riocore.widgets import MyStandardItem
 
 
 def load_tree(parent, tree_lcnc):
-    bitem = MyStandardItem()
-    tree_lcnc.appendRow(
-        [
-            MyStandardItem("Camera", help_text="LinuxCNC Camera-Setup"),
-            bitem,
-        ]
-    )
 
     def add_camera(widget):
         if "camera" not in parent.config["linuxcnc"]:
@@ -28,6 +21,14 @@ def load_tree(parent, tree_lcnc):
         )
         parent.load_tree()
         parent.display()
+
+    bitem = MyStandardItem()
+    tree_lcnc.appendRow(
+        [
+            MyStandardItem("Camera", help_text="LinuxCNC Camera-Setup"),
+            bitem,
+        ]
+    )
 
     button = QPushButton("add camera")
     button.clicked.connect(add_camera)

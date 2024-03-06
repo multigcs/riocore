@@ -336,7 +336,6 @@
         }
     ],
     "linuxcnc": {
-        "joypad": {"enable": true},
         "camera": [
             {
                 "device": "/dev/video0",
