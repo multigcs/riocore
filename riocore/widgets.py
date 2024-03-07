@@ -1,7 +1,7 @@
 import riocore
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtCore import QRect, Qt, QPoint
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import (
     QCheckBox,
@@ -37,8 +37,22 @@ STYLESHEET_CHECKBOX_GREEN_RED = """
 
 class MyQSvgWidget(QtSvg.QSvgWidget):
     def mousePressEvent(self, event):
-        size = self.size()
-        self.renderer().setViewBox(QRect(0, 0, size.width(), size.height()))
+        self.old_x = event.pos().x()
+        self.old_y = event.pos().y()
+
+    def mouseMoveEvent(self, event):
+        mp_x = event.pos().x()
+        mp_y = event.pos().y()
+        diff_x = self.old_x - mp_x
+        diff_y = self.old_y - mp_y
+        self.old_x = mp_x
+        self.old_y = mp_y
+        viewbox = self.renderer().viewBox()
+        x = int(viewbox.x()) + diff_x
+        y = int(viewbox.y()) + diff_y
+        width = int(viewbox.width())
+        height = int(viewbox.height())
+        self.renderer().setViewBox(QRect(int(x), int(y), int(width), int(height)))
         self.repaint()
 
     def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
