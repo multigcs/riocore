@@ -336,17 +336,12 @@
         }
     ],
     "linuxcnc": {
-        "camera": [
-            {
-                "device": "/dev/video0",
-                "tabname": "Camera-0",
-                "enable": true
-            }
-        ],
         "hy_vfd": {
-            "enable": true,
             "address": 1,
             "device": "/dev/ttyUSB0"
+        },
+        "classicladder": {
+            "enable": true
         }
     }
 }
