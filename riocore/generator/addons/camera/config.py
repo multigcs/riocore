@@ -1,3 +1,4 @@
+from functools import partial
 from PyQt5.QtWidgets import (
     QPushButton,
 )
@@ -18,6 +19,11 @@ def load_tree(parent, tree_lcnc):
                 "tabname": f"Camera-{camera_num}",
             }
         )
+        parent.load_tree()
+        parent.display()
+
+    def del_camera(camera_num, misc):
+        parent.config["linuxcnc"]["camera"].pop(camera_num)
         parent.load_tree()
         parent.display()
 
@@ -46,6 +52,12 @@ def load_tree(parent, tree_lcnc):
                 bitem,
             ]
         )
+        del_button = QPushButton("del camera")
+        cb = partial(del_camera, camera_num)
+        del_button.clicked.connect(cb)
+        del_button.setMaximumSize(button.sizeHint())
+
+        parent.treeview.setIndexWidget(bitem.index(), del_button)
         tree_lcnccamera_n = tree_lcnccamera.child(tree_lcnccamera.rowCount() - 1)
 
         for key, var_setup in {
