@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
+    QCheckBox,
     QDialogButtonBox,
     QDoubleSpinBox,
     QGridLayout,
@@ -68,6 +69,12 @@ class config:
                 "default": 1,
                 "on_special": False,
             },
+            "is_float": {
+                "description": "data format is float (4byte)",
+                "type": bool,
+                "default": False,
+                "on_special": False,
+            },
             "scale": {
                 "description": "Value-Scale",
                 "type": float,
@@ -123,6 +130,8 @@ class config:
                 for n in range(0, data["widget"].count()):
                     if data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
+            elif data["type"] == bool:
+                data["widget"].setChecked(value)
             elif data["type"] == int:
                 data["widget"].setValue(value)
             elif data["type"] == float:
@@ -150,6 +159,8 @@ class config:
                 value = data["widget"].currentText().split()[0]
                 if value.isnumeric():
                     value = int(value)
+            elif data["type"] == bool:
+                value = data["widget"].isChecked()
             elif data["type"] == int:
                 value = data["widget"].value()
             elif data["type"] == float:
@@ -192,6 +203,8 @@ class config:
                 for n in range(0, data["widget"].count()):
                     if data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
+            elif data["type"] == bool:
+                data["widget"].setChecked(value)
             elif data["type"] == int:
                 data["widget"].setValue(value)
             elif data["type"] == float:
@@ -249,6 +262,9 @@ class config:
                     data["widget"].addItem(option)
                 if name == "type":
                     data["widget"].activated.connect(self.on_type_change)
+            elif data["type"] == bool:
+                data["widget"] = QCheckBox()
+                data["widget"].setChecked(data["default"])
             elif data["type"] == int:
                 data["widget"] = QSpinBox()
                 data["widget"].setValue(data["default"])

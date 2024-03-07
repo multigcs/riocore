@@ -284,7 +284,10 @@ class Plugin(PluginBase):
                                 if address != signal_address:
                                     print(f"ERROR: wrong address {address} != {signal_address}")
                                 elif direction == "input":
-                                    start_pos = 3 + vn * 2
+                                    vlen = 2
+                                    if self.is_float:
+                                        vlen = 4
+                                    start_pos = 3 + vn * vlen
                                     if ctype == 2:
                                         if frame_data[3] & (1 << vn) != 0:
                                             self.SIGNALS[value_name]["value"] = 1
@@ -295,11 +298,14 @@ class Plugin(PluginBase):
                                             if direction == "input":
                                                 self.SIGNALS[f"{value_name}_valid"]["value"] = 1
                                     else:
-                                        value_list = frame_data[start_pos : start_pos + 2]
-                                        if value_list and len(value_list) == 2:
+                                        value_list = frame_data[start_pos : start_pos + vlen]
+                                        if value_list and len(value_list) == vlen:
                                             vscale = self.SIGNALS[value_name]["scale"]
                                             direction = self.SIGNALS[value_name]["direction"]
-                                            self.SIGNALS[value_name]["value"] = self.list2int(value_list)
+                                            if self.is_float and value_list and len(value_list) == vlen:
+                                                self.SIGNALS[value_name]["value"] = unpack(">f", bytearray(value_list))[0]
+                                            else:
+                                                self.SIGNALS[value_name]["value"] = self.list2int(value_list)
                                             if vscale:
                                                 self.SIGNALS[value_name]["value"] *= vscale
                                             if direction == "input":
@@ -315,7 +321,11 @@ class Plugin(PluginBase):
                             else:
                                 vscale = self.SIGNALS[self.signal_name]["scale"]
                                 direction = self.SIGNALS[self.signal_name]["direction"]
-                                self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
+                                if self.is_float:
+                                    self.SIGNALS[self.signal_name]["value"] = unpack(">f", bytearray(frame_data[3:-2]))[0]
+                                else:
+                                    self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
+
                                 if vscale:
                                     self.SIGNALS[self.signal_name]["value"] *= vscale
                                 if direction == "input":
@@ -353,6 +363,7 @@ class Plugin(PluginBase):
             ctype = config["type"]
             self.signal_name = signal_name
             self.signal_address = address
+            self.is_float = config.get("is_float", False)
             self.signal_values = config.get("values", 1)
             register = self.int2list(config["register"])
             n_values = self.int2list(self.signal_values)
@@ -379,7 +390,12 @@ class Plugin(PluginBase):
                         value *= 65280
                     cmd = [address, ctype] + register + self.int2list(value)
             else:
-                cmd = [address, ctype] + register + n_values
+                if self.is_float:
+                    n_values = self.int2list(self.signal_values * 2)
+                    cmd = [address, ctype] + register + n_values
+                else:
+                    cmd = [address, ctype] + register + n_values
+
         csum = crc16()
         csum.update(cmd)
         csum_calc = csum.intdigest()
