@@ -162,7 +162,6 @@ class LinuxCNC:
         self.addons = {}
         for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/linuxcnc.py"):
             addon_name = addon_path.split("/")[-2]
-            print(f"loading addon: {addon_name}")
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
     def generator(self):
