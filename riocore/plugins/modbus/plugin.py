@@ -433,6 +433,7 @@ class Plugin(PluginBase):
             address = signal_config["address"]
             ctype = signal_config["type"]
             vscale = signal_config.get("scale", 1.0)
+            self.is_float = signal_config.get("is_float", False)
             self.signal_values = signal_config.get("values", 1)
             register = self.int2list(signal_config["register"])
             n_values = self.int2list(self.signal_values)
@@ -478,18 +479,33 @@ class Plugin(PluginBase):
                         output.append(f"                        {value_name}_valid = 0;")
                     output.append("                    }")
                 else:
-                    output.append("                    // get single 16bit value")
-                    output.append("                    data_len = frame_data[2];")
-                    output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
-                    output.append(f"                        value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
-                    if vscale:
-                        output.append(f"                        value_{self.signal_name} *= {vscale};")
-                    output.append(f"                        value_{self.signal_name}_valid = 1;")
-                    output.append("                    } else {")
-                    output.append('                        // rtapi_print("rx error: addr or len\\n");')
-                    output.append(f"                        value_{self.signal_name}_errors += 1;")
-                    output.append(f"                        value_{self.signal_name}_valid = 0;")
-                    output.append("                    }")
+                    if self.is_float:
+                        output.append("                    // get single 32bit float value")
+                        output.append("                    data_len = frame_data[2];")
+                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 4}) {{")
+                        output.append(f"                        uint8_t farray[] = {{frame_data[6], frame_data[5], frame_data[4], frame_data[3]}};")
+                        output.append(f"                        memcpy((uint8_t *)&value_{self.signal_name}, (uint8_t *)&farray, 4);")
+                        if vscale:
+                            output.append(f"                        value_{self.signal_name} *= {vscale};")
+                        output.append(f"                        value_{self.signal_name}_valid = 1;")
+                        output.append("                    } else {")
+                        output.append('                        // rtapi_print("rx error: addr or len\\n");')
+                        output.append(f"                        value_{self.signal_name}_errors += 1;")
+                        output.append(f"                        value_{self.signal_name}_valid = 0;")
+                        output.append("                    }")
+                    else:
+                        output.append("                    // get single 16bit value")
+                        output.append("                    data_len = frame_data[2];")
+                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
+                        output.append(f"                        value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
+                        if vscale:
+                            output.append(f"                        value_{self.signal_name} *= {vscale};")
+                        output.append(f"                        value_{self.signal_name}_valid = 1;")
+                        output.append("                    } else {")
+                        output.append('                        // rtapi_print("rx error: addr or len\\n");')
+                        output.append(f"                        value_{self.signal_name}_errors += 1;")
+                        output.append(f"                        value_{self.signal_name}_valid = 0;")
+                        output.append("                    }")
                 output.append("                    break;")
                 output.append("                }")
             sn += 1
@@ -556,6 +572,7 @@ class Plugin(PluginBase):
             address = signal_config["address"]
             ctype = signal_config["type"]
             self.signal_values = signal_config.get("values", 1)
+            self.is_float = signal_config.get("is_float", False)
             register = self.int2list(signal_config["register"])
             n_values = self.int2list(self.signal_values)
             self.signal_name = signal_name
@@ -618,14 +635,25 @@ class Plugin(PluginBase):
                         output.append(f"                frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
                     output.append("                frame_len = 6;")
             else:
-                output.append("                // request 16bit value")
-                output.append(f"                frame_data[0] = {address};")
-                output.append(f"                frame_data[1] = {ctype};")
-                output.append(f"                frame_data[2] = {register[0]};")
-                output.append(f"                frame_data[3] = {register[1]};")
-                output.append(f"                frame_data[4] = {n_values[0]};")
-                output.append(f"                frame_data[5] = {n_values[1]};")
-                output.append("                frame_len = 6;")
+                if self.is_float:
+                    n_values = self.int2list(self.signal_values * 2)
+                    output.append("                // request 32bit float value")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    output.append(f"                frame_data[4] = {n_values[0]};")
+                    output.append(f"                frame_data[5] = {n_values[1]};")
+                    output.append("                frame_len = 6;")
+                else:
+                    output.append("                // request 16bit value")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    output.append(f"                frame_data[4] = {n_values[0]};")
+                    output.append(f"                frame_data[5] = {n_values[1]};")
+                    output.append("                frame_len = 6;")
             output.append("                break;")
             output.append("            }")
             sn += 1
