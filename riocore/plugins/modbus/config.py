@@ -8,12 +8,130 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QPlainTextEdit,
     QPushButton,
     QSpinBox,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
 )
+
+
+DEVICE_TEMPLATES = {
+    "NT18B07": {
+        "info": "7x Temperatur In (NTC)",
+        "comment": "",
+        "setup": {
+            "temp7": {"address": 18, "type": 3, "register": 0, "values": 2, "scale": 0.1, "unit": "\u00b0C", "error_values": "", "format": "0.1f", "timeout": 100, "delay": 60, "direction": "input"},
+        },
+    },
+    "DDS519MR": {
+        "info": "Energie-Meter",
+        "comment": "needs to change serial setup (Parity: even -> none)",
+        "setup": {
+            "voltage": {
+                "address": 16,
+                "type": 4,
+                "register": 0,
+                "is_float": True,
+                "values": 1,
+                "scale": 1.0,
+                "unit": "V",
+                "error_values": "",
+                "format": "0.1f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "input",
+            },
+            "current": {
+                "address": 16,
+                "type": 4,
+                "register": 8,
+                "is_float": True,
+                "values": 1,
+                "scale": 1.0,
+                "unit": "A",
+                "error_values": "",
+                "format": "0.2f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "input",
+            },
+            "power": {
+                "address": 16,
+                "type": 4,
+                "register": 18,
+                "is_float": True,
+                "values": 1,
+                "scale": 1.0,
+                "unit": "W",
+                "error_values": "",
+                "format": "0.1f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "input",
+            },
+            "power_factor": {
+                "address": 16,
+                "type": 4,
+                "register": 42,
+                "is_float": True,
+                "values": 1,
+                "scale": 1.0,
+                "unit": "Cos",
+                "error_values": "",
+                "format": "0.2f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "input",
+            },
+            "freq": {
+                "address": 16,
+                "type": 4,
+                "register": 54,
+                "is_float": True,
+                "values": 1,
+                "scale": 1.0,
+                "unit": "Hz",
+                "error_values": "",
+                "format": "0.1f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "input",
+            },
+            "power_total": {
+                "address": 16,
+                "type": 4,
+                "register": 256,
+                "is_float": True,
+                "values": 1,
+                "scale": 1.0,
+                "unit": "kWh",
+                "error_values": "",
+                "format": "0.1f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "input",
+            },
+        },
+    },
+    "EBYTE MA01-AXCX4020": {
+        "info": "4x Digital In / 2x Digital Out (Relais)",
+        "comment": "",
+        "setup": {
+            "do2": {"address": 11, "type": 15, "register": 0, "values": 2, "scale": 1.0, "unit": "", "error_values": "0 0", "format": "d", "timeout": 100, "delay": 60, "direction": "output"},
+            "di4": {"address": 11, "type": 2, "register": 0, "values": 4, "scale": 1.0, "unit": "", "error_values": "", "format": "d", "timeout": 100, "delay": 60, "direction": "input"},
+        },
+    },
+    "EBYTE MA01-XACX0440": {
+        "info": "4x Analog-In (0-20mA) / 4x Digital-Out (Relais)",
+        "comment": "",
+        "setup": {
+            "do4": {"address": 32, "type": 15, "register": 0, "values": 4, "scale": 1.0, "unit": "", "error_values": "", "format": "d", "timeout": 100, "delay": 60, "direction": "output"},
+            "ain": {"address": 32, "type": 4, "register": 0, "values": 4, "delay": 100, "scale": 0.0061, "unit": "mA", "format": "04.1f", "direction": "input"},
+        },
+    },
+}
 
 
 class config:
@@ -228,6 +346,83 @@ class config:
             else:
                 data["widget"].setEnabled(True)
 
+    def select_template(self):
+        def change(row, column):
+            selected = table.item(row, 0).text()
+            device_data = DEVICE_TEMPLATES[selected]
+
+            template_name.setText(selected)
+            info.setText(device_data["info"] + " - " + device_data["comment"])
+            description.clear()
+            description.insertPlainText(str(device_data["setup"]))
+
+        selected = ""
+        infotext = ""
+        descriptiontext = ""
+
+        dialog = QDialog()
+        dialog.setWindowTitle("select Template")
+        dialog.setFixedWidth(800)
+        dialog.setFixedHeight(600)
+        if self.styleSheet:
+            dialog.setStyleSheet(self.styleSheet)
+
+        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog.buttonBox.accepted.connect(dialog.accept)
+
+        dialog.layout = QVBoxLayout()
+
+        hlayout = QHBoxLayout()
+
+        vlayout_left = QVBoxLayout()
+
+        message = QLabel("Plugin-Type:")
+        vlayout_left.addWidget(message)
+
+        table = QTableWidget()
+        table.setColumnCount(1)
+        table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugins"))
+
+        table.setRowCount(len(DEVICE_TEMPLATES))
+
+        for row, device in enumerate(DEVICE_TEMPLATES):
+            pitem = QTableWidgetItem(device)
+            table.setItem(row, 0, pitem)
+
+        table.setFixedWidth(200)
+        vlayout_left.addWidget(table)
+
+        vlayout = QVBoxLayout()
+        template_name = QLabel("")
+        vlayout.addWidget(template_name)
+
+        info = QLabel(infotext)
+        vlayout.addWidget(info)
+
+        description = QPlainTextEdit()
+        description.clear()
+        description.insertPlainText(descriptiontext)
+
+        vlayout.addWidget(description)
+
+        hlayout.addLayout(vlayout_left)
+        hlayout.addLayout(vlayout)
+
+        dialog.layout.addLayout(hlayout)
+
+        table.cellClicked.connect(change)
+
+        dialog.layout.addWidget(dialog.buttonBox)
+        dialog.setLayout(dialog.layout)
+
+        if dialog.exec():
+            template = template_name.text()
+            device_data = DEVICE_TEMPLATES[template]
+            for key, value in device_data["setup"].items():
+                self.config[key] = value
+            self.table_load()
+            return ""
+
     def run(self):
         dialog = QDialog()
         if self.styleSheet:
@@ -281,6 +476,10 @@ class config:
             edit_layout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"), row_n, 1)
             edit_layout.addWidget(data["widget"], row_n, 2)
             row_n += 1
+
+        button_template = QPushButton("Template")
+        button_template.clicked.connect(self.select_template)
+        edit_layout.addWidget(button_template, row_n, 0)
 
         button_add = QPushButton("New")
         button_add.clicked.connect(self.add_item)
