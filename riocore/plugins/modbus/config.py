@@ -1,4 +1,7 @@
+import os
 import json
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
@@ -20,6 +23,7 @@ from PyQt5.QtWidgets import (
 
 DEVICE_TEMPLATES = {
     "NT18B07": {
+        "image": "NT18B07.jpg",
         "info": "7x Temperatur In (NTC)",
         "comment": "",
         "setup": {
@@ -27,6 +31,7 @@ DEVICE_TEMPLATES = {
         },
     },
     "DDS519MR": {
+        "image": "DDS519MR.jpg",
         "info": "Energie-Meter",
         "comment": "needs to change serial setup (Parity: even -> none)",
         "setup": {
@@ -117,6 +122,7 @@ DEVICE_TEMPLATES = {
         },
     },
     "EBYTE MA01-AXCX4020": {
+        "image": "MA01-AXCX4020.jpg",
         "info": "4x Digital In / 2x Digital Out (Relais)",
         "comment": "",
         "setup": {
@@ -125,6 +131,7 @@ DEVICE_TEMPLATES = {
         },
     },
     "EBYTE MA01-XACX0440": {
+        "image": "MA01-XACX0440.jpg",
         "info": "4x Analog-In (0-20mA) / 4x Digital-Out (Relais)",
         "comment": "",
         "setup": {
@@ -351,6 +358,11 @@ class config:
         def change(row, column):
             selected = table.item(row, 0).text()
             device_data = DEVICE_TEMPLATES[selected]
+            image_name = device_data.get("image")
+            if image_name:
+                image_file = f"{os.path.dirname(__file__)}/images/{image_name}"
+                pixmap = QPixmap(image_file)
+                image.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio))
             template_name.setText(selected)
             info.setText(device_data["info"])
             description_text = f"{device_data['comment']}\n\n{json.dumps(device_data['setup'], indent=4)}"
@@ -390,6 +402,12 @@ class config:
         table.setFixedWidth(200)
         vlayout_left.addWidget(table)
 
+        image = QLabel()
+        image.setFixedWidth(200)
+        image.setFixedHeight(200)
+        
+        vlayout_left.addWidget(image)
+
         vlayout = QVBoxLayout()
         template_name = QLabel("")
         vlayout.addWidget(template_name)
@@ -402,12 +420,9 @@ class config:
         description.insertPlainText(descriptiontext)
 
         vlayout.addWidget(description)
-
         hlayout.addLayout(vlayout_left)
         hlayout.addLayout(vlayout)
-
         dialog.layout.addLayout(hlayout)
-
         table.cellClicked.connect(change)
 
         dialog.layout.addWidget(dialog.buttonBox)
