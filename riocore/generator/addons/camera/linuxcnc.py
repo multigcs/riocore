@@ -33,27 +33,24 @@ def ini(parent, ini_setup):
 
 
 def gui(parent):
-    cfgxml_data = {"status": []}
     valid = False
     gui = parent.project.config["jdata"].get("gui", "axis")
     if gui != "qtdragon":
-        cfgxml_data["status"].append('  <labelframe text="MDI-Commands">')
-        cfgxml_data["status"].append("    <relief>RAISED</relief>")
-        cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
-        cfgxml_data["status"].append("    <hbox>")
-        cfgxml_data["status"].append("      <relief>RIDGE</relief>")
-        cfgxml_data["status"].append("      <bd>2</bd>")
+        parent.cfgxml_data["status"].append('  <labelframe text="MDI-Commands">')
+        parent.cfgxml_data["status"].append("    <relief>RAISED</relief>")
+        parent.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
+        parent.cfgxml_data["status"].append("    <hbox>")
+        parent.cfgxml_data["status"].append("      <relief>RIDGE</relief>")
+        parent.cfgxml_data["status"].append("      <bd>2</bd>")
         for camera_num, camera in enumerate(parent.project.config["jdata"].get("camera", [])):
             if camera and camera.get("enable"):
                 offsets = camera.get("offset")
                 if offsets:
                     parent.custom_net_add("rio.zerocam", "halui.mdi-command-06")
-                    cfgxml_data["status"] += parent.gui_gen.draw_button("zero-cam", "zerocam")
+                    parent.cfgxml_data["status"] += parent.gui_gen.draw_button("zero-cam", "zerocam")
                     valid = True
                     break
-        cfgxml_data["status"].append("    </hbox>")
-        cfgxml_data["status"].append("  </labelframe>")
+        parent.cfgxml_data["status"].append("    </hbox>")
+        parent.cfgxml_data["status"].append("  </labelframe>")
 
-    if valid:
-        return cfgxml_data
-    return {}
+    return []
