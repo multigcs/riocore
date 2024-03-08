@@ -405,7 +405,7 @@ class config:
         image = QLabel()
         image.setFixedWidth(200)
         image.setFixedHeight(200)
-        
+
         vlayout_left.addWidget(image)
 
         vlayout = QVBoxLayout()
