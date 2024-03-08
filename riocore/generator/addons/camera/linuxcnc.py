@@ -46,7 +46,7 @@ def gui(parent):
             if camera and camera.get("enable"):
                 offsets = camera.get("offset")
                 if offsets:
-                    parent.custom_net_add("rio.zerocam", "halui.mdi-command-06")
+                    parent.hal_net_add("rio.zerocam", "halui.mdi-command-06")
                     parent.cfgxml_data["status"] += parent.gui_gen.draw_button("zero-cam", "zerocam")
                     valid = True
                     break
