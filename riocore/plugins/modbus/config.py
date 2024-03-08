@@ -1,3 +1,4 @@
+import json
 from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
@@ -350,11 +351,11 @@ class config:
         def change(row, column):
             selected = table.item(row, 0).text()
             device_data = DEVICE_TEMPLATES[selected]
-
             template_name.setText(selected)
-            info.setText(device_data["info"] + " - " + device_data["comment"])
+            info.setText(device_data["info"])
+            description_text = f"{device_data['comment']}\n\n{json.dumps(device_data['setup'], indent=4)}"
             description.clear()
-            description.insertPlainText(str(device_data["setup"]))
+            description.insertPlainText(description_text)
 
         selected = ""
         infotext = ""
@@ -369,19 +370,16 @@ class config:
 
         dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
-
         dialog.layout = QVBoxLayout()
-
         hlayout = QHBoxLayout()
-
         vlayout_left = QVBoxLayout()
 
-        message = QLabel("Plugin-Type:")
+        message = QLabel("Template-Name:")
         vlayout_left.addWidget(message)
 
         table = QTableWidget()
         table.setColumnCount(1)
-        table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugins"))
+        table.setHorizontalHeaderItem(0, QTableWidgetItem("Templates"))
 
         table.setRowCount(len(DEVICE_TEMPLATES))
 
@@ -417,10 +415,11 @@ class config:
 
         if dialog.exec():
             template = template_name.text()
-            device_data = DEVICE_TEMPLATES[template]
-            for key, value in device_data["setup"].items():
-                self.config[key] = value
-            self.table_load()
+            if template in DEVICE_TEMPLATES:
+                device_data = DEVICE_TEMPLATES[template]
+                for key, value in device_data["setup"].items():
+                    self.config[key] = value
+                self.table_load()
             return ""
 
     def run(self):
@@ -477,10 +476,6 @@ class config:
             edit_layout.addWidget(data["widget"], row_n, 2)
             row_n += 1
 
-        button_template = QPushButton("Template")
-        button_template.clicked.connect(self.select_template)
-        edit_layout.addWidget(button_template, row_n, 0)
-
         button_add = QPushButton("New")
         button_add.clicked.connect(self.add_item)
         edit_layout.addWidget(button_add, row_n, 1)
@@ -492,6 +487,10 @@ class config:
         button_del = QPushButton("Remove")
         button_del.clicked.connect(self.del_item)
         edit_layout.addWidget(button_del, row_n + 1, 1)
+
+        button_template = QPushButton("Template")
+        button_template.clicked.connect(self.select_template)
+        edit_layout.addWidget(button_template, row_n + 1, 2)
 
         hlayout.addLayout(vlayout_left)
         hlayout.addLayout(edit_layout)
