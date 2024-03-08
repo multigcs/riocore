@@ -24,14 +24,14 @@ def load_tree(parent, tree_lcnc):
         ]
     )
 
-    button = QPushButton("add hy_vfd")
-    button.clicked.connect(add_hy_vfd)
-    button.setMaximumSize(button.sizeHint())
-    parent.treeview.setIndexWidget(bitem.index(), button)
-
-    tree_lcnchy_vfd = tree_lcnc.child(tree_lcnc.rowCount() - 1)
     if "hy_vfd" not in parent.config["linuxcnc"]:
         parent.config["linuxcnc"]["hy_vfd"] = {}
+        button = QPushButton("add hy_vfd")
+        button.clicked.connect(add_hy_vfd)
+        button.setMaximumSize(button.sizeHint())
+        parent.treeview.setIndexWidget(bitem.index(), button)
+
+    tree_lcnchy_vfd = tree_lcnc.child(tree_lcnc.rowCount() - 1)
     hy_vfd_config = parent.config["linuxcnc"]["hy_vfd"]
     if hy_vfd_config:
         for key, var_setup in {

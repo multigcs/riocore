@@ -26,14 +26,14 @@ def load_tree(parent, tree_lcnc):
         ]
     )
 
-    button = QPushButton("add joypad")
-    button.clicked.connect(add_joypad)
-    button.setMaximumSize(button.sizeHint())
-    parent.treeview.setIndexWidget(bitem.index(), button)
-
-    tree_lcncjoypad = tree_lcnc.child(tree_lcnc.rowCount() - 1)
     if "joypad" not in parent.config["linuxcnc"]:
         parent.config["linuxcnc"]["joypad"] = {}
+        button = QPushButton("add joypad")
+        button.clicked.connect(add_joypad)
+        button.setMaximumSize(button.sizeHint())
+        parent.treeview.setIndexWidget(bitem.index(), button)
+
+    tree_lcncjoypad = tree_lcnc.child(tree_lcnc.rowCount() - 1)
     joypad_config = parent.config["linuxcnc"]["joypad"]
     if joypad_config:
         joypad_buttons = ["btn-base", "btn-base2", "btn-top", "btn-top2"]
