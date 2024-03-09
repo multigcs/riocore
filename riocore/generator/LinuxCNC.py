@@ -203,6 +203,13 @@ class LinuxCNC:
                         for in_n, pin_in in enumerate(net["in"]):
                             output_hal.append(f"net rios.{network}-in-{in_n:02d} or.{network}.in-{in_n:02d} <= {pin_in}")
                         output_hal.append(f"net rios.{network} <= or.{network}.or")
+                    elif net["type"] == "XOR":
+                        n_inputs = len(net["in"])
+                        output_hal.append(f"# logic 'xor' with {n_inputs} inputs")
+                        output_hal.append(f"loadrt logic names=xor.{network} personality=0x{0x400+n_inputs:x}")
+                        for in_n, pin_in in enumerate(net["in"]):
+                            output_hal.append(f"net rios.{network}-in-{in_n:02d} xor.{network}.in-{in_n:02d} <= {pin_in}")
+                        output_hal.append(f"net rios.{network} <= xor.{network}.xor")
                     for out in net["out"]:
                         if out.startswith(custom_filter):
                             output_postgui.append("")
@@ -232,6 +239,13 @@ class LinuxCNC:
                         for in_n, pin_in in enumerate(net["in"]):
                             output_postgui.append(f"net rios.{network}-in-{in_n:02d} or.{network}.in-{in_n:02d} <= {pin_in}")
                         output_postgui.append(f"net rios.{network} <= or.{network}.or")
+                    elif net["type"] == "XOR":
+                        n_inputs = len(net["in"])
+                        output_hal.append(f"# logic 'xor' with {n_inputs} inputs")
+                        output_hal.append(f"loadrt logic names=xor.{network} personality=0x{0x400+n_inputs:x}")
+                        for in_n, pin_in in enumerate(net["in"]):
+                            output_postgui.append(f"net rios.{network}-in-{in_n:02d} xor.{network}.in-{in_n:02d} <= {pin_in}")
+                        output_postgui.append(f"net rios.{network} <= xor.{network}.xor")
                     for out in net["out"]:
                         output_postgui.append(f"net rios.{network} => {out}")
         output_hal.append("")
@@ -426,6 +440,9 @@ class LinuxCNC:
             output_name = output_name[1:]
         elif output_name[0] == "|":
             ctype = "OR"
+            output_name = output_name[1:]
+        elif output_name[0] == "^":
+            ctype = "XOR"
             output_name = output_name[1:]
         network = None
         for net_name, net_nodes in self.networks.items():
