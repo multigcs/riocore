@@ -190,15 +190,19 @@ class LinuxCNC:
                     if len(net["in"]) == 1:
                         output_hal.append(f"net rios.{network} <= {net['in'][0]}")
                     elif net["type"] == "AND":
-                        output_hal.append(f"loadrt and2 names=and.{network}")
-                        output_hal.append(f"net rios.{network}-in0 and.{network}.in0 <= {net['in'][0]}")
-                        output_hal.append(f"net rios.{network}-in1 and.{network}.in1 <= {net['in'][1]}")
-                        output_hal.append(f"net rios.{network} <= and.{network}.out")
+                        n_inputs = len(net["in"])
+                        output_hal.append(f"# logic 'and' with {n_inputs} inputs")
+                        output_hal.append(f"loadrt logic names=and.{network} personality=0x{0x100+n_inputs:x}")
+                        for in_n, pin_in in enumerate(net["in"]):
+                            output_hal.append(f"net rios.{network}-in-{in_n:02d} and.{network}.in-{in_n:02d} <= {pin_in}")
+                        output_hal.append(f"net rios.{network} <= and.{network}.and")
                     elif net["type"] == "OR":
-                        output_hal.append(f"loadrt or2 names=or.{network}")
-                        output_hal.append(f"net rios.{network}-in0 or.{network}.in0 <= {net['in'][0]}")
-                        output_hal.append(f"net rios.{network}-in1 or.{network}.in1 <= {net['in'][1]}")
-                        output_hal.append(f"net rios.{network} <= or.{network}.out")
+                        n_inputs = len(net["in"])
+                        output_hal.append(f"# logic 'or' with {n_inputs} inputs")
+                        output_hal.append(f"loadrt logic names=or.{network} personality=0x{0x200+n_inputs:x}")
+                        for in_n, pin_in in enumerate(net["in"]):
+                            output_hal.append(f"net rios.{network}-in-{in_n:02d} or.{network}.in-{in_n:02d} <= {pin_in}")
+                        output_hal.append(f"net rios.{network} <= or.{network}.or")
                     for out in net["out"]:
                         if out.startswith(custom_filter):
                             output_postgui.append("")
@@ -215,15 +219,19 @@ class LinuxCNC:
                     if len(net["in"]) == 1:
                         output_postgui.append(f"net rios.{network} <= {net['in'][0]}")
                     elif net["type"] == "AND":
-                        output_hal.append(f"loadrt and2 names=and.{network}")
-                        output_postgui.append(f"net rios.{network}-in0 and.{network}.in0 <= {net['in'][0]}")
-                        output_postgui.append(f"net rios.{network}-in1 and.{network}.in1 <= {net['in'][1]}")
-                        output_postgui.append(f"net rios.{network} <= and.{network}.out")
+                        n_inputs = len(net["in"])
+                        output_hal.append(f"# logic 'and' with {n_inputs} inputs")
+                        output_hal.append(f"loadrt logic names=and.{network} personality=0x{0x100+n_inputs:x}")
+                        for in_n, pin_in in enumerate(net["in"]):
+                            output_postgui.append(f"net rios.{network}-in-{in_n:02d} and.{network}.in-{in_n:02d} <= {pin_in}")
+                        output_postgui.append(f"net rios.{network} <= and.{network}.and")
                     elif net["type"] == "OR":
-                        output_hal.append(f"loadrt or2 names=or.{network}")
-                        output_postgui.append(f"net rios.{network}-in0 or.{network}.in0 <= {net['in'][0]}")
-                        output_postgui.append(f"net rios.{network}-in1 or.{network}.in1 <= {net['in'][1]}")
-                        output_postgui.append(f"net rios.{network} <= or.{network}.out")
+                        n_inputs = len(net["in"])
+                        output_hal.append(f"# logic 'or' with {n_inputs} inputs")
+                        output_hal.append(f"loadrt logic names=or.{network} personality=0x{0x200+n_inputs:x}")
+                        for in_n, pin_in in enumerate(net["in"]):
+                            output_postgui.append(f"net rios.{network}-in-{in_n:02d} or.{network}.in-{in_n:02d} <= {pin_in}")
+                        output_postgui.append(f"net rios.{network} <= or.{network}.or")
                     for out in net["out"]:
                         output_postgui.append(f"net rios.{network} => {out}")
         output_hal.append("")
