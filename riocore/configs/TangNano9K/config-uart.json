@@ -23,10 +23,10 @@
                     "pin": "10",
                     "modifier": [
                         {
-                            "type": "pwm"
+                            "type": "invert"
                         },
                         {
-                            "type": "invert"
+                            "type": "pwm"
                         }
                     ]
                 }

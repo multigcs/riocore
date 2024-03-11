@@ -8,6 +8,7 @@ from struct import pack, unpack
 
 from .generator.Gateware import Gateware
 from .generator.LinuxCNC import LinuxCNC
+from .generator.Simulator import Simulator
 
 riocore_path = os.path.dirname(__file__)
 
@@ -264,6 +265,7 @@ class Project:
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
         self.generator_gateware = Gateware(self)
+        self.generator_simulator = Simulator(self)
 
     def get_path(self, path):
         if os.path.exists(path):
@@ -633,4 +635,5 @@ class Project:
             generate_pll = False
         self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
+        self.generator_simulator.generator()
         os.system(f"cp {self.config['json_file']} {self.config['output_path']}/.config.json")
