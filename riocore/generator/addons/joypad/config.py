@@ -173,7 +173,7 @@ def load_tree(parent, tree_lcnc):
     parent.treeview.setIndexWidget(bitem.index(), buttons_widget)
 
     tree_lcncjoypad = tree_lcnc.child(tree_lcnc.rowCount() - 1)
-    joypad_config = parent.config["linuxcnc"]["joypad"]
+    joypad_config = parent.config["linuxcnc"].get("joypad")
     if joypad_config:
         joypad_buttons = ["btn-base", "btn-base2", "btn-top", "btn-top2"]
         joypad_axis = ["abs-x", "abs-y", "abs-z", "abs-rz"]
