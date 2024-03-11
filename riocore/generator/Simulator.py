@@ -8,8 +8,8 @@ from riocore import halpins
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
-class Simulator:
 
+class Simulator:
     def __init__(self, project):
         self.project = project
         self.base_path = f"{self.project.config['output_path']}/Simulator"
@@ -62,7 +62,6 @@ class Simulator:
             if plugin_instance.TYPE != "interface":
                 output.append(f"void simulate_{plugin_instance.instances_name}() {{")
 
-
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
                     direction = interface["direction"]
@@ -83,17 +82,15 @@ class Simulator:
                         else:
                             output.append(f"    uint8_t value_{iname} = data.{variable};")
 
-
-
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
                     direction = interface["direction"]
                     variable_size = interface["size"]
                     if interface["direction"] == "output":
                         if variable_size > 1:
-                            output.append(f"    printf(\"{variable}: %f\\n\", value_{iname});")
+                            output.append(f'    printf("{variable}: %f\\n", value_{iname});')
                         else:
-                            output.append(f"    printf(\"{variable}: %i\\n\", value_{iname});")
+                            output.append(f'    printf("{variable}: %i\\n", value_{iname});')
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
@@ -104,6 +101,8 @@ class Simulator:
                             output.append(f"    // value_{iname} = 0.0;")
                         else:
                             output.append(f"    // value_{iname} = 0;")
+
+                    output.append("    " + plugin_instance.simulate_c(iname, interface).strip())
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
@@ -182,7 +181,6 @@ class Simulator:
         output.append("}")
         output.append("")
 
-
         output.append("void read_rxbuffer(uint8_t *rxBuffer) {")
         output.append("    // rxBuffer to raw vars")
         input_pos = self.project.buffer_size - self.project.header_size
@@ -210,7 +208,11 @@ class Simulator:
                 if variable_size > 1:
                     output.append(f"    memcpy(&data.{variable_name}, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
                 else:
-                    output.append(f"    data.{variable_name} = (rxBuffer[{byte_start}] & (1<<{bit_offset}));")
+                    output.append(f"    if ((rxBuffer[{byte_start}] & (1<<{bit_offset})) != 0) {{")
+                    output.append(f"        data.{variable_name} = 1;")
+                    output.append("    } else {")
+                    output.append(f"        data.{variable_name} = 0;")
+                    output.append("    }")
                 input_pos -= variable_size
 
         mpid = 0
@@ -364,6 +366,11 @@ class Simulator:
         output.append('                printf("recovered..\\n");')
         output.append("            }")
         output.append("            read_rxbuffer(rxBuffer);")
+
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE != "interface":
+                output.append(f"    simulate_{plugin_instance.instances_name}();")
+
         output.append("        } else {")
         output.append("            err_counter += 1;")
         output.append('            printf("wronng header (%i): ", err_counter);')
@@ -382,6 +389,7 @@ class Simulator:
         output.append("}")
         output.append("")
         output.append("int main(void) {")
+        output.append("    interface_init();")
         output.append("    while(1) {")
         output.append("        rio_readwrite();")
         output.append("    }")
@@ -392,4 +400,3 @@ class Simulator:
 
         os.system(f"mkdir -p {self.component_path}/")
         open(f"{self.component_path}/rio-simulator.c", "w").write("\n".join(output))
-

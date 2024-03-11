@@ -199,6 +199,9 @@ class PluginBase:
     def convert_c(self, signal_name, signal_setup):
         return ""
 
+    def simulate_c(self, signal_name, signal_setup):
+        return ""
+
     def pins(self):
         pins = {}
         for pin_name, pin_config in self.PINDEFAULTS.items():

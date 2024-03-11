@@ -78,3 +78,9 @@ class Plugin(PluginBase):
             }
             """
         return ""
+
+    def simulate_c(self, signal_name, signal_setup):
+        if signal_name == "velocity":
+            speed = self.system_setup["speed"]
+            return f"    float hz = {speed} / value_velocity / 2;"
+        return ""
