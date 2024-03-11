@@ -50,12 +50,13 @@ int uart_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
     }
     printf("\n");
     */
+
     int ret = write(uart_serial_fd, txBuffer, BUFFER_SIZE);
     tcdrain(uart_serial_fd);
     tcflush(uart_serial_fd, TCIFLUSH);
 
 
-    while((rec = read(uart_serial_fd, rxBuffer, size)) < size && cnt++ < 250) {
+    while((rec = read(uart_serial_fd, rxBuffer, size * 2)) < size && cnt++ < 250) {
         usleep(1000);
     }
 
