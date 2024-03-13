@@ -210,7 +210,7 @@ class PluginBase:
                 self.plugin_setup["pins"] = {pin_name: {"pin": self.plugin_setup["pin"]}}
 
             if "pins" not in self.plugin_setup:
-                print(f"WARNING: no pins found in config ({self.instances_name})")
+                #print(f"WARNING: no pins found in config ({self.instances_name})")
                 continue
 
             if pin_name.upper() in self.plugin_setup["pins"]:
