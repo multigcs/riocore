@@ -40,7 +40,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "ws2812b interface for bar-displays"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "simple ws2812b driver with variable input to build led-bars"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

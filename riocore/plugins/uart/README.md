@@ -1,5 +1,5 @@
 # uart
-
+simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
 
 uart interface for host cominucation
 

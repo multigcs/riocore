@@ -48,7 +48,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "rc-servo output"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to control rc-servos, usable as joint or as variable/analog output in LinuxCNC"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

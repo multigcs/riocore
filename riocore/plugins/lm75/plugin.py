@@ -30,4 +30,4 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "I2C Temperature-Sensor"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "simple temperure sensor"

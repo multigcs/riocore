@@ -1,5 +1,5 @@
 # udpoti
-
+controling digital poti for analog outputs
 
 digital-poti with up/down+dir interface
 

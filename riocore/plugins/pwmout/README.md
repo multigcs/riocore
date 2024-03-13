@@ -1,5 +1,5 @@
 # pwmout
-
+to control DC-Motors or for analog outputs
 
 pwm output
 

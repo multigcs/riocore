@@ -1,5 +1,5 @@
 # counter
-
+to counting digital pulses, supporting up,down and reset signals
 
 pulse counter input
 

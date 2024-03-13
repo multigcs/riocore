@@ -24,7 +24,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "singe bit output pin"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to control relais, leds, valves, ...."
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)

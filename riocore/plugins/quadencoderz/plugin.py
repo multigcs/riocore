@@ -78,7 +78,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "quadencoder with index pin"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "usable as spindle-encoder for rigid tapping and thread cutting"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

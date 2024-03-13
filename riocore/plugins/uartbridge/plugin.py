@@ -63,7 +63,7 @@ class Plugin(PluginBase):
         self.TIMEOUT = 1000.0
         self.DELAY = 0.0
         self.INFO = "uart bridge"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "uart bridge to send and receive custom frames via uart port"
 
         self.rx_buffersize = 3 * 8
         self.tx_buffersize = 2 * 8

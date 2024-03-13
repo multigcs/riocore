@@ -49,7 +49,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "7segment display based on max7219"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to display values from LinuxCNC on 7segment display's"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -46,7 +46,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "udp interface for host comunication - experimental"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

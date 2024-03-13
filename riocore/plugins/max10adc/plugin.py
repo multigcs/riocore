@@ -66,4 +66,4 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "MAX10 ADC inputs"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "only usable for the max10 fpga boards"

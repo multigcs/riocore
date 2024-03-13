@@ -24,7 +24,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "IR-Remote input"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "that was just a gimmick, not really useful"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

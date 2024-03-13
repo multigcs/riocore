@@ -1,5 +1,5 @@
 # as5600
-
+for position feedbacks
 
 magnetic absolute encoder
 

@@ -1,5 +1,5 @@
 # spi
-for direct connection to Raspberry-PI or over UDB2SPI-Bridges
+for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 
 spi interface for host comunication
 

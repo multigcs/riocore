@@ -176,7 +176,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "7segment display with buttons"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

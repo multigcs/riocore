@@ -25,7 +25,7 @@ class Plugin(PluginBase):
         }
         self.TYPE = "interface"
         self.INFO = "uart interface for host cominucation"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

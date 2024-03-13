@@ -1,5 +1,5 @@
 # lm75
-
+simple temperure sensor
 
 I2C Temperature-Sensor
 

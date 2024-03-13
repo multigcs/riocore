@@ -1,5 +1,5 @@
 # sonar
-
+to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
 
 sonar sensor for distance measurement
 

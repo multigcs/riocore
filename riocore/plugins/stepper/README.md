@@ -1,5 +1,5 @@
 # stepper
-
+direct stepper driver with 4pin's directly controlled by the FPGA
 
 stepper driver output for H-Bridges like L298
 

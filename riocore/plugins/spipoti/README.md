@@ -1,7 +1,7 @@
 # spipoti
+Analog-Outout via spi digital poti
 
-
-spi analog-poti
+spi digital poti
 
 ## Basic-Example:
 ```

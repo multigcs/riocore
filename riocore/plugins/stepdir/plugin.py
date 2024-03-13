@@ -54,7 +54,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "step/dir output for stepper drivers"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to control motor drivers via step/dir pin's and an optional enable pin"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

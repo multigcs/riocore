@@ -62,7 +62,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "4-chanel adc via I2C"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to read analog signals with cheap ads1115 chips"
 
     def convert(self, signal_name, signal_setup, value):
         value /= 1000.0

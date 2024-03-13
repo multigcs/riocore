@@ -35,7 +35,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "SPI temperature sensor"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to messurement very high temperatures of up to 1250 degrees Celsius"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

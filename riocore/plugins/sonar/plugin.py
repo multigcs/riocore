@@ -32,7 +32,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "sonar sensor for distance measurement"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)"
 
     def convert(self, signal_name, signal_setup, value):
         if value != 0:

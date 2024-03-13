@@ -19,7 +19,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "blinking output pin"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

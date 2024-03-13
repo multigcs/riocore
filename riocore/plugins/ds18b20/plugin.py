@@ -25,7 +25,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "1Wire Temperature sensor"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "for cheap 1wire temperature sensor's, only one per pin is supported at the moment"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -62,7 +62,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "stepper driver output for H-Bridges like L298"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "direct stepper driver with 4pin's directly controlled by the FPGA"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

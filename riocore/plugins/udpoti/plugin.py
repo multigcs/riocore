@@ -46,7 +46,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "digital-poti with up/down+dir interface"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "controling digital poti for analog outputs"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

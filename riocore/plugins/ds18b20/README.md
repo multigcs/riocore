@@ -1,5 +1,5 @@
 # ds18b20
-
+for cheap 1wire temperature sensor's, only one per pin is supported at the moment
 
 1Wire Temperature sensor
 

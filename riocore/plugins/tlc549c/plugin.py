@@ -38,7 +38,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "spi adc input"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "Analog input via tlc549 ADC"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

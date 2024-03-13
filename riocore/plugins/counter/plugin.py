@@ -40,4 +40,4 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "pulse counter input"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to counting digital pulses, supporting up,down and reset signals"

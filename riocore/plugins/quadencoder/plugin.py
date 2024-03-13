@@ -44,7 +44,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "quadencoder"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

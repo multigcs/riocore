@@ -29,4 +29,4 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "magnetic absolute encoder"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "for position feedbacks"

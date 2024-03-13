@@ -28,7 +28,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "frequency output"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to output variable frequency signals"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

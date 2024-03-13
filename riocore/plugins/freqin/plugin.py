@@ -43,7 +43,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "frequency input"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to messurement digital frequencies"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

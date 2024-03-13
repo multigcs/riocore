@@ -56,7 +56,7 @@ class Plugin(PluginBase):
         self.TIMEOUT = 200.0
         self.DELAY = 90.0
         self.INFO = "generic modbus plugin"
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
         self.rx_buffersize = 128
         self.tx_buffersize = 128
         self.OPTIONS["rx_buffersize"]["default"] = self.rx_buffersize

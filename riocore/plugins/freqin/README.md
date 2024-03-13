@@ -1,5 +1,5 @@
 # freqin
-
+to messurement digital frequencies
 
 frequency input
 
