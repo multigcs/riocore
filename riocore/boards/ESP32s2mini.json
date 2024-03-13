@@ -1,0 +1,13 @@
+{
+    "name": "ESP32s2mini",
+    "description": "ESP32s2mini",
+    "board": "lolin_s2_mini",
+    "platform": "espressif32",
+    "type": "ESP32s2mini",
+    "family": "ESP32",
+    "toolchain": "platformio",
+    "clock": {
+        "speed": "80000000",
+        "pin": "52"
+    }
+}

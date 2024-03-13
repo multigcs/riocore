@@ -1,0 +1,118 @@
+{
+    "name": "ESP32S2",
+    "description": "ESP32S2 - for testing only",
+    "boardcfg": "ESP32s2mini",
+    "protocol": "UART",
+    "plugins": [
+        {
+            "type": "bitout",
+            "name": "blink",
+            "pins": {
+                "bit": {
+                    "pin": "10",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "pwm"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "spindle",
+            "pins": {
+                "bit": {
+                    "pin": "15",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in1",
+            "pins": {
+                "bit": {
+                    "pin": "0",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in2",
+            "pins": {
+                "bit": {
+                    "pin": "4",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "13",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "14",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "15",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "16",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        }
+    ]
+}

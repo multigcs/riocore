@@ -29,3 +29,34 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)
         return instances
+
+    def firmware_defines(self):
+        output = []
+        for pin_name, pin_config in self.pins().items():
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            output.append(f"#define {pin_define_name} {pin}")
+        return "\n".join(output)
+
+    def firmware_setup(self):
+        output = []
+        for pin_name, pin_config in self.pins().items():
+            pin = pin_config["pin"]
+            pullup = pin_config.get("pullup", False)
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            if pullup:
+                output.append(f"    pinMode({pin_define_name}, {direction.upper()}_PULLUP);")
+            else:
+                output.append(f"    pinMode({pin_define_name}, {direction.upper()});")
+        return "\n".join(output)
+
+    def firmware_loop(self):
+        output = []
+        for pin_name, pin_config in self.pins().items():
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            output.append(f"    value_bit = digitalRead({pin_define_name});")
+        return "\n".join(output)

@@ -134,6 +134,15 @@ class PluginBase:
             self.expansion_prefix = self.plugin_setup.get("name", f"EXPANSION{expansion_id}").upper()
             self.expansions.append(self.expansion_prefix)
 
+    def firmware_defines(self):
+        return ""
+
+    def firmware_setup(self):
+        return ""
+
+    def firmware_loop(self):
+        return ""
+
     def setup(self):
         pass
 
@@ -199,9 +208,6 @@ class PluginBase:
     def convert_c(self, signal_name, signal_setup):
         return ""
 
-    def simulate_c(self, signal_name, signal_setup):
-        return ""
-
     def pins(self):
         pins = {}
         for pin_name, pin_config in self.PINDEFAULTS.items():
@@ -210,7 +216,7 @@ class PluginBase:
                 self.plugin_setup["pins"] = {pin_name: {"pin": self.plugin_setup["pin"]}}
 
             if "pins" not in self.plugin_setup:
-                #print(f"WARNING: no pins found in config ({self.instances_name})")
+                # print(f"WARNING: no pins found in config ({self.instances_name})")
                 continue
 
             if pin_name.upper() in self.plugin_setup["pins"]:

@@ -8,7 +8,7 @@ from struct import pack, unpack
 
 from .generator.Gateware import Gateware
 from .generator.LinuxCNC import LinuxCNC
-from .generator.Simulator import Simulator
+from .generator.Firmware import Firmware
 
 riocore_path = os.path.dirname(__file__)
 
@@ -264,8 +264,10 @@ class Project:
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
-        self.generator_gateware = Gateware(self)
-        self.generator_simulator = Simulator(self)
+        if self.config["toolchain"] == "platformio":
+            self.generator_firmware = Firmware(self)
+        else:
+            self.generator_gateware = Gateware(self)
 
     def get_path(self, path):
         if os.path.exists(path):
@@ -633,7 +635,9 @@ class Project:
         generate_pll = True
         if preview:
             generate_pll = False
-        self.generator_gateware.generator(generate_pll=generate_pll)
+        if self.config["toolchain"] == "platformio":
+            self.generator_firmware.generator()
+        else:
+            self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
-        self.generator_simulator.generator()
         os.system(f"cp {self.config['json_file']} {self.config['output_path']}/.config.json")

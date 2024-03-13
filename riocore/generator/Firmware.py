@@ -9,13 +9,13 @@ from riocore import halpins
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 
-class Simulator:
+class Firmware:
     def __init__(self, project):
         self.project = project
-        self.base_path = f"{self.project.config['output_path']}/Simulator"
+        self.base_path = f"{self.project.config['output_path']}/Firmware"
         self.component_path = f"{self.base_path}"
         self.addons = {}
-        for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/simulator.py"):
+        for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/firmware.py"):
             addon_name = addon_path.split("/")[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
@@ -60,7 +60,14 @@ class Simulator:
         output = []
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE != "interface":
-                output.append(f"void simulate_{plugin_instance.instances_name}() {{")
+                string = plugin_instance.firmware_defines()
+                if string.strip():
+                    output.append(string)
+        output.append("")
+
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE != "interface":
+                output.append(f"void instance_{plugin_instance.instances_name}() {{")
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
@@ -102,7 +109,7 @@ class Simulator:
                         else:
                             output.append(f"    // value_{iname} = 0;")
 
-                    output.append("    " + plugin_instance.simulate_c(iname, interface).strip())
+                output.append("    " + plugin_instance.firmware_loop().strip())
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
@@ -119,8 +126,6 @@ class Simulator:
         output.append("    for (i = 0; i < BUFFER_SIZE; i++) {")
         output.append("        txBuffer[i] = 0;")
         output.append("    }")
-
-        output.append("    // simulated vars to txBuffer")
         output.append("    txBuffer[0] = 97;")
         output.append("    txBuffer[1] = 116;")
         output.append("    txBuffer[2] = 97;")
@@ -236,21 +241,7 @@ class Simulator:
 
     def component(self):
         output = []
-        header_list = ["stdint.h", "unistd.h", "stdlib.h", "stdio.h", "string.h", "math.h", "sys/mman.h"]
-        if "serial":
-            header_list += ["fcntl.h", "termios.h"]
-
-        protocol = self.project.config["jdata"].get("protocol", "SPI")
-
-        ip = "192.168.10.194"
-        port = 2390
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.TYPE == "interface":
-                ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip"))
-                port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port"))
-
-        ip = self.project.config["jdata"].get("ip", ip)
-        port = self.project.config["jdata"].get("port", port)
+        header_list = ["Arduino.h"]
 
         defines = {
             "PREFIX": '"rio"',
@@ -258,17 +249,6 @@ class Simulator:
             "BUFFER_SIZE": self.project.buffer_bytes,
             "OSC_CLOCK": self.project.config["speed"],
         }
-        if port and ip:
-            defines["UDP_IP"] = f'"{ip}"'
-            defines["UDP_PORT"] = port
-        defines["SERIAL_PORT"] = '"/dev/ttyVirt1"'
-        defines["SERIAL_BAUD"] = "B1000000"
-
-        defines["SPI_PIN_MOSI"] = "10"
-        defines["SPI_PIN_MISO"] = "9"
-        defines["SPI_PIN_CLK"] = "11"
-        defines["SPI_PIN_CS"] = "7"
-        defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
 
         for header in header_list:
             output.append(f"#include <{header}>")
@@ -278,125 +258,52 @@ class Simulator:
             output.append(f"#define {key} {value}")
         output.append("")
 
-        output.append("static int 			      comp_id;")
-        output.append("static const char 	      *prefix = PREFIX;")
-        output.append("")
-        output.append("uint32_t pkg_counter = 0;")
-        output.append("uint32_t err_counter = 0;")
-        output.append("")
-        output.append("long stamp_last = 0;")
-        output.append("")
-        output.append("void rio_readwrite();")
-        output.append("int error_handler(int retval);")
-        output.append("")
-
         output += self.component_variables()
-        for ppath in glob.glob(f"{riocore_path}/interfaces/*/*_sim.c"):
-            if protocol == ppath.split("/")[-2]:
-                output.append("/*")
-                output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                output.append("*/")
-                fdata = open(ppath, "r").read()
-                fdata = fdata.replace("rtapi_print_msg", "printf").replace("RTAPI_MSG_ERR,", "")
-                fdata = fdata.replace("rtapi_print", "printf")
-                fdata = fdata.replace("errno", "1")
-                fdata = fdata.replace("rtapi_get_time()", "1")
-                output.append(fdata)
-
-        output.append("int interface_init(void) {")
-        if protocol == "UART":
-            output.append("    uart_init();")
-        elif protocol == "SPI":
-            output.append("    spi_init();")
-        elif protocol == "UDP":
-            output.append("    udp_init();")
-        else:
-            print("ERROR: unsupported interface")
-            sys.exit(1)
-        output.append("}")
-        output.append("")
-
-        output.append("")
-        output.append("/***********************************************************************")
-        output.append("*                         PLUGIN GLOBALS                               *")
-        output.append("************************************************************************/")
-        output.append("")
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.TYPE == "frameio":
-                output.append(f"long {plugin_instance.instances_name}_last_rx = 0;")
-            for line in plugin_instance.globals_c().strip().split("\n"):
-                output.append(line)
-        output.append("")
-        output.append("/***********************************************************************/")
-        output.append("")
-
         output += self.component_buffer()
-        output.append("void rio_readwrite() {")
-        output.append("    uint8_t i = 0;")
-        output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
-        output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
         output.append("")
-        output.append("    for (i = 0; i < BUFFER_SIZE; i++) {")
-        output.append("        txBuffer[i] = 0;")
-        output.append("    }")
+
+        output.append("void setup() {")
+        output.append("    Serial.begin(1000000);")
         output.append("")
-        output.append("    if (data.sys_enable_request == 1) {")
-        output.append("        data.sys_status = 1;")
-        output.append("    }")
-        output.append("    long stamp_new = 1;")
-        output.append("    data.duration = (stamp_new - stamp_last) / 1000.0;")
-        output.append("    stamp_last = stamp_new;")
-        output.append("    //if (data.sys_enable == 1 && data.sys_status == 1) {")
-        output.append("        pkg_counter += 1;")
-        output.append("        write_txbuffer(txBuffer);")
-
-        if protocol == "UART":
-            output.append("        uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
-        elif protocol == "SPI":
-            output.append("        spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
-        elif protocol == "UDP":
-            output.append("        udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
-        else:
-            print("ERROR: unsupported interface")
-            sys.exit(1)
-
-        output.append("        if (rxBuffer[0] == 116 && rxBuffer[1] == 105 && rxBuffer[2] == 114 && rxBuffer[3] == 119) {")
-        output.append("            if (err_counter > 0) {")
-        output.append("                err_counter = 0;")
-        output.append('                printf("recovered..\\n");')
-        output.append("            }")
-        output.append("            read_rxbuffer(rxBuffer);")
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE != "interface":
-                output.append(f"    simulate_{plugin_instance.instances_name}();")
+                string = plugin_instance.firmware_setup()
+                if string.strip():
+                    output.append(string)
+        output.append("")
 
-        output.append("        } else {")
-        output.append("            err_counter += 1;")
-        output.append('            printf("wronng header (%i): ", err_counter);')
-        output.append("            for (i = 0; i < BUFFER_SIZE; i++) {")
-        output.append('                printf("%d ",rxBuffer[i]);')
-        output.append("            }")
-        output.append('            printf("\\n");')
-        output.append("            if (err_counter > 3) {")
-        output.append('                printf("too much errors..\\n");')
-        output.append("                data.sys_status = 0;")
-        output.append("            }")
-        output.append("        }")
-        output.append("    //} else {")
-        output.append("    //    data.sys_status = 0;")
-        output.append("    //}")
         output.append("}")
         output.append("")
-        output.append("int main(void) {")
-        output.append("    interface_init();")
-        output.append("    while(1) {")
-        output.append("        rio_readwrite();")
+        output.append("void loop() {")
+        output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
+        output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
+        output.append("    uint8_t rec = Serial.read(rxBuffer, BUFFER_SIZE * 2);")
+        output.append("    if (rec == BUFFER_SIZE && rxBuffer[0] == 116 && rxBuffer[1] == 105 && rxBuffer[2] == 114 && rxBuffer[3] == 119) {")
+        output.append("        read_rxbuffer(rxBuffer);")
+        output.append("        write_txbuffer(txBuffer);")
+        output.append("        Serial.write(txBuffer, BUFFER_SIZE);")
+
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE != "interface":
+                output.append(f"            instance_{plugin_instance.instances_name}();")
+
         output.append("    }")
-        output.append("    return 0;")
         output.append("}")
         output.append("")
-        output.append("")
 
-        os.system(f"mkdir -p {self.component_path}/")
-        open(f"{self.component_path}/rio-simulator.c", "w").write("\n".join(output))
+        platformio_ini = []
+        platformio_ini.append("")
+        platformio_ini.append("[env:lolin_s2_mini]")
+        platformio_ini.append("framework = arduino")
+        platformio_ini.append("platform = espressif32")
+        platformio_ini.append("board = lolin_s2_mini")
+        platformio_ini.append("board_build.mcu = esp32s2")
+        platformio_ini.append("board_build.f_cpu = 240000000L")
+        platformio_ini.append("upload_protocol = esptool")
+        platformio_ini.append("")
+
+        os.system(f"mkdir -p {self.component_path}/src")
+        os.system(f"mkdir -p {self.component_path}/lib")
+        open(f"{self.component_path}/platformio.ini", "w").write("\n".join(platformio_ini))
+        open(f"{self.component_path}/src/main.ino", "w").write("\n".join(output))
