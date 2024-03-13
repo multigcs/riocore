@@ -22,21 +22,11 @@
             }
         },
         {
-            "type": "bitout",
-            "name": "spindle",
+            "type": "esp32_ledc",
+            "name": "testled",
             "pins": {
-                "bit": {
-                    "pin": "15",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "spindle.0.on"
+                "pwm1": {
+                    "pin": "15"
                 }
             }
         },
