@@ -24,7 +24,7 @@ def load_tree(parent, tree_lcnc):
 
     if "classicladder" not in parent.config["linuxcnc"]:
         parent.config["linuxcnc"]["classicladder"] = {}
-        button = QPushButton("add classicladder")
+        button = QPushButton("add")
         button.clicked.connect(add_classicladder)
         button.setMaximumSize(button.sizeHint())
         parent.treeview.setIndexWidget(bitem.index(), button)

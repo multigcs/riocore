@@ -160,15 +160,15 @@ def load_tree(parent, tree_lcnc):
     buttons_widget = QWidget()
     buttons_widget.setLayout(buttons_layout)
 
-    button_wizard = QPushButton("wizard")
-    button_wizard.clicked.connect(wiz_joypad)
-    button_wizard.setMaximumSize(button_wizard.sizeHint())
-    buttons_layout.addWidget(button_wizard)
     if "joypad" not in parent.config["linuxcnc"]:
         button_add = QPushButton("add")
         button_add.clicked.connect(add_joypad)
         button_add.setMaximumSize(button_add.sizeHint())
         buttons_layout.addWidget(button_add)
+    button_wizard = QPushButton("wizard")
+    button_wizard.clicked.connect(wiz_joypad)
+    button_wizard.setMaximumSize(button_wizard.sizeHint())
+    buttons_layout.addWidget(button_wizard)
     buttons_layout.addStretch()
     parent.treeview.setIndexWidget(bitem.index(), buttons_widget)
 

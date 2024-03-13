@@ -35,7 +35,7 @@ def load_tree(parent, tree_lcnc):
         ]
     )
 
-    button = QPushButton("add camera")
+    button = QPushButton("add")
     button.clicked.connect(add_camera)
     button.setMaximumSize(button.sizeHint())
     parent.treeview.setIndexWidget(bitem.index(), button)
