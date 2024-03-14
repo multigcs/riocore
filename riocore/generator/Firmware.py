@@ -241,7 +241,14 @@ class Firmware:
 
     def component(self):
         output = []
+        protocol = self.project.config["jdata"].get("protocol")
+
         header_list = ["Arduino.h"]
+        if protocol == "UDP":
+            header_list.append("ETH.h")
+            header_list.append("ESPmDNS.h")
+            header_list.append("WiFiUdp.h")
+
 
         defines = {
             "PREFIX": '"rio"',
@@ -254,6 +261,13 @@ class Firmware:
             output.append(f"#include <{header}>")
         output.append("")
 
+
+        if protocol == "UDP":
+            output.append("WiFiUDP Udp;")
+            output.append("unsigned int localPort = 2390;")
+
+
+
         for key, value in defines.items():
             output.append(f"#define {key} {value}")
         output.append("")
@@ -262,9 +276,27 @@ class Firmware:
         output += self.component_buffer()
         output.append("")
 
+
         output.append("void setup() {")
-        output.append("    Serial.begin(1000000);")
+        if protocol == "UART":
+            output.append("    Serial.begin(1000000);")
+        else:
+            output.append("    Serial.begin(115200);")
+
         output.append("")
+
+        if protocol == "UDP":
+            output.append("    ETH.begin();")
+            #output.append("    /*")
+            output.append("    // setup static ip")
+            output.append("    IPAddress myIP(192, 168, 80, 242);")
+            output.append("    IPAddress myGW(192, 168, 80, 1);")
+            output.append("    IPAddress mySN(255, 255, 255, 0);")
+            output.append("    ETH.config(myIP, myGW, mySN);")
+            #output.append("    */")
+            output.append("    Udp.begin(localPort);")
+            output.append("")
+
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE != "interface":
@@ -275,31 +307,63 @@ class Firmware:
 
         output.append("}")
         output.append("")
-        output.append("void loop() {")
-        output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
-        output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
-        output.append("    uint8_t rec = Serial.read(rxBuffer, BUFFER_SIZE * 2);")
-        output.append("    if (rec == BUFFER_SIZE && rxBuffer[0] == 116 && rxBuffer[1] == 105 && rxBuffer[2] == 114 && rxBuffer[3] == 119) {")
-        output.append("        read_rxbuffer(rxBuffer);")
-        output.append("        write_txbuffer(txBuffer);")
-        output.append("        Serial.write(txBuffer, BUFFER_SIZE);")
 
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.TYPE != "interface":
-                output.append(f"            instance_{plugin_instance.instances_name}();")
 
-        output.append("    }")
-        output.append("}")
-        output.append("")
+        if protocol == "UART":
+            output.append("void loop() {")
+            output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
+            output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
+            output.append("    uint8_t rec = Serial.read(rxBuffer, BUFFER_SIZE * 2);")
+            output.append("    if (rec == BUFFER_SIZE && rxBuffer[0] == 116 && rxBuffer[1] == 105 && rxBuffer[2] == 114 && rxBuffer[3] == 119) {")
+            output.append("        read_rxbuffer(rxBuffer);")
+            output.append("        write_txbuffer(txBuffer);")
+            output.append("        Serial.write(txBuffer, BUFFER_SIZE);")
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.TYPE != "interface":
+                    output.append(f"            instance_{plugin_instance.instances_name}();")
+
+            output.append("    }")
+            output.append("}")
+            output.append("")
+
+        elif protocol == "UDP":
+
+            output.append("void loop() {")
+            output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
+            output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
+            output.append("    int packetSize = Udp.parsePacket();")
+            output.append("    if (packetSize) {")
+            output.append("        IPAddress remoteIp = Udp.remoteIP();")
+            output.append("        int len = Udp.read(rxBuffer, BUFFER_SIZE);")
+            output.append("        if (len == BUFFER_SIZE && rxBuffer[0] == 116 && rxBuffer[1] == 105 && rxBuffer[2] == 114 && rxBuffer[3] == 119) {")
+            output.append("            read_rxbuffer(rxBuffer);")
+            output.append("            write_txbuffer(txBuffer);")
+            output.append("            Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());")
+            output.append("            Udp.write((uint8_t*)txBuffer, BUFFER_SIZE);")
+            output.append("            Udp.endPacket();")
+            output.append("        }")
+            output.append("    }")
+            output.append("")
+
+
+
+            output.append("}")
+            output.append("")
+
+
+        board = self.project.config["jdata"].get("board")
+        platform = self.project.config["jdata"].get("platform")
+        btype = self.project.config["jdata"].get("type")
+        family = self.project.config["jdata"].get("family")
 
         platformio_ini = []
         platformio_ini.append("")
-        platformio_ini.append("[env:lolin_s2_mini]")
+        platformio_ini.append(f"[env:{board}]")
         platformio_ini.append("framework = arduino")
-        platformio_ini.append("platform = espressif32")
-        platformio_ini.append("board = lolin_s2_mini")
-        platformio_ini.append("board_build.mcu = esp32s2")
-        platformio_ini.append("board_build.f_cpu = 240000000L")
+        platformio_ini.append(f"platform = {platform}")
+        platformio_ini.append(f"board = {board}")
+        #platformio_ini.append("board_build.mcu = esp32s2")
+        #platformio_ini.append("board_build.f_cpu = 240000000L")
         platformio_ini.append("upload_protocol = esptool")
         platformio_ini.append("")
 

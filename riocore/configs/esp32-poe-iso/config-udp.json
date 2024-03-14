@@ -1,8 +1,8 @@
 {
-    "name": "ESP32S2",
-    "description": "ESP32S2 - for testing only",
-    "boardcfg": "ESP32s2mini",
-    "protocol": "UART",
+    "name": "ESP32-poe-iso",
+    "description": "ESP32-poe-iso - for testing only",
+    "boardcfg": "ESP32-poe-iso",
+    "protocol": "UDP",
     "plugins": [
         {
             "type": "bitout",
@@ -35,7 +35,7 @@
             "name": "in1",
             "pins": {
                 "bit": {
-                    "pin": "0",
+                    "pin": "34",
                     "pullup": true,
                     "modifier": [
                         {
