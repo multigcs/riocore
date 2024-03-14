@@ -273,6 +273,86 @@ class Firmware:
         output += self.component_buffer()
         output.append("")
 
+        output.append("""
+
+uint8_t step = 0;
+float frequencyScale;
+
+#define PRU_BASEFREQ 40000
+#define STEPBIT 22
+#define JOINTS 2
+bool isEnabled[JOINTS];
+bool isForward[JOINTS];
+bool isStepping[JOINTS];
+int32_t frequencyCommand[JOINTS];
+int32_t rawCount[JOINTS];
+int32_t DDSaccumulator[JOINTS];
+int32_t DDSaddValue[JOINTS];
+
+int step_pins[JOINTS];
+int dir_pins[JOINTS];
+
+int32_t stepgen_velocity[JOINTS];
+int32_t stepgen_position[JOINTS];
+
+
+void makeSteps() {
+    int8_t i;
+    int32_t stepNow;
+    for (i = 0; i < JOINTS; i++) {
+        stepNow = 0;
+        isEnabled[i] = true;
+        if (isEnabled[i] == true) {
+            frequencyCommand[i] = stepgen_velocity[i];
+            DDSaddValue[i] = frequencyCommand[i] * frequencyScale;
+            stepNow = DDSaccumulator[i];
+            DDSaccumulator[i] += DDSaddValue[i];
+            stepNow ^= DDSaccumulator[i];
+            stepNow &= (1L << STEPBIT);
+            rawCount[i] = DDSaccumulator[i] >> STEPBIT;
+
+            if (DDSaddValue[i] > 0) {
+                isForward[i] = true;
+            } else {
+                isForward[i] = false;
+            }
+            if (stepNow) {
+                digitalWrite(dir_pins[i], isForward[i]);
+                digitalWrite(step_pins[i], 1);
+                stepgen_position[i] = DDSaccumulator[i];
+                isStepping[i] = true;
+            }
+        }
+    }
+}
+
+void resetSteps() {
+    int8_t i;
+    for (i = 0; i < JOINTS; i++) {
+        if (isStepping[i]) {
+            digitalWrite(step_pins[i], 0);
+        }
+    }
+}
+
+""")
+
+        output.append("void updateBaseThread() {")
+        output.append("    if (!step) {")
+        output.append("        frequencyScale = (float)(1 << STEPBIT) / (float)PRU_BASEFREQ;")
+        output.append("        stepgen_velocity[0] = data.VAROUT32_STEPDIR4_VELOCITY;")
+        output.append("        stepgen_velocity[1] = data.VAROUT32_STEPDIR5_VELOCITY;")
+        output.append("        makeSteps();")
+        output.append("        data.VARIN32_STEPDIR4_POSITION = stepgen_position[0];")
+        output.append("        data.VARIN32_STEPDIR5_POSITION = stepgen_position[1];")
+        output.append("        step = true;")
+        output.append("    } else {")
+        output.append("        resetSteps();")
+        output.append("        step = false;")
+        output.append("    }")
+        output.append("}")
+        output.append("")
+
         output.append("void setup() {")
         if protocol == "UART":
             output.append("    Serial.begin(1000000);")
@@ -298,8 +378,6 @@ class Firmware:
                 string = plugin_instance.firmware_setup()
                 if string.strip():
                     output.append(string)
-        output.append("")
-
         output.append("}")
         output.append("")
 

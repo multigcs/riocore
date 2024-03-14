@@ -55,6 +55,9 @@ class Plugin(PluginBase):
         }
         self.INFO = "step/dir output for stepper drivers"
         self.DESCRIPTION = "to control motor drivers via step/dir pin's and an optional enable pin"
+        if self.system_setup:
+            if "joint_n" not in self.system_setup:
+                self.system_setup["joint_n"] = 0
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -78,3 +81,49 @@ class Plugin(PluginBase):
             }
             """
         return ""
+
+    def firmware_defines(self):
+        output = []
+        for pin_name, pin_config in self.pins().items():
+            if "pin" not in pin_config:
+                continue
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            output.append(f"#define {pin_define_name} {pin}")
+        return "\n".join(output)
+
+    def firmware_setup(self):
+        output = []
+        for pin_name, pin_config in self.pins().items():
+            if "pin" not in pin_config:
+                continue
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            output.append(f"    pinMode({pin_define_name}, {direction.upper()});")
+
+        for pin_name, pin_config in self.pins().items():
+            if "pin" not in pin_config:
+                continue
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            if pin_name == "step":
+                output.append(f"    step_pins[{self.system_setup['joint_n']}] = {pin_define_name};")
+            elif pin_name == "dir":
+                output.append(f"    dir_pins[{self.system_setup['joint_n']}] = {pin_define_name};")
+
+        self.system_setup["joint_n"] += 1
+        return "\n".join(output)
+
+    def firmware_loop(self):
+        output = []
+        for pin_name, pin_config in self.pins().items():
+            if "pin" not in pin_config:
+                continue
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            # output.append(f"    digitalWrite({pin_define_name}, value_bit);")
+        return "\n".join(output)
