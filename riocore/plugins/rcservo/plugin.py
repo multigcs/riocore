@@ -49,6 +49,7 @@ class Plugin(PluginBase):
         }
         self.INFO = "rc-servo output"
         self.DESCRIPTION = "to control rc-servos, usable as joint or as variable/analog output in LinuxCNC"
+        self.FIRMWARE_SUPPORT = True
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -72,3 +73,42 @@ class Plugin(PluginBase):
             value = ((value + 300)) * OSC_CLOCK / 200000;
             """
         return ""
+
+    def firmware_defines(self):
+        output = ["#include <Servo.h>"]
+        output.append("")
+        for pin_name, pin_config in self.pins().items():
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            output.append(f"#define {pin_define_name} {pin}")
+        output.append("")
+        for pin_name, pin_config in self.pins().items():
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            output.append(f"Servo servo_{self.instances_name};")
+        return "\n".join(output)
+
+    def firmware_setup(self):
+        output = []
+        for pin_name, pin_config in self.pins().items():
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            freq = 5000
+            resolution = 8
+            output.append(f"    servo_{self.instances_name}.attach({pin_define_name});")
+
+        return "\n".join(output)
+
+    def firmware_loop(self):
+        output = []
+        channel = 0
+        for pin_name, pin_config in self.pins().items():
+            pin = pin_config["pin"]
+            direction = pin_config["direction"]
+            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
+            output.append(f"    servo_{self.instances_name}.write(value_{pin_name});")
+            channel += 1
+        return "\n".join(output)

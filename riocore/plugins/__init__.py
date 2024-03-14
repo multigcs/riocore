@@ -88,6 +88,8 @@ class PluginBase:
         self.TYPE = "io"
         self.INFO = ""
         self.DESCRIPTION = ""
+        self.GATEWARE_SUPPORT = True
+        self.FIRMWARE_SUPPORT = False
         self.OPTIONS = {}
         self.PLUGIN_CONFIG = False
         self.system_setup = system_setup

@@ -1,0 +1,108 @@
+{
+    "name": "ESP32-poe-iso",
+    "description": "ESP32-poe-iso - for testing only",
+    "boardcfg": "ESP32-poe-iso",
+    "protocol": "UDP",
+    "plugins": [
+        {
+            "type": "bitout",
+            "name": "blink",
+            "pins": {
+                "bit": {
+                    "pin": "10",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "pwm"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "esp32_ledc",
+            "name": "testled",
+            "pins": {
+                "pwm1": {
+                    "pin": "15"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in1",
+            "pins": {
+                "bit": {
+                    "pin": "34",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in2",
+            "pins": {
+                "bit": {
+                    "pin": "4",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "13",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "14",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "15",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "16",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        }
+    ]
+}

@@ -24,6 +24,8 @@ class Plugin(PluginBase):
         }
         self.INFO = "ledc plugin to generate up to 16 PWM signals"
         self.DESCRIPTION = "only for esp32"
+        self.GATEWARE_SUPPORT = False
+        self.FIRMWARE_SUPPORT = True
 
     def firmware_defines(self):
         output = []
@@ -41,13 +43,12 @@ class Plugin(PluginBase):
             pin = pin_config["pin"]
             direction = pin_config["direction"]
             pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
-            #output.append(f"    pinMode({pin_define_name}, {direction.upper()});")
+            # output.append(f"    pinMode({pin_define_name}, {direction.upper()});")
             freq = 5000
             resolution = 8
             output.append(f"    ledcSetup({channel}, {freq}, {resolution});")
             output.append(f"    ledcAttachPin({pin_define_name}, {channel});")
             channel += 1
-
 
         return "\n".join(output)
 

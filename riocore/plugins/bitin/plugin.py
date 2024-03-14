@@ -25,6 +25,7 @@ class Plugin(PluginBase):
         }
         self.INFO = "single input pin"
         self.DESCRIPTION = "to read switches or other 1bit signals"
+        self.FIRMWARE_SUPPORT = True
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)

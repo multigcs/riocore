@@ -91,6 +91,7 @@ class LinuxCNC:
             "MIN_ANGULAR_VELOCITY": 0.0,
             "DEFAULT_ANGULAR_VELOCITY": 2.5,
             "MAX_ANGULAR_VELOCITY": 5.0,
+            "PYVCP_POSITION": "RIGHT",
         },
         "KINS": {
             "JOINTS": None,
@@ -158,8 +159,8 @@ class LinuxCNC:
         self.networks = {}
         self.project = project
         self.base_path = f"{self.project.config['output_path']}/LinuxCNC"
-        self.component_path = f"{self.base_path}/Component"
-        self.configuration_path = f"{self.base_path}/Configuration"
+        self.component_path = f"{self.base_path}"
+        self.configuration_path = f"{self.base_path}"
         self.create_axis_config()
         self.addons = {}
         for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/linuxcnc.py"):
