@@ -103,6 +103,14 @@
                 }
             },
             "is_joint": true
+        },
+        {
+            "type": "rcservo",
+            "pins": {
+                "pwm": {
+                    "pin": "36"
+                }
+            }
         }
     ]
 }

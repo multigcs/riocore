@@ -95,9 +95,9 @@ class Firmware:
                     variable_size = interface["size"]
                     if interface["direction"] == "output":
                         if variable_size > 1:
-                            output.append(f'    printf("{variable}: %f\\n", value_{iname});')
+                            output.append(f'    // printf("{variable}: %f\\n", value_{iname});')
                         else:
-                            output.append(f'    printf("{variable}: %i\\n", value_{iname});')
+                            output.append(f'    // printf("{variable}: %i\\n", value_{iname});')
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
