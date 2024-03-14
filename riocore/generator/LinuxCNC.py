@@ -671,7 +671,7 @@ class LinuxCNC:
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
                         self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
-                        self.hal_net_add(f"halui.axis.{axis_name}.pos-feedback", f"riof.jog.position_mux.in{mux_input:02d}")
+                        self.hal_net_add(f"halui.axis.{axis_name}.pos-relative", f"riof.jog.position_mux.in{mux_input:02d}")
                         mux_select += 1
                         mux_input = mux_input * 2
                     elif function == "position":
