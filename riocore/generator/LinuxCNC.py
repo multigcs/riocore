@@ -91,7 +91,7 @@ class LinuxCNC:
             "MIN_ANGULAR_VELOCITY": 0.0,
             "DEFAULT_ANGULAR_VELOCITY": 2.5,
             "MAX_ANGULAR_VELOCITY": 5.0,
-            "PYVCP_POSITION": "RIGHT",  # BOTTOM
+            "PYVCP_POSITION": "RIGHT",
         },
         "KINS": {
             "JOINTS": None,
