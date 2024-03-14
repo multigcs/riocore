@@ -1,3 +1,4 @@
+import hashlib
 import copy
 import glob
 import importlib
@@ -13,7 +14,7 @@ class Firmware:
     def __init__(self, project):
         self.project = project
         self.base_path = f"{self.project.config['output_path']}/Firmware"
-        self.component_path = f"{self.base_path}"
+        self.firmware_path = f"{self.base_path}"
         self.addons = {}
         for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/firmware.py"):
             addon_name = addon_path.split("/")[-2]
@@ -249,7 +250,6 @@ class Firmware:
             header_list.append("ESPmDNS.h")
             header_list.append("WiFiUdp.h")
 
-
         defines = {
             "PREFIX": '"rio"',
             "JOINTS": "3",
@@ -261,12 +261,9 @@ class Firmware:
             output.append(f"#include <{header}>")
         output.append("")
 
-
         if protocol == "UDP":
             output.append("WiFiUDP Udp;")
             output.append("unsigned int localPort = 2390;")
-
-
 
         for key, value in defines.items():
             output.append(f"#define {key} {value}")
@@ -275,7 +272,6 @@ class Firmware:
         output += self.component_variables()
         output += self.component_buffer()
         output.append("")
-
 
         output.append("void setup() {")
         if protocol == "UART":
@@ -287,16 +283,15 @@ class Firmware:
 
         if protocol == "UDP":
             output.append("    ETH.begin();")
-            #output.append("    /*")
+            # output.append("    /*")
             output.append("    // setup static ip")
             output.append("    IPAddress myIP(192, 168, 80, 242);")
             output.append("    IPAddress myGW(192, 168, 80, 1);")
             output.append("    IPAddress mySN(255, 255, 255, 0);")
             output.append("    ETH.config(myIP, myGW, mySN);")
-            #output.append("    */")
+            # output.append("    */")
             output.append("    Udp.begin(localPort);")
             output.append("")
-
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE != "interface":
@@ -307,7 +302,6 @@ class Firmware:
 
         output.append("}")
         output.append("")
-
 
         if protocol == "UART":
             output.append("void loop() {")
@@ -327,7 +321,6 @@ class Firmware:
             output.append("")
 
         elif protocol == "UDP":
-
             output.append("void loop() {")
             output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
             output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
@@ -345,11 +338,8 @@ class Firmware:
             output.append("    }")
             output.append("")
 
-
-
             output.append("}")
             output.append("")
-
 
         board = self.project.config["jdata"].get("board")
         platform = self.project.config["jdata"].get("platform")
@@ -362,12 +352,49 @@ class Firmware:
         platformio_ini.append("framework = arduino")
         platformio_ini.append(f"platform = {platform}")
         platformio_ini.append(f"board = {board}")
-        #platformio_ini.append("board_build.mcu = esp32s2")
-        #platformio_ini.append("board_build.f_cpu = 240000000L")
         platformio_ini.append("upload_protocol = esptool")
         platformio_ini.append("")
 
-        os.system(f"mkdir -p {self.component_path}/src")
-        os.system(f"mkdir -p {self.component_path}/lib")
-        open(f"{self.component_path}/platformio.ini", "w").write("\n".join(platformio_ini))
-        open(f"{self.component_path}/src/main.ino", "w").write("\n".join(output))
+        makefile = []
+        makefile.append("")
+        makefile.append("all: build load")
+        makefile.append("")
+        makefile.append("build:")
+        makefile.append("	pio run")
+        makefile.append("	cp -v hash_new.txt hash_compiled.txt")
+        makefile.append("")
+        makefile.append("load:")
+        makefile.append("	pio run --target upload")
+        makefile.append("	cp -v hash_new.txt hash_compiled.txt")
+        makefile.append("	cp -v hash_new.txt hash_flashed.txt")
+        makefile.append("")
+
+        os.system(f"mkdir -p {self.firmware_path}/src")
+        os.system(f"mkdir -p {self.firmware_path}/lib")
+        open(f"{self.firmware_path}/platformio.ini", "w").write("\n".join(platformio_ini))
+        open(f"{self.firmware_path}/Makefile", "w").write("\n".join(makefile))
+        open(f"{self.firmware_path}/src/main.ino", "w").write("\n".join(output))
+
+        # write hash of rio.v to filesystem
+        hash_file_compiled = f"{self.firmware_path}/hash_compiled.txt"
+        hash_compiled = ""
+        if os.path.isfile(hash_file_compiled):
+            hash_compiled = open(hash_file_compiled, "r").read()
+
+        hash_file_flashed = f"{self.firmware_path}/hash_flashed.txt"
+        hash_flashed = ""
+        if os.path.isfile(hash_file_flashed):
+            hash_flashed = open(hash_file_flashed, "r").read()
+
+        hash_md5 = hashlib.md5()
+        with open(f"{self.firmware_path}/src/main.ino", "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        hash_new = hash_md5.hexdigest()
+
+        if hash_compiled != hash_new:
+            print("!!! firmware changed: needs to be build and flash |||")
+        elif hash_flashed != hash_new:
+            print("!!! firmware changed: needs to flash |||")
+        hash_file_new = f"{self.firmware_path}/hash_new.txt"
+        open(hash_file_new, "w").write(hash_new)
