@@ -1,0 +1,7 @@
+o<z_touch> sub
+	G21 ; mm and speed
+    G91 G38.2 Z-20 F50	(probe down using a fast feedrate)
+    G91 G38.4 Z5 F10	(probe up using a slow feedrate)
+    G10 L20 P0 Z14	    (set current WCS Z value = plate thickness)
+    G91 G1 Z1 F100		(move up by 1mm)
+o<z_touch> endsub

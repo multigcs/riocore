@@ -41,8 +41,8 @@ def hal(parent):
 
     parent.hal_net_add(f"joy_or2_sel0.out", f"joy_mux4.sel0")
     parent.hal_net_add(f"joy_or2_sel1.out", f"joy_mux4.sel1")
-    parent.hal_net_add(f"joy_mux4.out", f"halui.axis.jog-speed")
-    parent.hal_net_add(f"joy_mux4.out", f"halui.joint.jog-speed")
+    # parent.hal_net_add(f"joy_mux4.out", f"halui.axis.jog-speed")
+    # parent.hal_net_add(f"joy_mux4.out", f"halui.joint.jog-speed")
 
     for axis_name, joints in parent.axis_dict.items():
         axis_lower = axis_name.lower()
