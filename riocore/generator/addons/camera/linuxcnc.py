@@ -38,7 +38,7 @@ def gui(parent):
                             diff = offsets[axis_name]
                             mdi_command.append(f"{axis_name}{diff}")
                     halpin = parent.ini_mdi_command(" ".join(mdi_command))
-                    parent.hal_net_add("rio.zerocam", halpin)
+                    parent.hal_net_add("pyvcp.zerocam", halpin)
                     parent.cfgxml_data["status"] += parent.gui_gen.draw_button("zero-cam", "zerocam")
                     offset_num += 1
                 elif offsets:
