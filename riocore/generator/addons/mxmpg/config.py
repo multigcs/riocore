@@ -34,6 +34,7 @@ def load_tree(parent, tree_lcnc):
     if mxmpg_config:
         for key, var_setup in {
             "enable": {"type": bool, "default": False},
+            "device": {"type": str, "default": "/dev/ttyACM0"},
         }.items():
             aitem = MyStandardItem()
             tree_lcncmxmpg.appendRow(

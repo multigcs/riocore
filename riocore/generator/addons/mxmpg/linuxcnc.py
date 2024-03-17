@@ -4,8 +4,9 @@ def hal(parent):
 
     mxmpg_config = linuxcnc_config.get("mxmpg", {})
     mxmpg_enable = mxmpg_config.get("enable", False)
+    mxmpg_device = mxmpg_config.get("device", "/dev/ttyACM0")
     if mxmpg_enable:
-        output.append(f"loadusr mpg -d /dev/ttyACM0 -s")
+        output.append(f"loadusr mpg -d {mxmpg_device} -s")
         output.append("")
 
         # display status
