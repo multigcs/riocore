@@ -8,11 +8,6 @@ def hal(parent):
         output.append(f"loadusr mpg -d /dev/ttyACM0 -s")
         output.append("")
 
-        # zero axis -> mdi commands
-        parent.hal_net_add("mpg.button.sel01-long", "|halui.mdi-command-00")
-        parent.hal_net_add("mpg.button.sel02-long", "|halui.mdi-command-01")
-        parent.hal_net_add("mpg.button.sel03-long", "|halui.mdi-command-02")
-
         # display status
         parent.hal_net_add("halui.machine.is-on", "mpg.machine.is-on")
         parent.hal_net_add("halui.program.is-running", "mpg.program.is-running")
@@ -31,6 +26,13 @@ def hal(parent):
         # spindle control
         parent.hal_net_add("mpg.button.02-long", "halui.spindle.0.start")
         parent.hal_net_add("mpg.button.02", "halui.spindle.0.stop")
+
+        # zero axis -> mdi commands
+        bn = 1
+        for axis_name, joints in parent.axis_dict.items():
+            halpin = parent.ini_mdi_command(f"G92 {axis_name}0")
+            parent.hal_net_add(f"mpg.button.sel{bn:02d}-long", halpin)
+            bn += 1
 
         # axis selection
         bn = 1

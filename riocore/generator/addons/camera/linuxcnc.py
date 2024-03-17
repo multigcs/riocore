@@ -1,4 +1,8 @@
+mdi_command = []
+
+
 def ini(parent, ini_setup):
+    global mdi_command
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
     gui = parent.project.config["jdata"].get("gui", "axis")
     offset_num = 0
@@ -26,7 +30,7 @@ def ini(parent, ini_setup):
                     if axis_name in offsets:
                         diff = offsets[axis_name]
                     mdi_command.append(f"{axis_name}{diff}")
-                ini_setup["HALUI"]["MDI_COMMAND|06"] = " ".join(mdi_command)
+                # ini_setup["HALUI"]["MDI_COMMAND|06"] = " ".join(mdi_command)
                 offset_num += 1
             elif offsets:
                 print("WARNING: offset works only on one camera")
@@ -46,7 +50,8 @@ def gui(parent):
             if camera and camera.get("enable"):
                 offsets = camera.get("offset")
                 if offsets:
-                    parent.hal_net_add("rio.zerocam", "halui.mdi-command-06")
+                    halpin = self.ini_mdi_command(mdi_command)
+                    parent.hal_net_add("rio.zerocam", halpin)
                     parent.cfgxml_data["status"] += parent.gui_gen.draw_button("zero-cam", "zerocam")
                     valid = True
                     break

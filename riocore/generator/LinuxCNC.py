@@ -133,7 +133,6 @@ class LinuxCNC:
             "MDI_COMMAND|03": "G92 X0 Y0",
             "MDI_COMMAND|04": "o<z_touch> call",
             "MDI_COMMAND|05": "o<x_touch> call",
-            "MDI_COMMAND|06": "G92 X0 Y0",
         },
         "TRAJ": {
             "COORDINATES": None,
@@ -170,13 +169,13 @@ class LinuxCNC:
 
     def generator(self):
         self.component()
-        self.ini()
         self.hal()
         self.gui()
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "generator"):
                 addon.generator(self)
         self.misc()
+        self.ini()
         os.system(f"mkdir -p {self.configuration_path}/")
         output_hal = []
         output_postgui = []
@@ -270,6 +269,22 @@ class LinuxCNC:
         open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(output_postgui))
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(self.postgui_call_list))
         print(f"writing linuxcnc files to: {self.base_path}")
+
+    def ini_mdi_command(self, command):
+        jdata = self.project.config["jdata"]
+        ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.axis_dict)
+        mdi_index = ""
+        mdi_n = 0
+        for key, value in ini["HALUI"].items():
+            if key.startswith("MDI_COMMAND|"):
+                if value == command:
+                    mdi_index = mdi_n
+                    break
+                mdi_n += 1
+        if not mdi_index:
+            mdi_index = mdi_n
+            ini["HALUI"][f"MDI_COMMAND|{mdi_index:02d}"] = command
+        return f"halui.mdi-command-{mdi_index:02d}"
 
     @classmethod
     def ini_defaults(cls, jdata, num_joints=5, axis_dict={}):
@@ -534,19 +549,24 @@ class LinuxCNC:
             self.cfgxml_data["status"].append("      <bd>2</bd>")
             if machinetype == "lathe":
                 if "Z":
-                    self.hal_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
+                    halpin = self.ini_mdi_command("G92 X0")
+                    self.hal_net_add(f"{prefix}.zeroz", halpin)
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
                 if "X":
-                    self.hal_net_add(f"{prefix}.zerox", "halui.mdi-command-00")
+                    halpin = self.ini_mdi_command("G92 X0")
+                    self.hal_net_add(f"{prefix}.zerox", halpin)
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-x", "zerox")
-                    self.hal_net_add(f"{prefix}.touchx", "halui.mdi-command-05")
+                    halpin = self.ini_mdi_command("o<z_touch> call")
+                    self.hal_net_add(f"{prefix}.touchx", halpin)
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("touch-x", "touchx")
             else:
                 if "X" in self.axis_dict and "Y" in self.axis_dict:
-                    self.hal_net_add(f"{prefix}.zeroxy", "halui.mdi-command-03")
+                    halpin = self.ini_mdi_command("G92 X0 Y0")
+                    self.hal_net_add(f"{prefix}.zeroxy", halpin)
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-xy", "zeroxy")
                 if "Z":
-                    self.hal_net_add(f"{prefix}.zeroz", "halui.mdi-command-02")
+                    halpin = self.ini_mdi_command("G92 Z0")
+                    self.hal_net_add(f"{prefix}.zeroz", halpin)
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
 
             self.cfgxml_data["status"].append("    </hbox>")
