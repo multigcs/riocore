@@ -238,9 +238,11 @@ class LinuxCNC:
                         output_hal.append(f"addf logic.{network} servo-thread")
                         for in_n, pin_in in enumerate(net["in"]):
                             if not pin_in.startswith(custom_filter):
-                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n:02d} logic.{network}.in-{in_n:02d} <= {pin_in}")
+                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
+                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
                             else:
-                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n:02d} logic.{network}.in-{in_n:02d} <= {pin_in}")
+                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
+                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
 
                         for ctype in uniq_types:
                             output_hal.append(f"net {signal_prefix}{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
