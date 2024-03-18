@@ -995,7 +995,9 @@ class LinuxCNC:
                     output.append(f"    hal_{hal_type}_t *{varname};")
                     if not signal_source and not signal_config.get("helper", False):
                         if direction == "input" and hal_type == "float":
+                            output.append(f"    hal_{hal_type}_t *{varname}_ABS;")
                             output.append(f"    hal_s32_t *{varname}_S32;")
+                            output.append(f"    hal_u32_t *{varname}_U32_ABS;")
                         output.append(f"    hal_float_t *{varname}_SCALE;")
                         output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
@@ -1061,8 +1063,12 @@ class LinuxCNC:
                     output.append(f'    if (retval = hal_pin_{hal_type}_newf(HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
                     if direction == "input" and hal_type == "float" and not signal_source and not signal_config.get("helper", False):
+                        output.append(f'    if (retval = hal_pin_float_newf(HAL_{hal_direction}, &(data->{varname}_ABS), comp_id, "%s.{halname}-abs", prefix) != 0) error_handler(retval);')
+                        output.append(f"    *data->{varname}_ABS = 0;")
                         output.append(f'    if (retval = hal_pin_s32_newf(HAL_{hal_direction}, &(data->{varname}_S32), comp_id, "%s.{halname}-s32", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_S32 = 0;")
+                        output.append(f'    if (retval = hal_pin_u32_newf(HAL_{hal_direction}, &(data->{varname}_U32_ABS), comp_id, "%s.{halname}-u32-abs", prefix) != 0) error_handler(retval);')
+                        output.append(f"    *data->{varname}_U32_ABS = 0;")
                 else:
                     output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
@@ -1363,7 +1369,9 @@ class LinuxCNC:
                                     output.append("    float raw_value = value;")
                                     output.append("    value = value + offset;")
                                     output.append("    value = value / scale;")
+                                    output.append(f"    *data->{varname}_ABS = abs(value);")
                                     output.append(f"    *data->{varname}_S32 = value;")
+                                    output.append(f"    *data->{varname}_U32_ABS = abs(value);")
                                 output.append(f"    *data->{varname} = value;")
                                 if boolean:
                                     output.append(f"    *data->{varname}_not = 1 - value;")
