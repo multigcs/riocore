@@ -185,6 +185,8 @@ class LinuxCNC:
         ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
 
         # hal
+        # signal_prefix = "rios."
+        signal_prefix = ""
         for network, net in self.networks.items():
             if net["in"] and net["out"]:
                 output_hal.append("")
@@ -193,15 +195,14 @@ class LinuxCNC:
                 output_postgui.append(f"# {network}")
                 if len(net["in"]) == 1:
                     if not net["in"][0].startswith(custom_filter):
-                        output_hal.append(f"net rios.{network} <= {net['in'][0]}")
+                        output_hal.append(f"net {signal_prefix}{network} <= {net['in'][0]}")
                     else:
-                        output_postgui.append(f"net rios.{network} <= {net['in'][0]}")
-
+                        output_postgui.append(f"net {signal_prefix}{network} <= {net['in'][0]}")
                     for out in net["out"]:
                         if not out.startswith(custom_filter):
-                            output_hal.append(f"net rios.{network} => {out}")
+                            output_hal.append(f"net {signal_prefix}{network} => {out}")
                         else:
-                            output_postgui.append(f"net rios.{network} => {out}")
+                            output_postgui.append(f"net {signal_prefix}{network} => {out}")
                 else:
                     uniq_types = set()
                     if net["in"][0].endswith("counts"):
@@ -212,16 +213,16 @@ class LinuxCNC:
                         output_hal.append(f"addf isum.{network} servo-thread")
                         for in_n, pin_in in enumerate(net["in"]):
                             if not pin_in.startswith(custom_filter):
-                                output_hal.append(f"net rios.{network}-in-{in_n} isum.{network}.in{in_n} <= {pin_in}")
+                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n} isum.{network}.in{in_n} <= {pin_in}")
                             else:
-                                output_postgui.append(f"net rios.{network}-in-{in_n} isum.{network}.in{in_n} <= {pin_in}")
-                        output_hal.append(f"net rios.{network}_out-s <= isum.{network}.out-s")
+                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n} isum.{network}.in{in_n} <= {pin_in}")
+                        output_hal.append(f"net {signal_prefix}{network}_out-s <= isum.{network}.out-s")
                         for out in net["out"]:
                             ctype = net["options"].get(out, {}).get("type", "OR")
                             if not out.startswith(custom_filter):
-                                output_hal.append(f"net rios.{network}_out-s => {out}")
+                                output_hal.append(f"net {signal_prefix}{network}_out-s => {out}")
                             else:
-                                output_postgui.append(f"net rios.{network}_out-s => {out}")
+                                output_postgui.append(f"net {signal_prefix}{network}_out-s => {out}")
                     else:
                         for option in net["options"].values():
                             uniq_types.add(option["type"])
@@ -235,19 +236,19 @@ class LinuxCNC:
                         output_hal.append(f"addf logic.{network} servo-thread")
                         for in_n, pin_in in enumerate(net["in"]):
                             if not pin_in.startswith(custom_filter):
-                                output_hal.append(f"net rios.{network}-in-{in_n:02d} logic.{network}.in-{in_n:02d} <= {pin_in}")
+                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n:02d} logic.{network}.in-{in_n:02d} <= {pin_in}")
                             else:
-                                output_postgui.append(f"net rios.{network}-in-{in_n:02d} logic.{network}.in-{in_n:02d} <= {pin_in}")
+                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n:02d} logic.{network}.in-{in_n:02d} <= {pin_in}")
 
                         for ctype in uniq_types:
-                            output_hal.append(f"net rios.{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
+                            output_hal.append(f"net {signal_prefix}{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
 
                         for out in net["out"]:
                             ctype = net["options"].get(out, {}).get("type", "OR")
                             if not out.startswith(custom_filter):
-                                output_hal.append(f"net rios.{network}_{ctype.lower()} => {out}")
+                                output_hal.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
                             else:
-                                output_postgui.append(f"net rios.{network}_{ctype.lower()} => {out}")
+                                output_postgui.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
 
         for name, value in self.setps.items():
             # check if pin is connected to other pin
@@ -470,7 +471,7 @@ class LinuxCNC:
         # else:
         #     print(f"WARNING: {output_name} allready set to {self.setps[output_name]}")
 
-    def hal_net_add(self, input_name, output_name):
+    def hal_net_add(self, input_name, output_name, signal_name=None):
         ctype = "OR"
         if output_name[0] == "&":
             ctype = "AND"
@@ -489,16 +490,22 @@ class LinuxCNC:
             elif input_name in net_nodes["out"]:
                 network = net_name
             elif output_name in net_nodes["out"]:
-                if output_name == "halui.axis.jog-speed":
-                    print("#### found in", net_name)
                 network = net_name
                 break
 
         if not network:
-            if not input_name.startswith("rio."):
-                network = input_name.replace(".", "_")
+            if signal_name in self.networks:
+                print(f"ERROR: signal name '{signal_name}' already exist")
+                signal_name = None
+
+            if signal_name:
+                # using user defined signal name
+                network = signal_name
             else:
-                network = output_name.replace(".", "_")
+                if not input_name.startswith("rio."):
+                    network = input_name.replace(".", "-")
+                else:
+                    network = output_name.replace(".", "-")
             if network not in self.networks:
                 self.networks[network] = {
                     "in": [input_name],
@@ -549,24 +556,24 @@ class LinuxCNC:
             self.cfgxml_data["status"].append("      <bd>2</bd>")
             if machinetype == "lathe":
                 if "Z":
-                    halpin = self.ini_mdi_command("G92 X0")
-                    self.hal_net_add(f"{prefix}.zeroz", halpin)
+                    halpin = self.ini_mdi_command("G92 Z0")
+                    self.hal_net_add(f"{prefix}.zeroz", halpin, "zero-z")
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
                 if "X":
                     halpin = self.ini_mdi_command("G92 X0")
-                    self.hal_net_add(f"{prefix}.zerox", halpin)
+                    self.hal_net_add(f"{prefix}.zerox", halpin, "zero-x")
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-x", "zerox")
                     halpin = self.ini_mdi_command("o<z_touch> call")
-                    self.hal_net_add(f"{prefix}.touchx", halpin)
+                    self.hal_net_add(f"{prefix}.touchx", halpin, "touch-x")
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("touch-x", "touchx")
             else:
                 if "X" in self.axis_dict and "Y" in self.axis_dict:
                     halpin = self.ini_mdi_command("G92 X0 Y0")
-                    self.hal_net_add(f"{prefix}.zeroxy", halpin)
+                    self.hal_net_add(f"{prefix}.zeroxy", halpin, "zero-xy")
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-xy", "zeroxy")
                 if "Z":
                     halpin = self.ini_mdi_command("G92 Z0")
-                    self.hal_net_add(f"{prefix}.zeroz", halpin)
+                    self.hal_net_add(f"{prefix}.zeroz", halpin, "zero-z")
                     self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
 
             self.cfgxml_data["status"].append("    </hbox>")
@@ -645,8 +652,8 @@ class LinuxCNC:
                     for joint, joint_setup in joints.items():
                         self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
                         self.hal_setp_add(f"joint.{joint}.jog-scale", 0.01)
-                        self.hal_net_add(f"axis.{laxis}.jog-counts", f"joint.{joint}.jog-counts")
-                        self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable")
+                        self.hal_net_add(f"axis.{laxis}.jog-counts", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                        self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
             else:
                 for axis_name, joints in self.axis_dict.items():
                     laxis = axis_name.lower()
@@ -657,7 +664,7 @@ class LinuxCNC:
                         self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
                         for function, halname in self.rio_functions["jog"].items():
                             if function == fname:
-                                self.hal_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts")
+                                self.hal_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
 
                         for joint, joint_setup in joints.items():
                             self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
@@ -665,7 +672,7 @@ class LinuxCNC:
                             self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
-                                    self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts")
+                                    self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
             if speed_selector:
                 self.loadrts.append("loadrt mux2 names=riof.jog.speed_mux")
@@ -852,8 +859,8 @@ class LinuxCNC:
         self.loadrts.append("addf motion-controller servo-thread")
         self.loadrts.append("addf rio.readwrite servo-thread")
         self.loadrts.append("")
-        self.hal_net_add("iocontrol.0.user-enable-out", "rio.sys-enable")
-        self.hal_net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request")
+        self.hal_net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
+        self.hal_net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
 
         has_estop = False
         for plugin_instance in self.project.plugin_instances:
@@ -869,10 +876,11 @@ class LinuxCNC:
 
         self.loadrts.append("")
         self.loadrts.append("loadusr -W hal_manualtoolchange")
-        self.loadrts.append("net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change")
-        self.loadrts.append("net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed")
-        self.loadrts.append("net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number")
-        self.loadrts.append("net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared")
+        self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+        self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+        self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+        self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+
         self.loadrts.append("")
 
         for addon_name, addon in self.addons.items():
