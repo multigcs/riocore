@@ -2,7 +2,6 @@ import os
 import fcntl
 import glob
 from functools import partial
-import linux_event
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import (
@@ -48,6 +47,8 @@ ALL_ACTIONS = {
 
 def load_tree(parent, tree_lcnc):
     def wiz2_joypad(selected_device):
+        import linux_event
+
         device_events = linux_event.InputDevice(selected_device)
 
         def wiz_select(action, clicked):
