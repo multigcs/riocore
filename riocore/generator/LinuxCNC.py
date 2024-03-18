@@ -151,7 +151,6 @@ class LinuxCNC:
     }
 
     def __init__(self, project):
-        self.used_signals = {}
         self.postgui_call_list = []
         self.loadrts = []
         self.axisout = []
@@ -857,6 +856,7 @@ class LinuxCNC:
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        machinetype = self.project.config["jdata"].get("machinetype")
 
         self.loadrts.append("# load the realtime components")
         self.loadrts.append("loadrt [KINS]KINEMATICS")
@@ -890,14 +890,18 @@ class LinuxCNC:
         if not has_estop:
             self.hal_net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
 
-        self.loadrts.append("")
         self.loadrts.append("loadusr -W hal_manualtoolchange")
+        self.loadrts.append("")
         self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
         self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
         self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
         self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
 
-        self.loadrts.append("")
+        if machinetype == "corexy":
+            self.loadrts.append("# machinetype is corexy")
+            self.loadrts.append("loadrt corexy_by_hal names=corexy")
+            self.loadrts.append("addf corexy servo-thread")
+            self.loadrts.append("")
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -946,8 +950,21 @@ class LinuxCNC:
                 if position_mode == "absolute":
                     self.axisout.append(f"# joint.{joint}: absolut positioning")
                     self.axisout.append(f"setp {position_halname}-scale [JOINT_{joint}]SCALE_OUT")
-                    self.axisout.append(f"net j{joint}pos-cmd        <= joint.{joint}.motor-pos-cmd  => {position_halname}")
-                    self.axisout.append(f"net j{joint}pos-cmd        => joint.{joint}.motor-pos-fb")
+                    if machinetype == "corexy" and axis_name in {"X", "Y"}:
+                        corexy_axis = "beta"
+                        if axis_name == "X":
+                            corexy_axis = "alpha"
+                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd => corexy.j{joint}-motor-pos-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} <= corexy.{corexy_axis}-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} => {position_halname}")
+                        self.axisout.append(f"net j{joint}pos-cmd => corexy.{corexy_axis}-fb")
+                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  => corexy.j{joint}-motor-pos-fb")
+                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis} => joint.{joint}.motor-pos-fb")
+                    else:
+                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd => {position_halname}")
+                        self.axisout.append(f"net j{joint}pos-cmd => joint.{joint}.motor-pos-fb")
                     if enable_halname:
                         self.axisout.append(f"net j{joint}enable         <= joint.{joint}.amp-enable-out => {enable_halname}")
                 elif position_halname and feedback_halname:
@@ -963,18 +980,36 @@ class LinuxCNC:
                     self.axisout.append(f"setp pid.{pin_num}.maxoutput [JOINT_{joint}]MAXOUTPUT")
                     self.axisout.append(f"setp {position_halname}-scale [JOINT_{joint}]SCALE_OUT")
                     self.axisout.append(f"setp {feedback_halname}-scale [JOINT_{joint}]SCALE_IN")
-                    self.axisout.append(f"net j{joint}vel-cmd        <= pid.{pin_num}.output           => {position_halname}")
-                    self.axisout.append(f"net j{joint}pos-cmd        <= joint.{joint}.motor-pos-cmd  => pid.{pin_num}.command")
-                    self.axisout.append(f"net j{joint}pos-fb         <= {feedback_halname}     => joint.{joint}.motor-pos-fb")
-                    self.axisout.append(f"net j{joint}pos-fb         => pid.{joint}.feedback")
-
-                    self.used_signals[feedback_halname.replace("rio.", "")] = f"joint.{joint}.motor-pos-fb"
+                    if machinetype == "corexy" and axis_name in {"X", "Y"}:
+                        corexy_axis = "beta"
+                        if axis_name == "X":
+                            corexy_axis = "alpha"
+                        self.axisout.append(f"net j{joint}vel-cmd <= pid.{pin_num}.output")
+                        self.axisout.append(f"net j{joint}vel-cmd => {position_halname}")
+                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd => corexy.j{joint}-motor-pos-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} <= corexy.{corexy_axis}-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} => pid.{pin_num}.command")
+                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  <= {feedback_halname}")
+                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  => corexy.{corexy_axis}-fb")
+                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  => pid.{joint}.feedback")
+                        self.axisout.append(f"net j{joint}pos-fb  <= corexy.j{joint}-motor-pos-fb")
+                        self.axisout.append(f"net j{joint}pos-fb  => joint.{joint}.motor-pos-fb")
+                    else:
+                        self.axisout.append(f"net j{joint}vel-cmd <= pid.{pin_num}.output")
+                        self.axisout.append(f"net j{joint}vel-cmd => {position_halname}")
+                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
+                        self.axisout.append(f"net j{joint}pos-cmd => pid.{pin_num}.command")
+                        self.axisout.append(f"net j{joint}pos-fb  <= {feedback_halname}")
+                        self.axisout.append(f"net j{joint}pos-fb  => joint.{joint}.motor-pos-fb")
+                        self.axisout.append(f"net j{joint}pos-fb  => pid.{joint}.feedback")
 
                     if enable_halname:
-                        self.axisout.append(f"net j{joint}enable         <= joint.{joint}.amp-enable-out => {enable_halname}")
+                        self.axisout.append(f"net j{joint}enable  <= joint.{joint}.amp-enable-out")
+                        self.axisout.append(f"net j{joint}enable  => {enable_halname}")
                     else:
-                        self.axisout.append(f"net j{joint}enable         <= joint.{joint}.amp-enable-out")
-                    self.axisout.append(f"net j{joint}enable         => pid.{pin_num}.enable")
+                        self.axisout.append(f"net j{joint}enable  <= joint.{joint}.amp-enable-out")
+                    self.axisout.append(f"net j{joint}enable  => pid.{pin_num}.enable")
                 self.axisout.append("")
 
     def component_variables(self):
