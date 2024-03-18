@@ -23,6 +23,15 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.OPTIONS = {
+            "quad_type": {
+                "default": 2,
+                "type": int,
+                "min": 1,
+                "max": 4,
+                "description": "encoder type",
+            },
+        }
         self.SIGNALS = {
             "position": {
                 "direction": "input",
