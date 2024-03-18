@@ -919,11 +919,13 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
+
+                    if scale:
+                        self.loadrts.append(f"setp rio.{halname}-scale {scale}")
+                    if offset:
+                        self.loadrts.append(f"setp rio.{halname}-offset {offset}")
+
                     if netname:
-                        if scale:
-                            self.loadrts.append(f"setp rio.{halname}-scale {scale}")
-                        if offset:
-                            self.loadrts.append(f"setp rio.{halname}-offset {offset}")
                         if direction == "inout":
                             self.loadrts.append(f"net rios.{halname} rio.{halname} <=> {netname}")
                         elif direction == "input":
