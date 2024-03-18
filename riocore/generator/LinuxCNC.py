@@ -213,9 +213,11 @@ class LinuxCNC:
                         output_hal.append(f"addf isum.{network} servo-thread")
                         for in_n, pin_in in enumerate(net["in"]):
                             if not pin_in.startswith(custom_filter):
-                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n} isum.{network}.in{in_n} <= {pin_in}")
+                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
+                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
                             else:
-                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n} isum.{network}.in{in_n} <= {pin_in}")
+                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
+                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
                         output_hal.append(f"net {signal_prefix}{network}_out-s <= isum.{network}.out-s")
                         for out in net["out"]:
                             ctype = net["options"].get(out, {}).get("type", "OR")
