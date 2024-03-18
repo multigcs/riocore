@@ -332,7 +332,6 @@ setps = {}
 
 
 def load_halfile(basepath, filepath):
-
     if not os.path.exists(f"{basepath}/{filepath}"):
         if os.path.exists(f"/usr/share/linuxcnc/hallib/{filepath}"):
             basepath = "/usr/share/linuxcnc/hallib"
@@ -362,8 +361,6 @@ def load_halfile(basepath, filepath):
             halpin = parts[1]
             value = parts[2]
             setps[halpin] = value
-
-
 
         elif line.startswith("net "):
             parts = line.split()
@@ -407,7 +404,6 @@ def load_halfile(basepath, filepath):
                             print("ERROR: double input", signalname, part, signals[signalname]["source"])
 
 
-
 section = None
 for line in ini_data.split("\n"):
     if line.startswith("["):
@@ -416,15 +412,13 @@ for line in ini_data.split("\n"):
         if section == "HAL":
             if line.split()[0] == "#":
                 continue
-            name, value = line.split("=",1)
+            name, value = line.split("=", 1)
             name = name.strip()
             value = value.strip()
             if name == "HALFILE":
                 load_halfile(base_dir, value)
             elif name == "POSTGUI_HALFILE":
                 load_halfile(base_dir, value)
-
-
 
 
 groups = {}
@@ -435,7 +429,7 @@ for signal_name, parts in signals.items():
     source_group = ".".join(source_parts[:-1])
     source_pin = source_parts[-1]
     source = f"{source_group}:{source_pin}"
-    
+
     if source_group not in groups:
         groups[source_group] = []
     groups[source_group].append(source_pin)
@@ -451,12 +445,12 @@ for signal_name, parts in signals.items():
         groups[target_group].append(target_pin)
 
         if source.startswith("pyvcp"):
-            gAll.edge(target_name, source, dir='back')
+            gAll.edge(target_name, source, dir="back")
         elif target.startswith("pyvcp"):
             gAll.edge(source, target_name)
 
         elif source.startswith("rio."):
-            gAll.edge(target_name, source, dir='back')
+            gAll.edge(target_name, source, dir="back")
         else:
             gAll.edge(source, target_name)
 
@@ -483,7 +477,7 @@ for group_name, pins in groups.items():
     for setp, value in setps.items():
         if setp.startswith(group_name):
             setp = setp.split(".")[-1]
-            
+
             pin_str = f"<{setp}>{setp}={value}"
             pin_strs.append(pin_str)
 
@@ -511,4 +505,3 @@ for group_name, pins in groups.items():
 
 print("write svg to: /tmp/hal-graph.svg")
 open("/tmp/hal-graph.svg", "w").write(gAll.pipe().decode())
-
