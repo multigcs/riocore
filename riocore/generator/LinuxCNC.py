@@ -706,21 +706,33 @@ class LinuxCNC:
                         self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
                         self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"{prefix}.selected-{axis_name}")
                         self.cfgxml_data["status"] += self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
-
                         for axis_id, joints in self.axis_dict.items():
                             laxis = axis_id.lower()
                             if axis_name == laxis:
-                                self.hal_net_add(f"axisui.jog.{laxis}", f"halui.axis.{laxis}.select")
+                                self.loadrts.append("")
+                                self.loadrts.append(f"# axis {laxis} selection")
+                                self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                                self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                                self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.width 0.1")
+                                self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.retriggerable 0")
+                                self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                                self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
                                 for joint, joint_setup in joints.items():
-                                    self.hal_net_add(f"axisui.jog.{laxis}", f"halui.joint.{joint}.select")
-
+                                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
                         joint_n += 1
             else:
-                for axis_name, joints in self.axis_dict.items():
-                    laxis = axis_name.lower()
-                    self.hal_net_add(f"axisui.jog.{laxis}", f"halui.axis.{laxis}.select")
+                for axis_id, joints in self.axis_dict.items():
+                    laxis = axis_id.lower()
+                    self.loadrts.append("")
+                    self.loadrts.append(f"# axis {laxis} selection")
+                    self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                    self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                    self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.width 0.1")
+                    self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.retriggerable 0")
+                    self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
                     for joint, joint_setup in joints.items():
-                        self.hal_net_add(f"axisui.jog.{laxis}", f"halui.joint.{joint}.select")
+                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
 
             if axis_selector and position_display:
                 self.loadrts.append("")
