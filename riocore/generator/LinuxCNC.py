@@ -271,7 +271,27 @@ class LinuxCNC:
         output_hal += self.axisout
         open(f"{self.configuration_path}/rio.hal", "w").write("\n".join(output_hal))
         open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(output_postgui))
-        open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(self.postgui_call_list))
+
+        extra_data = []
+        if os.path.isfile(f"{self.configuration_path}/postgui_call_list.hal"):
+            # read existing file to keep custom entry's
+            cl_data = open(f"{self.configuration_path}/postgui_call_list.hal", "r").read()
+            for line in cl_data.split("\n"):
+                if not line.strip():
+                    continue
+                if line.startswith("source "):
+                    source = " ".join(line.split()[1:])
+                    if source in self.postgui_call_list:
+                        continue
+                extra_data.append(line.strip())
+        cl_output = []
+        for halfile in self.postgui_call_list:
+            cl_output.append(f"source {halfile}")
+        cl_output.append("")
+        for line in extra_data:
+            cl_output.append(line)
+        open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(cl_output))
+
         print(f"writing linuxcnc files to: {self.base_path}")
 
     def ini_mdi_command(self, command):
@@ -852,7 +872,7 @@ class LinuxCNC:
             open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
 
         if gui not in {"touchy", "probe_basic"}:
-            self.postgui_call_list.append("source custom_postgui.hal")
+            self.postgui_call_list.append("custom_postgui.hal")
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
