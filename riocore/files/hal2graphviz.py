@@ -333,10 +333,29 @@ components = {}
 setps = {}
 setss = {}
 
+LIB_PATH = "/usr/share/linuxcnc/hallib"
 
 def load_halfile(basepath, filepath):
+    if filepath.startswith("LIB:"):
+        basepath = LIB_PATH
+        filepath = filepath.split(":", 1)[-1]
+
+    if filepath.endswith(".tcl"):
+        print(f"ERROR: tcl is not sulorted yet: {basepath}/{filepath}")
+
+        """
+        set KINS(KINEMATICS)  "trivkins"
+        set KINS(JOINTS)  "d"
+        set TRAJ(COORDINATES) ""
+        set EMCMOT(SERVO_PERIOD) ""
+        set EMCMOT(EMCMOT) ""
+        source [file join $::env(HALLIB_DIR) basic_sim.tcl]
+        """
+
+        return
+
     if not os.path.exists(f"{basepath}/{filepath}"):
-        if os.path.exists(f"/usr/share/linuxcnc/hallib/{filepath}"):
+        if os.path.exists(f"{LIB_PATH}/{filepath}"):
             basepath = "/usr/share/linuxcnc/hallib"
         else:
             print(f"ERROR: file: {filepath} not found")
