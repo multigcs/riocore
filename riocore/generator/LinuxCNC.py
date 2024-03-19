@@ -277,8 +277,6 @@ class LinuxCNC:
             # read existing file to keep custom entry's
             cl_data = open(f"{self.configuration_path}/postgui_call_list.hal", "r").read()
             for line in cl_data.split("\n"):
-                if not line.strip():
-                    continue
                 if line.startswith("source "):
                     source = " ".join(line.split()[1:])
                     if source in self.postgui_call_list:
@@ -287,7 +285,6 @@ class LinuxCNC:
         cl_output = []
         for halfile in self.postgui_call_list:
             cl_output.append(f"source {halfile}")
-        cl_output.append("")
         for line in extra_data:
             cl_output.append(line)
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(cl_output))
