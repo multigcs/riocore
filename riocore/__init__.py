@@ -66,25 +66,29 @@ class Plugins:
         return "\n".join(output)
 
     def load_plugin(self, plugin_id, plugin_config, system_setup=None):
-        plugin_type = plugin_config["type"]
-        if plugin_type not in self.plugin_modules:
-            if os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/plugin.py"):
-                # print(f"loading plugin {plugin_type}")
-                self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
-            elif os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v"):
-                if self.plugin_builder(plugin_type, f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v", plugin_config):
+        try:
+            plugin_type = plugin_config["type"]
+            if plugin_type not in self.plugin_modules:
+                if os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/plugin.py"):
+                    # print(f"loading plugin {plugin_type}")
                     self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
-            else:
-                print(f"WARNING: plugin not found: {plugin_type}")
-        if plugin_type in self.plugin_modules:
-            plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
-            for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
-                    if pin_config["pin"] == "" or pin_config["pin"] is None:
-                        print(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
-                        del pin_config["pin"]
-            self.plugin_instances.append(plugin_instance)
-            return plugin_instance
+                elif os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v"):
+                    if self.plugin_builder(plugin_type, f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v", plugin_config):
+                        self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
+                elif not plugin_type or plugin_type[0] != "_":
+                    print(f"WARNING: plugin not found: {plugin_type}")
+            if plugin_type in self.plugin_modules:
+                plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
+                for pin_name, pin_config in plugin_instance.pins().items():
+                    if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
+                        if pin_config["pin"] == "" or pin_config["pin"] is None:
+                            print(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
+                            del pin_config["pin"]
+                self.plugin_instances.append(plugin_instance)
+                return plugin_instance
+        except Exception as err:
+            print(f"ERROR: loading plugin: {plugin_id} / {plugin_config}")
+
 
     def load_plugins(self, config, system_setup=None):
         for plugin_id, plugin_config in enumerate(config["plugins"]):

@@ -33,10 +33,10 @@
     "linuxcnc": {
         "ini": {
             "DISPLAY": {
-                "DEFAULT_LINEAR_VELOCITY": 20.0
+                "DEFAULT_LINEAR_VELOCITY": 20
             },
             "TRJ": {
-                "DEFAULT_LINEAR_VELOCITY": 20.0
+                "DEFAULT_LINEAR_VELOCITY": 20
             }
         },
         "camera": [
@@ -45,7 +45,10 @@
                 "device": "/dev/video0",
                 "tabname": "Camera-0"
             }
-        ]
+        ],
+        "mxmpg": {
+            "enable": true
+        }
     },
     "modules": [
         {
@@ -87,163 +90,188 @@
                     }
                 }
             }
-        },
-        {
-            "slot": "ChipKit",
-            "module": "cnc-shield-v3",
-            "setup": {
-                "enable": {
-                    "type": "bitout",
-                    "name": "enable",
-                    "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                },
-                                {
-                                    "type": "onerror"
-                                },
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "home-x": {
-                    "type": "bitin",
-                    "name": "home-x",
-                    "pins": {
-                        "bit": {
-                            "pullup": true
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.1.home-sw-in"
-                        }
-                    }
-                },
-                "home-y": {
-                    "type": "bitin",
-                    "name": "home-z",
-                    "pins": {
-                        "bit": {
-                            "pullup": true
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.0.home-sw-in"
-                        }
-                    }
-                },
-                "home-z": {
-                    "type": "bitin",
-                    "name": "home-none",
-                    "pins": {
-                        "bit": {
-                            "pullup": true
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": ""
-                        }
-                    }
-                },
-                "spindle-enable": {
-                    "type": "rcservo",
-                    "name": "spindle",
-                    "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    },
-                    "signals": {
-                        "position": {
-                            "net": "spindle.0.speed-out",
-                            "offset": -200,
-                            "scale": 0.1,
-                            "max_limit": 120,
-                            "display": {
-                                "type": "none"
-                            }
-                        },
-                        "enable": {
-                            "setp": "1"
-                        },
-                        "bit": {
-                            "net": "spindle.0.on"
-                        }
-                    }
-                },
-                "spindle-dir": {
-                    "type": "bitout",
-                    "name": "spindle-dir"
-                },
-                "coolant": {
-                    "type": "bitout",
-                    "name": "coolant",
-                    "pins": {
-                        "bit": {
-                            "invert": true
-                        }
-                    }
-                },
-                "e-stop": {
-                    "type": "bitin",
-                    "name": "e-stop",
-                    "pins": {
-                        "bit": {
-                            "pullup": true
-                        }
-                    }
-                },
-                "joint-0": {
-                    "name": "joint-0",
-                    "type": "stepdir",
-                    "is_joint": true,
-                    "axis": "Z",
-                    "joint": {
-                        "scale": -800.0,
-                        "max_velocity": 40.0,
-                        "max_acceleration": 1200.0,
-                        "backlash": 0.0
-                    }
-                },
-                "joint-1": {
-                    "name": "joint-1",
-                    "type": "stepdir",
-                    "is_joint": true,
-                    "axis": "X",
-                    "joint": {
-                        "scale": 3200.0,
-                        "max_velocity": 5.0,
-                        "max_acceleration": 500.0,
-                        "backlash": 0.1
-                    }
-                },
-                "joint-2": {
-                    "name": "joint-2",
-                    "type": "stepdir",
-                    "is_joint": false,
-                    "joint": {
-                        "scale": 320.0,
-                        "max_velocity": 20.0,
-                        "max_acceleration": 500.0,
-                        "backlash": 0.0
-                    }
-                }
-            }
         }
     ],
     "plugins": [
+        {
+            "type": "bitout",
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "pin": "ChipKit:D8",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-x",
+            "pins": {
+                "bit": {
+                    "pullup": true,
+                    "pin": "ChipKit:D9"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-z",
+            "pins": {
+                "bit": {
+                    "pullup": true,
+                    "pin": "ChipKit:D10"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-none",
+            "pins": {
+                "bit": {
+                    "pullup": true,
+                    "pin": "ChipKit:D11"
+                }
+            }
+        },
+        {
+            "type": "rcservo",
+            "name": "spindle",
+            "pins": {
+                "pwm": {
+                    "pin": "ChipKit:D12",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "position": {
+                    "net": "spindle.0.speed-out",
+                    "offset": -200,
+                    "scale": 0.1,
+                    "max_limit": 120,
+                    "display": {
+                        "type": "none"
+                    }
+                },
+                "enable": {
+                    "setp": "1"
+                },
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "spindle-dir",
+            "pins": {
+                "bit": {
+                    "pin": "ChipKit:D13"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "coolant",
+            "pins": {
+                "bit": {
+                    "invert": true,
+                    "pin": "ChipKit:A3"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "e-stop",
+            "pins": {
+                "bit": {
+                    "pullup": true,
+                    "pin": "ChipKit:RST"
+                }
+            }
+        },
+        {
+            "name": "joint-0",
+            "type": "stepdir",
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "ChipKit:D2"
+                },
+                "dir": {
+                    "pin": "ChipKit:D5"
+                }
+            },
+            "axis": "Z",
+            "joint": {
+                "scale": -800,
+                "max_velocity": 40,
+                "max_acceleration": 1200,
+                "backlash": 0
+            }
+        },
+        {
+            "name": "joint-1",
+            "type": "stepdir",
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "ChipKit:D3"
+                },
+                "dir": {
+                    "pin": "ChipKit:D6"
+                }
+            },
+            "axis": "X",
+            "joint": {
+                "scale": 3200,
+                "max_velocity": 5,
+                "max_acceleration": 500,
+                "backlash": 0.1
+            }
+        },
+        {
+            "name": "joint-2",
+            "type": "stepdir",
+            "is_joint": false,
+            "pins": {
+                "step": {
+                    "pin": "ChipKit:D4"
+                },
+                "dir": {
+                    "pin": "ChipKit:D7"
+                }
+            },
+            "joint": {
+                "scale": 320,
+                "max_velocity": 20,
+                "max_acceleration": 500,
+                "backlash": 0
+            }
+        },
         {
             "type": "blink",
             "pins": {
@@ -256,7 +284,7 @@
                     ]
                 }
             },
-            "frequency": 1.0,
+            "frequency": 1,
             "name": "status"
         },
         {
@@ -352,7 +380,7 @@
             }
         },
         {
-            "type": "uart_",
+            "type": "_uart",
             "pins": {
                 "rx": {
                     "pin": "A9"

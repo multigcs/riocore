@@ -20,9 +20,10 @@ def hal(parent):
         parent.hal_net_add("mpg.button.01b-long", "halui.program.resume")
 
         # homing status
-        parent.hal_net_add("joint.0.homed", "mpg.axis.x.homed")
-        parent.hal_net_add("joint.1.homed", "mpg.axis.y.homed")
-        parent.hal_net_add("joint.2.homed", "mpg.axis.z.homed")
+        for axis_name, joints in parent.axis_dict.items():
+            axis_low = axis_name.lower()
+            for joint, joint_setup in joints.items():
+                parent.hal_net_add(f"joint.{joint}.homed", f"mpg.axis.{axis_low}.homed")
 
         # spindle control
         parent.hal_net_add("mpg.button.02-long", "halui.spindle.0.start")
