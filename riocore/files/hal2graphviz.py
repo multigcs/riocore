@@ -443,8 +443,6 @@ for line in ini_data.split("\n"):
 
 groups = {}
 for signal_name, parts in signals.items():
-    # print(signal_name, parts)
-
     source_parts = parts["source"].split(".")
     source_value = parts.get("source_value", "")
     source_group = ".".join(source_parts[:-1])
@@ -483,8 +481,6 @@ for signal_name, parts in signals.items():
         elabel = ""
         if args.elabel:
             elabel = signal_name
-        if "homeswpos" in signal_name:
-            print("#", signal_name, source, target_name)
 
         source_name = source.split("=")[0]
 
