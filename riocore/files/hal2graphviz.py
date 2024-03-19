@@ -314,7 +314,9 @@ LINUXCNC_SIGNALS = {
 
 parser = argparse.ArgumentParser()
 parser.add_argument("ini", help="path to ini file", nargs="?", type=str, default=None)
+parser.add_argument("--elabel", "-e", help="display edge labels", default=False, action="store_true")
 args = parser.parse_args()
+
 
 if not args.ini:
     print("please provide an ini file")
@@ -479,7 +481,8 @@ for signal_name, parts in signals.items():
         groups[target_group].append(target_pin)
 
         elabel = ""
-        elabel = signal_name
+        if args.elabel:
+            elabel = signal_name
         if "homeswpos" in signal_name:
             print("#", signal_name, source, target_name)
 
