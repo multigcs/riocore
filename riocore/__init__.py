@@ -89,7 +89,6 @@ class Plugins:
         except Exception as err:
             print(f"ERROR: loading plugin: {plugin_id} / {plugin_config}")
 
-
     def load_plugins(self, config, system_setup=None):
         for plugin_id, plugin_config in enumerate(config["plugins"]):
             self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)

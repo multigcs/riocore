@@ -194,6 +194,7 @@ class LinuxCNC:
                 output_hal.append(f"# {network}")
                 output_postgui.append("")
                 output_postgui.append(f"# {network}")
+
                 if len(net["in"]) == 1:
                     if not net["in"][0].startswith(custom_filter):
                         output_hal.append(f"net {signal_prefix}{network} <= {net['in'][0]}")
@@ -531,6 +532,11 @@ class LinuxCNC:
             elif output_name in net_nodes["out"]:
                 network = net_name
                 break
+            elif output_name == net_nodes["in"][0]:
+                network = net_name
+                self.networks[network]["in"] = [input_name]
+            elif output_name == net_nodes["in"]:
+                print(f"ERROR: can not handle this constellation {input_name} -> {output_name}: output is allready in a multi input signal")
 
         if not network:
             if signal_name in self.networks:
@@ -970,7 +976,6 @@ class LinuxCNC:
                                 self.hal_net_add(f"rio.{halname}-s32", netname)
                             else:
                                 self.hal_net_add(f"rio.{halname}", netname)
-
                         elif direction == "output":
                             self.hal_net_add(netname, f"rio.{halname}")
                     elif setp is not None:
