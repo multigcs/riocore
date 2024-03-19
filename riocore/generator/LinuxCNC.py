@@ -121,7 +121,8 @@ class LinuxCNC:
             "NUM_AIO": None,
         },
         "HAL": {
-            "HALFILE": "rio.hal",
+            "HALFILE|base": "rio.hal",
+            "HALFILE|custom": "pregui_call_list.hal",
             "TWOPASS": "ON",
             "POSTGUI_HALFILE": "postgui_call_list.hal",
             "HALUI": "halui",
@@ -152,6 +153,7 @@ class LinuxCNC:
 
     def __init__(self, project):
         self.postgui_call_list = []
+        self.pregui_call_list = []
         self.loadrts = []
         self.axisout = []
         self.networks = {}
@@ -288,6 +290,23 @@ class LinuxCNC:
         for line in extra_data:
             cl_output.append(line)
         open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(cl_output))
+
+        extra_data = []
+        if os.path.isfile(f"{self.configuration_path}/pregui_call_list.hal"):
+            # read existing file to keep custom entry's
+            cl_data = open(f"{self.configuration_path}/pregui_call_list.hal", "r").read()
+            for line in cl_data.split("\n"):
+                if line.startswith("source "):
+                    source = " ".join(line.split()[1:])
+                    if source in self.pregui_call_list:
+                        continue
+                extra_data.append(line.strip())
+        cl_output = []
+        for halfile in self.pregui_call_list:
+            cl_output.append(f"source {halfile}")
+        for line in extra_data:
+            cl_output.append(line)
+        open(f"{self.configuration_path}/pregui_call_list.hal", "w").write("\n".join(cl_output))
 
         print(f"writing linuxcnc files to: {self.base_path}")
 
