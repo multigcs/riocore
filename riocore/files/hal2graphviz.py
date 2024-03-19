@@ -329,6 +329,7 @@ ini_data = open(args.ini, "r").read()
 signals = {}
 components = {}
 setps = {}
+setss = {}
 
 
 def load_halfile(basepath, filepath):
@@ -361,6 +362,23 @@ def load_halfile(basepath, filepath):
             halpin = parts[1]
             value = parts[2]
             setps[halpin] = value
+
+        elif line.startswith("sets "):
+            parts = line.split()
+            halpin = parts[1]
+            value = parts[2]
+            setss[halpin] = value
+
+            signalname = halpin
+            if signalname not in signals:
+                signals[signalname] = {
+                    "source": f"{halpin}",
+                    "source_value": value,
+                    "targets": [],
+                }
+            else:
+                signals[signalname]["source"] = f"{halpin}"
+                signals[signalname]["source_value"] = value
 
         elif line.startswith("net "):
             parts = line.split()
@@ -426,13 +444,26 @@ for signal_name, parts in signals.items():
     # print(signal_name, parts)
 
     source_parts = parts["source"].split(".")
+    source_value = parts.get("source_value", "")
     source_group = ".".join(source_parts[:-1])
     source_pin = source_parts[-1]
+
+    if not source_group:
+        source_group = source_pin
+
     source = f"{source_group}:{source_pin}"
 
-    if source_group not in groups:
-        groups[source_group] = []
-    groups[source_group].append(source_pin)
+    if not source_group:
+        source_group = source_parts[0]
+
+    if source_group:
+        if source_group not in groups:
+            groups[source_group] = []
+
+        if source_value:
+            groups[source_group].append(f"{source_pin}={source_value}")
+        else:
+            groups[source_group].append(source_pin)
 
     for target in parts["targets"]:
         target_parts = target.split(".")
@@ -440,23 +471,32 @@ for signal_name, parts in signals.items():
         target_pin = target_parts[-1]
         target_name = f"{target_group}:{target_pin}"
 
+        if not target_group:
+            target_group = target_parts[0]
+
         if target_group not in groups:
             groups[target_group] = []
         groups[target_group].append(target_pin)
 
+        elabel = ""
+        elabel = signal_name
+        if "homeswpos" in signal_name:
+            print("#", signal_name, source, target_name)
+
+        source_name = source.split("=")[0]
+
         if source.startswith("pyvcp"):
-            gAll.edge(target_name, source, dir="back")
+            gAll.edge(target_name, source_name, dir="back", label=elabel)
         elif target.startswith("pyvcp"):
-            gAll.edge(source, target_name)
+            gAll.edge(source_name, target_name, label=elabel)
 
         elif source.startswith("rio."):
-            gAll.edge(target_name, source, dir="back")
+            gAll.edge(target_name, source_name, dir="back", label=elabel)
         else:
-            gAll.edge(source, target_name)
+            gAll.edge(source_name, target_name, label=elabel)
 
 
 clusters = ("pyvcp", "rio")
-clusters = []
 
 for group_name, pins in groups.items():
     cgroup = group_name.split(".")[0]
@@ -464,7 +504,8 @@ for group_name, pins in groups.items():
 
     pin_strs = []
     for pin in pins:
-        pin_str = f"<{pin}>{pin}"
+        port = pin.split("=")[0]
+        pin_str = f"<{port}>{pin}"
         pin_strs.append(pin_str)
 
     color = "lightyellow"
@@ -477,8 +518,10 @@ for group_name, pins in groups.items():
     for setp, value in setps.items():
         if setp.startswith(group_name):
             setp = setp.split(".")[-1]
-
-            pin_str = f"<{setp}>{setp}={value}"
+            if not cgroup:
+                pin_str = f"<{setp}>{setp}={value}"
+            else:
+                pin_str = f"<{setp}>{setp}={value}"
             pin_strs.append(pin_str)
 
     label = f"{title} | {'|'.join(pin_strs)} "
