@@ -185,6 +185,11 @@ class LinuxCNC:
         custom_filter = ("pyvcp", "qtdragon", "axisui", "mpg")
         ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
 
+        jdata = self.project.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        for network, net in linuxcnc_config.get("halsignals", {}).items():
+            self.networks[network] = net
+
         # hal
         # signal_prefix = "rios."
         signal_prefix = ""
