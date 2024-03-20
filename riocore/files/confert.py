@@ -232,11 +232,10 @@ for plugin in data["plugins"].copy():
         if scale:
             del plugin["scale"]
             plugin["signals_"] = {
-                    "velocity": {
-                        "scale": scale,
-                    }
+                "velocity": {
+                    "scale": scale,
                 }
-
+            }
 
         enc_a = plugin.get("pins", {}).get("enc_a")
         enc_b = plugin.get("pins", {}).get("enc_b")
@@ -260,10 +259,10 @@ for plugin in data["plugins"].copy():
             }
             if scale:
                 fbp["signals__"] = {
-                        "position": {
-                            "scale": scale,
-                        }
+                    "position": {
+                        "scale": scale,
                     }
+                }
 
             data["plugins"].append(fbp)
 
@@ -326,7 +325,6 @@ if "enable" in data:
     pin = data["enable"]["pin"]
     del data["enable"]
     data["plugins"].append({"name": "enable", "type": "bitout", "pins": {"bit": {"pin": pin}}, "modifier": [{"type": "onerror"}]})
-
 
 
 if not error:
