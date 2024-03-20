@@ -618,23 +618,28 @@ class LinuxCNC:
                 if "Z":
                     halpin = self.ini_mdi_command("G92 Z0")
                     self.hal_net_add(f"{prefix}.zeroz", halpin, "zero-z")
-                    self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
+                    (pname, gout) = self.gui_gen.draw_button("zero-z", "zeroz")
+                    self.cfgxml_data["status"] += gout
                 if "X":
                     halpin = self.ini_mdi_command("G92 X0")
                     self.hal_net_add(f"{prefix}.zerox", halpin, "zero-x")
-                    self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-x", "zerox")
+                    (pname, gout) = self.gui_gen.draw_button("zero-x", "zerox")
+                    self.cfgxml_data["status"] += gout
                     halpin = self.ini_mdi_command("o<z_touch> call")
                     self.hal_net_add(f"{prefix}.touchx", halpin, "touch-x")
-                    self.cfgxml_data["status"] += self.gui_gen.draw_button("touch-x", "touchx")
+                    (pname, gout) = self.gui_gen.draw_button("touch-x", "touchx")
+                    self.cfgxml_data["status"] += gout
             else:
                 if "X" in self.axis_dict and "Y" in self.axis_dict:
                     halpin = self.ini_mdi_command("G92 X0 Y0")
                     self.hal_net_add(f"{prefix}.zeroxy", halpin, "zero-xy")
-                    self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-xy", "zeroxy")
+                    (pname, gout) = self.gui_gen.draw_button("zero-xy", "zeroxy")
+                    self.cfgxml_data["status"] += gout
                 if "Z":
                     halpin = self.ini_mdi_command("G92 Z0")
                     self.hal_net_add(f"{prefix}.zeroz", halpin, "zero-z")
-                    self.cfgxml_data["status"] += self.gui_gen.draw_button("zero-z", "zeroz")
+                    (pname, gout) = self.gui_gen.draw_button("zero-z", "zeroz")
+                    self.cfgxml_data["status"] += gout
 
             self.cfgxml_data["status"].append("    </hbox>")
             self.cfgxml_data["status"].append("  </labelframe>")
@@ -745,7 +750,8 @@ class LinuxCNC:
                 self.hal_net_add("riof.jog.speed_mux.out", f"{prefix}.jogspeed")
                 self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
                 self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
-                self.cfgxml_data["status"] += self.gui_gen.draw_number("Jogspeed", "jogspeed")
+                (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
+                self.cfgxml_data["status"] += gout
 
             if axis_move and not wheel:
                 for function, halname in self.rio_functions["jog"].items():
@@ -761,7 +767,8 @@ class LinuxCNC:
                         self.hal_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
                         self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
                         self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"{prefix}.selected-{axis_name}")
-                        self.cfgxml_data["status"] += self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
+                        (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
+                        self.cfgxml_data["status"] += gout
                         for axis_id, joints in self.axis_dict.items():
                             laxis = axis_id.lower()
                             if axis_name == laxis:
@@ -880,7 +887,8 @@ class LinuxCNC:
                                 self.hal_net_add(f"{prefix}.{halname}", f"rio.{halname}")
 
                     if hasattr(self.gui_gen, f"draw_{dtype}"):
-                        self.cfgxml_data[section] += getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                        (pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                        self.cfgxml_data[section] += gout
                     elif dtype != "none":
                         print(f"WARNING: 'draw_{dtype}' not found")
 
@@ -2092,7 +2100,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_max = setup.get("max", vmax)
@@ -2145,7 +2153,7 @@ class qtdragon:
         cfgxml_data.append("      </property>")
         cfgxml_data.append("       </widget>")
         cfgxml_data.append("   </item>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
@@ -2189,7 +2197,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -2216,7 +2224,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -2273,7 +2281,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
 
 class axis:
@@ -2331,7 +2339,7 @@ class axis:
         cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2354,7 +2362,7 @@ class axis:
         cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_jogwheel(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2375,7 +2383,7 @@ class axis:
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </jogwheel>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_dial(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2402,7 +2410,7 @@ class axis:
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </dial>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2426,7 +2434,7 @@ class axis:
             cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
         cfgxml_data.append("    </meter>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2454,7 +2462,7 @@ class axis:
             cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
         cfgxml_data.append("    </bar>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_number(self, name, halpin, hal_type="float", setup={}):
         title = setup.get("title", name)
@@ -2489,7 +2497,7 @@ class axis:
             cfgxml_data.append(f'      <text>"{unit}"</text>')
             cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2507,7 +2515,7 @@ class axis:
         # cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup={}):
         title = setup.get("title", name)
@@ -2531,7 +2539,7 @@ class axis:
         cfgxml_data.append('      <text>"R"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2560,7 +2568,7 @@ class axis:
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_rectled(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2591,7 +2599,7 @@ class axis:
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
-        return cfgxml_data
+        return ("", cfgxml_data)
 
     def draw_button(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2602,4 +2610,4 @@ class axis:
         cfgxml_data.append(f'    <halpin>"{halpin}"</halpin><text>"{title}"</text>')
         cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("  </button>")
-        return cfgxml_data
+        return ("", cfgxml_data)
