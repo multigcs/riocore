@@ -168,7 +168,7 @@ class LinuxCNC:
             addon_name = addon_path.split("/")[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
-    def write_networks(self, networks, setps):
+    def generate_networks(self, networks, setps):
         output_hal = []
         output_postgui = []
 
@@ -178,7 +178,7 @@ class LinuxCNC:
         # hal
         # signal_prefix = "rios."
         signal_prefix = ""
-        for network, net in self.networks.items():
+        for network, net in networks.items():
             if net["in"] and net["out"]:
                 output_hal.append("")
                 output_hal.append(f"# {network}")
@@ -281,7 +281,7 @@ class LinuxCNC:
         output_postgui = []
         output_hal += self.loadrts
 
-        (network_hal, network_postgui) = self.write_networks(self.networks, self.setps)
+        (network_hal, network_postgui) = self.generate_networks(self.networks, self.setps)
         output_hal += network_hal
         output_postgui += network_postgui
 
