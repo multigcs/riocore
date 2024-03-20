@@ -41,10 +41,14 @@ class Modifiers:
         return pin_varname
 
     def pin_modifier_onerror(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
+        invert = modifier.get("invert", False)
+        invert_char = "~"
+        if invert:
+            invert_char = ""
         instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "predefines": [
                 f"wire {pin_varname}_ONERROR;",
-                f"assign {pin_varname}_ONERROR = {pin_varname} & ~ERROR;",
+                f"assign {pin_varname}_ONERROR = {pin_varname} & {invert_char}ERROR;",
             ],
         }
         pin_varname = f"{pin_varname}_ONERROR"

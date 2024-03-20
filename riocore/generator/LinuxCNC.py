@@ -41,9 +41,9 @@ class LinuxCNC:
         "STEPGEN_MAXACCEL": 2000.0,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
-        "HOME_SEARCH_VEL": 20.0,
+        "HOME_SEARCH_VEL": -50.0,
         "HOME_LATCH_VEL": 3.0,
-        "HOME_FINAL_VEL": -20,
+        "HOME_FINAL_VEL": 100.0,
         "HOME_IGNORE_LIMITS": "YES",
         "HOME_USE_INDEX": "NO",
         "HOME_OFFSET": 1.0,
@@ -961,6 +961,13 @@ class LinuxCNC:
         self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
         self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
         self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+        """
+        # no popup / no wait after toolchange
+        net autotc1 iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
+        net autotc2 iocontrol.0.tool-change => iocontrol.0.tool-changed
+        """
+
+
 
         if machinetype == "corexy":
             self.loadrts.append("# machinetype is corexy")
@@ -1938,8 +1945,8 @@ class LinuxCNC:
                 if position_scale < 0.0:
                     joint_setup["HOME_SEARCH_VEL"] *= -1.0
                     joint_setup["HOME_LATCH_VEL"] *= -1.0
-                    joint_setup["HOME_FINAL_VEL"] *= -1.0
-                    joint_setup["HOME_OFFSET"] *= -1.0
+                    #joint_setup["HOME_FINAL_VEL"] *= -1.0
+                    #joint_setup["HOME_OFFSET"] *= -1.0
 
                 # set autogen values
                 joint_setup["SCALE_OUT"] = position_scale
