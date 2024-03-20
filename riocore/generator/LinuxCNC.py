@@ -168,27 +168,12 @@ class LinuxCNC:
             addon_name = addon_path.split("/")[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
-    def generator(self):
-        self.component()
-        self.hal()
-        self.gui()
-        for addon_name, addon in self.addons.items():
-            if hasattr(addon, "generator"):
-                addon.generator(self)
-        self.misc()
-        self.ini()
-        os.system(f"mkdir -p {self.configuration_path}/")
+    def write_networks(self, networks, setps):
         output_hal = []
         output_postgui = []
-        output_hal += self.loadrts
 
         custom_filter = ("pyvcp", "qtdragon", "axisui", "mpg")
         ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
-
-        jdata = self.project.config["jdata"]
-        linuxcnc_config = jdata.get("linuxcnc", {})
-        for network, net in linuxcnc_config.get("halsignals", {}).items():
-            self.networks[network] = net
 
         # hal
         # signal_prefix = "rios."
@@ -261,10 +246,10 @@ class LinuxCNC:
                             else:
                                 output_postgui.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
 
-        for name, value in self.setps.items():
+        for name, value in setps.items():
             # check if pin is connected to other pin
             isFree = True
-            for network, net in self.networks.items():
+            for network, net in networks.items():
                 if net["in"] and net["out"]:
                     if name in net["out"]:
                         isFree = False
@@ -274,6 +259,31 @@ class LinuxCNC:
                     output_hal.append(f"setp {name} {value}")
                 else:
                     output_postgui.append(f"setp {name} {value}")
+
+        return (output_hal, output_postgui)
+
+    def generator(self):
+        jdata = self.project.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        for network, net in linuxcnc_config.get("halsignals", {}).items():
+            self.networks[network] = net
+
+        self.component()
+        self.hal()
+        self.gui()
+        for addon_name, addon in self.addons.items():
+            if hasattr(addon, "generator"):
+                addon.generator(self)
+        self.misc()
+        self.ini()
+        os.system(f"mkdir -p {self.configuration_path}/")
+        output_hal = []
+        output_postgui = []
+        output_hal += self.loadrts
+
+        (network_hal, network_postgui) = self.write_networks(self.networks, self.setps)
+        output_hal += network_hal
+        output_postgui += network_postgui
 
         output_hal.append("")
         output_hal += self.axisout
