@@ -1,5 +1,6 @@
 Output/
 pyvenv/
+tests/unit/output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

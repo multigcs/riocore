@@ -4,10 +4,13 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff format -q
+	find ./riocore/ ./tests/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff format -q
 
 check:
 	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check
+
+unittests:
+	python3 -m pytest -vv -v tests/unit/
 
 verilator:
 	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only
