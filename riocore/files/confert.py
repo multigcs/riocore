@@ -187,6 +187,7 @@ if data.get("expansion", []):
         data["plugins"].append(interface)
     del data["expansion"]
 
+
 fb_num = 0
 for plugin in data["plugins"].copy():
     old_type = plugin["type"]
@@ -280,6 +281,72 @@ for plugin in data["plugins"].copy():
                     new_pins[pin_name]["modifier"].append({"type": "debounce"})
         if ok:
             plugin["pins"] = new_pins
+
+
+if "blink" in data:
+    pin = data["blink"]["pin"]
+    data["plugins"].append(
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": pin,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        }
+    )
+elif "error" in data:
+    pin = data["error"]["pin"]
+    data["plugins"].append(
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": pin,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        }
+    )
+if "enable" in data:
+    pin = data["enable"]["pin"]
+    data["plugins"].append(
+        {
+          "name": "enable",
+          "type": "bitout",
+          "pins": {
+            "bit": {
+              "pin": pin
+            }
+          },
+        "modifier": [
+            {
+                "type": "onerror"
+            }
+        ]
+        }
+    )
 
 
 if not error:

@@ -39,7 +39,8 @@ def gui(parent):
                             mdi_command.append(f"{axis_name}{diff}")
                     halpin = parent.ini_mdi_command(" ".join(mdi_command))
                     parent.hal_net_add("pyvcp.zerocam", halpin)
-                    parent.cfgxml_data["status"] += parent.gui_gen.draw_button("zero-cam", "zerocam")
+                    (pname, gout) = parent.gui_gen.draw_button("zero-cam", "zerocam")
+                    parent.cfgxml_data["status"] += gout
                     offset_num += 1
                 elif offsets:
                     print("WARNING: offset works only on one camera")

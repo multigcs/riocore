@@ -2072,7 +2072,7 @@ class qtdragon:
         return cfgxml_data
 
     def draw_button(self, name, halpin, setup={}):
-        return []
+        return ("", [])
 
     def draw_scale(self, name, halpin, vmin, vmax, setup={}):
         cfgxml_data = []
