@@ -311,6 +311,7 @@ class PluginBase:
         modifier_list = pin_config.get("modifier", [])
         pin_varname_org = pin_varname
         if direction == "output":
+            instance_predefines.append(f"wire {pin_varname_org}_RAW;")
             pin_varname = f"{pin_varname_org}_RAW"
         for modifier_num, modifier in enumerate(modifier_list):
             if modifier:

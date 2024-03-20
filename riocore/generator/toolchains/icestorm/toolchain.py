@@ -8,9 +8,8 @@ class Toolchain:
 
     def generate(self, path):
         verilogs = " ".join(self.config["verilog_files"])
-
         family = self.config["family"]
-
+        device_family = None
         if family.startswith("GW"):
             device_family = family
             board = self.config.get("board")
@@ -40,7 +39,8 @@ class Toolchain:
         makefile_data.append("PROJECT  := rio")
         makefile_data.append("TOP      := rio")
         makefile_data.append(f"FAMILY   := {family}")
-        makefile_data.append(f"DEVICE_FAMILY   := {device_family}")
+        if device_family:
+            makefile_data.append(f"DEVICE_FAMILY   := {device_family}")
         makefile_data.append(f"TYPE     := {self.config['type']}")
         makefile_data.append(f"PACKAGE  := {self.config['package']}")
         makefile_data.append(f"VERILOGS := {verilogs}")

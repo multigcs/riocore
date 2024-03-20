@@ -158,7 +158,19 @@ pin_mapping = {
 }
 
 
+boardname = None
+if len(sys.argv) > 2:
+    boardname = sys.argv[2]
 data = json.loads(open(sys.argv[1], "r").read())
+
+if boardname:
+    data["boardcfg"] = boardname
+    del data["toolchain"]
+    del data["family"]
+    del data["type"]
+    del data["package"]
+    del data["clock"]
+
 
 error = False
 
@@ -216,6 +228,16 @@ for plugin in data["plugins"].copy():
         if "cl" in plugin:
             del plugin["cl"]
 
+        scale = plugin.get("scale")
+        if scale:
+            del plugin["scale"]
+            plugin["signals_"] = {
+                    "velocity": {
+                        "scale": scale,
+                    }
+                }
+
+
         enc_a = plugin.get("pins", {}).get("enc_a")
         enc_b = plugin.get("pins", {}).get("enc_b")
         if enc_a:
@@ -224,20 +246,27 @@ for plugin in data["plugins"].copy():
             del plugin["pins"]["enc_b"]
 
             plugin["feedback"] = f"feedback{fb_num}:position"
-            data["plugins"].append(
-                {
-                    "name": f"feedback{fb_num}",
-                    "type": "quadencoder",
-                    "pins": {
-                        "a": {
-                            "pin": pinmapping.get(enc_a, enc_a),
-                        },
-                        "b": {
-                            "pin": pinmapping.get(enc_b, enc_b),
-                        },
+            fbp = {
+                "name": f"feedback{fb_num}",
+                "type": "quadencoder",
+                "pins": {
+                    "a": {
+                        "pin": pinmapping.get(enc_a, enc_a),
                     },
-                }
-            )
+                    "b": {
+                        "pin": pinmapping.get(enc_b, enc_b),
+                    },
+                },
+            }
+            if scale:
+                fbp["signals__"] = {
+                        "position": {
+                            "scale": scale,
+                        }
+                    }
+
+            data["plugins"].append(fbp)
+
             fb_num += 1
 
     if "pins" in plugin:
@@ -285,68 +314,19 @@ for plugin in data["plugins"].copy():
 
 if "blink" in data:
     pin = data["blink"]["pin"]
-    data["plugins"].append(
-        {
-            "type": "blink",
-            "pins": {
-                "led": {
-                    "pin": pin,
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        },
-                        {
-                            "type": "onerror"
-                        },
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            }
-        }
-    )
+    del data["blink"]
+    if "error" in data:
+        del data["error"]
+    data["plugins"].append({"type": "blink", "pins": {"led": {"pin": pin, "modifier": [{"type": "invert"}, {"type": "onerror"}, {"type": "invert"}]}}})
 elif "error" in data:
     pin = data["error"]["pin"]
-    data["plugins"].append(
-        {
-            "type": "blink",
-            "pins": {
-                "led": {
-                    "pin": pin,
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        },
-                        {
-                            "type": "onerror"
-                        },
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            }
-        }
-    )
+    del data["error"]
+    data["plugins"].append({"type": "blink", "pins": {"led": {"pin": pin, "modifier": [{"type": "invert"}, {"type": "onerror"}, {"type": "invert"}]}}})
 if "enable" in data:
     pin = data["enable"]["pin"]
-    data["plugins"].append(
-        {
-          "name": "enable",
-          "type": "bitout",
-          "pins": {
-            "bit": {
-              "pin": pin
-            }
-          },
-        "modifier": [
-            {
-                "type": "onerror"
-            }
-        ]
-        }
-    )
+    del data["enable"]
+    data["plugins"].append({"name": "enable", "type": "bitout", "pins": {"bit": {"pin": pin}}, "modifier": [{"type": "onerror"}]})
+
 
 
 if not error:
