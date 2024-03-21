@@ -855,40 +855,27 @@ class LinuxCNC:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
-                        if dtype == "meter" and gui == "qtdragon":
-                            self.hal_net_add(f"rio.{halname}", f"{prefix}.{halname}_value")
-                        elif dtype != "none" and direction != "inout":
-                            self.hal_net_add(f"rio.{halname}", f"{prefix}.{halname}")
-
                     elif direction == "input":
                         section = displayconfig.get("section", "inputs")
                         if not boolean:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
-
-                        if dtype == "meter" and gui == "qtdragon":
-                            self.hal_net_add(f"rio.{halname}", f"{prefix}.{halname}_value")
-                        elif dtype != "none":
-                            self.hal_net_add(f"rio.{halname}", f"{prefix}.{halname}")
-
                     elif direction == "output":
                         section = displayconfig.get("section", "outputs")
                         if not boolean:
                             dtype = displayconfig.get("type", "scale")
-                            if dtype == "scale":
-                                self.hal_net_add(f"{prefix}.{halname}-f", f"rio.{halname}")
-                            elif dtype != "none":
-                                self.hal_net_add(f"{prefix}.{halname}", f"rio.{halname}")
-
                         else:
                             dtype = displayconfig.get("type", "checkbutton")
-                            if dtype != "none":
-                                self.hal_net_add(f"{prefix}.{halname}", f"rio.{halname}")
 
                     if hasattr(self.gui_gen, f"draw_{dtype}"):
-                        (pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                        (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
                         self.cfgxml_data[section] += gout
+                        if netname or setp or direction == "input":
+                            self.hal_net_add(f"rio.{halname}", gui_pinname)
+                        elif direction == "output":
+                            self.hal_net_add(gui_pinname, f"rio.{halname}")
+
                     elif dtype != "none":
                         print(f"WARNING: 'draw_{dtype}' not found")
 
@@ -2079,7 +2066,7 @@ class qtdragon:
         return cfgxml_data
 
     def draw_button(self, name, halpin, setup={}):
-        return ("", [])
+        return (f"qtdragon.{halpin}", [])
 
     def draw_scale(self, name, halpin, vmin, vmax, setup={}):
         cfgxml_data = []
@@ -2107,7 +2094,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return ("", cfgxml_data)
+        return (f"qtdragon.{halpin}-f", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_max = setup.get("max", vmax)
@@ -2160,7 +2147,7 @@ class qtdragon:
         cfgxml_data.append("      </property>")
         cfgxml_data.append("       </widget>")
         cfgxml_data.append("   </item>")
-        return ("", cfgxml_data)
+        return (f"qtdragon.{halpin}_value", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
@@ -2204,7 +2191,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return ("", cfgxml_data)
+        return (f"qtdragon.{halpin}", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -2231,7 +2218,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return ("", cfgxml_data)
+        return (f"qtdragon.{halpin}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -2288,7 +2275,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return ("", cfgxml_data)
+        return (f"qtdragon.{halpin}", cfgxml_data)
 
 
 class axis:
@@ -2346,7 +2333,7 @@ class axis:
         cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}-f", cfgxml_data)
 
     def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2369,7 +2356,7 @@ class axis:
         cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_jogwheel(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2390,7 +2377,7 @@ class axis:
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </jogwheel>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_dial(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2417,7 +2404,7 @@ class axis:
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </dial>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2441,7 +2428,7 @@ class axis:
             cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
         cfgxml_data.append("    </meter>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2469,7 +2456,7 @@ class axis:
             cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
         cfgxml_data.append("    </bar>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_number(self, name, halpin, hal_type="float", setup={}):
         title = setup.get("title", name)
@@ -2504,7 +2491,7 @@ class axis:
             cfgxml_data.append(f'      <text>"{unit}"</text>')
             cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2522,7 +2509,7 @@ class axis:
         # cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup={}):
         title = setup.get("title", name)
@@ -2546,7 +2533,7 @@ class axis:
         cfgxml_data.append('      <text>"R"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2575,7 +2562,7 @@ class axis:
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_rectled(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2606,7 +2593,7 @@ class axis:
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_button(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -2617,4 +2604,4 @@ class axis:
         cfgxml_data.append(f'    <halpin>"{halpin}"</halpin><text>"{title}"</text>')
         cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("  </button>")
-        return ("", cfgxml_data)
+        return (f"pyvcp.{halpin}", cfgxml_data)
