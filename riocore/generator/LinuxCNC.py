@@ -812,7 +812,7 @@ class LinuxCNC:
                         mux_select += 1
                         mux_input = mux_input * 2
                     elif function == "position":
-                        self.hal_net_add(f"riof.jog.position_mux.out-f", f"rio.{halname}")
+                        self.hal_net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
 
             if axis_leds:
                 for function, halname in self.rio_functions["jog"].items():

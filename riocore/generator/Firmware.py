@@ -1,11 +1,8 @@
 import hashlib
-import copy
 import glob
 import importlib
 import os
-import sys
 
-from riocore import halpins
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 

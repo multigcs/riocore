@@ -50,12 +50,12 @@ def hal(parent):
             axis_low = axis_name.lower()
             parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 1)
             parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
-            parent.hal_net_add(f"mpg.jog-scale", f"axis.{axis_low}.jog-scale")
+            parent.hal_net_add("mpg.jog-scale", f"axis.{axis_low}.jog-scale")
             parent.hal_net_add(f"mpg.axis.{axis_low}.jog-counts", f"axis.{axis_low}.jog-counts")
             for joint, joint_setup in joints.items():
                 parent.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
                 parent.hal_setp_add(f"joint.{joint}.jog-enable", 1)
-                parent.hal_net_add(f"mpg.jog-scale", f"joint.{joint}.jog-scale")
+                parent.hal_net_add("mpg.jog-scale", f"joint.{joint}.jog-scale")
                 parent.hal_net_add(f"mpg.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
 
         # display axis positions
@@ -69,9 +69,9 @@ def hal(parent):
             parent.hal_net_add(f"mpg.override.{ov}.counts", f"halui.{ov}-override.counts")
             parent.hal_net_add(f"halui.{ov}-override.value", f"mpg.override.{ov}.value")
 
-        parent.hal_setp_add(f"halui.spindle.0.override.scale", 0.01)
-        parent.hal_net_add(f"mpg.override.spindle.counts", f"halui.spindle.0.override.counts")
-        parent.hal_net_add(f"halui.spindle.0.override.value", f"mpg.override.spindle.value")
+        parent.hal_setp_add("halui.spindle.0.override.scale", 0.01)
+        parent.hal_net_add("mpg.override.spindle.counts", "halui.spindle.0.override.counts")
+        parent.hal_net_add("halui.spindle.0.override.value", "mpg.override.spindle.value")
 
         output.append("")
 

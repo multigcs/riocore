@@ -1,7 +1,7 @@
 import riocore
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, Qt, QPoint
+from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import (
     QCheckBox,

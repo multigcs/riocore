@@ -86,7 +86,7 @@ class Plugins:
                             del pin_config["pin"]
                 self.plugin_instances.append(plugin_instance)
                 return plugin_instance
-        except Exception as err:
+        except Exception:
             print(f"ERROR: loading plugin: {plugin_id} / {plugin_config}")
 
     def load_plugins(self, config, system_setup=None):

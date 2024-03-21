@@ -483,7 +483,7 @@ class Plugin(PluginBase):
                         output.append("                    // get single 32bit float value")
                         output.append("                    data_len = frame_data[2];")
                         output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 4}) {{")
-                        output.append(f"                        uint8_t farray[] = {{frame_data[6], frame_data[5], frame_data[4], frame_data[3]}};")
+                        output.append("                        uint8_t farray[] = {frame_data[6], frame_data[5], frame_data[4], frame_data[3]};")
                         output.append(f"                        memcpy((uint8_t *)&value_{self.signal_name}, (uint8_t *)&farray, 4);")
                         if vscale:
                             output.append(f"                        value_{self.signal_name} *= {vscale};")
