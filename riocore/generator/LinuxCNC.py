@@ -954,8 +954,6 @@ class LinuxCNC:
         net autotc2 iocontrol.0.tool-change => iocontrol.0.tool-changed
         """
 
-
-
         if machinetype == "corexy":
             self.loadrts.append("# machinetype is corexy")
             self.loadrts.append("loadrt corexy_by_hal names=corexy")
@@ -1932,8 +1930,8 @@ class LinuxCNC:
                 if position_scale < 0.0:
                     joint_setup["HOME_SEARCH_VEL"] *= -1.0
                     joint_setup["HOME_LATCH_VEL"] *= -1.0
-                    #joint_setup["HOME_FINAL_VEL"] *= -1.0
-                    #joint_setup["HOME_OFFSET"] *= -1.0
+                    # joint_setup["HOME_FINAL_VEL"] *= -1.0
+                    # joint_setup["HOME_OFFSET"] *= -1.0
 
                 # set autogen values
                 joint_setup["SCALE_OUT"] = position_scale
