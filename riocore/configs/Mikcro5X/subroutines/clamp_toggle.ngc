@@ -1,0 +1,13 @@
+o<clamp_toggle> sub
+
+	o110 if [#<_spindle_on> EQ 0]
+		o111 if [#<_hal[digital-out-0]> EQ 1]
+			M65 P0
+		o111 else
+			M64 P0
+		o111 endif
+	o110 endif
+
+o<clamp_toggle> endsub
+
+M2

@@ -1,0 +1,152 @@
+o<toolchange> sub
+
+
+	(alle offsets entfernen)
+	G92.1
+	G49
+	G10 L20 P0 Z[#<_hal[axis.z.pos-cmd]>]
+
+	(last tool-number)
+	#1 = #5400
+	(tc-offset)
+	#2 = 53.5
+
+	(tc-step/slot)
+	#3 = 24.0
+
+	(slot X  out)
+	#10 = -80
+
+	(slot X  in)
+	#11 = -86.9
+
+	(touchprobe X)
+	#12 = -76.5
+	(touchprobe Z drüber)
+	#13 = -25
+
+	(touchprobe max Z)
+	#14 = [#13 - 10]
+	(probe offset)
+	#15 = 11
+
+
+	(print, old tool #1)
+	(print, new tool #<T>)
+
+
+	o112 if [#1 EQ #<T>]
+		(print, tothing to do ....)
+	o112 else
+
+
+
+
+		o110 if [#1 GT 0]
+			(print, unload old tool:#1 ....)
+
+			#4 = [#2 + #1 * #3 - #3]
+			(print, load pocket: #4)
+
+
+			(spindel hoch fahren)
+			G01 Z0 F500
+			(spindel aus)
+			M5
+
+			(neben Tn fahren)
+			G00 X#10
+			G00 Y0 A#4
+
+			(auf höhe von Tn fahren)
+			G00 Z-28
+
+			(Tn in slot fahren)
+			G01 X#11 F400
+
+			(spannzannge öffnen und 1sec warten)
+			M64 P0
+			G04 P0.2
+
+			(spindel hoch fahren im Tn zu lösen)
+			G00 Z0
+
+			(spannzannge schließen)
+			M65 P0
+
+
+		o110 endif
+
+
+
+		o111 if [#<T> GT 0]
+			(print, load new tool:#<T> ....)
+
+			#4 = [#2 + #<T> * #3 - #3]
+			(print, load pocket: #4)
+
+
+			(spindel hoch fahren)
+			G01 Z0 F500
+			(spindel aus)
+			M5
+
+			(über Tn fahren)
+			G00 X#11
+			G00 Y0 A#4
+
+			(spannzannge öffnen und 200msec warten)
+			M64 P0
+			G04 P0.2
+
+			(in Tn fahren)
+			G00 Z-10
+			G01 Z-28 F300
+
+			(spannzannge schließen und 200msec warten)
+			M65 P0
+			G04 P0.2
+
+			(Tn seitlich rausnehmen)
+			G00 X#10
+
+			(tool hoch sonst hängt er an den anderen tools im slot)
+			G00 Z0
+			G00 A0
+
+			(tool hoch)
+			G00 Z0
+
+
+
+			(tool über touch-probe fahren)
+			G00 A0
+			G00 X#12 Y0
+			G00 Z#13
+
+			(touch-probe)
+			G38.2 Z#14 F100
+
+			(set new z-offset)
+			G10 L20 P0 Z#15
+
+			(tool hoch - inkl. offset)
+			#16 = [#<_hal[axis.z.pos-cmd]> * -1 + #15]
+			G00 Z#16
+
+
+
+		o111 endif
+
+		(A auf 0 / für 3achsen programme nötig)
+		G00 A0
+
+		M06 T#<T>
+		G00 X0.0 Y0.0
+
+	o112 endif
+
+
+o<toolchange> endsub
+
+M2

@@ -1,0 +1,437 @@
+{
+    "name": "Mikro5X",
+    "description": "Mikro5X with Tangoboard",
+    "boardcfg": "TangNano9K",
+    "protocol": "UDP",
+    "ip": "192.168.10.13",
+    "port": "2390",
+    "machinetype": "mill",
+    "toolchange": "auto",
+    "plugins": [
+        {
+            "type": "bitout",
+            "name": "atc",
+            "pins": {
+                "bit": {
+                    "pin": "38",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "motion.digital-out-00"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "dout2",
+            "pins": {
+                "bit": {
+                    "pin": "37",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "Laser-Line",
+            "pins": {
+                "bit": {
+                    "pin": "36",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "dout4",
+            "pins": {
+                "bit": {
+                    "pin": "39",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "power_on",
+            "pins": {
+                "bit": {
+                    "pin": "25",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-x",
+            "pins": {
+                "bit": {
+                    "pin": "26",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-y",
+            "pins": {
+                "bit": {
+                    "pin": "27",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-z",
+            "pins": {
+                "bit": {
+                    "pin": "28",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-a",
+            "pins": {
+                "bit": {
+                    "pin": "29",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-c",
+            "pins": {
+                "bit": {
+                    "pin": "53",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "_net": "joint.4.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "tool-probe",
+            "pins": {
+                "bit": {
+                    "pin": "54",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "55",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "estop",
+            "pins": {
+                "bit": {
+                    "pin": "56",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "spindle-speed",
+            "min": 0,
+            "max": 10000,
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "76",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "dty": {
+                    "net": "spindle.0.speed-out"
+                }
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "75",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "74",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Xaxis",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "63"
+                },
+                "dir": {
+                    "pin": "86"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -1600.0,
+                "max_velocity": 36.0,
+                "max_acceleration": 400.0,
+                "home_offset": 6.5,
+                "home_search_vel": 20.0,
+                "home_latch_vel": -3.0,
+                "home_final_vel": 20.0,
+                "home_sequence": 1,
+                "min_limit": -200.0,
+                "max_limit": 150.0
+            }
+        },
+        {
+            "name": "Yaxis",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "85"
+                },
+                "dir": {
+                    "pin": "84"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 1600.0,
+                "max_acceleration": 400.0,
+                "home_offset": 34.0,
+                "home_search_vel": 20.0,
+                "home_latch_vel": -3.0,
+                "home_final_vel": 20.0,
+                "home_sequence": 2,
+                "min_limit": -150.0,
+                "max_limit": 150.0
+            }
+        },
+        {
+            "name": "Zaxis",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "83"
+                },
+                "dir": {
+                    "pin": "82"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 1600.0,
+                "max_acceleration": 500.0,
+                "home_offset": 12.0,
+                "home_search_vel": -20.0,
+                "home_latch_vel": 3.0,
+                "home_final_vel": 20.0,
+                "home_sequence": 1,
+                "min_limit": -100.0,
+                "max_limit": 100.0
+            }
+        },
+        {
+            "name": "Aaxis",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "81"
+                },
+                "dir": {
+                    "pin": "80"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 223.0,
+                "max_acceleration": 300.0,
+                "home_offset": 101.5,
+                "home_search_vel": 10.0,
+                "home_latch_vel": -3.0,
+                "home_final_vel": 10.0,
+                "home_sequence": 3,
+                "min_limit": -100.0,
+                "max_limit": 100.0
+            }
+        },
+        {
+            "name": "Caxis",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "79"
+                },
+                "dir": {
+                    "pin": "77"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 800.0,
+                "max_acceleration": 300.0,
+                "home_offset": 0.0,
+                "home_search_vel": 0.0,
+                "home_latch_vel": 0.0,
+                "home_final_vel": 0.0,
+                "home_sequence": 0
+            }
+        },
+        {
+            "type": "spi",
+            "pins": {
+                "mosi": {
+                    "pin": "48"
+                },
+                "miso": {
+                    "pin": "49"
+                },
+                "sclk": {
+                    "pin": "31"
+                },
+                "sel": {
+                    "pin": "32"
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "10",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "linuxcnc": {
+        "mxmpg": {
+            "enable": false
+        },
+        "ini": {
+            "RS274NGC": {
+                "REMAP|M600": "M600 modalgroup=6 argspec=T ngc=toolchange"
+            },
+            "HALUI": {
+                "MDI_COMMAND|spindle_toggle": "o<spindle_toggle> call",
+                "MDI_COMMAND|clamp_toggle": "o<clamp_toggle> call"
+            }
+        }
+    }
+}
