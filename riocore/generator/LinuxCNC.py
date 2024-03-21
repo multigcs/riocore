@@ -357,6 +357,12 @@ class LinuxCNC:
             for joint, joint_setup in joints.items():
                 coordinates.append(axis_name)
 
+        for section, section_options in linuxcnc_config.get("ini", {}).items():
+            if section not in ini_setup:
+                ini_setup[section] = {}
+            for key, value in section_options.items():
+                ini_setup[section][key] = value
+
         kinematics = "trivkins"
         ini_setup["KINS"]["JOINTS"] = num_joints
         ini_setup["KINS"]["KINEMATICS"] = f"{kinematics} coordinates={''.join(coordinates)}"
@@ -420,12 +426,13 @@ class LinuxCNC:
 
     def ini(self):
         jdata = self.project.config["jdata"]
+        json_path = self.project.config["json_path"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         gui = self.project.config["jdata"].get("gui", "axis")
         machinetype = self.project.config["jdata"].get("machinetype")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
 
-        for section, section_options in self.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).items():
+        for section, section_options in linuxcnc_config.get("ini", {}).items():
             if section not in ini_setup:
                 ini_setup[section] = {}
             for key, value in section_options.items():
@@ -507,6 +514,22 @@ class LinuxCNC:
                         if key in self.JOINT_DEFAULTS:
                             output.append(f"{key:18s} = {value}")
                 output.append("")
+
+        path_subroutines = ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH")
+        if path_subroutines and path_subroutines.startswith("./"):
+            os.system(f"mkdir -p {self.configuration_path}/{path_subroutines}")
+            for subroutine in glob.glob(f"{json_path}/subroutines/*"):
+                target_path = f"{self.configuration_path}/{path_subroutines}/{os.path.basename(subroutine)}"
+                if not os.path.isfile(target_path):
+                    os.system(f"cp -a -v '{subroutine}' '{target_path}'")
+
+        path_mcodes = ini_setup.get("RS274NGC", {}).get("mcode_PATH")
+        if path_mcodes and path_mcodes.startswith("./"):
+            os.system(f"mkdir -p {self.configuration_path}/{path_mcodes}")
+            for mcode in glob.glob(f"{json_path}/mcodes/*"):
+                target_path = f"{self.configuration_path}/{path_mcodes}/{os.path.basename(mcode)}"
+                if not os.path.isfile(target_path):
+                    os.system(f"cp -a -v '{mcode}' '{target_path}'")
 
         os.system(f"mkdir -p {self.configuration_path}/")
         open(f"{self.configuration_path}/rio.ini", "w").write("\n".join(output))
@@ -909,6 +932,7 @@ class LinuxCNC:
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         machinetype = self.project.config["jdata"].get("machinetype")
+        toolchange = self.project.config["jdata"].get("toolchange", "manual")
 
         self.loadrts.append("# load the realtime components")
         self.loadrts.append("loadrt [KINS]KINEMATICS")
@@ -942,17 +966,16 @@ class LinuxCNC:
         if not has_estop:
             self.hal_net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
 
-        self.loadrts.append("loadusr -W hal_manualtoolchange")
-        self.loadrts.append("")
-        self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
-        self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
-        self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
-        self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-        """
-        # no popup / no wait after toolchange
-        net autotc1 iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
-        net autotc2 iocontrol.0.tool-change => iocontrol.0.tool-changed
-        """
+        if toolchange == "manual":
+            self.loadrts.append("loadusr -W hal_manualtoolchange")
+            self.loadrts.append("")
+            self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+            self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+            self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+            self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+        else:
+            self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+            self.hal_net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
         if machinetype == "corexy":
             self.loadrts.append("# machinetype is corexy")

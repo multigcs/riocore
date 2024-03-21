@@ -314,6 +314,7 @@ class Project:
                 print("")
                 exit(1)
             project["json_file"] = configuration
+            project["json_path"] = os.path.dirname(configuration)
 
         project["plugins"] = copy.deepcopy(project["jdata"].get("plugins"))
         project["board_data"] = {}
