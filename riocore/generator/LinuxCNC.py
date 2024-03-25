@@ -1897,6 +1897,16 @@ class LinuxCNC:
 
         self.num_axis = len(self.axis_dict)
 
+        # getting all home switches
+        joint_homeswitches = []
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    userconfig = signal_config.get("userconfig")
+                    net = userconfig.get("net")
+                    if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
+                        joint_homeswitches.append(int(net.split(".")[1]))
+
         for axis_name, joints in self.axis_dict.items():
             # print(f"  # Axis: {axis_name}")
             for joint, joint_setup in joints.items():
@@ -1974,6 +1984,13 @@ class LinuxCNC:
                     joint_setup["HOME_LATCH_VEL"] *= -1.0
                     # joint_setup["HOME_FINAL_VEL"] *= -1.0
                     # joint_setup["HOME_OFFSET"] *= -1.0
+
+                if joint not in joint_homeswitches:
+                    joint_setup["HOME_SEARCH_VEL"] = 0.0
+                    joint_setup["HOME_LATCH_VEL"] = 0.0
+                    joint_setup["HOME_FINAL_VEL"] = 0.0
+                    joint_setup["HOME_OFFSET"] = 0
+                    joint_setup["HOME_SEQUENCE"] = 0
 
                 # set autogen values
                 joint_setup["SCALE_OUT"] = position_scale
