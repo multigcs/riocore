@@ -364,8 +364,16 @@ class LinuxCNC:
                 ini_setup[section][key] = value
 
         kinematics = "trivkins"
+        kinematics_options = f" coordinates={''.join(coordinates)}"
+        if machinetype == "ldelta":
+            kinematics = "lineardeltakins"
+            kinematics_options = ""
+        elif machinetype == "rdelta":
+            kinematics = "rotarydeltakins"
+            kinematics_options = ""
+
         ini_setup["KINS"]["JOINTS"] = num_joints
-        ini_setup["KINS"]["KINEMATICS"] = f"{kinematics} coordinates={''.join(coordinates)}"
+        ini_setup["KINS"]["KINEMATICS"] = f"{kinematics}{kinematics_options}"
         ini_setup["TRAJ"]["COORDINATES"] = "".join(coordinates)
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
@@ -982,6 +990,14 @@ class LinuxCNC:
             self.loadrts.append("loadrt corexy_by_hal names=corexy")
             self.loadrts.append("addf corexy servo-thread")
             self.loadrts.append("")
+        elif machinetype == "ldelta":
+            self.loadrts.append("# loading lineardelta gl-view")
+            self.loadrts.append("loadusr -W lineardelta MIN_JOINT=-420")
+            self.loadrts.append("")
+        elif machinetype == "rdelta":
+            self.loadrts.append("# loading rotarydelta gl-view")
+            self.loadrts.append("loadusr -W rotarydelta MIN_JOINT=-420")
+            self.loadrts.append("")
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1084,6 +1100,9 @@ class LinuxCNC:
                         self.axisout.append(f"net j{joint}pos-fb  <= {feedback_halname}")
                         self.axisout.append(f"net j{joint}pos-fb  => joint.{joint}.motor-pos-fb")
                         self.axisout.append(f"net j{joint}pos-fb  => pid.{joint}.feedback")
+
+                    if machinetype in {"ldelta", "rdelta"} and axis_name in {"X", "Y", "Z", "XYZ"}:
+                        self.axisout.append(f"net j{joint}pos-fb  => lineardelta.joint{joint}")
 
                     if enable_halname:
                         self.axisout.append(f"net j{joint}enable  <= joint.{joint}.amp-enable-out")
