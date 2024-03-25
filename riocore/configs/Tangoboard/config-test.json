@@ -3,7 +3,6 @@
     "description": "Tangoboard with TangNano9K over SPI",
     "boardcfg": "TangNano9K",
     "protocol": "SPI",
-    "machinetype": "rdelta",
     "plugins": [
         {
             "type": "bitout",
