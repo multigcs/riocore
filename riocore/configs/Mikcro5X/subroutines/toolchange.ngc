@@ -9,7 +9,7 @@ o<toolchange> sub
 	(last tool-number)
 	#1 = #5400
 	(tc-offset)
-	#2 = 53.5
+	#2 = 54
 
 	(tc-step/slot)
 	#3 = 24.0
@@ -18,10 +18,10 @@ o<toolchange> sub
 	#10 = -80
 
 	(slot X  in)
-	#11 = -86.9
+	#11 = -86.5
 
 	(touchprobe X)
-	#12 = -76.5
+	#12 = -75
 	(touchprobe Z drüber)
 	#13 = -25
 

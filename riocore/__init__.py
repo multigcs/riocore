@@ -5,6 +5,8 @@ import json
 import os
 import re
 from struct import pack, unpack
+import sys
+import traceback
 
 from .generator.Gateware import Gateware
 from .generator.LinuxCNC import LinuxCNC
@@ -88,6 +90,9 @@ class Plugins:
                 return plugin_instance
         except Exception:
             print(f"ERROR: loading plugin: {plugin_id} / {plugin_config}")
+            print("##################################")
+            traceback.print_exc(file=sys.stdout)
+            print("##################################")
 
     def load_plugins(self, config, system_setup=None):
         for plugin_id, plugin_config in enumerate(config["plugins"]):

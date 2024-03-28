@@ -409,6 +409,62 @@
                     ]
                 }
             }
+        },
+        {
+            "type": "signal",
+            "name": "virtsource1",
+            "dir": "input",
+            "signals": {
+                "value": {
+                    "_net": ""
+                }
+            }
+        },
+        {
+            "type": "signal",
+            "name": "virtsource2",
+            "dir": "input",
+            "signals": {
+                "value": {
+                    "function": "wcomp.750"
+                }
+            }
+        },
+        {
+            "type": "signal",
+            "name": "virtsink",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riov.virtsource1.value",
+                    "display": {
+                        "title": "VS",
+                        "type": "meter"
+                    }
+                }
+            }
+        },
+        {
+            "type": "signal",
+            "name": "virtover",
+            "vtype": "bool",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riof.virtsource2.value.over"
+                }
+            }
+        },
+        {
+            "type": "signal",
+            "name": "virtunder",
+            "vtype": "bool",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riof.virtsource2.value.under"
+                }
+            }
         }
     ],
     "linuxcnc": {

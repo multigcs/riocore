@@ -1,6 +1,6 @@
 o<spindle_toggle> sub
 
-	o111 if [#<_hal[digital-out-0]> EQ 0]
+	o111 if [#<_hal[motion-digital-out-00]> EQ 0]
 		o110 if [#<_spindle_on> EQ 1]
 			M05
 		o110 else

@@ -363,6 +363,8 @@ class Gateware:
 
         # gateware instances
         for plugin_instance in self.project.plugin_instances:
+            if not plugin_instance.gateware_instances():
+                continue
             output.append("")
             output.append(f"    // Name: {plugin_instance.plugin_setup.get('name', plugin_instance.instances_name)} ({plugin_instance.NAME})")
             for instance_name, instance_config in plugin_instance.gateware_instances().items():
