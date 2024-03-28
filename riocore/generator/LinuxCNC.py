@@ -357,8 +357,16 @@ class LinuxCNC:
                 ini_setup[section][key] = value
 
         kinematics = "trivkins"
+        kinematics_options = f" coordinates={''.join(coordinates)}"
+        if machinetype == "ldelta":
+            kinematics = "lineardeltakins"
+            kinematics_options = ""
+        elif machinetype == "rdelta":
+            kinematics = "rotarydeltakins"
+            kinematics_options = ""
+
         ini_setup["KINS"]["JOINTS"] = num_joints
-        ini_setup["KINS"]["KINEMATICS"] = f"{kinematics} coordinates={''.join(coordinates)}"
+        ini_setup["KINS"]["KINEMATICS"] = f"{kinematics}{kinematics_options}"
         ini_setup["TRAJ"]["COORDINATES"] = "".join(coordinates)
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
@@ -975,6 +983,14 @@ class LinuxCNC:
             self.loadrts.append("loadrt corexy_by_hal names=corexy")
             self.loadrts.append("addf corexy servo-thread")
             self.loadrts.append("")
+        elif machinetype == "ldelta":
+            self.loadrts.append("# loading lineardelta gl-view")
+            self.loadrts.append("loadusr -W lineardelta MIN_JOINT=-420")
+            self.loadrts.append("")
+        elif machinetype == "rdelta":
+            self.loadrts.append("# loading rotarydelta gl-view")
+            self.loadrts.append("loadusr -W rotarydelta MIN_JOINT=-420")
+            self.loadrts.append("")
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1077,6 +1093,9 @@ class LinuxCNC:
                         self.axisout.append(f"net j{joint}pos-fb  <= {feedback_halname}")
                         self.axisout.append(f"net j{joint}pos-fb  => joint.{joint}.motor-pos-fb")
                         self.axisout.append(f"net j{joint}pos-fb  => pid.{joint}.feedback")
+
+                    if machinetype in {"ldelta", "rdelta"} and axis_name in {"X", "Y", "Z", "XYZ"}:
+                        self.axisout.append(f"net j{joint}pos-fb  => lineardelta.joint{joint}")
 
                     if enable_halname:
                         self.axisout.append(f"net j{joint}enable  <= joint.{joint}.amp-enable-out")
@@ -1871,6 +1890,16 @@ class LinuxCNC:
 
         self.num_axis = len(self.axis_dict)
 
+        # getting all home switches
+        joint_homeswitches = []
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    userconfig = signal_config.get("userconfig")
+                    net = userconfig.get("net")
+                    if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
+                        joint_homeswitches.append(int(net.split(".")[1]))
+
         for axis_name, joints in self.axis_dict.items():
             # print(f"  # Axis: {axis_name}")
             for joint, joint_setup in joints.items():
@@ -1948,6 +1977,13 @@ class LinuxCNC:
                     joint_setup["HOME_LATCH_VEL"] *= -1.0
                     # joint_setup["HOME_FINAL_VEL"] *= -1.0
                     # joint_setup["HOME_OFFSET"] *= -1.0
+
+                if joint not in joint_homeswitches:
+                    joint_setup["HOME_SEARCH_VEL"] = 0.0
+                    joint_setup["HOME_LATCH_VEL"] = 0.0
+                    joint_setup["HOME_FINAL_VEL"] = 0.0
+                    joint_setup["HOME_OFFSET"] = 0
+                    joint_setup["HOME_SEQUENCE"] = 0
 
                 # set autogen values
                 joint_setup["SCALE_OUT"] = position_scale
