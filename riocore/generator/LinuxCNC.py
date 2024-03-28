@@ -87,7 +87,7 @@ class LinuxCNC:
             "MAX_SPINDLE_POWER": 300,
             "MIN_LINEAR_VELOCITY": 0.0,
             "DEFAULT_LINEAR_VELOCITY": 40.0,
-            "MAX_LINEAR_VELOCITY": 80.0,
+            "MAX_LINEAR_VELOCITY": 45.0,
             "MIN_ANGULAR_VELOCITY": 0.0,
             "DEFAULT_ANGULAR_VELOCITY": 2.5,
             "MAX_ANGULAR_VELOCITY": 5.0,
@@ -127,21 +127,14 @@ class LinuxCNC:
             "POSTGUI_HALFILE": "postgui_call_list.hal",
             "HALUI": "halui",
         },
-        "HALUI": {
-            "MDI_COMMAND|00": "G92 X0",
-            "MDI_COMMAND|01": "G92 Y0",
-            "MDI_COMMAND|02": "G92 Z0",
-            "MDI_COMMAND|03": "G92 X0 Y0",
-            "MDI_COMMAND|04": "o<z_touch> call",
-            "MDI_COMMAND|05": "o<x_touch> call",
-        },
+        "HALUI": {},
         "TRAJ": {
             "COORDINATES": None,
             "LINEAR_UNITS": "mm",
             "ANGULAR_UNITS": "degree",
             "CYCLE_TIME": 0.010,
-            "DEFAULT_LINEAR_VELOCITY": 50.00,
-            "MAX_LINEAR_VELOCITY": 50.00,
+            "DEFAULT_LINEAR_VELOCITY": 40.00,
+            "MAX_LINEAR_VELOCITY": 45.00,
             "NO_FORCE_HOMING": 1,
         },
         "EMCIO": {
@@ -370,6 +363,17 @@ class LinuxCNC:
         ini_setup["EMCMOT"]["NUM_DIO"] = 3
         ini_setup["EMCMOT"]["NUM_AIO"] = 3
 
+        for axis_name, joints in axis_dict.items():
+            ini_setup["HALUI"][f"MDI_COMMAND|Zero-{axis_name}"] = f"G92 {axis_name}0"
+            if machinetype == "lathe":
+                if axis_name == "X":
+                    ini_setup["HALUI"]["MDI_COMMAND|Touch-X"] = "o<x_touch> call"
+                elif axis_name == "Z":
+                    ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+            else:
+                if axis_name == "Z":
+                    ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+
         if gui in {"tklinuxcnc", "touchy", "probe_basic"}:
             ini_setup["DISPLAY"]["DISPLAY"] = gui
         elif gui == "qtdragon":
@@ -452,6 +456,8 @@ class LinuxCNC:
                 elif value is not None:
                     if "|" in key:
                         key = key.split("|")[0]
+                    if key.endswith("_VELOCITY"):
+                        output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                     output.append(f"{key} = {value}")
             output.append("")
 
@@ -488,6 +494,8 @@ class LinuxCNC:
                 axis_setup["BACKLASH"] = backlash
 
             for key, value in axis_setup.items():
+                if key.endswith("_VELOCITY"):
+                    output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                 output.append(f"{key:18s} = {value}")
             output.append("")
             for joint, joint_config in joints.items():
@@ -512,6 +520,8 @@ class LinuxCNC:
                     output.append("")
                     for key, value in joint_setup.items():
                         if key in self.JOINT_DEFAULTS:
+                            if key.endswith("_VELOCITY"):
+                                output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                             output.append(f"{key:18s} = {value}")
                 output.append("")
 
@@ -606,6 +616,7 @@ class LinuxCNC:
     def gui(self):
         os.system(f"mkdir -p {self.configuration_path}/")
         machinetype = self.project.config["jdata"].get("machinetype")
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
         gui = self.project.config["jdata"].get("gui", "axis")
         if gui == "qtdragon":
             self.gui_gen = qtdragon()
@@ -634,37 +645,19 @@ class LinuxCNC:
             self.cfgxml_data["status"].append('  <labelframe text="MDI-Commands">')
             self.cfgxml_data["status"].append("    <relief>RAISED</relief>")
             self.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
-            self.cfgxml_data["status"].append("    <hbox>")
+            self.cfgxml_data["status"].append("    <vbox>")
             self.cfgxml_data["status"].append("      <relief>RIDGE</relief>")
             self.cfgxml_data["status"].append("      <bd>2</bd>")
-            if machinetype == "lathe":
-                if "Z":
-                    halpin = self.ini_mdi_command("G92 Z0")
-                    self.hal_net_add(f"{prefix}.zeroz", halpin, "zero-z")
-                    (pname, gout) = self.gui_gen.draw_button("zero-z", "zeroz")
-                    self.cfgxml_data["status"] += gout
-                if "X":
-                    halpin = self.ini_mdi_command("G92 X0")
-                    self.hal_net_add(f"{prefix}.zerox", halpin, "zero-x")
-                    (pname, gout) = self.gui_gen.draw_button("zero-x", "zerox")
-                    self.cfgxml_data["status"] += gout
-                    halpin = self.ini_mdi_command("o<z_touch> call")
-                    self.hal_net_add(f"{prefix}.touchx", halpin, "touch-x")
-                    (pname, gout) = self.gui_gen.draw_button("touch-x", "touchx")
-                    self.cfgxml_data["status"] += gout
-            else:
-                if "X" in self.axis_dict and "Y" in self.axis_dict:
-                    halpin = self.ini_mdi_command("G92 X0 Y0")
-                    self.hal_net_add(f"{prefix}.zeroxy", halpin, "zero-xy")
-                    (pname, gout) = self.gui_gen.draw_button("zero-xy", "zeroxy")
-                    self.cfgxml_data["status"] += gout
-                if "Z":
-                    halpin = self.ini_mdi_command("G92 Z0")
-                    self.hal_net_add(f"{prefix}.zeroz", halpin, "zero-z")
-                    (pname, gout) = self.gui_gen.draw_button("zero-z", "zeroz")
+            mdi_num = 0
+            for mdi_num, command in enumerate(ini_setup["HALUI"]):
+                if command.startswith("MDI_COMMAND|"):
+                    mdi_title = command.split("|")[-1]
+                    halpin = f"halui.mdi-command-{mdi_num:02d}"
+                    self.hal_net_add(f"{prefix}.{halpin}", halpin)
+                    (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
                     self.cfgxml_data["status"] += gout
 
-            self.cfgxml_data["status"].append("    </hbox>")
+            self.cfgxml_data["status"].append("    </vbox>")
             self.cfgxml_data["status"].append("  </labelframe>")
 
         for addon_name, addon in self.addons.items():

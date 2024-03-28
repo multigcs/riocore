@@ -13,12 +13,7 @@
             "name": "atc",
             "pins": {
                 "bit": {
-                    "pin": "38",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
+                    "pin": "38"
                 }
             },
             "signals": {
@@ -29,21 +24,21 @@
         },
         {
             "type": "bitout",
-            "name": "dout2",
+            "name": "compressor",
             "pins": {
                 "bit": {
-                    "pin": "37",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
+                    "pin": "37"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "motion.digital-out-01"
                 }
             }
         },
         {
             "type": "bitout",
-            "name": "Laser-Line",
+            "name": "dout3",
             "pins": {
                 "bit": {
                     "pin": "36",
@@ -71,7 +66,7 @@
         },
         {
             "type": "bitout",
-            "name": "power_on",
+            "name": "dout5",
             "pins": {
                 "bit": {
                     "pin": "25",
@@ -189,12 +184,7 @@
             "pins": {
                 "bit": {
                     "pin": "54",
-                    "pullup": true,
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
+                    "pullup": true
                 }
             },
             "signals": {
@@ -205,6 +195,7 @@
         },
         {
             "type": "bitin",
+            "name": "pressure",
             "pins": {
                 "bit": {
                     "pin": "55",
@@ -283,12 +274,12 @@
             "is_joint": true,
             "joint": {
                 "scale": -1600.0,
-                "max_velocity": 36.0,
+                "max_velocity": 45.0,
                 "max_acceleration": 400.0,
                 "home_offset": 6.5,
                 "home_search_vel": 20.0,
-                "home_latch_vel": -3.0,
-                "home_final_vel": 20.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 30.0,
                 "home_sequence": 1,
                 "min_limit": -200.0,
                 "max_limit": 150.0
@@ -311,8 +302,8 @@
                 "max_acceleration": 400.0,
                 "home_offset": 34.0,
                 "home_search_vel": 20.0,
-                "home_latch_vel": -3.0,
-                "home_final_vel": 20.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 30.0,
                 "home_sequence": 2,
                 "min_limit": -150.0,
                 "max_limit": 150.0
@@ -331,11 +322,11 @@
             },
             "is_joint": true,
             "joint": {
-                "scale": 1600.0,
+                "scale": -1600.0,
                 "max_acceleration": 500.0,
-                "home_offset": 12.0,
-                "home_search_vel": -20.0,
-                "home_latch_vel": 3.0,
+                "home_offset": -12.0,
+                "home_search_vel": 20.0,
+                "home_latch_vel": -1.0,
                 "home_final_vel": 20.0,
                 "home_sequence": 1,
                 "min_limit": -100.0,
@@ -362,8 +353,8 @@
                 "home_latch_vel": -3.0,
                 "home_final_vel": 10.0,
                 "home_sequence": 3,
-                "min_limit": -100.0,
-                "max_limit": 100.0
+                "min_limit": -400.0,
+                "max_limit": 400.0
             }
         },
         {
@@ -422,15 +413,17 @@
     ],
     "linuxcnc": {
         "mxmpg": {
-            "enable": false
+            "enable": true,
+            "device": "/dev/ttyUSB0"
         },
         "ini": {
             "RS274NGC": {
                 "REMAP|M600": "M600 modalgroup=6 argspec=T ngc=toolchange"
             },
             "HALUI": {
-                "MDI_COMMAND|spindle_toggle": "o<spindle_toggle> call",
-                "MDI_COMMAND|clamp_toggle": "o<clamp_toggle> call"
+                "MDI_COMMAND|Spindle": "o<spindle_toggle> call",
+                "MDI_COMMAND|Clamp": "o<clamp_toggle> call",
+                "MDI_COMMAND|Compressor": "o<compressor_toggle> call"
             }
         }
     }
