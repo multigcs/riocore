@@ -186,7 +186,6 @@ class LinuxCNC:
                         in_len += 1
                 if in_len == 0:
                     pass
-                    print(net)
                 elif in_len == 1:
                     if in_first.startswith("riov."):
                         pass
@@ -755,6 +754,7 @@ class LinuxCNC:
                 source = halname["source"]
                 vmin = halname["vmin"]
                 vmax = halname["vmax"]
+                virtual = halname["virtual"]
                 self.loadrts.append(f"loadrt wcomp names=riof.{source}")
                 self.loadrts.append(f"addf riof.{source} servo-thread")
                 self.loadrts.append(f"setp riof.{source}.min {vmin}")
@@ -911,8 +911,8 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     function = userconfig.get("function", "")
                     displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                    if function and not virtual:
-                        continue
+                    #if function and not virtual:
+                    #    continue
                     if signal_config.get("helper", False) and not displayconfig:
                         continue
                     vmin = signal_config.get("min", -1000)
@@ -1210,6 +1210,9 @@ class LinuxCNC:
                 boolean = signal_config.get("bool")
                 signal_source = signal_config.get("source")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                virtual = signal_config.get("virtual")
+                if virtual:
+                    continue
                 if not boolean:
                     output.append(f"    hal_{hal_type}_t *{varname};")
                     if not signal_source and not signal_config.get("helper", False):
@@ -1273,6 +1276,9 @@ class LinuxCNC:
                 signal_source = signal_config.get("source")
                 mapping = {"output": "IN", "input": "OUT", "inout": "IO"}
                 hal_direction = mapping[direction]
+                virtual = signal_config.get("virtual")
+                if virtual:
+                    continue
                 if not boolean:
                     if not signal_source and not signal_config.get("helper", False):
                         output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_SCALE), comp_id, "%s.{halname}-scale", prefix) != 0) error_handler(retval);')
@@ -1407,6 +1413,9 @@ class LinuxCNC:
                             userconfig = signal_config.get("userconfig", {})
                             min_limit = userconfig.get("min_limit")
                             max_limit = userconfig.get("max_limit")
+                            virtual = signal_config.get("virtual")
+                            if virtual:
+                                continue
 
                             if data_name.upper() == varname.split("_")[-1].strip():
                                 source = varname.split()[-1].strip("*")
@@ -1475,6 +1484,9 @@ class LinuxCNC:
                             signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
+                            virtual = signal_config.get("virtual")
+                            if virtual:
+                                continue
                             ctype = "float"
                             if boolean:
                                 ctype = "bool"
@@ -1506,6 +1518,9 @@ class LinuxCNC:
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
                     signal_targets = signal_config.get("targets", {})
+                    virtual = signal_config.get("virtual")
+                    if virtual:
+                        continue
                     if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
                         convert_parameter = []
                         for data_name, data_config in plugin_instance.interface_data().items():
@@ -1636,6 +1651,9 @@ class LinuxCNC:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
+                    virtual = signal_config.get("virtual")
+                    if virtual:
+                        continue
                     if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
                         output.append(f"    convert_{varname.lower()}(data);")
                         signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)

@@ -451,7 +451,7 @@
             "dir": "output",
             "signals": {
                 "value": {
-                    "net": "riof.virtsource2.value.over"
+                    "_net": "riof.virtsource2.value.over"
                 }
             }
         },
@@ -462,7 +462,34 @@
             "dir": "output",
             "signals": {
                 "value": {
-                    "net": "riof.virtsource2.value.under"
+                    "_net": "riof.virtsource2.value.under"
+                }
+            }
+        },
+        {
+            "type": "ads1115",
+            "pins": {
+                "sda": {
+                    "pin": "69"
+                },
+                "scl": {
+                    "pin": "68"
+                }
+            },
+            "signals": {
+                "adc0": {
+                    "function": "wcomp.6",
+                    "scale": 330.0,
+                    "offset": -480.0,
+                    "display": {
+                        "min": 0.0,
+                        "max": 10.0,
+                        "section": "status",
+                        "format": "0.1f",
+                        "region": [[5.5, 7.5, "green"]],
+                        "title": "BAR",
+                        "type": "meter"
+                    }
                 }
             }
         }
