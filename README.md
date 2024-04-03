@@ -46,8 +46,8 @@ a json configuration file serves as the basis
 
 installing via git:
 ```
-git clone git@github.com:multigcs/riocore.git
-git clone git@github.com:multigcs/riogui.git
+git clone https://github.com/multigcs/riocore.git
+git clone https://github.com/multigcs/riogui.git
 cd riocore
 ```
 
