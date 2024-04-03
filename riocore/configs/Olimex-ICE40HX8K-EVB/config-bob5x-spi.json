@@ -1,0 +1,233 @@
+{
+    "name": "Olimex-ICE40HX8K-EVB",
+    "description": "Olimex-ICE40HX8K-EVB with cheap 5axis-BOB - PWM spindle",
+    "boardcfg": "Olimex-ICE40HX8K-EVB",
+    "axis": 5,
+    "machinetype": "mill",
+    "plugins": [
+        {
+            "type": "bitin",
+            "name": "X-Home",
+            "pins": {
+                "bit": {
+                    "pin": "H6",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Y-Home",
+            "pins": {
+                "bit": {
+                    "pin": "F2",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Z-Home",
+            "pins": {
+                "bit": {
+                    "pin": "H3",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "A-Home",
+            "pins": {
+                "bit": {
+                    "pin": "F3",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "B-Home",
+            "pins": {
+                "bit": {
+                    "pin": "B1",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.4.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "pwmout",
+            "name": "Spindle",
+            "pins": {
+                "pwm": {
+                    "pin": "J2"
+                }
+            },
+            "signals": {
+                "dty": {
+                    "net": "spindle.0.speed-out"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "name": "X-Axis",
+            "pins": {
+                "step": {
+                    "pin": "H1"
+                },
+                "dir": {
+                    "pin": "G1"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Y-Axis",
+            "pins": {
+                "step": {
+                    "pin": "J5"
+                },
+                "dir": {
+                    "pin": "H2"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Z-Axis",
+            "pins": {
+                "step": {
+                    "pin": "J4"
+                },
+                "dir": {
+                    "pin": "G2"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "A-Axis",
+            "pins": {
+                "step": {
+                    "pin": "H4"
+                },
+                "dir": {
+                    "pin": "F1"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "B-Axis",
+            "pins": {
+                "step": {
+                    "pin": "C2"
+                },
+                "dir": {
+                    "pin": "C1"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "spi",
+            "pins": {
+                "mosi": {
+                    "pin": "P12"
+                },
+                "miso": {
+                    "pin": "P11"
+                },
+                "sclk": {
+                    "pin": "R11"
+                },
+                "sel": {
+                    "pin": "L11"
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "R16",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "enable",
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "F5"
+                }
+            },
+            "modifier": [
+                {
+                    "type": "onerror"
+                }
+            ]
+        }
+    ]
+}
