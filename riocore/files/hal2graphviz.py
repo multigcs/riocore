@@ -311,6 +311,13 @@ LINUXCNC_SIGNALS = {
     },
 }
 
+clusters = {
+    "MPG": ["mpg"],
+    "GUI": ["pyvcp", "qtdragon"],
+    "RIO": ["rio"],
+    "Joints": ["joint"],
+}
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("ini", help="path to ini file", nargs="?", type=str, default=None)
@@ -514,12 +521,6 @@ for signal_name, parts in signals.items():
         else:
             gAll.edge(source_name, target_name, label=elabel)
 
-
-clusters = {
-    "GUI": ["pyvcp", "qtdragon"],
-    "RIO": ["rio"],
-    "Joints": ["joint"],
-}
 
 for group_name, pins in groups.items():
     cgroup = group_name.split(".")[0]
