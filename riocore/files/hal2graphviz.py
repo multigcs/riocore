@@ -515,7 +515,11 @@ for signal_name, parts in signals.items():
             gAll.edge(source_name, target_name, label=elabel)
 
 
-clusters = ("pyvcp", "rio")
+clusters = {
+    "GUI": ["pyvcp", "qtdragon"],
+    "RIO": ["rio"],
+    "Joints": ["joint"],
+}
 
 for group_name, pins in groups.items():
     cgroup = group_name.split(".")[0]
@@ -545,8 +549,15 @@ for group_name, pins in groups.items():
 
     label = f"{title} | {'|'.join(pin_strs)} "
 
-    if cgroup in clusters:
-        with gAll.subgraph(name=f"cluster_{cgroup}") as gr:
+    cluster = None
+    for title, prefixes in clusters.items():
+        if cgroup in prefixes:
+            cluster = title
+            break
+
+    if cluster:
+        with gAll.subgraph(name=f"cluster_{cluster}") as gr:
+            gr.attr(label=cluster, style="rounded, filled")
             gr.node(
                 group_name,
                 shape="record",

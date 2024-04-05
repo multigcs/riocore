@@ -911,7 +911,7 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     function = userconfig.get("function", "")
                     displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                    #if function and not virtual:
+                    # if function and not virtual:
                     #    continue
                     if signal_config.get("helper", False) and not displayconfig:
                         continue
