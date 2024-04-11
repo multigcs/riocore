@@ -703,10 +703,19 @@ class LinuxCNC:
             (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
             self.cfgxml_data["status"] += gout
             self.hal_net_add(pname, "vismach.plotclear")
+            self.cfgxml_data["status"].append("<hbox>")
+            self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
+            self.cfgxml_data["status"].append("  <bd>2</bd>")
             for joint in range(6):
-                (pname, gout) = self.gui_gen.draw_bar(f"Joint{joint + 1}", f"joint_pos{joint}")
+                (pname, gout) = self.gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
                 self.cfgxml_data["status"] += gout
                 self.hal_net_add(f"joint.{joint}.pos-fb", pname)
+                if joint == 2:
+                    self.cfgxml_data["status"].append("</hbox>")
+                    self.cfgxml_data["status"].append("<hbox>")
+                    self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
+                    self.cfgxml_data["status"].append("  <bd>2</bd>")
+            self.cfgxml_data["status"].append("</hbox>")
 
         # buttons
         if gui != "qtdragon":
@@ -2332,13 +2341,14 @@ class qtdragon:
         display_max = setup.get("max", vmax)
         display_text = setup.get("text", name)
         display_threshold = setup.get("threshold")
+        display_size = setup.get("size", "150")
         cfgxml_data = []
         cfgxml_data.append("   <item>")
         cfgxml_data.append(f'       <widget class="Gauge" name="{halpin}">')
         cfgxml_data.append('        <property name="minimumSize">')
         cfgxml_data.append("         <size>")
-        cfgxml_data.append("          <width>150</width>")
-        cfgxml_data.append("          <height>150</height>")
+        cfgxml_data.append(f"          <width>{display_size}</width>")
+        cfgxml_data.append(f"          <height>{display_size}</height>")
         cfgxml_data.append("         </size>")
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_value" stdset="0">')
