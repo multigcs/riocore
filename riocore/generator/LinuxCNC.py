@@ -135,6 +135,8 @@ class LinuxCNC:
             "CYCLE_TIME": 0.010,
             "DEFAULT_LINEAR_VELOCITY": 40.00,
             "MAX_LINEAR_VELOCITY": 45.00,
+            "DEFAULT_ANGULAR_VELOCITY": 60.0,
+            "MAX_ANGULAR_VELOCITY": 100.0,
             "NO_FORCE_HOMING": 1,
         },
         "EMCIO": {
@@ -165,7 +167,7 @@ class LinuxCNC:
         output_hal = []
         output_postgui = []
 
-        custom_filter = ("pyvcp", "qtdragon", "axisui", "mpg")
+        custom_filter = ("pyvcp", "qtdragon", "axisui", "mpg", "vismach", "kinstype", "melfagui")
         ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
 
         # hal
@@ -173,10 +175,8 @@ class LinuxCNC:
         signal_prefix = ""
         for network, net in networks.items():
             if net["in"] and net["out"]:
-                output_hal.append("")
-                output_hal.append(f"# {network}")
-                output_postgui.append("")
-                output_postgui.append(f"# {network}")
+                output_hal_tmp = []
+                output_postgui_tmp = []
                 in_first = ""
                 in_len = 0
                 for net_in in net["in"]:
@@ -190,42 +190,42 @@ class LinuxCNC:
                     if in_first.startswith("riov."):
                         pass
                     elif not in_first.startswith(custom_filter):
-                        output_hal.append(f"net {signal_prefix}{network} <= {in_first}")
+                        output_hal_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
                     else:
-                        output_postgui.append(f"net {signal_prefix}{network} <= {in_first}")
+                        output_postgui_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
                     for out in net["out"]:
                         if out.startswith("riov."):
                             continue
                         if not out.startswith(custom_filter):
-                            output_hal.append(f"net {signal_prefix}{network} => {out}")
+                            output_hal_tmp.append(f"net {signal_prefix}{network} => {out}")
                         else:
-                            output_postgui.append(f"net {signal_prefix}{network} => {out}")
+                            output_postgui_tmp.append(f"net {signal_prefix}{network} => {out}")
                 else:
                     uniq_types = set()
                     if in_first.endswith("counts"):
                         if in_len > 4:
                             print(f"ERROR: can only sum 4 integer values: {net}")
 
-                        output_hal.append(f"loadrt scaled_s32_sums names=isum.{network}")
-                        output_hal.append(f"addf isum.{network} servo-thread")
+                        output_hal_tmp.append(f"loadrt scaled_s32_sums names=isum.{network}")
+                        output_hal_tmp.append(f"addf isum.{network} servo-thread")
                         for in_n, pin_in in enumerate(net["in"]):
                             if pin_in.startswith("riov."):
                                 pass
                             elif not pin_in.startswith(custom_filter):
-                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
-                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
+                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
+                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
                             else:
-                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
-                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
-                        output_hal.append(f"net {signal_prefix}{network}_out-s <= isum.{network}.out-s")
+                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
+                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
+                        output_hal_tmp.append(f"net {signal_prefix}{network}_out-s <= isum.{network}.out-s")
                         for out in net["out"]:
                             if out.startswith("riov."):
                                 continue
                             ctype = net["options"].get(out, {}).get("type", "OR")
                             if not out.startswith(custom_filter):
-                                output_hal.append(f"net {signal_prefix}{network}_out-s => {out}")
+                                output_hal_tmp.append(f"net {signal_prefix}{network}_out-s => {out}")
                             else:
-                                output_postgui.append(f"net {signal_prefix}{network}_out-s => {out}")
+                                output_postgui_tmp.append(f"net {signal_prefix}{network}_out-s => {out}")
                     else:
                         for option in net["options"].values():
                             uniq_types.add(option["type"])
@@ -235,29 +235,38 @@ class LinuxCNC:
                             personality |= ctypes[ctype]
 
                         n_inputs = in_len
-                        output_hal.append(f"loadrt logic names=logic.{network} personality=0x{personality+n_inputs:x}")
-                        output_hal.append(f"addf logic.{network} servo-thread")
+                        output_hal_tmp.append(f"loadrt logic names=logic.{network} personality=0x{personality+n_inputs:x}")
+                        output_hal_tmp.append(f"addf logic.{network} servo-thread")
                         for in_n, pin_in in enumerate(net["in"]):
                             if pin_in.startswith("riov."):
                                 pass
                             elif not pin_in.startswith(custom_filter):
-                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
-                                output_hal.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
+                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
+                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
                             else:
-                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
-                                output_postgui.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
+                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
+                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
 
                         for ctype in uniq_types:
-                            output_hal.append(f"net {signal_prefix}{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
+                            output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
 
                         for out in net["out"]:
                             if out.startswith("riov."):
                                 continue
                             ctype = net["options"].get(out, {}).get("type", "OR")
                             if not out.startswith(custom_filter):
-                                output_hal.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
+                                output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
                             else:
-                                output_postgui.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
+                                output_postgui_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
+
+                if output_hal_tmp:
+                    output_hal.append("")
+                    output_hal.append(f"# {network}")
+                    output_hal += output_hal_tmp
+                if output_postgui_tmp:
+                    output_postgui.append("")
+                    output_postgui.append(f"# {network}")
+                    output_postgui += output_postgui_tmp
 
         for name, value in setps.items():
             # check if pin is connected to other pin
@@ -362,6 +371,9 @@ class LinuxCNC:
         gui = jdata.get("gui", "axis")
         machinetype = jdata.get("machinetype")
 
+        if machinetype:
+            ini_setup["EMC"]["MACHINE"] = f"Rio - {machinetype}"
+
         if machinetype == "lathe":
             ini_setup["DISPLAY"]["LATHE"] = 1
 
@@ -393,12 +405,17 @@ class LinuxCNC:
         elif machinetype in {"melfa"}:
             kinematics = "genserkins"
             kinematics_options = ""
+            ini_setup["RS274NGC"]["RS274NGC_STARTUP_CODE"] = "G10 L2 P7 X0 Y0 Z0 A-180 B0 C0 G59.1"
+            ini_setup["RS274NGC"]["HAL_PIN_VARS"] = "1"
+            ini_setup["RS274NGC"]["REMAP|M428"] = "M428 modalgroup=10 ngc=428remap"
+            ini_setup["RS274NGC"]["REMAP|M429"] = "M429 modalgroup=10 ngc=429remap"
+            ini_setup["RS274NGC"]["REMAP|M430"] = "M430 modalgroup=10 ngc=430remap"
 
         ini_setup["KINS"]["JOINTS"] = num_joints
         ini_setup["KINS"]["KINEMATICS"] = f"{kinematics}{kinematics_options}"
         ini_setup["TRAJ"]["COORDINATES"] = "".join(coordinates)
-        ini_setup["EMCMOT"]["NUM_DIO"] = 3
-        ini_setup["EMCMOT"]["NUM_AIO"] = 3
+        ini_setup["EMCMOT"]["NUM_DIO"] = 16
+        ini_setup["EMCMOT"]["NUM_AIO"] = 16
 
         for axis_name, joints in axis_dict.items():
             ini_setup["HALUI"][f"MDI_COMMAND|Zero-{axis_name}"] = f"G92 {axis_name}0"
@@ -493,7 +510,7 @@ class LinuxCNC:
                 elif value is not None:
                     if "|" in key:
                         key = key.split("|")[0]
-                    if key.endswith("_VELOCITY"):
+                    if key.endswith("_VELOCITY") and "ANGULAR" not in key:
                         output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                     output.append(f"{key} = {value}")
             output.append("")
@@ -531,7 +548,7 @@ class LinuxCNC:
                 axis_setup["BACKLASH"] = backlash
 
             for key, value in axis_setup.items():
-                if key.endswith("_VELOCITY"):
+                if key.endswith("_VELOCITY") and "ANGULAR" not in key:
                     output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                 output.append(f"{key:18s} = {value}")
             output.append("")
@@ -676,6 +693,18 @@ class LinuxCNC:
                         self.cfgxml_data[section] = []
         self.cfgxml_data["inputs"] = []
         self.cfgxml_data["outputs"] = []
+
+        if machinetype == "melfa":
+            (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
+            self.cfgxml_data["status"] += gout
+            self.hal_net_add(f"kinstype.is-0", f"{pname}.legend0")
+            self.hal_net_add(f"kinstype.is-1", f"{pname}.legend1")
+            ini_setup["HALUI"][f"MDI_COMMAND|World Coord"] = "M428"
+            ini_setup["HALUI"][f"MDI_COMMAND|Joint Coord"] = "M429"
+            ini_setup["HALUI"][f"MDI_COMMAND|Gensertool"] = "M430"
+            (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
+            self.cfgxml_data["status"] += gout
+            self.hal_net_add(pname, "vismach.plotclear")
 
         # buttons
         if gui != "qtdragon":
@@ -1075,6 +1104,34 @@ class LinuxCNC:
             self.loadrts.append("# loading rotarydelta gl-view")
             self.loadrts.append("loadusr -W rotarydelta MIN_JOINT=-420")
             self.loadrts.append("")
+        elif machinetype == "melfa":
+            self.loadrts.append("# loading melfa gui")
+            self.loadrts.append("loadusr -W melfagui")
+            self.loadrts.append("")
+            self.loadrts.append("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
+            self.loadrts.append("")
+            os.system(f"mkdir -p {self.configuration_path}/")
+            os.system(f"cp -a riocore/files/melfa/* {self.configuration_path}/")
+            for joint in range(6):
+                self.hal_net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
+            self.loadrts.append("setp genserkins.A-0 0")
+            self.loadrts.append("setp genserkins.A-1 85")
+            self.loadrts.append("setp genserkins.A-2 380")
+            self.loadrts.append("setp genserkins.A-3 100")
+            self.loadrts.append("setp genserkins.A-4 0")
+            self.loadrts.append("setp genserkins.A-5 0")
+            self.loadrts.append("setp genserkins.ALPHA-0 0")
+            self.loadrts.append("setp genserkins.ALPHA-1 -1.570796326")
+            self.loadrts.append("setp genserkins.ALPHA-2 0")
+            self.loadrts.append("setp genserkins.ALPHA-3 -1.570796326")
+            self.loadrts.append("setp genserkins.ALPHA-4 1.570796326")
+            self.loadrts.append("setp genserkins.ALPHA-5 -1.570796326")
+            self.loadrts.append("setp genserkins.D-0 350")
+            self.loadrts.append("setp genserkins.D-1 0")
+            self.loadrts.append("setp genserkins.D-2 0")
+            self.loadrts.append("setp genserkins.D-3 425")
+            self.loadrts.append("setp genserkins.D-4 0")
+            self.loadrts.append("setp genserkins.D-5 235")
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1962,10 +2019,14 @@ class LinuxCNC:
 
     def create_axis_config(self):
         machinetype = self.project.config["jdata"].get("machinetype")
+        max_axis = self.project.config["jdata"].get("axis", 9)
         pin_num = 0
         self.num_joints = 0
         self.num_axis = 0
         self.axis_dict = {}
+
+        if machinetype in {"melfa", "puma"}:
+            self.AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C"]
 
         named_axis = []
         for plugin_instance in self.project.plugin_instances:
@@ -2770,7 +2831,21 @@ class axis:
         cfgxml_data.append("  <button>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>3</bd>")
-        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin><text>"{title}"</text>')
+        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f'    <text>"{title}"</text>')
         cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("  </button>")
+        return (f"pyvcp.{halpin}", cfgxml_data)
+
+    def draw_multilabel(self, name, halpin, setup={}):
+        title = setup.get("title", name)
+        legends = setup.get("legends", ["LABEL1", "LABEL2", "LABEL3", "LABEL4"])
+        cfgxml_data = []
+        cfgxml_data.append("  <multilabel>")
+        cfgxml_data.append(f"    <legends>{legends}</legends>")
+        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append('    <font>("Helvetica", 12)</font>')
+        cfgxml_data.append('    <bg>"black"</bg>')
+        cfgxml_data.append('    <fg>"yellow"</fg>')
+        cfgxml_data.append("  </multilabel>")
         return (f"pyvcp.{halpin}", cfgxml_data)

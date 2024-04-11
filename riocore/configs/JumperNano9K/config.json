@@ -72,7 +72,7 @@
         },
         {
             "type": "bitin",
-            "name": "P10",
+            "name": "P10A",
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P10",
@@ -82,7 +82,7 @@
         },
         {
             "type": "bitin",
-            "name": "P11",
+            "name": "P11A",
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P11",
@@ -92,7 +92,7 @@
         },
         {
             "type": "bitin",
-            "name": "P12",
+            "name": "P12A",
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P12",
@@ -102,7 +102,7 @@
         },
         {
             "type": "bitin",
-            "name": "P13",
+            "name": "P13A",
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P13",
@@ -112,7 +112,7 @@
         },
         {
             "type": "bitin",
-            "name": "P15",
+            "name": "P15A",
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P15",
@@ -122,7 +122,7 @@
         },
         {
             "type": "bitin",
-            "name": "P10",
+            "name": "P10B",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P10",
@@ -132,7 +132,7 @@
         },
         {
             "type": "bitin",
-            "name": "P11",
+            "name": "P11B",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P11",
@@ -142,7 +142,7 @@
         },
         {
             "type": "bitin",
-            "name": "P12",
+            "name": "P12B",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P12",
@@ -152,7 +152,7 @@
         },
         {
             "type": "bitin",
-            "name": "P13",
+            "name": "P13B",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P13",
@@ -162,7 +162,7 @@
         },
         {
             "type": "bitin",
-            "name": "P15",
+            "name": "P15B",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P15",
@@ -329,7 +329,7 @@
                     ]
                 }
             },
-            "is_joint": true
+            "is_joint": false
         },
         {
             "type": "stepdir",
@@ -352,7 +352,7 @@
                     ]
                 }
             },
-            "is_joint": true
+            "is_joint": false
         },
         {
             "type": "pwmout",
