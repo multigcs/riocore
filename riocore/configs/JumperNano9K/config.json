@@ -1,0 +1,457 @@
+{
+    "name": "JumperNano9K",
+    "description": "TangNano9K with two 5x-BOB's",
+    "boardcfg": "TangNano9K",
+    "protocol": "UDP",
+    "slots": [
+        {
+            "name": "BOB_A",
+            "comment": "1. 5Axis_BOB",
+            "pins": {
+                "P1": "63",
+                "P2": "77",
+                "P3": "76",
+                "P4": "75",
+                "P5": "74",
+                "P6": "73",
+                "P7": "72",
+                "P8": "71",
+                "P9": "70",
+                "P10": "48",
+                "P11": "49",
+                "P12": "31",
+                "P13": "32",
+                "P14": "53",
+                "P15": "79",
+                "P16": "54",
+                "P17": "55"
+            }
+        },
+        {
+            "name": "BOB_B",
+            "comment": "2. 5Axis_BOB",
+            "pins": {
+                "P1": "40",
+                "P2": "34",
+                "P3": "33",
+                "P4": "30",
+                "P5": "29",
+                "P6": "28",
+                "P7": "27",
+                "P8": "26",
+                "P9": "25",
+                "P10": "39",
+                "P11": "36",
+                "P12": "37",
+                "P13": "38",
+                "P14": "51",
+                "P15": "42",
+                "P16": "41",
+                "P17": "35"
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "type": "bitout",
+            "name": "status",
+            "pins": {
+                "bit": {
+                    "pin": "10",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true
+                        },
+                        {
+                            "type": "pwm"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P10",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P10",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P11",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P11",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P12",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P12",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P13",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P13",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P15",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P15",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P10",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P10",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P11",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P11",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P12",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P12",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P13",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P13",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "P15",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P15",
+                    "pullup": true
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint0",
+            "pins": {
+                "step": {
+                    "pin": "BOB_A:P2",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_A:P3",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint1",
+            "pins": {
+                "step": {
+                    "pin": "BOB_A:P4",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_A:P5",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint2",
+            "pins": {
+                "step": {
+                    "pin": "BOB_A:P6",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_A:P7",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint3",
+            "pins": {
+                "step": {
+                    "pin": "BOB_A:P8",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_A:P9",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint4",
+            "pins": {
+                "step": {
+                    "pin": "BOB_B:P2",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_B:P3",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint5",
+            "pins": {
+                "step": {
+                    "pin": "BOB_B:P4",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_B:P5",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint6",
+            "pins": {
+                "step": {
+                    "pin": "BOB_B:P6",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_B:P7",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint7",
+            "pins": {
+                "step": {
+                    "pin": "BOB_B:P8",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "dir": {
+                    "pin": "BOB_B:P9",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "pwmout",
+            "name": "PWM1",
+            "pins": {
+                "pwm": {
+                    "pin": "BOB_A:P1"
+                }
+            }
+        },
+        {
+            "type": "pwmout",
+            "name": "PWM2",
+            "pins": {
+                "pwm": {
+                    "pin": "BOB_B:P1"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "Out1",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P16"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "Relais1",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P17"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "Out2",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P16"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "Relais2",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P17"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "EnableA",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_A:P14",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "EnableB",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P14",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "69"
+                },
+                "miso": {
+                    "pin": "56"
+                },
+                "sclk": {
+                    "pin": "68"
+                },
+                "sel": {
+                    "pin": "57"
+                }
+            }
+        }
+    ]
+}
