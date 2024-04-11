@@ -49,7 +49,8 @@ class Gateware:
 
         self.pinmapping = {}
         self.pinmapping_rev = {}
-        for slot in self.config["board_data"].get("slots", []):
+        self.slots = self.config["board_data"].get("slots", []) + self.config["jdata"].get("slots", [])
+        for slot in self.slots:
             slot_name = slot.get("name")
             slot_pins = slot.get("pins", {})
             for pin_name, pin in slot_pins.items():
