@@ -705,6 +705,10 @@ class LinuxCNC:
             (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
             self.cfgxml_data["status"] += gout
             self.hal_net_add(pname, "vismach.plotclear")
+            for joint in range(6):
+                (pname, gout) = self.gui_gen.draw_bar(f"Joint{joint + 1}", f"joint_pos{joint}")
+                self.cfgxml_data["status"] += gout
+                self.hal_net_add(f"joint.{joint}.pos-fb", pname)
 
         # buttons
         if gui != "qtdragon":
