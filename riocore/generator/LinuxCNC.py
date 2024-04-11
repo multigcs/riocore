@@ -674,10 +674,8 @@ class LinuxCNC:
         gui = self.project.config["jdata"].get("gui", "axis")
         if gui == "qtdragon":
             self.gui_gen = qtdragon()
-            prefix = "qtdragon"
         else:
             self.gui_gen = axis()
-            prefix = "pyvcp"
 
         custom = []
         self.cfgxml_data = {
@@ -723,9 +721,9 @@ class LinuxCNC:
                 if command.startswith("MDI_COMMAND|"):
                     mdi_title = command.split("|")[-1]
                     halpin = f"halui.mdi-command-{mdi_num:02d}"
-                    self.hal_net_add(f"{prefix}.{halpin}", halpin)
                     (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
                     self.cfgxml_data["status"] += gout
+                    self.hal_net_add(pname, halpin)
 
             self.cfgxml_data["status"].append("    </vbox>")
             self.cfgxml_data["status"].append("  </labelframe>")
@@ -867,11 +865,11 @@ class LinuxCNC:
                 for function, halname in self.rio_functions["jog"].items():
                     if function == "fast":
                         self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
-                self.hal_net_add("riof.jog.speed_mux.out", f"{prefix}.jogspeed")
-                self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
-                self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
                 (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
                 self.cfgxml_data["status"] += gout
+                self.hal_net_add("riof.jog.speed_mux.out", pname)
+                self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
+                self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
 
             if axis_move and not wheel:
                 for function, halname in self.rio_functions["jog"].items():
@@ -886,9 +884,9 @@ class LinuxCNC:
                         axis_name = function.split("-")[-1]
                         self.hal_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
                         self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
-                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"{prefix}.selected-{axis_name}")
                         (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         self.cfgxml_data["status"] += gout
+                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", pname)
                         for axis_id, joints in self.axis_dict.items():
                             laxis = axis_id.lower()
                             if axis_name == laxis:
