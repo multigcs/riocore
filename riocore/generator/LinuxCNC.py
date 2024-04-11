@@ -384,6 +384,15 @@ class LinuxCNC:
         elif machinetype == "rdelta":
             kinematics = "rotarydeltakins"
             kinematics_options = ""
+        elif machinetype in {"scara"}:
+            kinematics = "scarakins"
+            kinematics_options = " coordinates=xyzcab"
+        elif machinetype in {"puma"}:
+            kinematics = "pumakins"
+            kinematics_options = ""
+        elif machinetype in {"melfa"}:
+            kinematics = "genserkins"
+            kinematics_options = ""
 
         ini_setup["KINS"]["JOINTS"] = num_joints
         ini_setup["KINS"]["KINEMATICS"] = f"{kinematics}{kinematics_options}"
@@ -2081,6 +2090,19 @@ class LinuxCNC:
                     joint_setup["HOME_FINAL_VEL"] = 0.0
                     joint_setup["HOME_OFFSET"] = 0
                     joint_setup["HOME_SEQUENCE"] = 0
+
+                if machinetype in {"scara"}:
+                    if axis_name in {"Z"}:
+                        joint_setup["TYPE"] = "LINEAR"
+                    else:
+                        joint_setup["TYPE"] = "ANGULAR"
+                elif machinetype in {"melfa", "puma"}:
+                    joint_setup["TYPE"] = "ANGULAR"
+                else:
+                    if axis_name in {"A", "C", "B"}:
+                        joint_setup["TYPE"] = "ANGULAR"
+                    else:
+                        joint_setup["TYPE"] = "LINEAR"
 
                 # set autogen values
                 joint_setup["SCALE_OUT"] = position_scale
