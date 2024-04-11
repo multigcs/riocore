@@ -58,12 +58,17 @@ class Gateware:
                 self.pinmapping[pin_id] = pin
                 self.pinmapping_rev[pin] = pin_id
 
+        pinnames = {}
         for plugin_instance in self.project.plugin_instances:
             self.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
                     pin_config["pin"] = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
                     self.config["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
+                    if pin_config["pin"] not in pinnames:
+                        pinnames[pin_config["pin"]] = plugin_instance.instances_name
+                    else:
+                        print(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
 
         toolchain = self.config["toolchain"]
         print(f"loading toolchain {toolchain}")

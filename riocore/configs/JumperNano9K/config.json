@@ -453,5 +453,7 @@
                 }
             }
         }
-    ]
+    ],
+    "axis": 6,
+    "machinetype": "melfa"
 }

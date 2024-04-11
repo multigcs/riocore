@@ -277,6 +277,16 @@ class Project:
         else:
             self.generator_gateware = Gateware(self)
 
+        # check names
+        varnames = {}
+        for plugin_instance in self.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                varname = signal_config["varname"]
+                if varname not in varnames:
+                    varnames[varname] = plugin_instance.instances_name
+                else:
+                    print(f"ERROR: varname allready exist: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
+
     def get_path(self, path):
         if os.path.exists(path):
             return path
