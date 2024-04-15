@@ -318,11 +318,13 @@ clusters = {
     "Joints": ["joint"],
 }
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("ini", help="path to ini file", nargs="?", type=str, default=None)
 parser.add_argument("--elabel", "-e", help="display edge labels", default=False, action="store_true")
+parser.add_argument("--quiet", "-q", help="quiet", default=False, action="store_true")
+parser.add_argument("--output", "-o", help="output file", type=str, default="/tmp/hal-graph.svg")
 args = parser.parse_args()
+
 
 
 if not args.ini:
@@ -369,7 +371,8 @@ def load_halfile(basepath, filepath):
             print(f"ERROR: file: {filepath} not found")
             return
 
-    print(f"loading {basepath}/{filepath}")
+    if not args.quiet:
+        print(f"loading {basepath}/{filepath}")
 
     halfile_data = open(f"{basepath}/{filepath}", "r").read()
     for line in halfile_data.split("\n"):
@@ -577,5 +580,6 @@ for group_name, pins in groups.items():
             fillcolor=color,
         )
 
-print("write svg to: /tmp/hal-graph.svg")
-open("/tmp/hal-graph.svg", "w").write(gAll.pipe().decode())
+if not args.quiet:
+    print(f"write svg to: {args.output}")
+open(args.output, "w").write(gAll.pipe().decode())
