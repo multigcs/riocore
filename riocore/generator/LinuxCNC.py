@@ -433,45 +433,14 @@ class LinuxCNC:
         elif gui == "qtdragon":
             qtdragon_setup = {
                 "DISPLAY": {
-                    "DISPLAY": "qtvcp -d rio_hd",
-                    "ICON": "silver_dragon.png",
-                    "EDITOR": None,
-                    "PYVCP": None,
-                    "PREFERENCE_FILE_PATH": "WORKINGFOLDER/qtdragon_hd.pref",
-                    "INTRO_GRAPHIC": "silver_dragon.png",
-                    "CYCLE_TIME": 100,
-                    "NGCGUI_SUBFILE_PATH": "../../../nc_files/ngcgui_lib/",
-                    "NGCGUI_SUBFILE": "qpocket.ngc",
+                    "DISPLAY": "qtvcp qtdragon",
+                    "PREFERENCE_FILE_PATH": "WORKINGFOLDER/qtdragon.pref",
                     "MDI_HISTORY_FILE": "mdi_history.dat",
-                    "LOG_FILE": "qtdragon_hd.log",
-                },
-                "MDI_COMMAND_LIST": {
-                    "MDI_COMMAND": [
-                        "G0 Z25 X0 Y0;Z0,Goto\\nZero",
-                        "G53 G0 Z0;G53 G0 X0 Y0,Goto\\nMach\\nZero",
-                    ],
-                },
-                "FILTER": {
-                    "PROGRAM_EXTENSION": [
-                        ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
-                        ".png,.gif,.jpg Greyscale Depth Image",
-                        ".py Python Script",
-                    ],
-                    "png": "image-to-gcode",
-                    "gif": "image-to-gcode",
-                    "jpg": "image-to-gcode",
-                    "py": "python3",
-                },
-                "RS274NGC": {
-                    "PARAMETER_FILE": "linuxcnc.var",
-                    "RS274NGC_STARTUP_CODE": "G17 G21 G40 G43H0 G54 G64P0.0127 G80 G90 G94 G97 M5 M9",
-                    "SUBROUTINE_PATH": "./subroutines/",
-                    "USER_M_PATH": "./mcodes/",
-                    "ON_ABORT_COMMAND": "O <on_abort> call",
-                },
-                "HALUI": {},
-                "PROBE": {
-                    "USE_PROBE": "basicprobe",
+                    "MACHINE_LOG_PATH": "machine_log.dat",
+                    "LOG_FILE": "qtdragon.log",
+                    "EMBED_TAB_NAME|RIO": "RIO",
+                    "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
+                    "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
                 },
             }
             for section, sdata in qtdragon_setup.items():
@@ -693,10 +662,11 @@ class LinuxCNC:
         self.cfgxml_data["outputs"] = []
 
         if machinetype == "melfa":
-            (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
-            self.cfgxml_data["status"] += gout
-            self.hal_net_add(f"kinstype.is-0", f"{pname}.legend0")
-            self.hal_net_add(f"kinstype.is-1", f"{pname}.legend1")
+            if gui != "qtdragon":
+                (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
+                self.cfgxml_data["status"] += gout
+                self.hal_net_add(f"kinstype.is-0", f"{pname}.legend0")
+                self.hal_net_add(f"kinstype.is-1", f"{pname}.legend1")
             ini_setup["HALUI"][f"MDI_COMMAND|World Coord"] = "M428"
             ini_setup["HALUI"][f"MDI_COMMAND|Joint Coord"] = "M429"
             ini_setup["HALUI"][f"MDI_COMMAND|Gensertool"] = "M430"
@@ -1043,11 +1013,15 @@ class LinuxCNC:
         cfgxml_adata += self.gui_gen.draw_end()
 
         if gui == "qtdragon":
-            os.system(f"mkdir -p {self.configuration_path}/rio_hd")
-            os.system(f"cp -a {riocore_path}/files/rio_hd/* {self.configuration_path}/rio_hd/")
-            os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.pre > {self.configuration_path}/rio_hd/rio_hd.ui")
-            open(f"{self.configuration_path}/rio_hd/rio_hd.ui", "a").write("\n".join(cfgxml_adata))
-            os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.post >> {self.configuration_path}/rio_hd/rio_hd.ui")
+
+            #os.system(f"mkdir -p {self.configuration_path}/rio_hd")
+            #os.system(f"cp -a {riocore_path}/files/rio_hd/* {self.configuration_path}/rio_hd/")
+            #os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.pre > {self.configuration_path}/rio_hd/rio_hd.ui")
+            #open(f"{self.configuration_path}/rio_hd/rio_hd.ui", "a").write("\n".join(cfgxml_adata))
+            #os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.post >> {self.configuration_path}/rio_hd/rio_hd.ui")
+
+            open(f"{self.configuration_path}/rio-gui.ui", "w").write("\n".join(cfgxml_adata))
+
         else:
             open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
 
@@ -2194,7 +2168,24 @@ class qtdragon:
 
     def draw_begin(self):
         cfgxml_data = []
-        cfgxml_data.append("")
+        cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>412</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+""")
         cfgxml_data.append("")
         cfgxml_data.append("           <item>")
         cfgxml_data.append('            <widget class="QGroupBox" name="groupBox_rio">')
@@ -2240,7 +2231,55 @@ class qtdragon:
         cfgxml_data.append("            </widget>")
         cfgxml_data.append("           </item>")
         cfgxml_data.append("")
-        cfgxml_data.append("")
+        cfgxml_data.append("""
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>350</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>IndicatedPushButton</class>
+   <extends>QPushButton</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>IndicatedPushButton</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>LED</class>
+   <extends>QWidget</extends>
+   <header>qtvcp.widgets.led_widget</header>
+  </customwidget>
+  <customwidget>
+   <class>HALLabel</class>
+   <extends>QLabel</extends>
+   <header>qtvcp.widgets.hal_label</header>
+  </customwidget>
+  <customwidget>
+   <class>ScreenOptions</class>
+   <extends>QWidget</extends>
+   <header>qtvcp.widgets.screen_options</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <slots>
+  <slot>applyClicked()</slot>
+  <slot>updateCombo()</slot>
+ </slots>
+</ui>""")
         return cfgxml_data
 
     def draw_tabs_begin(self, names):
@@ -2307,9 +2346,13 @@ class qtdragon:
         return cfgxml_data
 
     def draw_button(self, name, halpin, setup={}):
-        return (f"qtdragon.{halpin}", [])
+        return (f"qtdragon.rio-gui.{halpin}", [])
 
-    def draw_scale(self, name, halpin, vmin, vmax, setup={}):
+    def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        resolution = setup.get("resolution", 0.1)
         cfgxml_data = []
         cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
@@ -2335,7 +2378,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.{halpin}-f", cfgxml_data)
+        return (f"qtdragon.rio-gui.{halpin}-f", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_max = setup.get("max", vmax)
@@ -2389,7 +2432,7 @@ class qtdragon:
         cfgxml_data.append("      </property>")
         cfgxml_data.append("       </widget>")
         cfgxml_data.append("   </item>")
-        return (f"qtdragon.{halpin}_value", cfgxml_data)
+        return (f"qtdragon.rio-gui.{halpin}_value", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
@@ -2433,7 +2476,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.{halpin}", cfgxml_data)
+        return (f"qtdragon.rio-gui.{halpin}", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -2460,7 +2503,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.{halpin}", cfgxml_data)
+        return (f"qtdragon.rio-gui.{halpin}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -2517,7 +2560,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.{halpin}", cfgxml_data)
+        return (f"qtdragon.rio-gui.{halpin}", cfgxml_data)
 
 
 class axis:
