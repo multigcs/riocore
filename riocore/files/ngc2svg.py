@@ -22,7 +22,7 @@ else:
     exit(1)
 
 svg_out = []
-p = os.popen(f"rs274 -g '{filename}'")
+p = os.popen(f"rs274 -n 0 -g '{filename}'")
 output = p.readlines()
 r = p.close()
 last_pos = ()
