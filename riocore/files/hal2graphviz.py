@@ -326,7 +326,6 @@ parser.add_argument("--output", "-o", help="output file", type=str, default="/tm
 args = parser.parse_args()
 
 
-
 if not args.ini:
     print("please provide an ini file")
     exit(1)

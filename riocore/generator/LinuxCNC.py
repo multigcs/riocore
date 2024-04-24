@@ -1013,12 +1013,11 @@ class LinuxCNC:
         cfgxml_adata += self.gui_gen.draw_end()
 
         if gui == "qtdragon":
-
-            #os.system(f"mkdir -p {self.configuration_path}/rio_hd")
-            #os.system(f"cp -a {riocore_path}/files/rio_hd/* {self.configuration_path}/rio_hd/")
-            #os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.pre > {self.configuration_path}/rio_hd/rio_hd.ui")
-            #open(f"{self.configuration_path}/rio_hd/rio_hd.ui", "a").write("\n".join(cfgxml_adata))
-            #os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.post >> {self.configuration_path}/rio_hd/rio_hd.ui")
+            # os.system(f"mkdir -p {self.configuration_path}/rio_hd")
+            # os.system(f"cp -a {riocore_path}/files/rio_hd/* {self.configuration_path}/rio_hd/")
+            # os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.pre > {self.configuration_path}/rio_hd/rio_hd.ui")
+            # open(f"{self.configuration_path}/rio_hd/rio_hd.ui", "a").write("\n".join(cfgxml_adata))
+            # os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.post >> {self.configuration_path}/rio_hd/rio_hd.ui")
 
             open(f"{self.configuration_path}/rio-gui.ui", "w").write("\n".join(cfgxml_adata))
 
