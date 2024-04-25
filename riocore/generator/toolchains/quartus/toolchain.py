@@ -27,6 +27,7 @@ class Toolchain:
         makefile_data.append(f"PART      := {ftype}")
         makefile_data.append(f'FAMILY    := "{family}"')
         makefile_data.append(f"VERILOGS  := {verilogs}")
+        makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
         makefile_data.append("")
         makefile_data.append("QC   = quartus_sh")
         makefile_data.append("QP   = quartus_pgm")

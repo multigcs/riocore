@@ -34,16 +34,18 @@ class Toolchain:
         makefile_data.append(f"FAMILY   := {family}")
         makefile_data.append(f"FAMILY_GOWIN := {family_gowin}")
         makefile_data.append(f"DEVICE   := {ftype}")
+        makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
         makefile_data.append(f"VERILOGS := {verilogs}")
         makefile_data.append("")
         makefile_data.append("all: impl/pnr/project.fs")
         makefile_data.append("")
         makefile_data.append("clean:")
-        makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log")
+        makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
         makefile_data.append("")
         makefile_data.append("$(PROJECT).tcl: pins.cst $(VERILOGS)")
         makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
         makefile_data.append('	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
+        makefile_data.append('	@echo "add_file rio.sdc" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "add_file pins.cst" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "set_option -top_module $(TOP)" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "set_option -verilog_std v2001" >> $(PROJECT).tcl')
@@ -73,6 +75,12 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("")
         open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+
+        # generating timing constraints (.sdc)
+        speed_ns = 1000000000 / self.config['speed']
+        sdc_data = [f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name sysclk_in [get_ports {{sysclk_in}}]"]
+        sdc_data.append("")
+        open(f"{path}/rio.sdc", "w").write("\n".join(sdc_data))
 
         # generating project file for the gowin toolchain
         prj_data = []

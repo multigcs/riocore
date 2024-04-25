@@ -36,14 +36,15 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("# Toolchain: Icestorm")
         makefile_data.append("")
-        makefile_data.append("PROJECT  := rio")
-        makefile_data.append("TOP      := rio")
-        makefile_data.append(f"FAMILY   := {family}")
+        makefile_data.append("PROJECT   := rio")
+        makefile_data.append("TOP       := rio")
+        makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
+        makefile_data.append(f"FAMILY    := {family}")
         if device_family:
             makefile_data.append(f"DEVICE_FAMILY   := {device_family}")
-        makefile_data.append(f"TYPE     := {self.config['type']}")
-        makefile_data.append(f"PACKAGE  := {self.config['package']}")
-        makefile_data.append(f"VERILOGS := {verilogs}")
+        makefile_data.append(f"TYPE      := {self.config['type']}")
+        makefile_data.append(f"PACKAGE   := {self.config['package']}")
+        makefile_data.append(f"VERILOGS  := {verilogs}")
         makefile_data.append("")
         makefile_data.append(f"all: {bitfileName}")
         makefile_data.append("")
@@ -58,7 +59,7 @@ class Toolchain:
         makefile_data.append("")
         if family == "ecp5":
             makefile_data.append("$(PROJECT).config: $(PROJECT).json pins.lpf")
-            makefile_data.append("	nextpnr-${FAMILY} -q -l nextpnr.log --${TYPE} --package ${PACKAGE} --json $(PROJECT).json --lpf pins.lpf --textcfg $(PROJECT).config")
+            makefile_data.append("	nextpnr-$(FAMILY) -q -l nextpnr.log --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config")
             makefile_data.append('	@echo ""')
             makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
@@ -75,7 +76,7 @@ class Toolchain:
         elif family == "gowin":
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
             makefile_data.append(
-                f"	nextpnr-gowin --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq {float(self.config['speed']) / 1000000} --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
+                "	nextpnr-gowin --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
             )
             makefile_data.append("")
             makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
@@ -87,7 +88,7 @@ class Toolchain:
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
-            makefile_data.append("	nextpnr-${FAMILY} -q -l nextpnr.log --${TYPE} --package ${PACKAGE} --json $(PROJECT).json --pcf pins.pcf --asc $(PROJECT).asc")
+            makefile_data.append("	nextpnr-$(FAMILY) -q -l nextpnr.log --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc")
             makefile_data.append('	@echo ""')
             makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')

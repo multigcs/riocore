@@ -24,6 +24,7 @@ class Toolchain:
         makefile_data.append("TOP      := rio")
         makefile_data.append(f"PART     := {self.config['type']}")
         makefile_data.append(f"VERILOGS := {verilogs}")
+        makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
         makefile_data.append("")
         makefile_data.append("all: $(PROJECT).bit")
         makefile_data.append("")
