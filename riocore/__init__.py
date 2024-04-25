@@ -106,10 +106,11 @@ class Plugins:
 
     def testbench_builder(self, plugin_type, plugin_instance):
         print(f"try to build testbench for {plugin_type}")
-        print(plugin_instance)
 
+        speed = int(plugin_instance.system_setup["jdata"]["clock"]["speed"])
+        time_steps = 50
         max_time = 3000000
-        diff_time = max_time // 10
+        diff_time = max_time // time_steps
 
         if plugin_instance.gateware_instances():
             tbfile = []
@@ -132,7 +133,7 @@ class Plugins:
                 size = data_config["size"]
                 if data_config["direction"] == "output":
                     if size > 1:
-                        tbfile.append(f"    reg [{size-1}:0] {data_name} = {size}'d0;")
+                        tbfile.append(f"    reg signed [{size-1}:0] {data_name} = {size}'d0;")
                     else:
                         if data_name == "enable":
                             tbfile.append(f"    reg {data_name} = 1;")
@@ -140,7 +141,7 @@ class Plugins:
                             tbfile.append(f"    reg {data_name} = 0;")
                 else:
                     if size > 1:
-                        tbfile.append(f"    wire [{size-1}:0] {data_name};")
+                        tbfile.append(f"    wire signed [{size-1}:0] {data_name};")
                     else:
                         tbfile.append(f"    wire {data_name};")
 
@@ -160,13 +161,13 @@ class Plugins:
 
             time_pos = 0
             tbfile.append("")
-            for nn in range(10):
+            for nn in range(time_steps):
                 tbfile.append(f"        #{diff_time}")
                 for data_name, data_config in plugin_instance.interface_data().items():
                     if data_config["direction"] == "output":
                         if data_config["size"] > 1:
                             if data_name in {"dty", "velocity"}:
-                                tbfile.append(f"        {data_name} = {255 * nn};")
+                                tbfile.append(f"        {data_name} = {speed // (255 * (nn + 1))};")
                                 time_pos += diff_time
 
             tbfile.append("")
