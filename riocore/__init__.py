@@ -79,6 +79,10 @@ class Plugins:
                         self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
                 elif not plugin_type or plugin_type[0] != "_":
                     print(f"WARNING: plugin not found: {plugin_type}")
+
+                if not os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/testb.v"):
+                    self.testbench_builder(plugin_type, f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v", plugin_config)
+
             if plugin_type in self.plugin_modules:
                 plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
                 for pin_name, pin_config in plugin_instance.pins().items():
@@ -98,6 +102,174 @@ class Plugins:
         for plugin_id, plugin_config in enumerate(config["plugins"]):
             self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)
         return self.plugin_instances
+
+    def testbench_builder(self, plugin_name, verilog_file, plugin_config):
+        print(f"try to build testbench for {plugin_name}.v")
+        verilog_data = open(verilog_file, "r").read()
+        x = re.search(r"(module\s+)(?P<name>[a-z0-9_]+)\s+(?P<parameters>#\([^\).]*\))?\s*(?P<arguments>\([^\).]*\));", verilog_data)
+        if x is not None:
+            if plugin_name != x.group("name"):
+                print(f"ERROR: wrong toplevel name: {x.group('name')}, needs: {plugin_name}")
+                return False
+
+            arguments = x.group("arguments")
+            parameters = x.group("parameters")
+            pindefaults = {}
+            interface = {}
+            signals = {}
+            parameter = {}
+            has_clock = False
+            parameter_dict = {}
+            if parameters:
+                for parameter in parameters.strip("#()").split(","):
+                    parameter_name = ""
+                    parameter_default = ""
+                    for part in re.split(r"[\s=]", parameter):
+                        part = part.strip()
+                        if not part:
+                            pass
+                        elif not parameter_name and part.startswith("["):
+                            pass
+                        elif not parameter_name and part != "parameter" and "'" not in part:
+                            parameter_name = part
+                        elif parameter_name and part != "=":
+                            parameter_default = part
+                    if parameter_name:
+                        parameter_dict[parameter_name] = {"default": parameter_default}
+            is_interface = False
+            if "tx_data" in arguments and "rx_data" in arguments and "pkg_timeout" in arguments:
+                is_interface = True
+            for argument in arguments.strip("()").split(","):
+                argument_size = 1
+                argument_direction = ""
+                argument_name = ""
+                for part in argument.split():
+                    if part.startswith("["):
+                        argument_size_end, argument_size_start = part.strip("[]").split(":")
+                        if argument_size_end.isnumeric() and argument_size_start.isnumeric():
+                            argument_size = int(argument_size_end) - int(argument_size_start) + 1
+                        else:
+                            print(f"WARNING: can not parse size: {part}, using 32")
+                            argument_size = 32
+                    elif part in {"reg", "wire", "=", "signed", "unsigned"}:
+                        pass
+                    elif part in {"input", "output", "inout"}:
+                        argument_direction = part
+                    elif not argument_name:
+                        argument_name = part
+                if argument_name in {"clk"}:
+                    has_clock = True
+                elif is_interface and argument_name in {"pkg_timeout"}:
+                    pass
+                elif argument_size == 1 and plugin_config.get("init") is True:
+                    pindefaults[argument_name] = {
+                        "direction": argument_direction,
+                    }
+                elif argument_size == 1 and argument_name in plugin_config.get("pins", {}):
+                    pindefaults[argument_name] = {
+                        "direction": argument_direction,
+                    }
+                elif is_interface:
+                    pass
+                else:
+                    interface[argument_name] = {
+                        "size": argument_size,
+                        "direction": {"input": "output", "output": "input"}.get(argument_direction),
+                    }
+                    signals[argument_name] = {
+                        "size": argument_size,
+                        "direction": {"input": "output", "output": "input"}.get(argument_direction),
+                    }
+            if not has_clock:
+                print("FAILED: can not find clock pin")
+            elif not pindefaults:
+                print("FAILED: can not find io pin's")
+            # elif not interface and not signals and not is_interface:
+            #    print("FAILED: can not find interface/signals")
+            else:
+                # print("pindefaults", pindefaults)
+                # print("interface", interface)
+                # print("signals", signals)
+                # print("parameter_dict", parameter_dict)
+
+                tbfile = []
+                tbfile.append("")
+                tbfile.append("`timescale 1ns/100ps")
+                tbfile.append("")
+                tbfile.append("module testb;")
+                tbfile.append("    reg clk = 0;")
+                tbfile.append("    always #1 clk = !clk;")
+                tbfile.append("")
+                for pin_name, pin_setup in pindefaults.items():
+                    if pin_setup["direction"] == "output":
+                        tbfile.append(f"    wire {pin_name};")
+                    else:
+                        tbfile.append(f"    reg {pin_name} = 1;")
+                tbfile.append("")
+                tbfile.append("    initial begin")
+                tbfile.append('        $dumpfile("testb.vcd");')
+                tbfile.append("        $dumpvars(0, clk);")
+                pn = 1
+                for pin_name, pin_setup in pindefaults.items():
+                    tbfile.append(f"        $dumpvars({pn}, {pin_name});")
+                    pn += 1
+
+                tbfile.append("")
+                tbfile.append("        # 3000000 $finish;")
+                tbfile.append("    end")
+                tbfile.append("")
+                tbfile.append(f"    {plugin_name} {plugin_name}_1 (")
+
+                args = ["        .clk (clk)"]
+                for pin_name, pin_setup in pindefaults.items():
+                    args.append(f"        .{pin_name} ({pin_name})")
+
+                tbfile.append(",\n".join(args))
+
+                tbfile.append("    );")
+                tbfile.append("")
+                tbfile.append("endmodule")
+                tbfile.append("")
+                open(f"{riocore_path}/plugins/{plugin_name}/testb.v", "w").write("\n".join(tbfile))
+
+                gtkwfile = []
+                gtkwfile.append("[*]")
+                gtkwfile.append("[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI")
+                gtkwfile.append("[*] Thu Apr 25 12:05:02 2024")
+                gtkwfile.append("[*]")
+                gtkwfile.append('[dumpfile] "testb.vcd"')
+                gtkwfile.append('[dumpfile] "testb.vcd"')
+                gtkwfile.append("[timestart] 0")
+                gtkwfile.append("@30")
+                gtkwfile.append("testb.clk")
+
+                pn = 31
+                for pin_name, pin_setup in pindefaults.items():
+                    gtkwfile.append(f"@{pn}")
+                    gtkwfile.append(f"testb.{pin_name}")
+                    pn += 1
+
+                gtkwfile.append("")
+                open(f"{riocore_path}/plugins/{plugin_name}/testb.gtkw", "w").write("\n".join(gtkwfile))
+
+                makefile = []
+                makefile.append("")
+                makefile.append("all: testb")
+                makefile.append("")
+                makefile.append("testb:")
+                makefile.append(f"	iverilog -Wall -o testb.out testb.v {plugin_name}.v")
+                makefile.append("	vvp testb.out")
+                makefile.append("	#gtkwave testb.vcd")
+                makefile.append("	gtkwave testb.gtkw")
+                makefile.append("")
+                makefile.append("clean:")
+                makefile.append("	rm -rf testb.out testb.vcd")
+                makefile.append("")
+                open(f"{riocore_path}/plugins/{plugin_name}/Makefile", "w").write("\n".join(makefile))
+
+                return True
+        print(".... Failed")
+        return False
 
     def plugin_builder(self, plugin_name, verilog_file, plugin_config):
         print(f"try to autoload plugin from {plugin_name}.v")

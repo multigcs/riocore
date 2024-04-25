@@ -77,7 +77,7 @@ class Toolchain:
         open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
 
         # generating timing constraints (.sdc)
-        speed_ns = 1000000000 / self.config['speed']
+        speed_ns = 1000000000 / self.config["speed"]
         sdc_data = [f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name sysclk_in [get_ports {{sysclk_in}}]"]
         sdc_data.append("")
         open(f"{path}/rio.sdc", "w").write("\n".join(sdc_data))
