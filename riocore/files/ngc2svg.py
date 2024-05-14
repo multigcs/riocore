@@ -12,6 +12,7 @@ COMMAND = re.compile("(?P<line>\d+) N\.* (?P<type>[A-Z_]+)\((?P<coords>.*)\)")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("ngc", help="ngc file", nargs="?", type=str, default=None)
+parser.add_argument('--no-g0', help='do not fdraw G0 moves', action='store_true')
 args = parser.parse_args()
 
 filename = args.ngc
@@ -110,7 +111,8 @@ for line in output:
                 color = "green"
             if last_pos:
                 last_x, last_y, last_z = last_pos
-                draw_line(last_x, last_y, last_z, new_x, new_y, new_z, color)
+                if not result["type"] in {"STRAIGHT_TRAVERSE"} or not args.no_g0:
+                    draw_line(last_x, last_y, last_z, new_x, new_y, new_z, color)
 
             last_pos = (new_x, new_y, new_z)
 
