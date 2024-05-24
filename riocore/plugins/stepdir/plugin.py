@@ -36,8 +36,8 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "velocity": {
                 "direction": "output",
-                "min": -1000000,
-                "max": 1000000,
+                "min": -100000,
+                "max": 100000,
                 "unit": "Hz",
                 "absolute": False,
                 "description": "speed in steps per second",

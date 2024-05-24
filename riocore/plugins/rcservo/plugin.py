@@ -36,9 +36,9 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "position": {
                 "direction": "output",
-                "min": -100,
-                "max": 100,
-                "scale": 10.0,
+                "min": -100.0,
+                "max": 100.0,
+                "scale": 1.0,
                 "max_velocity": 1000.0,
                 "description": "absolute position (-100 = 1ms / 100 = 2ms)",
             },

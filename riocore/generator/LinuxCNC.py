@@ -33,7 +33,6 @@ class LinuxCNC:
     }
     JOINT_DEFAULTS = {
         "TYPE": "LINEAR",
-        "HOME": 0.0,
         "MIN_LIMIT": -500.0,
         "MAX_LIMIT": 1500.0,
         "MAX_VELOCITY": 40.0,
@@ -48,7 +47,7 @@ class LinuxCNC:
         "HOME_USE_INDEX": "NO",
         "HOME_OFFSET": 1.0,
         "HOME": 0.0,
-        "HOME_SEQUENCE": -1,
+        "HOME_SEQUENCE": 0,
     }
     INI_DEFAULTS = {
         "EMC": {
@@ -371,6 +370,12 @@ class LinuxCNC:
         gui = jdata.get("gui", "axis")
         machinetype = jdata.get("machinetype")
 
+        netlist = []
+        for plugin in jdata["plugins"]:
+            for signal in plugin.get("signals", {}).values():
+                if net := signal.get("net"):
+                    netlist.append(net)
+
         if machinetype:
             ini_setup["EMC"]["MACHINE"] = f"Rio - {machinetype}"
 
@@ -419,14 +424,15 @@ class LinuxCNC:
 
         for axis_name, joints in axis_dict.items():
             ini_setup["HALUI"][f"MDI_COMMAND|Zero-{axis_name}"] = f"G92 {axis_name}0"
-            if machinetype == "lathe":
-                if axis_name == "X":
-                    ini_setup["HALUI"]["MDI_COMMAND|Touch-X"] = "o<x_touch> call"
-                elif axis_name == "Z":
-                    ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
-            else:
-                if axis_name == "Z":
-                    ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+            if "motion.probe-input" in netlist:
+                if machinetype == "lathe":
+                    if axis_name == "X":
+                        ini_setup["HALUI"]["MDI_COMMAND|Touch-X"] = "o<x_touch> call"
+                    elif axis_name == "Z":
+                        ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+                else:
+                    if axis_name == "Z":
+                        ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
 
         if gui in {"tklinuxcnc", "touchy", "probe_basic"}:
             ini_setup["DISPLAY"]["DISPLAY"] = gui
@@ -689,23 +695,67 @@ class LinuxCNC:
 
         # buttons
         if gui != "qtdragon":
-            self.cfgxml_data["status"].append('  <labelframe text="MDI-Commands">')
-            self.cfgxml_data["status"].append("    <relief>RAISED</relief>")
-            self.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
-            self.cfgxml_data["status"].append("    <vbox>")
-            self.cfgxml_data["status"].append("      <relief>RIDGE</relief>")
-            self.cfgxml_data["status"].append("      <bd>2</bd>")
+            mdi_xml = []
+            mdi_xml.append('  <labelframe text="MDI-Commands">')
+            mdi_xml.append("    <relief>RAISED</relief>")
+            mdi_xml.append('    <font>("Helvetica", 10)</font>')
+            mdi_xml.append("    <vbox>")
+            mdi_xml.append("      <relief>RIDGE</relief>")
+            mdi_xml.append("      <bd>2</bd>")
             mdi_num = 0
+            mdi_groups = {}
             for mdi_num, command in enumerate(ini_setup["HALUI"]):
                 if command.startswith("MDI_COMMAND|"):
+                    """config Example
+                    "linuxcnc": {
+                        "ini": {
+                            "HALUI": {
+                                "MDI_COMMAND|Go to Zero": "G0 X0 Y0",
+                            }
+                        },
+                    },
+                    """
                     mdi_title = command.split("|")[-1]
                     halpin = f"halui.mdi-command-{mdi_num:02d}"
                     (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
-                    self.cfgxml_data["status"] += gout
+                    if command.startswith("MDI_COMMAND||"):
+                        """config Example (Horizontal grouping)
+                        "linuxcnc": {
+                            "ini": {
+                                "HALUI": {
+                                    "MDI_COMMAND||Gripper|0%": "M68 E0 Q-100",
+                                    "MDI_COMMAND||Gripper|50%": "M68 E0 Q0",
+                                    "MDI_COMMAND||Gripper|100%": "M68 E0 Q100"
+                                }
+                            },
+                        },
+                        """
+                        mdi_group = command.split("|")[-2]
+                        if mdi_group not in mdi_groups:
+                            mdi_groups[mdi_group] = []
+                        mdi_groups[mdi_group].append(gout)
+                    else:
+                        mdi_xml += gout
                     self.hal_net_add(pname, halpin)
 
-            self.cfgxml_data["status"].append("    </vbox>")
-            self.cfgxml_data["status"].append("  </labelframe>")
+            for group_name, mdi_commands in mdi_groups.items():
+                self.cfgxml_data["status"].append(f'  <labelframe text="{group_name}">')
+                self.cfgxml_data["status"].append("    <relief>RAISED</relief>")
+                self.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
+                self.cfgxml_data["status"].append("    <hbox>")
+                self.cfgxml_data["status"].append("      <bd>2</bd>")
+                for bn, mdi_command in enumerate(mdi_commands, 1):
+                    if bn % 6 == 0:
+                        self.cfgxml_data["status"].append("    </hbox>")
+                        self.cfgxml_data["status"].append("    <hbox>")
+                        self.cfgxml_data["status"].append("      <bd>2</bd>")
+                    self.cfgxml_data["status"] += mdi_command
+                self.cfgxml_data["status"].append("    </hbox>")
+                self.cfgxml_data["status"].append("  </labelframe>")
+
+            mdi_xml.append("    </vbox>")
+            mdi_xml.append("  </labelframe>")
+            self.cfgxml_data["status"] += mdi_xml
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "gui"):
@@ -1075,6 +1125,8 @@ class LinuxCNC:
             self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
             self.hal_net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
+        linuxcnc_setp = {}
+
         if machinetype == "corexy":
             self.loadrts.append("# machinetype is corexy")
             self.loadrts.append("loadrt corexy_by_hal names=corexy")
@@ -1098,24 +1150,30 @@ class LinuxCNC:
             os.system(f"cp -a riocore/files/melfa/* {self.configuration_path}/")
             for joint in range(6):
                 self.hal_net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
-            self.loadrts.append("setp genserkins.A-0 0")
-            self.loadrts.append("setp genserkins.A-1 85")
-            self.loadrts.append("setp genserkins.A-2 380")
-            self.loadrts.append("setp genserkins.A-3 100")
-            self.loadrts.append("setp genserkins.A-4 0")
-            self.loadrts.append("setp genserkins.A-5 0")
-            self.loadrts.append("setp genserkins.ALPHA-0 0")
-            self.loadrts.append("setp genserkins.ALPHA-1 -1.570796326")
-            self.loadrts.append("setp genserkins.ALPHA-2 0")
-            self.loadrts.append("setp genserkins.ALPHA-3 -1.570796326")
-            self.loadrts.append("setp genserkins.ALPHA-4 1.570796326")
-            self.loadrts.append("setp genserkins.ALPHA-5 -1.570796326")
-            self.loadrts.append("setp genserkins.D-0 350")
-            self.loadrts.append("setp genserkins.D-1 0")
-            self.loadrts.append("setp genserkins.D-2 0")
-            self.loadrts.append("setp genserkins.D-3 425")
-            self.loadrts.append("setp genserkins.D-4 0")
-            self.loadrts.append("setp genserkins.D-5 235")
+            linuxcnc_setp = {
+                "genserkins.A-0": 0,
+                "genserkins.A-1": 85,
+                "genserkins.A-2": 380,
+                "genserkins.A-3": 100,
+                "genserkins.A-4": 0,
+                "genserkins.A-5": 0,
+                "genserkins.ALPHA-0": 0,
+                "genserkins.ALPHA-1": -1.570796326,
+                "genserkins.ALPHA-2": 0,
+                "genserkins.ALPHA-3": -1.570796326,
+                "genserkins.ALPHA-4": 1.570796326,
+                "genserkins.ALPHA-5": -1.570796326,
+                "genserkins.D-0": 350,
+                "genserkins.D-1": 0,
+                "genserkins.D-2": 0,
+                "genserkins.D-3": 425,
+                "genserkins.D-4": 0,
+                "genserkins.D-5": 235,
+            }
+
+        linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
+        for key, value in linuxcnc_setp.items():
+            self.loadrts.append(f"setp {key} {value}")
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -2064,6 +2122,22 @@ class LinuxCNC:
                     home_sequence_default = 2
                     if axis_name == "X":
                         home_sequence_default = 1
+
+                elif machinetype == "melfa":
+                    home_sequence_default = 2
+                    if axis_name == "X":
+                        home_sequence_default = 2
+                    elif axis_name == "Y":
+                        home_sequence_default = 1
+                    elif axis_name == "Z":
+                        home_sequence_default = 1
+                    elif axis_name == "A":
+                        home_sequence_default = 1
+                    elif axis_name == "B":
+                        home_sequence_default = 2
+                    elif axis_name == "C":
+                        home_sequence_default = 1
+
                 else:
                     home_sequence_default = 2
                     if axis_name == "Z":
@@ -2134,6 +2208,7 @@ class LinuxCNC:
                     joint_setup["HOME_LATCH_VEL"] = 0.0
                     joint_setup["HOME_FINAL_VEL"] = 0.0
                     joint_setup["HOME_OFFSET"] = 0
+                    joint_setup["HOME"] = 0.0
                     joint_setup["HOME_SEQUENCE"] = 0
 
                 if machinetype in {"scara"}:
