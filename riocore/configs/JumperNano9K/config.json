@@ -72,11 +72,21 @@
         },
         {
             "type": "bitin",
-            "name": "P10A",
+            "name": "H0",
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P10",
-                    "pullup": true
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
                 }
             }
         },
@@ -122,51 +132,86 @@
         },
         {
             "type": "bitin",
-            "name": "P10B",
+            "name": "H1",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P10",
                     "pullup": true
                 }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
             }
         },
         {
             "type": "bitin",
-            "name": "P11B",
+            "name": "H2",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P11",
                     "pullup": true
                 }
-            }
-        },
-        {
-            "type": "bitin",
-            "name": "P12B",
-            "pins": {
+            },
+            "signals": {
                 "bit": {
-                    "pin": "BOB_B:P12",
-                    "pullup": true
+                    "net": "joint.2.home-sw-in"
                 }
             }
         },
         {
             "type": "bitin",
-            "name": "P13B",
+            "name": "H3",
+            "pins": {
+                "bit": {
+                    "pin": "BOB_B:P12",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "H4",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P13",
                     "pullup": true
                 }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.4.home-sw-in"
+                }
             }
         },
         {
             "type": "bitin",
-            "name": "P15B",
+            "name": "H5",
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P15",
-                    "pullup": true
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.5.home-sw-in"
                 }
             }
         },
@@ -191,7 +236,19 @@
                     ]
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "joint": {
+                "scale": -83.333333333,
+                "min_limit": -350,
+                "max_limit": 350,
+                "home_search_vel": 7.0,
+                "home_final_vel": 30.0,
+                "home_offset": 148.0,
+                "home": 0.0,
+                "home_latch_vel": 4.0,
+                "max_velocity": 20.0,
+                "max_acceleration": 100.0
+            }
         },
         {
             "type": "stepdir",
@@ -214,11 +271,23 @@
                     ]
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "joint": {
+                "scale": -888.888888889,
+                "min_limit": -350,
+                "max_limit": 350,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "home_offset": -140.0,
+                "home": -140.0,
+                "home_latch_vel": 4.0,
+                "max_velocity": 20.0,
+                "max_acceleration": 20.0
+            }
         },
         {
             "type": "stepdir",
-            "name": "Joint2",
+            "name": "Joint_2",
             "pins": {
                 "step": {
                     "pin": "BOB_A:P6",
@@ -236,12 +305,11 @@
                         }
                     ]
                 }
-            },
-            "is_joint": true
+            }
         },
         {
             "type": "stepdir",
-            "name": "Joint3",
+            "name": "JointA",
             "pins": {
                 "step": {
                     "pin": "BOB_A:P8",
@@ -259,12 +327,11 @@
                         }
                     ]
                 }
-            },
-            "is_joint": true
+            }
         },
         {
             "type": "stepdir",
-            "name": "Joint4",
+            "name": "Joint2",
             "pins": {
                 "step": {
                     "pin": "BOB_B:P2",
@@ -283,11 +350,23 @@
                     ]
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "joint": {
+                "scale": -122.66666666667,
+                "min_limit": -350,
+                "max_limit": 350,
+                "home_search_vel": 10.0,
+                "home_final_vel": 20.0,
+                "home_offset": 68.0,
+                "home": 68.0,
+                "home_latch_vel": -4.0,
+                "max_velocity": 20.0,
+                "max_acceleration": 20.0
+            }
         },
         {
             "type": "stepdir",
-            "name": "Joint5",
+            "name": "Joint3",
             "pins": {
                 "step": {
                     "pin": "BOB_B:P4",
@@ -306,11 +385,22 @@
                     ]
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "joint": {
+                "scale": -31.11111111111111,
+                "min_limit": -350,
+                "max_limit": 350,
+                "home_search_vel": -20.0,
+                "home_final_vel": 30.0,
+                "home_offset": -54.0,
+                "home_latch_vel": 10.0,
+                "max_velocity": 30.0,
+                "max_acceleration": 20.0
+            }
         },
         {
             "type": "stepdir",
-            "name": "Joint6",
+            "name": "Joint4",
             "pins": {
                 "step": {
                     "pin": "BOB_B:P6",
@@ -329,11 +419,23 @@
                     ]
                 }
             },
-            "is_joint": false
+            "is_joint": true,
+            "joint": {
+                "scale": 38.888888888888886,
+                "min_limit": -350,
+                "max_limit": 350,
+                "home_search_vel": -20.0,
+                "home_final_vel": 30.0,
+                "home_latch_vel": 10.0,
+                "home_offset": -127.0,
+                "home": 1.0,
+                "max_velocity": 30.0,
+                "max_acceleration": 100.0
+            }
         },
         {
             "type": "stepdir",
-            "name": "Joint7",
+            "name": "Joint5",
             "pins": {
                 "step": {
                     "pin": "BOB_B:P8",
@@ -352,7 +454,19 @@
                     ]
                 }
             },
-            "is_joint": false
+            "is_joint": true,
+            "joint": {
+                "scale": -44.44444444444444,
+                "min_limit": -350,
+                "max_limit": 350,
+                "home_search_vel": -30.0,
+                "home_final_vel": 20.0,
+                "home_latch_vel": 10.0,
+                "home_offset": -40.0,
+                "home": 0.0,
+                "max_velocity": 30.0,
+                "max_acceleration": 200.0
+            }
         },
         {
             "type": "pwmout",
@@ -391,11 +505,20 @@
             }
         },
         {
-            "type": "bitout",
-            "name": "Out2",
+            "type": "rcservo",
+            "name": "Gripper",
             "pins": {
-                "bit": {
+                "pwm": {
                     "pin": "BOB_B:P16"
+                }
+            },
+            "signals": {
+                "position": {
+                    "scale": 0.65,
+                    "net": "motion.analog-out-00"
+                },
+                "enable": {
+                    "setp": "1"
                 }
             }
         },
@@ -455,5 +578,46 @@
         }
     ],
     "axis": 6,
-    "machinetype": "melfa"
+    "machinetype": "melfa",
+    "linuxcnc": {
+        "ini": {
+            "HALUI": {
+                "MDI_COMMAND||Gripper|0": "M68 E0 Q-100",
+                "MDI_COMMAND||Gripper|1": "M68 E0 Q-80",
+                "MDI_COMMAND||Gripper|2": "M68 E0 Q-60",
+                "MDI_COMMAND||Gripper|3": "M68 E0 Q-40",
+                "MDI_COMMAND||Gripper|4": "M68 E0 Q-20",
+                "MDI_COMMAND||Gripper|5": "M68 E0 Q0",
+                "MDI_COMMAND||Gripper|6": "M68 E0 Q20",
+                "MDI_COMMAND||Gripper|7": "M68 E0 Q40",
+                "MDI_COMMAND||Gripper|8": "M68 E0 Q60",
+                "MDI_COMMAND||Gripper|9": "M68 E0 Q80",
+                "MDI_COMMAND||Gripper|10": "M68 E0 Q100"
+            }
+        },
+        "setp": {
+            "genserkins.A-0": 0,
+            "genserkins.D-0": 110.5,
+            "genserkins.ALPHA-0": 0,
+            "genserkins.A-1": 23.42,
+            "genserkins.D-1": 0,
+            "genserkins.ALPHA-1": -1.570796326,
+            "genserkins.A-2": 180,
+            "genserkins.D-2": 0,
+            "genserkins.ALPHA-2": 0,
+            "genserkins.A-3": 43.5,
+            "genserkins.D-3": 176.35,
+            "genserkins.ALPHA-3": -1.570796326,
+            "genserkins.A-4": 0,
+            "genserkins.D-4": 0,
+            "genserkins.ALPHA-4": 1.570796326,
+            "genserkins.A-5": 0,
+            "genserkins.D-5": 55,
+            "genserkins.ALPHA-5": -1.570796326
+        },
+        "mxmpg": {
+            "enable": false,
+            "device": "/dev/ttyUSB0"
+        }
+    }
 }
