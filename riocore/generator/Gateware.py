@@ -47,6 +47,11 @@ class Gateware:
         # if self.config.get("error_pin"):
         #    self.config["pinlists"]["base"]["errorout"] = {"direction": "input", "pullup": True, "pin": self.config["error_pin"], "varname": "ERROR_OUT"}
 
+        self.config["timing_constraints"] = {}
+        for plugin_instance in self.project.plugin_instances:
+            for key, value in plugin_instance.timing_constraints().items():
+                self.config["timing_constraints"][f"{plugin_instance.instances_name}.{key}"] = value
+
         self.pinmapping = {}
         self.pinmapping_rev = {}
         self.slots = self.config["board_data"].get("slots", []) + self.config["jdata"].get("slots", [])

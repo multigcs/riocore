@@ -31,6 +31,13 @@ class Toolchain:
 
         pins_generator.Pins(self.config).generate(path)
 
+        prepack_data = []
+        for key, value in self.config["timing_constraints"].items():
+            prepack_data.append(f'ctx.addClock("{key}", {int(value)})')
+
+        prepack_data.append("")
+        open(f"{path}/prepack.py", "w").write("\n".join(prepack_data))
+
         verilogs = " ".join(self.config["verilog_files"])
         makefile_data = []
         makefile_data.append("")
@@ -59,7 +66,9 @@ class Toolchain:
         makefile_data.append("")
         if family == "ecp5":
             makefile_data.append("$(PROJECT).config: $(PROJECT).json pins.lpf")
-            makefile_data.append("	nextpnr-$(FAMILY) -q -l nextpnr.log --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config")
+            makefile_data.append(
+                "	nextpnr-$(FAMILY) -q -l nextpnr.log --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
+            )
             makefile_data.append('	@echo ""')
             makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
@@ -88,7 +97,9 @@ class Toolchain:
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
-            makefile_data.append("	nextpnr-$(FAMILY) -q -l nextpnr.log --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc")
+            makefile_data.append(
+                "	nextpnr-$(FAMILY) -q -l nextpnr.log --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
+            )
             makefile_data.append('	@echo ""')
             makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')

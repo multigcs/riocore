@@ -28,6 +28,10 @@ class Plugin(PluginBase):
                 "pullup": False,
             },
         }
+        self.spi_clk_speed = 2000000
+        self.TIMING_CONSTRAINTS = {
+            "mclk": self.spi_clk_speed / 1000000,
+        }
         self.OPTIONS = {
             "mac": {
                 "default": "AA:AF:FA:CC:E3:1C",
@@ -68,11 +72,10 @@ class Plugin(PluginBase):
         instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"
 
-        spi_clk_speed = 2000000
-        divider = self.system_setup["speed"] // spi_clk_speed // 5
+        divider = self.system_setup["speed"] // self.spi_clk_speed // 5
         instance_parameter["DIVIDER"] = divider
 
         # instance_parameter["TIMEOUT"] = f"32'd{self.system_setup['speed'] // 20}"
-        instance_parameter["TIMEOUT"] = f"32'd{spi_clk_speed // 4}"
+        instance_parameter["TIMEOUT"] = f"32'd{self.spi_clk_speed // 4}"
 
         return instances

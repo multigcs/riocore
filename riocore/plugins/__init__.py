@@ -86,11 +86,13 @@ class PluginBase:
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.SIGNALS = {}
+        self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []
         self.NAME = ""
         self.TYPE = "io"
         self.INFO = ""
+        self.DESCRIPTION = ""
         self.DESCRIPTION = ""
         self.GATEWARE_SUPPORT = True
         self.FIRMWARE_SUPPORT = False
@@ -213,6 +215,9 @@ class PluginBase:
 
     def convert_c(self, signal_name, signal_setup):
         return ""
+
+    def timing_constraints(self):
+        return self.TIMING_CONSTRAINTS
 
     def pins(self):
         pins = {}

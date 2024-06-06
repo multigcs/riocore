@@ -12,7 +12,7 @@ COMMAND = re.compile("(?P<line>\d+) N\.* (?P<type>[A-Z_]+)\((?P<coords>.*)\)")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("ngc", help="ngc file", nargs="?", type=str, default=None)
-parser.add_argument('--no-g0', help='do not fdraw G0 moves', action='store_true')
+parser.add_argument("--no-g0", help="do not fdraw G0 moves", action="store_true")
 args = parser.parse_args()
 
 filename = args.ngc
