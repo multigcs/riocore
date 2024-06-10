@@ -20,25 +20,37 @@ def hal(parent):
         parent.hal_net_add("mpg.button.01b-long", "halui.program.resume")
 
         # homing status
-        for axis_name, joints in parent.axis_dict.items():
+        for axis_name, axis_config in parent.axis_dict.items():
+            joints = axis_config["joints"]
             axis_low = axis_name.lower()
             for joint, joint_setup in joints.items():
                 parent.hal_net_add(f"joint.{joint}.homed", f"mpg.axis.{axis_low}.homed")
 
         # spindle control
-        parent.hal_net_add("mpg.button.02-long", "halui.spindle.0.start")
-        parent.hal_net_add("mpg.button.02", "halui.spindle.0.stop")
+        #parent.hal_net_add("mpg.button.02-long", "halui.spindle.0.start")
+        #parent.hal_net_add("mpg.button.02", "halui.spindle.0.stop")
+        # robot gripper
+        halpin = parent.ini_mdi_command(f"M68 E0 Q-100")
+        parent.hal_net_add(f"mpg.button.02", halpin)
+
+        halpin = parent.ini_mdi_command(f"M68 E0 Q40")
+        parent.hal_net_add(f"mpg.button.03", halpin)
+
+        halpin = parent.ini_mdi_command(f"M68 E0 Q100")
+        parent.hal_net_add(f"mpg.button.04", halpin)
 
         # zero axis -> mdi commands
         bn = 1
-        for axis_name, joints in parent.axis_dict.items():
+        for axis_name, axis_config in parent.axis_dict.items():
+            joints = axis_config["joints"]
             halpin = parent.ini_mdi_command(f"G92 {axis_name}0")
             parent.hal_net_add(f"mpg.button.sel{bn:02d}-long", halpin)
             bn += 1
 
         # axis selection
         bn = 1
-        for axis_name, joints in parent.axis_dict.items():
+        for axis_name, axis_config in parent.axis_dict.items():
+            joints = axis_config["joints"]
             axis_low = axis_name.lower()
             parent.hal_net_add(f"mpg.button.sel{bn:02d}", f"halui.axis.{axis_low}.select")
             for joint, joint_setup in joints.items():
@@ -46,7 +58,8 @@ def hal(parent):
             bn += 1
 
         # jog axis
-        for axis_name, joints in parent.axis_dict.items():
+        for axis_name, axis_config in parent.axis_dict.items():
+            joints = axis_config["joints"]
             axis_low = axis_name.lower()
             parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 1)
             parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
@@ -59,7 +72,8 @@ def hal(parent):
                 parent.hal_net_add(f"mpg.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
 
         # display axis positions
-        for axis_name, joints in parent.axis_dict.items():
+        for axis_name, axis_config in parent.axis_dict.items():
+            joints = axis_config["joints"]
             axis_low = axis_name.lower()
             parent.hal_net_add(f"halui.axis.{axis_low}.pos-relative", f"mpg.axis.{axis_low}.pos")
 

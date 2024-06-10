@@ -33,6 +33,7 @@ class LinuxCNC:
     }
     JOINT_DEFAULTS = {
         "TYPE": "LINEAR",
+        "FERROR": 1.0,
         "MIN_LIMIT": -500.0,
         "MAX_LIMIT": 1500.0,
         "MAX_VELOCITY": 40.0,
@@ -490,7 +491,8 @@ class LinuxCNC:
                     output.append(f"{key} = {value}")
             output.append("")
 
-        for axis_name, joints in self.axis_dict.items():
+        for axis_name, axis_config in self.axis_dict.items():
+            joints = axis_config["joints"]
             output.append(f"[AXIS_{axis_name}]")
             axis_setup = copy.deepcopy(self.AXIS_DEFAULTS)
             axis_max_velocity = 10000.0
@@ -498,12 +500,14 @@ class LinuxCNC:
             axis_min_limit = 100000.0
             axis_max_limit = -100000.0
             axis_backlash = 0.0
+            axis_ferror = axis_setup["FERROR"]
             for joint, joint_setup in joints.items():
                 max_velocity = joint_setup["MAX_VELOCITY"]
                 max_acceleration = joint_setup["MAX_ACCELERATION"]
                 min_limit = joint_setup["MIN_LIMIT"]
                 max_limit = joint_setup["MAX_LIMIT"]
                 backlash = joint_setup.get("BACKLASH", 0.0)
+                ferror = joint_setup.get("FERROR", axis_ferror)
                 if axis_max_velocity > max_velocity:
                     axis_max_velocity = max_velocity
                 if axis_max_acceleration > max_acceleration:
@@ -515,12 +519,19 @@ class LinuxCNC:
 
                 if axis_backlash < backlash:
                     axis_backlash = backlash
+                if axis_ferror < ferror:
+                    axis_ferror = ferror
 
                 axis_setup["MAX_VELOCITY"] = axis_max_velocity
                 axis_setup["MAX_ACCELERATION"] = axis_max_acceleration
                 axis_setup["MIN_LIMIT"] = axis_min_limit
                 axis_setup["MAX_LIMIT"] = axis_max_limit
-                axis_setup["BACKLASH"] = backlash
+                axis_setup["BACKLASH"] = axis_backlash
+                axis_setup["FERROR"] = axis_ferror
+
+                for key in axis_setup:
+                    if key in axis_config:
+                        axis_setup[key] = axis_config[key]
 
             for key, value in axis_setup.items():
                 if key.endswith("_VELOCITY") and "ANGULAR" not in key:
@@ -857,7 +868,8 @@ class LinuxCNC:
                     wheel = True
 
             if wheel:
-                for axis_name, joints in self.axis_dict.items():
+                for axis_name, axis_config in self.axis_dict.items():
+                    joints = axis_config["joints"]
                     laxis = axis_name.lower()
                     self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
                     self.hal_setp_add(f"axis.{laxis}.jog-scale", 0.01)
@@ -867,7 +879,8 @@ class LinuxCNC:
                         self.hal_net_add(f"axis.{laxis}.jog-counts", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
                         self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
             else:
-                for axis_name, joints in self.axis_dict.items():
+                for axis_name, axis_config in self.axis_dict.items():
+                    joints = axis_config["joints"]
                     laxis = axis_name.lower()
                     fname = f"wheel_{laxis}"
                     if fname in self.rio_functions["jog"]:
@@ -916,7 +929,8 @@ class LinuxCNC:
                         (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         self.cfgxml_data["status"] += gout
                         self.hal_net_add(f"halui.axis.{axis_name}.is-selected", pname)
-                        for axis_id, joints in self.axis_dict.items():
+                        for axis_id, axis_config in self.axis_dict.items():
+                            joints = axis_config["joints"]
                             laxis = axis_id.lower()
                             if axis_name == laxis:
                                 self.loadrts.append("")
@@ -931,7 +945,8 @@ class LinuxCNC:
                                     self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
                         joint_n += 1
             else:
-                for axis_id, joints in self.axis_dict.items():
+                for axis_id, axis_config in self.axis_dict.items():
+                    joints = axis_config["joints"]
                     laxis = axis_id.lower()
                     self.loadrts.append("")
                     self.loadrts.append(f"# axis {laxis} selection")
@@ -1215,7 +1230,8 @@ class LinuxCNC:
                     elif setp is not None:
                         self.loadrts.append(f"setp {rprefix}.{halname} {setp}")
 
-        for axis_name, joints in self.axis_dict.items():
+        for axis_name, axis_config in self.axis_dict.items():
+            joints = axis_config["joints"]
             self.axisout.append(f"# Axis: {axis_name}")
             self.axisout.append("")
             for joint, joint_setup in joints.items():
@@ -2086,16 +2102,17 @@ class LinuxCNC:
                         if name not in self.axis_dict and name not in named_axis:
                             axis_name = name
                             break
-                if axis_name not in self.axis_dict:
-                    self.axis_dict[axis_name] = {}
-                self.axis_dict[axis_name][self.num_joints] = {
-                    "type": plugin_instance.NAME,
-                    "axis": axis_name,
-                    "joint": self.num_joints,
-                    "plugin_instance": plugin_instance,
-                    "feedback": plugin_instance.plugin_setup.get("feedback", True),
-                }
-                self.num_joints += 1
+                if axis_name:
+                    if axis_name not in self.axis_dict:
+                        self.axis_dict[axis_name] = {"joints": {}}
+                    self.axis_dict[axis_name]["joints"][self.num_joints] = {
+                        "type": plugin_instance.NAME,
+                        "axis": axis_name,
+                        "joint": self.num_joints,
+                        "plugin_instance": plugin_instance,
+                        "feedback": plugin_instance.plugin_setup.get("feedback", True),
+                    }
+                    self.num_joints += 1
 
         self.num_axis = len(self.axis_dict)
 
@@ -2109,7 +2126,8 @@ class LinuxCNC:
                     if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
                         joint_homeswitches.append(int(net.split(".")[1]))
 
-        for axis_name, joints in self.axis_dict.items():
+        for axis_name, axis_config in self.axis_dict.items():
+            joints = axis_config["joints"]
             # print(f"  # Axis: {axis_name}")
             for joint, joint_setup in joints.items():
                 position_halname = None
@@ -2233,6 +2251,11 @@ class LinuxCNC:
                 for key, value in joint_config.items():
                     key = key.upper()
                     joint_setup[key] = value
+
+            # overwrite axis configuration with user data
+            for key, value in self.project.config["jdata"].get("linuxcnc", {}).get("axis", {}).get(axis_name, {}).items():
+                key = key.upper()
+                axis_config[key] = value
 
 
 class qtdragon:

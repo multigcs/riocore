@@ -239,15 +239,16 @@
             "is_joint": true,
             "joint": {
                 "scale": -83.333333333,
-                "min_limit": -350,
-                "max_limit": 350,
-                "home_search_vel": 7.0,
-                "home_final_vel": 30.0,
-                "home_offset": 148.0,
+                "ferror": 50,
+                "min_limit": -600,
+                "max_limit": 600,
+                "home_search_vel": 10.0,
+                "home_final_vel": 40.0,
+                "home_offset": 130.0,
                 "home": 0.0,
                 "home_latch_vel": 4.0,
-                "max_velocity": 20.0,
-                "max_acceleration": 100.0
+                "max_velocity": 60.0,
+                "max_acceleration": 300.0
             }
         },
         {
@@ -274,15 +275,16 @@
             "is_joint": true,
             "joint": {
                 "scale": -888.888888889,
-                "min_limit": -350,
-                "max_limit": 350,
-                "home_search_vel": -10.0,
-                "home_final_vel": 20.0,
+                "ferror": 50,
+                "min_limit": -600,
+                "max_limit": 600,
+                "home_search_vel": -20.0,
+                "home_final_vel": 40.0,
                 "home_offset": -140.0,
                 "home": -140.0,
                 "home_latch_vel": 4.0,
-                "max_velocity": 20.0,
-                "max_acceleration": 20.0
+                "max_velocity": 60.0,
+                "max_acceleration": 300.0
             }
         },
         {
@@ -353,15 +355,16 @@
             "is_joint": true,
             "joint": {
                 "scale": -122.66666666667,
-                "min_limit": -350,
-                "max_limit": 350,
-                "home_search_vel": 10.0,
-                "home_final_vel": 20.0,
+                "ferror": 50,
+                "min_limit": -600,
+                "max_limit": 600,
+                "home_search_vel": 20.0,
+                "home_final_vel": 40.0,
                 "home_offset": 68.0,
                 "home": 68.0,
                 "home_latch_vel": -4.0,
-                "max_velocity": 20.0,
-                "max_acceleration": 20.0
+                "max_velocity": 60.0,
+                "max_acceleration": 300.0
             }
         },
         {
@@ -388,14 +391,15 @@
             "is_joint": true,
             "joint": {
                 "scale": -31.11111111111111,
-                "min_limit": -350,
-                "max_limit": 350,
+                "ferror": 50,
+                "min_limit": -600,
+                "max_limit": 600,
                 "home_search_vel": -20.0,
-                "home_final_vel": 30.0,
+                "home_final_vel": 40.0,
                 "home_offset": -54.0,
                 "home_latch_vel": 10.0,
-                "max_velocity": 30.0,
-                "max_acceleration": 20.0
+                "max_velocity": 60.0,
+                "max_acceleration": 300.0
             }
         },
         {
@@ -422,15 +426,16 @@
             "is_joint": true,
             "joint": {
                 "scale": 38.888888888888886,
-                "min_limit": -350,
-                "max_limit": 350,
+                "ferror": 50,
+                "min_limit": -600,
+                "max_limit": 600,
                 "home_search_vel": -20.0,
-                "home_final_vel": 30.0,
+                "home_final_vel": 40.0,
                 "home_latch_vel": 10.0,
                 "home_offset": -127.0,
                 "home": 1.0,
-                "max_velocity": 30.0,
-                "max_acceleration": 100.0
+                "max_velocity": 60.0,
+                "max_acceleration": 300.0
             }
         },
         {
@@ -457,15 +462,16 @@
             "is_joint": true,
             "joint": {
                 "scale": -44.44444444444444,
-                "min_limit": -350,
-                "max_limit": 350,
-                "home_search_vel": -30.0,
-                "home_final_vel": 20.0,
+                "ferror": 50,
+                "min_limit": -600,
+                "max_limit": 600,
+                "home_search_vel": -20.0,
+                "home_final_vel": 40.0,
                 "home_latch_vel": 10.0,
                 "home_offset": -40.0,
                 "home": 0.0,
-                "max_velocity": 30.0,
-                "max_acceleration": 200.0
+                "max_velocity": 60.0,
+                "max_acceleration": 300.0
             }
         },
         {
@@ -488,7 +494,7 @@
         },
         {
             "type": "bitout",
-            "name": "Out1",
+            "name": "Out-P16A",
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P16"
@@ -593,6 +599,10 @@
                 "MDI_COMMAND||Gripper|8": "M68 E0 Q60",
                 "MDI_COMMAND||Gripper|9": "M68 E0 Q80",
                 "MDI_COMMAND||Gripper|10": "M68 E0 Q100"
+            },
+            "DISPLAY": {
+                "MAX_LINEAR_VELOCITY": 60.0,
+                "MAX_ANGULAR_VELOCITY": 60.0
             }
         },
         "setp": {
@@ -615,9 +625,35 @@
             "genserkins.D-5": 55,
             "genserkins.ALPHA-5": -1.570796326
         },
+        "axis": {
+            "X": {
+                "min_limit": -500,
+                "max_limit": 500
+            },
+            "Y": {
+                "min_limit": -500,
+                "max_limit": 500
+            },
+            "Z": {
+                "min_limit": -500,
+                "max_limit": 500
+            },
+            "A": {
+                "min_limit": -170,
+                "max_limit": 170
+            },
+            "B": {
+                "min_limit": -170,
+                "max_limit": 170
+            },
+            "C": {
+                "min_limit": -170,
+                "max_limit": 170
+            }
+        },
         "mxmpg": {
-            "enable": false,
-            "device": "/dev/ttyUSB0"
+            "enable": true,
+            "device": "/dev/ttyUSB2"
         }
     }
 }

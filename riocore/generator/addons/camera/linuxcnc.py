@@ -26,7 +26,8 @@ def gui(parent):
                 offsets = camera.get("offset", {})
                 if offset_num == 0:
                     mdi_command = ["G92"]
-                    for axis_name, joints in parent.axis_dict.items():
+                    for axis_name, axis_config in parent.axis_dict.items():
+                        joints = axis_config["joints"]
                         diff = 0
                         if axis_name in offsets:
                             diff = offsets[axis_name]
