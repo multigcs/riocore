@@ -242,6 +242,7 @@
                 "ferror": 50,
                 "min_limit": -600,
                 "max_limit": 600,
+                "home_sequence": 1,
                 "home_search_vel": 10.0,
                 "home_final_vel": 40.0,
                 "home_offset": 130.0,
@@ -278,6 +279,7 @@
                 "ferror": 50,
                 "min_limit": -600,
                 "max_limit": 600,
+                "home_sequence": 1,
                 "home_search_vel": -20.0,
                 "home_final_vel": 40.0,
                 "home_offset": -140.0,
@@ -358,6 +360,7 @@
                 "ferror": 50,
                 "min_limit": -600,
                 "max_limit": 600,
+                "home_sequence": 1,
                 "home_search_vel": 20.0,
                 "home_final_vel": 40.0,
                 "home_offset": 68.0,
@@ -394,6 +397,7 @@
                 "ferror": 50,
                 "min_limit": -600,
                 "max_limit": 600,
+                "home_sequence": 1,
                 "home_search_vel": -20.0,
                 "home_final_vel": 40.0,
                 "home_offset": -54.0,
@@ -429,6 +433,7 @@
                 "ferror": 50,
                 "min_limit": -600,
                 "max_limit": 600,
+                "home_sequence": 1,
                 "home_search_vel": -20.0,
                 "home_final_vel": 40.0,
                 "home_latch_vel": 10.0,
@@ -465,6 +470,7 @@
                 "ferror": 50,
                 "min_limit": -600,
                 "max_limit": 600,
+                "home_sequence": 1,
                 "home_search_vel": -20.0,
                 "home_final_vel": 40.0,
                 "home_latch_vel": 10.0,
@@ -566,6 +572,36 @@
             }
         },
         {
+            "type": "signal",
+            "name": "head",
+            "dir": "input",
+            "signals": {
+                "value": {
+                    "net": "genserkins.D-5",
+                    "display": {
+                        "section": "status",
+                        "title": "Head",
+                        "type": "fselect",
+                        "values": {"Pen": 54, "Gripper": 150, "Laser": 70},
+                        "filter": {"type": "LOWPASS", "gain": 0.001}
+                    }
+                }
+            }
+        },
+        {
+            "type": "signal",
+            "name": "virtsink1",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "genserkins.D-5",
+                    "display": {
+                        "section": "status"
+                    }
+                }
+            }
+        },
+        {
             "type": "w5500",
             "pins": {
                 "mosi": {
@@ -622,7 +658,7 @@
             "genserkins.D-4": 0,
             "genserkins.ALPHA-4": 1.570796326,
             "genserkins.A-5": 0,
-            "genserkins.D-5": 55,
+            "genserkins.D-5": 145,
             "genserkins.ALPHA-5": -1.570796326
         },
         "axis": {
@@ -639,8 +675,8 @@
                 "max_limit": 500
             },
             "A": {
-                "min_limit": -170,
-                "max_limit": 170
+                "min_limit": -190,
+                "max_limit": 190
             },
             "B": {
                 "min_limit": -170,

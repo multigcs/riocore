@@ -153,6 +153,7 @@ class LinuxCNC:
         self.axisout = []
         self.networks = {}
         self.setps = {}
+        self.halextras = []
         self.project = project
         self.base_path = f"{self.project.config['output_path']}/LinuxCNC"
         self.component_path = f"{self.base_path}"
@@ -306,6 +307,8 @@ class LinuxCNC:
         (network_hal, network_postgui) = self.generate_networks(self.networks, self.setps)
         output_hal += network_hal
         output_postgui += network_postgui
+        output_postgui += [""]
+        output_hal += self.halextras
 
         output_hal.append("")
         output_hal += self.axisout
@@ -351,7 +354,7 @@ class LinuxCNC:
     def ini_mdi_command(self, command):
         jdata = self.project.config["jdata"]
         ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.axis_dict)
-        mdi_index = ""
+        mdi_index = None
         mdi_n = 0
         for key, value in ini["HALUI"].items():
             if key.startswith("MDI_COMMAND|"):
@@ -359,7 +362,7 @@ class LinuxCNC:
                     mdi_index = mdi_n
                     break
                 mdi_n += 1
-        if not mdi_index:
+        if mdi_index is None:
             mdi_index = mdi_n
             ini["HALUI"][f"MDI_COMMAND|{mdi_index:02d}"] = command
         return f"halui.mdi-command-{mdi_index:02d}"
@@ -1012,7 +1015,7 @@ class LinuxCNC:
                     if vunit and "unit" not in displayconfig:
                         displayconfig["unit"] = vunit
 
-                    if (netname and not virtual) or setp:
+                    if ((netname and not virtual) or setp) and False:
                         section = displayconfig.get("section", "status")
                         if not boolean:
                             dtype = displayconfig.get("type", "number")
@@ -1049,6 +1052,47 @@ class LinuxCNC:
                         (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
                         if section not in self.cfgxml_data:
                             self.cfgxml_data[section] = []
+
+                        # fselect handling
+                        if dtype == "fselect":
+                            values = displayconfig.get("values", {"v0": 0, "v1": 1})
+                            n_values = len(values)
+                            self.halextras.append(f"loadrt conv_s32_u32 names=conv_s32_u32_{halname}")
+                            self.halextras.append(f"addf conv_s32_u32_{halname} servo-thread")
+                            self.hal_net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
+                            self.halextras.append("")
+                            self.halextras.append(f"loadrt demux names=demux_{halname} personality={n_values}")
+                            self.halextras.append(f"addf demux_{halname} servo-thread")
+                            self.hal_net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
+                            for nv in range(n_values):
+                                self.hal_net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
+                            self.halextras.append("")
+                            self.halextras.append(f"loadrt bitslice names=bitslice_{halname} personality=3")
+                            self.halextras.append(f"addf bitslice_{halname} servo-thread")
+                            self.hal_net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
+                            self.halextras.append("")
+                            self.halextras.append(f"loadrt mux8 names=mux8_{halname}")
+                            self.halextras.append(f"addf mux8_{halname} servo-thread")
+                            self.hal_net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
+                            self.hal_net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
+                            self.hal_net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
+                            for vn, name in enumerate(values):
+                                self.halextras.append(f"setp mux8_{halname}.in{vn} {values[name]}")
+                            self.halextras.append("")
+                            gui_pinname = f"mux8_{halname}.out"
+
+                        if direction == "input":
+                            dfilter = displayconfig.get("filter", {})
+                            dfilter_type = dfilter.get("type")
+                            if dfilter_type == "LOWPASS":
+                                dfilter_gain = dfilter.get("gain", "0.001")
+                                self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
+                                self.halextras.append(f"addf lowpass_{halname} servo-thread")
+                                self.halextras.append(f"setp lowpass_{halname}.load 0")
+                                self.halextras.append(f"setp lowpass_{halname}.gain {dfilter_gain}")
+                                self.hal_net_add(gui_pinname, f"lowpass_{halname}.in")
+                                gui_pinname = f"lowpass_{halname}.out"
+
                         self.cfgxml_data[section] += gout
                         if virtual and direction == "input":
                             self.hal_net_add(gui_pinname, f"riov.{halname}")
@@ -2697,6 +2741,7 @@ class axis:
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
+        display_initval = setup.get("initval", 0)
         resolution = setup.get("resolution", 0.1)
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
@@ -2706,7 +2751,7 @@ class axis:
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
         cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
         cfgxml_data.append("      <orient>HORIZONTAL</orient>")
-        cfgxml_data.append("      <initval>0</initval>")
+        cfgxml_data.append(f"      <initval>{display_initval}</initval>")
         cfgxml_data.append(f"      <min_>{display_min}</min_>")
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
@@ -2716,6 +2761,39 @@ class axis:
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
         return (f"pyvcp.{halpin}-f", cfgxml_data)
+
+    def draw_fselect(self, name, halpin, setup={}):
+        title = setup.get("title", name)
+        values = setup.get("values", {"v0": 0, "v1": 1})
+        display_min = 0
+        display_max = len(values) - 1
+        display_initval = setup.get("initval", 0)
+        resolution = 1
+        legends = list(values.keys())
+        cfgxml_data = []
+        cfgxml_data.append(f"  <labelframe text=\"{title}\">")
+        cfgxml_data.append("   <vbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <multilabel>")
+        cfgxml_data.append(f"     <legends>{legends}</legends>")
+        cfgxml_data.append(f'     <halpin>"{halpin}-label"</halpin>')
+        cfgxml_data.append('     <font>("Helvetica", 12)</font>')
+        cfgxml_data.append('     <bg>"black"</bg>')
+        cfgxml_data.append('     <fg>"yellow"</fg>')
+        cfgxml_data.append("    </multilabel>")
+        cfgxml_data.append("    <scale>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
+        cfgxml_data.append("      <orient>HORIZONTAL</orient>")
+        cfgxml_data.append(f"      <initval>{display_initval}</initval>")
+        cfgxml_data.append(f"      <min_>{display_min}</min_>")
+        cfgxml_data.append(f"      <max_>{display_max}</max_>")
+        cfgxml_data.append("      <param_pin>1</param_pin>")
+        cfgxml_data.append("    </scale>")
+        cfgxml_data.append("   </vbox>")
+        cfgxml_data.append("  </labelframe>")
+        return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
