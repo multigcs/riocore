@@ -1015,8 +1015,11 @@ class LinuxCNC:
                     if vunit and "unit" not in displayconfig:
                         displayconfig["unit"] = vunit
 
-                    if ((netname and not virtual) or setp) and False:
-                        section = displayconfig.get("section", "status")
+                    if ((netname and not virtual) or setp):
+                        if direction == "input":
+                            section = displayconfig.get("section", "inputs")
+                        elif direction == "output":
+                            section = displayconfig.get("section", "outputs")
                         if not boolean:
                             dtype = displayconfig.get("type", "number")
                         else:
