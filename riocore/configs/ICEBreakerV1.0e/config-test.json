@@ -2,8 +2,8 @@
     "name": "ICEBreakerV1.0e",
     "description": "Small and low cost FPGA educational and development board",
     "boardcfg": "ICEBreakerV1.0e",
-    "machinetype": "lathe",
-    "protocol": "SPI",
+    "machinetype": "mill",
+    "protocol": "UDP",
     "modules": [
         {
             "slot": "PMOD_2",
@@ -26,24 +26,125 @@
             "frequency": 1.0
         },
         {
-            "type": "modbus",
+            "name": "joint-x",
+            "type": "stepdir",
             "pins": {
-                "tx": {
-                    "pin": "PMOD_1A:P1"
-                },
-                "rx": {
+                "step": {
                     "pin": "PMOD_1A:P2"
                 },
-                "tx_enable": {
+                "dir": {
                     "pin": "PMOD_1A:P3"
                 }
             },
-            "baud": 9600,
-            "rx_buffersize": 128,
-            "tx_buffersize": 128,
+            "is_joint": true,
+            "joint": {
+                "scale": 800.0
+            }
+        },
+        {
+            "name": "joint-y",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD_1A:P4"
+                },
+                "dir": {
+                    "pin": "PMOD_1B:P10"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -800.0
+            }
+        },
+        {
+            "name": "joint-z",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD_1B:P9"
+                },
+                "dir": {
+                    "pin": "PMOD_1B:P8"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -1600.0
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home_x",
+            "pins": {
+                "bit": {
+                    "pin": "PMOD_1B:P4",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
             "signals": {
-                "temperature": {
-                    "display": {}
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home_y",
+            "pins": {
+                "bit": {
+                    "pin": "PMOD_1B:P2",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home_z",
+            "pins": {
+                "bit": {
+                    "pin": "PMOD_1A:P8",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "din1",
+            "pins": {
+                "bit": {
+                    "pin": "PMOD_1B:P3",
+                    "pullup": true,
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         }

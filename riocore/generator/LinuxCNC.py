@@ -17,7 +17,7 @@ class LinuxCNC:
         "MIN_LIMIT": -500,
         "MAX_LIMIT": 1500,
         "MIN_FERROR": 0.01,
-        "FERROR": 1.0,
+        "FERROR": 2.0,
         "BACKLASH": 0.0,
     }
     PID_DEFAULTS = {
@@ -41,8 +41,8 @@ class LinuxCNC:
         "STEPGEN_MAXACCEL": 2000.0,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
-        "HOME_SEARCH_VEL": -50.0,
-        "HOME_LATCH_VEL": 3.0,
+        "HOME_SEARCH_VEL": -30.0,
+        "HOME_LATCH_VEL": 5.0,
         "HOME_FINAL_VEL": 100.0,
         "HOME_IGNORE_LIMITS": "YES",
         "HOME_USE_INDEX": "NO",
@@ -2262,11 +2262,17 @@ class LinuxCNC:
                     joint_setup[key.upper()] = value
 
                 # update defaults
-                if position_scale < 0.0:
-                    joint_setup["HOME_SEARCH_VEL"] *= -1.0
-                    joint_setup["HOME_LATCH_VEL"] *= -1.0
+                # if position_scale < 0.0:
+                    # joint_setup["HOME_SEARCH_VEL"] *= -1.0
+                    # joint_setup["HOME_LATCH_VEL"] *= -1.0
                     # joint_setup["HOME_FINAL_VEL"] *= -1.0
                     # joint_setup["HOME_OFFSET"] *= -1.0
+
+                if machinetype not in {"scara", "melfa", "puma"}:
+                    if axis_name in {"Z"}:
+                        joint_setup["HOME_SEARCH_VEL"] *= -1.0
+                        joint_setup["HOME_LATCH_VEL"] *= -1.0
+                        joint_setup["MAX_VELOCITY"] /= 3.0
 
                 if joint not in joint_homeswitches:
                     joint_setup["HOME_SEARCH_VEL"] = 0.0
