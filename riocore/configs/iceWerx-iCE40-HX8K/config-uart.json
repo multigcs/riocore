@@ -1,0 +1,49 @@
+{
+    "name": "iceWerx-iCE40-HX8K",
+    "description": "Small and low cost FPGA educational and development board",
+    "boardcfg": "iceWerx-iCE40-HX8K",
+    "gui": "axis",
+    "protocol": "UART",
+    "plugins": [
+        {
+            "type": "uart",
+            "pins": {
+                "rx": {
+                    "pin": "UART:RX"
+                },
+                "tx": {
+                    "pin": "UART:TX"
+                }
+            },
+            "baud": 1000000
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            },
+            "frequency": 1.0
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:R"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "display": {}
+                }
+            }
+        }
+    ],
+    "transport": "UART"
+}
