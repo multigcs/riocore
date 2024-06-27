@@ -147,6 +147,20 @@
                     ]
                 }
             }
+        },
+        {
+            "type": "bitout",
+            "name": "relais",
+            "pins": {
+                "bit": {
+                    "pin": "PMOD_1A:P10"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
         }
     ],
     "axis": 3

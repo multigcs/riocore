@@ -499,6 +499,9 @@ class Project:
                 if key not in project["jdata"]:
                     project["jdata"][key] = value
 
+        if "flashcmd" in project["jdata"]:
+            project["flashcmd"] = project["jdata"]["flashcmd"]
+
         # loading modules
         project["modules"] = {}
         modules_path = self.get_path("modules")
