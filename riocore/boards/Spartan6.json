@@ -4,9 +4,6 @@
     "toolchain": "ise",
     "family": "xc6",
     "type": "xc6slx9-3tqg144",
-    
-    
-    
     "package": "tqg144",
     "clock": {
         "speed": "125000000",
