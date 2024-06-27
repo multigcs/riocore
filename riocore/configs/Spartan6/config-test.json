@@ -1,0 +1,18 @@
+{
+    "name": "Spartan6",
+    "description": "Spartan6 - only for testing the toolchain",
+    "boardcfg": "Spartan6",
+    "machinetype": "mill",
+    "protocol": "SPI",
+    "plugins": [
+        {
+            "type": "bitout",
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "pin": "p11"
+                }
+            }
+        }
+    ]
+}
