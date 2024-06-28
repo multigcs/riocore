@@ -6,13 +6,89 @@
     "protocol": "SPI",
     "plugins": [
         {
+            "type": "spi",
+            "pins": {
+                "mosi": {
+                    "pin": "p83"
+                },
+                "miso": {
+                    "pin": "p82"
+                },
+                "sclk": {
+                    "pin": "p84"
+                },
+                "sel": {
+                    "pin": "p81"
+                }
+            }
+        },
+
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:LED1",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            },
+            "frequency": 1.0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:LED2",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            },
+            "frequency": 5.0
+        },
+
+
+        {
             "type": "bitout",
-            "name": "enable",
+            "name": "led00",
             "pins": {
                 "bit": {
-                    "pin": "p11"
+                    "pin": "p79"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "led01",
+            "pins": {
+                "bit": {
+                    "pin": "p80"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "led02",
+            "pins": {
+                "bit": {
+                    "pin": "p74"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "led03",
+            "pins": {
+                "bit": {
+                    "pin": "p78"
                 }
             }
         }
+
     ]
 }

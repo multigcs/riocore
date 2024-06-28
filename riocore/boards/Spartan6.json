@@ -6,7 +6,17 @@
     "type": "xc6slx9-3tqg144",
     "package": "tqg144",
     "clock": {
-        "speed": "125000000",
-        "pin": "p111"
-    }
+        "speed": "25000000",
+        "pin": "p55"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LEDs",
+            "pins": {
+                "LED1": "p87",
+                "LED2": "p88"
+            }
+        }
+    ]
 }
