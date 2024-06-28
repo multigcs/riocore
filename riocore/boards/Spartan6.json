@@ -1,6 +1,7 @@
 {
     "name": "Spartan6",
     "description": "Spartan6 - only for testing the toolchain",
+    "url": "https://github.com/ozzyrob/Linuxcnc-FPGA/",
     "toolchain": "ise",
     "family": "xc6",
     "type": "xc6slx9-3tqg144",

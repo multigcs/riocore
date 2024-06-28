@@ -1,9 +1,35 @@
 {
     "name": "Spartan6",
-    "description": "Spartan6 - only for testing the toolchain",
+    "description": "Spartan6 - https://github.com/ozzyrob/Linuxcnc-FPGA/",
     "boardcfg": "Spartan6",
     "machinetype": "mill",
     "protocol": "SPI",
+
+    "slots": [
+        {
+            "name": "BOB_A",
+            "comment": "DB3 connector (v04)",
+            "pins": {
+                "P1": "p27",
+                "P2": "p24",
+                "P3": "p22",
+                "P4": "p17",
+                "P5": "p30",
+                "P6": "p29",
+                "P7": "p33",
+                "P8": "p32",
+                "P9": "p35",
+                "P10": "p34",
+                "P11": "p41",
+                "P12": "p40",
+                "P13": "p43",
+                "P14": "p26",
+                "P15": "p23",
+                "P16": "p21",
+                "P17": "p16"
+            }
+        }
+    ],
     "plugins": [
         {
             "type": "spi",
@@ -22,7 +48,6 @@
                 }
             }
         },
-
         {
             "type": "blink",
             "pins": {
@@ -51,8 +76,56 @@
             },
             "frequency": 5.0
         },
-
-
+        {
+            "type": "stepdir",
+            "name": "Joint0",
+            "pins": {
+                "step": {
+                    "pin": "BOB_A:P2"
+                },
+                "dir": {
+                    "pin": "BOB_A:P3"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint1",
+            "pins": {
+                "step": {
+                    "pin": "BOB_A:P4"
+                },
+                "dir": {
+                    "pin": "BOB_A:P5"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "Joint2",
+            "pins": {
+                "step": {
+                    "pin": "BOB_A:P6"
+                },
+                "dir": {
+                    "pin": "BOB_A:P7"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "pwmout",
+            "name": "PWM",
+            "min": 0,
+            "max": 10000,
+            "pins": {
+                "pwm": {
+                    "pin": "BOB_A:P1"
+                }
+            }
+        },
         {
             "type": "bitout",
             "name": "led00",
@@ -89,6 +162,5 @@
                 }
             }
         }
-
     ]
 }
