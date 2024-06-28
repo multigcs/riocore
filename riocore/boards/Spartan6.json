@@ -4,10 +4,10 @@
     "url": "https://github.com/ozzyrob/Linuxcnc-FPGA/",
     "toolchain": "ise",
     "family": "xc6",
-    "type": "xc6slx9-3tqg144",
+    "type": "xc6slx9-2tqg144",
     "package": "tqg144",
     "clock": {
-        "speed": "25000000",
+        "speed": "50000000",
         "pin": "p55"
     },
     "slots": [
