@@ -11,6 +11,7 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "invert": False,
                 "pullup": False,
+                "slew": "fast",
             },
             "miso": {
                 "direction": "input",
@@ -21,6 +22,7 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "invert": False,
                 "pullup": False,
+                "slew": "fast",
             },
             "sel": {
                 "direction": "output",

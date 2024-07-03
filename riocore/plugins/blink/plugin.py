@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "led": {
                 "direction": "output",
+                "drive": 8,
             },
         }
         self.OPTIONS = {

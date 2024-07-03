@@ -15,6 +15,7 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "invert": False,
                 "pullup": False,
+                "slew": "fast",
             },
             "sclk": {
                 "direction": "input",

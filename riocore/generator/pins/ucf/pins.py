@@ -7,6 +7,12 @@ class Pins:
         for pname, pins in self.config["pinlists"].items():
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
-                data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\";")
+                iostandard = pin_config.get("iostandard", "LVTTL").upper()
+                drive = pin_config.get("drive", "4")
+                slew = pin_config.get("slew", "SLOW").upper()
+                if pin_config["direction"] == "input":
+                    data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                else:
+                    data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} | DRIVE = {drive} | SLEW = {slew} ;")
             data.append("")
         open(f"{path}/pins.ucf", "w").write("\n".join(data))
