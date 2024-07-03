@@ -16,6 +16,9 @@ class Toolchain:
 
         verilogs = " ".join(self.config["verilog_files"])
 
+        # CClk | jtagclk
+        startupClk = self.config["jdata"]["clock"].get("startup", "jtagclk")
+
         makefile_data = []
         makefile_data.append("")
         makefile_data.append("# Toolchain: ISE/Webpack")
@@ -25,6 +28,7 @@ class Toolchain:
         makefile_data.append(f"PART     := {self.config['type']}")
         makefile_data.append(f"VERILOGS := {verilogs}")
         makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
+        makefile_data.append(f"STARTUP_CLK := {startupClk}")
         makefile_data.append("")
         makefile_data.append("all: $(PROJECT).bit")
         makefile_data.append("")
@@ -44,8 +48,7 @@ class Toolchain:
         makefile_data.append("	par -w $(PROJECT).ncd parout.ncd $(PROJECT).pcf")
         makefile_data.append("")
         makefile_data.append("$(PROJECT).bit: parout.ncd $(PROJECT).pcf")
-        makefile_data.append("	#bitgen -w -g StartUpClk:CClk -g CRC:Enable parout.ncd $(PROJECT).bit $(PROJECT).pcf")
-        makefile_data.append("	bitgen -w -g StartUpClk:jtagclk -g CRC:Enable parout.ncd $(PROJECT).bit $(PROJECT).pcf")
+        makefile_data.append("	bitgen -w -g StartUpClk:$(STARTUP_CLK) -g CRC:Enable parout.ncd $(PROJECT).bit $(PROJECT).pcf")
         makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
         makefile_data.append("")
         makefile_data.append("clean:")

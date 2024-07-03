@@ -8,7 +8,8 @@
     "package": "tqg144",
     "clock": {
         "speed": "50000000",
-        "pin": "p55"
+        "pin": "p55",
+        "startup": "CClk"
     },
     "slots": [
         {
