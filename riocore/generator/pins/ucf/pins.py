@@ -11,7 +11,10 @@ class Pins:
                 drive = pin_config.get("drive", "4")
                 slew = pin_config.get("slew", "SLOW").upper()
                 if pin_config["direction"] == "input":
-                    data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                    if pin_config.get("pullup", False):
+                        data.append(f"NET \"{pin_config['varname']}\"       PULLUP | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                    else:
+                        data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
                 else:
                     data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} | DRIVE = {drive} | SLEW = {slew} ;")
             data.append("")
