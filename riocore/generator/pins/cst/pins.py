@@ -8,10 +8,19 @@ class Pins:
             data.append(f"// ### {pname} ###")
             for pin, pin_config in pins.items():
                 data.append(f"IO_LOC \"{pin_config['varname']}\" {pin_config['pin']};")
-                if pin_config.get("pullup", False):
-                    data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE=LVCMOS33 PULL_MODE=UP;")
+
+                iostandard = pin_config.get("iostandard", "LVCMOS33").upper()
+                drive = pin_config.get("drive", "4")
+                # slew = pin_config.get("slew", "SLOW").upper()
+
+                if pin_config["direction"] == "input":
+                    if pin_config.get("pullup", False):
+                        data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} PULL_MODE=UP;")
+                    else:
+                        data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard};")
                 else:
-                    data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE=LVCMOS33;")
+                    data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} DRIVE={drive};")
+
             data.append("")
         data.append("")
         open(f"{path}/pins.cst", "w").write("\n".join(data))

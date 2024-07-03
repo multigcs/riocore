@@ -12,6 +12,11 @@ class Pins:
                     options.append("-pullup yes")
                 options.append(pin_config["varname"])
                 options.append(pin_config["pin"])
+
+                # iostandard = pin_config.get("iostandard", "LVTTL").upper()
+                # drive = pin_config.get("drive", "4")
+                # slew = pin_config.get("slew", "SLOW").upper()
+
                 data.append(f"set_io {' '.join(options)}")
             data.append("")
         open(f"{path}/pins.pcf", "w").write("\n".join(data))

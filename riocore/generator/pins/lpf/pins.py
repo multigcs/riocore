@@ -23,7 +23,16 @@ class Pins:
                     data.append(f"# this pin ({pin_config['pin']}) is not available in the lpf file, have to use the USRMCLK primitive in the verilog")
                     continue
                 data.append(f"LOCATE COMP \"{pin_config['pin']}\" SITE \"{pin_config['varname']}\";")
-                data.append(f"IOBUF PORT \"{pin_config['pin']}\" IO_TYPE=LVCMOS33;")
+
+                iostandard = pin_config.get("iostandard", "LVCMOS33").upper()
+                drive = pin_config.get("drive", "4")
+                slew = pin_config.get("slew", "SLOW").upper()
+
+                if pin_config["direction"] == "input":
+                    data.append(f"IOBUF PORT \"{pin_config['pin']}\" IO_TYPE={iostandard};")
+                else:
+                    data.append(f"IOBUF PORT \"{pin_config['pin']}\" IO_TYPE={iostandard} DRIVE={drive} SLEWRATE={slew};")
+
             data.append("")
         data.append("")
         open(f"{path}/pins.lpf", "w").write("\n".join(data))
