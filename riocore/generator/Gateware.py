@@ -43,9 +43,9 @@ class Gateware:
         self.config["verilog_files"] = self.verilogs
         self.config["pinlists"] = {}
         self.config["pinlists"]["base"] = {}
-        self.config["pinlists"]["base"]["sysclk_in"] = {"direction": "input", "pullup": False, "pin": self.config["sysclk_pin"], "varname": "sysclk_in"}
+        self.config["pinlists"]["base"]["sysclk_in"] = {"direction": "input", "pullup": False, "pulldown": False, "pin": self.config["sysclk_pin"], "varname": "sysclk_in"}
         # if self.config.get("error_pin"):
-        #    self.config["pinlists"]["base"]["errorout"] = {"direction": "input", "pullup": True, "pin": self.config["error_pin"], "varname": "ERROR_OUT"}
+        #    self.config["pinlists"]["base"]["errorout"] = {"direction": "input", "pullup": True, "pulldown": False, "pin": self.config["error_pin"], "varname": "ERROR_OUT"}
 
         self.config["timing_constraints"] = {}
         for plugin_instance in self.project.plugin_instances:
@@ -176,12 +176,15 @@ class Gateware:
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
                     pullup = "PULLUP" if pin_config.get("pullup", False) else ""
+                    pulldown = "PULLDOWN" if pin_config.get("pulldown", False) else ""
+                    if pullup and pulldown:
+                        print(f"WARNING: pullup and pulldown at the same time is not possible: {pin_config['varname']}")
                     if pin_config["direction"] == "input":
-                        output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pullup}")
+                        output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pullup}{pulldown}")
                     elif pin_config["direction"] == "output":
-                        output.append(f"    {pin_config['varname']} -> {pin_config['pin']} {pullup}")
+                        output.append(f"    {pin_config['varname']} -> {pin_config['pin']} {pullup}{pulldown}")
                     else:
-                        output.append(f"    {pin_config['varname']} <> {pin_config['pin']} {pullup}")
+                        output.append(f"    {pin_config['varname']} <> {pin_config['pin']} {pullup}{pulldown}")
         output.append("")
         output.append("*/")
         output.append("")

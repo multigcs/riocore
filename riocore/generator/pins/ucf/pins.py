@@ -13,6 +13,8 @@ class Pins:
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False):
                         data.append(f"NET \"{pin_config['varname']}\"       PULLUP | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                    elif pin_config.get("pulldown", False):
+                        data.append(f"NET \"{pin_config['varname']}\"       PULLDOWN | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
                     else:
                         data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
                 else:

@@ -350,6 +350,7 @@ class Plugins:
                     initfile.append(f"                \"direction\": \"{pin_setup['direction']}\",")
                     initfile.append('                "invert": False,')
                     initfile.append('                "pullup": False,')
+                    initfile.append('                "pulldown": False,')
                     initfile.append("            },")
                 initfile.append("        }")
                 if interface:

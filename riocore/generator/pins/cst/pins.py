@@ -16,6 +16,8 @@ class Pins:
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False):
                         data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} PULL_MODE=UP;")
+                    elif pin_config.get("pulldown", False):
+                        data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} PULL_MODE=DOWN;")
                     else:
                         data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard};")
                 else:
