@@ -1995,7 +1995,7 @@ class LinuxCNC:
         defines["SPI_PIN_MOSI"] = "10"
         defines["SPI_PIN_MISO"] = "9"
         defines["SPI_PIN_CLK"] = "11"
-        defines["SPI_PIN_CS"] = "7"
+        defines["SPI_PIN_CS"] = "8" # CE1 = 7
         defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
 
         for header in header_list:
