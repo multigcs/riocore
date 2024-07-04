@@ -600,12 +600,16 @@ class Project:
                     if multiplexed:
                         self.multiplexed_input += 1
                         self.multiplexed_input_size = max(self.multiplexed_input_size, variable_size)
+                        if self.multiplexed_input_size < 8:
+                            self.multiplexed_input_size = 8
                     else:
                         self.input_size += variable_size
                 elif data_config["direction"] == "output":
                     if multiplexed:
                         self.multiplexed_output += 1
                         self.multiplexed_output_size = max(self.multiplexed_output_size, variable_size)
+                        if self.multiplexed_output_size < 8:
+                            self.multiplexed_output_size = 8
                     else:
                         self.output_size += variable_size
 

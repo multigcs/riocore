@@ -286,6 +286,11 @@ class PluginBase:
             size = setup.get("size", 32)
             direction = setup["direction"].upper().replace("PUT", "")
             data[name] = setup
+
+            multiplexed = self.plugin_setup.get("multiplexed")
+            if multiplexed is not None:
+                data[name]["multiplexed"] = multiplexed
+
             data[name]["variable"] = f"VAR{direction}{size}_{self.instances_name}_{name}".upper()
         return data
 
