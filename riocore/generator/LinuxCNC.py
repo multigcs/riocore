@@ -368,7 +368,7 @@ class LinuxCNC:
         return f"halui.mdi-command-{mdi_index:02d}"
 
     @classmethod
-    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}):
+    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}, dios=16, aios=16):
         linuxcnc_config = jdata.get("linuxcnc", {})
         ini_setup = cls.INI_DEFAULTS.copy()
         gui = jdata.get("gui", "axis")
@@ -423,8 +423,8 @@ class LinuxCNC:
         ini_setup["KINS"]["JOINTS"] = num_joints
         ini_setup["KINS"]["KINEMATICS"] = f"{kinematics}{kinematics_options}"
         ini_setup["TRAJ"]["COORDINATES"] = "".join(coordinates)
-        ini_setup["EMCMOT"]["NUM_DIO"] = 16
-        ini_setup["EMCMOT"]["NUM_AIO"] = 16
+        ini_setup["EMCMOT"]["NUM_DIO"] = dios
+        ini_setup["EMCMOT"]["NUM_AIO"] = aios
 
         for axis_name, joints in axis_dict.items():
             ini_setup["HALUI"][f"MDI_COMMAND|Zero-{axis_name}"] = f"G92 {axis_name}0"
@@ -467,7 +467,26 @@ class LinuxCNC:
         linuxcnc_config = jdata.get("linuxcnc", {})
         gui = self.project.config["jdata"].get("gui", "axis")
         machinetype = self.project.config["jdata"].get("machinetype")
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
+
+        dios = 0
+        aios = 0
+        for net_name, net_nodes in self.networks.items():
+            for net in net_nodes.get("in", []):
+                if net.startswith("motion.digital-out-"):
+                    dios = max(dios, int(net.split("-")[-1]) + 1)
+                if net.startswith("motion.analog-out-"):
+                    aios = max(dios, int(net.split("-")[-1]) + 1)
+            for net in net_nodes.get("out", []):
+                if net.startswith("motion.digital-in-"):
+                    dios = max(dios, int(net.split("-")[-1]) + 1)
+                if net.startswith("motion.analog-in-"):
+                    aios = max(dios, int(net.split("-")[-1]) + 1)
+        if dios > 64:
+            print("ERROR: you can only configure up to 64 motion.digital-in-NN/motion.digital-out-NN")
+        if aios > 64:
+            print("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
+
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, dios=dios, aios=aios)
 
         for section, section_options in linuxcnc_config.get("ini", {}).items():
             if section not in ini_setup:
