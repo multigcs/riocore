@@ -8,13 +8,13 @@
     "flashcmd": "iceFUNprog rio.bin",
     "clock": {
         "osc": "12000000",
-        "speed": "30000000",
+        "speed": "60000000",
         "pin": "P7"
     },
     "slots": [
         {
-            "name": "UART",
-            "comment": "USB UART",
+            "name": "ADC_UART",
+            "comment": "ADC_UART",
             "pins": {
                 "TX": "P4",
                 "RX": "P5"
