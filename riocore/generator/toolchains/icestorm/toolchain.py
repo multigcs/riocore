@@ -89,19 +89,22 @@ class Toolchain:
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
             if family == "himbaechel":
                 makefile_data.append(
-                    "	nextpnr-himbaechel --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${DEVICE_FAMILY}"
+                    "	nextpnr-himbaechel -q -l nextpnr.log --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${DEVICE_FAMILY}"
                 )
             else:
                 makefile_data.append(
-                    "	nextpnr-gowin --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
+                    "	nextpnr-gowin -q -l nextpnr.log --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
                 )
+            makefile_data.append('	@echo ""')
+            makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
             makefile_data.append("	gowin_pack -d ${DEVICE_FAMILY} -o $(PROJECT).fs $(PROJECT)_pnr.json")
             makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")
-            makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log")
+            makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
