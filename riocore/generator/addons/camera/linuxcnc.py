@@ -32,18 +32,19 @@ def gui(parent):
                         if axis_name in offsets:
                             diff = offsets[axis_name]
                             mdi_command.append(f"{axis_name}{diff}")
-                    halpin = parent.ini_mdi_command(" ".join(mdi_command))
-                    parent.hal_net_add("pyvcp.zerocam", halpin)
-                    parent.cfgxml_data["status"].append('  <labelframe text="Camera">')
-                    parent.cfgxml_data["status"].append("    <relief>RAISED</relief>")
-                    parent.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
-                    parent.cfgxml_data["status"].append("    <hbox>")
-                    parent.cfgxml_data["status"].append("      <relief>RIDGE</relief>")
-                    parent.cfgxml_data["status"].append("      <bd>2</bd>")
-                    (pname, gout) = parent.gui_gen.draw_button("zero-cam", "zerocam")
-                    parent.cfgxml_data["status"] += gout
-                    parent.cfgxml_data["status"].append("    </hbox>")
-                    parent.cfgxml_data["status"].append("  </labelframe>")
+                    if len(mdi_command) > 1:
+                        halpin = parent.ini_mdi_command(" ".join(mdi_command), title="ZeroCam")
+                        #parent.hal_net_add("pyvcp.zerocam", halpin)
+                        #parent.cfgxml_data["status"].append('  <labelframe text="Camera">')
+                        #parent.cfgxml_data["status"].append("    <relief>RAISED</relief>")
+                        #parent.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
+                        #parent.cfgxml_data["status"].append("    <hbox>")
+                        #parent.cfgxml_data["status"].append("      <relief>RIDGE</relief>")
+                        #parent.cfgxml_data["status"].append("      <bd>2</bd>")
+                        #(pname, gout) = parent.gui_gen.draw_button("zero-cam", "zerocam")
+                        #parent.cfgxml_data["status"] += gout
+                        #parent.cfgxml_data["status"].append("    </hbox>")
+                        #parent.cfgxml_data["status"].append("  </labelframe>")
                     offset_num += 1
                 elif offsets:
                     print("WARNING: offset works only on one camera")

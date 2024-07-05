@@ -351,7 +351,7 @@ class LinuxCNC:
 
         print(f"writing linuxcnc files to: {self.base_path}")
 
-    def ini_mdi_command(self, command):
+    def ini_mdi_command(self, command, title=None):
         jdata = self.project.config["jdata"]
         ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.axis_dict)
         mdi_index = None
@@ -364,7 +364,10 @@ class LinuxCNC:
                 mdi_n += 1
         if mdi_index is None:
             mdi_index = mdi_n
-            ini["HALUI"][f"MDI_COMMAND|{mdi_index:02d}"] = command
+            if title:
+                ini["HALUI"][f"MDI_COMMAND|{title}"] = command
+            else:
+                ini["HALUI"][f"MDI_COMMAND|{mdi_index:02d}"] = command
         return f"halui.mdi-command-{mdi_index:02d}"
 
     @classmethod
