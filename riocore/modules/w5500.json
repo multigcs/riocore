@@ -9,16 +9,16 @@
             "port": 2390,
             "pins": {
                 "mosi": {
-                    "pin": "P10"
+                    "pin": "P4"
                 },
                 "miso": {
-                    "pin": "P9"
+                    "pin": "P3"
                 },
                 "sclk": {
-                    "pin": "P8"
+                    "pin": "P2"
                 },
                 "sel": {
-                    "pin": "P7"
+                    "pin": "P1"
                 }
             }
         }
