@@ -33,9 +33,19 @@ if args.config:
         config_name = project.config.get("name")
 
         if args.build:
-            os.system(f"(cd Output/{config_name}/Gateware/ ; make clean all)")
+            cmd = f"(cd Output/{config_name}/Gateware/ ; make clean all)"
+            print("")
+            print("running:")
+            print(f"  {cmd}")
+            print("")
+            os.system(cmd)
         if args.flash:
-            os.system(f"(cd Output/{config_name}/Gateware/ ; make load)")
+            cmd = f"(cd Output/{config_name}/Gateware/ ; make load)"
+            print("")
+            print("running:")
+            print(f"  {cmd}")
+            print("")
+            os.system(cmd)
 
     elif args.config.startswith("plugininfo:"):
         plugin = args.config.split(":")[-1]
