@@ -13,7 +13,10 @@ class Toolchain:
         if family.startswith("GW"):
             device_family = family
             board = self.config.get("board")
-            family = "gowin"
+            if shutil.which(f"nextpnr-himbaechel") is not None:
+                family = "himbaechel"
+            else:
+                family = "gowin"
 
         nextpnr = shutil.which(f"nextpnr-{family}")
         if nextpnr is None:
@@ -22,7 +25,7 @@ class Toolchain:
         if family == "ecp5":
             pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
             bitfileName = "$(PROJECT).bit"
-        elif family == "gowin":
+        elif family in {"gowin", "himbaechel"}:
             pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
             bitfileName = "$(PROJECT).fs"
         else:
@@ -58,7 +61,7 @@ class Toolchain:
         makefile_data.append("$(PROJECT).json: $(VERILOGS)")
         if self.config["type"] == "up5k":
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -dsp -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
-        elif family == "gowin":
+        elif family in {"gowin", "himbaechel"}:
             OPTIONS: -noalu - nowidelut
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         else:
@@ -82,11 +85,16 @@ class Toolchain:
             makefile_data.append("clean:")
             makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
-        elif family == "gowin":
+        elif family in {"gowin", "himbaechel"}:
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
-            makefile_data.append(
-                "	nextpnr-gowin --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
-            )
+            if family == "himbaechel":
+                makefile_data.append(
+                    "	nextpnr-himbaechel --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${DEVICE_FAMILY}"
+                )
+            else:
+                makefile_data.append(
+                    "	nextpnr-gowin --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
+                )
             makefile_data.append("")
             makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
             makefile_data.append("	gowin_pack -d ${DEVICE_FAMILY} -o $(PROJECT).fs $(PROJECT)_pnr.json")
