@@ -21,7 +21,7 @@ package_data = {
 packages = ["riocore"]
 
 for script in glob.glob("bin/*"):
-    if not "gui" in script:
+    if not "gui" in script and not os.path.islink(script):
         scripts.append(script)
 
 for folder in ("riocore/plugins/*", "riocore/generator/*", "riocore/generator/pins/*", "riocore/generator/toolchains/*", "riocore/interfaces/*"):
