@@ -1,14 +1,14 @@
-# bitout
-to control relais, leds, valves, ....
+# esp32_ledc
+only for esp32
 
-singe bit output pin
+ledc plugin to generate up to 16 PWM signals
 
 ## Basic-Example:
 ```
 {
-    "type": "bitout",
+    "type": "esp32_ledc",
     "pins": {
-        "bit": {
+        "pwm1": {
             "pin": "0"
         }
     }
@@ -16,7 +16,7 @@ singe bit output pin
 ```
 
 ## Pins:
-### bit:
+### pwm1:
 
  * direction: output
  * pullup: False
@@ -31,26 +31,26 @@ name of this plugin instance
 
 
 ## Signals:
-### bit:
+### pwm1:
 
- * type: bit
+ * type: float
  * direction: output
 
 
 ## Interfaces:
-### bit:
+### pwm1:
 
- * size: 1 bit
+ * size: 8 bit
  * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "bitout",
+    "type": "esp32_ledc",
     "name": "",
     "pins": {
-        "bit": {
+        "pwm1": {
             "pin": "0",
             "modifiers": [
                 {
@@ -60,13 +60,15 @@ name of this plugin instance
         }
     },
     "signals": {
-        "bit": {
+        "pwm1": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
             "display": {
-                "title": "bit",
+                "title": "pwm1",
                 "section": "outputs",
-                "type": "checkbox"
+                "type": "scale"
             }
         }
     }

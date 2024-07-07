@@ -1,0 +1,69 @@
+# signal
+virtual signal
+
+virtual signal
+
+## Basic-Example:
+```
+{
+    "type": "signal",
+    "pins": {}
+}
+```
+
+## Pins:
+
+
+## Options:
+### dir:
+signal direction
+
+ * type: select
+ * default: input
+
+### vtype:
+signal type
+
+ * type: select
+ * default: float
+
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: None
+
+
+## Signals:
+### value:
+
+ * type: float
+ * direction: input
+
+
+## Interfaces:
+
+
+## Full-Example:
+```
+{
+    "type": "signal",
+    "dir": "input",
+    "vtype": "float",
+    "name": "",
+    "pins": {},
+    "signals": {
+        "value": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "value",
+                "section": "inputs",
+                "type": "meter"
+            }
+        }
+    }
+}
+```

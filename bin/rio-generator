@@ -50,5 +50,11 @@ if args.config:
     elif args.config.startswith("plugininfo:"):
         plugin = args.config.split(":")[-1]
         plugins = riocore.Plugins()
-        plugins.list()
-        plugins.info(plugin)
+        #plugins.list()
+        print(plugins.info(plugin))
+    elif args.config.startswith("pluginlist"):
+        plugin = args.config.split(":")[-1]
+        plugins = riocore.Plugins()
+        for line in plugins.list():
+            print(line)
+

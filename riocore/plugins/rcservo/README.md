@@ -56,8 +56,8 @@ absolute position (-100 = 1ms / 100 = 2ms)
 
  * type: float
  * direction: output
- * min: -100
- * max: 100
+ * min: -100.0
+ * max: 100.0
 
 ### enable:
 

@@ -31,6 +31,14 @@ quadencoder
 
 
 ## Options:
+### quad_type:
+encoder type
+
+ * type: int
+ * min: 1
+ * max: 4
+ * default: 2
+
 ### name:
 name of this plugin instance
 
@@ -69,6 +77,7 @@ calculates revolutions per minute
 ```
 {
     "type": "quadencoder",
+    "quad_type": 2,
     "name": "",
     "pins": {
         "a": {
