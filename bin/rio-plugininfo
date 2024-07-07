@@ -67,28 +67,28 @@ elif args.generate:
     text.append("")
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "interface":
-            text.append(f"  [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
+            text.append(f"  * [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
     text.append("")
 
     text.append("## Expansions:")
     text.append("")
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "expansion":
-            text.append(f"  [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
+            text.append(f"  * [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
     text.append("")
 
     text.append("## Joints:")
     text.append("")
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "joint":
-            text.append(f"  [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
+            text.append(f"  * [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
     text.append("")
 
     text.append("## IO:")
     text.append("")
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "io":
-            text.append(f"  [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
+            text.append(f"  * [{plugin_instance.NAME:20s} {plugin_instance.INFO}](riocore/plugins/{plugin['name']}/README.md)")
     text.append("")
     open(filename, "w").write("\n".join(text))
 
