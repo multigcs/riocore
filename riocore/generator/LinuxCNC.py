@@ -1417,7 +1417,8 @@ class LinuxCNC:
                         output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
                     output.append(f"    hal_bit_t   *{varname};")
-                    output.append(f"    hal_bit_t   *{varname}_not;")
+                    if direction == "input":
+                        output.append(f"    hal_bit_t   *{varname}_not;")
                     if signal_config.get("is_index_out"):
                         output.append(f"    hal_bit_t   *{var_prefix}_INDEX_RESET;")
                         output.append(f"    hal_bit_t   *{var_prefix}_INDEX_WAIT;")
@@ -1490,8 +1491,9 @@ class LinuxCNC:
                 else:
                     output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}), comp_id, "%s.{halname}", prefix) != 0) error_handler(retval);')
                     output.append(f"    *data->{varname} = 0;")
-                    output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}_not), comp_id, "%s.{halname}-not", prefix) != 0) error_handler(retval);')
-                    output.append(f"    *data->{varname}_not = 1 - *data->{varname};")
+                    if direction == "input":
+                        output.append(f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{varname}_not), comp_id, "%s.{halname}-not", prefix) != 0) error_handler(retval);')
+                        output.append(f"    *data->{varname}_not = 1 - *data->{varname};")
                     if signal_config.get("is_index_out"):
                         output.append(
                             f'    if (retval = hal_pin_bit_newf  (HAL_{hal_direction}, &(data->{var_prefix}_INDEX_RESET), comp_id, "%s.{halname}-reset", prefix) != 0) error_handler(retval);'
@@ -1610,7 +1612,12 @@ class LinuxCNC:
                             if virtual:
                                 continue
 
-                            if data_name.upper() == varname.split("_")[-1].strip():
+                            # TODO: fixing for wled plugin
+                            check = varname.split("_")[-1].strip()
+                            if plugin_instance.NAME == "wled":
+                                check = varname.split("_")[-2].strip() + "_" + varname.split("_")[-1].strip()
+
+                            if data_name.upper() == check:
                                 source = varname.split()[-1].strip("*")
                                 if variable_size > 1:
                                     output.append(f"    float value = *data->{source};")
@@ -1801,7 +1808,8 @@ class LinuxCNC:
                                     output.append(f"    *data->{varname}_U32_ABS = abs(value);")
                                 output.append(f"    *data->{varname} = value;")
                                 if boolean:
-                                    output.append(f"    *data->{varname}_not = 1 - value;")
+                                    if direction == "input":
+                                        output.append(f"    *data->{varname}_not = 1 - value;")
 
                                 for target, calc in signal_targets.items():
                                     tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
@@ -1995,8 +2003,8 @@ class LinuxCNC:
         port = 2390
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE == "interface":
-                ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip"))
-                port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port"))
+                ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
+                port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
 
         ip = self.project.config["jdata"].get("ip", ip)
         port = self.project.config["jdata"].get("port", port)
@@ -2008,6 +2016,7 @@ class LinuxCNC:
             "BUFFER_SIZE": self.project.buffer_bytes,
             "OSC_CLOCK": self.project.config["speed"],
         }
+
         if port and ip:
             defines["UDP_IP"] = f'"{ip}"'
             defines["UDP_PORT"] = port
