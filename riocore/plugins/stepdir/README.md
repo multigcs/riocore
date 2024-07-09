@@ -37,6 +37,7 @@ to control motor drivers via step/dir pin's and an optional enable pin
 
  * direction: output
  * pullup: False
+ * optional: True
 
 
 ## Options:

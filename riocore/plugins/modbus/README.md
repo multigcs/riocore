@@ -37,6 +37,7 @@ to read and write values (analog/digital) via modbus, also supports hy_vfd spind
 
  * direction: output
  * pullup: False
+ * optional: True
 
 
 ## Options:

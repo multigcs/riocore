@@ -71,36 +71,43 @@ only usable for devboards with 7segment display / better using other 7seg plugin
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### seg_b:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### seg_c:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### seg_d:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### seg_e:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### seg_f:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### seg_g:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 
 ## Options:

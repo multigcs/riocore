@@ -32,11 +32,13 @@ to control DC-Motors or for analog outputs
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### en:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 
 ## Options:

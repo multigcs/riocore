@@ -37,6 +37,7 @@ uart bridge to send and receive custom frames via uart port
 
  * direction: output
  * pullup: False
+ * optional: True
 
 
 ## Options:

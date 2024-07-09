@@ -480,6 +480,7 @@ class PluginBase:
             pullup = pin_setup.get("pullup", False)
             description = pin_setup.get("description")
             default = pin_setup.get("default")
+            optional = pin_setup.get("optional")
 
             output.append(f"### {pin_name}:")
             if description:
@@ -490,6 +491,8 @@ class PluginBase:
             output.append(f" * pullup: {pullup}")
             if default is not None:
                 output.append(f" * default: {default}")
+            if optional is not None:
+                output.append(f" * optional: {optional}")
 
             output.append("")
         return "\n".join(output)

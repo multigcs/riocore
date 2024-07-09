@@ -32,11 +32,13 @@ Analog input via tlc549 ADC
 
  * direction: output
  * pullup: False
+ * optional: True
 
 ### sel:
 
  * direction: output
  * pullup: False
+ * optional: True
 
 
 ## Options:
