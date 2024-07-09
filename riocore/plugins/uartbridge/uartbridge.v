@@ -98,7 +98,6 @@ module uartbridge
                     txbuffer <= {8'd0, txbuffer[TX_BUFFERSIZE-17:8]};
                     txlen <= txlen - 1;
 
-
                     TxD_start <= 1;
                 end else begin
                     tx_counter <= 0;

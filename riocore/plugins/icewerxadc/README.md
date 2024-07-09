@@ -1,17 +1,17 @@
-# ads1115
-to read analog signals with cheap ads1115 chips
+# icewerxadc
+to read analog signals from the iceWerx-board
 
-4-channel adc via I2C
+4-channel adc of the iceWerx-board
 
 ## Basic-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "icewerxadc",
     "pins": {
-        "sda": {
+        "tx": {
             "pin": "0"
         },
-        "scl": {
+        "rx": {
             "pin": "1"
         }
     }
@@ -19,15 +19,15 @@ to read analog signals with cheap ads1115 chips
 ```
 
 ## Pins:
-### sda:
-
- * direction: inout
- * pullup: True
-
-### scl:
+### tx:
 
  * direction: output
- * pullup: True
+ * pullup: False
+
+### rx:
+
+ * direction: input
+ * pullup: False
 
 
 ## Options:
@@ -39,11 +39,6 @@ name of this plugin instance
 
 
 ## Signals:
-### adc0:
-
- * type: float
- * direction: input
-
 ### adc1:
 
  * type: float
@@ -55,17 +50,17 @@ name of this plugin instance
  * direction: input
 
 ### adc3:
+
+ * type: float
+ * direction: input
+
+### adc4:
 
  * type: float
  * direction: input
 
 
 ## Interfaces:
-### adc0:
-
- * size: 16 bit
- * direction: input
-
 ### adc1:
 
  * size: 16 bit
@@ -77,6 +72,11 @@ name of this plugin instance
  * direction: input
 
 ### adc3:
+
+ * size: 16 bit
+ * direction: input
+
+### adc4:
 
  * size: 16 bit
  * direction: input
@@ -85,10 +85,10 @@ name of this plugin instance
 ## Full-Example:
 ```
 {
-    "type": "ads1115",
+    "type": "icewerxadc",
     "name": "",
     "pins": {
-        "sda": {
+        "tx": {
             "pin": "0",
             "modifiers": [
                 {
@@ -96,9 +96,12 @@ name of this plugin instance
                 }
             ]
         },
-        "scl": {
+        "rx": {
             "pin": "1",
             "modifiers": [
+                {
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
@@ -106,17 +109,6 @@ name of this plugin instance
         }
     },
     "signals": {
-        "adc0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
         "adc1": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
@@ -149,10 +141,24 @@ name of this plugin instance
                 "section": "inputs",
                 "type": "meter"
             }
+        },
+        "adc4": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "adc4",
+                "section": "inputs",
+                "type": "meter"
+            }
         }
     }
 }
 ```
 
 ## Verilogs:
- * ads1115.v
+ * icewerxadc.v
+ * uart_baud.v
+ * uart_rx.v
+ * uart_tx.v

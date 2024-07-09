@@ -19,7 +19,7 @@ single input pin
 ### bit:
 
  * direction: input
- * pullup: False
+ * pullup: True
 
 
 ## Options:

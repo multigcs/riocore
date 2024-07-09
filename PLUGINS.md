@@ -21,7 +21,7 @@
 
 ## IO:
 
-  * [ads1115: 4-chanel adc via I2C](riocore/plugins/ads1115/README.md)
+  * [ads1115: 4-channel adc via I2C](riocore/plugins/ads1115/README.md)
   * [as5600: magnetic absolute encoder](riocore/plugins/as5600/README.md)
   * [bitin: single input pin](riocore/plugins/bitin/README.md)
   * [bitout: singe bit output pin](riocore/plugins/bitout/README.md)
@@ -32,6 +32,7 @@
   * [esp32_ledc: ledc plugin to generate up to 16 PWM signals](riocore/plugins/esp32_ledc/README.md)
   * [freqin: frequency input](riocore/plugins/freqin/README.md)
   * [freqout: frequency output](riocore/plugins/freqout/README.md)
+  * [icewerxadc: 4-channel adc of the iceWerx-board](riocore/plugins/icewerxadc/README.md)
   * [irin: IR-Remote input](riocore/plugins/irin/README.md)
   * [lm75: I2C Temperature-Sensor](riocore/plugins/lm75/README.md)
   * [max10adc: MAX10 ADC inputs](riocore/plugins/max10adc/README.md)
