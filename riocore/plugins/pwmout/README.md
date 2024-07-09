@@ -1,5 +1,5 @@
 # pwmout
-pwm output
+**pwm output**
 
 to control DC-Motors or for analog outputs
 

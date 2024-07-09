@@ -1,5 +1,5 @@
 # tlc549c
-spi adc input
+**spi adc input**
 
 Analog input via tlc549 ADC
 

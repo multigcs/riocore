@@ -1,5 +1,5 @@
 # blink
-blinking output pin
+**blinking output pin**
 
 outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals
 

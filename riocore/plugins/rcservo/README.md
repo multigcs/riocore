@@ -1,5 +1,5 @@
 # rcservo
-rc-servo output
+**rc-servo output**
 
 to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 

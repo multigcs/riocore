@@ -1,5 +1,5 @@
 # uart
-uart interface for host cominucation
+**uart interface for host cominucation**
 
 simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
 

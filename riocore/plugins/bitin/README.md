@@ -1,5 +1,5 @@
 # bitin
-single input pin
+**single input pin**
 
 to read switches or other 1bit signals
 

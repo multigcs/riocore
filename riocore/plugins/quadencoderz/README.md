@@ -1,5 +1,5 @@
 # quadencoderz
-quadencoder with index pin
+**quadencoder with index pin**
 
 usable as spindle-encoder for rigid tapping and thread cutting
 

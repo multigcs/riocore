@@ -1,5 +1,5 @@
 # shiftreg
-Expansion to add I/O's via shiftregister's
+**Expansion to add I/O's via shiftregister's**
 
 
 do not use this for high frequency signals !!!

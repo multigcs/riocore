@@ -1,5 +1,5 @@
 # esp32_ledc
-ledc plugin to generate up to 16 PWM signals
+**ledc plugin to generate up to 16 PWM signals**
 
 only for esp32
 

@@ -1,5 +1,5 @@
 # ads1115
-4-channel adc via I2C
+**4-channel adc via I2C**
 
 to read analog signals with cheap ads1115 chips
 

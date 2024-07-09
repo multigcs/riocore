@@ -1,5 +1,5 @@
 # tm1638b8s7l8
-7segment display with buttons
+**7segment display with buttons**
 
 with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)
 

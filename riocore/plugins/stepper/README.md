@@ -1,5 +1,5 @@
 # stepper
-stepper driver output for H-Bridges like L298
+**stepper driver output for H-Bridges like L298**
 
 direct stepper driver with 4pin's directly controlled by the FPGA
 

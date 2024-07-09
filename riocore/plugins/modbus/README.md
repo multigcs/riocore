@@ -1,5 +1,5 @@
 # modbus
-generic modbus plugin
+**generic modbus plugin**
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 

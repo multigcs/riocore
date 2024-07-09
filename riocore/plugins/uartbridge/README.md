@@ -1,5 +1,5 @@
 # uartbridge
-uart bridge
+**uart bridge**
 
 uart bridge to send and receive custom frames via uart port
 

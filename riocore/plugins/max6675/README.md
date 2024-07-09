@@ -1,5 +1,5 @@
 # max6675
-SPI temperature sensor
+**SPI temperature sensor**
 
 to messurement very high temperatures of up to 1250 degrees Celsius
 

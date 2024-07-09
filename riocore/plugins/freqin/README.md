@@ -1,5 +1,5 @@
 # freqin
-frequency input
+**frequency input**
 
 to messurement digital frequencies
 

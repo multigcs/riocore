@@ -34,7 +34,7 @@ class Plugins:
 
         output.append(f"# {plugin.NAME}")
         if plugin.INFO:
-            output.append(plugin.INFO)
+            output.append(f"**{plugin.INFO}**")
             output.append("")
         if plugin.DESCRIPTION:
             output.append(plugin.DESCRIPTION)

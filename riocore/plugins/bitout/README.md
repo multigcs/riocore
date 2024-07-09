@@ -1,5 +1,5 @@
 # bitout
-singe bit output pin
+**singe bit output pin**
 
 to control relais, leds, valves, ....
 

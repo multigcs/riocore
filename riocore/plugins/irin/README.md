@@ -1,5 +1,5 @@
 # irin
-IR-Remote input
+**IR-Remote input**
 
 that was just a gimmick, not really useful
 

@@ -1,5 +1,5 @@
 # pwmin
-pwm input
+**pwm input**
 
 ## Basic-Example:
 ```

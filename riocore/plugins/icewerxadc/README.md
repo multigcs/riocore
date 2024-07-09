@@ -1,5 +1,5 @@
 # icewerxadc
-4-channel adc of the iceWerx-board
+**4-channel adc of the iceWerx-board**
 
 to read analog signals from the iceWerx-board
 

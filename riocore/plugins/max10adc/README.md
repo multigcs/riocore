@@ -1,5 +1,5 @@
 # max10adc
-MAX10 ADC inputs
+**MAX10 ADC inputs**
 
 only usable for the max10 fpga boards
 

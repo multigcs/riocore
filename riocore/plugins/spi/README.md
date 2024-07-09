@@ -1,5 +1,5 @@
 # spi
-spi interface for host comunication
+**spi interface for host comunication**
 
 for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 

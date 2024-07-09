@@ -1,5 +1,5 @@
 # freqout
-frequency output
+**frequency output**
 
 to output variable frequency signals
 

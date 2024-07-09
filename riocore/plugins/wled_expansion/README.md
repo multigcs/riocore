@@ -1,5 +1,5 @@
 # wled
-ws2812b interface acting as an expansion port
+**ws2812b interface acting as an expansion port**
 
 simple ws2812b led driver / same as the wled plugin but integrated as an expansion to combinate with other plugins
 

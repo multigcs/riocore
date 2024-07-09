@@ -1,5 +1,5 @@
 # wled
-ws2812b interface
+**ws2812b interface**
 
 simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each led
 
