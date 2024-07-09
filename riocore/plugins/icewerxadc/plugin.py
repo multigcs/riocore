@@ -63,9 +63,11 @@ class Plugin(PluginBase):
         self.INFO = "4-channel adc of the iceWerx-board"
         self.DESCRIPTION = """to read analog signals from the iceWerx-board
 
-            Range: 0-3.3V -> 0-1024
+Range: 0-3.3V -> 0-1024
 
-            https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
+https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
+
+should work also with the iceFUN board
 
         """
 
