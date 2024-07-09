@@ -128,4 +128,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * w5500.v
+ * [w5500.v](w5500.v)

@@ -110,4 +110,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * spi.v
+ * [spi.v](spi.v)

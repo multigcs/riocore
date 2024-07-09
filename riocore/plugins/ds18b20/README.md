@@ -76,4 +76,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * ds18b20.v
+ * [ds18b20.v](ds18b20.v)

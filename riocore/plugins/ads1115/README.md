@@ -155,4 +155,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * ads1115.v
+ * [ads1115.v](ads1115.v)

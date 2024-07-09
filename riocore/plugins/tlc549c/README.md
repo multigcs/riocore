@@ -109,4 +109,4 @@ measured voltage
 ```
 
 ## Verilogs:
- * tlc549c.v
+ * [tlc549c.v](tlc549c.v)

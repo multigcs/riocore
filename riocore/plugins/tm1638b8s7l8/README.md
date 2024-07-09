@@ -437,4 +437,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * tm1638b8s7l8.v
+ * [tm1638b8s7l8.v](tm1638b8s7l8.v)

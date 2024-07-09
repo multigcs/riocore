@@ -166,4 +166,4 @@ position feedback
 ```
 
 ## Verilogs:
- * stepdir.v
+ * [stepdir.v](stepdir.v)

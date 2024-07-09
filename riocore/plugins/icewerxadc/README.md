@@ -166,7 +166,7 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * icewerxadc.v
- * uart_baud.v
- * uart_rx.v
- * uart_tx.v
+ * [icewerxadc.v](icewerxadc.v)
+ * [uart_baud.v](uart_baud.v)
+ * [uart_rx.v](uart_rx.v)
+ * [uart_tx.v](uart_tx.v)

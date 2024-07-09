@@ -206,4 +206,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * max10adc.v
+ * [max10adc.v](max10adc.v)

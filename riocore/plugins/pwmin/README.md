@@ -103,4 +103,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * pwmin.v
+ * [pwmin.v](pwmin.v)

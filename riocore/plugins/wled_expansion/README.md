@@ -74,5 +74,5 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * ws2812.v
- * wled.v
+ * [ws2812.v](ws2812.v)
+ * [wled.v](wled.v)

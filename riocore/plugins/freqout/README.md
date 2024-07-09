@@ -79,4 +79,4 @@ output frequency
 ```
 
 ## Verilogs:
- * freqout.v
+ * [freqout.v](freqout.v)

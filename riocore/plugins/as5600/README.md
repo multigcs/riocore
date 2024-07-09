@@ -92,4 +92,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * as5600.v
+ * [as5600.v](as5600.v)

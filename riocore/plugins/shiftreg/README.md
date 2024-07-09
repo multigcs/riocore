@@ -154,4 +154,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * shiftreg.v
+ * [shiftreg.v](shiftreg.v)

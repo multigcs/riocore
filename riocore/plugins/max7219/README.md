@@ -128,4 +128,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * max7219.v
+ * [max7219.v](max7219.v)

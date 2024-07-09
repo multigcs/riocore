@@ -239,4 +239,4 @@ number to display
 ```
 
 ## Verilogs:
- * dis7seg.v
+ * [dis7seg.v](dis7seg.v)

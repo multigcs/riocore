@@ -182,4 +182,4 @@ position feedback
 ```
 
 ## Verilogs:
- * stepper.v
+ * [stepper.v](stepper.v)

@@ -64,4 +64,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * blink.v
+ * [blink.v](blink.v)

@@ -143,7 +143,7 @@ the signals of this plugin are user configurable
 ```
 
 ## Verilogs:
- * modbus.v
- * uart_baud.v
- * uart_rx.v
- * uart_tx.v
+ * [modbus.v](modbus.v)
+ * [uart_baud.v](uart_baud.v)
+ * [uart_rx.v](uart_rx.v)
+ * [uart_tx.v](uart_tx.v)

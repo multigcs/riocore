@@ -139,4 +139,4 @@ calculates revolutions per minute
 ```
 
 ## Verilogs:
- * quadencoder.v
+ * [quadencoder.v](quadencoder.v)

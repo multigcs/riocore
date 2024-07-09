@@ -76,4 +76,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * irin.v
+ * [irin.v](irin.v)

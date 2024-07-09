@@ -117,4 +117,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * counter.v
+ * [counter.v](counter.v)

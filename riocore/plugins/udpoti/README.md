@@ -111,4 +111,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * udpoti.v
+ * [udpoti.v](udpoti.v)

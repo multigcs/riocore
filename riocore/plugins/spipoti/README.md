@@ -108,4 +108,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * spipoti.v
+ * [spipoti.v](spipoti.v)

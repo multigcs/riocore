@@ -92,4 +92,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * lm75.v
+ * [lm75.v](lm75.v)

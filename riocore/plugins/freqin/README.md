@@ -105,4 +105,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * freqin.v
+ * [freqin.v](freqin.v)

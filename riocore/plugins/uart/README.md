@@ -82,7 +82,7 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * uart.v
- * uart_baud.v
- * uart_rx.v
- * uart_tx.v
+ * [uart.v](uart.v)
+ * [uart_baud.v](uart_baud.v)
+ * [uart_rx.v](uart_rx.v)
+ * [uart_tx.v](uart_tx.v)
