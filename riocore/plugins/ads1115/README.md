@@ -43,21 +43,25 @@ name of this plugin instance
 
  * type: float
  * direction: input
+ * unit: Volt
 
 ### adc1:
 
  * type: float
  * direction: input
+ * unit: Volt
 
 ### adc2:
 
  * type: float
  * direction: input
+ * unit: Volt
 
 ### adc3:
 
  * type: float
  * direction: input
+ * unit: Volt
 
 
 ## Interfaces:

@@ -44,6 +44,7 @@ name of this plugin instance
 
  * type: float
  * direction: input
+ * unit: Hz
 
 ### valid:
 

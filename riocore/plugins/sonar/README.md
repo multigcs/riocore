@@ -44,6 +44,7 @@ distance between sensor and object
 
  * type: float
  * direction: input
+ * unit: cm
 
 
 ## Interfaces:

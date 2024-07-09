@@ -74,6 +74,7 @@ configure as joint
  * direction: output
  * min: -100
  * max: 100
+ * unit: %
 
 ### enable:
 

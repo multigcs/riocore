@@ -52,6 +52,7 @@ measured voltage
 
  * type: float
  * direction: input
+ * unit: Volt
 
 
 ## Interfaces:

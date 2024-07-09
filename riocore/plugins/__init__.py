@@ -534,6 +534,7 @@ class PluginBase:
                 description = signal_setup.get("description")
                 vmin = signal_setup.get("min")
                 vmax = signal_setup.get("max")
+                unit = signal_setup.get("unit")
                 output.append(f"### {signal_name}:")
                 if description:
                     output.append(description)
@@ -548,6 +549,10 @@ class PluginBase:
                     output.append(f" * min: {vmin}")
                 if vmax is not None:
                     output.append(f" * max: {vmax}")
+
+                if unit is not None:
+                    output.append(f" * unit: {unit}")
+
 
                 output.append("")
 

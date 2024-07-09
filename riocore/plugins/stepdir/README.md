@@ -66,12 +66,14 @@ speed in steps per second
  * direction: output
  * min: -100000
  * max: 100000
+ * unit: Hz
 
 ### position:
 position feedback
 
  * type: float
  * direction: input
+ * unit: steps
 
 ### enable:
 

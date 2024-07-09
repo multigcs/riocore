@@ -38,6 +38,7 @@ output frequency
  * direction: output
  * min: 0
  * max: 1000000
+ * unit: Hz
 
 
 ## Interfaces:

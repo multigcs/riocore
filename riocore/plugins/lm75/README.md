@@ -43,6 +43,7 @@ name of this plugin instance
 
  * type: float
  * direction: input
+ * unit: °C
 
 
 ## Interfaces:
