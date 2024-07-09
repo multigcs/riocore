@@ -7,11 +7,6 @@ in progress but ready for testing
 
 # 
 
-<p align="center">
-  <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="LinuxCNC-RIO"></a>
-</p>
-
 <h3 align="center">LinuxCNC-RIO</h3>
 
 <div align="center">
@@ -22,22 +17,46 @@ in progress but ready for testing
 
 ---
 
-<p align="center"> Few lines describing your project.
-    <br> 
-</p>
+<p align="center"> Realtime-IO for LinuxCNC<br></p>
 
 ## 📝 Table of Contents
 - [About](#about)
+- [Help](#help)
+- [Plugins/Drivers](#plugins)
+- [supported Toolchains](#toolchains)
+- [supported Chips/Boards](#chips)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
 - [TODO](../TODO.md)
 
 ## 🧐 About <a name = "about"></a>
 
-LinuxCNC-RIO is a code generator for using FPGA boards as real-time IO for LinuxCNC.
+LinuxCNC-RIO is a code generator for using FPGA boards as Realtime-IO for LinuxCNC.
 
 Furthermore, the complete configuration and hal is generated.
 a json configuration file serves as the basis
+
+## Help <a name = "help"></a>
+
+* [LinuxCNC-Forum (en)](https://forum.linuxcnc.org/18-computer/49142-linuxcnc-rio-realtimeio-for-linuxcnc-based-on-fpga-ice40-ecp5)
+* [cnc-aus-holz (de)](https://www.cnc-aus-holz.at/)
+
+
+## Plugins/Drivers <a name = "plugins"></a>
+here is a small overview of the plugins: [PLUGINS](PLUGINS.md)
+
+## supported Toolchains <a name = "toolchains"></a>
+
+* icestorm (yosys/nextpnr)
+* gowin
+* ISE
+* Quartus
+* Vivado
+* diamond
+
+## Chips/Boards <a name = "chips"></a>
+
+RIO is largely platform independent and portable to most FPGAs.
 
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
@@ -61,11 +80,10 @@ cp riocore/configs/Tangoboard/config-spi.json my_config.json
 ```
 
 ## 🎈 Usage <a name="usage"></a>
-Add notes about how to use the system.
 
 you can edit your configuration file by hand (text-editor) or using the setup tool (rio-setup):
 ```
-PYTHONPATH=. ../riogui/bin/rio-setup my_config.json
+PYTHONPATH=. bin/rio-setup my_config.json
 ```
 
 ![basic setup](./doc/images/basic_setup.png)
@@ -113,6 +131,8 @@ to start LinuxCNC, you have to install the new component first:
 ```
 halcompile --install Output/BOARD_NAME/LinuxCNC/rio.c
 ```
+this step is necessary after every configuration change !
+
 
 then you can start LinuxCNC with your new .ini file:
 ```
