@@ -64,7 +64,7 @@ class Plugins:
         if plugin.VERILOGS:
             output.append("## Verilogs:")
             for vfile in plugin.VERILOGS:
-                output.append(f" * {vfile}")
+                output.append(f" * [{vfile}]({vfile})")
             output.append("")
         return "\n".join(output)
 

@@ -5,15 +5,14 @@ module icewerxadc
         input clk,
         input rx,
         output tx,
-        output reg [15:0] adc1,
-        output reg [15:0] adc2,
-        output reg [15:0] adc3,
-        output reg [15:0] adc4
+        output reg [9:0] adc1,
+        output reg [9:0] adc2,
+        output reg [9:0] adc3,
+        output reg [9:0] adc4
     );
 
-    reg [31:0] rxbuffer = 0;
+    reg [15:0] rxbuffer = 0;
     reg [31:0] counter = 0;
-    reg [7:0] value_n = 0;
     reg [7:0] rxlen = 0;
     reg [1:0] channel = 0;
 
@@ -34,20 +33,19 @@ module icewerxadc
     always @(posedge clk) begin
         if (RxD_endofpacket == 1) begin
             if (channel == 0) begin
-                adc1 <= rxbuffer;
+                adc1 <= rxbuffer[9:0];
             end else if (channel == 1) begin
-                adc2 <= rxbuffer;
+                adc2 <= rxbuffer[9:0];
             end else if (channel == 2) begin
-                adc3 <= rxbuffer;
+                adc3 <= rxbuffer[9:0];
             end else if (channel == 3) begin
-                adc4 <= rxbuffer;
+                adc4 <= rxbuffer[9:0];
             end
 
             rxbuffer <= 0;
             rxlen <= 0;
         end else if (RxD_data_ready == 1) begin
             if (rxlen < 2) begin
-                //rxbuffer <= {rxbuffer[7:0], RxD_data};
                 rxbuffer <= {RxD_data, rxbuffer[15:8]};
                 rxlen <= rxlen + 1;
             end
