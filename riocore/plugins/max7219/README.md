@@ -1,7 +1,7 @@
 # max7219
-to display values from LinuxCNC on 7segment display's
-
 7segment display based on max7219
+
+to display values from LinuxCNC on 7segment display's
 
 ## Basic-Example:
 ```

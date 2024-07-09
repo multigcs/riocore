@@ -1,4 +1,6 @@
 # icewerxadc
+4-channel adc of the iceWerx-board
+
 to read analog signals from the iceWerx-board
 
 Range: 0-3.3V -> 0-1024
@@ -8,8 +10,6 @@ https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
 should work also with the iceFUN board
 
         
-
-4-channel adc of the iceWerx-board
 
 ## Basic-Example:
 ```

@@ -1,7 +1,7 @@
 # ads1115
-to read analog signals with cheap ads1115 chips
-
 4-channel adc via I2C
+
+to read analog signals with cheap ads1115 chips
 
 ## Basic-Example:
 ```

@@ -1,7 +1,7 @@
 # quadencoderz
-usable as spindle-encoder for rigid tapping and thread cutting
-
 quadencoder with index pin
+
+usable as spindle-encoder for rigid tapping and thread cutting
 
 ## Basic-Example:
 ```

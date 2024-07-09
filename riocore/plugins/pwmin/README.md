@@ -1,6 +1,4 @@
 # pwmin
-
-
 pwm input
 
 ## Basic-Example:

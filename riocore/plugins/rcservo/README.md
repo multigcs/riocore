@@ -1,7 +1,7 @@
 # rcservo
-to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
-
 rc-servo output
+
+to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 
 ## Basic-Example:
 ```

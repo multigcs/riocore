@@ -1,7 +1,7 @@
 # dis7seg
-only usable for devboards with 7segment display / better using other 7seg plugins
-
 7segment display with buttons
+
+only usable for devboards with 7segment display / better using other 7seg plugins
 
 ## Basic-Example:
 ```

@@ -1,7 +1,7 @@
 # bitout
-to control relais, leds, valves, ....
-
 singe bit output pin
+
+to control relais, leds, valves, ....
 
 ## Basic-Example:
 ```

@@ -1,7 +1,7 @@
 # wled_bar
-simple ws2812b driver with variable input to build led-bars
-
 ws2812b interface for bar-displays
+
+simple ws2812b driver with variable input to build led-bars
 
 ## Basic-Example:
 ```

@@ -1,7 +1,7 @@
 # pwmout
-to control DC-Motors or for analog outputs
-
 pwm output
+
+to control DC-Motors or for analog outputs
 
 ## Basic-Example:
 ```

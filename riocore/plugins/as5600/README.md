@@ -1,7 +1,7 @@
 # as5600
-for position feedbacks
-
 magnetic absolute encoder
+
+for position feedbacks
 
 ## Basic-Example:
 ```

@@ -1,7 +1,7 @@
 # stepdir
-to control motor drivers via step/dir pin's and an optional enable pin
-
 step/dir output for stepper drivers
+
+to control motor drivers via step/dir pin's and an optional enable pin
 
 ## Basic-Example:
 ```

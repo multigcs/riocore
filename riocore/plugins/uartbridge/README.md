@@ -1,7 +1,7 @@
 # uartbridge
-uart bridge to send and receive custom frames via uart port
-
 uart bridge
+
+uart bridge to send and receive custom frames via uart port
 
 ## Basic-Example:
 ```

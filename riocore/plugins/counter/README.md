@@ -1,7 +1,7 @@
 # counter
-to counting digital pulses, supporting up,down and reset signals
-
 pulse counter input
+
+to counting digital pulses, supporting up,down and reset signals
 
 ## Basic-Example:
 ```

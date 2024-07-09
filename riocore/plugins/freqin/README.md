@@ -1,7 +1,7 @@
 # freqin
-to messurement digital frequencies
-
 frequency input
+
+to messurement digital frequencies
 
 ## Basic-Example:
 ```

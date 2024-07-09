@@ -33,10 +33,11 @@ class Plugins:
         plugin = self.plugin_instances[-1]
 
         output.append(f"# {plugin.NAME}")
-        output.append(plugin.DESCRIPTION)
-        output.append("")
         if plugin.INFO:
             output.append(plugin.INFO)
+            output.append("")
+        if plugin.DESCRIPTION:
+            output.append(plugin.DESCRIPTION)
             output.append("")
         output.append("## Basic-Example:")
         output.append("```")

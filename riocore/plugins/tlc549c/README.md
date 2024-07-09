@@ -1,7 +1,7 @@
 # tlc549c
-Analog input via tlc549 ADC
-
 spi adc input
+
+Analog input via tlc549 ADC
 
 ## Basic-Example:
 ```

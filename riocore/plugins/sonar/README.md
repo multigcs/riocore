@@ -1,7 +1,7 @@
 # sonar
-to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
-
 sonar sensor for distance measurement
+
+to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
 
 ## Basic-Example:
 ```

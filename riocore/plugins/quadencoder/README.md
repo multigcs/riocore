@@ -1,7 +1,7 @@
 # quadencoder
-usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
-
 quadencoder
+
+usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
 
 ## Basic-Example:
 ```
