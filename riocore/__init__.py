@@ -123,7 +123,14 @@ class Plugins:
             tbfile.append("")
 
             tbfile.append("    // pins")
-            for pin_name, pin_config in plugin_instance.pins().items():
+            if plugin_instance.pins():
+                pins = plugin_instance.pins()
+            else:
+                pins = plugin_instance.PINDEFAULTS
+                for pin_name, pin_config in pins.items():
+                    pins[pin_name]["pin"] = "11"
+
+            for pin_name, pin_config in pins.items():
                 if pin_config["direction"] == "output":
                     tbfile.append(f"    wire {pin_name};")
                 else:
@@ -151,7 +158,7 @@ class Plugins:
             tbfile.append("        $dumpvars(0, clk);")
             pn = 1
             tbfile.append("        // pins")
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_name, pin_config in pins.items():
                 tbfile.append(f"        $dumpvars({pn}, {pin_name});")
                 pn += 1
             tbfile.append("        // interface")
@@ -166,7 +173,7 @@ class Plugins:
                 for data_name, data_config in plugin_instance.interface_data().items():
                     if data_config["direction"] == "output":
                         if data_config["size"] > 1:
-                            if data_name in {"dty", "velocity"}:
+                            if data_name in {"dty", "velocity", "position", "frequency"}:
                                 tbfile.append(f"        {data_name} = {speed // (255 * (nn + 1))};")
                                 time_pos += diff_time
 
@@ -181,7 +188,6 @@ class Plugins:
                 instance_arguments = instance_config.get("arguments")
                 instance_predefines = instance_config.get("predefines")
                 instance_direct = instance_config.get("direct")
-
                 if not instance_direct:
                     if instance_arguments:
                         if instance_parameter:
@@ -197,6 +203,10 @@ class Plugins:
                         arguments_list = []
                         for argument_name, argument_value in instance_arguments.items():
                             arguments_list.append(f".{argument_name}({argument_name})")
+                        for pin_name, pin_config in pins.items():
+                            if f"({pin_name})" not in arguments_list:
+                                arguments_list.append(f".{pin_name}({pin_name})")
+
                         arguments_string = ",\n        ".join(arguments_list)
                         tbfile.append(f"        {arguments_string}")
                         tbfile.append("    );")
@@ -218,7 +228,7 @@ class Plugins:
             gtkwfile.append("testb.clk")
 
             pn = 31
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_name, pin_config in pins.items():
                 gtkwfile.append(f"@{pn}")
                 gtkwfile.append(f"testb.{pin_name}")
                 pn += 1
@@ -248,6 +258,10 @@ class Plugins:
             makefile.append("	rm -rf testb.out testb.vcd")
             makefile.append("")
             open(f"{riocore_path}/plugins/{plugin_type}/Makefile", "w").write("\n".join(makefile))
+
+            print(f"(cd {riocore_path}/plugins/{plugin_type} ; make)")
+
+            return True
 
         return False
 

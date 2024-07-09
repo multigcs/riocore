@@ -47,11 +47,17 @@ if args.config:
             print("")
             os.system(cmd)
 
+    elif args.config.startswith("testbench:"):
+        plugin = args.config.split(":")[-1]
+        plugins = riocore.Plugins()
+        plugin_instance = plugins.load_plugin(plugin, {"type": plugin}, {"speed": 1000000, "jdata": {"clock": {"speed": 1000000}}})
+        plugins.testbench_builder(plugin, plugin_instance)
+
     elif args.config.startswith("plugininfo:"):
         plugin = args.config.split(":")[-1]
         plugins = riocore.Plugins()
-        #plugins.list()
         print(plugins.info(plugin))
+
     elif args.config.startswith("pluginlist"):
         plugin = args.config.split(":")[-1]
         plugins = riocore.Plugins()
