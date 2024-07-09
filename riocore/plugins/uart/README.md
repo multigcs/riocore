@@ -19,6 +19,7 @@ simple uart interface, not usable for realtime stuff in LinuxCNC / only for test
 ```
 
 ## Pins:
+*FPGA-pins*
 ### rx:
 
  * direction: input
@@ -31,6 +32,7 @@ simple uart interface, not usable for realtime stuff in LinuxCNC / only for test
 
 
 ## Options:
+*user-options*
 ### baud:
 serial baud rate
 
@@ -48,9 +50,11 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

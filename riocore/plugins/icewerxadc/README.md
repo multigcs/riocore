@@ -27,6 +27,7 @@ should work also with the iceFUN board
 ```
 
 ## Pins:
+*FPGA-pins*
 ### tx:
 
  * direction: output
@@ -39,6 +40,7 @@ should work also with the iceFUN board
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -47,6 +49,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### adc1:
 
  * type: float
@@ -73,25 +76,34 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### adc1:
+1. ADC channel
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 ### adc2:
+2. ADC channel
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 ### adc3:
+3. ADC channel
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 ### adc4:
+4. ADC channel
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 
 ## Full-Example:

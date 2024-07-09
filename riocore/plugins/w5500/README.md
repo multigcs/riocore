@@ -25,6 +25,7 @@ w5500 driver for the interface communication over UDP
 ```
 
 ## Pins:
+*FPGA-pins*
 ### mosi:
 
  * direction: output
@@ -47,6 +48,7 @@ w5500 driver for the interface communication over UDP
 
 
 ## Options:
+*user-options*
 ### mac:
 MAC-Address
 
@@ -73,9 +75,11 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

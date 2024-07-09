@@ -22,6 +22,7 @@ to control DC-Motors or for analog outputs
 ```
 
 ## Pins:
+*FPGA-pins*
 ### pwm:
 
  * direction: output
@@ -39,6 +40,7 @@ to control DC-Motors or for analog outputs
 
 
 ## Options:
+*user-options*
 ### frequency:
 PWM frequency
 
@@ -68,6 +70,7 @@ configure as joint
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### dty:
 
  * type: float
@@ -83,6 +86,7 @@ configure as joint
 
 
 ## Interfaces:
+*transport layer*
 ### dty:
 
  * size: 32 bit

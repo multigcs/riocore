@@ -25,6 +25,7 @@ direct stepper driver with 4pin's directly controlled by the FPGA
 ```
 
 ## Pins:
+*FPGA-pins*
 ### a1:
 
  * direction: output
@@ -47,6 +48,7 @@ direct stepper driver with 4pin's directly controlled by the FPGA
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -67,6 +69,7 @@ configure as joint
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### velocity:
 speed in steps per second
 
@@ -90,6 +93,7 @@ position feedback
 
 
 ## Interfaces:
+*transport layer*
 ### velocity:
 
  * size: 32 bit

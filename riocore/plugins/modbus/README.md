@@ -22,6 +22,7 @@ to read and write values (analog/digital) via modbus, also supports hy_vfd spind
 ```
 
 ## Pins:
+*FPGA-pins*
 ### tx:
 
  * direction: output
@@ -39,6 +40,7 @@ to read and write values (analog/digital) via modbus, also supports hy_vfd spind
 
 
 ## Options:
+*user-options*
 ### baud:
 serial baud rate
 
@@ -74,10 +76,12 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 the signals of this plugin are user configurable
 
 
 ## Interfaces:
+*transport layer*
 ### rxdata:
 
  * size: 128 bit

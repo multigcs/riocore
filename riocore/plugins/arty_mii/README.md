@@ -62,6 +62,7 @@
 ```
 
 ## Pins:
+*FPGA-pins*
 ### phy_rx_clk:
 
  * direction: input
@@ -166,6 +167,7 @@
 
 
 ## Options:
+*user-options*
 ### mac:
 MAC-Address
 
@@ -192,9 +194,11 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

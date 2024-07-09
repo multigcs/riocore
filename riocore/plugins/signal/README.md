@@ -12,9 +12,11 @@ virtual signal
 ```
 
 ## Pins:
+*FPGA-pins*
 
 
 ## Options:
+*user-options*
 ### dir:
 signal direction
 
@@ -35,6 +37,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### value:
 
  * type: float
@@ -42,6 +45,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

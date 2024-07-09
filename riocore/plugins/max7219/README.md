@@ -22,6 +22,7 @@ to display values from LinuxCNC on 7segment display's
 ```
 
 ## Pins:
+*FPGA-pins*
 ### mosi:
 
  * direction: output
@@ -39,6 +40,7 @@ to display values from LinuxCNC on 7segment display's
 
 
 ## Options:
+*user-options*
 ### brightness:
 display brightness
 
@@ -63,6 +65,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### value:
 
  * type: float
@@ -72,6 +75,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### value:
 
  * size: 24 bit

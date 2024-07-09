@@ -20,21 +20,25 @@ class Plugin(PluginBase):
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
+                "description": "1. ADC channel",
             },
             "adc2": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
+                "description": "2. ADC channel",
             },
             "adc3": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
+                "description": "3. ADC channel",
             },
             "adc4": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
+                "description": "4. ADC channel",
             },
         }
         self.SIGNALS = {

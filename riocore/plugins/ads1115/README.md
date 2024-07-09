@@ -19,6 +19,7 @@ to read analog signals with cheap ads1115 chips
 ```
 
 ## Pins:
+*FPGA-pins*
 ### sda:
 
  * direction: inout
@@ -31,6 +32,7 @@ to read analog signals with cheap ads1115 chips
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -39,6 +41,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### adc0:
 
  * type: float
@@ -65,25 +68,30 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### adc0:
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 ### adc1:
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 ### adc2:
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 ### adc3:
 
  * size: 16 bit
  * direction: input
+ * multiplexed: True
 
 
 ## Full-Example:

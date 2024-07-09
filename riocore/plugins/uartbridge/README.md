@@ -22,6 +22,7 @@ uart bridge to send and receive custom frames via uart port
 ```
 
 ## Pins:
+*FPGA-pins*
 ### tx:
 
  * direction: output
@@ -39,6 +40,7 @@ uart bridge to send and receive custom frames via uart port
 
 
 ## Options:
+*user-options*
 ### baud:
 serial baud rate
 
@@ -86,10 +88,12 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 the signals of this plugin are user configurable
 
 
 ## Interfaces:
+*transport layer*
 ### rxdata:
 
  * size: 24 bit

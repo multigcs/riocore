@@ -16,6 +16,7 @@ that was just a gimmick, not really useful
 ```
 
 ## Pins:
+*FPGA-pins*
 ### ir:
 
  * direction: input
@@ -23,6 +24,7 @@ that was just a gimmick, not really useful
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -31,6 +33,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### code:
 
  * type: float
@@ -38,6 +41,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### code:
 
  * size: 8 bit

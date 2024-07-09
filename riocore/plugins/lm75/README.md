@@ -19,6 +19,7 @@ simple temperure sensor
 ```
 
 ## Pins:
+*FPGA-pins*
 ### sda:
 
  * direction: inout
@@ -31,6 +32,7 @@ simple temperure sensor
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -39,6 +41,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### temperature:
 
  * type: float
@@ -47,6 +50,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### temperature:
 
  * size: 16 bit

@@ -22,6 +22,7 @@ to counting digital pulses, supporting up,down and reset signals
 ```
 
 ## Pins:
+*FPGA-pins*
 ### up:
 increment pin
 
@@ -42,6 +43,7 @@ reset to zero pin
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -50,6 +52,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### counter:
 
  * type: float
@@ -57,6 +60,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### counter:
 
  * size: 32 bit

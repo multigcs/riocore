@@ -16,6 +16,7 @@ to read switches or other 1bit signals
 ```
 
 ## Pins:
+*FPGA-pins*
 ### bit:
 
  * direction: input
@@ -23,6 +24,7 @@ to read switches or other 1bit signals
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -31,6 +33,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### bit:
 
  * type: bit
@@ -38,6 +41,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### bit:
 
  * size: 1 bit

@@ -16,6 +16,7 @@ simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each 
 ```
 
 ## Pins:
+*FPGA-pins*
 ### data:
 
  * direction: output
@@ -23,6 +24,7 @@ simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each 
 
 
 ## Options:
+*user-options*
 ### leds:
 number of LED's
 
@@ -47,6 +49,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### 0_green:
 
  * type: bit
@@ -64,6 +67,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### 0_green:
 
  * size: 1 bit

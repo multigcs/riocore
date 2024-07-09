@@ -16,6 +16,7 @@ for cheap 1wire temperature sensor's, only one per pin is supported at the momen
 ```
 
 ## Pins:
+*FPGA-pins*
 ### one_wire:
 
  * direction: inout
@@ -23,6 +24,7 @@ for cheap 1wire temperature sensor's, only one per pin is supported at the momen
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -31,6 +33,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### temperature:
 
  * type: float
@@ -39,6 +42,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### temperature:
 
  * size: 16 bit

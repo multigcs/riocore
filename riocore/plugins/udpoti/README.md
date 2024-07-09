@@ -19,6 +19,7 @@ controling digital poti for analog outputs
 ```
 
 ## Pins:
+*FPGA-pins*
 ### updown:
 
  * direction: output
@@ -31,6 +32,7 @@ controling digital poti for analog outputs
 
 
 ## Options:
+*user-options*
 ### resolution:
 number of steps from min to maximum value
 
@@ -56,6 +58,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### value:
 
  * type: float
@@ -63,6 +66,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### value:
 
  * size: 32 bit

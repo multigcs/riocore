@@ -16,6 +16,7 @@ only for esp32
 ```
 
 ## Pins:
+*FPGA-pins*
 ### pwm1:
 
  * direction: output
@@ -23,6 +24,7 @@ only for esp32
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -31,6 +33,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### pwm1:
 
  * type: float
@@ -38,6 +41,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### pwm1:
 
  * size: 8 bit

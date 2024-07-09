@@ -22,6 +22,7 @@ Analog-Outout via spi digital poti
 ```
 
 ## Pins:
+*FPGA-pins*
 ### mosi:
 
  * direction: output
@@ -39,6 +40,7 @@ Analog-Outout via spi digital poti
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -47,6 +49,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### value:
 
  * type: float
@@ -54,6 +57,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### value:
 
  * size: 8 bit

@@ -22,6 +22,7 @@ to control motor drivers via step/dir pin's and an optional enable pin
 ```
 
 ## Pins:
+*FPGA-pins*
 ### step:
 
  * direction: output
@@ -39,6 +40,7 @@ to control motor drivers via step/dir pin's and an optional enable pin
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -59,6 +61,7 @@ configure as joint
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### velocity:
 speed in steps per second
 
@@ -82,6 +85,7 @@ position feedback
 
 
 ## Interfaces:
+*transport layer*
 ### velocity:
 
  * size: 32 bit

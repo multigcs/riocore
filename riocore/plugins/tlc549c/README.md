@@ -22,6 +22,7 @@ Analog input via tlc549 ADC
 ```
 
 ## Pins:
+*FPGA-pins*
 ### miso:
 
  * direction: input
@@ -39,6 +40,7 @@ Analog input via tlc549 ADC
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -47,6 +49,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### value:
 measured voltage
 
@@ -56,6 +59,7 @@ measured voltage
 
 
 ## Interfaces:
+*transport layer*
 ### value:
 
  * size: 8 bit

@@ -25,6 +25,7 @@ for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 ```
 
 ## Pins:
+*FPGA-pins*
 ### mosi:
 
  * direction: input
@@ -47,6 +48,7 @@ for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -55,9 +57,11 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

@@ -564,6 +564,7 @@ class PluginBase:
             size = interface_setup.get("size")
             direction = interface_setup.get("direction")
             description = interface_setup.get("description")
+            multiplexed = interface_setup.get("multiplexed")
 
             output.append(f"### {interface_name}:")
             if description:
@@ -572,6 +573,8 @@ class PluginBase:
 
             output.append(f" * size: {size} bit")
             output.append(f" * direction: {direction}")
+            if multiplexed:
+                output.append(f" * multiplexed: {multiplexed}")
 
             output.append("")
         return "\n".join(output)

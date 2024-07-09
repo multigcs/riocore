@@ -22,6 +22,7 @@ usable as spindle-encoder for rigid tapping and thread cutting
 ```
 
 ## Pins:
+*FPGA-pins*
 ### a:
 
  * direction: input
@@ -40,6 +41,7 @@ index pin
 
 
 ## Options:
+*user-options*
 ### quad_type:
 encoder type
 
@@ -56,6 +58,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### indexenable:
 
  * type: bit
@@ -86,6 +89,7 @@ calculates revolutions per minute
 
 
 ## Interfaces:
+*transport layer*
 ### indexenable:
 
  * size: 1 bit

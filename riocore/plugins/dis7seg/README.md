@@ -46,6 +46,7 @@ only usable for devboards with 7segment display / better using other 7seg plugin
 ```
 
 ## Pins:
+*FPGA-pins*
 ### en1:
 
  * direction: output
@@ -103,6 +104,7 @@ only usable for devboards with 7segment display / better using other 7seg plugin
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -111,6 +113,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### value:
 number to display
 
@@ -121,10 +124,12 @@ number to display
 
 
 ## Interfaces:
+*transport layer*
 ### value:
 
  * size: 16 bit
  * direction: output
+ * multiplexed: True
 
 
 ## Full-Example:

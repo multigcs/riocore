@@ -54,6 +54,7 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 ```
 
 ## Pins:
+*FPGA-pins*
 ### out:
 
  * direction: output
@@ -76,6 +77,7 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
 
 ## Options:
+*user-options*
 ### speed:
 interface clock
 
@@ -100,9 +102,11 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

@@ -22,6 +22,7 @@ with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segme
 ```
 
 ## Pins:
+*FPGA-pins*
 ### sel:
 
  * direction: output
@@ -39,6 +40,7 @@ with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segme
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -47,6 +49,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### sw0:
 
  * type: bit
@@ -143,6 +146,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### sw0:
 
  * size: 1 bit
@@ -227,11 +231,13 @@ name of this plugin instance
 
  * size: 24 bit
  * direction: output
+ * multiplexed: True
 
 ### number2:
 
  * size: 8 bit
  * direction: output
+ * multiplexed: True
 
 
 ## Full-Example:

@@ -16,6 +16,7 @@ to messurement digital frequencies
 ```
 
 ## Pins:
+*FPGA-pins*
 ### freq:
 
  * direction: input
@@ -23,6 +24,7 @@ to messurement digital frequencies
 
 
 ## Options:
+*user-options*
 ### freq_min:
 minimum measured frequency (for faster updates)
 
@@ -40,6 +42,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### frequency:
 
  * type: float
@@ -53,6 +56,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### frequency:
 
  * size: 32 bit

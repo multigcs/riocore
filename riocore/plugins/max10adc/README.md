@@ -12,9 +12,11 @@ only usable for the max10 fpga boards
 ```
 
 ## Pins:
+*FPGA-pins*
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -23,6 +25,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### adc0:
 
  * type: float
@@ -65,6 +68,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### adc0:
 
  * size: 16 bit

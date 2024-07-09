@@ -14,6 +14,7 @@
 ```
 
 ## Pins:
+*FPGA-pins*
 ### pwm:
 
  * direction: input
@@ -21,6 +22,7 @@
 
 
 ## Options:
+*user-options*
 ### freq_min:
 minimum measured frequency (for faster updates)
 
@@ -38,6 +40,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### width:
 
  * type: float
@@ -51,6 +54,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### width:
 
  * size: 32 bit

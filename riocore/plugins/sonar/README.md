@@ -19,6 +19,7 @@ to messure distance via cheap ultra-sonic sensors (like filling level of bigger 
 ```
 
 ## Pins:
+*FPGA-pins*
 ### trigger:
 
  * direction: output
@@ -31,6 +32,7 @@ to messure distance via cheap ultra-sonic sensors (like filling level of bigger 
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -39,6 +41,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### distance:
 distance between sensor and object
 
@@ -48,6 +51,7 @@ distance between sensor and object
 
 
 ## Interfaces:
+*transport layer*
 ### distance:
 
  * size: 32 bit

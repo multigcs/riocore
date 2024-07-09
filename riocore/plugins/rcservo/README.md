@@ -16,6 +16,7 @@ to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 ```
 
 ## Pins:
+*FPGA-pins*
 ### pwm:
 
  * direction: output
@@ -23,6 +24,7 @@ to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 
 
 ## Options:
+*user-options*
 ### frequency:
 update frequency
 
@@ -51,6 +53,7 @@ configure as joint
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### position:
 absolute position (-100 = 1ms / 100 = 2ms)
 
@@ -66,6 +69,7 @@ absolute position (-100 = 1ms / 100 = 2ms)
 
 
 ## Interfaces:
+*transport layer*
 ### position:
 
  * size: 32 bit

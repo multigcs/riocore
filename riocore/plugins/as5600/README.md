@@ -19,6 +19,7 @@ for position feedbacks
 ```
 
 ## Pins:
+*FPGA-pins*
 ### sda:
 
  * direction: inout
@@ -31,6 +32,7 @@ for position feedbacks
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -39,6 +41,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### position:
 
  * type: float
@@ -46,6 +49,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### position:
 
  * size: 32 bit

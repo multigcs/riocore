@@ -16,6 +16,7 @@ outputs a fixed frequency / was used to indicate that the FPGA is runing / no co
 ```
 
 ## Pins:
+*FPGA-pins*
 ### led:
 
  * direction: output
@@ -23,6 +24,7 @@ outputs a fixed frequency / was used to indicate that the FPGA is runing / no co
 
 
 ## Options:
+*user-options*
 ### frequency:
 blink frequency in Hz
 
@@ -38,9 +40,11 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

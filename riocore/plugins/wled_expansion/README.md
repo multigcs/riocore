@@ -16,6 +16,7 @@ simple ws2812b led driver / same as the wled plugin but integrated as an expansi
 ```
 
 ## Pins:
+*FPGA-pins*
 ### data:
 
  * direction: output
@@ -23,6 +24,7 @@ simple ws2812b led driver / same as the wled plugin but integrated as an expansi
 
 
 ## Options:
+*user-options*
 ### leds:
 number of LED's
 
@@ -47,9 +49,11 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 
 
 ## Interfaces:
+*transport layer*
 
 
 ## Full-Example:

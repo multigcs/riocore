@@ -19,6 +19,7 @@ usable as position feedback for closed-loop configuration or as variable input t
 ```
 
 ## Pins:
+*FPGA-pins*
 ### a:
 
  * direction: input
@@ -31,6 +32,7 @@ usable as position feedback for closed-loop configuration or as variable input t
 
 
 ## Options:
+*user-options*
 ### quad_type:
 encoder type
 
@@ -47,6 +49,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### position:
 position feedback in steps
 
@@ -67,6 +70,7 @@ calculates revolutions per minute
 
 
 ## Interfaces:
+*transport layer*
 ### position:
 
  * size: 32 bit

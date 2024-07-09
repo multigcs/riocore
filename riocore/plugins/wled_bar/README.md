@@ -16,6 +16,7 @@ simple ws2812b driver with variable input to build led-bars
 ```
 
 ## Pins:
+*FPGA-pins*
 ### data:
 
  * direction: output
@@ -23,6 +24,7 @@ simple ws2812b driver with variable input to build led-bars
 
 
 ## Options:
+*user-options*
 ### leds:
 number of LED's
 
@@ -47,6 +49,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### value:
 
  * type: float
@@ -54,6 +57,7 @@ name of this plugin instance
 
 
 ## Interfaces:
+*transport layer*
 ### value:
 
  * size: 8 bit

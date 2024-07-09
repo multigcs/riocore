@@ -16,6 +16,7 @@ to output variable frequency signals
 ```
 
 ## Pins:
+*FPGA-pins*
 ### freq:
 
  * direction: output
@@ -23,6 +24,7 @@ to output variable frequency signals
 
 
 ## Options:
+*user-options*
 ### name:
 name of this plugin instance
 
@@ -31,6 +33,7 @@ name of this plugin instance
 
 
 ## Signals:
+*signals/pins in LinuxCNC*
 ### frequency:
 output frequency
 
@@ -42,6 +45,7 @@ output frequency
 
 
 ## Interfaces:
+*transport layer*
 ### frequency:
 
  * size: 32 bit
