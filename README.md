@@ -58,6 +58,8 @@ here is a small overview of the plugins: [PLUGINS](PLUGINS.md)
 
 RIO is largely platform independent and portable to most FPGAs.
 
+[some examples](riocore/boards)
+
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
