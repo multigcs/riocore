@@ -2910,7 +2910,7 @@ class axis:
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
-        display_subtext = setup.get("subtext", "")
+        display_subtext = setup.get("subtext", setup.get("unit", ""))
         display_region = setup.get("region", [])
         display_size = setup.get("size", 150)
         cfgxml_data = []
