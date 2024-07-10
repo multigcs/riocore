@@ -154,3 +154,23 @@ linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 you need the toolchain for your FPGA or in some cases the https://github.com/YosysHQ/oss-cad-suite-build
 
 
+## Flow
+```mermaid
+graph LR;
+    rio-setup-->JSON;
+    JSON-->rio-setup;
+    JSON-->rio-generator;
+    rio-generator-->Output;
+    Output-->Gateware;
+    Gateware-->Makefile;
+    Gateware-->verilog-files;
+    Gateware-->pins.*;
+    Makefile--make-->Bitfile;
+    Output-->LinuxCNC;
+    LinuxCNC-->rio.c;
+    LinuxCNC-->rio.ini
+    LinuxCNC-->rio-gui.xml
+    LinuxCNC-->*.hal;
+    rio.c--halcompile-->hal-component;
+```
+
