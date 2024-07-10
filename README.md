@@ -157,10 +157,7 @@ you need the toolchain for your FPGA or in some cases the https://github.com/Yos
 ## Flow <a name = "flow"></a>
 ```mermaid
 graph LR;
-    rio-setup-->JSON;
-    JSON-->rio-setup;
-    JSON-->rio-generator;
-    rio-generator-->Output;
+    JSON--rio-generator-->Output;
     Output-->Gateware;
     Gateware-->Makefile;
     Gateware-->verilog-files;
