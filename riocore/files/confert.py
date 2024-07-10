@@ -24,6 +24,7 @@ plugin_mapping = {
     "uart": "uart",
     "spi": "spi",
     "w5500": "w5500",
+    "vin_counter": "counter",
     "vin_pulsecounter": "counter",
     "vin_ads1115": "ads1115",
     "vin_quadencoderz": "quadencoderz",
@@ -86,6 +87,11 @@ pin_mapping = {
         "b": "b",
     },
     "vin_pulsecounter": {
+        "up": "up",
+        "down": "down",
+        "reset": "reset",
+    },
+    "vin_counter": {
         "up": "up",
         "down": "down",
         "reset": "reset",
