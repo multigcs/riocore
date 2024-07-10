@@ -145,7 +145,7 @@ linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 ```
 
 > [!WARNING]
-> all file will be overwritte by the generator tool
+> all files will be overwritte by the generator tool
 > 
 > if you change the .ini file by hand, for example, you should make a copy of it
 
