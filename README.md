@@ -27,7 +27,7 @@ in progress but ready for testing
 - [supported Chips/Boards](#chips)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
-- [TODO](../TODO.md)
+- [Flow](#flow)
 
 ## About <a name = "about"></a>
 
@@ -154,7 +154,7 @@ linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 you need the toolchain for your FPGA or in some cases the https://github.com/YosysHQ/oss-cad-suite-build
 
 
-## Flow
+## Flow <a name = "flow"></a>
 ```mermaid
 graph LR;
     rio-setup-->JSON;
