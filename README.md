@@ -136,14 +136,15 @@ to start LinuxCNC, you have to install the new component first:
 ```
 halcompile --install Output/BOARD_NAME/LinuxCNC/rio.c
 ```
-this step is necessary after every configuration change !
+*this step is necessary after every configuration change !*
 
 
 then you can start LinuxCNC with your new .ini file:
 ```
 linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 ```
-
+**all file will be overwritte by the generator tool**
+**if you change the .ini file by hand, for example, you should make a copy of it**
 
 
 ### Prerequisites
