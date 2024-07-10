@@ -143,8 +143,10 @@ then you can start LinuxCNC with your new .ini file:
 ```
 linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 ```
-**all file will be overwritte by the generator tool**
-**if you change the .ini file by hand, for example, you should make a copy of it**
+<span style="color: red">
+all file will be overwritte by the generator tool
+if you change the .ini file by hand, for example, you should make a copy of it
+</span>
 
 
 ### Prerequisites
