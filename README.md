@@ -19,7 +19,7 @@ in progress but ready for testing
 
 <p align="center"> Realtime-IO for LinuxCNC<br></p>
 
-## 📝 Table of Contents
+## Table of Contents
 - [About](#about)
 - [Help](#help)
 - [Plugins/Drivers](#plugins)
@@ -29,7 +29,7 @@ in progress but ready for testing
 - [Usage](#usage)
 - [TODO](../TODO.md)
 
-## 🧐 About <a name = "about"></a>
+## About <a name = "about"></a>
 
 LinuxCNC-RIO is a code generator for using FPGA boards as Realtime-IO for LinuxCNC.
 
@@ -79,7 +79,7 @@ than copy a config file that is near to your setup:
 cp riocore/configs/Tangoboard/config-spi.json my_config.json
 ```
 
-## 🎈 Usage <a name="usage"></a>
+## Usage <a name="usage"></a>
 
 you can edit your configuration file by hand (text-editor) or using the setup tool (rio-setup):
 ```
