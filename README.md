@@ -1,4 +1,4 @@
-LinuxCNC-RIO - rewrite
+[LinuxCNC-RIO](https://github.com/multigcs/LinuxCNC-RIO) - rewrite
 
 in progress but ready for testing
 
