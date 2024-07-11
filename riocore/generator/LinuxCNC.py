@@ -471,8 +471,8 @@ class LinuxCNC:
         gui = self.project.config["jdata"].get("gui", "axis")
         machinetype = self.project.config["jdata"].get("machinetype")
 
-        dios = 0
-        aios = 0
+        dios = 16
+        aios = 16
         for net_name, net_nodes in self.networks.items():
             for net in net_nodes.get("in", []):
                 if net.startswith("motion.digital-out-"):
