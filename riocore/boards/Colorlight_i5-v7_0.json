@@ -1,0 +1,147 @@
+{
+    "name": "Colorlight_i5-v7_0",
+    "description": "minimal configuration for Colorlight_i5-v7.0",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA381",
+    "clock": {
+        "speed": "25000000",
+        "pin": "P3"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "G": "U16"
+            }
+        },
+        {
+            "name": "PMOD_2A",
+            "comment": "PMOD 2A on i5_extboard_v1.2",
+            "pins": {
+                "P1": "J20",
+                "P2": "L18",
+                "P3": "M18",
+                "P4": "N17",
+                "P7": "G20",
+                "P8": "K20",
+                "P9": "L20",
+                "P10": "N18"
+            }
+        },
+        {
+            "name": "PMOD_2B",
+            "comment": "PMOD 2B on i5_extboard_v1.2",
+            "pins": {
+                "P1": "P17",
+                "P2": "R18",
+                "P3": "C18",
+                "P4": "U16",
+                "P7": "M17",
+                "P8": "R17",
+                "P9": "T18",
+                "P10": "K18"
+            }
+        },
+        {
+            "name": "PMOD_3A",
+            "comment": "PMOD 3A on i5_extboard_v1.2",
+            "pins": {
+                "P1": "D1",
+                "P2": "C1",
+                "P3": "C2",
+                "P4": "E3",
+                "P7": "E2",
+                "P8": "D2",
+                "P9": "B1",
+                "P10": "A3"
+            }
+        },
+        {
+            "name": "PMOD_3B",
+            "comment": "PMOD 3B on i5_extboard_v1.2",
+            "pins": {
+                "P1": "C17",
+                "P2": "B18",
+                "P3": "B20",
+                "P4": "F20",
+                "P7": "A18",
+                "P8": "A19",
+                "P9": "B19",
+                "P10": "D20"
+            }
+        },
+        {
+            "name": "PMOD_4B",
+            "comment": "PMOD 4B on i5_extboard_v1.2",
+            "pins": {
+                "P1": "H4",
+                "P2": "G3",
+                "P3": "F1",
+                "P4": "F2",
+                "P7": "H3",
+                "P8": "F3",
+                "P9": "E4",
+                "P10": "E1"
+            }
+        },
+        {
+            "name": "PMOD_5A",
+            "comment": "PMOD 5A on i5_extboard_v1.2",
+            "pins": {
+                "P1": "J17",
+                "P2": "H17",
+                "P3": "H16",
+                "P4": "G16",
+                "P7": "H18",
+                "P8": "G18",
+                "P9": "F18",
+                "P10": "E18"
+            }
+        },
+        {
+            "name": "PMOD_5B",
+            "comment": "PMOD 5B on i5_extboard_v1.2",
+            "pins": {
+                "P1": "D18",
+                "P2": "G5",
+                "P3": "F5",
+                "P4": "E5",
+                "P7": "D17",
+                "P8": "D16",
+                "P9": "E6",
+                "P10": "F4"
+            }
+        },
+        {
+            "name": "PMOD_6A",
+            "comment": "PMOD 6A on i5_extboard_v1.2",
+            "pins": {
+                "P1": "R1",
+                "P2": "U1",
+                "P3": "W1",
+                "P4": "M1",
+                "P7": "T1",
+                "P8": "Y2",
+                "P9": "V1",
+                "P10": "N2"
+            }
+        },
+        {
+            "name": "PMOD_6B",
+            "comment": "PMOD 6B on i5_extboard_v1.2",
+            "pins": {
+                "P1": "R3",
+                "P2": "M4",
+                "P3": "L5",
+                "P4": "J16",
+                "P7": "N4",
+                "P8": "L4",
+                "P9": "P16",
+                "P10": "J18"
+            }
+        }
+    ]
+}

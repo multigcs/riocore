@@ -1,0 +1,67 @@
+{
+    "name": "Colorlight_i5-v7.0",
+    "description": "only for testing",
+    "boardcfg": "Colorlight_i5-v7_0",
+    "flashcmd": "ecpdap flash write rio.bit",
+    "protocol": "UDP",
+    "modules": [
+        {
+            "slot": "PMOD_5B",
+            "module": "w5500"
+        }
+    ],
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD_3A:P4"
+                },
+                "dir": {
+                    "pin": "PMOD_3A:P10"
+                }
+            },
+            "is_joint": true,
+            "name": "Stepper1"
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD_3A:P3"
+                },
+                "dir": {
+                    "pin": "PMOD_3A:P9"
+                }
+            },
+            "is_joint": true,
+            "name": "Stepper2"
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD_3A:P2"
+                },
+                "dir": {
+                    "pin": "PMOD_3A:P8"
+                }
+            },
+            "is_joint": true,
+            "name": "Stepper3"
+        }
+    ]
+}
