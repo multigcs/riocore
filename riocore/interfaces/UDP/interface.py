@@ -1,3 +1,5 @@
+import ipaddress
+
 class Interface:
     def __init__(self, cstr):
         (self.NET_IP, self.NET_PORT) = cstr.split(":")
@@ -32,6 +34,9 @@ class Interface:
 
     @classmethod
     def check(cls, cstr):
-        if cstr.startswith("192."):
+        try:
+            addr, port = cstr.split(":")
+            ipa = ipaddress.ip_address(addr)
             return True
-        return False
+        except ValueError:
+            return False
