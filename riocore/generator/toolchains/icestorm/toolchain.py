@@ -10,9 +10,9 @@ class Toolchain:
         verilogs = " ".join(self.config["verilog_files"])
         family = self.config["family"]
         device_family = None
+        board = self.config.get("board")
         if family.startswith("GW"):
             device_family = family
-            board = self.config.get("board")
             if shutil.which(f"nextpnr-himbaechel") is not None:
                 family = "himbaechel"
             else:
@@ -136,7 +136,7 @@ class Toolchain:
             makefile_data.append(f"load: {bitfileName}")
             makefile_data.append(f"	{flashcmd}")
         else:
-            if family == "gowin":
+            if board and board.startswith("TangNano"):
                 makefile_data.append("load: $(PROJECT).fs")
                 makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs -f")
             else:
