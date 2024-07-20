@@ -9,23 +9,23 @@ class Plugin(PluginBase):
             "mosi": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "miso": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
                 "slew": "fast",
             },
             "sclk": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "sel": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.TYPE = "interface"

@@ -118,7 +118,7 @@
             "name": "home-x",
             "pins": {
                 "bit": {
-                    "pullup": true,
+                    "pull": "up",
                     "pin": "ChipKit:D9"
                 }
             },
@@ -133,7 +133,7 @@
             "name": "home-z",
             "pins": {
                 "bit": {
-                    "pullup": true,
+                    "pull": "up",
                     "pin": "ChipKit:D10"
                 }
             },
@@ -148,7 +148,7 @@
             "name": "home-none",
             "pins": {
                 "bit": {
-                    "pullup": true,
+                    "pull": "up",
                     "pin": "ChipKit:D11"
                 }
             }
@@ -208,7 +208,7 @@
             "name": "e-stop",
             "pins": {
                 "bit": {
-                    "pullup": true,
+                    "pull": "up",
                     "pin": "ChipKit:RST"
                 }
             }
@@ -292,11 +292,11 @@
             "pins": {
                 "a": {
                     "pin": "PMOD_JD:P10",
-                    "pullup": true
+                    "pull": "up"
                 },
                 "b": {
                     "pin": "PMOD_JD:P9",
-                    "pullup": true
+                    "pull": "up"
                 }
             },
             "name": "jog_z",
@@ -314,11 +314,11 @@
             "pins": {
                 "a": {
                     "pin": "PMOD_JD:P4",
-                    "pullup": true
+                    "pull": "up"
                 },
                 "b": {
                     "pin": "PMOD_JD:P3",
-                    "pullup": true
+                    "pull": "up"
                 }
             },
             "name": "jog_x",

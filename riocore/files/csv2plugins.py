@@ -90,15 +90,7 @@ for line in csv_data.split("\n"):
         plugin = "bitout"
         pnum = ""
         pinname = "pin"
-        modifier = [
-            {
-                "type": "invert"
-            },
-            {
-                "type": "onerror"
-            }
-        ]
-
+        modifier = [{"type": "invert"}, {"type": "onerror"}]
 
     else:
         print(f"plugin not found: {plugin}")
@@ -114,16 +106,9 @@ for line in csv_data.split("\n"):
 
     pid = f"{plugin}_{pnum}"
     if pid not in plugins:
-        plugins[pid] = {
-            "type": plugin,
-            "name": pid,
-            "pins": {}
-        }
+        plugins[pid] = {"type": plugin, "name": pid, "pins": {}}
     plugins[pid]["pins"][pinname] = {"pin": str(pin)}
     if modifier:
         plugins[pid]["pins"][pinname]["modifier"] = modifier
 
 print(json.dumps({"plugins": list(plugins.values())}, indent=4))
-
-
-

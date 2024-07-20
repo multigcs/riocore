@@ -20,7 +20,6 @@ to control relais, leds, valves, ....
 ### bit:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

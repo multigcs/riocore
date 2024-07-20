@@ -26,17 +26,14 @@ to read and write values (analog/digital) via modbus, also supports hy_vfd spind
 ### tx:
 
  * direction: output
- * pullup: False
 
 ### rx:
 
  * direction: input
- * pullup: False
 
 ### tx_enable:
 
  * direction: output
- * pullup: False
  * optional: True
 
 

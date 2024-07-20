@@ -1037,7 +1037,7 @@ class LinuxCNC:
                     if vunit and "unit" not in displayconfig:
                         displayconfig["unit"] = vunit
 
-                    if ((netname and not virtual) or setp):
+                    if (netname and not virtual) or setp:
                         if direction == "input":
                             section = displayconfig.get("section", "inputs")
                         elif direction == "output":
@@ -2026,7 +2026,7 @@ class LinuxCNC:
         defines["SPI_PIN_MOSI"] = "10"
         defines["SPI_PIN_MISO"] = "9"
         defines["SPI_PIN_CLK"] = "11"
-        defines["SPI_PIN_CS"] = "8" # CE1 = 7
+        defines["SPI_PIN_CS"] = "8"  # CE1 = 7
         defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
 
         for header in header_list:
@@ -2294,10 +2294,10 @@ class LinuxCNC:
 
                 # update defaults
                 # if position_scale < 0.0:
-                    # joint_setup["HOME_SEARCH_VEL"] *= -1.0
-                    # joint_setup["HOME_LATCH_VEL"] *= -1.0
-                    # joint_setup["HOME_FINAL_VEL"] *= -1.0
-                    # joint_setup["HOME_OFFSET"] *= -1.0
+                # joint_setup["HOME_SEARCH_VEL"] *= -1.0
+                # joint_setup["HOME_LATCH_VEL"] *= -1.0
+                # joint_setup["HOME_FINAL_VEL"] *= -1.0
+                # joint_setup["HOME_OFFSET"] *= -1.0
 
                 if machinetype not in {"scara", "melfa", "puma"}:
                     if axis_name in {"Z"}:
@@ -2811,7 +2811,7 @@ class axis:
         resolution = 1
         legends = list(values.keys())
         cfgxml_data = []
-        cfgxml_data.append(f"  <labelframe text=\"{title}\">")
+        cfgxml_data.append(f'  <labelframe text="{title}">')
         cfgxml_data.append("   <vbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>2</bd>")

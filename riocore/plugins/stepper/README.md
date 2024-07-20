@@ -3,6 +3,8 @@
 
 direct stepper driver with 4pin's directly controlled by the FPGA
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -29,22 +31,18 @@ direct stepper driver with 4pin's directly controlled by the FPGA
 ### a1:
 
  * direction: output
- * pullup: False
 
 ### a2:
 
  * direction: output
- * pullup: False
 
 ### b1:
 
  * direction: output
- * pullup: False
 
 ### b2:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

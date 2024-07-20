@@ -20,7 +20,6 @@ simple ws2812b led driver / same as the wled plugin but integrated as an expansi
 ### data:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

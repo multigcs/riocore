@@ -8,7 +8,7 @@ class Plugin(PluginBase):
             "bit": {
                 "direction": "input",
                 "invert": True,
-                "pullup": True,
+                "pull": "up",
             },
         }
         self.INTERFACE = {
@@ -44,11 +44,11 @@ class Plugin(PluginBase):
         output = []
         for pin_name, pin_config in self.pins().items():
             pin = pin_config["pin"]
-            pullup = pin_config.get("pullup", False)
+            pull = pin_config.get("pull")
             direction = pin_config["direction"]
             pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
-            if pullup:
-                output.append(f"    pinMode({pin_define_name}, {direction.upper()}_PULLUP);")
+            if pull:
+                output.append(f"    pinMode({pin_define_name}, {direction.upper()}_PULL{pull.upper()});")
             else:
                 output.append(f"    pinMode({pin_define_name}, {direction.upper()});")
         return "\n".join(output)

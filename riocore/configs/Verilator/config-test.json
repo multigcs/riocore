@@ -9,7 +9,7 @@
       "pins": {
         "bit": {
           "pin": "C2",
-          "pullup": true,
+          "pull": "up",
           "modifier": [
             {
               "type": "invert"

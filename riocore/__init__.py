@@ -39,6 +39,13 @@ class Plugins:
         if plugin.DESCRIPTION:
             output.append(plugin.DESCRIPTION)
             output.append("")
+
+        plugin_path = f"{riocore_path}/plugins/{plugin_name}"
+        image_path = f"{plugin_path}/image.png"
+        if os.path.isfile(image_path):
+            output.append("<img align=\"right\" src=\"image.png\">")
+            output.append("")
+
         output.append("## Basic-Example:")
         output.append("```")
         output.append(json.dumps(plugin.basic_config(), indent=4))
@@ -368,8 +375,7 @@ class Plugins:
                     initfile.append(f'            "{pin_name}": {{')
                     initfile.append(f"                \"direction\": \"{pin_setup['direction']}\",")
                     initfile.append('                "invert": False,')
-                    initfile.append('                "pullup": False,')
-                    initfile.append('                "pulldown": False,')
+                    initfile.append('                "pull": None,')
                     initfile.append("            },")
                 initfile.append("        }")
                 if interface:
@@ -761,6 +767,10 @@ class Project:
                 if plugin_instance.TYPE == "frameio":
                     if not value:
                         value = [0] * byte_size
+
+                    #for pv in value:
+                    #    print(pv)
+
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
                 elif variable_size > 1:
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]

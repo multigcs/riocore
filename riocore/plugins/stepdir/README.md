@@ -3,6 +3,8 @@
 
 to control motor drivers via step/dir pin's and an optional enable pin
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -26,17 +28,14 @@ to control motor drivers via step/dir pin's and an optional enable pin
 ### step:
 
  * direction: output
- * pullup: False
 
 ### dir:
 
  * direction: output
- * pullup: False
 
 ### en:
 
  * direction: output
- * pullup: False
  * optional: True
 
 

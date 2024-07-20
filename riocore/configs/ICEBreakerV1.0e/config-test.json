@@ -79,7 +79,7 @@
             "pins": {
                 "bit": {
                     "pin": "PMOD_1B:P4",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -99,7 +99,7 @@
             "pins": {
                 "bit": {
                     "pin": "PMOD_1B:P2",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -119,7 +119,7 @@
             "pins": {
                 "bit": {
                     "pin": "PMOD_1A:P8",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -139,7 +139,7 @@
             "pins": {
                 "bit": {
                     "pin": "PMOD_1B:P3",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"

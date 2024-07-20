@@ -29,22 +29,18 @@ for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 ### mosi:
 
  * direction: input
- * pullup: False
 
 ### miso:
 
  * direction: output
- * pullup: False
 
 ### sclk:
 
  * direction: input
- * pullup: False
 
 ### sel:
 
  * direction: input
- * pullup: False
 
 
 ## Options:

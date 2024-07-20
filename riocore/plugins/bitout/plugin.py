@@ -8,7 +8,7 @@ class Plugin(PluginBase):
             "bit": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

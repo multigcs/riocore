@@ -23,12 +23,10 @@ simple temperure sensor
 ### sda:
 
  * direction: inout
- * pullup: False
 
 ### scl:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

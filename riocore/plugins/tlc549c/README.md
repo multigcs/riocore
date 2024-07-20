@@ -26,18 +26,15 @@ Analog input via tlc549 ADC
 ### miso:
 
  * direction: input
- * pullup: False
 
 ### sclk:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### sel:
 
  * direction: output
- * pullup: False
  * optional: True
 
 

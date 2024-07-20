@@ -9,18 +9,18 @@ class Plugin(PluginBase):
             "miso": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
                 "optional": True,
             },
             "sel": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
                 "optional": True,
             },
         }

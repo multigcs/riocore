@@ -10,7 +10,7 @@ class Plugin(PluginBase):
             "pwm": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.OPTIONS = {

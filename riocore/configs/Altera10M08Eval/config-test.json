@@ -14,7 +14,7 @@
                     "net": "joint.0.home-sw-in",
                     "pins": {
                         "bit": {
-                            "pullup": true
+                            "pull": "up"
                         }
                     }
                 },
@@ -24,7 +24,7 @@
                     "net": "joint.1.home-sw-in",
                     "pins": {
                         "bit": {
-                            "pullup": true
+                            "pull": "up"
                         }
                     }
                 },
@@ -34,7 +34,7 @@
                     "net": "joint.2.home-sw-in",
                     "pins": {
                         "bit": {
-                            "pullup": true
+                            "pull": "up"
                         }
                     }
                 },
@@ -66,7 +66,7 @@
                     "name": "e-stop",
                     "pins": {
                         "bit": {
-                            "pullup": true
+                            "pull": "up"
                         }
                     }
                 },

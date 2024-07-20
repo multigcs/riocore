@@ -20,7 +20,6 @@ only for esp32
 ### pwm1:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

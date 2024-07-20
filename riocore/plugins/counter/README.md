@@ -27,21 +27,18 @@ to counting digital pulses, supporting up,down and reset signals
 increment pin
 
  * direction: input
- * pullup: False
  * optional: True
 
 ### down:
 decrement pin
 
  * direction: input
- * pullup: False
  * optional: True
 
 ### reset:
 reset to zero pin
 
  * direction: input
- * pullup: False
  * optional: True
 
 

@@ -26,17 +26,14 @@ uart bridge to send and receive custom frames via uart port
 ### tx:
 
  * direction: output
- * pullup: False
 
 ### rx:
 
  * direction: input
- * pullup: False
 
 ### tx_enable:
 
  * direction: output
- * pullup: False
  * optional: True
 
 

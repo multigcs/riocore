@@ -9,7 +9,7 @@ class Plugin(PluginBase):
             "ir": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

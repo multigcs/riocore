@@ -26,18 +26,15 @@ usable as spindle-encoder for rigid tapping and thread cutting
 ### a:
 
  * direction: input
- * pullup: False
 
 ### b:
 
  * direction: input
- * pullup: False
 
 ### z:
 index pin
 
  * direction: input
- * pullup: False
 
 
 ## Options:

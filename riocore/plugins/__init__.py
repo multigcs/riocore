@@ -113,6 +113,8 @@ class PluginBase:
             self.txframe_id = 0
             self.txdata = 0
             self.frame = b""
+            self.frame_tx = None
+            self.frame_tx_overwride = None
 
         if "name" not in self.OPTIONS:
             self.OPTIONS["name"] = {
@@ -174,7 +176,13 @@ class PluginBase:
                     self.txframe_id += 1
                 else:
                     self.txframe_id = 0
+
                 txdata = self.frameio_tx(frame_ack, frame_timeout)
+                
+                if self.frame_tx_overwride is not None:
+                    txdata = self.frame_tx_overwride
+                self.frame_tx = txdata
+                
                 if txdata is not None:
                     frame_len = len(txdata)
                     data = [0] * (self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]) // 8)
@@ -477,7 +485,7 @@ class PluginBase:
         output = []
         for pin_name, pin_setup in self.PINDEFAULTS.items():
             direction = pin_setup.get("direction")
-            pullup = pin_setup.get("pullup", False)
+            pull = pin_setup.get("pull")
             description = pin_setup.get("description")
             default = pin_setup.get("default")
             optional = pin_setup.get("optional")
@@ -488,7 +496,8 @@ class PluginBase:
             output.append("")
 
             output.append(f" * direction: {direction}")
-            output.append(f" * pullup: {pullup}")
+            if pull is not None:
+                output.append(f" * pull: {pull}")
             if default is not None:
                 output.append(f" * default: {default}")
             if optional is not None:
@@ -555,7 +564,6 @@ class PluginBase:
 
                 if unit is not None:
                     output.append(f" * unit: {unit}")
-
 
                 output.append("")
 

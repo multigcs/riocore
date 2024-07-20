@@ -20,7 +20,6 @@ to messurement digital frequencies
 ### freq:
 
  * direction: input
- * pullup: False
 
 
 ## Options:

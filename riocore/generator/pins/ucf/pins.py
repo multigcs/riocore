@@ -12,9 +12,13 @@ class Pins:
                 slew = pin_config.get("slew", "SLOW").upper()
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False):
+                        print('WARNING: please change your pin-config to : "pull": "up"')
                         data.append(f"NET \"{pin_config['varname']}\"       PULLUP | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
                     elif pin_config.get("pulldown", False):
+                        print('WARNING: please change your pin-config to : "pull": "down"')
                         data.append(f"NET \"{pin_config['varname']}\"       PULLDOWN | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                    elif pin_config.get("pull"):
+                        data.append(f"NET \"{pin_config['varname']}\"       PULL{pin_config['pull'].uppper()} | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
                     else:
                         data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
                 else:

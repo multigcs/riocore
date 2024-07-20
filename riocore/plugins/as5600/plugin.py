@@ -9,12 +9,12 @@ class Plugin(PluginBase):
             "sda": {
                 "direction": "inout",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "scl": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

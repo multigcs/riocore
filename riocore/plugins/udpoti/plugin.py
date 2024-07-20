@@ -9,12 +9,12 @@ class Plugin(PluginBase):
             "updown": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "increment": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.OPTIONS = {

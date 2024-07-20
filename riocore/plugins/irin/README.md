@@ -20,7 +20,6 @@ that was just a gimmick, not really useful
 ### ir:
 
  * direction: input
- * pullup: False
 
 
 ## Options:

@@ -3,6 +3,8 @@
 
 to messurement very high temperatures of up to 1250 degrees Celsius
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -26,17 +28,14 @@ to messurement very high temperatures of up to 1250 degrees Celsius
 ### miso:
 
  * direction: input
- * pullup: False
 
 ### sclk:
 
  * direction: output
- * pullup: False
 
 ### sel:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

@@ -305,7 +305,7 @@ for plugin in data["plugins"].copy():
                 "pin": pinmapping.get(pin, pin),
             }
             if pullup:
-                new_pins[pin_name]["pullup"] = True
+                new_pins[pin_name]["pull"] = "up"
 
             if invert or debounce:
                 new_pins[pin_name]["modifier"] = []

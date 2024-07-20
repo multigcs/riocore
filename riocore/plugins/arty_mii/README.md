@@ -66,103 +66,86 @@
 ### phy_rx_clk:
 
  * direction: input
- * pullup: False
  * default: F15
 
 ### phy_rxd0:
 
  * direction: input
- * pullup: False
  * default: D18
 
 ### phy_rxd1:
 
  * direction: input
- * pullup: False
  * default: E17
 
 ### phy_rxd2:
 
  * direction: input
- * pullup: False
  * default: E18
 
 ### phy_rxd3:
 
  * direction: input
- * pullup: False
  * default: G17
 
 ### phy_rx_dv:
 
  * direction: input
- * pullup: False
  * default: G16
 
 ### phy_rx_er:
 
  * direction: input
- * pullup: False
  * default: C17
 
 ### phy_tx_clk:
 
  * direction: input
- * pullup: False
  * default: H16
 
 ### phy_txd0:
 
  * direction: output
- * pullup: False
  * default: H14
 
 ### phy_txd1:
 
  * direction: output
- * pullup: False
  * default: J14
 
 ### phy_txd2:
 
  * direction: output
- * pullup: False
  * default: J13
 
 ### phy_txd3:
 
  * direction: output
- * pullup: False
  * default: H17
 
 ### phy_tx_en:
 
  * direction: output
- * pullup: False
  * default: H15
 
 ### phy_col:
 
  * direction: input
- * pullup: False
  * default: D17
 
 ### phy_crs:
 
  * direction: input
- * pullup: False
  * default: G14
 
 ### phy_ref_clk:
 
  * direction: output
- * pullup: False
  * default: G18
 
 ### phy_reset_n:
 
  * direction: output
- * pullup: False
  * default: C16
 
 

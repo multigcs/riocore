@@ -32,6 +32,8 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
         
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -58,22 +60,18 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 ### out:
 
  * direction: output
- * pullup: False
 
 ### in:
 
  * direction: input
- * pullup: False
 
 ### sclk:
 
  * direction: output
- * pullup: False
 
 ### load:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

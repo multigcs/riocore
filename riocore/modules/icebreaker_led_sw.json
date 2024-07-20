@@ -52,7 +52,7 @@
             "pins": {
                 "bit": {
                   "pin": "P9",
-                  "pullup": true
+                  "pull": "up"
                 }
             }
         },
@@ -62,7 +62,7 @@
             "pins": {
                 "bit": {
                   "pin": "P4",
-                  "pullup": true
+                  "pull": "up"
                 }
             }
         },
@@ -72,7 +72,7 @@
             "pins": {
                 "bit": {
                   "pin": "P10",
-                  "pullup": true
+                  "pull": "up"
                 }
             }
         }

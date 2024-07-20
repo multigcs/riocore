@@ -9,12 +9,12 @@ class Plugin(PluginBase):
             "a": {
                 "direction": "input",
                 "invert": False,
-                "pullup": True,
+                "pull": "up",
             },
             "b": {
                 "direction": "input",
                 "invert": False,
-                "pullup": True,
+                "pull": "up",
             },
         }
         self.INTERFACE = {

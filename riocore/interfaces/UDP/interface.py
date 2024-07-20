@@ -1,5 +1,6 @@
 import ipaddress
 
+
 class Interface:
     def __init__(self, cstr):
         (self.NET_IP, self.NET_PORT) = cstr.split(":")

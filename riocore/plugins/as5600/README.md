@@ -3,6 +3,8 @@
 
 for position feedbacks
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -23,12 +25,10 @@ for position feedbacks
 ### sda:
 
  * direction: inout
- * pullup: False
 
 ### scl:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

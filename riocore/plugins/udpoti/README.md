@@ -23,12 +23,10 @@ controling digital poti for analog outputs
 ### updown:
 
  * direction: output
- * pullup: False
 
 ### increment:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

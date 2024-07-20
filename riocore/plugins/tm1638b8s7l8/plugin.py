@@ -9,17 +9,17 @@ class Plugin(PluginBase):
             "sel": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "data": {
                 "direction": "inout",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

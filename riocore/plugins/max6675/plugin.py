@@ -9,17 +9,17 @@ class Plugin(PluginBase):
             "miso": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "sel": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

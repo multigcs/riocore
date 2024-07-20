@@ -18,7 +18,6 @@
 ### pwm:
 
  * direction: input
- * pullup: False
 
 
 ## Options:

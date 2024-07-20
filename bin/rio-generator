@@ -63,4 +63,3 @@ if args.config:
         plugins = riocore.Plugins()
         for line in plugins.list():
             print(line)
-

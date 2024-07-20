@@ -9,7 +9,7 @@ class Plugin(PluginBase):
             "one_wire": {
                 "direction": "inout",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

@@ -68,7 +68,7 @@
             "pins": {
                 "bit": {
                     "pin": "26",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -88,7 +88,7 @@
             "pins": {
                 "bit": {
                     "pin": "27",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -108,7 +108,7 @@
             "pins": {
                 "bit": {
                     "pin": "28",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -128,7 +128,7 @@
             "pins": {
                 "bit": {
                     "pin": "29",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -147,7 +147,7 @@
             "pins": {
                 "bit": {
                     "pin": "53",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -161,7 +161,7 @@
             "pins": {
                 "bit": {
                     "pin": "54",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -175,7 +175,7 @@
             "pins": {
                 "bit": {
                     "pin": "55",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -189,7 +189,7 @@
             "pins": {
                 "bit": {
                     "pin": "56",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"

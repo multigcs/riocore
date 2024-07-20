@@ -3,6 +3,8 @@
 
 w5500 driver for the interface communication over UDP
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -29,22 +31,18 @@ w5500 driver for the interface communication over UDP
 ### mosi:
 
  * direction: output
- * pullup: False
 
 ### miso:
 
  * direction: input
- * pullup: False
 
 ### sclk:
 
  * direction: output
- * pullup: False
 
 ### sel:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

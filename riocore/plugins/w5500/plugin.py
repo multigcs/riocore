@@ -10,24 +10,24 @@ class Plugin(PluginBase):
             "mosi": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
                 "slew": "fast",
             },
             "miso": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
                 "slew": "fast",
             },
             "sel": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.spi_clk_speed = 2000000

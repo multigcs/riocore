@@ -20,7 +20,6 @@ simple ws2812b driver with variable input to build led-bars
 ### data:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

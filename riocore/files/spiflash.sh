@@ -15,7 +15,7 @@
 BITFILE=$1
 if test "$BITFILE" = ""
 then
-    echo "$0 BITFILE"
+    echo "$0 BITFILE [SIZE]"
     exit 1
 fi
 
@@ -24,7 +24,11 @@ SPISPEED="20000"
 SPISEL_FLASH="1"
 SPISELPIN_FLASH="7"
 RESETPIN="25"
-FLASHSIZE="8M"
+FLASHSIZE="$2"
+if test "$FLASHSIZE" = ""
+then
+    FLASHSIZE="8M"
+fi
 
 if test -e /sys/class/gpio/gpio$SPISELPIN_FLASH
 then
@@ -36,7 +40,10 @@ sudo rmmod spi_bcm2835 2>/dev/null
 sudo modprobe spi_bcm2835 2>/dev/null
 sudo modprobe spidev 2>/dev/null
 
-echo $RESETPIN > /sys/class/gpio/export
+if ! test -e /sys/class/gpio/gpio$RESETPIN
+then
+    echo $RESETPIN > /sys/class/gpio/export
+fi
 echo out > /sys/class/gpio/gpio$RESETPIN/direction
 sleep .5
 

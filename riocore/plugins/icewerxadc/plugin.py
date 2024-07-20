@@ -3,6 +3,7 @@ from struct import *
 
 from riocore.plugins import PluginBase
 
+
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "icewerxadc"
@@ -13,7 +14,7 @@ class Plugin(PluginBase):
             },
             "rx": {
                 "direction": "input",
-            }
+            },
         }
         self.INTERFACE = {
             "adc1": {
@@ -73,7 +74,6 @@ https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
 should work also with the iceFUN board
 
         """
-
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

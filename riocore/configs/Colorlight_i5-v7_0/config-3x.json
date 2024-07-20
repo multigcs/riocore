@@ -7,7 +7,7 @@
     "modules": [
         {
             "slot": "PMOD_5B",
-            "module": "w5500"
+            "module": "w5500mod"
         }
     ],
     "plugins": [

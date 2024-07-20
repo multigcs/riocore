@@ -20,7 +20,6 @@ for cheap 1wire temperature sensor's, only one per pin is supported at the momen
 ### one_wire:
 
  * direction: inout
- * pullup: False
 
 
 ## Options:

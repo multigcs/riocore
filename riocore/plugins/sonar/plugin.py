@@ -9,12 +9,12 @@ class Plugin(PluginBase):
             "trigger": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
             "echo": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

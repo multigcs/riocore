@@ -3,6 +3,8 @@
 
 to control DC-Motors or for analog outputs
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -26,18 +28,15 @@ to control DC-Motors or for analog outputs
 ### pwm:
 
  * direction: output
- * pullup: False
 
 ### dir:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### en:
 
  * direction: output
- * pullup: False
  * optional: True
 
 

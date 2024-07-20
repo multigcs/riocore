@@ -245,9 +245,15 @@ class edit_combobox(QComboBox):
             self.addItem(option)
         self.setEditable(True)
         if key in obj:
-            self.setCurrentIndex(options.index(obj[key]))
+            if obj[key] in options:
+                self.setCurrentIndex(options.index(obj[key]))
+            else:
+                print(f"ERROR: {obj[key]} is not a option")
         elif default is not None:
-            self.setCurrentIndex(options.index(default))
+            if default in options:
+                self.setCurrentIndex(options.index(default))
+            else:
+                print(f"ERROR: {default} is not a option")
         else:
             self.setCurrentIndex(options.index(""))
         self.editTextChanged.connect(self.change)

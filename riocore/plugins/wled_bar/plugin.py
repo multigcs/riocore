@@ -9,7 +9,7 @@ class Plugin(PluginBase):
             "data": {
                 "direction": "output",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.OPTIONS = {

@@ -12,7 +12,10 @@ class Pins:
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
                 data.append(f"set_location_assignment {pin_config['pin']} -to {pin_config['varname']}")
-                if pin_config.get("pullup", False):
+                if pin_config.get("pull") == "up":
+                    data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin_config['varname']}")
+                elif pin_config.get("pullup", False):
+                    print('WARNING: please change your pin-config to : "pull": "up"')
                     data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin_config['varname']}")
             data.append("")
         open(f"{path}/pins.qdf", "w").write("\n".join(data))

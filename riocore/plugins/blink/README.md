@@ -20,7 +20,6 @@ outputs a fixed frequency / was used to indicate that the FPGA is runing / no co
 ### led:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

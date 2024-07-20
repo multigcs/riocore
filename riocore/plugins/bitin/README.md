@@ -20,7 +20,7 @@ to read switches or other 1bit signals
 ### bit:
 
  * direction: input
- * pullup: True
+ * pull: up
 
 
 ## Options:

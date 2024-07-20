@@ -11,6 +11,8 @@ should work also with the iceFUN board
 
         
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -31,12 +33,10 @@ should work also with the iceFUN board
 ### tx:
 
  * direction: output
- * pullup: False
 
 ### rx:
 
  * direction: input
- * pullup: False
 
 
 ## Options:

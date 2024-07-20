@@ -3,6 +3,8 @@
 
 with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -26,17 +28,14 @@ with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segme
 ### sel:
 
  * direction: output
- * pullup: False
 
 ### sclk:
 
  * direction: output
- * pullup: False
 
 ### data:
 
  * direction: inout
- * pullup: False
 
 
 ## Options:

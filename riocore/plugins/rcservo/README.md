@@ -3,6 +3,8 @@
 
 to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -20,7 +22,6 @@ to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 ### pwm:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

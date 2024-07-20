@@ -76,7 +76,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P10",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -96,7 +96,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P11",
-                    "pullup": true
+                    "pull": "up"
                 }
             }
         },
@@ -106,7 +106,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P12",
-                    "pullup": true
+                    "pull": "up"
                 }
             }
         },
@@ -116,7 +116,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P13",
-                    "pullup": true
+                    "pull": "up"
                 }
             }
         },
@@ -126,7 +126,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_A:P15",
-                    "pullup": true
+                    "pull": "up"
                 }
             }
         },
@@ -136,7 +136,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P10",
-                    "pullup": true
+                    "pull": "up"
                 }
             },
             "signals": {
@@ -151,7 +151,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P11",
-                    "pullup": true
+                    "pull": "up"
                 }
             },
             "signals": {
@@ -166,7 +166,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P12",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -186,7 +186,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P13",
-                    "pullup": true
+                    "pull": "up"
                 }
             },
             "signals": {
@@ -201,7 +201,7 @@
             "pins": {
                 "bit": {
                     "pin": "BOB_B:P15",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"

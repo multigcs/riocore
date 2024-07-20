@@ -3,6 +3,8 @@
 
 usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -23,12 +25,12 @@ usable as position feedback for closed-loop configuration or as variable input t
 ### a:
 
  * direction: input
- * pullup: True
+ * pull: up
 
 ### b:
 
  * direction: input
- * pullup: True
+ * pull: up
 
 
 ## Options:

@@ -11,7 +11,7 @@
             "pins": {
                 "bit": {
                     "pin": "H6",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -31,7 +31,7 @@
             "pins": {
                 "bit": {
                     "pin": "F2",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -51,7 +51,7 @@
             "pins": {
                 "bit": {
                     "pin": "H3",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -71,7 +71,7 @@
             "pins": {
                 "bit": {
                     "pin": "F3",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -91,7 +91,7 @@
             "pins": {
                 "bit": {
                     "pin": "B1",
-                    "pullup": true,
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"

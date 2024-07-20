@@ -260,7 +260,9 @@ class Plugin(PluginBase):
         if config["type"] == 101:
             config["instance"].frameio_rx(frame_new, frame_id, frame_len, frame_data)
         elif frame_new:
-            # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
+
+            #print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
+
             if frame_len > 4:
                 address = frame_data[0]
                 ctype = frame_data[1]
@@ -400,7 +402,9 @@ class Plugin(PluginBase):
         csum.update(cmd)
         csum_calc = csum.intdigest()
         frame_data = cmd + csum_calc
-        # print(f"tx frame -- {len(frame_data)}: {frame_data}")
+
+        #print(f"tx frame -- {len(frame_data)}: {frame_data}")
+
         return frame_data
 
     def globals_c(self):
@@ -674,3 +678,91 @@ class Plugin(PluginBase):
         output.append("            frame_len += 2;")
         output.append("        }")
         return "\n".join(output)
+
+
+
+    def testgui_frameio_init(self, layout):
+        from PyQt5.QtWidgets import (
+            QLineEdit,
+            QVBoxLayout,
+            QHBoxLayout,
+            QApplication,
+            QCheckBox,
+            QComboBox,
+            QDialog,
+            QDialogButtonBox,
+            QGridLayout,
+            QHBoxLayout,
+            QLabel,
+            QListWidget,
+            QPushButton,
+            QSlider,
+            QVBoxLayout,
+            QWidget,
+            QTabWidget,
+            QTextEdit,
+        )
+
+        def pause_toggle():
+            if self.pause:
+                self.pause = False
+                self.button_pause.setText("PAUSE")
+            else:
+                self.pause = True
+                self.button_pause.setText("RESUME")
+
+        self.addrs = []
+        self.linebuffer = []
+        self.pause = False
+
+        row_layout = QHBoxLayout()
+        layout.addLayout(row_layout)
+
+        row_layout.addWidget(QLabel("Log"), stretch=1)
+        self.button_pause = QPushButton("PAUSE")
+        self.button_pause.clicked.connect(pause_toggle)
+        row_layout.addWidget(self.button_pause, stretch=1)
+        row_layout.addWidget(QLabel("Addresses (RX)"), stretch=1)
+
+        row_layout = QHBoxLayout()
+        layout.addLayout(row_layout)
+
+        self.widget_log = QTextEdit()
+        row_layout.addWidget(self.widget_log, stretch=2)
+
+        self.widget_addrs = QTextEdit()
+        row_layout.addWidget(self.widget_addrs, stretch=1)
+
+    def testgui_frameio_clean(self, txframe):
+        return txframe[:-2]
+
+    def testgui_frameio_send(self, txframe):
+        csum = crc16()
+        csum.update(txframe)
+        txframe += csum.intdigest()
+        return txframe
+
+    def testgui_frameio_update(self, send, frame):
+        if self.pause:
+            return
+            
+        if send:
+            frame_tx_id = int(frame[0])
+            frame_tx_len = int(frame[1])
+            logline = f"> {frame_tx_id}: {' '.join(frame[2:frame_tx_len])}"
+            logline = f"> {' '.join(frame[2:frame_tx_len])}"
+        else:
+            frame_rx_id = int(frame[1])
+            frame_rx_len = int(frame[2])
+            frame_data = list(reversed(frame[3:(frame_rx_len+3)]))[:-2]
+            device_addrs = frame_data[0]
+            if device_addrs not in self.addrs:
+                self.addrs.append(device_addrs)
+            logline = f"< {frame_rx_id}: {' '.join(frame_data)}"
+            logline = f"< {' '.join(frame_data)}"
+
+        self.linebuffer = [logline] + self.linebuffer[:50]
+        self.widget_log.setPlainText("\n".join(self.linebuffer))
+        self.widget_addrs.setPlainText("\n".join(self.addrs))
+
+

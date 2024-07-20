@@ -8,15 +8,15 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "mosi": {
                 "direction": "output",
-                "pullup": False,
+                "pull": None,
             },
             "sclk": {
                 "direction": "output",
-                "pullup": False,
+                "pull": None,
             },
             "sel": {
                 "direction": "output",
-                "pullup": False,
+                "pull": None,
             },
         }
         self.INTERFACE = {

@@ -26,17 +26,14 @@ to display values from LinuxCNC on 7segment display's
 ### mosi:
 
  * direction: output
- * pullup: False
 
 ### sclk:
 
  * direction: output
- * pullup: False
 
 ### sel:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

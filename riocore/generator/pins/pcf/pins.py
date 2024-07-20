@@ -8,7 +8,10 @@ class Pins:
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
                 options = []
-                if pin_config.get("pullup", False):
+                if pin_config.get("pull") == "up":
+                    options.append("-pullup yes")
+                elif pin_config.get("pullup", False):
+                    print('WARNING: please change your pin-config to : "pull": "up"')
                     options.append("-pullup yes")
                 options.append(pin_config["varname"])
                 options.append(pin_config["pin"])

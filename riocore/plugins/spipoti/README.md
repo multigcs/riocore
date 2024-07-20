@@ -26,17 +26,14 @@ Analog-Outout via spi digital poti
 ### mosi:
 
  * direction: output
- * pullup: False
 
 ### sclk:
 
  * direction: output
- * pullup: False
 
 ### sel:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

@@ -3,6 +3,8 @@
 
 to read analog signals with cheap ads1115 chips
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -23,12 +25,12 @@ to read analog signals with cheap ads1115 chips
 ### sda:
 
  * direction: inout
- * pullup: True
+ * pull: up
 
 ### scl:
 
  * direction: output
- * pullup: True
+ * pull: up
 
 
 ## Options:

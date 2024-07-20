@@ -50,63 +50,52 @@ only usable for devboards with 7segment display / better using other 7seg plugin
 ### en1:
 
  * direction: output
- * pullup: False
 
 ### en2:
 
  * direction: output
- * pullup: False
 
 ### en3:
 
  * direction: output
- * pullup: False
 
 ### en4:
 
  * direction: output
- * pullup: False
 
 ### seg_a:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### seg_b:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### seg_c:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### seg_d:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### seg_e:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### seg_f:
 
  * direction: output
- * pullup: False
  * optional: True
 
 ### seg_g:
 
  * direction: output
- * pullup: False
  * optional: True
 
 

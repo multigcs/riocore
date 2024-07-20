@@ -23,12 +23,10 @@ simple uart interface, not usable for realtime stuff in LinuxCNC / only for test
 ### rx:
 
  * direction: input
- * pullup: False
 
 ### tx:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

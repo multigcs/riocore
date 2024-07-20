@@ -20,7 +20,6 @@ to output variable frequency signals
 ### freq:
 
  * direction: output
- * pullup: False
 
 
 ## Options:

@@ -3,6 +3,8 @@
 
 to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
 
+<img align="right" src="image.png">
+
 ## Basic-Example:
 ```
 {
@@ -23,12 +25,10 @@ to messure distance via cheap ultra-sonic sensors (like filling level of bigger 
 ### trigger:
 
  * direction: output
- * pullup: False
 
 ### echo:
 
  * direction: input
- * pullup: False
 
 
 ## Options:

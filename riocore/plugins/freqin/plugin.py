@@ -9,7 +9,7 @@ class Plugin(PluginBase):
             "freq": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.OPTIONS = {

@@ -9,7 +9,7 @@ class Plugin(PluginBase):
             "pwm": {
                 "direction": "input",
                 "invert": False,
-                "pullup": False,
+                "pull": None,
             },
         }
         self.OPTIONS = {
