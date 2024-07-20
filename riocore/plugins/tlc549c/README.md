@@ -3,6 +3,9 @@
 
 Analog input via tlc549 ADC
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {
