@@ -3,6 +3,9 @@
 
 simple ws2812b driver with variable input to build led-bars
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {
