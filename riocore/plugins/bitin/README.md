@@ -3,6 +3,9 @@
 
 to read switches or other 1bit signals
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {
