@@ -1,9 +1,9 @@
 # wled
+<img align="right" src="image.png">
+
 **ws2812b interface**
 
 simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each led
-
-<img align="right" src="image.png">
 
 ## Basic-Example:
 ```

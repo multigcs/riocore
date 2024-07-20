@@ -1,9 +1,9 @@
 # pwmout
+<img align="right" src="image.png">
+
 **pwm output**
 
 to control DC-Motors or for analog outputs
-
-<img align="right" src="image.png">
 
 ## Basic-Example:
 ```

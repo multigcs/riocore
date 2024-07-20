@@ -1,4 +1,6 @@
 # shiftreg
+<img align="right" src="image.png">
+
 **Expansion to add I/O's via shiftregister's**
 
 
@@ -31,8 +33,6 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 [![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
 
         
-
-<img align="right" src="image.png">
 
 ## Basic-Example:
 ```

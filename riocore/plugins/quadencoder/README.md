@@ -1,9 +1,9 @@
 # quadencoder
+<img align="right" src="image.png">
+
 **quadencoder**
 
 usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
-
-<img align="right" src="image.png">
 
 ## Basic-Example:
 ```

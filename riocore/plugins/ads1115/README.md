@@ -1,9 +1,9 @@
 # ads1115
+<img align="right" src="image.png">
+
 **4-channel adc via I2C**
 
 to read analog signals with cheap ads1115 chips
-
-<img align="right" src="image.png">
 
 ## Basic-Example:
 ```

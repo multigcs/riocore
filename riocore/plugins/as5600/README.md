@@ -1,9 +1,9 @@
 # as5600
+<img align="right" src="image.png">
+
 **magnetic absolute encoder**
 
 for position feedbacks
-
-<img align="right" src="image.png">
 
 ## Basic-Example:
 ```

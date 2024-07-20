@@ -1,9 +1,9 @@
 # stepper
+<img align="right" src="image.png">
+
 **stepper driver output for H-Bridges like L298**
 
 direct stepper driver with 4pin's directly controlled by the FPGA
-
-<img align="right" src="image.png">
 
 ## Basic-Example:
 ```
