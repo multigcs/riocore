@@ -62,33 +62,35 @@ elif args.generate:
 
     text.append("# PLUGINS")
     text.append("")
-    text.append("## Interfaces:")
-    text.append("")
-    for plugin_instance in plugins.plugin_instances:
-        if plugin_instance.TYPE == "interface":
-            text.append(f"  * [{plugin_instance.NAME}: {plugin_instance.INFO}](riocore/plugins/{plugin_instance.NAME}/README.md)")
+    text.append("| Type | Name | Info | Image |")
+    text.append("| --- | :---: | --- | ---:  |")
+
+    for title, ptype in {
+        "Interfaces": "interface",
+        "Joints": "joint",
+        "IO": "io",
+        "FrameIO": "frameio",
+        "Expansions": "expansion",
+    }.items():
+        #text.append(f"## {title}:")
+        #text.append("")
+
+        for plugin_instance in plugins.plugin_instances:
+            if plugin_instance.TYPE == ptype:
+
+                image = ""
+                plugin_path = f"{riocore_path}/plugins/{plugin_instance.NAME}"
+                image_path = f"{plugin_path}/image.png"
+                if os.path.isfile(image_path):
+                    image = f"<img src=\"riocore/plugins/{plugin_instance.NAME}/image.png\" height=\"48\">"
+
+                text.append(f"| {title} | [{plugin_instance.NAME}](riocore/plugins/{plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} |")
+
+                title = ""
+
+
     text.append("")
 
-    text.append("## Expansions:")
-    text.append("")
-    for plugin_instance in plugins.plugin_instances:
-        if plugin_instance.TYPE == "expansion":
-            text.append(f"  * [{plugin_instance.NAME}: {plugin_instance.INFO}](riocore/plugins/{plugin_instance.NAME}/README.md)")
-    text.append("")
-
-    text.append("## Joints:")
-    text.append("")
-    for plugin_instance in plugins.plugin_instances:
-        if plugin_instance.TYPE == "joint":
-            text.append(f"  * [{plugin_instance.NAME}: {plugin_instance.INFO}](riocore/plugins/{plugin_instance.NAME}/README.md)")
-    text.append("")
-
-    text.append("## IO:")
-    text.append("")
-    for plugin_instance in plugins.plugin_instances:
-        if plugin_instance.TYPE == "io":
-            text.append(f"  * [{plugin_instance.NAME}: {plugin_instance.INFO}](riocore/plugins/{plugin_instance.NAME}/README.md)")
-    text.append("")
     open(filename, "w").write("\n".join(text))
 
 
