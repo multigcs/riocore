@@ -1,9 +1,10 @@
 # pwmout
-<img align="right" src="image.png">
-
 **pwm output**
 
 to control DC-Motors or for analog outputs
+
+
+![image.png](image.png)
 
 ## Basic-Example:
 ```

@@ -1,9 +1,10 @@
 # as5600
-<img align="right" src="image.png">
-
 **magnetic absolute encoder**
 
 for position feedbacks
+
+
+![image.png](image.png)
 
 ## Basic-Example:
 ```

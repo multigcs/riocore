@@ -1,6 +1,4 @@
 # icewerxadc
-<img align="right" src="image.png">
-
 **4-channel adc of the iceWerx-board**
 
 to read analog signals from the iceWerx-board
@@ -12,6 +10,9 @@ https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
 should work also with the iceFUN board
 
         
+
+
+![image.png](image.png)
 
 ## Basic-Example:
 ```

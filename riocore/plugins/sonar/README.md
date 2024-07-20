@@ -1,9 +1,10 @@
 # sonar
-<img align="right" src="image.png">
-
 **sonar sensor for distance measurement**
 
 to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
+
+
+![image.png](image.png)
 
 ## Basic-Example:
 ```

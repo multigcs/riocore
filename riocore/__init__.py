@@ -34,17 +34,17 @@ class Plugins:
 
         output.append(f"# {plugin.NAME}")
 
-        plugin_path = f"{riocore_path}/plugins/{plugin_name}"
-        image_path = f"{plugin_path}/image.png"
-        if os.path.isfile(image_path):
-            output.append("<img align=\"right\" src=\"image.png\">")
-            output.append("")
-
         if plugin.INFO:
             output.append(f"**{plugin.INFO}**")
             output.append("")
         if plugin.DESCRIPTION:
             output.append(plugin.DESCRIPTION)
+            output.append("")
+        plugin_path = f"{riocore_path}/plugins/{plugin_name}"
+        image_path = f"{plugin_path}/image.png"
+        if os.path.isfile(image_path):
+            output.append("")
+            output.append("![image.png](image.png)")
             output.append("")
 
         output.append("## Basic-Example:")

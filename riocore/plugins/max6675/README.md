@@ -1,9 +1,10 @@
 # max6675
-<img align="right" src="image.png">
-
 **SPI temperature sensor**
 
 to messurement very high temperatures of up to 1250 degrees Celsius
+
+
+![image.png](image.png)
 
 ## Basic-Example:
 ```

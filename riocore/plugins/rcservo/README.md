@@ -1,9 +1,10 @@
 # rcservo
-<img align="right" src="image.png">
-
 **rc-servo output**
 
 to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
+
+
+![image.png](image.png)
 
 ## Basic-Example:
 ```
