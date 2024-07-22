@@ -260,8 +260,7 @@ class Plugin(PluginBase):
         if config["type"] == 101:
             config["instance"].frameio_rx(frame_new, frame_id, frame_len, frame_data)
         elif frame_new:
-
-            #print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
+            # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
 
             if frame_len > 4:
                 address = frame_data[0]
@@ -403,7 +402,7 @@ class Plugin(PluginBase):
         csum_calc = csum.intdigest()
         frame_data = cmd + csum_calc
 
-        #print(f"tx frame -- {len(frame_data)}: {frame_data}")
+        # print(f"tx frame -- {len(frame_data)}: {frame_data}")
 
         return frame_data
 
@@ -679,8 +678,6 @@ class Plugin(PluginBase):
         output.append("        }")
         return "\n".join(output)
 
-
-
     def testgui_frameio_init(self, layout):
         from PyQt5.QtWidgets import (
             QLineEdit,
@@ -745,7 +742,7 @@ class Plugin(PluginBase):
     def testgui_frameio_update(self, send, frame):
         if self.pause:
             return
-            
+
         if send:
             frame_tx_id = int(frame[0])
             frame_tx_len = int(frame[1])
@@ -754,7 +751,7 @@ class Plugin(PluginBase):
         else:
             frame_rx_id = int(frame[1])
             frame_rx_len = int(frame[2])
-            frame_data = list(reversed(frame[3:(frame_rx_len+3)]))[:-2]
+            frame_data = list(reversed(frame[3 : (frame_rx_len + 3)]))[:-2]
             device_addrs = frame_data[0]
             if device_addrs not in self.addrs:
                 self.addrs.append(device_addrs)
@@ -764,5 +761,3 @@ class Plugin(PluginBase):
         self.linebuffer = [logline] + self.linebuffer[:50]
         self.widget_log.setPlainText("\n".join(self.linebuffer))
         self.widget_addrs.setPlainText("\n".join(self.addrs))
-
-

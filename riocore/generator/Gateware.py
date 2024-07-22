@@ -57,6 +57,8 @@ class Gateware:
             slot_name = slot.get("name")
             slot_pins = slot.get("pins", {})
             for pin_name, pin in slot_pins.items():
+                if isinstance(pin, dict):
+                    pin = pin["pin"]
                 pin_id = f"{slot_name}:{pin_name}"
                 self.pinmapping[pin_id] = pin
                 self.pinmapping_rev[pin] = pin_id

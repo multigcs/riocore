@@ -178,11 +178,11 @@ class PluginBase:
                     self.txframe_id = 0
 
                 txdata = self.frameio_tx(frame_ack, frame_timeout)
-                
+
                 if self.frame_tx_overwride is not None:
                     txdata = self.frame_tx_overwride
                 self.frame_tx = txdata
-                
+
                 if txdata is not None:
                     frame_len = len(txdata)
                     data = [0] * (self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]) // 8)

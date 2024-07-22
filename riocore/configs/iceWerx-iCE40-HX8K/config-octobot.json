@@ -1,7 +1,7 @@
 {
     "name": "iceWerx-iCE40-HX8K",
     "description": "Octobot-Board + 6Axis",
-    "boardcfg": "iceWerx-iCE40-HX8K",
+    "boardcfg": "octobot",
     "gui": "axis",
     "protocol": "UDP",
     "transport": "UDP",
@@ -11,16 +11,16 @@
             "ip": "192.168.10.195",
             "pins": {
                 "mosi": {
-                    "pin": "H1"
+                    "pin": "SPI:MOSI"
                 },
                 "miso": {
-                    "pin": "J1"
+                    "pin": "SPI:MISO"
                 },
                 "sclk": {
-                    "pin": "G3"
+                    "pin": "SPI:SCLK"
                 },
                 "sel": {
-                    "pin": "H3"
+                    "pin": "SPI:SEL"
                 }
             }
         },
@@ -29,10 +29,10 @@
             "name": "joint1",
             "pins": {
                 "step": {
-                    "pin": "J3"
+                    "pin": "JOINT1:STEP"
                 },
                 "dir": {
-                    "pin": "K3"
+                    "pin": "JOINT1:DIR"
                 }
             },
             "is_joint": true,
@@ -56,10 +56,10 @@
             "name": "joint2",
             "pins": {
                 "step": {
-                    "pin": "F3"
+                    "pin": "JOINT2:STEP"
                 },
                 "dir": {
-                    "pin": "G1"
+                    "pin": "JOINT2:DIR"
                 }
             },
             "is_joint": true,
@@ -83,10 +83,10 @@
             "name": "joint3",
             "pins": {
                 "step": {
-                    "pin": "D1"
+                    "pin": "JOINT3:STEP"
                 },
                 "dir": {
-                    "pin": "E1"
+                    "pin": "JOINT3:DIR"
                 }
             },
             "is_joint": true,
@@ -110,10 +110,10 @@
             "name": "joint4",
             "pins": {
                 "step": {
-                    "pin": "D3"
+                    "pin": "JOINT4:STEP"
                 },
                 "dir": {
-                    "pin": "C1"
+                    "pin": "JOINT4:DIR"
                 }
             },
             "is_joint": true,
@@ -136,10 +136,10 @@
             "name": "joint5",
             "pins": {
                 "step": {
-                    "pin": "A7"
+                    "pin": "JOINT5:STEP"
                 },
                 "dir": {
-                    "pin": "A6"
+                    "pin": "JOINT5:DIR"
                 }
             },
             "is_joint": true,
@@ -163,10 +163,10 @@
             "name": "joint6",
             "pins": {
                 "step": {
-                    "pin": "C7"
+                    "pin": "JOINT6:STEP"
                 },
                 "dir": {
-                    "pin": "C6"
+                    "pin": "JOINT6:DIR"
                 }
             },
             "is_joint": true,
@@ -189,7 +189,7 @@
             "type": "wled",
             "pins": {
                 "data": {
-                    "pin": "M7"
+                    "pin": "WLED:DATA"
                 }
             }
         },
@@ -198,7 +198,7 @@
             "name": "in1",
             "pins": {
                 "bit": {
-                    "pin": "D14",
+                    "pin": "IN1:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -217,7 +217,7 @@
             "name": "in2",
             "pins": {
                 "bit": {
-                    "pin": "C12",
+                    "pin": "IN2:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -236,7 +236,7 @@
             "name": "in3",
             "pins": {
                 "bit": {
-                    "pin": "C14",
+                    "pin": "IN3:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -255,7 +255,7 @@
             "name": "in4",
             "pins": {
                 "bit": {
-                    "pin": "B14",
+                    "pin": "IN4:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -274,7 +274,7 @@
             "name": "in5",
             "pins": {
                 "bit": {
-                    "pin": "A12",
+                    "pin": "IN5:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -293,7 +293,7 @@
             "name": "in6",
             "pins": {
                 "bit": {
-                    "pin": "A11",
+                    "pin": "IN6:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -312,7 +312,7 @@
             "name": "in7",
             "pins": {
                 "bit": {
-                    "pin": "C11",
+                    "pin": "IN7:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -326,7 +326,7 @@
             "name": "in8",
             "pins": {
                 "bit": {
-                    "pin": "C10",
+                    "pin": "IN8:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -340,7 +340,7 @@
             "name": "out1",
             "pins": {
                 "bit": {
-                    "pin": "A3",
+                    "pin": "OUT1:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -354,7 +354,7 @@
             "name": "out2",
             "pins": {
                 "bit": {
-                    "pin": "C5",
+                    "pin": "OUT2:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -368,7 +368,7 @@
             "name": "out3",
             "pins": {
                 "bit": {
-                    "pin": "A4",
+                    "pin": "OUT3:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -382,7 +382,7 @@
             "name": "out4",
             "pins": {
                 "bit": {
-                    "pin": "C4",
+                    "pin": "OUT4:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -396,7 +396,7 @@
             "name": "out5",
             "pins": {
                 "bit": {
-                    "pin": "A1",
+                    "pin": "OUT5:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -410,7 +410,7 @@
             "name": "out6",
             "pins": {
                 "bit": {
-                    "pin": "C3",
+                    "pin": "OUT6:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -424,7 +424,7 @@
             "name": "out7",
             "pins": {
                 "bit": {
-                    "pin": "B1",
+                    "pin": "OUT7:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -438,7 +438,7 @@
             "name": "gripper",
             "pins": {
                 "pwm": {
-                    "pin": "A2",
+                    "pin": "OUT8:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -507,10 +507,10 @@
             "type": "icewerxadc",
             "pins": {
                 "rx": {
-                    "pin": "P5"
+                    "pin": "ADC_UART:RX"
                 },
                 "tx": {
-                    "pin": "P4"
+                    "pin": "ADC_UART:TX"
                 }
             },
             "signals": {
@@ -671,13 +671,13 @@
             "rx_buffersize": 128,
             "pins": {
                 "tx": {
-                    "pin": "P14"
+                    "pin": "MODBUS:TX"
                 },
                 "rx": {
-                    "pin": "P8"
+                    "pin": "MODBUS:RX"
                 },
                 "tx_enable": {
-                    "pin": "N14"
+                    "pin": "MODBUS:TX_ENABLE"
                 }
             },
             "config": {

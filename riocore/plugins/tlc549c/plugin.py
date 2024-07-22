@@ -15,13 +15,11 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "invert": False,
                 "pull": None,
-                "optional": True,
             },
             "sel": {
                 "direction": "output",
                 "invert": False,
                 "pull": None,
-                "optional": True,
             },
         }
         self.INTERFACE = {
