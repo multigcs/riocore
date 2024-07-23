@@ -520,7 +520,7 @@
         {
             "name": "AUX",
             "comment": "AUX",
-            "default": "pwmdir",
+            "default": "pwmout",
             "pins": {
                 "PWM": {
                     "pin": "76",
