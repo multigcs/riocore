@@ -73,7 +73,7 @@
                 "RX": {
                     "pin": "16",
                     "pos": [
-                        280,
+                        260,
                         275
                     ],
                     "direction": "input"
@@ -81,7 +81,7 @@
                 "TX": {
                     "pin": "17",
                     "pos": [
-                        280,
+                        260,
                         300
                     ],
                     "direction": "output"
