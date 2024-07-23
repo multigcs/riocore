@@ -161,16 +161,14 @@
                     "pos": [
                         550,
                         400
-                    ],
-                    "direction": "output"
+                    ]
                 },
                 "SDA": {
                     "pin": "69",
                     "pos": [
                         581,
                         400
-                    ],
-                    "direction": "inout"
+                    ]
                 }
             }
         },
@@ -184,32 +182,28 @@
                     "pos": [
                         740,
                         240
-                    ],
-                    "direction": "input"
+                    ]
                 },
                 "SCLK": {
                     "pin": "31",
                     "pos": [
                         740,
                         255
-                    ],
-                    "direction": "input"
+                    ]
                 },
                 "MISO": {
                     "pin": "49",
                     "pos": [
                         740,
                         270
-                    ],
-                    "direction": "output"
+                    ]
                 },
                 "MOSI": {
                     "pin": "48",
                     "pos": [
                         740,
                         285
-                    ],
-                    "direction": "input"
+                    ]
                 }
             }
         },
@@ -221,7 +215,7 @@
                 "BIT": {
                     "pin": "38",
                     "pos": [
-                        45,
+                        40,
                         435
                     ],
                     "direction": "output"
@@ -234,9 +228,9 @@
             "default": "",
             "pins": {
                 "BIT": {
-                    "pin": "36",
+                    "pin": "37",
                     "pos": [
-                        45,
+                        40,
                         355
                     ],
                     "direction": "output"
@@ -249,9 +243,9 @@
             "default": "",
             "pins": {
                 "BIT": {
-                    "pin": "39",
+                    "pin": "36",
                     "pos": [
-                        45,
+                        40,
                         275
                     ],
                     "direction": "output"
@@ -264,9 +258,9 @@
             "default": "",
             "pins": {
                 "BIT": {
-                    "pin": "25",
+                    "pin": "39",
                     "pos": [
-                        45,
+                        40,
                         195
                     ],
                     "direction": "output"
@@ -279,9 +273,9 @@
             "default": "",
             "pins": {
                 "BIT": {
-                    "pin": "a25",
+                    "pin": "25",
                     "pos": [
-                        45,
+                        40,
                         115
                     ],
                     "direction": "output"
@@ -296,7 +290,7 @@
                 "BIT": {
                     "pin": "26",
                     "pos": [
-                        115,
+                        105,
                         500
                     ],
                     "direction": "input"
@@ -311,7 +305,7 @@
                 "BIT": {
                     "pin": "27",
                     "pos": [
-                        195,
+                        190,
                         500
                     ],
                     "direction": "input"
@@ -341,7 +335,7 @@
                 "BIT": {
                     "pin": "29",
                     "pos": [
-                        355,
+                        360,
                         500
                     ],
                     "direction": "input"
@@ -356,7 +350,7 @@
                 "BIT": {
                     "pin": "53",
                     "pos": [
-                        435,
+                        445,
                         500
                     ],
                     "direction": "input"
@@ -371,7 +365,7 @@
                 "BIT": {
                     "pin": "54",
                     "pos": [
-                        515,
+                        535,
                         500
                     ],
                     "direction": "input"
@@ -386,7 +380,7 @@
                 "BIT": {
                     "pin": "55",
                     "pos": [
-                        595,
+                        620,
                         500
                     ],
                     "direction": "input"
@@ -401,7 +395,7 @@
                 "BIT": {
                     "pin": "56",
                     "pos": [
-                        675,
+                        700,
                         500
                     ],
                     "direction": "input"
@@ -416,7 +410,7 @@
                 "STEP": {
                     "pin": "63",
                     "pos": [
-                        100,
+                        95,
                         55
                     ],
                     "direction": "output"
@@ -424,7 +418,7 @@
                 "DIR": {
                     "pin": "86",
                     "pos": [
-                        150,
+                        145,
                         55
                     ],
                     "direction": "output"
@@ -462,7 +456,7 @@
                 "STEP": {
                     "pin": "83",
                     "pos": [
-                        300,
+                        305,
                         55
                     ],
                     "direction": "output"
@@ -470,7 +464,7 @@
                 "DIR": {
                     "pin": "82",
                     "pos": [
-                        350,
+                        355,
                         55
                     ],
                     "direction": "output"
@@ -485,7 +479,7 @@
                 "STEP": {
                     "pin": "81",
                     "pos": [
-                        405,
+                        420,
                         55
                     ],
                     "direction": "output"
@@ -493,7 +487,7 @@
                 "DIR": {
                     "pin": "80",
                     "pos": [
-                        455,
+                        470,
                         55
                     ],
                     "direction": "output"
@@ -508,7 +502,7 @@
                 "STEP": {
                     "pin": "79",
                     "pos": [
-                        510,
+                        530,
                         55
                     ],
                     "direction": "output"
@@ -516,7 +510,7 @@
                 "DIR": {
                     "pin": "77",
                     "pos": [
-                        560,
+                        580,
                         55
                     ],
                     "direction": "output"
@@ -529,25 +523,25 @@
             "default": "pwmdir",
             "pins": {
                 "PWM": {
-                    "pin": "75",
+                    "pin": "76",
                     "pos": [
-                        640,
+                        660,
                         55
                     ],
                     "direction": "output"
                 },
                 "DIR": {
-                    "pin": "74",
+                    "pin": "75",
                     "pos": [
-                        670,
+                        690,
                         55
                     ],
                     "direction": "output"
                 },
-                "MISC": {
-                    "pin": "76",
+                "EN": {
+                    "pin": "74",
                     "pos": [
-                        700,
+                        720,
                         55
                     ],
                     "direction": "output"
@@ -564,32 +558,28 @@
                     "pos": [
                         490,
                         160
-                    ],
-                    "direction": "output"
+                    ]
                 },
                 "P2": {
                     "pin": "71",
                     "pos": [
                         507,
                         160
-                    ],
-                    "direction": "output"
+                    ]
                 },
                 "P3": {
                     "pin": "70",
                     "pos": [
                         524,
                         160
-                    ],
-                    "direction": "output"
+                    ]
                 },
                 "P4": {
                     "pin": "57",
                     "pos": [
                         541,
                         160
-                    ],
-                    "direction": "output"
+                    ]
                 }
             }
         }
