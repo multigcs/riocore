@@ -48,7 +48,7 @@
                         55,
                         30
                     ],
-                    "direction": "output"
+                    "direction": "input"
                 }
             }
         },
