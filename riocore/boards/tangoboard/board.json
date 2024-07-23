@@ -12,8 +12,8 @@
     },
     "slots": [
         {
-            "name": "PMOD",
-            "comment": "PMOD",
+            "name": "PMOD1",
+            "comment": "PMOD1 8pin",
             "default": "",
             "pins": {
                 "P4": {
@@ -441,6 +441,45 @@
                     "pos": [
                         560,
                         55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "PMOD2",
+            "comment": "PMOD2 4pin",
+            "default": "",
+            "pins": {
+                "P1": {
+                    "pin": "72",
+                    "pos": [
+                        490,
+                        160
+                    ],
+                    "direction": "output"
+                },
+                "P2": {
+                    "pin": "71",
+                    "pos": [
+                        507,
+                        160
+                    ],
+                    "direction": "output"
+                },
+                "P3": {
+                    "pin": "70",
+                    "pos": [
+                        524,
+                        160
+                    ],
+                    "direction": "output"
+                },
+                "P4": {
+                    "pin": "57",
+                    "pos": [
+                        541,
+                        160
                     ],
                     "direction": "output"
                 }
