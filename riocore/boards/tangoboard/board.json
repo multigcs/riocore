@@ -12,6 +12,83 @@
     },
     "slots": [
         {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "10",
+                    "pos": [
+                        360,
+                        245
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "11",
+                    "pos": [
+                        360,
+                        260
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "13",
+                    "pos": [
+                        360,
+                        275
+                    ],
+                    "direction": "output"
+                },
+                "L4": {
+                    "pin": "14",
+                    "pos": [
+                        360,
+                        290
+                    ],
+                    "direction": "output"
+                },
+                "L5": {
+                    "pin": "15",
+                    "pos": [
+                        360,
+                        305
+                    ],
+                    "direction": "output"
+                },
+                "L6": {
+                    "pin": "16",
+                    "pos": [
+                        360,
+                        320
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "UART",
+            "default": "",
+            "pins": {
+                "RX": {
+                    "pin": "16",
+                    "pos": [
+                        280,
+                        275
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "17",
+                    "pos": [
+                        280,
+                        300
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
             "name": "PMOD1",
             "comment": "PMOD1 8pin",
             "default": "",
@@ -334,7 +411,7 @@
         {
             "name": "JOINT1",
             "comment": "JOINT1",
-            "default": "",
+            "default": "stepdir",
             "pins": {
                 "STEP": {
                     "pin": "63",
@@ -357,7 +434,7 @@
         {
             "name": "JOINT2",
             "comment": "JOINT2",
-            "default": "",
+            "default": "stepdir",
             "pins": {
                 "STEP": {
                     "pin": "85",
@@ -380,7 +457,7 @@
         {
             "name": "JOINT3",
             "comment": "JOINT3",
-            "default": "",
+            "default": "stepdir",
             "pins": {
                 "STEP": {
                     "pin": "83",
@@ -403,7 +480,7 @@
         {
             "name": "JOINT4",
             "comment": "JOINT4",
-            "default": "",
+            "default": "stepdir",
             "pins": {
                 "STEP": {
                     "pin": "81",
@@ -426,7 +503,7 @@
         {
             "name": "JOINT5",
             "comment": "JOINT5",
-            "default": "",
+            "default": "stepdir",
             "pins": {
                 "STEP": {
                     "pin": "79",
@@ -440,6 +517,37 @@
                     "pin": "77",
                     "pos": [
                         560,
+                        55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "AUX",
+            "comment": "AUX",
+            "default": "pwmdir",
+            "pins": {
+                "PWM": {
+                    "pin": "75",
+                    "pos": [
+                        640,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "74",
+                    "pos": [
+                        670,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "MISC": {
+                    "pin": "76",
+                    "pos": [
+                        700,
                         55
                     ],
                     "direction": "output"
