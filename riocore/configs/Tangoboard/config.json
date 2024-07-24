@@ -9,7 +9,7 @@
             "name": "spindle-enable",
             "pins": {
                 "bit": {
-                    "pin": "38",
+                    "pin": "OUT1:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -25,9 +25,10 @@
         },
         {
             "type": "bitout",
+            "name": "spindle-enable",
             "pins": {
                 "bit": {
-                    "pin": "36",
+                    "pin": "OUT2:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -40,7 +41,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "39",
+                    "pin": "OUT3:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -53,7 +54,20 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "25",
+                    "pin": "OUT4:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "OUT5:BIT",
                     "modifier": [
                         {
                             "type": "invert"
@@ -67,7 +81,7 @@
             "name": "home-x",
             "pins": {
                 "bit": {
-                    "pin": "26",
+                    "pin": "IN1:BIT",
                     "pull": "up",
                     "modifier": [
                         {
@@ -87,7 +101,7 @@
             "name": "home-y",
             "pins": {
                 "bit": {
-                    "pin": "27",
+                    "pin": "IN2:BIT",
                     "pull": "up",
                     "modifier": [
                         {
@@ -107,7 +121,7 @@
             "name": "home-z",
             "pins": {
                 "bit": {
-                    "pin": "28",
+                    "pin": "IN3:BIT",
                     "pull": "up",
                     "modifier": [
                         {
@@ -127,7 +141,7 @@
             "name": "tool-probe",
             "pins": {
                 "bit": {
-                    "pin": "29",
+                    "pin": "IN4:BIT",
                     "pull": "up",
                     "modifier": [
                         {
@@ -146,7 +160,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "53",
+                    "pin": "IN5:BIT",
                     "pull": "up",
                     "modifier": [
                         {
@@ -160,7 +174,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "54",
+                    "pin": "IN6:BIT",
                     "pull": "up",
                     "modifier": [
                         {
@@ -174,7 +188,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "55",
+                    "pin": "IN7:BIT",
                     "pull": "up",
                     "modifier": [
                         {
@@ -188,22 +202,8 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "56",
+                    "pin": "IN8:BIT",
                     "pull": "up",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "type": "pwmout",
-            "frequency": "1500",
-            "pins": {
-                "pwm": {
-                    "pin": "37",
                     "modifier": [
                         {
                             "type": "invert"
@@ -217,10 +217,10 @@
             "scale": -800,
             "pins": {
                 "step": {
-                    "pin": "63"
+                    "pin": "JOINT1:STEP"
                 },
                 "dir": {
-                    "pin": "86"
+                    "pin": "JOINT1:DIR"
                 }
             },
             "is_joint": true
@@ -230,10 +230,10 @@
             "scale": -800,
             "pins": {
                 "step": {
-                    "pin": "85"
+                    "pin": "JOINT2:STEP"
                 },
                 "dir": {
-                    "pin": "84"
+                    "pin": "JOINT2:DIR"
                 }
             },
             "is_joint": true
@@ -243,10 +243,10 @@
             "scale": -1600,
             "pins": {
                 "step": {
-                    "pin": "83"
+                    "pin": "JOINT3:STEP"
                 },
                 "dir": {
-                    "pin": "82"
+                    "pin": "JOINT3:DIR"
                 }
             },
             "is_joint": true
@@ -255,10 +255,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "81"
+                    "pin": "JOINT4:STEP"
                 },
                 "dir": {
-                    "pin": "80"
+                    "pin": "JOINT4:DIR"
                 }
             },
             "is_joint": true
@@ -267,10 +267,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "79"
+                    "pin": "JOINT5:STEP"
                 },
                 "dir": {
-                    "pin": "77"
+                    "pin": "JOINT5:DIR"
                 }
             },
             "is_joint": true
@@ -279,16 +279,16 @@
             "type": "spi",
             "pins": {
                 "mosi": {
-                    "pin": "48"
+                    "pin": "SPI:MOSI"
                 },
                 "miso": {
-                    "pin": "49"
+                    "pin": "SPI:MISO"
                 },
                 "sclk": {
-                    "pin": "31"
+                    "pin": "SPI:SCLK"
                 },
                 "sel": {
-                    "pin": "32"
+                    "pin": "SPI:SEL"
                 }
             }
         },
@@ -300,13 +300,8 @@
                 },
                 "dir": {
                     "pin": "AUX:DIR"
-                }
-            }
-        },
-        {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
+                },
+                "en": {
                     "pin": "AUX:EN"
                 }
             }
