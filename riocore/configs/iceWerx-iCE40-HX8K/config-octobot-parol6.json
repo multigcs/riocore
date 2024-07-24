@@ -1,8 +1,7 @@
 {
     "name": "iceWerx-iCE40-HX8K",
     "description": "Octobot-Board on Parol6 (melfa)",
-    "boardcfg": "iceWerx-iCE40-HX8K",
-    "gui": "axis",
+    "boardcfg": "octobot",
     "protocol": "UDP",
     "transport": "UDP",
     "plugins": [
@@ -679,10 +678,11 @@
             }
         }
     ],
-    "axis": 6,
-    "machinetype": "melfa",
-    "_embed_vismach": "fanuc_200f",
     "linuxcnc": {
+        "gui": "axis",
+        "num_axis": 6,
+        "machinetype": "melfa",
+        "embed_vismach": "fanuc_200f",
         "ini": {
             "HALUI": {
                 "MDI_COMMAND||Gripper|0": "M68 E0 Q-100",

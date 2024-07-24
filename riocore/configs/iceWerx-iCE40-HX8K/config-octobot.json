@@ -2,7 +2,6 @@
     "name": "iceWerx-iCE40-HX8K",
     "description": "Octobot-Board + 6Axis",
     "boardcfg": "octobot",
-    "gui": "axis",
     "protocol": "UDP",
     "transport": "UDP",
     "plugins": [
@@ -722,6 +721,9 @@
             }
         }
     ],
-    "axis": 6,
-    "machinetype": "mill"
+    "linuxcnc": {
+        "num_axis": 6,
+        "machinetype": "mill"
+        "gui": "axis",
+    }
 }

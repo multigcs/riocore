@@ -2,12 +2,7 @@
     "name": "ICEBreakerV1.0e",
     "description": "Small and low cost FPGA educational and development board",
     "boardcfg": "ICEBreakerV1.0e",
-    "gui": "axis",
     "protocol": "UART",
-    "_hy_vfd": {
-        "device": "/dev/ttyUSB2",
-        "address": 9
-    },
     "plugins": [
         {
             "type": "uart",
@@ -153,7 +148,5 @@
             "is_joint": true,
             "joint": {}
         }
-    ],
-    "transport": "UDP",
-    "axis": 3
+    ]
 }

@@ -2,8 +2,10 @@
     "name": "Arty-a7-35t",
     "description": "Arty a7-35t - testing",
     "boardcfg": "Arty-a7-35t",
-    "machinetype": "lathe",
     "protocol": "UDP",
+    "linuxcnc": {
+        "machinetype": "lathe"
+    },
     "_joypad": {
         "enable": true,
         "name": "Microntek",

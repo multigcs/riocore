@@ -3,7 +3,9 @@
     "description": "TangNano20K test setup",
     "boardcfg": "TangNano20K",
     "protocol": "UDP",
-    "axis": 3,
+    "linuxcnc": {
+        "num_axis": 3
+    },
     "plugins": [
         {
             "type": "blink",

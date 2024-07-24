@@ -4,7 +4,6 @@
     "boardcfg": "Spartan6",
     "machinetype": "mill",
     "protocol": "SPI",
-
     "slots": [
         {
             "name": "BOB_A",

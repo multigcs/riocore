@@ -619,9 +619,9 @@
             }
         }
     ],
-    "axis": 6,
-    "machinetype": "melfa",
     "linuxcnc": {
+        "num_axis": 6,
+        "machinetype": "melfa",
         "ini": {
             "HALUI": {
                 "MDI_COMMAND||Gripper|0": "M68 E0 Q-100",

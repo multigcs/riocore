@@ -2,8 +2,10 @@
     "name": "Olimex-ICE40HX8K-EVB",
     "description": "Olimex-ICE40HX8K-EVB with cheap 5axis-BOB - PWM spindle",
     "boardcfg": "Olimex-ICE40HX8K-EVB",
-    "axis": 5,
-    "machinetype": "mill",
+    "linuxcnc": {
+        "machinetype": "mill",
+        "num_axis": 5
+    },
     "plugins": [
         {
             "type": "bitin",

@@ -374,9 +374,9 @@ class LinuxCNC:
     def ini_defaults(cls, jdata, num_joints=5, axis_dict={}, dios=16, aios=16):
         linuxcnc_config = jdata.get("linuxcnc", {})
         ini_setup = cls.INI_DEFAULTS.copy()
-        gui = jdata.get("gui", "axis")
-        machinetype = jdata.get("machinetype")
-        embed_vismach = jdata.get("embed_vismach")
+        gui = linuxcnc_config.get("gui", "axis")
+        machinetype = linuxcnc_config.get("machinetype")
+        embed_vismach = linuxcnc_config.get("embed_vismach")
 
         netlist = []
         for plugin in jdata["plugins"]:
@@ -473,8 +473,8 @@ class LinuxCNC:
         jdata = self.project.config["jdata"]
         json_path = self.project.config["json_path"]
         linuxcnc_config = jdata.get("linuxcnc", {})
-        gui = self.project.config["jdata"].get("gui", "axis")
-        machinetype = self.project.config["jdata"].get("machinetype")
+        gui = linuxcnc_config.get("gui", "axis")
+        machinetype = linuxcnc_config.get("machinetype")
 
         dios = 16
         aios = 16
@@ -685,10 +685,11 @@ class LinuxCNC:
 
     def gui(self):
         os.system(f"mkdir -p {self.configuration_path}/")
-        machinetype = self.project.config["jdata"].get("machinetype")
-        embed_vismach = self.project.config["jdata"].get("embed_vismach")
+        linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype")
+        embed_vismach = linuxcnc_config.get("embed_vismach")
+        gui = linuxcnc_config.get("gui", "axis")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
-        gui = self.project.config["jdata"].get("gui", "axis")
         if gui == "qtdragon":
             self.gui_gen = qtdragon()
         else:
@@ -1173,9 +1174,9 @@ class LinuxCNC:
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
-        machinetype = self.project.config["jdata"].get("machinetype")
-        embed_vismach = self.project.config["jdata"].get("embed_vismach")
-        toolchange = self.project.config["jdata"].get("toolchange", "manual")
+        machinetype = linuxcnc_config.get("machinetype")
+        embed_vismach = linuxcnc_config.get("embed_vismach")
+        toolchange = linuxcnc_config.get("toolchange", "manual")
 
         self.loadrts.append("# load the realtime components")
         self.loadrts.append("loadrt [KINS]KINEMATICS")
@@ -2172,8 +2173,9 @@ class LinuxCNC:
         open(f"{self.component_path}/rio.c", "w").write("\n".join(output))
 
     def create_axis_config(self):
-        machinetype = self.project.config["jdata"].get("machinetype")
-        max_axis = self.project.config["jdata"].get("axis", 9)
+        linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype")
+        max_axis = linuxcnc_config.get("num_axis", 9)
         pin_num = 0
         self.num_joints = 0
         self.num_axis = 0
@@ -2355,7 +2357,7 @@ class LinuxCNC:
                     joint_setup[key] = value
 
             # overwrite axis configuration with user data
-            for key, value in self.project.config["jdata"].get("linuxcnc", {}).get("axis", {}).get(axis_name, {}).items():
+            for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
                 key = key.upper()
                 axis_config[key] = value
 

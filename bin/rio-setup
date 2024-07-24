@@ -1863,10 +1863,6 @@ class WinForm(QWidget):
             "description": {"type": str},
             "boardcfg": {"type": "select", "options": self.boards},
             "protocol": {"type": "select", "options": self.interfaces, "default": "UDP"},
-            "axis": {"type": int, "min": 0, "max": 9, "default": 3},
-            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"]},
-            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual"},
-            "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic"], "default": "axis"},
         }.items():
             aitem = MyStandardItem()
             self.model.appendRow(
@@ -1887,6 +1883,22 @@ class WinForm(QWidget):
         tree_lcnc = self.model.item(self.model.rowCount() - 1)
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
+
+        for key, var_setup in {
+            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3},
+            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"]},
+            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual"},
+            "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic"], "default": "axis"},
+            "embed_vismach": {"type": "select", "options": ["", "fanuc_200f", "gantry_5axis", "millturn", "mill_xyz", "scara"], "default": ""},
+        }.items():
+            aitem = MyStandardItem()
+            tree_lcnc.appendRow(
+                [
+                    MyStandardItem(key.title()),
+                    aitem,
+                ]
+            )
+            self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config["linuxcnc"], key, var_setup))
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "load_tree"):

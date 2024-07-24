@@ -2,8 +2,6 @@
     "name": "iceWerx-iCE40-HX8K",
     "description": "Small and low cost FPGA educational and development board",
     "boardcfg": "iceWerx-iCE40-HX8K",
-    "gui": "axis",
-    "protocol": "SPI",
     "plugins": [
         {
             "type": "spi",
@@ -368,6 +366,5 @@
                 }
             }
         }
-    ],
-    "transport": "UART"
+    ]
 }

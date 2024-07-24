@@ -2,7 +2,6 @@
     "name": "rio-icebreaker3x",
     "description": "ICEBreakerV1.0e with rio-icebreaker3x voard",
     "boardcfg": "icebreaker3x",
-    "machinetype": "mill",
     "protocol": "SPI",
     "plugins": [
         {

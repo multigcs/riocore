@@ -5,8 +5,6 @@
     "protocol": "UDP",
     "ip": "192.168.10.13",
     "port": "2390",
-    "machinetype": "mill",
-    "toolchange": "auto",
     "plugins": [
         {
             "type": "bitout",
@@ -495,6 +493,9 @@
         }
     ],
     "linuxcnc": {
+        "machinetype": "mill",
+        "toolchange": "auto",
+        "num_axis": 5,
         "mxmpg": {
             "enable": true,
             "device": "/dev/ttyUSB0"
