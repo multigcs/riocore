@@ -14,6 +14,7 @@ package_data = {
     "riocore": [
         "files/*",
         "boards/*",
+        "boards/*/*",
         "modules/*",
         "configs/*/*",
     ],
@@ -21,8 +22,7 @@ package_data = {
 packages = ["riocore"]
 
 for script in glob.glob("bin/*"):
-    if not "gui" in script and not os.path.islink(script):
-        scripts.append(script)
+    scripts.append(script)
 
 for folder in ("riocore/plugins/*", "riocore/generator/*", "riocore/generator/pins/*", "riocore/generator/toolchains/*", "riocore/interfaces/*"):
     packages.append(folder.replace("/*", "").replace("/", "."))
@@ -30,7 +30,7 @@ for folder in ("riocore/plugins/*", "riocore/generator/*", "riocore/generator/pi
         if "__" not in module and not module.endswith(".py"):
             module_name = module.replace("/", ".")
             packages.append(module_name)
-            package_data[module_name] = ["*.c", "*.v"]
+            package_data[module_name] = ["*.c", "*.v", "*.png", "*.md"]
 
 setup(
     name="riocore",
@@ -44,6 +44,6 @@ setup(
     license="LICENSE",
     description="riocore",
     long_description=open("README.md").read(),
-    install_requires=[],
+    install_requires=["PyQt5>=5.15", "graphviz>=0.20", "pyqtgraph>=0.13.3"],
     include_package_data=True,
 )
