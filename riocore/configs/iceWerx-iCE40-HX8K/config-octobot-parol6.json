@@ -11,16 +11,16 @@
             "ip": "192.168.10.195",
             "pins": {
                 "mosi": {
-                    "pin": "H1"
+                    "pin": "SPI:MOSI"
                 },
                 "miso": {
-                    "pin": "J1"
+                    "pin": "SPI:MISO"
                 },
                 "sclk": {
-                    "pin": "G3"
+                    "pin": "SPI:SCLK"
                 },
                 "sel": {
-                    "pin": "H3"
+                    "pin": "SPI:SEL"
                 }
             }
         },
@@ -29,10 +29,10 @@
             "name": "joint1",
             "pins": {
                 "step": {
-                    "pin": "J3"
+                    "pin": "JOINT1:STEP"
                 },
                 "dir": {
-                    "pin": "K3"
+                    "pin": "JOINT1:DIR"
                 }
             },
             "is_joint": true,
@@ -681,6 +681,7 @@
     ],
     "axis": 6,
     "machinetype": "melfa",
+    "_embed_vismach": "fanuc_200f",
     "linuxcnc": {
         "ini": {
             "HALUI": {

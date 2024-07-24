@@ -168,7 +168,7 @@ class LinuxCNC:
         output_hal = []
         output_postgui = []
 
-        custom_filter = ("pyvcp", "qtdragon", "axisui", "mpg", "vismach", "kinstype", "melfagui")
+        postgui_filter = ("pyvcp", "qtdragon", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f")
         ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
 
         # hal
@@ -190,14 +190,14 @@ class LinuxCNC:
                 elif in_len == 1:
                     if in_first.startswith("riov."):
                         pass
-                    elif not in_first.startswith(custom_filter):
+                    elif not in_first.startswith(postgui_filter):
                         output_hal_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
                     else:
                         output_postgui_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
                     for out in net["out"]:
                         if out.startswith("riov."):
                             continue
-                        if not out.startswith(custom_filter):
+                        if not out.startswith(postgui_filter):
                             output_hal_tmp.append(f"net {signal_prefix}{network} => {out}")
                         else:
                             output_postgui_tmp.append(f"net {signal_prefix}{network} => {out}")
@@ -212,7 +212,7 @@ class LinuxCNC:
                         for in_n, pin_in in enumerate(net["in"]):
                             if pin_in.startswith("riov."):
                                 pass
-                            elif not pin_in.startswith(custom_filter):
+                            elif not pin_in.startswith(postgui_filter):
                                 output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
                                 output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
                             else:
@@ -223,7 +223,7 @@ class LinuxCNC:
                             if out.startswith("riov."):
                                 continue
                             ctype = net["options"].get(out, {}).get("type", "OR")
-                            if not out.startswith(custom_filter):
+                            if not out.startswith(postgui_filter):
                                 output_hal_tmp.append(f"net {signal_prefix}{network}_out-s => {out}")
                             else:
                                 output_postgui_tmp.append(f"net {signal_prefix}{network}_out-s => {out}")
@@ -241,7 +241,7 @@ class LinuxCNC:
                         for in_n, pin_in in enumerate(net["in"]):
                             if pin_in.startswith("riov."):
                                 pass
-                            elif not pin_in.startswith(custom_filter):
+                            elif not pin_in.startswith(postgui_filter):
                                 output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
                                 output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
                             else:
@@ -255,7 +255,7 @@ class LinuxCNC:
                             if out.startswith("riov."):
                                 continue
                             ctype = net["options"].get(out, {}).get("type", "OR")
-                            if not out.startswith(custom_filter):
+                            if not out.startswith(postgui_filter):
                                 output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
                             else:
                                 output_postgui_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
@@ -278,7 +278,7 @@ class LinuxCNC:
                         isFree = False
                         break
             if isFree:
-                if not name.startswith(custom_filter):
+                if not name.startswith(postgui_filter):
                     output_hal.append(f"setp {name} {value}")
                 else:
                     output_postgui.append(f"setp {name} {value}")
@@ -376,6 +376,7 @@ class LinuxCNC:
         ini_setup = cls.INI_DEFAULTS.copy()
         gui = jdata.get("gui", "axis")
         machinetype = jdata.get("machinetype")
+        embed_vismach = jdata.get("embed_vismach")
 
         netlist = []
         for plugin in jdata["plugins"]:
@@ -422,6 +423,10 @@ class LinuxCNC:
             ini_setup["RS274NGC"]["REMAP|M428"] = "M428 modalgroup=10 ngc=428remap"
             ini_setup["RS274NGC"]["REMAP|M429"] = "M429 modalgroup=10 ngc=429remap"
             ini_setup["RS274NGC"]["REMAP|M430"] = "M430 modalgroup=10 ngc=430remap"
+
+        if embed_vismach:
+            ini_setup["DISPLAY"]["EMBED_TAB_NAME|VISMACH"] = "Vismach"
+            ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|VISMACH"] = f"halcmd loadusr -Wn qtvcp_embed qtvcp -d -c qtvcp_embed -x {{XID}} vismach_{embed_vismach}"
 
         ini_setup["KINS"]["JOINTS"] = num_joints
         ini_setup["KINS"]["KINEMATICS"] = f"{kinematics}{kinematics_options}"
@@ -681,6 +686,7 @@ class LinuxCNC:
     def gui(self):
         os.system(f"mkdir -p {self.configuration_path}/")
         machinetype = self.project.config["jdata"].get("machinetype")
+        embed_vismach = self.project.config["jdata"].get("embed_vismach")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
         gui = self.project.config["jdata"].get("gui", "axis")
         if gui == "qtdragon":
@@ -714,7 +720,11 @@ class LinuxCNC:
             ini_setup["HALUI"][f"MDI_COMMAND|Gensertool"] = "M430"
             (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
             self.cfgxml_data["status"] += gout
-            self.hal_net_add(pname, "vismach.plotclear")
+            if embed_vismach:
+                self.hal_net_add(pname, f"{embed_vismach}.plotclear")
+            else:
+                self.hal_net_add(pname, "vismach.plotclear")
+
             self.cfgxml_data["status"].append("<hbox>")
             self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
             self.cfgxml_data["status"].append("  <bd>2</bd>")
@@ -1164,6 +1174,7 @@ class LinuxCNC:
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         machinetype = self.project.config["jdata"].get("machinetype")
+        embed_vismach = self.project.config["jdata"].get("embed_vismach")
         toolchange = self.project.config["jdata"].get("toolchange", "manual")
 
         self.loadrts.append("# load the realtime components")
@@ -1225,15 +1236,18 @@ class LinuxCNC:
             self.loadrts.append("loadusr -W rotarydelta MIN_JOINT=-420")
             self.loadrts.append("")
         elif machinetype == "melfa":
-            self.loadrts.append("# loading melfa gui")
-            self.loadrts.append("loadusr -W melfagui")
-            self.loadrts.append("")
+            if not embed_vismach:
+                self.loadrts.append("# loading melfa gui")
+                self.loadrts.append("loadusr -W melfagui")
+                self.loadrts.append("")
             self.loadrts.append("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
             self.loadrts.append("")
             os.system(f"mkdir -p {self.configuration_path}/")
             os.system(f"cp -a riocore/files/melfa/* {self.configuration_path}/")
-            for joint in range(6):
-                self.hal_net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
+            if not embed_vismach:
+                for joint in range(6):
+                    self.hal_net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
+
             linuxcnc_setp = {
                 "genserkins.A-0": 0,
                 "genserkins.A-1": 85,
@@ -1254,6 +1268,10 @@ class LinuxCNC:
                 "genserkins.D-4": 0,
                 "genserkins.D-5": 235,
             }
+
+        if embed_vismach:
+            for joint in range(len(self.axis_dict)):
+                self.hal_net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}")
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
