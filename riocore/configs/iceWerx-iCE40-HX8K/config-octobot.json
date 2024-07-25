@@ -723,7 +723,7 @@
     ],
     "linuxcnc": {
         "num_axis": 6,
-        "machinetype": "mill"
-        "gui": "axis",
+        "machinetype": "mill",
+        "gui": "axis"
     }
 }
