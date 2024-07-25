@@ -2575,6 +2575,7 @@ class WinForm(QWidget):
         message = QLabel("Slot:")
         dialog.layout.addWidget(message)
         combo_slot = QComboBox(self)
+        dialog.layout.addWidget(combo_slot)
 
         message = QLabel("Module:")
         dialog.layout.addWidget(message)
@@ -2584,7 +2585,6 @@ class WinForm(QWidget):
             slot_name = slot["name"]
             if slot_name not in self.modules:
                 combo_slot.addItem(slot_name)
-        dialog.layout.addWidget(combo_slot)
 
         for module in self.module_names:
             combo_module.addItem(module)
