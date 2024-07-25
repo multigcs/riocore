@@ -2082,14 +2082,15 @@ class WinForm(QWidget):
         self.display()
 
     def add_module(self, widget):
+        last_error = None
+        slot_name = None
+        module_name = None
         while True:
-            print("select")
-            ret = self.select_module()
+            ret = self.select_module(last_error=last_error, set_slot=slot_name, set_module=module_name)
             if not ret:
                 return
-            slot_name, module_name = self.select_module()
+            slot_name, module_name = ret
             if not module_name or not slot_name:
-                print("cancel")
                 return
 
             module_path = self.get_path(f"modules/{module_name}.json")
@@ -2106,14 +2107,15 @@ class WinForm(QWidget):
             for plugin in module_defaults.get("plugins"):
                 for pin_name, pin_config in plugin.get("pins", {}).items():
                     pin_location = pin_config.get("pin")
-                    print(pin_location, slot_pins)
+                    # print(pin_location, slot_pins)
                     if pin_location not in slot_pins:
                         check = False
 
             if check is True:
                 break
             else:
-                print("ERROR: module/slot is not compatible")
+                last_error = "ERROR: module/slot is not compatible"
+                print(last_error)
 
         if "modules" not in self.config:
             self.config["modules"] = []
@@ -2126,7 +2128,7 @@ class WinForm(QWidget):
                 "setup": module_setup,
             }
         )
-        print("module_instance", self.config["modules"])
+        # print("module_instance", self.config["modules"])
 
         mplugins = riocore.Plugins()
         for plugin_id, plugin_config in enumerate(module_defaults.get("plugins", [])):
@@ -2563,7 +2565,7 @@ class WinForm(QWidget):
         if dialog.exec():
             return plugin_name.text()
 
-    def select_module(self):
+    def select_module(self, last_error=None, set_slot=None, set_module=None):
         dialog = QDialog()
         dialog.setWindowTitle("add Module")
         dialog.setStyleSheet(STYLESHEET)
@@ -2572,22 +2574,35 @@ class WinForm(QWidget):
         dialog.buttonBox.accepted.connect(dialog.accept)
 
         dialog.layout = QVBoxLayout()
-        message = QLabel("Slot:")
-        dialog.layout.addWidget(message)
+        if last_error:
+            message = QLabel(last_error)
+            dialog.layout.addWidget(message)
+
+        label = QLabel("Slot:")
+        dialog.layout.addWidget(label)
         combo_slot = QComboBox(self)
         dialog.layout.addWidget(combo_slot)
 
-        message = QLabel("Module:")
-        dialog.layout.addWidget(message)
+        label = QLabel("Module:")
+        dialog.layout.addWidget(label)
         combo_module = QComboBox(self)
 
+        item = 0
         for slot in self.slots:
             slot_name = slot["name"]
             if slot_name not in self.modules:
                 combo_slot.addItem(slot_name)
+                if slot_name == set_slot:
+                    combo_slot.setCurrentIndex(item)
+                item += 1
 
-        for module in self.module_names:
-            combo_module.addItem(module)
+        item = 0
+        for module_name in self.module_names:
+            combo_module.addItem(module_name)
+            if module_name == set_module:
+                combo_module.setCurrentIndex(item)
+            item += 1
+
         dialog.layout.addWidget(combo_module)
 
         dialog.layout.addWidget(dialog.buttonBox)
