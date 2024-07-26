@@ -1064,7 +1064,6 @@ class WinForm(QWidget):
         layout_box.setContentsMargins(0, 0, 0, 0)
         layout_box.addWidget(self.image)
         self.boardimg.setFixedSize(pixmap1.size())
-        #        self.img_container.setFixedSize(pixmap1.size())
 
         for slot in self.slots:
             slot_name = slot["name"]
@@ -2244,22 +2243,32 @@ class WinForm(QWidget):
             pin_rows = QVBoxLayout()
 
             pin_cols = QHBoxLayout()
-            pin_cols.addWidget(QLabel("Pin:"), stretch=2)
-            pin_cols.addWidget(self.edit_item(pin_config, "pin", {"type": "select", "options": self.pinlist, "default": ""}, cb=update), stretch=6)
-            pin_cols.addWidget(QLabel("Pull:"), stretch=1)
-            pin_cols.addWidget(self.edit_item(pin_config, "pull", {"type": "select", "options": [None, "up", "down"], "default": None}, cb=update), stretch=3)
             pin_rows.addLayout(pin_cols)
+            pin_cols.addWidget(QLabel(f"Dir: {direction}"), stretch=1)
 
             pin_cols = QHBoxLayout()
-            pin_cols.addWidget(QLabel("Slew:"), stretch=1)
-            pin_cols.addWidget(self.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW"}, cb=update), stretch=3)
-            pin_cols.addWidget(QLabel("Drive:"), stretch=1)
-            pin_cols.addWidget(self.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4"}, cb=update), stretch=3)
+            pin_rows.addLayout(pin_cols)
+            pin_cols.addWidget(QLabel("Pin:"), stretch=2)
+            pin_cols.addWidget(self.edit_item(pin_config, "pin", {"type": "select", "options": self.pinlist, "default": ""}, cb=update), stretch=6)
+            if direction == "input":
+                pin_cols.addWidget(QLabel("Pull:"), stretch=1)
+                pin_cols.addWidget(self.edit_item(pin_config, "pull", {"type": "select", "options": [None, "up", "down"], "default": None}, cb=update), stretch=3)
+            else:
+                pin_cols.addWidget(QLabel(""), stretch=4)
+
+            pin_cols = QHBoxLayout()
+            pin_rows.addLayout(pin_cols)
             pin_cols.addWidget(QLabel("IO-Standart:"), stretch=1)
             pin_cols.addWidget(
                 self.edit_item(pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL"}, cb=update), stretch=3
             )
-            pin_rows.addLayout(pin_cols)
+            if direction == "output":
+                pin_cols.addWidget(QLabel("Slew:"), stretch=1)
+                pin_cols.addWidget(self.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW"}, cb=update), stretch=3)
+                pin_cols.addWidget(QLabel("Drive:"), stretch=1)
+                pin_cols.addWidget(self.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4"}, cb=update), stretch=3)
+            else:
+                pin_cols.addWidget(QLabel(""), stretch=8)
 
             frame.setLayout(pin_rows)
             pins.addWidget(frame)
@@ -2354,19 +2363,12 @@ class WinForm(QWidget):
             joint_tab.setLayout(joint)
             tabwidget.addTab(joint_tab, "Joint")
 
-        else:
-            signal_table = QTableWidget()
-            signal_table.setColumnCount(10)
-            signal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Name"))
-            signal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Type"))
-            signal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Direction"))
-            signal_table.setHorizontalHeaderItem(3, QTableWidgetItem("Multiplexed"))
-            signal_table.setHorizontalHeaderItem(4, QTableWidgetItem("Net"))
-            signal_table.setHorizontalHeaderItem(5, QTableWidgetItem("Function"))
-            signal_table.setHorizontalHeaderItem(6, QTableWidgetItem("Scale"))
-            signal_table.setHorizontalHeaderItem(7, QTableWidgetItem("Offset"))
-            signal_table.setHorizontalHeaderItem(8, QTableWidgetItem("Setp"))
-            signal_table.setHorizontalHeaderItem(9, QTableWidgetItem("Display"))
+        elif plugin_instance.TYPE != "interface":
+            ## Signals
+            signals = QVBoxLayout()
+            label = QLabel("Signals-Setup")
+            label.setFont(myFont)
+            signals.addWidget(label)
 
             if "signals" not in plugin_config:
                 plugin_config["signals"] = {}
@@ -2374,7 +2376,7 @@ class WinForm(QWidget):
 
             row_n = 0
             for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
-                signal_table.setRowCount(row_n + 1)
+                # signal_table.setRowCount(row_n + 1)
                 if signal_name not in signals_setup:
                     signals_setup[signal_name] = {}
                 help_text = f"{signal_name} config"
@@ -2400,47 +2402,68 @@ class WinForm(QWidget):
                     elif halpin_info.get("type") != bool:
                         options_func.append(halpin)
 
-                signal_table.setItem(row_n, 0, QTableWidgetItem(signal_name))
+                frame = QGroupBox(self)
+                frame.setTitle(signal_name)
+                frame.setToolTip(help_text)
+
+                signal_rows = QVBoxLayout()
+
+                signal_cols = QHBoxLayout()
+                signal_rows.addLayout(signal_cols)
+
                 if is_bool:
-                    signal_table.setItem(row_n, 1, QTableWidgetItem("BOOL"))
+                    signal_cols.addWidget(QLabel(f"Type: BOOL"), stretch=1)
                 else:
-                    signal_table.setItem(row_n, 1, QTableWidgetItem("FLOAT"))
-                signal_table.setItem(row_n, 2, QTableWidgetItem(signal_direction))
+                    signal_cols.addWidget(QLabel(f"Type: FLOAT"), stretch=1)
+
+                signal_cols.addWidget(QLabel(f"Dir: {signal_direction}"), stretch=1)
+
                 if signal_multiplexed:
-                    signal_table.setItem(row_n, 3, QTableWidgetItem("YES"))
+                    signal_cols.addWidget(QLabel(f"Multiplexed: YES"), stretch=1)
                 else:
-                    signal_table.setItem(row_n, 3, QTableWidgetItem("NO"))
+                    signal_cols.addWidget(QLabel(f"Multiplexed: NO"), stretch=1)
 
-                signal_net = signals_setup[signal_name].get("net", "")
-                signal_table.setItem(row_n, 4, QTableWidgetItem())
-
-                signal_function = signals_setup[signal_name].get("function", "")
-                signal_table.setItem(row_n, 5, QTableWidgetItem())
-
-                signal_scale = signals_setup[signal_name].get("scale", "")
-                signal_table.setItem(row_n, 6, QTableWidgetItem())
-
-                signal_offset = signals_setup[signal_name].get("offset", "")
-                signal_table.setItem(row_n, 7, QTableWidgetItem())
-
+                signal_cols = QHBoxLayout()
+                signal_rows.addLayout(signal_cols)
+                signal_cols.addWidget(QLabel("Net:"), stretch=1)
                 signal_setup["net"] = {"type": "select", "options": options_net}
-                signal_table.setCellWidget(row_n, 4, self.edit_item(signals_setup[signal_name], "net", signal_setup["net"], cb=update))
+                signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "net", signal_setup["net"], cb=update), stretch=5)
 
+                signal_cols = QHBoxLayout()
+                signal_rows.addLayout(signal_cols)
+                signal_cols.addWidget(QLabel("Function:"), stretch=1)
                 signal_setup["function"] = {"type": "select", "options": options_func}
-                signal_table.setCellWidget(row_n, 5, self.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update))
-
-                if "source" not in signal_defaults and not signal_defaults.get("bool"):
-                    signal_setup["scale"] = {"type": float, "default": 1.0}
-                    signal_table.setCellWidget(row_n, 6, self.edit_item(signals_setup[signal_name], "scale", signal_setup["scale"], cb=update))
-                    signal_setup["offset"] = {"type": float, "default": 0.0}
-                    signal_table.setCellWidget(row_n, 7, self.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update))
+                signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update), stretch=5)
 
                 if signal_direction == "output":
                     signal_setup["setp"] = {"type": str, "default": ""}
-                    signal_table.setCellWidget(row_n, 8, self.edit_item(signals_setup[signal_name], "setp", signal_setup["setp"], cb=update))
+                    signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "setp", signal_setup["setp"], cb=update), stretch=1)
 
-                row_n += 1
-            tabwidget.addTab(signal_table, "Signals")
+                signal_cols = QHBoxLayout()
+                signal_rows.addLayout(signal_cols)
+
+                if "source" not in signal_defaults and not signal_defaults.get("bool"):
+                    signal_cols.addWidget(QLabel(f"Scale"), stretch=1)
+                    signal_setup["scale"] = {"type": float, "default": 1.0}
+                    signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "scale", signal_setup["scale"], cb=update), stretch=4)
+
+                    signal_cols.addWidget(QLabel(f"Offset"), stretch=1)
+                    signal_setup["offset"] = {"type": float, "default": 0.0}
+                    signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
+
+                signal_cols = QHBoxLayout()
+                signal_rows.addLayout(signal_cols)
+                signal_cols.addWidget(QLabel(f"Display"), stretch=1)
+
+                frame.setLayout(signal_rows)
+                signals.addWidget(frame)
+
+            signals_tab = QWidget()
+            signals.addStretch()
+            signals_tab.setLayout(signals)
+            tabwidget.addTab(signals_tab, "Signals")
+
+            # tabwidget.addTab(signal_table, "Signals")
 
         blayout = QHBoxLayout()
         dialog.layout.addLayout(blayout)
