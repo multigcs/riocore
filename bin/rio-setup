@@ -2150,7 +2150,8 @@ class WinForm(QWidget):
 
         self.config_load()
 
-    def del_plugin(self, plugin_instance, plugin_id, widget, dialog=None):
+    def del_plugin(self, plugin_instance, widget, dialog=None):
+        plugin_id = plugin_instance.plugin_id
         if dialog is not None:
             dialog.close()
         self.config["plugins"].pop(plugin_id)
@@ -2529,7 +2530,7 @@ class WinForm(QWidget):
         dialog_buttonBox.rejected.connect(dialog.reject)
 
         remove_button = QPushButton(self.tr("Remove"))
-        remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, plugin_instance.plugin_id, dialog=dialog))
+        remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
         dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
         tab_widget = QTabWidget()
@@ -2856,7 +2857,7 @@ class WinForm(QWidget):
         buttons_widget.setLayout(buttons_layout)
 
         button_delete = QPushButton("delete")
-        cb = partial(self.del_plugin, plugin_instance, plugin_instance.plugin_id)
+        cb = partial(self.del_plugin, plugin_instance)
         button_delete.clicked.connect(cb)
         button_delete.setMaximumSize(button_delete.sizeHint())
         buttons_layout.addWidget(button_delete)
