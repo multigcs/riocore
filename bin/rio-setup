@@ -270,8 +270,8 @@ class ImageMap(QLabel):
         dialog.setWindowTitle("set pin")
         # dialog.setStyleSheet(STYLESHEET)
 
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
 
         dialog.layout = QVBoxLayout()
         message = QLabel("Slot:")
@@ -279,7 +279,7 @@ class ImageMap(QLabel):
         configstr = QLineEdit("JOINT STEP 0")
         dialog.layout.addWidget(configstr)
 
-        dialog.layout.addWidget(dialog.buttonBox)
+        dialog.layout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
@@ -785,8 +785,8 @@ class WinForm(QWidget):
         dialog.setStyleSheet(STYLESHEET)
 
         dialog.layout = QVBoxLayout()
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
         dialog.setLayout(dialog.layout)
 
         def show_plugin_info(idx):
@@ -854,7 +854,7 @@ class WinForm(QWidget):
         infos.addWidget(right_widget, stretch=1)
 
         dialog.layout.addLayout(infos)
-        dialog.layout.addWidget(dialog.buttonBox)
+        dialog.layout.addWidget(dialog_buttonBox)
 
         show_plugin_info(0)
 
@@ -2519,45 +2519,48 @@ class WinForm(QWidget):
         dialog = QDialog()
         dialog.setWindowTitle(f"edit Plugin {plugin_instance.NAME}")
         dialog.setStyleSheet(STYLESHEET)
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
 
-        remove = QPushButton(self.tr("Remove"))
-        cb = partial(self.del_plugin, plugin_instance, plugin_instance.plugin_id, dialog=dialog)
-        remove.clicked.connect(cb)
-        dialog.buttonBox.addButton(remove, QDialogButtonBox.ActionRole)
+        remove_button = QPushButton(self.tr("Remove"))
+        remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, plugin_instance.plugin_id, dialog=dialog))
+        dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
-        dialog.layout = QVBoxLayout()
-        tabwidget = QTabWidget()
+        tab_widget = QTabWidget()
 
         options_tab = self.edit_plugin_options(plugin_instance, plugin_config)
-        tabwidget.addTab(options_tab, "Plugin")
+        tab_widget.addTab(options_tab, "Plugin")
 
         pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config)
-        tabwidget.addTab(pins_tab, "Pins")
+        tab_widget.addTab(pins_tab, "Pins")
         if is_new:
-            tabwidget.setCurrentWidget(pins_tab)
+            tab_widget.setCurrentWidget(pins_tab)
 
         if plugin_instance.TYPE == "joint" and plugin_instance.plugin_setup.get("is_joint", False):
             joint_tab = self.edit_plugin_joints(plugin_instance)
-            tabwidget.addTab(joint_tab, "Joint")
+            tab_widget.addTab(joint_tab, "Joint")
         elif plugin_instance.TYPE != "interface":
             signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config)
-            tabwidget.addTab(signals_tab, "Signals")
+            tab_widget.addTab(signals_tab, "Signals")
 
-        blayout = QHBoxLayout()
-        dialog.layout.addLayout(blayout)
-        blayout.addWidget(tabwidget)
-
+        img_layout = QVBoxLayout()
         plugin_path = f"{riocore_path}/plugins/{plugin_instance.NAME}"
         image_path = f"{plugin_path}/image.png"
         if os.path.isfile(image_path):
             ilabel = QLabel(self)
             pixmap = QPixmap(image_path)
             ilabel.setPixmap(pixmap)
-            blayout.addWidget(ilabel, stretch=1)
-        dialog.layout.addWidget(dialog.buttonBox)
-        dialog.setLayout(dialog.layout)
+            img_layout.addWidget(ilabel)
+            img_layout.addStretch()
+
+        hlayout = QHBoxLayout()
+        hlayout.addWidget(tab_widget)
+        hlayout.addLayout(img_layout)
+
+        dialog_layout = QVBoxLayout()
+        dialog_layout.addLayout(hlayout)
+        dialog_layout.addWidget(dialog_buttonBox)
+        dialog.setLayout(dialog_layout)
 
         if dialog.exec():
             self.config_load()
@@ -2601,8 +2604,8 @@ class WinForm(QWidget):
         dialog.setFixedHeight(600)
         dialog.setStyleSheet(STYLESHEET)
 
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
 
         dialog.layout = QVBoxLayout()
 
@@ -2643,7 +2646,7 @@ class WinForm(QWidget):
 
         table.cellClicked.connect(change)
 
-        dialog.layout.addWidget(dialog.buttonBox)
+        dialog.layout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
@@ -2656,8 +2659,8 @@ class WinForm(QWidget):
         dialog.setFixedHeight(600)
         dialog.setStyleSheet(STYLESHEET)
 
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
 
         dialog.layout = QVBoxLayout()
 
@@ -2673,8 +2676,8 @@ class WinForm(QWidget):
         dialog.setWindowTitle("add Module")
         dialog.setStyleSheet(STYLESHEET)
 
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
 
         dialog.layout = QVBoxLayout()
         if last_error:
@@ -2708,7 +2711,7 @@ class WinForm(QWidget):
 
         dialog.layout.addWidget(combo_module)
 
-        dialog.layout.addWidget(dialog.buttonBox)
+        dialog.layout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
