@@ -2188,6 +2188,7 @@ class WinForm(QWidget):
     def del_plugin(self, plugin_instance, widget, dialog=None):
         plugin_id = plugin_instance.plugin_id
         if dialog is not None:
+            dialog.is_removed = True
             dialog.close()
         self.config["plugins"].pop(plugin_id)
         self.config_load()
@@ -2558,6 +2559,7 @@ class WinForm(QWidget):
         plugin_config_backup = copy.deepcopy(plugin_config)
 
         dialog = QDialog()
+        dialog.is_removed = False
         dialog.setWindowTitle(f"edit Plugin {plugin_instance.NAME}")
         dialog.setStyleSheet(STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
@@ -2613,7 +2615,8 @@ class WinForm(QWidget):
             self.config_load()
             self.display()
             return
-        self.config["plugins"][plugin_id] = plugin_config_backup
+        if not dialog.is_removed:
+            self.config["plugins"][plugin_id] = plugin_config_backup
 
     def config_plugin(self, plugin_instance, plugin_id, widget):
         if os.path.isfile(f"{riocore_path}/plugins/{plugin_instance.NAME}/config.py"):
