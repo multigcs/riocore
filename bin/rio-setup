@@ -584,7 +584,7 @@ class WinForm(QWidget):
             self.pininfo.setText("")
         elif self.pininfo_timer > 1:
             self.pininfo_timer -= 1
-        
+
         if self.request_load_tree > 1:
             self.request_load_tree -= 1
         elif self.request_load_tree == 1:
