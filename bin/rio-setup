@@ -2163,6 +2163,13 @@ class WinForm(QWidget):
         def update(arg):
             print("#update", arg, plugin_config)
 
+        def toggleGroup(ctrl):
+            state = ctrl.isChecked()
+            if state:
+                ctrl.setFixedHeight(ctrl.sizeHint().height())
+            else:
+                ctrl.setFixedHeight(30)
+
         dialog = QDialog()
         dialog.setWindowTitle(f"edit Plugin {plugin_instance.NAME}")
         dialog.setStyleSheet(STYLESHEET)
@@ -2381,7 +2388,6 @@ class WinForm(QWidget):
                 plugin_config["signals"] = {}
             signals_setup = plugin_config["signals"]
 
-            row_n = 0
             for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
                 # signal_table.setRowCount(row_n + 1)
                 if signal_name not in signals_setup:
@@ -2412,6 +2418,9 @@ class WinForm(QWidget):
                 frame = QGroupBox(self)
                 frame.setTitle(signal_name)
                 frame.setToolTip(help_text)
+                frame.setCheckable(True)
+                frame.setChecked(True)
+                frame.toggled.connect(partial(toggleGroup, frame))
 
                 signal_rows = QVBoxLayout()
 
