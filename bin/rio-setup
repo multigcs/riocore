@@ -2273,9 +2273,16 @@ class WinForm(QWidget):
             frame.setLayout(pin_rows)
             pins.addWidget(frame)
 
-        pins_tab = QWidget()
+        pins_widget = QWidget()
         pins.addStretch()
-        pins_tab.setLayout(pins)
+        pins_widget.setLayout(pins)
+
+        pins_tab = QScrollArea()
+        pins_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        pins_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        pins_tab.setWidgetResizable(True)
+        pins_tab.setWidget(pins_widget)
+
         tabwidget.addTab(pins_tab, "Pins")
         if is_new:
             tabwidget.setCurrentWidget(pins_tab)
@@ -2458,12 +2465,16 @@ class WinForm(QWidget):
                 frame.setLayout(signal_rows)
                 signals.addWidget(frame)
 
-            signals_tab = QWidget()
+            signals_widget = QWidget()
             signals.addStretch()
-            signals_tab.setLayout(signals)
-            tabwidget.addTab(signals_tab, "Signals")
+            signals_widget.setLayout(signals)
 
-            # tabwidget.addTab(signal_table, "Signals")
+            signals_tab = QScrollArea()
+            signals_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+            signals_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            signals_tab.setWidgetResizable(True)
+            signals_tab.setWidget(signals_widget)
+            tabwidget.addTab(signals_tab, "Signals")
 
         blayout = QHBoxLayout()
         dialog.layout.addLayout(blayout)

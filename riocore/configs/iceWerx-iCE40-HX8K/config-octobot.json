@@ -190,7 +190,8 @@
                 "data": {
                     "pin": "WLED:DATA"
                 }
-            }
+            },
+            "leds": 4
         },
         {
             "type": "bitin",
