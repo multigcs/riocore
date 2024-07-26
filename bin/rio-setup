@@ -2521,9 +2521,6 @@ class WinForm(QWidget):
         plugin_config = self.config["plugins"][plugin_id]
         plugin_config_backup = copy.deepcopy(plugin_config)
 
-        def update(arg):
-            print("#update", arg, plugin_config)
-
         dialog = QDialog()
         dialog.setWindowTitle(f"edit Plugin {plugin_instance.NAME}")
         dialog.setStyleSheet(STYLESHEET)
