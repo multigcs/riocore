@@ -490,6 +490,10 @@ class WinForm(QWidget):
         button.clicked.connect(self.testgui)
         button_layout.addWidget(button)
 
+        button = QPushButton("PyVCP-Preview")
+        button.clicked.connect(self.open_pyvcp)
+        button_layout.addWidget(button)
+
         self.addons = {}
         for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/config.py"):
             addon_name = addon_path.split("/")[-2]
@@ -502,11 +506,12 @@ class WinForm(QWidget):
 
         self.request_load_tree = 0
         self.request_load_hal = 0
+        self.request_generate = 0
         self.request_pin_table_load = 0
         self.request_sig_table_load = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(500)
+        self.timer.start(1000)
 
     def check_status(self):
         self.config_checked = self.clean_config(self.config)
@@ -579,6 +584,12 @@ class WinForm(QWidget):
                 self.info_flashed.setChecked(False)
 
     def runTimer(self):
+        if self.request_generate > 1:
+            self.request_generate -= 1
+        elif self.request_generate == 1:
+            self.generate_cb(preview=True)
+            self.request_generate = 0
+
         if self.pininfo_timer == 1:
             self.pininfo_timer = 0
             self.pininfo.setText("")
@@ -1278,12 +1289,31 @@ class WinForm(QWidget):
 
     def display(self):
         try:
-            self.generate_cb(preview=True)
+            self.request_generate = 2
             self.request_pin_table_load = 2
             self.request_sig_table_load = 2
             self.overview_load()
             self.json_preview()
             self.info_widget.setText(self.config_file)
+        except Exception as error:
+            print(f"ERROR: {error}")
+            self.info_widget.setText(f"ERROR: {error}")
+
+    def open_pyvcp(self):
+        try:
+            if os.system("pidof linuxcncsvr") == 0:
+                print(f"ERROR: linuxcnc is running")
+                self.info_widget.setText(f"ERROR: linuxcnc is running")
+            else:
+                self.generate_cb(preview=True)
+                if "rio-gui.xml" in self.linuxcnc:
+                    xml_data = self.linuxcnc["rio-gui.xml"].toPlainText()
+                    if xml_data:
+                        tmp_file = ".tmp_rio-gui.xml"
+                        os.system('ps fax | grep "pyvcp .tmp_rio-gui.xml" | grep -v grep | cut -d" " -f1 | xargs -r -l kill -4')
+                        os.system("halcmd stop")
+                        open(tmp_file, "w").write(xml_data)
+                        os.system(f"(pyvcp '{tmp_file}' ; rm -f '{tmp_file}') &")
         except Exception as error:
             print(f"ERROR: {error}")
             self.info_widget.setText(f"ERROR: {error}")
@@ -2461,7 +2491,7 @@ class WinForm(QWidget):
                 display_cols = QHBoxLayout()
                 display_rows.addLayout(display_cols)
                 display_cols.addWidget(QLabel(option.title()), stretch=1)
-                display_cols.addWidget(self.edit_item(signals_setup[signal_name]["display"], option, option_setup, cb=None))
+                display_cols.addWidget(self.edit_item(signals_setup[signal_name]["display"], option, option_setup, cb=None), stretch=5)
 
         signals_widget = QWidget()
         signals.addStretch()
@@ -2533,6 +2563,11 @@ class WinForm(QWidget):
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog_buttonBox.rejected.connect(dialog.reject)
+
+        if self.config["linuxcnc"].get("gui", "axis") == "axis":
+            pyvcp_button = QPushButton(self.tr("PyVCP-Preview"))
+            pyvcp_button.clicked.connect(self.open_pyvcp)
+            dialog_buttonBox.addButton(pyvcp_button, QDialogButtonBox.ActionRole)
 
         remove_button = QPushButton(self.tr("Remove"))
         remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
