@@ -2571,9 +2571,10 @@ class WinForm(QWidget):
             pyvcp_button.clicked.connect(self.open_pyvcp)
             dialog_buttonBox.addButton(pyvcp_button, QDialogButtonBox.ActionRole)
 
-        remove_button = QPushButton(self.tr("Remove"))
-        remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
-        dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
+        if not is_new:
+            remove_button = QPushButton(self.tr("Remove"))
+            remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
+            dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
         tab_widget = QTabWidget()
 
