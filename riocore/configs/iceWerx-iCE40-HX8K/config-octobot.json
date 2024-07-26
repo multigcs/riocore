@@ -720,6 +720,27 @@
                     "direction": "input"
                 }
             }
+        },
+        {
+            "type": "ads1115",
+            "pins": {
+                "sda": {
+                    "pin": "I2C1:SDA"
+                },
+                "scl": {
+                    "pin": "I2C1:SCL"
+                }
+            },
+            "signals": {
+                "adc0": {
+                    "display": {
+                        "title": "Volt1",
+                        "section": "Status"
+                    },
+                    "offset": 2.0
+                }
+            },
+            "name": "analog"
         }
     ],
     "linuxcnc": {

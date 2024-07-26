@@ -704,7 +704,7 @@ class LinuxCNC:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     userconfig = signal_config.get("userconfig", {})
                     displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                    section = displayconfig.get("section")
+                    section = displayconfig.get("section", "").lower()
                     if section and section not in self.cfgxml_data:
                         self.cfgxml_data[section] = []
         self.cfgxml_data["inputs"] = []
@@ -1050,16 +1050,16 @@ class LinuxCNC:
 
                     if (netname and not virtual) or setp:
                         if direction == "input":
-                            section = displayconfig.get("section", "inputs")
+                            section = displayconfig.get("section", "inputs").lower()
                         elif direction == "output":
-                            section = displayconfig.get("section", "outputs")
+                            section = displayconfig.get("section", "outputs").lower()
                         if not boolean:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
 
                     elif virtual:
-                        section = displayconfig.get("section", "virtual")
+                        section = displayconfig.get("section", "virtual").lower()
                         if direction == "output":
                             if not boolean:
                                 dtype = displayconfig.get("type", "number")
@@ -1072,13 +1072,13 @@ class LinuxCNC:
                                 dtype = displayconfig.get("type", "checkbutton")
 
                     elif direction == "input":
-                        section = displayconfig.get("section", "inputs")
+                        section = displayconfig.get("section", "inputs").lower()
                         if not boolean:
                             dtype = displayconfig.get("type", "number")
                         else:
                             dtype = displayconfig.get("type", "led")
                     elif direction == "output":
-                        section = displayconfig.get("section", "outputs")
+                        section = displayconfig.get("section", "outputs").lower()
                         if not boolean:
                             dtype = displayconfig.get("type", "scale")
                         else:
