@@ -136,13 +136,16 @@ class PluginBase:
                     "description": "configure as joint",
                 }
 
-        self.instances_name = f"{self.NAME}{self.plugin_id}"
-        self.title = plugin_setup.get("name") or self.instances_name
+        self.update_title()
 
         if self.TYPE == "expansion":
             expansion_id = len(self.expansions)
             self.expansion_prefix = self.plugin_setup.get("name", f"EXPANSION{expansion_id}").upper()
             self.expansions.append(self.expansion_prefix)
+
+    def update_title(self):
+        self.instances_name = f"{self.NAME}{self.plugin_id}"
+        self.title = self.plugin_setup.get("name") or self.instances_name
 
     def firmware_defines(self):
         return ""

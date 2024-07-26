@@ -2230,16 +2230,16 @@ class WinForm(QWidget):
 
         return pins_tab
 
-    def edit_plugin_joints(self, plugin_instance):
+    def edit_plugin_joints(self, plugin_instance, plugin_config):
         def update(arg):
             print("#update", arg)
 
         myFont = QFont()
         myFont.setBold(True)
 
-        if "joint" not in plugin_instance.plugin_setup:
-            plugin_instance.plugin_setup["joint"] = {}
-        joints_setup = plugin_instance.plugin_setup["joint"]
+        if "joint" not in plugin_config:
+            plugin_config["joint"] = {}
+        joints_setup = plugin_config["joint"]
 
         joint_options = {
             "scale": {
@@ -2470,12 +2470,14 @@ class WinForm(QWidget):
 
     def edit_plugin_options(self, plugin_instance, plugin_config):
         def update(arg):
-            print("#update", arg, plugin_config)
+            plugin_instance.update_title()
+            iname_label.setText(plugin_instance.title)
 
         myFont = QFont()
         myFont.setBold(True)
 
         options = QVBoxLayout()
+
         infotext = plugin_instance.INFO
         label = QLabel(f"{infotext}\n")
         label.setFont(myFont)
@@ -2484,6 +2486,12 @@ class WinForm(QWidget):
         label = QLabel(f"{descriptiontext}\n")
         options.addWidget(label)
 
+        iname_row = QHBoxLayout()
+        iname_row.addWidget(QLabel("Instance-Name"), stretch=1)
+        iname_label = QLabel(plugin_instance.title)
+        iname_row.addWidget(iname_label, stretch=3)
+        options.addLayout(iname_row)
+
         for option_name, option_defaults in plugin_instance.OPTIONS.items():
             title = option_name.title()
             unit = option_defaults.get("unit")
@@ -2491,12 +2499,11 @@ class WinForm(QWidget):
                 title = f"{title} ({unit})"
             help_text = option_defaults.get("description", title)
             option_row = QHBoxLayout()
+            options.addLayout(option_row)
             option_label = QLabel(title)
             option_label.setToolTip(help_text)
             option_row.addWidget(option_label, stretch=1)
-            option_widget = self.edit_item(plugin_instance.plugin_setup, option_name, option_defaults, cb=update)
-            option_row.addWidget(option_widget, stretch=3)
-            options.addLayout(option_row)
+            option_row.addWidget(self.edit_item(plugin_config, option_name, option_defaults, cb=update), stretch=3)
 
         if plugin_instance.PLUGIN_CONFIG:
             button_config = QPushButton("config")
@@ -2512,6 +2519,7 @@ class WinForm(QWidget):
 
     def edit_plugin(self, plugin_instance, plugin_id, widget, is_new=False):
         plugin_config = self.config["plugins"][plugin_id]
+        plugin_config_backup = copy.deepcopy(plugin_config)
 
         def update(arg):
             print("#update", arg, plugin_config)
@@ -2519,8 +2527,9 @@ class WinForm(QWidget):
         dialog = QDialog()
         dialog.setWindowTitle(f"edit Plugin {plugin_instance.NAME}")
         dialog.setStyleSheet(STYLESHEET)
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
 
         remove_button = QPushButton(self.tr("Remove"))
         remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, plugin_instance.plugin_id, dialog=dialog))
@@ -2536,26 +2545,26 @@ class WinForm(QWidget):
         if is_new:
             tab_widget.setCurrentWidget(pins_tab)
 
-        if plugin_instance.TYPE == "joint" and plugin_instance.plugin_setup.get("is_joint", False):
-            joint_tab = self.edit_plugin_joints(plugin_instance)
+        if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
+            joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
             tab_widget.addTab(joint_tab, "Joint")
         elif plugin_instance.TYPE != "interface":
             signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config)
             tab_widget.addTab(signals_tab, "Signals")
 
-        img_layout = QVBoxLayout()
+        right_layout = QVBoxLayout()
         plugin_path = f"{riocore_path}/plugins/{plugin_instance.NAME}"
         image_path = f"{plugin_path}/image.png"
         if os.path.isfile(image_path):
             ilabel = QLabel(self)
             pixmap = QPixmap(image_path)
             ilabel.setPixmap(pixmap)
-            img_layout.addWidget(ilabel)
-            img_layout.addStretch()
+            right_layout.addWidget(ilabel)
+            right_layout.addStretch()
 
         hlayout = QHBoxLayout()
         hlayout.addWidget(tab_widget)
-        hlayout.addLayout(img_layout)
+        hlayout.addLayout(right_layout)
 
         dialog_layout = QVBoxLayout()
         dialog_layout.addLayout(hlayout)
@@ -2566,6 +2575,7 @@ class WinForm(QWidget):
             self.config_load()
             self.display()
             return
+        self.config["plugins"][plugin_id] = plugin_config_backup
 
     def config_plugin(self, plugin_instance, plugin_id, widget):
         if os.path.isfile(f"{riocore_path}/plugins/{plugin_instance.NAME}/config.py"):
