@@ -7,7 +7,7 @@ def hal(parent):
     mxmpg_device = mxmpg_config.get("device", "/dev/ttyACM0")
     mxmpg_buttons = mxmpg_config.get("buttons")
     if mxmpg_enable:
-        output.append(f"loadusr mpg -d {mxmpg_device} -s")
+        output.append(f"loadusr -W mpg -d {mxmpg_device} -s")
         output.append("")
 
         # display status
