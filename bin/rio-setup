@@ -2418,14 +2418,12 @@ class WinForm(QWidget):
                 frame = QGroupBox(self)
                 frame.setTitle(signal_name)
                 frame.setToolTip(help_text)
-                frame.setCheckable(True)
-                frame.setChecked(True)
-                frame.toggled.connect(partial(toggleGroup, frame))
-
-                signal_rows = QVBoxLayout()
 
                 signal_cols = QHBoxLayout()
+                signal_rows = QVBoxLayout()
                 signal_rows.addLayout(signal_cols)
+                frame.setLayout(signal_rows)
+                signals.addWidget(frame)
 
                 if is_bool:
                     signal_cols.addWidget(QLabel(f"Type: BOOL"), stretch=1)
@@ -2452,6 +2450,7 @@ class WinForm(QWidget):
                 signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update), stretch=5)
 
                 if signal_direction == "output":
+                    signal_cols.addWidget(QLabel("setp:"), stretch=1)
                     signal_setup["setp"] = {"type": str, "default": ""}
                     signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "setp", signal_setup["setp"], cb=update), stretch=1)
 
@@ -2467,12 +2466,42 @@ class WinForm(QWidget):
                     signal_setup["offset"] = {"type": float, "default": 0.0}
                     signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
 
-                signal_cols = QHBoxLayout()
-                signal_rows.addLayout(signal_cols)
-                signal_cols.addWidget(QLabel(f"Display"), stretch=1)
+                display_frame = QGroupBox(self)
+                display_frame.setTitle("Display")
+                display_frame.setToolTip(help_text)
+                display_frame.setCheckable(True)
+                display_frame.setChecked(False)
+                toggleGroup(display_frame)
+                display_frame.toggled.connect(partial(toggleGroup, display_frame))
+                display_rows = QVBoxLayout()
+                display_frame.setLayout(display_rows)
+                signal_rows.addWidget(display_frame)
 
-                frame.setLayout(signal_rows)
-                signals.addWidget(frame)
+                if "display" not in signals_setup[signal_name]:
+                    signals_setup[signal_name]["display"] = {}
+
+                if signal_defaults["direction"] == "input" or signals_setup[signal_name].get("net"):
+                    if signal_defaults.get("bool"):
+                        type_options = ["none", "led", "rectled"]
+                    else:
+                        type_options = ["none", "number", "bar", "meter"]
+                else:
+                    if signal_defaults.get("bool"):
+                        type_options = ["none", "checkbutton", "button"]
+                    else:
+                        type_options = ["none", "scale", "spinbox", "dial", "jogwheel"]
+                display_setup = {
+                    "title": {"type": str},
+                    "section": {"type": str},
+                    "type": {"type": "select", "options": type_options},
+                    "min": {"type": float, "default": None},
+                    "max": {"type": float, "default": None},
+                }
+                for option, option_setup in display_setup.items():
+                    display_cols = QHBoxLayout()
+                    display_rows.addLayout(display_cols)
+                    display_cols.addWidget(QLabel(option.title()), stretch=1)
+                    display_cols.addWidget(self.edit_item(signals_setup[signal_name]["display"], option, option_setup, cb=None))
 
             signals_widget = QWidget()
             signals.addStretch()
