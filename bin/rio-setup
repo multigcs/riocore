@@ -240,30 +240,30 @@ class ImageMap(QLabel):
         self.parent = parent
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.RightButton:
             print(int(event.pos().x()), int(event.pos().y()))
             configstr = self.setPin(event.pos())
-            slot, name, pin = configstr.split()
+            if configstr:
+                slot, name, pin = configstr.split()
 
-            if slot not in mapping:
-                mapping[slot] = {}
+                if slot not in mapping:
+                    mapping[slot] = {}
 
-            mapping[slot][name] = {"pin": pin, "pos": [int(event.pos().x()) - 5, int(event.pos().y()) - 5], "direction": "output"}
-            print(configstr)
-            print("")
+                mapping[slot][name] = {"pin": pin, "pos": [int(event.pos().x()) - 5, int(event.pos().y()) - 5], "direction": "output"}
+                print(configstr)
+                print("")
 
-            slots = []
-            for slot, pins in mapping.items():
-                slots.append(
-                    {
-                        "name": slot,
-                        "comment": slot,
-                        "default": "",
-                        "pins": pins,
-                    }
-                )
-
-            print(json.dumps(slots, indent=4))
+                slots = []
+                for slot, pins in mapping.items():
+                    slots.append(
+                        {
+                            "name": slot,
+                            "comment": slot,
+                            "default": "",
+                            "pins": pins,
+                        }
+                    )
+                print(json.dumps(slots, indent=4))
 
     def setPin(self, pos):
         dialog = QDialog()
@@ -348,7 +348,7 @@ class WinForm(QWidget):
         self.sig_table.horizontalHeader().sectionClicked.connect(self.onHeaderClickedSignals)
         self.sig_table_sort_col = 1
 
-        self.imagew = MyQSvgWidget()
+        self.overview_img = MyQSvgWidget()
 
         self.img_container = QWidget()
         self.img_layout = QVBoxLayout(self.img_container)
@@ -356,6 +356,7 @@ class WinForm(QWidget):
         self.img_layout.addWidget(self.boardimg)
 
         self.pininfo = QLabel("")
+        self.pininfo_timer = 0
 
         ipin_layout = QVBoxLayout()
         ipin_widget = QWidget()
@@ -365,7 +366,7 @@ class WinForm(QWidget):
         ipin_layout.addStretch()
 
         self.tabwidget.addTab(ipin_widget, "Board")
-        self.tabwidget.addTab(self.imagew, "Flow")
+        self.tabwidget.addTab(self.overview_img, "Flow")
         self.tabwidget.addTab(self.pin_table, "Pins")
         self.tabwidget.addTab(self.sig_table, "Signals")
 
@@ -505,7 +506,7 @@ class WinForm(QWidget):
         self.request_sig_table_load = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(1000)
+        self.timer.start(500)
 
     def check_status(self):
         self.config_checked = self.clean_config(self.config)
@@ -578,6 +579,12 @@ class WinForm(QWidget):
                 self.info_flashed.setChecked(False)
 
     def runTimer(self):
+        if self.pininfo_timer == 1:
+            self.pininfo_timer = 0
+            self.pininfo.setText("")
+        elif self.pininfo_timer > 1:
+            self.pininfo_timer -= 1
+        
         if self.request_load_tree > 1:
             self.request_load_tree -= 1
         elif self.request_load_tree == 1:
@@ -1000,7 +1007,7 @@ class WinForm(QWidget):
         for key, label in self.pinlabels.items():
             splitted = key.split(":")
             if splitted[0] == slot_name:
-                color = "gray"
+                color = "darkCyan"
                 label.mark(color)
                 direction = label.pin.get("direction", "all")
 
@@ -1034,17 +1041,13 @@ class WinForm(QWidget):
                 for net in networks:
                     infotext.append(f" {net}")
             self.pininfo.setText("\n".join(infotext))
+            self.pininfo_timer = 0
         else:
-            self.pininfo.setText("")
+            self.pininfo_timer = 3
 
     def config_pinlayout(self):
         self.img_layout.removeWidget(self.boardimg)
-        self.img_layout.removeWidget(self.pininfo)
         self.boardimg = QWidget()
-        self.img_layout.addWidget(self.boardimg)
-        self.pininfo = QLabel("INFO")
-        self.img_layout.addWidget(self.pininfo)
-
         self.pinlabels = {}
 
         pinimage = self.board.get("pinimage")
@@ -1053,17 +1056,19 @@ class WinForm(QWidget):
                 self.tabwidget.removeTab(0)
             return
 
-        pixmap1 = QPixmap(f"{self.boardcfg_path}/{pinimage}")
+        pinlayout_pixmap = QPixmap(f"{self.boardcfg_path}/{pinimage}")
+        self.boardimg.setFixedSize(pinlayout_pixmap.size())
 
-        self.image = ImageMap(self)
-        self.image.setAlignment(Qt.AlignRight | Qt.AlignTop)
-        self.image.setFixedSize(pixmap1.size())
-        self.image.setPixmap(pixmap1)
+        pinlayout_image = ImageMap(self)
+        pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
+        pinlayout_image.setFixedSize(pinlayout_pixmap.size())
+        pinlayout_image.setPixmap(pinlayout_pixmap)
+
+        self.img_layout.addWidget(self.boardimg)
 
         layout_box = QVBoxLayout(self.boardimg)
         layout_box.setContentsMargins(0, 0, 0, 0)
-        layout_box.addWidget(self.image)
-        self.boardimg.setFixedSize(pixmap1.size())
+        layout_box.addWidget(pinlayout_image)
 
         for slot in self.slots:
             slot_name = slot["name"]
@@ -1586,8 +1591,8 @@ class WinForm(QWidget):
             fillcolor="lightgreen",
         )
 
-        self.imagew.load(gAll.pipe().decode().encode())
-        self.imagew.setFixedSize(self.imagew.renderer().defaultSize())
+        self.overview_img.load(gAll.pipe())
+        self.overview_img.setFixedSize(self.overview_img.renderer().defaultSize())
 
     def sig_edit_cb(self, widget):
         self.generate_cb(preview=True)
