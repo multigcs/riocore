@@ -3254,7 +3254,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("config", help="config", nargs="?", type=str, default=None)
+    parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
     args = parser.parse_args()
+
+    if args.nostyle:
+        STYLESHEET = ""
 
     form = WinForm(args)
     form.show()
