@@ -996,7 +996,7 @@ class WinForm(QWidget):
                 pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
                 if not pin_setup and pin_defaults.get("optional") is True:
                     continue
-                if "pin" not in pin_setup:
+                if "pin" not in pin_setup and pin_defaults.get("optional") is True:
                     continue
                 pin_str = pin_setup["pin"]
                 if pinsearch == pin_str:
@@ -1218,6 +1218,8 @@ class WinForm(QWidget):
                 pin_setup = plugin_instance.plugin_setup["pins"][pin_name]
                 if not pin_setup and pin_defaults.get("optional") is True:
                     continue
+                if "pin" not in pin_setup and pin_defaults.get("optional") is True:
+                    continue
                 pin = pin_setup["pin"]
                 if pin not in self.pinlist:
                     self.pinlist.append(pin)
@@ -1402,6 +1404,8 @@ class WinForm(QWidget):
                 pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
                 pports.append(f"<{pin_name}>{pin_name}")
                 if not pin_setup and pin_defaults.get("optional") is True:
+                    continue
+                if "pin" not in pin_setup and pin_defaults.get("optional") is True:
                     continue
                 pin = pin_setup["pin"]
 
@@ -1775,6 +1779,8 @@ class WinForm(QWidget):
                 pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
                 if not pin_setup and pin_defaults.get("optional") is True:
                     continue
+                if "pin" not in pin_setup and pin_defaults.get("optional") is True:
+                    continue
                 pin = pin_setup["pin"]
                 pin_real = pin
 
@@ -1812,6 +1818,8 @@ class WinForm(QWidget):
                 for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                     pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
                     if not pin_setup and pin_defaults.get("optional") is True:
+                        continue
+                    if "pin" not in pin_setup and pin_defaults.get("optional") is True:
                         continue
 
                     pin = pin_setup.get("pin", pin_setup.get("pin_mapped", "???"))
@@ -2234,6 +2242,7 @@ class WinForm(QWidget):
 
         if dialog.exec():
             modifier_list[modifier_id] = modifier_config
+            print(modifier_list[modifier_id], modifier_config)
 
     def modifier_list_add(self, parent_layout, modifier_list):
         dialog = QDialog()
