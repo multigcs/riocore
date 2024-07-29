@@ -998,7 +998,7 @@ class WinForm(QWidget):
                     continue
                 if "pin" not in pin_setup and pin_defaults.get("optional") is True:
                     continue
-                pin_str = pin_setup["pin"]
+                pin_str = pin_setup.get("pin", "")
                 if pinsearch == pin_str:
                     return (plugin_instance, pin_name)
 
@@ -1220,7 +1220,7 @@ class WinForm(QWidget):
                     continue
                 if "pin" not in pin_setup and pin_defaults.get("optional") is True:
                     continue
-                pin = pin_setup["pin"]
+                pin = pin_setup.get("pin")
                 if pin not in self.pinlist:
                     self.pinlist.append(pin)
         for slot in self.slots:
@@ -1407,7 +1407,9 @@ class WinForm(QWidget):
                     continue
                 if "pin" not in pin_setup and pin_defaults.get("optional") is True:
                     continue
-                pin = pin_setup["pin"]
+                pin = pin_setup.get("pin")
+                if not pin:
+                    continue
 
                 con_dev = fpga_name
                 con_pin = pin
@@ -1781,7 +1783,9 @@ class WinForm(QWidget):
                     continue
                 if "pin" not in pin_setup and pin_defaults.get("optional") is True:
                     continue
-                pin = pin_setup["pin"]
+                pin = pin_setup.get("pin")
+                if not pin:
+                    continue
                 pin_real = pin
 
                 mapped = ""
