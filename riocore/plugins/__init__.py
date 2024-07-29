@@ -74,7 +74,7 @@ class Modifiers:
     def pin_modifier_list(self, direction=None):
         modifiers = []
         for part in dir(self):
-            if part.startswith("pin_modifier_"):
+            if part.startswith("pin_modifier_") and part != "pin_modifier_list":
                 modifiers.append(part.split("_")[2])
         return modifiers
 

@@ -18,6 +18,7 @@ from functools import partial
 import graphviz
 import riocore
 from riocore import halpins
+from riocore.plugins import Modifiers
 from riocore.widgets import MyQSvgWidget, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, modifier_selector, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
 
@@ -2194,6 +2195,83 @@ class WinForm(QWidget):
         self.config_load()
         self.display()
 
+    def edit_modifier(self, modifier_list, modifier_id, parent_layout=None):
+        def remove_modifier(modifier_list, modifier_id, dialog, parent_layout=None):
+            modifier_list.pop(modifier_id)
+            if parent_layout:
+                self.modifier_list_update(parent_layout, modifier_list)
+            dialog.close()
+
+        modifier_config = modifier_list[modifier_id]
+        modifier_type = modifier_config.get("type", "???")
+
+        dialog = QDialog()
+        dialog.setWindowTitle("edit Modifier")
+        dialog.setStyleSheet(STYLESHEET)
+
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+
+        remove_button = QPushButton(self.tr("Remove"))
+        remove_button.clicked.connect(partial(remove_modifier, modifier_list, modifier_id, dialog, parent_layout))
+        dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
+
+        if modifier_type == "onerror":
+            dialog.layout.addWidget(QLabel("Invert:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "invert", {"type": bool, "default": False}, cb=None))
+        elif modifier_type == "debounce":
+            dialog.layout.addWidget(QLabel("Delay:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "delay", {"type": int, "default": 16}, cb=None))
+        elif modifier_type == "pwm":
+            dialog.layout.addWidget(QLabel("Frequency:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "frequency", {"type": int, "default": 1}, cb=None))
+            dialog.layout.addWidget(QLabel("DTY:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "dty", {"type": int, "default": 50}, cb=None))
+
+        dialog.layout.addWidget(dialog_buttonBox)
+        dialog.setLayout(dialog.layout)
+
+        if dialog.exec():
+            modifier_list[modifier_id] = modifier_config
+
+    def modifier_list_add(self, parent_layout, modifier_list):
+        dialog = QDialog()
+        dialog.setWindowTitle("add Module")
+        dialog.setStyleSheet(STYLESHEET)
+
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+
+        dialog.layout = QVBoxLayout()
+        label = QLabel("Modifier:")
+        dialog.layout.addWidget(label)
+        combo = QComboBox(self)
+        for modifier_name in Modifiers().pin_modifier_list():
+            combo.addItem(modifier_name)
+        dialog.layout.addWidget(combo)
+
+        dialog.layout.addWidget(dialog_buttonBox)
+        dialog.setLayout(dialog.layout)
+
+        if dialog.exec():
+            modifier_type = combo.currentText()
+            modifier_list.append({"type": modifier_type})
+            self.modifier_list_update(parent_layout, modifier_list)
+            self.edit_modifier(modifier_list, len(modifier_list) - 1, parent_layout)
+
+    def modifier_list_update(self, parent_layout, modifier_list):
+        pc = parent_layout.count()
+        for i in reversed(range(pc)):
+            parent_layout.itemAt(i).widget().setParent(None)
+
+        for modifier_id, modifier in enumerate(modifier_list):
+            modifier_type = modifier.get("type", "???")
+            modifier_button = QPushButton(modifier_type)
+            modifier_button.clicked.connect(partial(self.edit_modifier, modifier_list, modifier_id, parent_layout))
+            modifier_button.setFixedWidth(len(modifier_type) * 9 + 10)
+            parent_layout.addWidget(modifier_button, stretch=1)
+
     def edit_plugin_pins(self, plugin_instance, plugin_config):
         def update(arg):
             print("#update", arg, plugin_config)
@@ -2251,6 +2329,23 @@ class WinForm(QWidget):
                 pin_cols.addWidget(self.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4"}, cb=update), stretch=3)
             else:
                 pin_cols.addWidget(QLabel(""), stretch=8)
+
+            if "modifier" not in pin_config:
+                pin_config["modifier"] = []
+            modifier_list = pin_config["modifier"]
+
+            pin_cols = QHBoxLayout()
+            pin_rows.addLayout(pin_cols)
+            pin_cols.addWidget(QLabel("Modifiers:"))
+            mod_cols = QHBoxLayout()
+            pin_cols.addLayout(mod_cols)
+
+            add_button = QPushButton("+")
+            add_button.clicked.connect(partial(self.modifier_list_add, mod_cols, modifier_list))
+            add_button.setFixedWidth(20)
+            pin_cols.addWidget(add_button)
+            pin_cols.addStretch()
+            self.modifier_list_update(mod_cols, modifier_list)
 
             frame.setLayout(pin_rows)
             pins.addWidget(frame)
