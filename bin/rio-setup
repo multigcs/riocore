@@ -2210,6 +2210,20 @@ class WinForm(QWidget):
                 self.modifier_list_update(parent_layout, modifier_list)
             dialog.close()
 
+        def move_left(modifier_list, modifier_id, dialog, parent_layout=None):
+            if modifier_id > 0:
+                modifier_list[modifier_id - 1], modifier_list[modifier_id] = modifier_list[modifier_id], modifier_list[modifier_id - 1]
+                if parent_layout:
+                    self.modifier_list_update(parent_layout, modifier_list)
+            dialog.close()
+
+        def move_right(modifier_list, modifier_id, dialog, parent_layout=None):
+            if modifier_id < len(modifier_list) - 1:
+                modifier_list[modifier_id + 1], modifier_list[modifier_id] = modifier_list[modifier_id], modifier_list[modifier_id + 1]
+                if parent_layout:
+                    self.modifier_list_update(parent_layout, modifier_list)
+            dialog.close()
+
         modifier_config = modifier_list[modifier_id]
         modifier_type = modifier_config.get("type", "???")
 
@@ -2224,6 +2238,17 @@ class WinForm(QWidget):
         remove_button = QPushButton(self.tr("Remove"))
         remove_button.clicked.connect(partial(remove_modifier, modifier_list, modifier_id, dialog, parent_layout))
         dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
+
+        if modifier_id > 0:
+            remove_button = QPushButton(self.tr("Move-Left"))
+            remove_button.clicked.connect(partial(move_left, modifier_list, modifier_id, dialog, parent_layout))
+            dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
+        if modifier_id < len(modifier_list) - 1:
+            remove_button = QPushButton(self.tr("Move-Right"))
+            remove_button.clicked.connect(partial(move_right, modifier_list, modifier_id, dialog, parent_layout))
+            dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
+
+        dialog.layout.addWidget(QLabel(f"Type: {modifier_type}"))
 
         if modifier_type == "onerror":
             dialog.layout.addWidget(QLabel("Invert:"))
@@ -2242,7 +2267,6 @@ class WinForm(QWidget):
 
         if dialog.exec():
             modifier_list[modifier_id] = modifier_config
-            print(modifier_list[modifier_id], modifier_config)
 
     def modifier_list_add(self, parent_layout, modifier_list):
         dialog = QDialog()
