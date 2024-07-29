@@ -2315,6 +2315,7 @@ class WinForm(QWidget):
             pin_rows.addLayout(pin_cols)
             pin_cols.addWidget(QLabel(f"Dir: {direction}"), stretch=1)
 
+            # Options
             pin_cols = QHBoxLayout()
             pin_rows.addLayout(pin_cols)
             pin_cols.addWidget(QLabel("Pin:"), stretch=2)
@@ -2325,9 +2326,31 @@ class WinForm(QWidget):
             else:
                 pin_cols.addWidget(QLabel(""), stretch=4)
 
+            # Modifiers
+            if "modifier" not in pin_config:
+                pin_config["modifier"] = []
+            modifier_list = pin_config["modifier"]
+
             pin_cols = QHBoxLayout()
             pin_rows.addLayout(pin_cols)
-            pin_cols.addWidget(QLabel("IO-Standart:"), stretch=1)
+            pin_cols.addWidget(QLabel("Modifiers:"))
+            mod_cols = QHBoxLayout()
+            pin_cols.addLayout(mod_cols)
+            add_button = QPushButton("+")
+            add_button.clicked.connect(partial(self.modifier_list_add, mod_cols, modifier_list))
+            add_button.setFixedWidth(20)
+            pin_cols.addWidget(add_button)
+            pin_cols.addStretch()
+            self.modifier_list_update(mod_cols, modifier_list)
+
+            # IO-Standart
+            pin_cols = QHBoxLayout()
+            pin_rows.addLayout(pin_cols)
+
+            io_label = QLabel("IO-Standart:")
+            io_label.setToolTip("FPGA level IO config / optional / better do not use :)")
+            pin_cols.addWidget(io_label, stretch=1)
+
             pin_cols.addWidget(
                 self.edit_item(pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL"}, cb=update), stretch=3
             )
@@ -2338,23 +2361,6 @@ class WinForm(QWidget):
                 pin_cols.addWidget(self.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4"}, cb=update), stretch=3)
             else:
                 pin_cols.addWidget(QLabel(""), stretch=8)
-
-            if "modifier" not in pin_config:
-                pin_config["modifier"] = []
-            modifier_list = pin_config["modifier"]
-
-            pin_cols = QHBoxLayout()
-            pin_rows.addLayout(pin_cols)
-            pin_cols.addWidget(QLabel("Modifiers:"))
-            mod_cols = QHBoxLayout()
-            pin_cols.addLayout(mod_cols)
-
-            add_button = QPushButton("+")
-            add_button.clicked.connect(partial(self.modifier_list_add, mod_cols, modifier_list))
-            add_button.setFixedWidth(20)
-            pin_cols.addWidget(add_button)
-            pin_cols.addStretch()
-            self.modifier_list_update(mod_cols, modifier_list)
 
             frame.setLayout(pin_rows)
             pins.addWidget(frame)
