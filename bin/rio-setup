@@ -2204,49 +2204,60 @@ class WinForm(QWidget):
         self.display()
 
     def edit_modifier(self, modifier_list, modifier_id, parent_layout=None):
-        def remove_modifier(modifier_list, modifier_id, dialog, parent_layout=None):
-            modifier_list.pop(modifier_id)
+        def update():
+            mods = []
+            for modifier_id, modifier in enumerate(modifier_list):
+                modifier_type = modifier.get("type", "???")
+                if dialog.modifier_id == modifier_id:
+                    mods.append(modifier_type.upper())
+                else:
+                    mods.append(modifier_type)
+            dialog.mlabel.setText(">".join(mods))
+
+        def remove_modifier():
+            modifier_list.pop(dialog.modifier_id)
             if parent_layout:
                 self.modifier_list_update(parent_layout, modifier_list)
             dialog.close()
 
-        def move_left(modifier_list, modifier_id, dialog, parent_layout=None):
-            if modifier_id > 0:
-                modifier_list[modifier_id - 1], modifier_list[modifier_id] = modifier_list[modifier_id], modifier_list[modifier_id - 1]
+        def move_left():
+            if dialog.modifier_id > 0:
+                modifier_list[dialog.modifier_id - 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id - 1]
                 if parent_layout:
                     self.modifier_list_update(parent_layout, modifier_list)
-            dialog.close()
+                dialog.modifier_id -= 1
+                update()
 
-        def move_right(modifier_list, modifier_id, dialog, parent_layout=None):
-            if modifier_id < len(modifier_list) - 1:
-                modifier_list[modifier_id + 1], modifier_list[modifier_id] = modifier_list[modifier_id], modifier_list[modifier_id + 1]
+        def move_right():
+            if dialog.modifier_id < len(modifier_list) - 1:
+                modifier_list[dialog.modifier_id + 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id + 1]
                 if parent_layout:
                     self.modifier_list_update(parent_layout, modifier_list)
-            dialog.close()
-
-        modifier_config = modifier_list[modifier_id]
-        modifier_type = modifier_config.get("type", "???")
+                dialog.modifier_id += 1
+                update()
 
         dialog = QDialog()
         dialog.setWindowTitle("edit Modifier")
         dialog.setStyleSheet(STYLESHEET)
+        dialog.modifier_id = modifier_id
+        modifier_config = modifier_list[dialog.modifier_id]
+        modifier_type = modifier_config.get("type", "???")
 
         dialog.layout = QVBoxLayout()
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
 
         remove_button = QPushButton(self.tr("Remove"))
-        remove_button.clicked.connect(partial(remove_modifier, modifier_list, modifier_id, dialog, parent_layout))
+        remove_button.clicked.connect(remove_modifier)
         dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
-        if modifier_id > 0:
-            remove_button = QPushButton(self.tr("Move-Left"))
-            remove_button.clicked.connect(partial(move_left, modifier_list, modifier_id, dialog, parent_layout))
-            dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
-        if modifier_id < len(modifier_list) - 1:
-            remove_button = QPushButton(self.tr("Move-Right"))
-            remove_button.clicked.connect(partial(move_right, modifier_list, modifier_id, dialog, parent_layout))
-            dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
+        move_button = QPushButton(self.tr("Move-Left"))
+        move_button.clicked.connect(move_left)
+        dialog_buttonBox.addButton(move_button, QDialogButtonBox.ActionRole)
+
+        move_button = QPushButton(self.tr("Move-Right"))
+        move_button.clicked.connect(move_right)
+        dialog_buttonBox.addButton(move_button, QDialogButtonBox.ActionRole)
 
         dialog.layout.addWidget(QLabel(f"Type: {modifier_type}"))
 
@@ -2262,11 +2273,15 @@ class WinForm(QWidget):
             dialog.layout.addWidget(QLabel("DTY:"))
             dialog.layout.addWidget(self.edit_item(modifier_config, "dty", {"type": int, "default": 50}, cb=None))
 
+        dialog.mlabel = QLabel("")
+        dialog.layout.addWidget(dialog.mlabel)
+        update()
+
         dialog.layout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
-            modifier_list[modifier_id] = modifier_config
+            modifier_list[dialog.modifier_id] = modifier_config
 
     def modifier_list_add(self, parent_layout, modifier_list):
         dialog = QDialog()
@@ -2291,7 +2306,8 @@ class WinForm(QWidget):
             modifier_type = combo.currentText()
             modifier_list.append({"type": modifier_type})
             self.modifier_list_update(parent_layout, modifier_list)
-            self.edit_modifier(modifier_list, len(modifier_list) - 1, parent_layout)
+            if modifier_type != "invert":
+                self.edit_modifier(modifier_list, len(modifier_list) - 1, parent_layout)
 
     def modifier_list_update(self, parent_layout, modifier_list):
         pc = parent_layout.count()
