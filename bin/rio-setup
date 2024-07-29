@@ -22,6 +22,7 @@ from riocore.plugins import Modifiers
 from riocore.widgets import MyQSvgWidget, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, modifier_selector, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
 
+from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
 from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
 from PyQt5.QtWidgets import (
@@ -163,22 +164,27 @@ help_text = {
         },
         "JOINT_NUM": {
             "TYPE": "The type of joint, either `LINEAR` or `ANGULAR`.",
-            "UNITS": "(((UNITS)))",
+            "UNITS": "UNITS",
             "MAX_VELOCITY": "Maximum velocity for this joint in <<sub:ini:sec:traj,machine units>> per second.",
             "MAX_ACCELERATION": "Maximum acceleration for this joint in machine units per second squared.",
-            "BACKLASH": "(((Backlash))) Backlash in machine units.",
-            "COMP_FILE": "(((Compensation)))",
+            "BACKLASH": "Backlash in machine units.",
+            "COMP_FILE": "Compensation file",
             "COMP_FILE_TYPE": "Specifies the type of compensation file.",
-            "MIN_LIMIT": "(((MIN LIMIT)))",
-            "MAX_LIMIT": "(((MAX LIMIT)))",
-            "MIN_FERROR": "(((MIN FERROR)))",
-            "FERROR": "(((FERROR))) `FERROR` is the maximum allowable following error, in machine units.",
+            "MIN_LIMIT": "minimum limit",
+            "MAX_LIMIT": "maximum  limit",
+            "MIN_FERROR": "the maximum allowable following error, in machine units. (slow movements)",
+            "FERROR": "the maximum allowable following error, in machine units. (fast movements)",
             "LOCKING_INDEXER": "Indicates the joint is used as a locking indexer.",
             "HOME": "The position that the joint will go to upon completion of the homing sequence.",
-            "HOME_SEARCH_VEL": "(((HOME SEARCH VEL))) Initial homing velocity in machine units per second.",
+            "HOME_SEARCH_VEL": "Initial homing velocity in machine units per second.",
             "HOME_ABSOLUTE_ENCODER": "Used to indicate the joint uses an absolute encoder.",
             "HOME_SEQUENCE": 'Used to define the "Home All" sequence.',
-            "DEADBAND": "How close is close enough to consider the motor in position, in <<sub:ini:sec:traj,machine units>>.",
+            "HOME_LATCH_VEL": "Specifies the speed and direction that LinuxCNC uses when it makes its final accurate determination of the home switch (if present) and index pulse location (if present)",
+            "HOME_FINAL_VEL": "It specifies the speed that LinuxCNC uses when it makes its move from HOME_OFFSET to the HOME position",
+            "HOME_USE_INDEX": "Specifies whether or not there is an index pulse",
+            "HOME_OFFSET": "Contains the location of the home switch or index pulse, in joint coordinates",
+            "HOME_IGNORE_LIMITS": "This flag determines whether LinuxCNC will ignore the limit switch inputs",
+            "DEADBAND": "How close is close enough to consider the motor in position, in machine units",
             "BIAS": "This is used by hm2-servo and some others.",
             "P": "The proportional gain for the joint servo.",
             "I": "The integral gain for the joint servo.",
@@ -2422,9 +2428,92 @@ class WinForm(QWidget):
 
         return pins_tab
 
+    def draw_joint_home(self, joints_setup, joint_options):
+        HOME_SEARCH_VEL = joints_setup.get("home_search_vel", joint_options["home_search_vel"].get("default", 0.0))
+        HOME_LATCH_VEL = joints_setup.get("home_latch_vel", joint_options["home_latch_vel"].get("default", 0.0))
+        HOME_FINAL_VEL = joints_setup.get("home_final_vel", joint_options["home_final_vel"].get("default", 0.0))
+        HOME_OFFSET = joints_setup.get("home_offset", joint_options["home_offset"].get("default", 0.0))
+        HOME = joints_setup.get("home", joint_options["home"].get("default", 0.0))
+        HOME_SEQUENCE = joints_setup.get("home_sequence", joint_options["home_sequence"].get("default", 0.0))
+
+        def svg_arrow_h(x, y, x2, color="rgb(255, 255, 255)"):
+            svg_data = []
+            if x < x2:
+                svg_data.append(f'<line x1="{x}" y1="{y}" x2="{x2}" y2="{y}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2-10}" y2="{y-3}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2-10}" y2="{y+3}" stroke="{color}" stroke-width="1"></line>')
+            else:
+                svg_data.append(f'<line x1="{x}" y1="{y}" x2="{x2}" y2="{y}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2+10}" y2="{y-3}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2+10}" y2="{y+3}" stroke="{color}" stroke-width="1"></line>')
+            return svg_data
+
+        def svg_line_h(x, y, w, color="rgb(255, 255, 255)"):
+            return [f'<line x1="{x}" y1="{y}" x2="{x+w}" y2="{y}" stroke="{color}" stroke-width="1"></line>']
+
+        def svg_line_v(x, y, h, color="rgb(255, 255, 255)"):
+            return [f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y+h}" stroke="{color}" stroke-width="1"></line>']
+
+        def svg_text(x, y, text, center=False, color="rgb(255, 255, 255)"):
+            if center:
+                return [f'<text x="{x}" y="{y}" fill="{color}" text-anchor="middle">{text}</text>']
+            else:
+                return [f'<text x="{x}" y="{y}" fill="{color}">{text}</text>']
+
+        y_diff = 15
+        top = 12
+        width = 400
+        height = 6 * y_diff
+        left = 95
+        right = 10
+        svg_data = [f'<svg width="{width}" height="{height}"><g><rect width="{width}" height="{height}" x="0" y="0" fill="black" />']
+
+        min_pos = min(0, HOME, HOME_OFFSET) - 1.0
+        max_pos = max(0, HOME, HOME_OFFSET) + 1.0
+
+        scale_width = abs(max_pos - min_pos)
+        scale = (width - left - right) / scale_width
+        scale_offset = -min_pos * scale + left
+
+        y_line = top + 3
+        y_pos = top
+        svg_data += svg_text(5, y_pos, "MACHINE")
+        svg_data += svg_line_h(left, y_line, width - left - right)
+        svg_data += svg_text(scale_offset, y_pos, "0.0", True)
+        svg_data += svg_line_v(scale_offset, y_line - 2, 5)
+
+        y_pos += y_diff
+        svg_data += svg_text(5, y_pos, "OFFSET")
+        svg_data += svg_text(scale_offset + HOME_OFFSET * scale, y_pos, f"{HOME_OFFSET}", True)
+        svg_data += svg_line_v(scale_offset + HOME_OFFSET * scale, y_line - 2, 5)
+
+        y_pos += y_diff
+        svg_data += svg_text(5, y_pos, "HOME")
+        svg_data += svg_text(scale_offset + HOME * scale, y_pos, f"{HOME}", True)
+        svg_data += svg_line_v(scale_offset + HOME * scale, y_line - 2, 5)
+
+        y_pos += y_diff
+        svg_data += svg_text(5, y_pos, "SEARCH_VEL")
+        if HOME_SEARCH_VEL > 0:
+            svg_data += svg_arrow_h(scale_offset + (max_pos - 0.2) * scale, y_pos - 3, scale_offset + HOME_OFFSET * scale)
+        else:
+            svg_data += svg_arrow_h(scale_offset + (min_pos + 0.2) * scale, y_pos - 3, scale_offset + HOME_OFFSET * scale)
+
+        y_pos += y_diff
+        svg_data += svg_text(5, y_pos, "LATCH_VEL")
+        svg_data += svg_arrow_h(scale_offset + HOME_OFFSET * scale - 2, y_pos - 3 - (y_diff / 2), scale_offset + HOME_OFFSET * scale + 22, color="rgb(200, 100, 100)")
+        svg_data += svg_arrow_h(scale_offset + HOME_OFFSET * scale + 22, y_pos - 3, scale_offset + HOME_OFFSET * scale)
+
+        y_pos += y_diff
+        svg_data += svg_text(5, y_pos, "FINAL_VEL")
+        svg_data += svg_arrow_h(scale_offset + HOME_OFFSET * scale, y_pos - 3, scale_offset + HOME * scale)
+
+        svg_data.append(f"</g></svg>")
+        return "\n".join(svg_data).encode()
+
     def edit_plugin_joints(self, plugin_instance, plugin_config):
         def update(arg):
-            print("#update", arg)
+            svgWidget.load(self.draw_joint_home(joints_setup, joint_options))
 
         myFont = QFont()
         myFont.setBold(True)
@@ -2484,11 +2573,6 @@ class WinForm(QWidget):
             },
         }
 
-        joint = QVBoxLayout()
-        label = QLabel("Joint-Setup for LinuxCNC")
-        label.setFont(myFont)
-        joint.addWidget(label)
-
         for key, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
             key = key.lower()
             if key == "scale_out":
@@ -2496,20 +2580,60 @@ class WinForm(QWidget):
             if key in joint_options:
                 joint_options[key.lower()]["default"] = value
 
+        joint_tabs = QTabWidget()
+
+        general_layout = QVBoxLayout()
+        label = QLabel("Joint-Setup")
+        label.setFont(myFont)
+        general_layout.addWidget(label)
+
         for option, option_setup in joint_options.items():
-            help_text = f"{option} config"
+            if option.startswith("home"):
+                continue
+            tootltip = help_text["INI"]["JOINT_NUM"].get(option.upper(), f"{option} config")
             option_row = QHBoxLayout()
             option_label = QLabel(option)
-            option_label.setToolTip(help_text)
+            option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=1)
             option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
             option_row.addWidget(option_widget, stretch=3)
-            joint.addLayout(option_row)
+            general_layout.addLayout(option_row)
 
-        joint_tab = QWidget()
-        joint.addStretch()
-        joint_tab.setLayout(joint)
-        return joint_tab
+        general_tab = QWidget()
+        general_layout.addStretch()
+        general_tab.setLayout(general_layout)
+        joint_tabs.addTab(general_tab, "General")
+
+        homing_layout = QVBoxLayout()
+        label = QLabel("Joint-Homing")
+        label.setFont(myFont)
+        homing_layout.addWidget(label)
+
+        home_values = {}
+
+        for option, option_setup in joint_options.items():
+            if not option.startswith("home"):
+                continue
+
+            tootltip = help_text["INI"]["JOINT_NUM"].get(option.upper(), f"{option} config")
+            option_row = QHBoxLayout()
+            option_label = QLabel(option)
+            option_label.setToolTip(tootltip)
+            option_row.addWidget(option_label, stretch=1)
+            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+            option_row.addWidget(option_widget, stretch=3)
+            homing_layout.addLayout(option_row)
+
+        svgWidget = QtSvg.QSvgWidget()
+        update(None)
+        homing_layout.addStretch()
+        homing_layout.addWidget(svgWidget)
+
+        homing_tab = QWidget()
+        homing_tab.setLayout(homing_layout)
+        joint_tabs.addTab(homing_tab, "Homing")
+
+        return joint_tabs
 
     def edit_plugin_signals(self, plugin_instance, plugin_config):
         def update(arg):

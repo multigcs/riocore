@@ -24,7 +24,7 @@ from PyQt5.QtWidgets import (
 DEVICE_TEMPLATES = {
     "NT18B07": {
         "image": "NT18B07.jpg",
-        "info": "7x Temperatur In (NTC)",
+        "info": "7x Temperature Input (NTC)",
         "comment": "",
         "setup": {
             "temp7": {"address": 18, "type": 3, "register": 0, "values": 2, "scale": 0.1, "unit": "\u00b0C", "error_values": "", "format": "0.1f", "timeout": 100, "delay": 60, "direction": "input"},
