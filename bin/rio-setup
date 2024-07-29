@@ -2212,7 +2212,7 @@ class WinForm(QWidget):
                     mods.append(modifier_type.upper())
                 else:
                     mods.append(modifier_type)
-            dialog.mlabel.setText(">".join(mods))
+            dialog.mlabel.setText(f"Chain: {'>'.join(mods)}")
 
         def remove_modifier():
             modifier_list.pop(dialog.modifier_id)
@@ -2251,13 +2251,14 @@ class WinForm(QWidget):
         remove_button.clicked.connect(remove_modifier)
         dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
-        move_button = QPushButton(self.tr("Move-Left"))
-        move_button.clicked.connect(move_left)
-        dialog_buttonBox.addButton(move_button, QDialogButtonBox.ActionRole)
+        if len(modifier_list) > 1:
+            move_button = QPushButton(self.tr("<<"))
+            move_button.clicked.connect(move_left)
+            dialog_buttonBox.addButton(move_button, QDialogButtonBox.ActionRole)
 
-        move_button = QPushButton(self.tr("Move-Right"))
-        move_button.clicked.connect(move_right)
-        dialog_buttonBox.addButton(move_button, QDialogButtonBox.ActionRole)
+            move_button = QPushButton(self.tr(">>"))
+            move_button.clicked.connect(move_right)
+            dialog_buttonBox.addButton(move_button, QDialogButtonBox.ActionRole)
 
         dialog.layout.addWidget(QLabel(f"Type: {modifier_type}"))
 
