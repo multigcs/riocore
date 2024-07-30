@@ -2421,7 +2421,7 @@ class WinForm(QWidget):
         pins_widget.setLayout(pins)
 
         pins_tab = QScrollArea()
-        pins_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        pins_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         pins_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         pins_tab.setWidgetResizable(True)
         pins_tab.setWidget(pins_widget)
@@ -2784,7 +2784,7 @@ class WinForm(QWidget):
         signals_widget.setLayout(signals)
 
         signals_tab = QScrollArea()
-        signals_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        signals_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         signals_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         signals_tab.setWidgetResizable(True)
         signals_tab.setWidget(signals_widget)
@@ -2834,9 +2834,15 @@ class WinForm(QWidget):
             button_config.setMaximumSize(button_config.sizeHint())
             options.addWidget(button_config)
 
-        options_tab = QWidget()
+        options_widget = QWidget()
         options.addStretch()
-        options_tab.setLayout(options)
+        options_widget.setLayout(options)
+
+        options_tab = QScrollArea()
+        options_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        options_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        options_tab.setWidgetResizable(True)
+        options_tab.setWidget(options_widget)
         return options_tab
 
     def edit_plugin(self, plugin_instance, plugin_id, widget, is_new=False):
