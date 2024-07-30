@@ -2530,11 +2530,11 @@ class WinForm(QWidget):
                 "type": "select",
                 "options": ["LINEAR", "ROTARY"],
             },
-            "home": {
+            "ferror": {
                 "type": float,
             },
-            "home_sequence": {
-                "type": int,
+            "min_ferror": {
+                "type": float,
             },
             "min_limit": {
                 "type": float,
@@ -2551,6 +2551,15 @@ class WinForm(QWidget):
             "stepgen_maxaccel": {
                 "type": float,
             },
+            "home_sequence": {
+                "type": int,
+            },
+            "home": {
+                "type": float,
+            },
+            "home_offset": {
+                "type": float,
+            },
             "home_search_vel": {
                 "type": float,
             },
@@ -2558,9 +2567,6 @@ class WinForm(QWidget):
                 "type": float,
             },
             "home_final_vel": {
-                "type": float,
-            },
-            "home_offset": {
                 "type": float,
             },
             "home_ignore_limits": {
