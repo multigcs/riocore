@@ -36,7 +36,7 @@ class Toolchain:
 
         prepack_data = []
         for key, value in self.config["timing_constraints"].items():
-            prepack_data.append(f'ctx.addClock("{key}", {int(value)})')
+            prepack_data.append(f'ctx.addClock("{key}", {int(value)/1000000})')
 
         prepack_data.append("")
         open(f"{path}/prepack.py", "w").write("\n".join(prepack_data))

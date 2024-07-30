@@ -33,12 +33,10 @@ Analog input via tlc549 ADC
 ### sclk:
 
  * direction: output
- * optional: True
 
 ### sel:
 
  * direction: output
- * optional: True
 
 
 ## Options:

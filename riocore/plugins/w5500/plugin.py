@@ -32,7 +32,7 @@ class Plugin(PluginBase):
         }
         self.spi_clk_speed = 2000000
         self.TIMING_CONSTRAINTS = {
-            "mclk": self.spi_clk_speed / 1000000,
+            "mclk": self.spi_clk_speed,
         }
         self.OPTIONS = {
             "mac": {

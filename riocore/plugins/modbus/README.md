@@ -3,6 +3,9 @@
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

@@ -1,7 +1,6 @@
 {
     "name": "TangNano20K",
     "description": "TangNano20K with 3 stepper Axis SPI",
-    "board": "TangNano20K",
     "type": "GW2AR-LV18QN88C8/I7",
     "family": "GW2AR-18C",
     "toolchain": "gowin",

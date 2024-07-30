@@ -48,7 +48,12 @@ class Gateware:
         self.config["timing_constraints"] = {}
         for plugin_instance in self.project.plugin_instances:
             for key, value in plugin_instance.timing_constraints().items():
-                self.config["timing_constraints"][f"{plugin_instance.instances_name}.{key}"] = value
+                if ":" in key:
+                    pre, post = key.split(":")
+                    pname = f"{pre}_{plugin_instance.instances_name}_{post}".upper()
+                    self.config["timing_constraints"][pname] = value
+                else:
+                    self.config["timing_constraints"][f"{plugin_instance.instances_name}.{key}"] = value
 
         self.pinmapping = {}
         self.pinmapping_rev = {}

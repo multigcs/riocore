@@ -3,7 +3,8 @@
 | Type | Name | Info | Image |
 | --- | :---: | --- | ---:  |
 | Interfaces | [arty_mii](riocore/plugins/arty_mii/README.md) | udp interface for host comunication - experimental - Arty7-35t only |  |
-|  | [spi](riocore/plugins/spi/README.md) | spi interface for host comunication |  |
+|  | [rmii](riocore/plugins/rmii/README.md) | rmii udp interface |  |
+|  | [spi](riocore/plugins/spi/README.md) | spi interface for host comunication | <img src="riocore/plugins/spi/image.png" height="48"> |
 |  | [uart](riocore/plugins/uart/README.md) | uart interface for host cominucation |  |
 |  | [w5500](riocore/plugins/w5500/README.md) | udp interface for host comunication - experimental | <img src="riocore/plugins/w5500/image.png" height="48"> |
 | Joints | [pwmout](riocore/plugins/pwmout/README.md) | pwm output | <img src="riocore/plugins/pwmout/image.png" height="48"> |
@@ -18,7 +19,6 @@
 |  | [counter](riocore/plugins/counter/README.md) | pulse counter input |  |
 |  | [dis7seg](riocore/plugins/dis7seg/README.md) | 7segment display with buttons | <img src="riocore/plugins/dis7seg/image.png" height="48"> |
 |  | [ds18b20](riocore/plugins/ds18b20/README.md) | 1Wire Temperature sensor |  |
-|  | [esp32_ledc](riocore/plugins/esp32_ledc/README.md) | ledc plugin to generate up to 16 PWM signals |  |
 |  | [freqin](riocore/plugins/freqin/README.md) | frequency input |  |
 |  | [freqout](riocore/plugins/freqout/README.md) | frequency output |  |
 |  | [icewerxadc](riocore/plugins/icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="riocore/plugins/icewerxadc/image.png" height="48"> |
@@ -38,7 +38,7 @@
 |  | [udpoti](riocore/plugins/udpoti/README.md) | digital-poti with up/down+dir interface |  |
 |  | [wled](riocore/plugins/wled/README.md) | ws2812b interface | <img src="riocore/plugins/wled/image.png" height="48"> |
 |  | [wled_bar](riocore/plugins/wled_bar/README.md) | ws2812b interface for bar-displays | <img src="riocore/plugins/wled_bar/image.png" height="48"> |
-| FrameIO | [modbus](riocore/plugins/modbus/README.md) | generic modbus plugin |  |
+| FrameIO | [modbus](riocore/plugins/modbus/README.md) | generic modbus plugin | <img src="riocore/plugins/modbus/image.png" height="48"> |
 |  | [uartbridge](riocore/plugins/uartbridge/README.md) | uart bridge |  |
 | Expansions | [shiftreg](riocore/plugins/shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="riocore/plugins/shiftreg/image.png" height="48"> |
 |  | [wled](riocore/plugins/wled/README.md) | ws2812b interface acting as an expansion port | <img src="riocore/plugins/wled/image.png" height="48"> |
