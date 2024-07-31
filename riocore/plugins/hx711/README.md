@@ -1,7 +1,7 @@
 # hx711
 **digital weight sensor**
 
-to messurement weight's
+to measure weight's
 
 
 ![image.png](image.png)
@@ -74,6 +74,7 @@ name of this plugin instance
 
  * size: 32 bit
  * direction: input
+ * multiplexed: True
 
 
 ## Full-Example:
