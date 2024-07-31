@@ -1,0 +1,167 @@
+{
+    "name": "TangPrimer20K",
+    "description": "TangPrimer20K-Devboard",
+    "type": "GW2A-LV18PG256C8/I7",
+    "family": "GW2A-18C",
+    "_toolchain": "gowin",
+    "toolchain": "icestorm",
+    "package": "PG256",
+    "clock": {
+        "speed": "27000000",
+        "pin": "H11"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "C13",
+                    "pos": [
+                        495,
+                        515
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "A13",
+                    "pos": [
+                        465,
+                        515
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "N16",
+                    "pos": [
+                        465,
+                        515
+                    ],
+                    "direction": "output"
+                },
+                "L4": {
+                    "pin": "N14",
+                    "pos": [
+                        465,
+                        515
+                    ],
+                    "direction": "output"
+                },
+                "L5": {
+                    "pin": "L14",
+                    "pos": [
+                        465,
+                        515
+                    ],
+                    "direction": "output"
+                },
+                "L6": {
+                    "pin": "L16",
+                    "pos": [
+                        465,
+                        515
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "WLED",
+            "comment": "WLED",
+            "compatible": [
+                "wled",
+                "wled_bar",
+                "wled_expansion"
+            ],
+            "pos": [
+                9,
+                313
+            ],
+            "pins": {
+                "DATA": {
+                    "pin": "T9",
+                    "direction": "output"
+                }
+            }
+        },
+        {
+          "name": "PMOD1",
+          "comment": "SLOT1 MIC ARRAY",
+          "pins": {
+            "P1": "P6",
+            "P2": "R8",
+            "P3": "P8",
+            "P4": "T9",
+            "P7": "T6",
+            "P8": "T7",
+            "P9": "T8",
+            "P10": "P9"
+          }
+        },
+        {
+          "name": "PMOD2",
+          "comment": "SLOT2 TVP",
+          "pins": {
+            "P1": "P11",
+            "P2": "R11",
+            "P3": "M15",
+            "P4": "J16",
+            "P7": "T11",
+            "P8": "T12",
+            "P9": "M14",
+            "P10": "J14"
+          }
+        },
+        {
+          "name": "PMOD3",
+          "comment": "SLOT3 RGB",
+          "pins": {
+            "P1": "E15",
+            "P2": "A15",
+            "P3": "A14",
+            "P4": "C12",
+            "P7": "D14",
+            "P8": "B14",
+            "P9": "B13",
+            "P10": "B12"
+          }
+        },
+        {
+          "name": "PMOD4",
+          "comment": "SLOT4 LCD",
+          "pins": {
+            "P1": "B11",
+            "P2": "D11",
+            "P3": "N7",
+            "P4": "N8",
+            "P7": "A11",
+            "P8": "N6",
+            "P9": "N9",
+            "P10": "L9"
+          }
+        },
+        {
+            "name": "UART",
+            "comment": "UART2USB",
+            "default": "uart",
+            "pins": {
+                "TX": {
+                    "pin": "M11",
+                    "pos": [
+                        465,
+                        670
+                    ],
+                    "direction": "output"
+                },
+                "RX": {
+                    "pin": "T13",
+                    "pos": [
+                        495,
+                        670
+                    ],
+                    "direction": "input"
+                }
+            }
+        }
+    ]
+}
