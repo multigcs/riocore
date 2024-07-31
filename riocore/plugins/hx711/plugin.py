@@ -21,6 +21,7 @@ class Plugin(PluginBase):
             "weight": {
                 "size": 32,
                 "direction": "input",
+                "multiplexed": True,
             },
         }
         self.SIGNALS = {
@@ -50,7 +51,7 @@ class Plugin(PluginBase):
             },
         }
         self.INFO = "digital weight sensor"
-        self.DESCRIPTION = "to messurement weight's"
+        self.DESCRIPTION = "to measure weight's"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
