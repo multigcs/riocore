@@ -1899,7 +1899,7 @@ class WinForm(QWidget):
         elif var_setup["type"] == int:
             return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, default=var_setup.get("default"))
         elif var_setup["type"] == float:
-            return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, default=var_setup.get("default"))
+            return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
         elif var_setup["type"] == bool:
             return edit_bool(self, obj, key, cb=cb, default=var_setup.get("default"))
         return edit_text(self, obj, key, cb=cb, default=var_setup.get("default"))

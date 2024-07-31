@@ -720,6 +720,22 @@
                     "direction": "input"
                 }
             }
+        },
+        {
+            "type": "hx711",
+            "pins": {
+                "miso": {
+                    "pin": "I2C2:SCL"
+                },
+                "sclk": {
+                    "pin": "I2C2:SDA"
+                },
+                "sel": {
+                    "pin": ""
+                }
+            },
+            "zero": 954755,
+            "scale": -0.0004
         }
     ],
     "linuxcnc": {

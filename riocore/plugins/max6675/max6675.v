@@ -1,6 +1,6 @@
 
 module max6675
-    #(DIVIDER = 1000)
+    #(parameter DIVIDER = 1000)
     (
         input clk,
         input miso,

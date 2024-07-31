@@ -89,7 +89,7 @@ class MyStandardItem(QStandardItem):
 
 
 class edit_float(QDoubleSpinBox):
-    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None):
+    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None, decimals=None):
         super().__init__()
         self.win = win
         self.cb = cb
@@ -98,6 +98,14 @@ class edit_float(QDoubleSpinBox):
         self.default = default
         if help_text:
             self.setToolTip(help_text)
+        if decimals is None:
+            decimals = 3
+        self.setDecimals(decimals)
+        steps = 1.0
+        if decimals > 1:
+            for dn in range(decimals - 1):
+                steps /= 10.0
+            self.setSingleStep(steps)
         if vmin:
             self.setMinimum(vmin)
         else:

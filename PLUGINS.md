@@ -21,6 +21,7 @@
 |  | [ds18b20](riocore/plugins/ds18b20/README.md) | 1Wire Temperature sensor |  |
 |  | [freqin](riocore/plugins/freqin/README.md) | frequency input |  |
 |  | [freqout](riocore/plugins/freqout/README.md) | frequency output |  |
+|  | [hx711](riocore/plugins/hx711/README.md) | digital weight sensor | <img src="riocore/plugins/hx711/image.png" height="48"> |
 |  | [icewerxadc](riocore/plugins/icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="riocore/plugins/icewerxadc/image.png" height="48"> |
 |  | [irin](riocore/plugins/irin/README.md) | IR-Remote input | <img src="riocore/plugins/irin/image.png" height="48"> |
 |  | [lm75](riocore/plugins/lm75/README.md) | I2C Temperature-Sensor |  |
