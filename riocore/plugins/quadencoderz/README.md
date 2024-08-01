@@ -3,6 +3,9 @@
 
 usable as spindle-encoder for rigid tapping and thread cutting
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

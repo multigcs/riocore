@@ -30,8 +30,8 @@
 |  | [max7219](riocore/plugins/max7219/README.md) | 7segment display based on max7219 | <img src="riocore/plugins/max7219/image.png" height="48"> |
 |  | [pwmin](riocore/plugins/pwmin/README.md) | pwm input | <img src="riocore/plugins/pwmin/image.png" height="48"> |
 |  | [quadencoder](riocore/plugins/quadencoder/README.md) | quadencoder | <img src="riocore/plugins/quadencoder/image.png" height="48"> |
-|  | [quadencoderz](riocore/plugins/quadencoderz/README.md) | quadencoder with index pin |  |
-|  | [signal](riocore/plugins/signal/README.md) | virtual signal |  |
+|  | [quadencoderz](riocore/plugins/quadencoderz/README.md) | quadencoder with index pin | <img src="riocore/plugins/quadencoderz/image.png" height="48"> |
+|  | [signal](riocore/plugins/signal/README.md) | virtual signal | <img src="riocore/plugins/signal/image.png" height="48"> |
 |  | [sonar](riocore/plugins/sonar/README.md) | sonar sensor for distance measurement | <img src="riocore/plugins/sonar/image.png" height="48"> |
 |  | [spipoti](riocore/plugins/spipoti/README.md) | spi digital poti | <img src="riocore/plugins/spipoti/image.png" height="48"> |
 |  | [tlc549c](riocore/plugins/tlc549c/README.md) | spi adc input | <img src="riocore/plugins/tlc549c/image.png" height="48"> |
