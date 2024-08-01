@@ -1,7 +1,7 @@
 {
     "name": "Tangoboard",
     "description": "Tangoboard with TangNano9K over SPI",
-    "boardcfg": "tangoboard",
+    "boardcfg": "Tangoboard",
     "protocol": "SPI",
     "plugins": [
         {

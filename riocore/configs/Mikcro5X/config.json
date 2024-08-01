@@ -1,7 +1,7 @@
 {
     "name": "Mikro5X",
     "description": "Mikro5X with Tangoboard",
-    "boardcfg": "TangNano9K",
+    "boardcfg": "Tangoboard",
     "protocol": "UDP",
     "ip": "192.168.10.13",
     "port": "2390",
