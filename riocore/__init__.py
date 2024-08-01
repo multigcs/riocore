@@ -335,7 +335,6 @@ class Plugins:
 
                 print(argument_name, argument_size, argument_name in plugin_config.get("pins", {}))
 
-
                 if argument_name in {"clk"}:
                     has_clock = True
                 elif is_interface and argument_name in {"pkg_timeout"}:

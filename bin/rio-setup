@@ -26,6 +26,7 @@ from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
 from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
 from PyQt5.QtWidgets import (
+    QHeaderView,
     QSizePolicy,
     QGroupBox,
     QLineEdit,
@@ -314,17 +315,26 @@ class WinForm(QWidget):
         self.treeview.setUniformRowHeights(True)
 
         if not args.config:
-            print("ERROR: no configuration file given")
-            exit(1)
-
-        if os.path.isfile(args.config):
-            self.config_file = args.config
-        elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
-            self.config_file = f"{riocore_path}/configs/{args.config}"
+            self.config_file = None
+            boardcfg = self.select_board()
+            if boardcfg:
+                new_config = {
+                    "name": boardcfg,
+                    "boardcfg": boardcfg,
+                    "plugins": [],
+                }
+                self.config = new_config
+            else:
+                exit(1)
         else:
-            print(f"can not load: {args.config}")
-            exit(1)
-        print(f"loading: {self.config_file}")
+            if os.path.isfile(args.config):
+                self.config_file = args.config
+            elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
+                self.config_file = f"{riocore_path}/configs/{args.config}"
+            else:
+                print(f"can not load: {args.config}")
+                exit(1)
+            print(f"loading: {self.config_file}")
 
         layout.addWidget(self.treeview, 0, 0)
 
@@ -524,6 +534,96 @@ class WinForm(QWidget):
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
 
+    def select_board(self):
+        def show_board_info(idx):
+            board_path = board_list[idx]
+            if board_path.endswith(".json"):
+                board_name = board_path.split("/")[-1].replace(".json", "")
+                board_raw = open(board_path, "r").read()
+            else:
+                board_name = board_path.split("/")[-1]
+                board_raw = open(f"{board_path}/board.json", "r").read()
+            board_config = json.loads(board_raw)
+
+            pinimage = board_config.get("pinimage")
+            image_path = f"{board_path}/{pinimage}"
+            if os.path.isfile(image_path):
+                pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
+                image_label.setPixmap(pixmap)
+            else:
+                image_label.clear()
+
+            name_label.setText(board_name)
+            description = []
+            for key in ("name", "description", "type", "family", "toolchain"):
+                value = board_config.get(key)
+                description.append(f"{key.title()}: {value}")
+            description_label.setText("\n".join(description))
+            dialog.selected = board_name
+
+        dialog = QDialog()
+        dialog.setWindowTitle("select board")
+        dialog.setStyleSheet(STYLESHEET)
+
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog.setLayout(dialog.layout)
+
+        board_table = QTableWidget()
+        board_table.setColumnCount(1)
+        board_table.setHorizontalHeaderItem(0, QTableWidgetItem("Boards"))
+        header = board_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+
+        board_list = []
+        for bn, path in enumerate(glob.glob(f"{riocore_path}/boards/*")):
+            board_table.setRowCount(bn + 1)
+            board_list.append(path)
+            if path.endswith(".json"):
+                board_name = path.split("/")[-1].replace(".json", "")
+            else:
+                board_name = path.split("/")[-1]
+            pitem = QTableWidgetItem(board_name)
+            board_table.setItem(bn, 0, pitem)
+
+        board_table.setFixedWidth(300)
+        board_table.cellClicked.connect(show_board_info)
+
+        mid_layout = QVBoxLayout()
+        mid_widget = QWidget()
+        mid_widget.setFixedWidth(400)
+        mid_widget.setLayout(mid_layout)
+        name_label = QLabel("name")
+        name_label_font = QFont()
+        name_label_font.setBold(True)
+        name_label.setFont(name_label_font)
+
+        mid_layout.addWidget(name_label)
+        description_label = QLabel("description")
+        mid_layout.addWidget(description_label)
+        mid_layout.addStretch()
+
+        right_layout = QVBoxLayout()
+        right_widget = QWidget()
+        right_widget.setLayout(right_layout)
+        image_label = QLabel(self)
+        right_layout.addWidget(image_label)
+        right_layout.addStretch()
+
+        infos = QHBoxLayout()
+        infos.addWidget(board_table, stretch=1)
+        infos.addWidget(mid_widget, stretch=3)
+        infos.addWidget(right_widget, stretch=1)
+
+        dialog.layout.addLayout(infos)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        show_board_info(0)
+
+        if dialog.exec():
+            return dialog.selected
+
     def check_status(self):
         self.config_checked = self.clean_config(self.config)
         config_name = self.config.get("name")
@@ -701,8 +801,11 @@ class WinForm(QWidget):
 
     def json_load(self):
         # loading json config
-        configJsonStr = open(self.config_file, "r").read()
-        self.config = json.loads(configJsonStr)
+        if self.config_file:
+            configJsonStr = open(self.config_file, "r").read()
+            self.config = json.loads(configJsonStr)
+        if "plugins" not in self.config:
+            self.config["plugins"] = []
 
     def closeEvent(self, event):
         if self.config_original != self.clean_config(self.config):
@@ -1889,8 +1992,7 @@ class WinForm(QWidget):
             for col_n, col in enumerate(row):
                 pitem = QTableWidgetItem(col)
                 self.pin_table.setItem(row_n, col_n, pitem)
-        for col_n, col in enumerate(row):
-            self.pin_table.resizeColumnToContents(col_n)
+                self.pin_table.resizeColumnToContents(col_n)
 
     def edit_item(self, obj, key, var_setup=None, cb=None):
         if var_setup is None:
@@ -3156,7 +3258,12 @@ class WinForm(QWidget):
     def save_config_as(self, widget=None):
         file_dialog = QFileDialog(self)
         file_dialog.setNameFilters(["json (*.json)"])
-        name = file_dialog.getSaveFileName(self, "Save File", self.config_file, "json (*.json)")
+
+        if self.config_file:
+            name = file_dialog.getSaveFileName(self, "Save File", self.config_file, "json (*.json)")
+        else:
+            name = file_dialog.getSaveFileName(self, "Save File", f"{riocore_path}/configs/", "json (*.json)")
+
         if name[0]:
             self.save_config(name[0])
             self.config_file = name[0]
@@ -3166,13 +3273,20 @@ class WinForm(QWidget):
 
     def save_config_cb(self):
         self.save_config(self.config_file)
-        self.config_original = self.clean_config(self.config)
-        self.info_widget.setText(f"Saved as: {os.path.basename(self.config_file)}")
-        self.check_status()
+        if self.config_file is not None:
+            self.config_original = self.clean_config(self.config)
+            self.info_widget.setText(f"Saved as: {os.path.basename(self.config_file)}")
+            self.check_status()
+        else:
+            print("ERROR: saving config")
+            self.info_widget.setText("ERROR: saving config")
 
     def save_config(self, filename):
-        config = self.clean_config(self.config)
-        open(filename, "w").write(json.dumps(config, indent=4))
+        if filename is None:
+            self.save_config_as()
+        else:
+            config = self.clean_config(self.config)
+            open(filename, "w").write(json.dumps(config, indent=4))
 
     def tree_add_plugin(self, parent, plugin_instance, nopins=False, expand=False):
         name = plugin_instance.plugin_setup.get("name")

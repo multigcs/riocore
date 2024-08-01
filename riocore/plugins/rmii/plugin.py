@@ -1,8 +1,7 @@
-
 from riocore.plugins import PluginBase
 
-class Plugin(PluginBase):
 
+class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rmii"
         self.INFO = "rmii udp interface (experimental)"
@@ -66,7 +65,6 @@ class Plugin(PluginBase):
             "PININ:netrmii_clk50m": 50000000,
         }
 
-
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
@@ -80,7 +78,7 @@ class Plugin(PluginBase):
         instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"
         instance_parameter["TIMEOUT"] = f"32'd{self.system_setup['speed'] // 20}"
-        #instance_parameter["MAC"] = self.plugin_setup.get("mac", "{8'h06")
-        #instance_parameter["IP"] = self.plugin_setup.get("ip", "{8'd192")
+        # instance_parameter["MAC"] = self.plugin_setup.get("mac", "{8'h06")
+        # instance_parameter["IP"] = self.plugin_setup.get("ip", "{8'd192")
 
         return instances
