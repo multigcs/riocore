@@ -318,12 +318,11 @@ class WinForm(QWidget):
             self.config_file = None
             boardcfg = self.select_board()
             if boardcfg:
-                new_config = {
+                self.config = {
                     "name": boardcfg,
                     "boardcfg": boardcfg,
                     "plugins": [],
                 }
-                self.config = new_config
             else:
                 exit(1)
         else:
@@ -562,12 +561,13 @@ class WinForm(QWidget):
             dialog.selected = board_name
 
         dialog = QDialog()
-        dialog.setWindowTitle("select board")
+        dialog.setWindowTitle("create new config / select board")
         dialog.setStyleSheet(STYLESHEET)
 
         dialog.layout = QVBoxLayout()
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
         dialog.setLayout(dialog.layout)
 
         board_table = QTableWidget()
