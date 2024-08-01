@@ -63,7 +63,7 @@ elif args.generate:
     text.append("# PLUGINS")
     text.append("")
     text.append("| Type | Name | Info | Image |")
-    text.append("| --- | :---: | --- | ---:  |")
+    text.append("| --- | :---: | --- | :---: |")
 
     for title, ptype in {
         "Interfaces": "interface",

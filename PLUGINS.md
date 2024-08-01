@@ -1,7 +1,7 @@
 # PLUGINS
 
 | Type | Name | Info | Image |
-| --- | :---: | --- | ---:  |
+| --- | :---: | --- | :---: |
 | Interfaces | [arty_mii](riocore/plugins/arty_mii/README.md) | udp interface for host comunication - experimental - Arty7-35t only | <img src="riocore/plugins/arty_mii/image.png" height="48"> |
 |  | [rmii](riocore/plugins/rmii/README.md) | rmii udp interface (experimental) | <img src="riocore/plugins/rmii/image.png" height="48"> |
 |  | [spi](riocore/plugins/spi/README.md) | spi interface for host comunication | <img src="riocore/plugins/spi/image.png" height="48"> |
