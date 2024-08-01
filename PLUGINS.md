@@ -15,7 +15,7 @@
 |  | [as5600](riocore/plugins/as5600/README.md) | magnetic absolute encoder | <img src="riocore/plugins/as5600/image.png" height="48"> |
 |  | [bitin](riocore/plugins/bitin/README.md) | single input pin | <img src="riocore/plugins/bitin/image.png" height="48"> |
 |  | [bitout](riocore/plugins/bitout/README.md) | singe bit output pin | <img src="riocore/plugins/bitout/image.png" height="48"> |
-|  | [blink](riocore/plugins/blink/README.md) | blinking output pin |  |
+|  | [blink](riocore/plugins/blink/README.md) | blinking output pin | <img src="riocore/plugins/blink/image.png" height="48"> |
 |  | [counter](riocore/plugins/counter/README.md) | pulse counter input | <img src="riocore/plugins/counter/image.png" height="48"> |
 |  | [dis7seg](riocore/plugins/dis7seg/README.md) | 7segment display with buttons | <img src="riocore/plugins/dis7seg/image.png" height="48"> |
 |  | [ds18b20](riocore/plugins/ds18b20/README.md) | 1Wire Temperature sensor | <img src="riocore/plugins/ds18b20/image.png" height="48"> |
@@ -25,19 +25,18 @@
 |  | [icewerxadc](riocore/plugins/icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="riocore/plugins/icewerxadc/image.png" height="48"> |
 |  | [irin](riocore/plugins/irin/README.md) | IR-Remote input | <img src="riocore/plugins/irin/image.png" height="48"> |
 |  | [lm75](riocore/plugins/lm75/README.md) | I2C Temperature-Sensor | <img src="riocore/plugins/lm75/image.png" height="48"> |
-|  | [max10adc](riocore/plugins/max10adc/README.md) | MAX10 ADC inputs |  |
+|  | [max10adc](riocore/plugins/max10adc/README.md) | MAX10 ADC inputs | <img src="riocore/plugins/max10adc/image.png" height="48"> |
 |  | [max6675](riocore/plugins/max6675/README.md) | SPI temperature sensor | <img src="riocore/plugins/max6675/image.png" height="48"> |
-|  | [max7219](riocore/plugins/max7219/README.md) | 7segment display based on max7219 |  |
+|  | [max7219](riocore/plugins/max7219/README.md) | 7segment display based on max7219 | <img src="riocore/plugins/max7219/image.png" height="48"> |
 |  | [pwmin](riocore/plugins/pwmin/README.md) | pwm input | <img src="riocore/plugins/pwmin/image.png" height="48"> |
 |  | [quadencoder](riocore/plugins/quadencoder/README.md) | quadencoder | <img src="riocore/plugins/quadencoder/image.png" height="48"> |
 |  | [quadencoderz](riocore/plugins/quadencoderz/README.md) | quadencoder with index pin |  |
-|  | [quadencoderz_jschoch](riocore/plugins/quadencoderz_jschoch/README.md) | quadencoder with index pin |  |
 |  | [signal](riocore/plugins/signal/README.md) | virtual signal |  |
 |  | [sonar](riocore/plugins/sonar/README.md) | sonar sensor for distance measurement | <img src="riocore/plugins/sonar/image.png" height="48"> |
-|  | [spipoti](riocore/plugins/spipoti/README.md) | spi digital poti |  |
+|  | [spipoti](riocore/plugins/spipoti/README.md) | spi digital poti | <img src="riocore/plugins/spipoti/image.png" height="48"> |
 |  | [tlc549c](riocore/plugins/tlc549c/README.md) | spi adc input | <img src="riocore/plugins/tlc549c/image.png" height="48"> |
 |  | [tm1638b8s7l8](riocore/plugins/tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="riocore/plugins/tm1638b8s7l8/image.png" height="48"> |
-|  | [udpoti](riocore/plugins/udpoti/README.md) | digital-poti with up/down+dir interface |  |
+|  | [udpoti](riocore/plugins/udpoti/README.md) | digital-poti with up/down+dir interface | <img src="riocore/plugins/udpoti/image.png" height="48"> |
 |  | [wled](riocore/plugins/wled/README.md) | ws2812b interface | <img src="riocore/plugins/wled/image.png" height="48"> |
 |  | [wled_bar](riocore/plugins/wled_bar/README.md) | ws2812b interface for bar-displays | <img src="riocore/plugins/wled_bar/image.png" height="48"> |
 | FrameIO | [modbus](riocore/plugins/modbus/README.md) | generic modbus plugin | <img src="riocore/plugins/modbus/image.png" height="48"> |

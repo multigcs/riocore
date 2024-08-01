@@ -3,6 +3,9 @@
 
 to display values from LinuxCNC on 7segment display's
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

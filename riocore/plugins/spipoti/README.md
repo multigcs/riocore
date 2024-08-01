@@ -3,6 +3,9 @@
 
 Analog-Outout via spi digital poti
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

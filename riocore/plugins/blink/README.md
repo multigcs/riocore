@@ -3,6 +3,9 @@
 
 outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {
