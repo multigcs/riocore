@@ -535,7 +535,6 @@ class WinForm(QWidget):
 
     def select_board(self):
         def load_config_from():
-
             file_dialog = QFileDialog(self)
             suffix_list = ["*.json"]
             name = file_dialog.getOpenFileName(
@@ -548,7 +547,6 @@ class WinForm(QWidget):
             if name[0]:
                 dialog.close()
                 self.config_file = name[0]
-
 
         def show_board_info(idx):
             board_path = board_list[idx]
@@ -3117,6 +3115,8 @@ class WinForm(QWidget):
 
         dialog.layout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
+
+        change(0, 0)
 
         if dialog.exec():
             return plugin_name.text()
