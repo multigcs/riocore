@@ -160,11 +160,19 @@ class WinForm(QWidget):
                         row_layout.addWidget(QLabel(f"    {halname_np}"), stretch=2)
                         wid = f"widget_{plugin_instance.title}"
                         gid = f"graph_{plugin_instance.title}"
+                        virtual = signal.get("virtual", False)
+                        direction = signal.get("direction")
+                        if virtual:
+                            # swap direction vor virt signals
+                            if direction == "input":
+                                direction = "output"
+                            else:
+                                direction = "input"
                         if signal.get("bool"):
                             signal[wid] = QCheckBox()
                             signal[wid].setChecked(value)
                             signal[wid].setStyleSheet(STYLESHEET_CHECKBOX)
-                            if args.graphs and signal.get("direction") == "input":
+                            if args.graphs and direction == "input":
                                 signal[f"graph_tab_{plugin_instance.title}"] = tab_num
                                 signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
                                 plot_graph = pg.PlotWidget()
@@ -182,7 +190,7 @@ class WinForm(QWidget):
                                 row_layout.addWidget(plot_graph)
                             row_layout.addWidget(signal[wid], stretch=6)
 
-                        elif signal.get("direction") == "input":
+                        elif direction == "input":
                             signal[wid] = QLabel("")
                             if args.graphs:
                                 signal[f"graph_tab_{plugin_instance.title}"] = tab_num
@@ -463,9 +471,17 @@ class WinForm(QWidget):
                         value = (value + value_offset) / value_scale
 
                     value_str = f"%{value_format}" % (value,)
+                    virtual = signal.get("virtual", False)
+                    direction = signal.get("direction")
+                    if virtual:
+                        # swap direction vor virt signals
+                        if direction == "input":
+                            direction = "output"
+                        else:
+                            direction = "input"
                     if signal.get("bool"):
                         signal[f"widget_{plugin_instance.title}"].setChecked(int(value))
-                        if args.graphs and signal.get("direction") == "input":
+                        if args.graphs and direction == "input":
                             gmin, gmax = signal[f"graph_minmax_{plugin_instance.title}"]
                             mm_changed = False
                             if gmax < value:
@@ -481,7 +497,7 @@ class WinForm(QWidget):
                             signal[f"history_{plugin_instance.title}"].append(value)
                             if self.ucount == 0:
                                 signal[f"graph_{plugin_instance.title}"].setData(self.time, signal[f"history_{plugin_instance.title}"])
-                    elif signal.get("direction") == "input":
+                    elif direction == "input":
                         signal[f"widget_{plugin_instance.title}"].setText(f"{value_str} {value_unit}")
                         if args.graphs:
                             gmin, gmax = signal[f"graph_minmax_{plugin_instance.title}"]

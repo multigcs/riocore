@@ -734,8 +734,19 @@
                     "pin": ""
                 }
             },
-            "zero": 954755,
-            "scale": -0.0004
+            "zero": 3758,
+            "scale": 0.00072,
+            "signals": {
+                "tare": {
+                    "display": {
+                        "type": "button"
+                    }
+                }
+            }
+        },
+        {
+            "type": "signal",
+            "name": "vinf"
         }
     ],
     "linuxcnc": {

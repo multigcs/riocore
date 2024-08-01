@@ -68,9 +68,14 @@ class Toolchain:
         makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
         makefile_data.append("	gw_sh $(PROJECT).tcl")
         makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
+        makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
         makefile_data.append("")
         makefile_data.append("load: impl/pnr/project.fs")
-        makefile_data.append(f"	openFPGALoader -b {board.lower()} impl/pnr/project.fs -f")
+
+        board_id = board.lower()
+        if board_id == "tangoboard":
+            board_id = "tangnano9k"
+        makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")

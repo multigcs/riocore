@@ -701,6 +701,13 @@ class Project:
         for plugin_instance in self.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 direction = signal_config["direction"]
+                virtual = signal_config.get("virtual", False)
+                if virtual:
+                    # swap direction vor virt signals
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
                 halname = signal_config["halname"]
                 if direction in {"output", "inout"} and name == halname:
                     signal_config["value"] = value
@@ -709,6 +716,13 @@ class Project:
         for plugin_instance in self.plugin_instances:
             for interface_name, interface_config in plugin_instance.interface_data().items():
                 direction = interface_config["direction"]
+                virtual = signal_config.get("virtual", False)
+                if virtual:
+                    # swap direction vor virt signals
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
                 variable = interface_config["variable"]
                 if direction in {"output", "inout"} and name == variable:
                     interface_config["value"] = value
@@ -723,6 +737,13 @@ class Project:
             }
             for signal_name, signal_config in plugin_instance.signals().items():
                 direction = signal_config["direction"]
+                virtual = signal_config.get("virtual", False)
+                if virtual:
+                    # swap direction vor virt signals
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
                 halname = signal_config["halname"]
                 haldata[plugin_instance][direction][halname] = signal_config
 

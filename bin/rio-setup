@@ -2879,8 +2879,16 @@ class WinForm(QWidget):
 
             if "display" not in signals_setup[signal_name]:
                 signals_setup[signal_name]["display"] = {}
+            direction = signal_defaults["direction"]
+            virtual = signal_defaults.get("virtual", False)
+            if virtual:
+                # swap direction vor virt signals in component
+                if direction == "input":
+                    direction = "output"
+                else:
+                    direction = "input"
 
-            if signal_defaults["direction"] == "input" or signals_setup[signal_name].get("net"):
+            if direction == "input" or signals_setup[signal_name].get("net"):
                 if signal_defaults.get("bool"):
                     type_options = ["none", "led", "rectled"]
                 else:
@@ -2894,9 +2902,10 @@ class WinForm(QWidget):
                 "title": {"type": str},
                 "section": {"type": str},
                 "type": {"type": "select", "options": type_options},
-                "min": {"type": float, "default": None},
-                "max": {"type": float, "default": None},
             }
+            if not signal_defaults.get("bool", False):
+                display_setup["min"] = {"type": float, "default": None}
+                display_setup["max"] = {"type": float, "default": None}
             for option, option_setup in display_setup.items():
                 display_cols = QHBoxLayout()
                 display_rows.addLayout(display_cols)
@@ -3285,8 +3294,8 @@ class WinForm(QWidget):
             name = file_dialog.getSaveFileName(self, "Save File", f"{riocore_path}/configs/", "json (*.json)")
 
         if name[0]:
-            if not name.endswith(".json"):
-                name = f"{name}.json"
+            if not name[0].endswith(".json"):
+                name[0] = f"{name[0]}.json"
             self.save_config(name[0])
             self.config_file = name[0]
             self.config_original = self.clean_config(self.config)

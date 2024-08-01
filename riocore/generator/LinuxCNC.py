@@ -1295,13 +1295,14 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
                     virtual = signal_config.get("virtual")
+                    component = signal_config.get("component")
                     rprefix = "rio"
                     if virtual:
                         rprefix = "riov"
 
-                    if scale:
+                    if scale and not virtual:
                         self.loadrts.append(f"setp {rprefix}.{halname}-scale {scale}")
-                    if offset:
+                    if offset and not virtual:
                         self.loadrts.append(f"setp {rprefix}.{halname}-offset {offset}")
 
                     if netname:
@@ -1317,6 +1318,11 @@ class LinuxCNC:
                             self.hal_net_add(netname, f"{rprefix}.{halname}")
                     elif setp is not None:
                         self.loadrts.append(f"setp {rprefix}.{halname} {setp}")
+                    elif virtual and component:
+                        if direction == "input":
+                            self.hal_net_add(f"{rprefix}.{halname}", f"rio.{halname}")
+                        else:
+                            self.hal_net_add(f"rio.{halname}", f"{rprefix}.{halname}")
 
         for axis_name, axis_config in self.axis_dict.items():
             joints = axis_config["joints"]
@@ -1423,7 +1429,14 @@ class LinuxCNC:
                 signal_source = signal_config.get("source")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
                 virtual = signal_config.get("virtual")
-                if virtual:
+                component = signal_config.get("component")
+                if virtual and component:
+                    # swap direction vor virt signals in component
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
+                elif virtual:
                     continue
                 if not boolean:
                     output.append(f"    hal_{hal_type}_t *{varname};")
@@ -1432,8 +1445,9 @@ class LinuxCNC:
                             output.append(f"    hal_{hal_type}_t *{varname}_ABS;")
                             output.append(f"    hal_s32_t *{varname}_S32;")
                             output.append(f"    hal_u32_t *{varname}_U32_ABS;")
-                        output.append(f"    hal_float_t *{varname}_SCALE;")
-                        output.append(f"    hal_float_t *{varname}_OFFSET;")
+                        if not virtual:
+                            output.append(f"    hal_float_t *{varname}_SCALE;")
+                            output.append(f"    hal_float_t *{varname}_OFFSET;")
                 else:
                     output.append(f"    hal_bit_t   *{varname};")
                     if direction == "input":
@@ -1490,10 +1504,18 @@ class LinuxCNC:
                 mapping = {"output": "IN", "input": "OUT", "inout": "IO"}
                 hal_direction = mapping[direction]
                 virtual = signal_config.get("virtual")
-                if virtual:
+                component = signal_config.get("component")
+                if virtual and component:
+                    # swap direction vor virt signals in component
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
+                    hal_direction = mapping[direction]
+                elif virtual:
                     continue
                 if not boolean:
-                    if not signal_source and not signal_config.get("helper", False):
+                    if not signal_source and not signal_config.get("helper", False) and not virtual:
                         output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_SCALE), comp_id, "%s.{halname}-scale", prefix) != 0) error_handler(retval);')
                         output.append(f"    *data->{varname}_SCALE = 1.0;")
                         output.append(f'    if (retval = hal_pin_float_newf(HAL_IN, &(data->{varname}_OFFSET), comp_id, "%s.{halname}-offset", prefix) != 0) error_handler(retval);')

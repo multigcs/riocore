@@ -30,6 +30,17 @@ class Plugin(PluginBase):
                 "unit": "Kg",
                 "format": "0.3f",
             },
+            "tare": {
+                "direction": "input",
+                "bool": True,
+                "virtual": True,
+                "component": True,
+            },
+            "toffset": {
+                "direction": "output",
+                "virtual": True,
+                "component": True,
+            },
         }
         self.OPTIONS = {
             "zero": {
@@ -70,13 +81,21 @@ class Plugin(PluginBase):
         scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
         zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])
         value -= zero
+        if self.SIGNALS["tare"]["value"] == 1:
+            self.SIGNALS["toffset"]["value"] = value
+        value -= self.SIGNALS["toffset"]["value"]
         value *= scale
         return value
 
     def convert_c(self, signal_name, signal_setup):
         scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
         zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])
+        instances_name = self.instances_name.upper()
         return f"""
             value -= {zero};
+            if (*data->SIGIN_{instances_name}_TARE == 1) {{
+                *data->SIGOUT_{instances_name}_TOFFSET = value;
+            }}
+            value -= *data->SIGOUT_{instances_name}_TOFFSET;
             value *= {scale};
         """
