@@ -3265,6 +3265,8 @@ class WinForm(QWidget):
             name = file_dialog.getSaveFileName(self, "Save File", f"{riocore_path}/configs/", "json (*.json)")
 
         if name[0]:
+            if not name.endswith(".json"):
+                name = f"{name}.json"
             self.save_config(name[0])
             self.config_file = name[0]
             self.config_original = self.clean_config(self.config)
