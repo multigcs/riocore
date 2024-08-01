@@ -3,7 +3,7 @@
 | Type | Name | Info | Image |
 | --- | :---: | --- | ---:  |
 | Interfaces | [arty_mii](riocore/plugins/arty_mii/README.md) | udp interface for host comunication - experimental - Arty7-35t only |  |
-|  | [rmii](riocore/plugins/rmii/README.md) | rmii udp interface |  |
+|  | [rmii](riocore/plugins/rmii/README.md) | rmii udp interface (experimental) |  |
 |  | [spi](riocore/plugins/spi/README.md) | spi interface for host comunication | <img src="riocore/plugins/spi/image.png" height="48"> |
 |  | [uart](riocore/plugins/uart/README.md) | uart interface for host cominucation |  |
 |  | [w5500](riocore/plugins/w5500/README.md) | udp interface for host comunication - experimental | <img src="riocore/plugins/w5500/image.png" height="48"> |
@@ -31,6 +31,7 @@
 |  | [pwmin](riocore/plugins/pwmin/README.md) | pwm input |  |
 |  | [quadencoder](riocore/plugins/quadencoder/README.md) | quadencoder | <img src="riocore/plugins/quadencoder/image.png" height="48"> |
 |  | [quadencoderz](riocore/plugins/quadencoderz/README.md) | quadencoder with index pin |  |
+|  | [quadencoderz_jschoch](riocore/plugins/quadencoderz_jschoch/README.md) | quadencoder with index pin |  |
 |  | [signal](riocore/plugins/signal/README.md) | virtual signal |  |
 |  | [sonar](riocore/plugins/sonar/README.md) | sonar sensor for distance measurement | <img src="riocore/plugins/sonar/image.png" height="48"> |
 |  | [spipoti](riocore/plugins/spipoti/README.md) | spi digital poti |  |

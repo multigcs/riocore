@@ -1,7 +1,7 @@
 # rmii
-**rmii udp interface**
+**rmii udp interface (experimental)**
 
-rmii ethernet - udp interface
+rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)
 
 ## Basic-Example:
 ```
