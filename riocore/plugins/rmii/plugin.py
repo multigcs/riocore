@@ -5,8 +5,8 @@ class Plugin(PluginBase):
 
     def setup(self):
         self.NAME = "rmii"
-        self.INFO = "rmii udp interface"
-        self.DESCRIPTION = "rmii ethernet - udp interface"
+        self.INFO = "rmii udp interface (experimental)"
+        self.DESCRIPTION = "rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)"
         self.VERILOGS = ["udp.v", "rmii.v"]
         self.PINDEFAULTS = {
             "phyrst": {
