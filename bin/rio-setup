@@ -323,7 +323,7 @@ class WinForm(QWidget):
                     "boardcfg": boardcfg,
                     "plugins": [],
                 }
-            else:
+            elif self.config_file is None:
                 exit(1)
         else:
             if os.path.isfile(args.config):
@@ -534,6 +534,22 @@ class WinForm(QWidget):
         self.timer.start(1000)
 
     def select_board(self):
+        def load_config_from():
+
+            file_dialog = QFileDialog(self)
+            suffix_list = ["*.json"]
+            name = file_dialog.getOpenFileName(
+                self,
+                "Load Config",
+                f"{riocore_path}/configs/",
+                f"config ( {' '.join(suffix_list)} )" "Load Config",
+                "",
+            )
+            if name[0]:
+                dialog.close()
+                self.config_file = name[0]
+
+
         def show_board_info(idx):
             board_path = board_list[idx]
             if board_path.endswith(".json"):
@@ -565,10 +581,14 @@ class WinForm(QWidget):
         dialog.setStyleSheet(STYLESHEET)
 
         dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
+
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog_buttonBox.rejected.connect(dialog.reject)
-        dialog.setLayout(dialog.layout)
+        load_button = QPushButton(self.tr("Loead existing config"))
+        load_button.clicked.connect(load_config_from)
+        dialog_buttonBox.addButton(load_button, QDialogButtonBox.ActionRole)
 
         board_table = QTableWidget()
         board_table.setColumnCount(1)
