@@ -1,6 +1,9 @@
 # pwmin
 **pwm input**
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

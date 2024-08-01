@@ -3,6 +3,9 @@
 
 to messurement digital frequencies
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

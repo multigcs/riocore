@@ -3,6 +3,9 @@
 
 to counting digital pulses, supporting up,down and reset signals
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

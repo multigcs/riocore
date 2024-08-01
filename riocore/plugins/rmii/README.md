@@ -3,6 +3,9 @@
 
 rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

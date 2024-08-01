@@ -2,10 +2,10 @@
 
 | Type | Name | Info | Image |
 | --- | :---: | --- | ---:  |
-| Interfaces | [arty_mii](riocore/plugins/arty_mii/README.md) | udp interface for host comunication - experimental - Arty7-35t only |  |
-|  | [rmii](riocore/plugins/rmii/README.md) | rmii udp interface (experimental) |  |
+| Interfaces | [arty_mii](riocore/plugins/arty_mii/README.md) | udp interface for host comunication - experimental - Arty7-35t only | <img src="riocore/plugins/arty_mii/image.png" height="48"> |
+|  | [rmii](riocore/plugins/rmii/README.md) | rmii udp interface (experimental) | <img src="riocore/plugins/rmii/image.png" height="48"> |
 |  | [spi](riocore/plugins/spi/README.md) | spi interface for host comunication | <img src="riocore/plugins/spi/image.png" height="48"> |
-|  | [uart](riocore/plugins/uart/README.md) | uart interface for host cominucation |  |
+|  | [uart](riocore/plugins/uart/README.md) | uart interface for host cominucation | <img src="riocore/plugins/uart/image.png" height="48"> |
 |  | [w5500](riocore/plugins/w5500/README.md) | udp interface for host comunication - experimental | <img src="riocore/plugins/w5500/image.png" height="48"> |
 | Joints | [pwmout](riocore/plugins/pwmout/README.md) | pwm output | <img src="riocore/plugins/pwmout/image.png" height="48"> |
 |  | [rcservo](riocore/plugins/rcservo/README.md) | rc-servo output | <img src="riocore/plugins/rcservo/image.png" height="48"> |
@@ -16,19 +16,19 @@
 |  | [bitin](riocore/plugins/bitin/README.md) | single input pin | <img src="riocore/plugins/bitin/image.png" height="48"> |
 |  | [bitout](riocore/plugins/bitout/README.md) | singe bit output pin | <img src="riocore/plugins/bitout/image.png" height="48"> |
 |  | [blink](riocore/plugins/blink/README.md) | blinking output pin |  |
-|  | [counter](riocore/plugins/counter/README.md) | pulse counter input |  |
+|  | [counter](riocore/plugins/counter/README.md) | pulse counter input | <img src="riocore/plugins/counter/image.png" height="48"> |
 |  | [dis7seg](riocore/plugins/dis7seg/README.md) | 7segment display with buttons | <img src="riocore/plugins/dis7seg/image.png" height="48"> |
-|  | [ds18b20](riocore/plugins/ds18b20/README.md) | 1Wire Temperature sensor |  |
-|  | [freqin](riocore/plugins/freqin/README.md) | frequency input |  |
-|  | [freqout](riocore/plugins/freqout/README.md) | frequency output |  |
+|  | [ds18b20](riocore/plugins/ds18b20/README.md) | 1Wire Temperature sensor | <img src="riocore/plugins/ds18b20/image.png" height="48"> |
+|  | [freqin](riocore/plugins/freqin/README.md) | frequency input | <img src="riocore/plugins/freqin/image.png" height="48"> |
+|  | [freqout](riocore/plugins/freqout/README.md) | frequency output | <img src="riocore/plugins/freqout/image.png" height="48"> |
 |  | [hx711](riocore/plugins/hx711/README.md) | digital weight sensor | <img src="riocore/plugins/hx711/image.png" height="48"> |
 |  | [icewerxadc](riocore/plugins/icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="riocore/plugins/icewerxadc/image.png" height="48"> |
 |  | [irin](riocore/plugins/irin/README.md) | IR-Remote input | <img src="riocore/plugins/irin/image.png" height="48"> |
-|  | [lm75](riocore/plugins/lm75/README.md) | I2C Temperature-Sensor |  |
+|  | [lm75](riocore/plugins/lm75/README.md) | I2C Temperature-Sensor | <img src="riocore/plugins/lm75/image.png" height="48"> |
 |  | [max10adc](riocore/plugins/max10adc/README.md) | MAX10 ADC inputs |  |
 |  | [max6675](riocore/plugins/max6675/README.md) | SPI temperature sensor | <img src="riocore/plugins/max6675/image.png" height="48"> |
 |  | [max7219](riocore/plugins/max7219/README.md) | 7segment display based on max7219 |  |
-|  | [pwmin](riocore/plugins/pwmin/README.md) | pwm input |  |
+|  | [pwmin](riocore/plugins/pwmin/README.md) | pwm input | <img src="riocore/plugins/pwmin/image.png" height="48"> |
 |  | [quadencoder](riocore/plugins/quadencoder/README.md) | quadencoder | <img src="riocore/plugins/quadencoder/image.png" height="48"> |
 |  | [quadencoderz](riocore/plugins/quadencoderz/README.md) | quadencoder with index pin |  |
 |  | [quadencoderz_jschoch](riocore/plugins/quadencoderz_jschoch/README.md) | quadencoder with index pin |  |
@@ -41,6 +41,6 @@
 |  | [wled](riocore/plugins/wled/README.md) | ws2812b interface | <img src="riocore/plugins/wled/image.png" height="48"> |
 |  | [wled_bar](riocore/plugins/wled_bar/README.md) | ws2812b interface for bar-displays | <img src="riocore/plugins/wled_bar/image.png" height="48"> |
 | FrameIO | [modbus](riocore/plugins/modbus/README.md) | generic modbus plugin | <img src="riocore/plugins/modbus/image.png" height="48"> |
-|  | [uartbridge](riocore/plugins/uartbridge/README.md) | uart bridge |  |
+|  | [uartbridge](riocore/plugins/uartbridge/README.md) | uart bridge | <img src="riocore/plugins/uartbridge/image.png" height="48"> |
 | Expansions | [shiftreg](riocore/plugins/shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="riocore/plugins/shiftreg/image.png" height="48"> |
 |  | [wled](riocore/plugins/wled/README.md) | ws2812b interface acting as an expansion port | <img src="riocore/plugins/wled/image.png" height="48"> |

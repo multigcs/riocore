@@ -3,6 +3,9 @@
 
 for cheap 1wire temperature sensor's, only one per pin is supported at the moment
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {

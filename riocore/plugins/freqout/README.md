@@ -3,6 +3,9 @@
 
 to output variable frequency signals
 
+
+![image.png](image.png)
+
 ## Basic-Example:
 ```
 {
