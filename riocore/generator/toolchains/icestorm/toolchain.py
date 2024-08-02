@@ -139,6 +139,9 @@ class Toolchain:
             if board and board.startswith("TangNano"):
                 makefile_data.append("load: $(PROJECT).fs")
                 makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs -f")
+            elif board and board == "Tangoboard":
+                makefile_data.append("load: $(PROJECT).fs")
+                makefile_data.append(f"	openFPGALoader -b tangnano9k $(PROJECT).fs -f")
             else:
                 makefile_data.append(f"load: {bitfileName}")
                 makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
