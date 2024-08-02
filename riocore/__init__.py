@@ -595,6 +595,8 @@ class Project:
                             for pname, pin in ssetup.get(msetup_name, {}).get("pins", {}).items():
                                 if "pin" in pin:
                                     realpin = spins[pin["pin"]]
+                                    if isinstance(realpin, dict):
+                                        realpin = realpin["pin"]
                                 ssetup[msetup_name]["pins"][pname]["pin"] = realpin
                             module_data["plugins"][jn] = ssetup[msetup_name]
                         # merge into jdata
