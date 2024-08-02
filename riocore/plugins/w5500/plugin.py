@@ -31,9 +31,9 @@ class Plugin(PluginBase):
             },
         }
         self.spi_clk_speed = 2000000
-        self.TIMING_CONSTRAINTS = {
-            "mclk": self.spi_clk_speed,
-        }
+        #self.TIMING_CONSTRAINTS = {
+        #    "mclk": self.spi_clk_speed,
+        #}
         self.OPTIONS = {
             "mac": {
                 "default": "AA:AF:FA:CC:E3:1C",
