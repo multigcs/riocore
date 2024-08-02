@@ -30,10 +30,10 @@ class Plugin(PluginBase):
                 "pull": None,
             },
         }
-        self.spi_clk_speed = 2000000
-        #self.TIMING_CONSTRAINTS = {
+        self.spi_clk_speed = 10000000
+        # self.TIMING_CONSTRAINTS = {
         #    "mclk": self.spi_clk_speed,
-        #}
+        # }
         self.OPTIONS = {
             "mac": {
                 "default": "AA:AF:FA:CC:E3:1C",
@@ -51,7 +51,7 @@ class Plugin(PluginBase):
                 "description": "UDP-Port",
             },
         }
-        self.INFO = "udp interface for host comunication - experimental"
+        self.INFO = "udp interface for host comunication"
         self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
 
     def gateware_instances(self):

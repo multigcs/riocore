@@ -262,6 +262,7 @@ module wiznet5500
     reg [15:0] dst_port = 16'd2390;
     reg [10:0] rx_size = 11'd0;
     reg [3:0] rx_timer = 4'd0;
+    reg [3:0] rx_checks = 4'd0;
     reg rx_buffer_valid = 0;
     reg [15:0] tx_buffer_write_pointer = 16'd0;
     reg [15:0] rx_buffer_read_pointer = 16'd0;
@@ -306,6 +307,7 @@ module wiznet5500
 
         end else if (state == STATE_RX_START) begin
             rx_buffer_read_pointer <= rx_buffer_read_pointer + data_read[7:0];
+
             if (rx_size == (BUFFER_SIZE_RX+HEADER_SIZE)) begin
                 rx_buffer_valid <= 1;
                 current_instruction <= {8'd0, rx_buffer_read_pointer, BSB_S0_RX_RWB_READ};
@@ -550,10 +552,20 @@ module wiznet5500
                 if (is_check_rx == 1) begin
                     is_busy <= 1'b0;
                     is_check_rx <= 0;
-                    rx_timer <= 0;
+                    rx_timer <= 4'd0;
                     rx_size <= {data_read[7:0], 3'd0};
-                    if (data_read[7:0] > 8'b0) begin
+                    if (data_read[7:0] >= (BUFFER_SIZE_RX+HEADER_SIZE)) begin
+                        rx_checks <= 4'd0;
                         state <= STATE_RX_START;
+                    end else if (data_read[7:0] > 8'd0) begin
+                        // if package size is not valid, recheck rx-buffer 10 times
+                        if (rx_checks > 4'd9) begin
+                            // valid package size will not reached, clear the buffers
+                            rx_checks <= 4'd0;
+                            state <= STATE_RX_START;
+                        end else begin
+                            rx_checks <= rx_checks + 4'd1;
+                        end
                     end
                 end else begin
                     spi_clk <= 1'b0;
