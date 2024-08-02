@@ -190,8 +190,7 @@
                 "data": {
                     "pin": "WLED:DATA"
                 }
-            },
-            "leds": 4
+            }
         },
         {
             "type": "bitin",
@@ -681,17 +680,6 @@
                 }
             },
             "config": {
-                "do4": {
-                    "direction": "output",
-                    "type": 15,
-                    "address": 32,
-                    "register": 0,
-                    "values": 4,
-                    "delay": 100,
-                    "unit": "",
-                    "scale": 1,
-                    "format": "d"
-                },
                 "do2": {
                     "address": 11,
                     "type": 15,
@@ -739,14 +727,21 @@
             "signals": {
                 "tare": {
                     "display": {
-                        "type": "button"
+                        "section": "status",
+                        "type": "button",
+                        "title": "Tare"
+                    }
+                },
+                "weight": {
+                    "display": {
+                        "section": "status",
+                        "type": "meter",
+                        "min": 0.0,
+                        "max": 10.0,
+                        "title": "Kg"
                     }
                 }
             }
-        },
-        {
-            "type": "signal",
-            "name": "vinf"
         }
     ],
     "linuxcnc": {
