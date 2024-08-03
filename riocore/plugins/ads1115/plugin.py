@@ -1,3 +1,4 @@
+import math
 from riocore.plugins import PluginBase
 
 
@@ -61,14 +62,70 @@ class Plugin(PluginBase):
                 "unit": "Volt",
             },
         }
+        self.OPTIONS = {
+            "address": {
+                "default": "1",
+                "type": "select",
+                "options": ["0", "1"],
+                "description": "I2C-Address",
+            },
+            "sensor0": {
+                "default": "voltage",
+                "type": "select",
+                "options": ["Voltage", "NTC"],
+                "description": "Sensor-Type",
+            },
+            "sensor1": {
+                "default": "voltage",
+                "type": "select",
+                "options": ["Voltage", "NTC"],
+                "description": "Sensor-Type",
+            },
+            "sensor2": {
+                "default": "voltage",
+                "type": "select",
+                "options": ["Voltage", "NTC"],
+                "description": "Sensor-Type",
+            },
+            "sensor3": {
+                "default": "voltage",
+                "type": "select",
+                "options": ["Voltage", "NTC"],
+                "description": "Sensor-Type",
+            },
+        }
         self.INFO = "4-channel adc via I2C"
         self.DESCRIPTION = "to read analog signals with cheap ads1115 chips"
 
+        for sn in range(4):
+            stype = self.plugin_setup.get(f"sensor{sn}", self.option_default(f"sensor{sn}"))
+            if stype == "NTC":
+                self.SIGNALS[f"adc{sn}"]["format"] = "0.1f"
+                self.SIGNALS[f"adc{sn}"]["unit"] = "°C"
+            else:
+                self.SIGNALS[f"adc{sn}"]["format"] = "0.3f"
+                self.SIGNALS[f"adc{sn}"]["unit"] = "Volt"
+
+    def gateware_instances(self):
+        instances = self.gateware_instances_base()
+        instance = instances[self.instances_name]
+        instance_predefines = instance["predefines"]
+        instance_parameter = instance["parameter"]
+        instance_arguments = instance["arguments"]
+        address = self.plugin_setup.get("address", self.option_default("address"))
+        instance_parameter["ADDRESS"] = f"7'b100100{address}"
+        return instances
+
     def convert(self, signal_name, signal_setup, value):
+        channel = signal_name[-1]
+        sensor = self.plugin_setup.get(f"sensor{channel}", self.OPTIONS[f"sensor{channel}"]["default"])
         value /= 1000.0
-        if signal_setup.get("sensor") == "NTC":
+        if sensor == "NTC":
             Rt = 10.0 * value / (3.3 - value)
-            tempK = 1.0 / (math.log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0))
-            tempC = tempK - 273.15
-            value = tempC
+            if Rt == 0.0:
+                value = -999.0
+            else:
+                tempK = 1.0 / (math.log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0))
+                tempC = tempK - 273.15
+                value = tempC
         return value

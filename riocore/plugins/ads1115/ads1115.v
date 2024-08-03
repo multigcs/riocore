@@ -4,7 +4,9 @@
 // https://github.com/lushaylabs/tangnano9k-series-examples/blob/master/ads1115_adc/
 
 
-module ads1115 (
+module ads1115 #(
+        parameter ADDRESS = 7'b1001001
+    ) (
         input clk,
         inout sda,
         output scl,
@@ -47,7 +49,7 @@ module ads1115 (
                     i2cComplete
                 );
 
-    ads1115_adc #(7'b1001001) adc(
+    ads1115_adc #(ADDRESS) adc(
                     clk,
                     adcChannel,
                     adcOutputData,
@@ -233,7 +235,7 @@ endmodule
 
 
 module ads1115_adc #(
-        parameter address = 7'd0
+        parameter ADDRESS = 7'd0
     ) (
         input clk,
         input [1:0] channel,
@@ -312,7 +314,7 @@ module ads1115_adc #(
                     {TASK_CHECK_DONE,3'd2},
                     {TASK_READ_VALUE,3'd1}: begin
                         instructionI2C <= INST_WRITE_BYTE;
-                        byteToSendI2C <= {address, (taskIndex == TASK_CHECK_DONE || taskIndex == TASK_READ_VALUE) ? 1'b1 : 1'b0};
+                        byteToSendI2C <= {ADDRESS, (taskIndex == TASK_CHECK_DONE || taskIndex == TASK_READ_VALUE) ? 1'b1 : 1'b0};
                         enableI2C <= 1;
                         state <= STATE_WAIT_FOR_I2C;
                     end
