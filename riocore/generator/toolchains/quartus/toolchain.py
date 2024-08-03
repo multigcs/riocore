@@ -59,6 +59,8 @@ class Toolchain:
         makefile_data.append('	$(Q)$(ECHO) "Generating asignment files."')
         makefile_data.append("	$(QC) --prepare -f $(FAMILY) -t $(TOP) $(PROJECT)")
         makefile_data.append("	echo >> $(PROJECT).qsf")
+        makefile_data.append('	echo "set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005" >> $(PROJECT).qsf')
+        makefile_data.append("	echo >> $(PROJECT).qsf")
         makefile_data.append("	cat pins.qdf >> $(PROJECT).qsf")
         makefile_data.append("")
         makefile_data.append("smart.log: $(ASIGN)")
