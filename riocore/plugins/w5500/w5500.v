@@ -21,10 +21,10 @@ module w5500
          output reg pkg_timeout = 0
      );
 
-    localparam TIMEOUT_BITS = $clog2(TIMEOUT + 1);
+    localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);
     reg [TIMEOUT_BITS:0] timeout_counter = 0;
 
-    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] clk_counter = 0;
     reg mclk = 0;
     always @(posedge clk) begin

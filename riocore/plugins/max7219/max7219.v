@@ -13,7 +13,7 @@ module max7219
          input wire signed [23:0] value
      );
 
-    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     localparam INIT_DECODEMODE_NONE = {8'h09, 8'h00};
     localparam INIT_INTENSE         = {8'h0a, BRIGHTNESS};
     localparam INIT_SCANLIMIT       = {8'h0b, 8'h07};

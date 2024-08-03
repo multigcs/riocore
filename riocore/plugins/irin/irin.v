@@ -7,7 +7,7 @@ module irin
          output reg [7:0] code
      );
 
-    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0]counter;
 
     reg clk_1us;

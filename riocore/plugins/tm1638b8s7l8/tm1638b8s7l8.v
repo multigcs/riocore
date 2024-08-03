@@ -39,7 +39,7 @@ module tm1638b8s7l8
     assign data = isSending ? dataOut : 1'bz;
     assign dataIn = data;
 
-    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] counter = 0;
     reg mclk = 0;
     always @(posedge clk) begin

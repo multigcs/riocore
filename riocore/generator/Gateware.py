@@ -13,7 +13,28 @@ class Gateware:
         self.gateware_path = f"{project.config['output_path']}/Gateware"
         os.system(f"mkdir -p {self.gateware_path}/")
 
+    def globals(self):
+        toolchain = self.config["toolchain"]
+
+        # create globals.v for compatibility functions
+        globals_data = []
+        globals_data.append(f'localparam TOOLCHAIN = "{toolchain}";')
+        globals_data.append("")
+        globals_data.append("// replacement for $clog2")
+        globals_data.append("function integer clog2;")
+        globals_data.append("  input integer value;")
+        globals_data.append("  begin")
+        globals_data.append("    value = value-1;")
+        globals_data.append("    for (clog2=0; value>0; clog2=clog2+1)")
+        globals_data.append("      value = value>>1;")
+        globals_data.append("  end")
+        globals_data.append("endfunction")
+        globals_data.append("")
+        open(f"{self.gateware_path}/globals.v", "w").write("\n".join(globals_data))
+        self.verilogs.append("globals.v")
+
     def generator(self, generate_pll=True):
+        self.config = self.project.config.copy()
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE == "expansion":
@@ -23,6 +44,7 @@ class Gateware:
                     self.expansion_pins.append(pin)
         self.generate_pll = generate_pll
         self.verilogs = []
+        self.globals()
         self.top()
         self.makefile()
 
@@ -39,7 +61,6 @@ class Gateware:
             self.verilogs.append(extrafile)
             os.system(f"cp -a {riocore_path}/files/{extrafile} {self.gateware_path}/{extrafile}")
         self.verilogs.append("rio.v")
-        self.config = self.project.config.copy()
         self.config["verilog_files"] = self.verilogs
         self.config["pinlists"] = {}
         self.config["pinlists"]["base"] = {}

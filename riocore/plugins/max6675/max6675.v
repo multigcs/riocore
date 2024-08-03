@@ -9,7 +9,7 @@ module max6675
         output reg [15:0] temperature
     );
 
-    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
 
     reg [15:0] state = 0;
     reg [7:0] data_pos = 0;

@@ -15,8 +15,8 @@ module ws2812 (
     parameter t_reset = (CLK_MHZ*280);
 
     localparam t_period = (CLK_MHZ*1250/1000);
-    localparam LED_BITS = $clog2(NUM_LEDS);
-    localparam COUNT_BITS = $clog2(t_reset);
+    localparam LED_BITS = clog2(NUM_LEDS);
+    localparam COUNT_BITS = clog2(t_reset);
     localparam STATE_DATA  = 0;
     localparam STATE_RESET = 1;
 
