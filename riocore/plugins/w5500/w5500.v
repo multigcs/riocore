@@ -20,10 +20,12 @@ module w5500
          output reg sync = 0,
          output reg pkg_timeout = 0
      );
-    reg [31:0] timeout_counter = 0;
 
+    localparam TIMEOUT_BITS = $clog2(TIMEOUT + 1);
+    reg [TIMEOUT_BITS:0] timeout_counter = 0;
 
-    reg [31:0] clk_counter = 0;
+    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    reg [DIVIDER_BITS:0] clk_counter = 0;
     reg mclk = 0;
     always @(posedge clk) begin
         if (clk_counter == 0) begin
@@ -36,7 +38,7 @@ module w5500
 
     wire data_output_valid;
 
-    reg [15:0] counter = 16'd0;
+    reg send_flag = 0;
     reg flush_requested = 1'b0;
     reg [BUFFER_SIZE-1:0] data_to_ethernet = 0;
     reg data_out_valid = 1'b0;
@@ -63,13 +65,13 @@ module w5500
             end
             if (do_transmit == 1) begin
                 if (ethernet_available) begin
-                    if (counter < 1) begin
+                    if (send_flag == 0) begin
                         data_to_ethernet <= tx_data;
                         data_out_valid <= 1'b1;
-                        counter <= counter + 1'b1;
+                        send_flag <= 1;
                     end else begin
                         flush_requested <= 1'b1;
-                        counter <= 0;
+                        send_flag <= 0;
                     end
                 end else begin
                     data_out_valid <= 1'b0;

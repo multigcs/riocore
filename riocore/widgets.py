@@ -109,11 +109,11 @@ class edit_float(QDoubleSpinBox):
         if vmin:
             self.setMinimum(vmin)
         else:
-            self.setMinimum(-999999)
+            self.setMinimum(-99999999)
         if vmax:
             self.setMaximum(vmax)
         else:
-            self.setMaximum(999999)
+            self.setMaximum(99999999)
         if key in obj:
             self.setValue(float(obj[key]))
         elif default is not None:
@@ -150,11 +150,11 @@ class edit_int(QSpinBox):
         if vmin:
             self.setMinimum(vmin)
         else:
-            self.setMinimum(-999999)
+            self.setMinimum(-99999999)
         if vmax:
             self.setMaximum(vmax)
         else:
-            self.setMaximum(999999)
+            self.setMaximum(99999999)
         if key in obj:
             self.setValue(int(obj[key]))
         elif default is not None:

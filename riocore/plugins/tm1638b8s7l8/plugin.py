@@ -164,8 +164,8 @@ class Plugin(PluginBase):
                 "bool": True,
             },
             "number1": {
-                "min": -65000,
-                "max": 65000,
+                "min": -6500.0,
+                "max": 6500.0,
                 "direction": "output",
             },
             "number2": {

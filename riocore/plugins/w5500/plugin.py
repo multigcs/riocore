@@ -30,10 +30,6 @@ class Plugin(PluginBase):
                 "pull": None,
             },
         }
-        self.spi_clk_speed = 10000000
-        # self.TIMING_CONSTRAINTS = {
-        #    "mclk": self.spi_clk_speed,
-        # }
         self.OPTIONS = {
             "mac": {
                 "default": "AA:AF:FA:CC:E3:1C",
@@ -50,6 +46,11 @@ class Plugin(PluginBase):
                 "type": int,
                 "description": "UDP-Port",
             },
+            "speed": {
+                "default": 10000000,
+                "type": int,
+                "description": "SPI clock",
+            },
         }
         self.INFO = "udp interface for host comunication"
         self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
@@ -64,20 +65,18 @@ class Plugin(PluginBase):
         ip = self.plugin_setup.get("ip", self.option_default("ip"))
         mac = self.plugin_setup.get("mac", self.option_default("mac"))
         port = self.plugin_setup.get("port", self.option_default("port"))
+        speed = self.plugin_setup.get("speed", self.option_default("speed"))
 
         ipl = ip.split(".")
         macl = mac.split(":")
         instance_parameter["IP_ADDR"] = f"{{8'd{ipl[0]}, 8'd{ipl[1]}, 8'd{ipl[2]}, 8'd{ipl[3]}}}"
         instance_parameter["MAC_ADDR"] = f"{{8'h{macl[0]}, 8'h{macl[1]}, 8'h{macl[2]}, 8'h{macl[3]}, 8'h{macl[4]}, 8'h{macl[5]}}}"
         instance_parameter["PORT"] = port
-
         instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"
 
-        divider = self.system_setup["speed"] // self.spi_clk_speed // 5
+        divider = self.system_setup["speed"] // speed // 5
         instance_parameter["DIVIDER"] = divider
-
-        # instance_parameter["TIMEOUT"] = f"32'd{self.system_setup['speed'] // 20}"
-        instance_parameter["TIMEOUT"] = f"32'd{self.spi_clk_speed // 4}"
+        instance_parameter["TIMEOUT"] = f"32'd{speed // 4}"
 
         return instances

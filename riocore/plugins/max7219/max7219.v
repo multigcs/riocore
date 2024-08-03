@@ -12,21 +12,23 @@ module max7219
          output reg sel = 1,
          input wire signed [23:0] value
      );
-    parameter cmd = 8'd0;
-    reg [7:0] state = 0;
-    reg [7:0] data_pos = 0;
-    reg [31:0] counter = 0;
-    reg mclk = 0;
-    reg next_clk = 0;
 
-    reg [7:0] initcnt = 0;
-    reg [15:0] cmddata = 0;
-
+    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
     localparam INIT_DECODEMODE_NONE = {8'h09, 8'h00};
     localparam INIT_INTENSE         = {8'h0a, BRIGHTNESS};
     localparam INIT_SCANLIMIT       = {8'h0b, 8'h07};
     localparam INIT_SD_NORMALOP     = {8'h0c, 8'h01};
     localparam INIT_DT_NORMALOP     = {8'h0f, 8'h01};
+
+    parameter cmd = 8'd0;
+    reg [7:0] state = 0;
+    reg [7:0] data_pos = 0;
+    reg [DIVIDER_BITS:0] counter = 0;
+    reg mclk = 0;
+    reg next_clk = 0;
+
+    reg [7:0] initcnt = 0;
+    reg [15:0] cmddata = 0;
 
     reg [3:0] val = 0;
     reg [3:0] num = 3;

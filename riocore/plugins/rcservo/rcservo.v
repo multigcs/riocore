@@ -7,10 +7,13 @@ module rcservo
          input enable,
          output pwm
      );
+    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    reg [DIVIDER_BITS:0] counter = 0;
+
     reg [31:0] positionAbs = 32'd0;
     reg pulse = 0;
     assign pwm = pulse;
-    reg [31:0] counter = 0;
+
     always @ (posedge clk) begin
         if (position > 0) begin
             positionAbs <= position;

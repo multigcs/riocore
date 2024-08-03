@@ -8,9 +8,11 @@ module hx711
         output reg [23:0] weight
     );
 
+    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    reg [DIVIDER_BITS:0] counter = 0;
+
     reg [23:0] state = 0;
     reg [7:0] data_pos = 0;
-    reg [31:0] counter = 0;
     reg [23:0] tmp_data = 0;
     reg mclk = 0;
     always @(posedge clk) begin

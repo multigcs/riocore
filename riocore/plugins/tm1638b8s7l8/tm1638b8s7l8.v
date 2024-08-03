@@ -39,7 +39,8 @@ module tm1638b8s7l8
     assign data = isSending ? dataOut : 1'bz;
     assign dataIn = data;
 
-    reg [31:0] counter = 0;
+    localparam DIVIDER_BITS = $clog2(DIVIDER + 1);
+    reg [DIVIDER_BITS:0] counter = 0;
     reg mclk = 0;
     always @(posedge clk) begin
         if (counter == 0) begin
@@ -52,10 +53,9 @@ module tm1638b8s7l8
 
     reg [7:0] cmd_size = 8;
     reg [7:0] cmd_cnt = 0;
-    reg [23:0] cmd = 8'h8F;
+    reg [16:0] cmd = 8'h8F;
     reg [7:0] state = 0;
     reg [7:0] data_pos = 0;
-
 
     reg [31:0] data_read = 0;
     reg [3:0] prefix = 4'hb;
@@ -236,8 +236,6 @@ module tm1638b8s7l8
                     cmd <= 8'h42;
                     cmd_size <= 8'd40;
                     read_cmd <= 1;
-
-
                     cmd_cnt <= 0;
                 end
 
