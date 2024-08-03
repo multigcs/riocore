@@ -3,7 +3,6 @@ module arty_mii
     #(
          parameter BUFFER_SIZE=16'd64,
          parameter MSGID=32'h74697277,
-         parameter TIMEOUT=32'd4800000,
          parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd194},
          parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1D},
          parameter PORT=2390
@@ -33,8 +32,7 @@ module arty_mii
 
     input [BUFFER_SIZE-1:0] tx_data,
     output reg [BUFFER_SIZE-1:0] rx_data,
-    output reg sync = 0,
-    output reg pkg_timeout = 0
+    output reg sync = 0
 );
 
 assign phy_ref_clk = clk25;
@@ -249,20 +247,10 @@ reg [7:0] data_counter = 0;
 reg [BUFFER_SIZE-1:0] tx_data_buffer = 0;
 reg [BUFFER_SIZE-1:0] rx_data_buffer = 0;
 
-reg [31:0] timeout_counter = 0;
-
 always @(posedge clk) begin
     sync <= 0;
 
     if (~rst) begin
-
-        if (timeout_counter < TIMEOUT) begin
-            timeout_counter <= timeout_counter + 1;
-            pkg_timeout <= 0;
-        end else begin
-            pkg_timeout <= 1;
-        end
-
         if (tx_udp_payload_axis_tvalid) begin
             if (data_counter < BUFFER_SIZE / 8) begin
                 rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE-1-8:0], tx_fifo_udp_payload_axis_tdata};
@@ -276,16 +264,12 @@ always @(posedge clk) begin
                 rx_data <= rx_data_buffer;
                 rx_data_buffer <= 0;
                 sync <= 1;
-                timeout_counter <= 0;
-                pkg_timeout <= 0;
             end
             rx_data_buffer <= 0;
-            
             data_counter <= 0;
             tx_udp_payload_axis_tdata <= 97;
             tx_data_buffer <= {tx_data[BUFFER_SIZE-1-8:0], 8'd0};;
             tx_udp_payload_axis_tdata <= tx_data[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
-
         end
     end
 end

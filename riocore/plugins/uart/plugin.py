@@ -38,7 +38,6 @@ class Plugin(PluginBase):
         baud = int(self.system_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["BUFFER_SIZE"] = self.system_setup["buffer_size"]
         instance_parameter["MSGID"] = "32'h74697277"
-        instance_parameter["TIMEOUT"] = f"32'd{self.system_setup['speed'] // 4}"
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
 

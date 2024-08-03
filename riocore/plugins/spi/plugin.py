@@ -41,6 +41,5 @@ class Plugin(PluginBase):
 
         instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"
-        instance_parameter["TIMEOUT"] = f"32'd{self.system_setup['speed'] // 20}"
 
         return instances

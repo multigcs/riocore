@@ -386,7 +386,6 @@ class PluginBase:
             instance_arguments["rx_data"] = "rx_data"
             instance_arguments["tx_data"] = "tx_data"
             instance_arguments["sync"] = "INTERFACE_SYNC"
-            instance_arguments["pkg_timeout"] = "INTERFACE_TIMEOUT"
 
         elif self.TYPE == "expansion":
             instance_arguments["data_in"] = f"{self.expansion_prefix}_INPUT"

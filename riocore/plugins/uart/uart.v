@@ -1,11 +1,10 @@
 
 module uart
-    #(parameter BUFFER_SIZE=80, parameter MSGID=32'h74697277, parameter TIMEOUT=32'd4800000, parameter ClkFrequency=12000000, parameter Baud=2000000)
+    #(parameter BUFFER_SIZE=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000)
      (
          input clk,
          output reg [BUFFER_SIZE-1:0] rx_data,
          input [BUFFER_SIZE-1:0] tx_data,
-         output reg pkg_timeout = 0,
          output reg sync = 0,
          output tx,
          input rx

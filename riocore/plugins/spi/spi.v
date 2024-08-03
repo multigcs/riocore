@@ -1,6 +1,6 @@
 
 module spi
-    #(parameter BUFFER_SIZE=64, parameter MSGID=32'h74697277, parameter TIMEOUT=32'd4800000)
+    #(parameter BUFFER_SIZE=64, parameter MSGID=32'h74697277)
      (
          input clk,
          input sclk,
@@ -9,11 +9,9 @@ module spi
          input [BUFFER_SIZE-1:0] tx_data,
          output [BUFFER_SIZE-1:0] rx_data,
          output miso,
-         output reg sync = 0,
-         output pkg_timeout
+         output reg sync = 0
          //output [15:0] counter
      );
-    reg [31:0] timeout_counter = 0;
     //assign counter = bitcnt;
     reg[2:0] SCKr;  always @(posedge clk) SCKr <= {SCKr[1:0], sclk};
     wire SCK_risingedge = (SCKr[2:1]==2'b01);  // now we can detect SCK rising edges
@@ -26,8 +24,6 @@ module spi
     reg[BUFFER_SIZE-1:0] byte_data_received;
     reg[BUFFER_SIZE-1:0] byte_data_receive;
     reg[BUFFER_SIZE-1:0] byte_data_sent;
-    reg timeout = 1;
-    assign pkg_timeout = timeout;
     assign rx_data = byte_data_received;
     always @(posedge clk) begin
         if(~SSEL_active) begin
@@ -44,14 +40,8 @@ module spi
         if (SSEL_endmessage) begin
             if (byte_data_receive[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
                 byte_data_received <= byte_data_receive;
-                timeout_counter <= 0;
                 sync <= 1;
             end
-        end else if (timeout_counter < TIMEOUT) begin
-            timeout_counter <= timeout_counter + 1;
-            timeout <= 0;
-        end else begin
-            timeout <= 1;
         end
     end
     always @(posedge clk) begin

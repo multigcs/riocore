@@ -220,9 +220,9 @@ class Gateware:
         output.append("")
         output.append(f"    parameter BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size//8} bytes")
         output.append("")
+        output.append("    reg INTERFACE_TIMEOUT = 0;")
         output.append("    reg ESTOP = 0;")
         output.append("    wire ERROR;")
-        output.append("    wire INTERFACE_TIMEOUT;")
         output.append("    wire INTERFACE_SYNC;")
         output.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
         # output.append("    assign ERROR_OUT = ERROR;")
@@ -295,6 +295,31 @@ class Gateware:
             output.append("    assign sysclk = sysclk_in;")
         output.append("")
 
+        sysclk_speed = self.project.config["speed"]
+        output.append(f"    parameter TIMEOUT = 32'd{sysclk_speed // 10};")
+        output.append("")
+
+        output.append("    reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};")
+        output.append("    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);")
+        output.append("")
+
+        output.append("    localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);")
+        output.append("    reg [TIMEOUT_BITS:0] timeout_counter = 0;")
+        output.append("")
+        output.append("    always @(posedge sysclk) begin")
+        output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
+        output.append("            timeout_counter <= 0;")
+        output.append("        end else begin")
+        output.append("            if (timeout_counter < TIMEOUT) begin")
+        output.append("                timeout_counter <= timeout_counter + 1;")
+        output.append("                INTERFACE_TIMEOUT <= 0;")
+        output.append("            end else begin")
+        output.append("                INTERFACE_TIMEOUT <= 1;")
+        output.append("            end")
+        output.append("        end")
+        output.append("    end")
+        output.append("")
+
         output.append(f"    wire[{self.project.buffer_size-1}:0] rx_data;")
         output.append(f"    wire[{self.project.buffer_size-1}:0] tx_data;")
         output.append("")
@@ -361,7 +386,7 @@ class Gateware:
 
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")
-            output.append("        if (INTERFACE_SYNC == 1) begin")
+            output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
             output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.project.multiplexed_input-1}) begin")
             output.append("                MULTIPLEXED_INPUT_ID = MULTIPLEXED_INPUT_ID + 1;")
             output.append("            end else begin")
@@ -376,7 +401,7 @@ class Gateware:
                 direction = data_config["direction"]
                 if direction == "input":
                     output.append(f"            if (MULTIPLEXED_INPUT_ID == {mpid}) begin")
-                    output.append(f"                MULTIPLEXED_INPUT_VALUE <= {variable_name};")
+                    output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name};")
                     output.append("            end")
                     mpid += 1
             output.append("        end")

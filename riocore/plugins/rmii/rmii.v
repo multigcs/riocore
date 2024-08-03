@@ -1,12 +1,11 @@
 
 module rmii
-    #(parameter DIVIDER=13, parameter BUFFER_SIZE=40, parameter MSGID=32'h74697277, parameter MAC={8'h06,8'h00,8'hAA,8'hBB,8'h0C,8'hDD}, parameter IP={8'd192,8'd168,8'd10,8'd14}, parameter TIMEOUT=32'd4800000)
+    #(parameter DIVIDER=13, parameter BUFFER_SIZE=40, parameter MSGID=32'h74697277, parameter MAC={8'h06,8'h00,8'hAA,8'hBB,8'h0C,8'hDD}, parameter IP={8'd192,8'd168,8'd10,8'd14})
     (
         input clk,
         output reg [BUFFER_SIZE-1:0] rx_data,
         input [BUFFER_SIZE-1:0] tx_data,
         output sync,
-        output pkg_timeout,
         output phyrst,
         input netrmii_clk50m,
         input netrmii_rx_crs,
@@ -18,10 +17,6 @@ module rmii
         input netrmii_rxd_0,
         input netrmii_rxd_1
     );
-
-    reg [31:0] timeout_counter = 0;
-    reg timeout = 1;
-    assign pkg_timeout = timeout;
 
     reg soft_rst = 0;
     reg [31:0] rst_counter = 0;
@@ -112,15 +107,6 @@ module rmii
             eth_tx_counter <= 8'd0;
             eth_tx_req <= 0;
         end else begin
-
-            // check timeout
-            if (timeout_counter < TIMEOUT) begin
-                timeout_counter <= timeout_counter + 1;
-                timeout <= 0;
-            end else begin
-                //timeout <= 1;
-            end
-
             // rx data
             if (eth_rx_data_av) begin
                 // receive data
@@ -132,7 +118,6 @@ module rmii
                     // check and save rx data
                     if (rx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
                         rx_data <= rx_data_buffer;
-                        timeout_counter <= 0;
                         // trigger next tx
                         eth_tx_state <= 4'd1;
                     end

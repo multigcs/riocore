@@ -41,6 +41,16 @@ class Plugin(PluginBase):
                 "type": str,
                 "description": "IP-Address",
             },
+            "mask": {
+                "default": "255.255.255.0",
+                "type": str,
+                "description": "Network-Mask",
+            },
+            "gw": {
+                "default": "192.168.10.1",
+                "type": str,
+                "description": "Gateway IP-Address",
+            },
             "port": {
                 "default": 2390,
                 "type": int,
@@ -62,21 +72,26 @@ class Plugin(PluginBase):
         instance_parameter = instance["parameter"]
         instance_arguments = instance["arguments"]
 
-        ip = self.plugin_setup.get("ip", self.option_default("ip"))
         mac = self.plugin_setup.get("mac", self.option_default("mac"))
+        ip = self.plugin_setup.get("ip", self.option_default("ip"))
+        gw = self.plugin_setup.get("gw", self.option_default("gw"))
+        mask = self.plugin_setup.get("mask", self.option_default("mask"))
         port = self.plugin_setup.get("port", self.option_default("port"))
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
 
-        ipl = ip.split(".")
         macl = mac.split(":")
-        instance_parameter["IP_ADDR"] = f"{{8'd{ipl[0]}, 8'd{ipl[1]}, 8'd{ipl[2]}, 8'd{ipl[3]}}}"
+        ipl = ip.split(".")
+        gwl = gw.split(".")
+        maskl = mask.split(".")
         instance_parameter["MAC_ADDR"] = f"{{8'h{macl[0]}, 8'h{macl[1]}, 8'h{macl[2]}, 8'h{macl[3]}, 8'h{macl[4]}, 8'h{macl[5]}}}"
+        instance_parameter["IP_ADDR"] = f"{{8'd{ipl[0]}, 8'd{ipl[1]}, 8'd{ipl[2]}, 8'd{ipl[3]}}}"
+        instance_parameter["NET_MASK"] = f"{{8'd{maskl[0]}, 8'd{maskl[1]}, 8'd{maskl[2]}, 8'd{maskl[3]}}}"
+        instance_parameter["GW_ADDR"] = f"{{8'd{gwl[0]}, 8'd{gwl[1]}, 8'd{gwl[2]}, 8'd{gwl[3]}}}"
         instance_parameter["PORT"] = port
         instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"
 
         divider = self.system_setup["speed"] // speed // 5
         instance_parameter["DIVIDER"] = divider
-        instance_parameter["TIMEOUT"] = f"32'd{speed // 4}"
 
         return instances
