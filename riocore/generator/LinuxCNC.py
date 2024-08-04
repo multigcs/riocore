@@ -3000,6 +3000,12 @@ class axis:
         cfgxml_data.append("  </hbox>")
         return (f"pyvcp.{halpin}", cfgxml_data)
 
+    def draw_number_u32(self, name, halpin, setup={}):
+        return self.draw_number(name, halpin, hal_type="u32", setup=setup)
+
+    def draw_number_s32(self, name, halpin, setup={}):
+        return self.draw_number(name, halpin, hal_type="s32", setup=setup)
+
     def draw_number(self, name, halpin, hal_type="float", setup={}):
         title = setup.get("title", name)
         display_format = setup.get("format")

@@ -67,6 +67,7 @@ class Gateware:
         self.config["pinlists"]["base"]["sysclk_in"] = {"direction": "input", "pull": None, "pin": self.config["sysclk_pin"], "varname": "sysclk_in"}
 
         self.config["timing_constraints"] = {}
+        self.config["timing_constraints_instance"] = {}
         for plugin_instance in self.project.plugin_instances:
             for key, value in plugin_instance.timing_constraints().items():
                 if ":" in key:
@@ -74,7 +75,7 @@ class Gateware:
                     pname = f"{pre}_{plugin_instance.instances_name}_{post}".upper()
                     self.config["timing_constraints"][pname] = value
                 else:
-                    self.config["timing_constraints"][f"{plugin_instance.instances_name}.{key}"] = value
+                    self.config["timing_constraints_instance"][f"{plugin_instance.instances_name}.{key}"] = value
 
         self.pinmapping = {}
         self.pinmapping_rev = {}

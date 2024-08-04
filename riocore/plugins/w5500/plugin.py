@@ -65,6 +65,11 @@ class Plugin(PluginBase):
         self.INFO = "udp interface for host comunication"
         self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
 
+        speed = self.plugin_setup.get("speed", self.option_default("speed"))
+        self.TIMING_CONSTRAINTS = {
+            "mclk": speed,
+        }
+
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
