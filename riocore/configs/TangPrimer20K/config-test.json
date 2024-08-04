@@ -95,37 +95,36 @@
         {
             "type": "rmii",
             "mac": "06:00:AA:BB:0C:DE",
-            "ip": "192.168.10.15",
             "pins": {
                 "phyrst": {
-                  "pin": "F10"
+                    "pin": "F10"
                 },
                 "netrmii_txd_1": {
-                  "pin": "E14"
+                    "pin": "E14"
                 },
                 "netrmii_txd_0": {
-                  "pin": "D16"
+                    "pin": "D16"
                 },
                 "netrmii_txen": {
-                  "pin": "E16"
+                    "pin": "E16"
                 },
                 "netrmii_mdc": {
-                  "pin": "F14"
+                    "pin": "F14"
                 },
                 "netrmii_rxd_1": {
-                  "pin": "C9"
+                    "pin": "C9"
                 },
                 "netrmii_rxd_0": {
-                  "pin": "F15"
+                    "pin": "F15"
                 },
                 "netrmii_rx_crs": {
-                  "pin": "M6"
+                    "pin": "M6"
                 },
                 "netrmii_clk50m": {
-                  "pin": "A9"
+                    "pin": "A9"
                 },
                 "netrmii_mdio": {
-                  "pin": "F16"
+                    "pin": "F16"
                 }
             }
         }

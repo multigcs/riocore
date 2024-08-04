@@ -6,7 +6,7 @@
 |  | [rmii](riocore/plugins/rmii/README.md) | rmii udp interface (experimental) | <img src="riocore/plugins/rmii/image.png" height="48"> |
 |  | [spi](riocore/plugins/spi/README.md) | spi interface for host comunication | <img src="riocore/plugins/spi/image.png" height="48"> |
 |  | [uart](riocore/plugins/uart/README.md) | uart interface for host cominucation | <img src="riocore/plugins/uart/image.png" height="48"> |
-|  | [w5500](riocore/plugins/w5500/README.md) | udp interface for host comunication - experimental | <img src="riocore/plugins/w5500/image.png" height="48"> |
+|  | [w5500](riocore/plugins/w5500/README.md) | udp interface for host comunication | <img src="riocore/plugins/w5500/image.png" height="48"> |
 | Joints | [pwmout](riocore/plugins/pwmout/README.md) | pwm output | <img src="riocore/plugins/pwmout/image.png" height="48"> |
 |  | [rcservo](riocore/plugins/rcservo/README.md) | rc-servo output | <img src="riocore/plugins/rcservo/image.png" height="48"> |
 |  | [stepdir](riocore/plugins/stepdir/README.md) | step/dir output for stepper drivers | <img src="riocore/plugins/stepdir/image.png" height="48"> |

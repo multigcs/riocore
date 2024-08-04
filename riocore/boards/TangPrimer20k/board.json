@@ -3,8 +3,8 @@
     "description": "TangPrimer20K-Devboard",
     "type": "GW2A-LV18PG256C8/I7",
     "family": "GW2A-18C",
-    "_toolchain": "gowin",
-    "toolchain": "icestorm",
+    "toolchain": "gowin",
+    "_toolchain": "icestorm",
     "package": "PG256",
     "clock": {
         "speed": "27000000",

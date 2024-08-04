@@ -1,11 +1,20 @@
 
 module rmii
-    #(parameter DIVIDER=13, parameter BUFFER_SIZE=40, parameter MSGID=32'h74697277, parameter MAC={8'h06,8'h00,8'hAA,8'hBB,8'h0C,8'hDD}, parameter IP={8'd192,8'd168,8'd10,8'd14})
+    #(
+         parameter BUFFER_SIZE=16'd64,
+         parameter MSGID=32'h74697277,
+         parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd194},
+         parameter NET_MASK={8'd255, 8'd255, 8'd255, 8'd0},
+         parameter GW_ADDR={8'd192, 8'd168, 8'd10, 8'd1},
+         parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
+         parameter PORT=2390,
+         parameter DIVIDER=27
+    )
     (
         input clk,
         output reg [BUFFER_SIZE-1:0] rx_data,
         input [BUFFER_SIZE-1:0] tx_data,
-        output sync,
+        output reg sync,
         output phyrst,
         input netrmii_clk50m,
         input netrmii_rx_crs,
@@ -58,8 +67,8 @@ module rmii
 	wire eth_tx_data_rdy;
 
     udp #(
-        .ip_adr(IP),
-        .mac_adr(MAC),
+        .ip_adr(IP_ADDR),
+        .mac_adr(MAC_ADDR),
 
         .arp_refresh_interval(50000000*15), // 15 seconds    
         .arp_max_life_time(50000000*30) // 30 seconds
@@ -85,7 +94,7 @@ module rmii
         .rx_data_o(eth_rx_data),
 
         .tx_ip_i(eth_tx_ip),
-        .tx_src_port_i(16'd2390),
+        .tx_src_port_i(PORT),
         .tx_dst_port_i(eth_tx_dst_port),
         .tx_req_i(eth_tx_req),
         .tx_data_i(eth_tx_data),
@@ -118,12 +127,15 @@ module rmii
                     // check and save rx data
                     if (rx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
                         rx_data <= rx_data_buffer;
+                        sync <= 1;
                         // trigger next tx
                         eth_tx_state <= 4'd1;
                     end
                     // ready for next rx
                     eth_rx_state <= 4'd0;
                     eth_rx_counter <= 8'd0;
+                end else begin
+                    sync <= 0;
                 end
             end
 
@@ -149,7 +161,7 @@ module rmii
                 end
                 3:begin
                     // read port from header
-                    if (eth_rx_head[15:0] == 16'd2390) begin
+                    if (eth_rx_head[15:0] == PORT) begin
                         eth_tx_dst_port <= eth_rx_head[31:16];
                         eth_rx_state <= 4'd4;
                     end else begin
@@ -178,7 +190,7 @@ module rmii
                 end
                 2:begin
                     // send data
-                    if (eth_tx_counter <= BUFFER_SIZE-1) begin
+                    if (eth_tx_counter <= (BUFFER_SIZE-1) / 8) begin
                         eth_tx_data_av <= 1;
                         eth_tx_data <= tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
                         tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-1-8:0], 8'd0};

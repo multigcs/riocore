@@ -1,5 +1,5 @@
 # w5500
-**udp interface for host comunication - experimental**
+**udp interface for host comunication**
 
 w5500 driver for the interface communication over UDP
 
@@ -60,11 +60,29 @@ IP-Address
  * type: str
  * default: 192.168.10.194
 
+### mask:
+Network-Mask
+
+ * type: str
+ * default: 255.255.255.0
+
+### gw:
+Gateway IP-Address
+
+ * type: str
+ * default: 192.168.10.1
+
 ### port:
 UDP-Port
 
  * type: int
  * default: 2390
+
+### speed:
+SPI clock
+
+ * type: int
+ * default: 10000000
 
 ### name:
 name of this plugin instance
@@ -87,7 +105,10 @@ name of this plugin instance
     "type": "w5500",
     "mac": "AA:AF:FA:CC:E3:1C",
     "ip": "192.168.10.194",
+    "mask": "255.255.255.0",
+    "gw": "192.168.10.1",
     "port": 2390,
+    "speed": 10000000,
     "name": "",
     "pins": {
         "mosi": {

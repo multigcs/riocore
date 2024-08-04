@@ -36,6 +36,36 @@ to read analog signals with cheap ads1115 chips
 
 ## Options:
 *user-options*
+### address:
+I2C-Address
+
+ * type: select
+ * default: 1
+
+### sensor0:
+Sensor-Type
+
+ * type: select
+ * default: Voltage
+
+### sensor1:
+Sensor-Type
+
+ * type: select
+ * default: Voltage
+
+### sensor2:
+Sensor-Type
+
+ * type: select
+ * default: Voltage
+
+### sensor3:
+Sensor-Type
+
+ * type: select
+ * default: Voltage
+
 ### name:
 name of this plugin instance
 
@@ -101,6 +131,11 @@ name of this plugin instance
 ```
 {
     "type": "ads1115",
+    "address": "1",
+    "sensor0": "Voltage",
+    "sensor1": "Voltage",
+    "sensor2": "Voltage",
+    "sensor3": "Voltage",
     "name": "",
     "pins": {
         "sda": {

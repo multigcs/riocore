@@ -67,6 +67,16 @@ name of this plugin instance
  * direction: input
  * unit: Kg
 
+### tare:
+
+ * type: bit
+ * direction: input
+
+### toffset:
+
+ * type: float
+ * direction: output
+
 
 ## Interfaces:
 *transport layer*
@@ -113,6 +123,26 @@ name of this plugin instance
                 "title": "weight",
                 "section": "inputs",
                 "type": "meter"
+            }
+        },
+        "tare": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "tare",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "toffset": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "toffset",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }

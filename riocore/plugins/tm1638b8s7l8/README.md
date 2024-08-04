@@ -134,8 +134,8 @@ name of this plugin instance
 
  * type: float
  * direction: output
- * min: -65000
- * max: 65000
+ * min: -6500.0
+ * max: 6500.0
 
 ### number2:
 
