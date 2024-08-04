@@ -8,55 +8,36 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)"
         self.VERILOGS = ["udp.v", "rmii.v"]
         self.PINDEFAULTS = {
-            "phyrst": {
-                "direction": "output",
-                "invert": False,
-                "pull": None,
-            },
             "netrmii_clk50m": {
                 "direction": "input",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_rx_crs": {
                 "direction": "input",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_mdc": {
                 "direction": "output",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_txen": {
                 "direction": "output",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_mdio": {
                 "direction": "inout",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_txd_0": {
                 "direction": "output",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_txd_1": {
                 "direction": "output",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_rxd_0": {
                 "direction": "input",
-                "invert": False,
-                "pull": None,
             },
             "netrmii_rxd_1": {
                 "direction": "input",
-                "invert": False,
-                "pull": None,
+            },
+            "phyrst": {
+                "direction": "output",
+                "optional": True,
             },
         }
         self.OPTIONS = {

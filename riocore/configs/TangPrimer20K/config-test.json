@@ -94,11 +94,7 @@
         },
         {
             "type": "rmii",
-            "mac": "06:00:AA:BB:0C:DE",
             "pins": {
-                "phyrst": {
-                    "pin": "F10"
-                },
                 "netrmii_txd_1": {
                     "pin": "E14"
                 },
