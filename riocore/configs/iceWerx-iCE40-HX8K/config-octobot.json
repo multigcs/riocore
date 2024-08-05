@@ -742,6 +742,18 @@
                     }
                 }
             }
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "ENC1:A"
+                },
+                "b": {
+                    "pin": "ENC1:Z"
+                }
+            },
+            "quad_type": 1
         }
     ],
     "linuxcnc": {

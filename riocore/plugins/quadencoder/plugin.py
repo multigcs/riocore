@@ -27,7 +27,7 @@ class Plugin(PluginBase):
             "quad_type": {
                 "default": 2,
                 "type": int,
-                "min": 1,
+                "min": 0,
                 "max": 4,
                 "description": "encoder type",
             },
