@@ -21,7 +21,7 @@ class LinuxCNC:
         "BACKLASH": 0.0,
     }
     PID_DEFAULTS = {
-        "P": 500.0,
+        "P": 250.0,
         "I": 0.0,
         "D": 0.0,
         "BIAS": 0.0,
