@@ -866,7 +866,7 @@ class WinForm(QWidget):
         testgui_path = f"{os.path.dirname(__file__)}/rio-test"
         os.system(f"({testgui_path} {filename} ; rm {filename}) &")
 
-    def open_pin(self, slot_name, pin_id):
+    def add_plugin(self, pin_id, slot_name=None):
         plugin_needs = {}
         plugin_list = self.plugins.list()
         plugin_infos = {}
@@ -895,41 +895,46 @@ class WinForm(QWidget):
             }
 
         possible_plugins = []
-        for slot in self.slots:
-            if slot_name == slot["name"]:
-                compatible = slot.get("compatible")
-                if compatible:
-                    possible_plugins = compatible
-                else:
-                    default = slot.get("default")
-                    if default:
-                        possible_plugins.append(default)
-                    slot_has = {
-                        "inputs": 0,
-                        "outputs": 0,
-                        "inouts": 0,
-                        "alls": 0,
-                    }
-                    for _pin_id, pin in slot["pins"].items():
-                        if isinstance(pin, dict):
-                            direction = pin.get("direction", "all")
-                            slot_has[f"{direction}s"] += 1
+        if slot_name:
+            # filter possible plugins if slot is set
+            for slot in self.slots:
+                if slot_name == slot["name"]:
+                    compatible = slot.get("compatible")
+                    if compatible:
+                        possible_plugins = compatible
+                    else:
+                        default = slot.get("default")
+                        if default:
+                            possible_plugins.append(default)
+                        slot_has = {
+                            "inputs": 0,
+                            "outputs": 0,
+                            "inouts": 0,
+                            "alls": 0,
+                        }
+                        for _pin_id, pin in slot["pins"].items():
+                            if isinstance(pin, dict):
+                                direction = pin.get("direction", "all")
+                                slot_has[f"{direction}s"] += 1
 
-                    for pname, plugin_data in plugin_needs.items():
-                        match = True
-                        for key in ("inputs", "outputs", "inouts"):
-                            if not (slot_has[key] >= plugin_data[key] and slot_has[key] <= plugin_data[key] + plugin_data[f"opt_{key}"]):
-                                match = False
-                        if match and pname and pname not in possible_plugins:
-                            possible_plugins.append(pname)
-                    for pname, plugin_data in plugin_needs.items():
-                        match = True
-                        for key in ("inputs", "outputs", "inouts"):
-                            if slot_has[key] + slot_has["alls"] < plugin_data[key]:
-                                match = False
-                        if match and pname and pname not in possible_plugins:
-                            possible_plugins.append(pname)
-                break
+                        for pname, plugin_data in plugin_needs.items():
+                            match = True
+                            for key in ("inputs", "outputs", "inouts"):
+                                if not (slot_has[key] >= plugin_data[key] and slot_has[key] <= plugin_data[key] + plugin_data[f"opt_{key}"]):
+                                    match = False
+                            if match and pname and pname not in possible_plugins:
+                                possible_plugins.append(pname)
+                        for pname, plugin_data in plugin_needs.items():
+                            match = True
+                            for key in ("inputs", "outputs", "inouts"):
+                                if slot_has[key] + slot_has["alls"] < plugin_data[key]:
+                                    match = False
+                            if match and pname and pname not in possible_plugins:
+                                possible_plugins.append(pname)
+                    break
+        else:
+            for pname, plugin_data in plugin_needs.items():
+                possible_plugins.append(pname)
 
         dialog = QDialog()
         dialog.setWindowTitle("select plugin")
@@ -1020,95 +1025,97 @@ class WinForm(QWidget):
 
             plugin_instance = self.plugins.load_plugin(plugin_id, self.config["plugins"][plugin_id], self.config)
             if plugin_instance:
-                slotpins = {
-                    "input": [],
-                    "output": [],
-                    "inout": [],
-                    "all": [],
-                }
-                for spin_name, spin in slot["pins"].items():
-                    direction = spin.get("direction", "all")
-                    if self.get_plugin_by_pin(spin["pin"]) == (None, None):
-                        if direction:
-                            slotpins[direction].append(spin_name)
+                # auto select pins if slot is set
+                if slot_name:
+                    slotpins = {
+                        "input": [],
+                        "output": [],
+                        "inout": [],
+                        "all": [],
+                    }
+                    for spin_name, spin in slot.get("pins", {}).items():
+                        direction = spin.get("direction", "all")
+                        if self.get_plugin_by_pin(spin["pin"]) == (None, None):
+                            if direction:
+                                slotpins[direction].append(spin_name)
 
-                # map single pin plugin to pin_id
-                num_mandatory = 0
-                for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                    optional = pin_defaults.get("optional")
-                    if optional is True:
-                        continue
-                    num_mandatory += 1
-
-                if num_mandatory == 1:
+                    # map single pin plugin to pin_id
+                    num_mandatory = 0
                     for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                         optional = pin_defaults.get("optional")
                         if optional is True:
                             continue
-                        direction = pin_defaults.get("direction", "all")
-                        pinconfig = {"pin": f"{slot_name}:{pin_id}"}
-                        if direction in slotpins and pin_id in slotpins[direction]:
-                            slotpins[direction].remove(pin_id)
-                        self.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
-                else:
-                    # first mandatory pins
-                    for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                        optional = pin_defaults.get("optional")
-                        if optional is True:
-                            continue
-                        direction = pin_defaults.get("direction", "all")
-                        pinconfig = {"pin": ""}
-                        # find matching pins by name
-                        found = False
-                        for spin in slotpins[direction]:
-                            if pin_name.lower() == spin.lower():
-                                pinconfig = {"pin": f"{slot_name}:{spin}"}
-                                slotpins[direction].remove(spin)
-                                found = True
-                                break
-                        for spin in slotpins["all"]:
-                            if pin_name.lower() == spin.lower():
-                                pinconfig = {"pin": f"{slot_name}:{spin}"}
-                                slotpins["all"].remove(spin)
-                                found = True
-                                break
-                        if not found:
-                            # find matching pins by direction
+                        num_mandatory += 1
+
+                    if num_mandatory == 1:
+                        for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                            optional = pin_defaults.get("optional")
+                            if optional is True:
+                                continue
+                            direction = pin_defaults.get("direction", "all")
+                            pinconfig = {"pin": f"{slot_name}:{pin_id}"}
+                            if direction in slotpins and pin_id in slotpins[direction]:
+                                slotpins[direction].remove(pin_id)
+                            self.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
+                    else:
+                        # first mandatory pins
+                        for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                            optional = pin_defaults.get("optional")
+                            if optional is True:
+                                continue
+                            direction = pin_defaults.get("direction", "all")
+                            pinconfig = {"pin": ""}
+                            # find matching pins by name
+                            found = False
                             for spin in slotpins[direction]:
-                                pinconfig = {"pin": f"{slot_name}:{spin}"}
-                                slotpins[direction].remove(spin)
-                                found = True
-                                break
+                                if pin_name.lower() == spin.lower():
+                                    pinconfig = {"pin": f"{slot_name}:{spin}"}
+                                    slotpins[direction].remove(spin)
+                                    found = True
+                                    break
                             for spin in slotpins["all"]:
-                                pinconfig = {"pin": f"{slot_name}:{spin}"}
-                                slotpins["all"].remove(spin)
-                                found = True
-                                break
-                        self.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
+                                if pin_name.lower() == spin.lower():
+                                    pinconfig = {"pin": f"{slot_name}:{spin}"}
+                                    slotpins["all"].remove(spin)
+                                    found = True
+                                    break
+                            if not found:
+                                # find matching pins by direction
+                                for spin in slotpins[direction]:
+                                    pinconfig = {"pin": f"{slot_name}:{spin}"}
+                                    slotpins[direction].remove(spin)
+                                    found = True
+                                    break
+                                for spin in slotpins["all"]:
+                                    pinconfig = {"pin": f"{slot_name}:{spin}"}
+                                    slotpins["all"].remove(spin)
+                                    found = True
+                                    break
+                            self.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
 
-                    # then optional pins
-                    for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                        optional = pin_defaults.get("optional", False)
-                        if optional is False:
-                            continue
-                        direction = pin_defaults.get("direction", "all")
-                        pinconfig = {"pin": None}
-                        # find matching pins by name
-                        found = False
-                        for spin in slotpins[direction]:
-                            if pin_name.lower() == spin.lower():
-                                pinconfig = {"pin": f"{slot_name}:{spin}"}
-                                slotpins[direction].remove(spin)
-                                found = True
-                                break
-                        if not found:
-                            # find matching pins by direction
+                        # then optional pins
+                        for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                            optional = pin_defaults.get("optional", False)
+                            if optional is False:
+                                continue
+                            direction = pin_defaults.get("direction", "all")
+                            pinconfig = {"pin": None}
+                            # find matching pins by name
+                            found = False
                             for spin in slotpins[direction]:
-                                pinconfig = {"pin": f"{slot_name}:{spin}"}
-                                slotpins[direction].remove(spin)
-                                found = True
-                                break
-                        self.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
+                                if pin_name.lower() == spin.lower():
+                                    pinconfig = {"pin": f"{slot_name}:{spin}"}
+                                    slotpins[direction].remove(spin)
+                                    found = True
+                                    break
+                            if not found:
+                                # find matching pins by direction
+                                for spin in slotpins[direction]:
+                                    pinconfig = {"pin": f"{slot_name}:{spin}"}
+                                    slotpins[direction].remove(spin)
+                                    found = True
+                                    break
+                            self.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
 
                 self.tree_add_plugin(self.tree_plugins, plugin_instance, expand=True)
                 self.display()
@@ -1292,7 +1299,7 @@ class WinForm(QWidget):
                         elif plugin_instance:
                             self.pinlabels[pkey].clicked.connect(partial(self.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
                         else:
-                            self.pinlabels[pkey].clicked.connect(partial(self.open_pin, slot_name, pin_id))
+                            self.pinlabels[pkey].clicked.connect(partial(self.add_plugin, pin_id, slot_name=slot_name))
 
                     elif "pos" in slot:
                         self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
@@ -1307,7 +1314,7 @@ class WinForm(QWidget):
                         elif plugin_instance:
                             self.pinlabels[pkey].clicked.connect(partial(self.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
                         else:
-                            self.pinlabels[pkey].clicked.connect(partial(self.open_pin, slot_name, pin_id))
+                            self.pinlabels[pkey].clicked.connect(partial(self.add_plugin, pin_id, slot_name=slot_name))
 
     def config_load(self):
         self.info_widget.setText(self.config_file)
@@ -2261,11 +2268,6 @@ class WinForm(QWidget):
         button.setMaximumSize(button.sizeHint())
         buttons_layout.addWidget(button)
 
-        # button_cfg = QPushButton("config")
-        # button_cfg.clicked.connect(self.plugin_config)
-        # button_cfg.setMaximumSize(button_cfg.sizeHint())
-        # buttons_layout.addWidget(button_cfg)
-
         buttons_layout.addStretch()
         self.treeview.setIndexWidget(bitem.index(), buttons_widget)
         self.treeview.expand(self.model.indexFromItem(self.tree_plugins))
@@ -2286,28 +2288,6 @@ class WinForm(QWidget):
         pin_setup["modifier"].append({"type": "invert"})
         modifier = pin_setup["modifier"][-1]
         self.tree_add_modifier(parent, pin_setup, modifier_id, modifier)
-        self.display()
-
-    def add_plugin(self, widget):
-        plugin_type = self.select_plugin()
-        if not plugin_type:
-            return
-        plugin_id = len(self.config["plugins"])
-        self.config["plugins"].append(
-            {
-                "type": plugin_type,
-                "pins": {},
-            }
-        )
-        plugin_instance = self.plugins.load_plugin(plugin_id, self.config["plugins"][plugin_id], self.config)
-        if plugin_instance:
-            for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                optional = pin_defaults.get("optional")
-                if optional is not True:
-                    self.config["plugins"][plugin_id]["pins"][pin_name] = {"pin": ""}
-                else:
-                    self.config["plugins"][plugin_id]["pins"][pin_name] = {"pin": None}
-            self.tree_add_plugin(self.tree_plugins, plugin_instance, expand=True)
         self.display()
 
     def add_module(self, widget):
@@ -3104,84 +3084,6 @@ class WinForm(QWidget):
         self.load_tree()
         self.display()
 
-    def select_plugin(self):
-        def change(row, column):
-            selected = table.item(row, 0).text()
-            plugins = riocore.Plugins()
-            plugins.load_plugins({"plugins": [{"type": selected}]})
-            infotext = plugins.plugin_instances[0].INFO
-            plugin_name.setText(selected)
-            info.setText(infotext)
-            descriptiontext = plugins.plugin_instances[0].DESCRIPTION
-            if not descriptiontext:
-                descriptiontext = plugins.info(selected)
-
-            description.clear()
-            description.insertPlainText(descriptiontext)
-
-        selected = ""
-        plugin_list = self.plugins.list()
-        plugins = riocore.Plugins()
-        plugins.load_plugins({"plugins": [{"type": plugin_list[0]["name"]}]})
-        infotext = plugins.plugin_instances[0].INFO
-        descriptiontext = plugins.plugin_instances[0].DESCRIPTION
-
-        dialog = QDialog()
-        dialog.setWindowTitle("add Plugin")
-        dialog.setFixedWidth(800)
-        dialog.setFixedHeight(600)
-        dialog.setStyleSheet(STYLESHEET)
-
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-
-        dialog.layout = QVBoxLayout()
-
-        hlayout = QHBoxLayout()
-
-        vlayout_left = QVBoxLayout()
-
-        message = QLabel("Plugin-Type:")
-        vlayout_left.addWidget(message)
-
-        table = QTableWidget()
-        table.setColumnCount(1)
-        table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugins"))
-        table.setRowCount(len(plugin_list))
-        for row, plugin in enumerate(plugin_list):
-            pitem = QTableWidgetItem(plugin["name"])
-            table.setItem(row, 0, pitem)
-        table.setFixedWidth(200)
-        vlayout_left.addWidget(table)
-
-        vlayout = QVBoxLayout()
-        plugin_name = QLabel("")
-        vlayout.addWidget(plugin_name)
-
-        info = QLabel(infotext)
-        vlayout.addWidget(info)
-
-        description = QPlainTextEdit()
-        description.clear()
-        description.insertPlainText(descriptiontext)
-
-        vlayout.addWidget(description)
-
-        hlayout.addLayout(vlayout_left)
-        hlayout.addLayout(vlayout)
-
-        dialog.layout.addLayout(hlayout)
-
-        table.cellClicked.connect(change)
-
-        dialog.layout.addWidget(dialog_buttonBox)
-        dialog.setLayout(dialog.layout)
-
-        change(0, 0)
-
-        if dialog.exec():
-            return plugin_name.text()
-
     def plugin_config(self, plugin_instance=None):
         dialog = QDialog()
         dialog.setWindowTitle("Plugin-Config")
@@ -3394,17 +3296,18 @@ class WinForm(QWidget):
         buttons_widget = QWidget()
         buttons_widget.setLayout(buttons_layout)
 
-        button_delete = QPushButton("delete")
-        cb = partial(self.del_plugin, plugin_instance)
-        button_delete.clicked.connect(cb)
-        button_delete.setMaximumSize(button_delete.sizeHint())
-        buttons_layout.addWidget(button_delete)
+        if not nopins:
+            button_edit = QPushButton("edit")
+            cb = partial(self.edit_plugin, plugin_instance, plugin_instance.plugin_id)
+            button_edit.clicked.connect(cb)
+            button_edit.setMaximumSize(button_edit.sizeHint())
+            buttons_layout.addWidget(button_edit)
 
-        button_edit = QPushButton("edit")
-        cb = partial(self.edit_plugin, plugin_instance, plugin_instance.plugin_id)
-        button_edit.clicked.connect(cb)
-        button_edit.setMaximumSize(button_edit.sizeHint())
-        buttons_layout.addWidget(button_edit)
+            button_delete = QPushButton("delete")
+            cb = partial(self.del_plugin, plugin_instance)
+            button_delete.clicked.connect(cb)
+            button_delete.setMaximumSize(button_delete.sizeHint())
+            buttons_layout.addWidget(button_delete)
 
         if plugin_instance.PLUGIN_CONFIG:
             button_config = QPushButton("config")
