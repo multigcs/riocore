@@ -26,6 +26,7 @@ from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
 from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
 from PyQt5.QtWidgets import (
+    QMessageBox,
     QHeaderView,
     QSizePolicy,
     QGroupBox,
@@ -1188,6 +1189,28 @@ class WinForm(QWidget):
         else:
             self.pininfo_timer = 3
 
+    def get_module_by_slot(self, slot_name):
+        if slot_name in self.modules:
+            return self.modules[slot_name]["name"]
+        return
+
+    def remove_module(self, slot_name):
+        module_name = self.get_module_by_slot(slot_name)
+        qm = QMessageBox
+        ret = qm.question(self, "remove module", f"Are you sure to remove module '{module_name}' from slot '{slot_name}' ?", qm.Yes | qm.No)
+        if ret == qm.Yes:
+            if "modules" in self.config:
+                for mn, module in enumerate(self.config["modules"]):
+                    if module["slot"] == slot_name:
+                        self.config["modules"].pop(mn)
+                        break
+            del self.modules[slot_name]
+            self.config_pinlayout()
+            self.load_tree()
+            self.pin_table_load()
+            self.sig_table_load()
+            self.display()
+
     def config_pinlayout(self):
         self.img_layout.removeWidget(self.boardimg)
         self.boardimg = QWidget()
@@ -1226,9 +1249,12 @@ class WinForm(QWidget):
                     else:
                         tooltip = f"{slot_name}"
 
+                    module_name = self.get_module_by_slot(slot_name)
                     plugin_instance, pin_name = self.get_plugin_by_pin(pin["pin"])
-                    userconfig = {}
-                    if plugin_instance:
+                    if module_name:
+                        bgcolor = "red"
+                        tooltip += f"\nmodule: {module_name}"
+                    elif plugin_instance:
                         bgcolor = "green"
                         tooltip += f"\n{plugin_instance.title} ({plugin_instance.NAME}) : {pin_name}"
 
@@ -1240,7 +1266,9 @@ class WinForm(QWidget):
                         self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
                         self.pinlabels[pkey].setToolTip(tooltip)
 
-                        if plugin_instance:
+                        if module_name:
+                            self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
+                        elif plugin_instance:
                             self.pinlabels[pkey].clicked.connect(partial(self.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
                         else:
                             self.pinlabels[pkey].clicked.connect(partial(self.open_pin, slot_name, pin_id))
@@ -1253,7 +1281,9 @@ class WinForm(QWidget):
                         self.pinlabels[pkey].move(QPoint(int(slot["pos"][0]), int(slot["pos"][1])))
                         self.pinlabels[pkey].setToolTip(tooltip)
 
-                        if plugin_instance:
+                        if module_name:
+                            self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
+                        elif plugin_instance:
                             self.pinlabels[pkey].clicked.connect(partial(self.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
                         else:
                             self.pinlabels[pkey].clicked.connect(partial(self.open_pin, slot_name, pin_id))
@@ -1306,6 +1336,7 @@ class WinForm(QWidget):
                 mplugins.load_plugin(plugin_id, module_setup[plugin_name], self.config)
 
             self.modules[slot_name] = {
+                "name": module_name,
                 "defaults": module_defaults,
                 "setup": module_setup,
                 "instances": mplugins.plugin_instances,
