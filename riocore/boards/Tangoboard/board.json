@@ -92,7 +92,7 @@
         {
             "name": "PMOD1",
             "comment": "PMOD1 8pin",
-            "default": "",
+            "rect": [385, 375, 110, 50],
             "pins": {
                 "P4": {
                     "pin": "30",
@@ -553,6 +553,7 @@
             "name": "PMOD2",
             "comment": "PMOD2 4pin",
             "default": "",
+            "rect": [485, 155, 110, 25],
             "pins": {
                 "P1": {
                     "pin": "72",

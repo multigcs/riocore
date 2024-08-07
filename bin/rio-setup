@@ -1238,6 +1238,28 @@ class WinForm(QWidget):
 
         for slot in self.slots:
             slot_name = slot["name"]
+            module_name = self.get_module_by_slot(slot_name)
+
+            if "rect" in slot:
+                pkey = f"{slot_name}:"
+                w = int(slot["rect"][2])
+                h = int(slot["rect"][3])
+                tooltip = f"slot:{slot_name}"
+                bgcolor = "lightblue"
+                if module_name:
+                    bgcolor = "lightgreen"
+                    tooltip += f"\nmodule: {module_name}"
+                self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
+                self.pinlabels[pkey].setFixedWidth(w)
+                self.pinlabels[pkey].setFixedHeight(h)
+                self.pinlabels[pkey].setText(pin_id)
+                self.pinlabels[pkey].move(QPoint(int(slot["rect"][0]), int(slot["rect"][1])))
+                self.pinlabels[pkey].setToolTip(tooltip)
+                if module_name:
+                    self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
+                else:
+                    self.pinlabels[pkey].clicked.connect(partial(self.select_module, set_slot=slot_name, slot_select=False))
+
             for pin_id, pin in slot["pins"].items():
                 if isinstance(pin, dict):
                     # check if pin is allready used
@@ -1249,10 +1271,9 @@ class WinForm(QWidget):
                     else:
                         tooltip = f"{slot_name}"
 
-                    module_name = self.get_module_by_slot(slot_name)
                     plugin_instance, pin_name = self.get_plugin_by_pin(pin["pin"])
                     if module_name:
-                        bgcolor = "red"
+                        bgcolor = "green"
                         tooltip += f"\nmodule: {module_name}"
                     elif plugin_instance:
                         bgcolor = "green"
@@ -2451,7 +2472,7 @@ class WinForm(QWidget):
 
     def modifier_list_add(self, parent_layout, modifier_list):
         dialog = QDialog()
-        dialog.setWindowTitle("add Module")
+        dialog.setWindowTitle("add Modifier")
         dialog.setStyleSheet(STYLESHEET)
 
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
@@ -3180,13 +3201,14 @@ class WinForm(QWidget):
         if dialog.exec():
             return plugin_name.text()
 
-    def select_module(self, last_error=None, set_slot=None, set_module=None):
+    def select_module(self, last_error=None, set_slot=None, set_module=None, slot_select=True):
         dialog = QDialog()
         dialog.setWindowTitle("add Module")
         dialog.setStyleSheet(STYLESHEET)
 
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
 
         dialog.layout = QVBoxLayout()
         if last_error:
@@ -3196,6 +3218,7 @@ class WinForm(QWidget):
         label = QLabel("Slot:")
         dialog.layout.addWidget(label)
         combo_slot = QComboBox(self)
+        combo_slot.setDisabled(not slot_select)
         dialog.layout.addWidget(combo_slot)
 
         label = QLabel("Module:")
