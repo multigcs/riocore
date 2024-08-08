@@ -11,34 +11,34 @@ rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - pr
 {
     "type": "rmii",
     "pins": {
-        "phyrst": {
+        "netrmii_clk50m": {
             "pin": "0"
         },
-        "netrmii_clk50m": {
+        "netrmii_rx_crs": {
             "pin": "1"
         },
-        "netrmii_rx_crs": {
+        "netrmii_mdc": {
             "pin": "2"
         },
-        "netrmii_mdc": {
+        "netrmii_txen": {
             "pin": "3"
         },
-        "netrmii_txen": {
+        "netrmii_mdio": {
             "pin": "4"
         },
-        "netrmii_mdio": {
+        "netrmii_txd_0": {
             "pin": "5"
         },
-        "netrmii_txd_0": {
+        "netrmii_txd_1": {
             "pin": "6"
         },
-        "netrmii_txd_1": {
+        "netrmii_rxd_0": {
             "pin": "7"
         },
-        "netrmii_rxd_0": {
+        "netrmii_rxd_1": {
             "pin": "8"
         },
-        "netrmii_rxd_1": {
+        "phyrst": {
             "pin": "9"
         }
     }
@@ -47,10 +47,6 @@ rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - pr
 
 ## Pins:
 *FPGA-pins*
-### phyrst:
-
- * direction: output
-
 ### netrmii_clk50m:
 
  * direction: input
@@ -87,9 +83,44 @@ rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - pr
 
  * direction: input
 
+### phyrst:
+
+ * direction: output
+ * optional: True
+
 
 ## Options:
 *user-options*
+### mac:
+MAC-Address
+
+ * type: str
+ * default: AA:AF:FA:CC:E3:1C
+
+### ip:
+IP-Address
+
+ * type: str
+ * default: 192.168.10.194
+
+### mask:
+Network-Mask
+
+ * type: str
+ * default: 255.255.255.0
+
+### gw:
+Gateway IP-Address
+
+ * type: str
+ * default: 192.168.10.1
+
+### port:
+UDP-Port
+
+ * type: int
+ * default: 2390
+
 ### name:
 name of this plugin instance
 
@@ -109,17 +140,22 @@ name of this plugin instance
 ```
 {
     "type": "rmii",
+    "mac": "AA:AF:FA:CC:E3:1C",
+    "ip": "192.168.10.194",
+    "mask": "255.255.255.0",
+    "gw": "192.168.10.1",
+    "port": 2390,
     "name": "",
     "pins": {
-        "phyrst": {
+        "netrmii_clk50m": {
             "pin": "0",
             "modifiers": [
                 {
-                    "type": "invert"
+                    "type": "debounce"
                 }
             ]
         },
-        "netrmii_clk50m": {
+        "netrmii_rx_crs": {
             "pin": "1",
             "modifiers": [
                 {
@@ -130,19 +166,8 @@ name of this plugin instance
                 }
             ]
         },
-        "netrmii_rx_crs": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
         "netrmii_mdc": {
-            "pin": "3",
+            "pin": "2",
             "modifiers": [
                 {
                     "type": "invert"
@@ -150,7 +175,7 @@ name of this plugin instance
             ]
         },
         "netrmii_txen": {
-            "pin": "4",
+            "pin": "3",
             "modifiers": [
                 {
                     "type": "invert"
@@ -158,7 +183,7 @@ name of this plugin instance
             ]
         },
         "netrmii_mdio": {
-            "pin": "5",
+            "pin": "4",
             "modifiers": [
                 {
                     "type": "invert"
@@ -166,7 +191,7 @@ name of this plugin instance
             ]
         },
         "netrmii_txd_0": {
-            "pin": "6",
+            "pin": "5",
             "modifiers": [
                 {
                     "type": "invert"
@@ -174,7 +199,7 @@ name of this plugin instance
             ]
         },
         "netrmii_txd_1": {
-            "pin": "7",
+            "pin": "6",
             "modifiers": [
                 {
                     "type": "invert"
@@ -182,7 +207,7 @@ name of this plugin instance
             ]
         },
         "netrmii_rxd_0": {
-            "pin": "8",
+            "pin": "7",
             "modifiers": [
                 {
                     "type": "debounce"
@@ -193,11 +218,19 @@ name of this plugin instance
             ]
         },
         "netrmii_rxd_1": {
-            "pin": "9",
+            "pin": "8",
             "modifiers": [
                 {
                     "type": "debounce"
                 },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "phyrst": {
+            "pin": "9",
+            "modifiers": [
                 {
                     "type": "invert"
                 }

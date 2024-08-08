@@ -40,7 +40,7 @@ usable as position feedback for closed-loop configuration or as variable input t
 encoder type
 
  * type: int
- * min: 1
+ * min: 0
  * max: 4
  * default: 2
 
