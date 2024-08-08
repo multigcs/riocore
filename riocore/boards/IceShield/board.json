@@ -1,0 +1,409 @@
+{
+    "name": "IceShield",
+    "description": "RIO-IceShield board for Raspberry PI4",
+    "url": "https://github.com/multigcs/rio-iceshield",
+    "pinimage": "board.png",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "package": "sg48",
+    "flashcmd": "./spiflash.sh rio.bin",
+    "clock": {
+        "osc": "18000000",
+        "speed": "29812000",
+        "pin": "35"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "G": {
+                    "pin": "18",
+                    "pos": [
+                        752,
+                        362
+                    ],
+                    "direction": "output"
+                },
+                "R": {
+                    "pin": "19",
+                    "pos": [
+                        777,
+                        362
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "IN1",
+            "comment": "IN1",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "41",
+                    "pos": [
+                        15,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN2",
+            "comment": "IN2",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "40",
+                    "pos": [
+                        80,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN3",
+            "comment": "IN3",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "39",
+                    "pos": [
+                        150,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN4",
+            "comment": "IN4",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "38",
+                    "pos": [
+                        215,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN5",
+            "comment": "IN5",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "37",
+                    "pos": [
+                        280,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN6",
+            "comment": "IN6",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "36",
+                    "pos": [
+                        345,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN7",
+            "comment": "IN7",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "42",
+                    "pos": [
+                        410,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN8",
+            "comment": "IN8",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "34",
+                    "pos": [
+                        475,
+                        306
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "OUT1",
+            "comment": "OUT1",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "44",
+                    "pos": [
+                        15,
+                        411
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "OUT2",
+            "comment": "OUT2",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "43",
+                    "pos": [
+                        80,
+                        411
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "GLOBAL",
+            "comment": "Global",
+            "default": "",
+            "pins": {
+                "ENABLE": {
+                    "pin": "45",
+                    "pos": [
+                        150,
+                        405
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT1",
+            "comment": "JOINT1",
+            "default": "stepdir",
+            "pins": {
+                "DIR": {
+                    "pin": "12",
+                    "pos": [
+                        150,
+                        363
+                    ],
+                    "direction": "output"
+                },
+                "STEP": {
+                    "pin": "13",
+                    "pos": [
+                        150,
+                        384
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT2",
+            "comment": "JOINT2",
+            "default": "stepdir",
+            "pins": {
+                "DIR": {
+                    "pin": "10",
+                    "pos": [
+                        215,
+                        363
+                    ],
+                    "direction": "output"
+                },
+                "STEP": {
+                    "pin": "11",
+                    "pos": [
+                        215,
+                        384
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT3",
+            "comment": "JOINT3",
+            "default": "stepdir",
+            "pins": {
+                "DIR": {
+                    "pin": "6",
+                    "pos": [
+                        280,
+                        363
+                    ],
+                    "direction": "output"
+                },
+                "STEP": {
+                    "pin": "9",
+                    "pos": [
+                        280,
+                        384
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT4",
+            "comment": "JOINT4",
+            "default": "stepdir",
+            "pins": {
+                "DIR": {
+                    "pin": "3",
+                    "pos": [
+                        345,
+                        363
+                    ],
+                    "direction": "output"
+                },
+                "STEP": {
+                    "pin": "4",
+                    "pos": [
+                        345,
+                        384
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT5",
+            "comment": "JOINT5",
+            "default": "stepdir",
+            "pins": {
+                "DIR": {
+                    "pin": "48",
+                    "pos": [
+                        410,
+                        363
+                    ],
+                    "direction": "output"
+                },
+                "STEP": {
+                    "pin": "2",
+                    "pos": [
+                        410,
+                        384
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT6",
+            "comment": "JOINT6",
+            "default": "stepdir",
+            "pins": {
+                "DIR": {
+                    "pin": "46",
+                    "pos": [
+                        475,
+                        363
+                    ],
+                    "direction": "output"
+                },
+                "STEP": {
+                    "pin": "47",
+                    "pos": [
+                        475,
+                        384
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "PMOD1",
+            "comment": "PMOD1",
+            "default": "",
+            "pins": {
+                "P1": {
+                    "pin": "20",
+                    "pos": [
+                        690,
+                        81
+                    ]
+                },
+                "P2": {
+                    "pin": "23",
+                    "pos": [
+                        660,
+                        81
+                    ]
+                },
+                "P3": {
+                    "pin": "26",
+                    "pos": [
+                        635,
+                        81
+                    ]
+                },
+                "P4": {
+                    "pin": "28",
+                    "pos": [
+                        605,
+                        81
+                    ]
+                },
+                "P7": {
+                    "pin": "21",
+                    "pos": [
+                        690,
+                        104
+                    ]
+                },
+                "P8": {
+                    "pin": "25",
+                    "pos": [
+                        660,
+                        104
+                    ]
+                },
+                "P9": {
+                    "pin": "27",
+                    "pos": [
+                        635,
+                        104
+                    ]
+                },
+                "P10": {
+                    "pin": "31",
+                    "pos": [
+                        605,
+                        104
+                    ]
+                }
+            }
+        }
+    ]
+}
+
+
+

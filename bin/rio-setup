@@ -655,15 +655,20 @@ class WinForm(QWidget):
         header.setSectionResizeMode(0, QHeaderView.Stretch)
 
         board_list = []
-        for bn, path in enumerate(glob.glob(f"{riocore_path}/boards/*")):
-            board_table.setRowCount(bn + 1)
-            board_list.append(path)
+        board_n = 0
+        for path in glob.glob(f"{riocore_path}/boards/*"):
             if path.endswith(".json"):
                 board_name = path.split("/")[-1].replace(".json", "")
             else:
+                if not os.path.isfile(f"{path}/board.json"):
+                    print(f"WARNING: can not found board.json in {path}")
+                    continue
                 board_name = path.split("/")[-1]
+            board_table.setRowCount(board_n + 1)
+            board_list.append(path)
             pitem = QTableWidgetItem(board_name)
-            board_table.setItem(bn, 0, pitem)
+            board_table.setItem(board_n, 0, pitem)
+            board_n += 1
 
         board_table.setFixedWidth(300)
         board_table.cellClicked.connect(show_board_info)

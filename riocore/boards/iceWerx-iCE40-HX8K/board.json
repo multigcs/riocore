@@ -1,0 +1,35 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "hx8k",
+    "package": "cb132",
+    "flashcmd": "iceFUNprog rio.bin",
+    "clock": {
+        "osc": "12000000",
+        "speed": "60000000",
+        "pin": "P7"
+    },
+    "slots": [
+        {
+            "name": "ADC_UART",
+            "comment": "ADC_UART",
+            "pins": {
+                "TX": "P4",
+                "RX": "P5"
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "G": "M4",
+                "R": "A5"
+            }
+        }
+    ]
+}
+
+
+
