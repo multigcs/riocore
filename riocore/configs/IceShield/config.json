@@ -1,0 +1,392 @@
+{
+    "name": "IceShield",
+    "description": "RIO-IceShield on Raspberry PI4",
+    "boardcfg": "IceShield",
+    "protocol": "SPI",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G"
+                }
+            },
+            "frequency": 1.0
+        },
+        {
+            "type": "spi",
+            "pins": {
+                "mosi": {
+                    "pin": "14"
+                },
+                "miso": {
+                    "pin": "17"
+                },
+                "sclk": {
+                    "pin": "15"
+                },
+                "sel": {
+                    "pin": "32"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "pin": "45",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Stepper1",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "13"
+                },
+                "dir": {
+                    "pin": "12"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 320.0,
+                "ferror": 10.0,
+                "max_velocity": 80.0
+            }
+        },
+        {
+            "name": "Stepper2",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "11"
+                },
+                "dir": {
+                    "pin": "10"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 320.0,
+                "ferror": 10.0,
+                "max_velocity": 80.0
+            }
+        },
+        {
+            "name": "Stepper3",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "9"
+                },
+                "dir": {
+                    "pin": "6"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 320.0,
+                "ferror": 10.0,
+                "max_velocity": 80.0
+            }
+        },
+        {
+            "name": "Stepper4",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "4"
+                },
+                "dir": {
+                    "pin": "3"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 320.0,
+                "ferror": 10.0,
+                "max_velocity": 80.0
+            }
+        },
+        {
+            "name": "Stepper5",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "2"
+                },
+                "dir": {
+                    "pin": "48"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "name": "Stepper6",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "47"
+                },
+                "dir": {
+                    "pin": "46"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "bitout",
+            "name": "Output1",
+            "pins": {
+                "bit": {
+                    "pin": "44",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "Output2",
+            "pins": {
+                "bit": {
+                    "pin": "43",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "LED",
+            "pins": {
+                "bit": {
+                    "pin": "LED:R",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input1",
+            "pins": {
+                "bit": {
+                    "pin": "41",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input2",
+            "pins": {
+                "bit": {
+                    "pin": "40",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input3",
+            "pins": {
+                "bit": {
+                    "pin": "39",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input4",
+            "pins": {
+                "bit": {
+                    "pin": "38",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input5",
+            "pins": {
+                "bit": {
+                    "pin": "37",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input6",
+            "pins": {
+                "bit": {
+                    "pin": "36",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input7",
+            "pins": {
+                "bit": {
+                    "pin": "42",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "Input8",
+            "pins": {
+                "bit": {
+                    "pin": "34",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "debug",
+                        "title": "readwrite time",
+                        "type": "number_s32"
+                    },
+                    "net": "rio.readwrite.time"
+                }
+            },
+            "dir": "output",
+            "name": "riotime"
+        }
+    ],
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "MAX_FEED_OVERRIDE": 15.0,
+                "MAX_ANGULAR_VELOCITY": 4.98,
+                "MAX_LINEAR_VELOCITY": 75.0,
+                "DEFAULT_LINEAR_VELOCITY": 60.0
+            }
+        },
+        "machinetype": "mill"
+    },
+    "modules": [
+        {
+            "slot": "PMOD1",
+            "module": "icebreaker_led_sw",
+            "setup": {
+                "LED1": {
+                    "type": "bitout",
+                    "name": "LED1"
+                },
+                "LED2": {
+                    "type": "bitout",
+                    "name": "LED2"
+                },
+                "LED3": {
+                    "type": "bitout",
+                    "name": "LED3"
+                },
+                "LED4": {
+                    "type": "bitout",
+                    "name": "LED4"
+                },
+                "LED5": {
+                    "type": "bitout",
+                    "name": "LED5"
+                },
+                "BUTTON1": {
+                    "type": "bitin",
+                    "name": "BUTTON1",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                },
+                "BUTTON2": {
+                    "type": "bitin",
+                    "name": "BUTTON2",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                },
+                "BUTTON3": {
+                    "type": "bitin",
+                    "name": "BUTTON3",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
