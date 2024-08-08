@@ -114,7 +114,7 @@ class Toolchain:
         prj_data.append("</Project>")
         open(f"{path}/rio.gprj", "w").write("\n".join(prj_data))
 
-        os.system(f"mkdir -p {path}/impl")
+        os.makedirs(f"{path}/impl", exist_ok=True)
         pps_data = """{
  "Allow_Duplicate_Modules" : false,
  "Annotated_Properties_for_Analyst" : true,

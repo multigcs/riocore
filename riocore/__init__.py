@@ -4,6 +4,7 @@ import importlib
 import json
 import os
 import re
+import shutil
 from struct import pack, unpack
 import sys
 import traceback
@@ -887,4 +888,5 @@ class Project:
         else:
             self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
-        os.system(f"cp {self.config['json_file']} {self.config['output_path']}/.config.json")
+        target = f"{self.config['output_path']}/.config.json"
+        shutil.copy(self.config["json_file"], target)

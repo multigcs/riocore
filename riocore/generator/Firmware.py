@@ -444,8 +444,8 @@ void resetSteps() {
         makefile.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile.append("")
 
-        os.system(f"mkdir -p {self.firmware_path}/src")
-        os.system(f"mkdir -p {self.firmware_path}/lib")
+        os.makedirs(f"{self.firmware_path}/src", exist_ok=True)
+        os.makedirs(f"{self.firmware_path}/lib", exist_ok=True)
         open(f"{self.firmware_path}/platformio.ini", "w").write("\n".join(platformio_ini))
         open(f"{self.firmware_path}/Makefile", "w").write("\n".join(makefile))
         open(f"{self.firmware_path}/src/main.ino", "w").write("\n".join(output))

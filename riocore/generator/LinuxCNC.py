@@ -2,6 +2,7 @@ import copy
 import glob
 import importlib
 import os
+import shutil
 import sys
 
 from riocore import halpins
@@ -299,7 +300,8 @@ class LinuxCNC:
                 addon.generator(self)
         self.misc()
         self.ini()
-        os.system(f"mkdir -p {self.configuration_path}/")
+        os.makedirs(self.configuration_path, exist_ok=True)
+
         output_hal = []
         output_postgui = []
         output_hal += self.loadrts
@@ -597,21 +599,21 @@ class LinuxCNC:
 
         path_subroutines = ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH")
         if path_subroutines and path_subroutines.startswith("./"):
-            os.system(f"mkdir -p {self.configuration_path}/{path_subroutines}")
+            os.makedirs(f"{self.configuration_path}/{path_subroutines}", exist_ok=True)
             for subroutine in glob.glob(f"{json_path}/subroutines/*"):
                 target_path = f"{self.configuration_path}/{path_subroutines}/{os.path.basename(subroutine)}"
                 if not os.path.isfile(target_path):
-                    os.system(f"cp -a -v '{subroutine}' '{target_path}'")
+                    shutil.copy(subroutine, target_path)
 
         path_mcodes = ini_setup.get("RS274NGC", {}).get("mcode_PATH")
         if path_mcodes and path_mcodes.startswith("./"):
-            os.system(f"mkdir -p {self.configuration_path}/{path_mcodes}")
+            os.makedirs(f"{self.configuration_path}/{path_mcodes}", exist_ok=True)
             for mcode in glob.glob(f"{json_path}/mcodes/*"):
                 target_path = f"{self.configuration_path}/{path_mcodes}/{os.path.basename(mcode)}"
                 if not os.path.isfile(target_path):
-                    os.system(f"cp -a -v '{mcode}' '{target_path}'")
+                    shutil.copy(mcode, target_path)
 
-        os.system(f"mkdir -p {self.configuration_path}/")
+        os.makedirs(self.configuration_path, exist_ok=True)
         open(f"{self.configuration_path}/rio.ini", "w").write("\n".join(output))
 
     def misc(self):
@@ -620,7 +622,7 @@ class LinuxCNC:
             tooltbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
             tooltbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
             tooltbl.append("T3 P3 D0.201000 Z+1.273000 ;#7 tap drill")
-            os.system(f"mkdir -p {self.configuration_path}/")
+            os.makedirs(self.configuration_path, exist_ok=True)
             open(f"{self.configuration_path}/tool.tbl", "w").write("\n".join(tooltbl))
 
     def hal_setp_add(self, output_name, value):
@@ -684,7 +686,7 @@ class LinuxCNC:
             self.networks[network]["in"].append(input_name)
 
     def gui(self):
-        os.system(f"mkdir -p {self.configuration_path}/")
+        os.makedirs(self.configuration_path, exist_ok=True)
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
@@ -1158,14 +1160,7 @@ class LinuxCNC:
         cfgxml_adata += self.gui_gen.draw_end()
 
         if gui == "qtdragon":
-            # os.system(f"mkdir -p {self.configuration_path}/rio_hd")
-            # os.system(f"cp -a {riocore_path}/files/rio_hd/* {self.configuration_path}/rio_hd/")
-            # os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.pre > {self.configuration_path}/rio_hd/rio_hd.ui")
-            # open(f"{self.configuration_path}/rio_hd/rio_hd.ui", "a").write("\n".join(cfgxml_adata))
-            # os.system(f"cat {riocore_path}/files/rio_hd/rio_hd.ui.post >> {self.configuration_path}/rio_hd/rio_hd.ui")
-
             open(f"{self.configuration_path}/rio-gui.ui", "w").write("\n".join(cfgxml_adata))
-
         else:
             open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
 
@@ -1243,8 +1238,10 @@ class LinuxCNC:
                 self.loadrts.append("")
             self.loadrts.append("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
             self.loadrts.append("")
-            os.system(f"mkdir -p {self.configuration_path}/")
-            os.system(f"cp -a riocore/files/melfa/* {self.configuration_path}/")
+            os.makedirs(self.configuration_path, exist_ok=True)
+            for source in glob.glob(f"riocore/files/melfa/*"):
+                shutil.copy(source, self.configuration_path)
+
             if not embed_vismach:
                 for joint in range(6):
                     self.hal_net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
@@ -2191,7 +2188,7 @@ class LinuxCNC:
         output.append("")
         output.append("")
 
-        os.system(f"mkdir -p {self.component_path}/")
+        os.makedirs(self.component_path, exist_ok=True)
         open(f"{self.component_path}/rio.c", "w").write("\n".join(output))
 
     def create_axis_config(self):

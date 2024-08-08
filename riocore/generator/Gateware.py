@@ -2,6 +2,8 @@ import hashlib
 import importlib
 import os
 import re
+import shutil
+import stat
 import subprocess
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -15,7 +17,6 @@ class Gateware:
 
     def globals(self):
         toolchain = self.config["toolchain"]
-
         # create globals.v for compatibility functions
         globals_data = []
         globals_data.append(f'localparam TOOLCHAIN = "{toolchain}";')
@@ -49,17 +50,32 @@ class Gateware:
         self.makefile()
 
     def makefile(self):
+        flashcmd = self.config.get("flashcmd")
+        if flashcmd:
+            if flashcmd.startswith("./") and self.project.config["json_path"]:
+                flashcmd_script = flashcmd.split()[0].replace("./", "")
+                json_path = self.project.config["json_path"]
+                flashcmd_script_path = f"{json_path}/{flashcmd_script}"
+                print(flashcmd_script_path)
+                if os.path.isfile(flashcmd_script_path):
+                    target = f"{self.gateware_path}/{flashcmd_script}"
+                    shutil.copy(flashcmd_script_path, target)
+                    os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
         for plugin_instance in self.project.plugin_instances:
             for verilog in plugin_instance.gateware_files():
                 if verilog in self.verilogs:
                     continue
                 self.verilogs.append(verilog)
                 ipv_path = f"{riocore_path}/plugins/{plugin_instance.NAME}/{verilog}"
-                os.system(f"cp -a {ipv_path} {self.gateware_path}/{verilog}")
+                target = f"{self.gateware_path}/{verilog}"
+                shutil.copy(ipv_path, target)
 
         for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v"):
             self.verilogs.append(extrafile)
-            os.system(f"cp -a {riocore_path}/files/{extrafile} {self.gateware_path}/{extrafile}")
+            source = f"{riocore_path}/files/{extrafile}"
+            target = f"{self.gateware_path}/{extrafile}"
+            shutil.copy(source, target)
         self.verilogs.append("rio.v")
         self.config["verilog_files"] = self.verilogs
         self.config["pinlists"] = {}
