@@ -618,7 +618,7 @@ class WinForm(QWidget):
                 board_raw = open(f"{board_path}/board.json", "r").read()
             board_config = json.loads(board_raw)
 
-            pinimage = board_config.get("pinimage")
+            pinimage = board_config.get("pinimage", "board.png")
             image_path = f"{board_path}/{pinimage}"
             if os.path.isfile(image_path):
                 pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
@@ -637,6 +637,8 @@ class WinForm(QWidget):
         dialog = QDialog()
         dialog.setWindowTitle("create new config / select board")
         dialog.setStyleSheet(STYLESHEET)
+        # dialog.setMinimumWidth(800)
+        dialog.setMinimumHeight(480)
 
         dialog.layout = QVBoxLayout()
         dialog.setLayout(dialog.layout)
