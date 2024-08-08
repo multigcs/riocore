@@ -202,6 +202,7 @@ help_text = {
             "STEP_SCALE": "in PnCconf built configs",
             "STEPGEN_MAXACCEL": " Acceleration limit for the step generator.",
             "STEPGEN_MAXVEL": "Older configuration files have a velocity limit for the step generator as well.",
+            "FEEDBACK": "the feedback signal for this joint (plugin_name[:signal_name]) - closed loop",
         },
         "SPINDLE_NUM": {"HOME_SEARCH_VELOCITY": "FIXME: Spindle homing not yet working.", "HOME_SEQUENCE": "FIXME: Spindle homing not yet working"},
         "EMCIO": {
@@ -324,6 +325,9 @@ JOINT_OPTIONS = {
     },
     "stepgen_maxaccel": {
         "type": float,
+    },
+    "feedback": {
+        "type": str,
     },
     "home_sequence": {
         "type": int,
@@ -2774,7 +2778,18 @@ class WinForm(QWidget):
             option_label = QLabel(option)
             option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=1)
-            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+
+            if option == "feedback":
+                options = [""]
+                for plugin_instance in self.plugins.plugin_instances:
+                    for signal_name, signal_config in plugin_instance.signals().items():
+                        if signal_name == "position":
+                            options.append(f"{plugin_instance.title}:{signal_name}")
+                option_setup = {"type": "select", "options": options, "default": ""}
+                option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+            else:
+                option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+
             option_row.addWidget(option_widget, stretch=3)
             general_layout.addLayout(option_row)
 
@@ -2787,13 +2802,10 @@ class WinForm(QWidget):
         label = QLabel("Joint-Homing")
         label.setFont(myFont)
         homing_layout.addWidget(label)
-
         home_values = {}
-
         for option, option_setup in joint_options.items():
             if not option.startswith("home"):
                 continue
-
             tootltip = help_text["INI"]["JOINT_NUM"].get(option.upper(), f"{option} config")
             option_row = QHBoxLayout()
             option_label = QLabel(option)

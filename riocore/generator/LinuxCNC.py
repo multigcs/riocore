@@ -2227,7 +2227,7 @@ class LinuxCNC:
                         "axis": axis_name,
                         "joint": self.num_joints,
                         "plugin_instance": plugin_instance,
-                        "feedback": plugin_instance.plugin_setup.get("feedback", True),
+                        "feedback": plugin_instance.plugin_setup.get("joint", {}).get("feedback", True),
                     }
                     self.num_joints += 1
 
@@ -2299,11 +2299,17 @@ class LinuxCNC:
                 feedback_scale = position_scale
                 feedback_halname = None
                 feedback = joint_config.get("feedback")
-                if position_mode == "relative" and not feedback:
+                feedback = joint_setup.get("feedback")
+                if position_mode == "relative" and feedback is True:
                     feedback_halname = f"rio.{position['halname']}"
                     feedback_scale = position_scale
                 elif position_mode == "relative":
-                    fb_plugin_name, fb_signal_name = feedback.split(":")
+                    if ":" in feedback:
+                        fb_plugin_name, fb_signal_name = feedback.split(":")
+                    else:
+                        fb_plugin_name = feedback
+                        fb_signal_name = "position"
+                    found = False
                     for sub_instance in self.project.plugin_instances:
                         if sub_instance.title == fb_plugin_name:
                             for sub_signal_name, sub_signal_config in sub_instance.signals().items():
@@ -2316,8 +2322,12 @@ class LinuxCNC:
 
                                 feedback_halname = f"rio.{sub_signal_config['halname']}"
                                 feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("scale", 320.0))
-                                print("feedback", feedback, feedback_halname, feedback_scale)
+                                found = True
                                 break
+                    print("found", found)
+                    if not found:
+                        print(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint} not found")
+                        continue
 
                 joint_setup["position_mode"] = position_mode
                 joint_setup["position_halname"] = position_halname
