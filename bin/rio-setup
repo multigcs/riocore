@@ -8,6 +8,7 @@ import glob
 import hashlib
 import importlib
 import json
+import yaml
 import os
 import re
 import subprocess
@@ -351,6 +352,7 @@ JOINT_OPTIONS = {
         "options": ["YES", "NO"],
     },
 }
+
 
 class WinForm(QWidget):
     def __init__(self, args, parent=None):
@@ -879,7 +881,11 @@ class WinForm(QWidget):
         # loading json config
         if self.config_file:
             configJsonStr = open(self.config_file, "r").read()
-            self.config = json.loads(configJsonStr)
+            if self.config_file.endswith(".yml"):
+                self.config = yaml.load(configJsonStr)
+            else:
+                self.config = json.loads(configJsonStr)
+
         if "plugins" not in self.config:
             self.config["plugins"] = []
 
