@@ -674,6 +674,7 @@ class WinForm(QWidget):
 
         board_table.setFixedWidth(300)
         board_table.cellClicked.connect(show_board_info)
+        board_table.currentCellChanged.connect(show_board_info)
 
         mid_layout = QVBoxLayout()
         mid_widget = QWidget()
@@ -1050,6 +1051,7 @@ class WinForm(QWidget):
             plugin_table.setItem(row, 0, pitem)
         plugin_table.setFixedWidth(200)
         plugin_table.cellClicked.connect(show_plugin_info)
+        plugin_table.currentCellChanged.connect(show_plugin_info)
 
         mid_layout = QVBoxLayout()
         mid_widget = QWidget()
