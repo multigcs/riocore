@@ -575,7 +575,7 @@ class WinForm(QWidget):
         button_layout.addWidget(button)
 
         self.addons = {}
-        for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/config.py"):
+        for addon_path in sorted(glob.glob(f"{riocore_path}/generator/addons/*/config.py")):
             addon_name = addon_path.split("/")[-2]
             self.addons[addon_name] = importlib.import_module(".config", f"riocore.generator.addons.{addon_name}")
 
@@ -656,7 +656,7 @@ class WinForm(QWidget):
 
         board_list = []
         board_n = 0
-        for path in glob.glob(f"{riocore_path}/boards/*"):
+        for path in sorted(glob.glob(f"{riocore_path}/boards/*")):
             if path.endswith(".json"):
                 board_name = path.split("/")[-1].replace(".json", "")
             else:
@@ -1528,13 +1528,13 @@ class WinForm(QWidget):
         modules_path = self.get_path("modules/")
 
         self.interfaces = []
-        for path in glob.glob(f"{riocore_path}/interfaces/*"):
+        for path in sorted(glob.glob(f"{riocore_path}/interfaces/*")):
             self.interfaces.append(path.split("/")[-1])
         self.boards = []
-        for path in glob.glob(f"{boards_path}/*.json"):
+        for path in sorted(glob.glob(f"{boards_path}/*.json")):
             self.boards.append(path.split("/")[-1].split(".")[0])
         self.module_names = []
-        for path in glob.glob(f"{modules_path}/*.json"):
+        for path in sorted(glob.glob(f"{modules_path}/*.json")):
             self.module_names.append(path.split("/")[-1].split(".")[0])
         self.slotnames = []
         for slot in self.slots:

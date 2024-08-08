@@ -548,7 +548,7 @@ class Project:
         # loading modules
         project["modules"] = {}
         modules_path = self.get_path("modules")
-        for path in glob.glob(f"{modules_path}/*.json"):
+        for path in sorted(glob.glob(f"{modules_path}/*.json")):
             module = path.split("/")[-1].split(".")[0]
             mdata = open(path, "r").read()
             project["modules"][module] = json.loads(mdata)
@@ -686,7 +686,7 @@ class Project:
 
     def connect(self, cstr):
         connection = None
-        for ppath in glob.glob(f"{os.path.dirname(__file__)}/interfaces/*/*.py"):
+        for ppath in sorted(glob.glob(f"{os.path.dirname(__file__)}/interfaces/*/*.py")):
             plugin = os.path.basename(os.path.dirname(ppath))
             interface = importlib.import_module(".interface", f"riocore.interfaces.{plugin}")
             if interface.Interface.check(cstr):
