@@ -6,7 +6,7 @@
     "plugins": [
         {
             "type": "bitout",
-            "name": "spindle-enable",
+            "name": "out1",
             "pins": {
                 "bit": {
                     "pin": "OUT1:BIT",
@@ -16,16 +16,11 @@
                         }
                     ]
                 }
-            },
-            "signals": {
-                "bit": {
-                    "net": "spindle.0.on"
-                }
             }
         },
         {
             "type": "bitout",
-            "name": "spindle-enable",
+            "name": "out2",
             "pins": {
                 "bit": {
                     "pin": "OUT2:BIT",
@@ -304,20 +299,13 @@
                 "en": {
                     "pin": "AUX:EN"
                 }
-            }
-        }
-    ],
-    "modules": [
-        {
-            "slot": "PMOD1",
-            "module": "w5500",
-            "setup": {
-                "w5500": {
-                    "name": "w5500",
-                    "type": "w5500",
-                    "mac": "AA:AF:FA:CC:E3:1C",
-                    "ip": "192.168.10.195",
-                    "port": 2390
+            },
+            "signals": {
+                "dty": {
+                    "net": "spindle.0.speed-out"
+                },
+                "enable": {
+                    "net": "spindle.0.on"
                 }
             }
         }

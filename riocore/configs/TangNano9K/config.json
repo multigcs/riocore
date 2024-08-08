@@ -1,0 +1,67 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K over UART for testing basic functions",
+    "boardcfg": "TangNano9K",
+    "protocol": "UART",
+    "plugins": [
+        {
+            "type": "uart",
+            "pins": {
+                "rx": {
+                    "pin": "18"
+                },
+                "tx": {
+                    "pin": "17"
+                }
+            },
+            "baud": 1000000
+        },
+        {
+            "type": "bitout",
+            "name": "blink",
+            "pins": {
+                "bit": {
+                    "pin": "10",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "pwm"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in1",
+            "pins": {
+                "bit": {
+                    "pin": "3",
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in2",
+            "pins": {
+                "bit": {
+                    "pin": "4",
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

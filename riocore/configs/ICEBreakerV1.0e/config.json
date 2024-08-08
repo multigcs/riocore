@@ -1,0 +1,38 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "ICEBreakerV1.0e",
+    "boardcfg": "ICEBreakerV1.0e",
+    "protocol": "SPI",
+    "plugins": [
+        {
+            "type": "spi",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

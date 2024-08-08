@@ -1,0 +1,605 @@
+{
+    "name": "OctoBot",
+    "description": "OctoBot minimal 6axis config",
+    "boardcfg": "OctoBot",
+    "protocol": "UDP",
+    "plugins": [
+        {
+            "type": "spi",
+            "ip": "192.168.10.195",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "name": "joint1",
+            "pins": {
+                "step": {
+                    "pin": "JOINT1:STEP"
+                },
+                "dir": {
+                    "pin": "JOINT1:DIR"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "joint2",
+            "pins": {
+                "step": {
+                    "pin": "JOINT2:STEP"
+                },
+                "dir": {
+                    "pin": "JOINT2:DIR"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "joint3",
+            "pins": {
+                "step": {
+                    "pin": "JOINT3:STEP"
+                },
+                "dir": {
+                    "pin": "JOINT3:DIR"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "joint4",
+            "pins": {
+                "step": {
+                    "pin": "JOINT4:STEP"
+                },
+                "dir": {
+                    "pin": "JOINT4:DIR"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "joint5",
+            "pins": {
+                "step": {
+                    "pin": "JOINT5:STEP"
+                },
+                "dir": {
+                    "pin": "JOINT5:DIR"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "name": "joint6",
+            "pins": {
+                "step": {
+                    "pin": "JOINT6:STEP"
+                },
+                "dir": {
+                    "pin": "JOINT6:DIR"
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "wled",
+            "pins": {
+                "data": {
+                    "pin": "WLED:DATA"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in1",
+            "pins": {
+                "bit": {
+                    "pin": "IN1:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in2",
+            "pins": {
+                "bit": {
+                    "pin": "IN2:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in3",
+            "pins": {
+                "bit": {
+                    "pin": "IN3:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in4",
+            "pins": {
+                "bit": {
+                    "pin": "IN4:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in5",
+            "pins": {
+                "bit": {
+                    "pin": "IN5:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.4.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in6",
+            "pins": {
+                "bit": {
+                    "pin": "IN6:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.5.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in7",
+            "pins": {
+                "bit": {
+                    "pin": "IN7:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "in8",
+            "pins": {
+                "bit": {
+                    "pin": "IN8:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "out1",
+            "pins": {
+                "bit": {
+                    "pin": "OUT1:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "out2",
+            "pins": {
+                "bit": {
+                    "pin": "OUT2:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "out3",
+            "pins": {
+                "bit": {
+                    "pin": "OUT3:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "out4",
+            "pins": {
+                "bit": {
+                    "pin": "OUT4:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "out5",
+            "pins": {
+                "bit": {
+                    "pin": "OUT5:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "out6",
+            "pins": {
+                "bit": {
+                    "pin": "OUT6:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "out7",
+            "pins": {
+                "bit": {
+                    "pin": "OUT7:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "rcservo",
+            "name": "gripper",
+            "pins": {
+                "pwm": {
+                    "pin": "OUT8:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "position": {
+                    "scale": 0.65,
+                    "net": "motion.analog-out-00"
+                },
+                "enable": {
+                    "setp": "1"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "pin": "L12",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            "frequency": 1.0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:R",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true
+                        }
+                    ]
+                }
+            },
+            "frequency": 5.0
+        },
+        {
+            "type": "icewerxadc",
+            "pins": {
+                "rx": {
+                    "pin": "ADC_UART:RX"
+                },
+                "tx": {
+                    "pin": "ADC_UART:TX"
+                }
+            },
+            "signals": {
+                "adc1": {
+                    "display": {
+                        "title": "12V-Rail",
+                        "section": "status",
+                        "format": "0.1f",
+                        "unit": "A",
+                        "_type": "bar",
+                        "min": 0,
+                        "max": 5.0,
+                        "region": [
+                            [
+                                0.0,
+                                3.0,
+                                "green"
+                            ],
+                            [
+                                3.0,
+                                4.0,
+                                "yellow"
+                            ],
+                            [
+                                4.0,
+                                5.0,
+                                "red"
+                            ]
+                        ],
+                        "size": 200
+                    },
+                    "filters": [
+                        {
+                            "type": "avg",
+                            "depth": 100
+                        }
+                    ],
+                    "scale": 0.17,
+                    "offset": -1.25
+                },
+                "adc2": {
+                    "display": {
+                        "title": "5V-Rail",
+                        "section": "status",
+                        "format": "0.1f",
+                        "unit": "A",
+                        "_type": "bar",
+                        "min": 0,
+                        "max": 2.0,
+                        "region": [
+                            [
+                                0.0,
+                                1.0,
+                                "green"
+                            ],
+                            [
+                                1.0,
+                                1.5,
+                                "yellow"
+                            ],
+                            [
+                                1.5,
+                                2.0,
+                                "red"
+                            ]
+                        ],
+                        "size": 200
+                    },
+                    "filters": [
+                        {
+                            "type": "avg",
+                            "depth": 100
+                        }
+                    ],
+                    "scale": 0.17,
+                    "offset": -1.25
+                },
+                "adc3": {
+                    "display": {
+                        "title": "5V-Rail",
+                        "section": "status",
+                        "format": "0.1f",
+                        "unit": "V",
+                        "_type": "bar",
+                        "min": 4.5,
+                        "max": 5.5,
+                        "region": [
+                            [
+                                4.8,
+                                5.2,
+                                "green"
+                            ],
+                            [
+                                4.5,
+                                4.8,
+                                "yellow"
+                            ],
+                            [
+                                5.2,
+                                5.5,
+                                "yellow"
+                            ]
+                        ],
+                        "size": 200
+                    },
+                    "filters": [
+                        {
+                            "type": "avg",
+                            "depth": 100
+                        }
+                    ],
+                    "scale": 0.5
+                },
+                "adc4": {
+                    "display": {
+                        "title": "12V-Rail",
+                        "section": "status",
+                        "format": "0.1f",
+                        "unit": "V",
+                        "_type": "bar",
+                        "min": 5,
+                        "max": 26,
+                        "region": [
+                            [
+                                12.0,
+                                24,
+                                "green"
+                            ],
+                            [
+                                5,
+                                12,
+                                "yellow"
+                            ],
+                            [
+                                24,
+                                26,
+                                "yellow"
+                            ]
+                        ],
+                        "size": 200
+                    },
+                    "filters": [
+                        {
+                            "type": "avg",
+                            "depth": 100
+                        }
+                    ],
+                    "_scale": 0.191,
+                    "scale": 0.0435
+                }
+            }
+        },
+        {
+            "type": "modbus",
+            "name": "modbus",
+            "baud": 9600,
+            "tx_buffersize": 128,
+            "rx_buffersize": 128,
+            "pins": {
+                "tx": {
+                    "pin": "MODBUS:TX"
+                },
+                "rx": {
+                    "pin": "MODBUS:RX"
+                },
+                "tx_enable": {
+                    "pin": "MODBUS:TX_ENABLE"
+                }
+            }
+        }
+    ],
+    "linuxcnc": {
+        "num_axis": 6,
+        "machinetype": "mill",
+        "gui": "axis"
+    }
+}

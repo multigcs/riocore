@@ -358,8 +358,8 @@ class WinForm(QWidget):
     def __init__(self, args, parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("LinuxCNC-RIO - Setup-GUI")
-        self.setMinimumWidth(1400)
-        self.setMinimumHeight(900)
+        #self.setMinimumWidth(1400)
+        #self.setMinimumHeight(900)
         self.setStyleSheet(STYLESHEET)
 
         self.listFile = QListWidget()

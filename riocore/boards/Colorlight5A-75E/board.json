@@ -1,0 +1,14 @@
+{
+    "name": "Colorlight5A-75E",
+    "description": "Colorlight5A-75E",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA256",
+    "flashcmd": "openFPGALoader -c usb-blaster -m rio.bit",
+    "transport": "SPI",
+    "clock": {
+        "speed": "25000000",
+        "pin": "P6"
+    }
+}
