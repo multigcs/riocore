@@ -644,7 +644,7 @@ class WinForm(QWidget):
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog_buttonBox.rejected.connect(dialog.reject)
-        load_button = QPushButton(self.tr("Loead existing config"))
+        load_button = QPushButton(self.tr("Load existing config"))
         load_button.clicked.connect(load_config_from)
         dialog_buttonBox.addButton(load_button, QDialogButtonBox.ActionRole)
 
