@@ -25,7 +25,6 @@ in progress but ready for testing
 - [Boards](#boards)
 - [Plugins/Drivers](#plugins)
 - [supported Toolchains](#toolchains)
-- [supported Chips/Boards](#chips)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
 - [Flow](#flow)
@@ -56,13 +55,6 @@ here is a small overview of the plugins: [PLUGINS](PLUGINS.md)
 * [Xilinx/AMD ISE WebPACK](https://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.html)
 * [Xilinx/AMD Vivado](https://www.xilinx.com/products/design-tools/vivado.html)
 * [Lattice Diamond](https://www.latticesemi.com/latticediamond)
-
-## Chips/Boards <a name = "chips"></a>
-
-RIO is largely platform independent and portable to most FPGAs.
-
-[some examples](riocore/boards)
-
 
 ## Getting Started <a name = "getting_started"></a>
 
