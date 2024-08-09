@@ -643,7 +643,7 @@ class Project:
                 if data_config["direction"] == "input":
                     if multiplexed:
                         self.multiplexed_input += 1
-                        self.multiplexed_input_size = max(self.multiplexed_input_size, variable_size)
+                        self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
                         if self.multiplexed_input_size < 8:
                             self.multiplexed_input_size = 8
                     else:
@@ -651,7 +651,7 @@ class Project:
                 elif data_config["direction"] == "output":
                     if multiplexed:
                         self.multiplexed_output += 1
-                        self.multiplexed_output_size = max(self.multiplexed_output_size, variable_size)
+                        self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
                         if self.multiplexed_output_size < 8:
                             self.multiplexed_output_size = 8
                     else:
@@ -773,7 +773,7 @@ class Project:
                     continue
                 variable_size = data_config["size"]
                 value = data_config["value"]
-                if data_config["direction"] in {"output", "input", "input"}:
+                if data_config["direction"] in {"output"}:
                     if self.multiplexed_output_id == mpxid:
                         mpx_value = value
                     mpxid += 1

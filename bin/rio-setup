@@ -734,12 +734,17 @@ class WinForm(QWidget):
 
         if self.config_original != self.clean_config(self.config):
             self.info_saved.setChecked(False)
+            self.button_save.setStyleSheet(f"background-color: red;")
+            self.button_save_as.setStyleSheet(f"background-color: red;")
             self.info_generated.setChecked(False)
+            self.button_generate.setStyleSheet(f"background-color: red;")
             self.button_generate.setEnabled(False)
             self.button_compile.setEnabled(False)
             self.button_flash.setEnabled(False)
         else:
             self.info_saved.setChecked(True)
+            self.button_save.setStyleSheet(f"background-color: green;")
+            self.button_save_as.setStyleSheet(f"background-color: green;")
             self.button_generate.setEnabled(True)
 
             # checking generated config
@@ -749,9 +754,11 @@ class WinForm(QWidget):
                 ret = 1
             if ret == 0:
                 self.info_generated.setChecked(True)
+                self.button_generate.setStyleSheet(f"background-color: green;")
                 self.button_compile.setEnabled(True)
             else:
                 self.info_generated.setChecked(False)
+                self.button_generate.setStyleSheet(f"background-color: red;")
                 self.button_compile.setEnabled(False)
 
         # checking gateware
@@ -763,9 +770,11 @@ class WinForm(QWidget):
                 hash_compiled = open(hash_compiled_file, "r").read()
             if hash_compiled == self.firmware_hash:
                 self.info_compiled.setChecked(True)
+                self.button_compile.setStyleSheet(f"background-color: green;")
                 self.button_flash.setEnabled(True)
             else:
                 self.info_compiled.setChecked(False)
+                self.button_compile.setStyleSheet(f"background-color: red;")
                 self.button_flash.setEnabled(False)
 
             hash_flashed = ""
@@ -774,17 +783,22 @@ class WinForm(QWidget):
                 hash_flashed = open(hash_flashed_file, "r").read()
             if hash_flashed == self.firmware_hash:
                 self.info_flashed.setChecked(True)
+                self.button_flash.setStyleSheet(f"background-color: green;")
             else:
                 self.info_flashed.setChecked(False)
+                self.button_flash.setStyleSheet(f"background-color: red;")
+
         else:
             hash_compiled_file = f"Output/{config_name}/Gateware/hash_compiled.txt"
             if os.path.isfile(hash_compiled_file):
                 hash_compiled = open(hash_compiled_file, "r").read()
             if hash_compiled == self.gateware_hash:
                 self.info_compiled.setChecked(True)
+                self.button_compile.setStyleSheet(f"background-color: green;")
                 self.button_flash.setEnabled(True)
             else:
                 self.info_compiled.setChecked(False)
+                self.button_compile.setStyleSheet(f"background-color: red;")
                 self.button_flash.setEnabled(False)
 
             hash_flashed = ""
@@ -793,8 +807,10 @@ class WinForm(QWidget):
                 hash_flashed = open(hash_flashed_file, "r").read()
             if hash_flashed == self.gateware_hash:
                 self.info_flashed.setChecked(True)
+                self.button_flash.setStyleSheet(f"background-color: green;")
             else:
                 self.info_flashed.setChecked(False)
+                self.button_flash.setStyleSheet(f"background-color: red;")
 
     def runTimer(self):
         if self.request_generate > 1:
@@ -878,7 +894,6 @@ class WinForm(QWidget):
                 self.button_save.setEnabled(False)
                 self.button_save_as.setEnabled(False)
                 self.button_generate.setEnabled(False)
-                self.button_flash.setEnabled(False)
                 self.button_flash.setEnabled(False)
                 self.info_widget.setText(f"flash...({duration:0.1f}s)")
 
@@ -2191,7 +2206,7 @@ class WinForm(QWidget):
             "name": {"type": str},
             "description": {"type": str},
             "boardcfg": {"type": "select", "options": self.boards},
-            "protocol": {"type": "select", "options": self.interfaces, "default": "UDP"},
+            "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
         }.items():
             aitem = MyStandardItem()
             self.model.appendRow(

@@ -74,7 +74,7 @@ class Toolchain:
         if family == "ecp5":
             makefile_data.append("$(PROJECT).config: $(PROJECT).json pins.lpf")
             makefile_data.append(
-                "	nextpnr-$(FAMILY) -q -l nextpnr.log --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
+                "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
             )
             makefile_data.append('	@echo ""')
             makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
@@ -93,7 +93,7 @@ class Toolchain:
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
             if family == "himbaechel":
                 makefile_data.append(
-                    "	nextpnr-himbaechel -q -l nextpnr.log --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${DEVICE_FAMILY}"
+                    "	nextpnr-himbaechel -q -l nextpnr.log --timing-allow-fail --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${DEVICE_FAMILY}"
                 )
             else:
                 makefile_data.append(
@@ -113,7 +113,7 @@ class Toolchain:
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
             makefile_data.append(
-                "	nextpnr-$(FAMILY) -q -l nextpnr.log --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
+                "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
             )
             makefile_data.append('	@echo ""')
             makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
