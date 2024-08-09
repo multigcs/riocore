@@ -2775,7 +2775,7 @@ class WinForm(QWidget):
                 continue
             tootltip = help_text["INI"]["JOINT_NUM"].get(option.upper(), f"{option} config")
             option_row = QHBoxLayout()
-            option_label = QLabel(option)
+            option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=1)
 
@@ -2808,7 +2808,7 @@ class WinForm(QWidget):
                 continue
             tootltip = help_text["INI"]["JOINT_NUM"].get(option.upper(), f"{option} config")
             option_row = QHBoxLayout()
-            option_label = QLabel(option)
+            option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=1)
             option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
