@@ -593,6 +593,9 @@ class WinForm(QWidget):
         self.request_generate = 0
         self.request_pin_table_load = 0
         self.request_sig_table_load = 0
+
+        self.generate_cb(preview=True)
+        self.check_status()
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
@@ -721,6 +724,7 @@ class WinForm(QWidget):
         self.button_save_as.setEnabled(True)
 
         if self.config_original != self.clean_config(self.config):
+            print("conf diff")
             self.info_saved.setChecked(False)
             self.info_generated.setChecked(False)
             self.button_generate.setEnabled(False)
@@ -1895,7 +1899,7 @@ class WinForm(QWidget):
         )
 
         self.overview_img.load(gAll.pipe())
-        #self.overview_img.setFixedSize(self.overview_img.renderer().defaultSize())
+        # self.overview_img.setFixedSize(self.overview_img.renderer().defaultSize())
 
     def sig_edit_cb(self, widget):
         self.generate_cb(preview=True)
@@ -2580,6 +2584,7 @@ class WinForm(QWidget):
             pin_config = plugin_config.get("pins", {}).get(pin_name, {})
             pin_title = pin_name
             direction = pin_defaults["direction"]
+            description = pin_defaults.get("description")
             optional = pin_defaults.get("optional", False)
             help_text = f"location for {direction} pin: {pin_name}"
             if optional:
@@ -2587,6 +2592,10 @@ class WinForm(QWidget):
 
             if optional:
                 pin_title = f"{pin_title} (optional)"
+
+            if description:
+                help_text = f"{help_text}: {description}"
+                pin_title = f"{pin_title}: {description}"
 
             frame = QGroupBox(self)
             frame.setTitle(pin_title)
@@ -3243,7 +3252,7 @@ class WinForm(QWidget):
                         os.system(f"python3 {riocore_path}/files/hal2graphviz.py -q -o {output_path}/{config_name}/LinuxCNC/{filename} {output_path}/{config_name}/LinuxCNC/rio.ini")
                     if os.path.exists(f"{output_path}/{config_name}/LinuxCNC/{filename}"):
                         self.hal_imagew.load(f"{output_path}/{config_name}/LinuxCNC/{filename}")
-                        self.hal_imagew.setFixedSize(self.hal_imagew.renderer().defaultSize())
+                        # self.hal_imagew.setFixedSize(self.hal_imagew.renderer().defaultSize())
                 else:
                     file_content = open(f"{output_path}/{config_name}/LinuxCNC/{filename}", "r").read()
                     widget.clear()

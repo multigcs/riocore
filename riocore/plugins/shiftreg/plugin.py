@@ -8,15 +8,19 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "out": {
                 "direction": "output",
+                "description": "output data (DS on 74HC595)",
             },
             "in": {
                 "direction": "input",
+                "description": "input data (SER_OUT on 74HC165)",
             },
             "sclk": {
                 "direction": "output",
+                "description": "input data (CLK on 74HC165/ CH_CP/SRCLK on 74HC595)",
             },
             "load": {
                 "direction": "output",
+                "description": "input data (SH/LD on 74HC165/ ST_CP/RCLK on 74HC595)",
             },
         }
         self.TYPE = "expansion"
