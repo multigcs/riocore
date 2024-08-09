@@ -6,7 +6,7 @@
 * Type: hx8k
 * Package: cb132
 * Flashcmd: iceFUNprog rio.bin
-* Clock: 60.000Mhz -> PLL -> 60.000Mhz (Pin:P7)
+* Clock: 12.000Mhz -> PLL -> 60.000Mhz (Pin:P7)
 
 ![board.png](board.png)
 

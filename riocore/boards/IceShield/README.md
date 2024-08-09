@@ -7,7 +7,7 @@
 * Type: up5k
 * Package: sg48
 * Flashcmd: ./spiflash.sh rio.bin
-* Clock: 29.812Mhz -> PLL -> 29.812Mhz (Pin:35)
+* Clock: 18.000Mhz -> PLL -> 29.812Mhz (Pin:35)
 
 ![board.png](board.png)
 
