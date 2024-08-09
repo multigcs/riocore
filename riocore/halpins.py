@@ -7,6 +7,7 @@ RIO_FUNCTIONS = {
         "jog.position": {"help": "Position of selected axis", "type": float},
     },
     "input": {
+        "jog.wheel": {"help": "Jog-Wheel", "type": float},
         "jog.wheel_x": {"help": "Jog-Wheel X-Axis", "type": float},
         "jog.wheel_y": {"help": "Jog-Wheel Y-Axis", "type": float},
         "jog.wheel_z": {"help": "Jog-Wheel Z-Axis", "type": float},

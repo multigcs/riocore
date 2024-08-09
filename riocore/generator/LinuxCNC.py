@@ -204,7 +204,7 @@ class LinuxCNC:
                             output_postgui_tmp.append(f"net {signal_prefix}{network} => {out}")
                 else:
                     uniq_types = set()
-                    if in_first.endswith("counts"):
+                    if in_first.endswith("counts") or in_first.endswith("position-s32"):
                         if in_len > 4:
                             print(f"ERROR: can only sum 4 integer values: {net}")
 
@@ -905,17 +905,27 @@ class LinuxCNC:
                 elif function in {"wheel"}:
                     wheel = True
 
+            jog_scale = 0.1
             if wheel:
-                for axis_name, axis_config in self.axis_dict.items():
-                    joints = axis_config["joints"]
-                    laxis = axis_name.lower()
-                    self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-                    self.hal_setp_add(f"axis.{laxis}.jog-scale", 0.01)
-                    for joint, joint_setup in joints.items():
-                        self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
-                        self.hal_setp_add(f"joint.{joint}.jog-scale", 0.01)
-                        self.hal_net_add(f"axis.{laxis}.jog-counts", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
-                        self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
+                halname_wheel = ""
+                for function, halname in self.rio_functions["jog"].items():
+                    if function == "wheel":
+                        halname_wheel = f"rio.{halname}-s32"
+                        break
+                if halname_wheel:
+                    for axis_name, axis_config in self.axis_dict.items():
+                        joints = axis_config["joints"]
+                        laxis = axis_name.lower()
+                        self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
+                        self.hal_setp_add(f"axis.{laxis}.jog-scale", jog_scale)
+                        self.hal_net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
+                        self.hal_net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+                        for joint, joint_setup in joints.items():
+                            self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
+                            self.hal_setp_add(f"joint.{joint}.jog-scale", jog_scale)
+                            self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
+                            self.hal_net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+
             else:
                 for axis_name, axis_config in self.axis_dict.items():
                     joints = axis_config["joints"]
@@ -923,7 +933,7 @@ class LinuxCNC:
                     fname = f"wheel_{laxis}"
                     if fname in self.rio_functions["jog"]:
                         self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-                        self.hal_setp_add(f"axis.{laxis}.jog-scale", 0.01)
+                        self.hal_setp_add(f"axis.{laxis}.jog-scale", jog_scale)
                         self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
                         for function, halname in self.rio_functions["jog"].items():
                             if function == fname:
@@ -931,7 +941,7 @@ class LinuxCNC:
 
                         for joint, joint_setup in joints.items():
                             self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
-                            self.hal_setp_add(f"joint.{joint}.jog-scale", 0.01)
+                            self.hal_setp_add(f"joint.{joint}.jog-scale", jog_scale)
                             self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
