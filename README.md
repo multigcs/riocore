@@ -22,6 +22,7 @@ in progress but ready for testing
 ## Table of Contents
 - [About](#about)
 - [Help](#help)
+- [Boards](#boards)
 - [Plugins/Drivers](#plugins)
 - [supported Toolchains](#toolchains)
 - [supported Chips/Boards](#chips)
@@ -41,6 +42,8 @@ a json configuration file serves as the basis
 * [LinuxCNC-Forum (en)](https://forum.linuxcnc.org/18-computer/49142-linuxcnc-rio-realtimeio-for-linuxcnc-based-on-fpga-ice40-ecp5)
 * [cnc-aus-holz (de)](https://www.cnc-aus-holz.at/)
 
+## Boards <a name = "boards"></a>
+here is a small overview of the boards: [BOARDS](BOARDS.md)
 
 ## Plugins/Drivers <a name = "plugins"></a>
 here is a small overview of the plugins: [PLUGINS](PLUGINS.md)
