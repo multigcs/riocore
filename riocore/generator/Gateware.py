@@ -369,7 +369,10 @@ class Gateware:
                     else:
                         output.append(f"    wire [{variable_size-1}:0] {variable_name};")
                 else:
-                    output.append(f"    wire {variable_name};")
+                    if multiplexed and direction == "output":
+                        output.append(f"    reg {variable_name};")
+                    else:
+                        output.append(f"    wire {variable_name};")
         output.append("")
 
         output_variables_string = "\n    ".join(output_variables_list)

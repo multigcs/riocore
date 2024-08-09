@@ -1471,7 +1471,12 @@ class LinuxCNC:
             if plugin_instance.TYPE == "frameio":
                 output.append(f"    uint8_t {variable_name}[{variable_bytesize}];")
             elif variable_size > 1:
-                output.append(f"    int{variable_size if variable_size != 24 else 32}_t {variable_name};")
+                variable_size_align = 8
+                for isize in (8, 16, 32, 64):
+                    variable_size_align = isize
+                    if isize >= variable_size:
+                        break
+                output.append(f"    int{variable_size_align}_t {variable_name};")
             else:
                 output.append(f"    bool {variable_name};")
         output.append("")
