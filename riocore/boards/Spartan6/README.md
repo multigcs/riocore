@@ -11,5 +11,5 @@ Type: xc6slx9-2tqg144
 
 Package: tqg144
 
-Clock: Pin:p55 (50.000Mhz)
+Clock: 50.000Mhz (Pin:p55)
 

@@ -9,7 +9,7 @@ Type: 25k
 
 Package: CABGA381
 
-Clock: Pin:P3 (25.000Mhz)
+Clock: 25.000Mhz (Pin:P3)
 
 ![board.png](board.png)
 

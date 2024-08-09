@@ -13,7 +13,7 @@ Package: sg48
 
 Flashcmd: ./spiflash.sh rio.bin
 
-Clock: Pin:35 (29.812Mhz) -> PLL -> 29.812Mhz
+Clock: 29.812Mhz -> PLL -> 29.812Mhz (Pin:35)
 
 ![board.png](board.png)
 

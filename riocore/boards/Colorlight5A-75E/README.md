@@ -11,7 +11,7 @@ Package: CABGA256
 
 Flashcmd: openFPGALoader -c usb-blaster -m rio.bit
 
-Clock: Pin:P6 (25.000Mhz)
+Clock: 25.000Mhz (Pin:P6)
 
 ![board.png](board.png)
 

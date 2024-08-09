@@ -11,7 +11,7 @@ Package: sg48
 
 Flashcmd: openFPGALoader -b ice40_generic rio.bin -f
 
-Clock: Pin:35 (30.000Mhz) -> PLL -> 30.000Mhz
+Clock: 30.000Mhz -> PLL -> 30.000Mhz (Pin:35)
 
 ![board.png](board.png)
 

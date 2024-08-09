@@ -11,7 +11,7 @@ Package: vq100
 
 Flashcmd: djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit
 
-Clock: Pin:B8 (50.000Mhz)
+Clock: 50.000Mhz (Pin:B8)
 
 ![board.png](board.png)
 
