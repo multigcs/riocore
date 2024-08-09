@@ -98,7 +98,7 @@ int udp_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
         } else {
             rtapi_print("wronng size = %d\n", ret);
             for (i = 0; i < ret; i++) {
-                rtapi_print("%d ",rxBuffer[i]);
+                rtapi_print("%d ", rxBufferTmp[i]);
             }
             rtapi_print("\n");
         }
@@ -109,14 +109,11 @@ int udp_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
         }
         printf("\n");
         */
-
-
-
     } else {
         errCount++;
-        rtapi_print("Ethernet ERROR: N = %d (ret: %d)\n", errCount, ret);
+        rtapi_print("Ethernet TIMEOUT: N = %d (ret: %d)\n", errCount, ret);
     }
 
-    return 1;
+    return ret;
 }
 

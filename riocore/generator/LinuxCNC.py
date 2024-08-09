@@ -2148,6 +2148,7 @@ class LinuxCNC:
         output += self.component_buffer_converter()
         output += self.component_buffer()
         output.append("void rio_readwrite() {")
+        output.append("    int ret = 0;")
         output.append("    uint8_t i = 0;")
         output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
         output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
@@ -2167,12 +2168,15 @@ class LinuxCNC:
         elif protocol == "SPI":
             output.append("        spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
         elif protocol == "UDP":
-            output.append("        udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+            output.append("        ret = udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)
 
-        output.append("        if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
+        if protocol == "UDP":
+            output.append("        if (ret == BUFFER_SIZE && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
+        else:
+            output.append("        if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         output.append("            if (err_counter > 0) {")
         output.append("                err_counter = 0;")
         output.append('                rtapi_print("recovered..\\n");')
@@ -2181,13 +2185,23 @@ class LinuxCNC:
         output.append("            convert_inputs();")
         output.append("        } else {")
         output.append("            err_counter += 1;")
-        output.append('            rtapi_print("wronng header (%i): ", err_counter);')
-        output.append("            for (i = 0; i < BUFFER_SIZE; i++) {")
+        if protocol == "UDP":
+            output.append("            if (ret != BUFFER_SIZE) {")
+            output.append('                rtapi_print("wronng data size (%i %i/3): ", ret, err_counter);')
+            output.append("            } else {")
+            output.append('                rtapi_print("wronng header (%i/3): ", err_counter);')
+            output.append("            }")
+        else:
+            output.append('            rtapi_print("wronng data (%i/3): ", err_counter);')
+        if protocol == "UDP":
+            output.append("            for (i = 0; i < ret; i++) {")
+        else:
+            output.append("            for (i = 0; i < BUFFER_SIZE; i++) {")
         output.append('                rtapi_print("%d ",rxBuffer[i]);')
         output.append("            }")
         output.append('            rtapi_print("\\n");')
         output.append("            if (err_counter > 3) {")
-        output.append('                rtapi_print("too much errors..\\n");')
+        output.append('                rtapi_print("too many errors..\\n");')
         output.append("                *data->sys_status = 0;")
         output.append("            }")
         output.append("        }")
