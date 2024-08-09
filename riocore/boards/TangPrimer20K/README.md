@@ -9,7 +9,7 @@ Type: GW2A-LV18PG256C8/I7
 
 Package: PG256
 
-Clock: Pin:H11 (27.000
+Clock: Pin:H11 (27.000Mhz)
 
 ![board.png](board.png)
 

@@ -11,7 +11,7 @@ Package: cb132
 
 Flashcmd: iceFUNprog rio.bin
 
-Clock: Pin:P7 (60.000) -> PLL -> 60.000
+Clock: Pin:P7 (60.000Mhz) -> PLL -> 60.000Mhz
 
 ![board.png](board.png)
 

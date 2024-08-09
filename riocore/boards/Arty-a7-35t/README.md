@@ -9,7 +9,7 @@ Type: xc7a35ticsg324-1l
 
 Package: csg324
 
-Clock: Pin:E3 (125.000) -> PLL -> 125.000
+Clock: Pin:E3 (125.000Mhz) -> PLL -> 125.000Mhz
 
 ![board.png](board.png)
 

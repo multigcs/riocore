@@ -9,7 +9,7 @@ Type: GW2AR-LV18QN88C8/I7
 
 Package: QN88
 
-Clock: Pin:4 (27.000
+Clock: Pin:4 (27.000Mhz)
 
 ![board.png](board.png)
 

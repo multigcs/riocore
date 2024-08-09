@@ -9,7 +9,7 @@ Type: GW1NR-LV9QN88PC6/I5
 
 Package: 
 
-Clock: Pin:52 (27.000
+Clock: Pin:52 (27.000Mhz)
 
 ![board.png](board.png)
 

@@ -9,7 +9,7 @@ Type: hx8k
 
 Package: ct256
 
-Clock: Pin:J3 (100.000
+Clock: Pin:J3 (100.000Mhz)
 
 ![board.png](board.png)
 

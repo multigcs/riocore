@@ -9,7 +9,7 @@ Type: 10M08SAE144C8G
 
 Package: E144
 
-Clock: Pin:PIN_27 (50.000
+Clock: Pin:PIN_27 (50.000Mhz)
 
 ![board.png](board.png)
 
