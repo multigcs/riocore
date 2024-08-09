@@ -724,7 +724,6 @@ class WinForm(QWidget):
         self.button_save_as.setEnabled(True)
 
         if self.config_original != self.clean_config(self.config):
-            print("conf diff")
             self.info_saved.setChecked(False)
             self.info_generated.setChecked(False)
             self.button_generate.setEnabled(False)
@@ -3007,9 +3006,6 @@ class WinForm(QWidget):
         label = QLabel(f"{infotext}\n")
         label.setFont(myFont)
         options.addWidget(label)
-        descriptiontext = plugin_instance.DESCRIPTION
-        label = QLabel(f"{descriptiontext}\n")
-        options.addWidget(label)
 
         iname_row = QHBoxLayout()
         iname_row.addWidget(QLabel("Instance-Name"), stretch=1)
@@ -3036,6 +3032,10 @@ class WinForm(QWidget):
             button_config.clicked.connect(cb)
             button_config.setMaximumSize(button_config.sizeHint())
             options.addWidget(button_config)
+
+        descriptiontext = plugin_instance.DESCRIPTION
+        label = QLabel(f"{descriptiontext}\n")
+        options.addWidget(label)
 
         options_widget = QWidget()
         options.addStretch()
