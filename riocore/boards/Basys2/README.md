@@ -1,6 +1,5 @@
 # Basys2
-
-![board.png](board.png)
+**Small and low cost FPGA educational and development board**
 
 Toolchain: ise
 
@@ -13,4 +12,6 @@ Package: vq100
 Flashcmd: djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit
 
 Clock: Pin:B8 (50.000
+
+![board.png](board.png)
 

@@ -1,6 +1,5 @@
 # Tangoboard
-
-![board.png](board.png)
+**based on TangNano9k**
 
 Toolchain: gowin
 
@@ -11,4 +10,6 @@ Type: GW1NR-LV9QN88PC6/I5
 Package: 
 
 Clock: Pin:52 (27.000
+
+![board.png](board.png)
 

@@ -1,6 +1,5 @@
 # Altera10M08Eval
-
-![board.png](board.png)
+**Altera10M08Eval**
 
 Toolchain: quartus
 
@@ -11,4 +10,6 @@ Type: 10M08SAE144C8G
 Package: E144
 
 Clock: Pin:PIN_27 (50.000
+
+![board.png](board.png)
 

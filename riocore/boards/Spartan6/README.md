@@ -1,4 +1,5 @@
 # Spartan6
+**Spartan6 - only for testing the toolchain**
 
 [https://github.com/ozzyrob/Linuxcnc-FPGA/](https://github.com/ozzyrob/Linuxcnc-FPGA/)
 

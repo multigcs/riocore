@@ -1,6 +1,5 @@
 # TangNano20K
-
-![board.png](board.png)
+**TangNano20K with 3 stepper Axis SPI**
 
 Toolchain: gowin
 
@@ -11,4 +10,6 @@ Type: GW2AR-LV18QN88C8/I7
 Package: QN88
 
 Clock: Pin:4 (27.000
+
+![board.png](board.png)
 

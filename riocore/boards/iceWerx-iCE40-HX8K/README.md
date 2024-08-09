@@ -1,6 +1,5 @@
 # iceWerx-iCE40-HX8K
-
-![board.png](board.png)
+**Small and low cost FPGA educational and development board**
 
 Toolchain: icestorm
 
@@ -13,4 +12,6 @@ Package: cb132
 Flashcmd: iceFUNprog rio.bin
 
 Clock: Pin:P7 (60.000) -> PLL -> 60.000
+
+![board.png](board.png)
 

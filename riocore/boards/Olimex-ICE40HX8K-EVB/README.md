@@ -1,6 +1,5 @@
 # Olimex-ICE40HX8K-EVB
-
-![board.png](board.png)
+**Small and low cost FPGA educational and development board**
 
 Toolchain: icestorm
 
@@ -11,4 +10,6 @@ Type: hx8k
 Package: ct256
 
 Clock: Pin:J3 (100.000
+
+![board.png](board.png)
 

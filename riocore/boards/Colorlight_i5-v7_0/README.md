@@ -1,6 +1,5 @@
 # Colorlight_i5-v7_0
-
-![board.png](board.png)
+**minimal configuration for Colorlight_i5-v7.0**
 
 Toolchain: icestorm
 
@@ -11,4 +10,6 @@ Type: 25k
 Package: CABGA381
 
 Clock: Pin:P3 (25.000
+
+![board.png](board.png)
 
