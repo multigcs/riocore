@@ -1,15 +1,15 @@
 # Spartan6
 **Spartan6 - only for testing the toolchain**
 
-[https://github.com/ozzyrob/Linuxcnc-FPGA/](https://github.com/ozzyrob/Linuxcnc-FPGA/)
+* URL: [https://github.com/ozzyrob/Linuxcnc-FPGA/](https://github.com/ozzyrob/Linuxcnc-FPGA/)
 
-Toolchain: ise
+* Toolchain: ise
 
-Family: xc6
+* Family: xc6
 
-Type: xc6slx9-2tqg144
+* Type: xc6slx9-2tqg144
 
-Package: tqg144
+* Package: tqg144
 
-Clock: 50.000Mhz (Pin:p55)
+* Clock: 50.000Mhz (Pin:p55)
 

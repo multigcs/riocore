@@ -1,15 +1,15 @@
 # Altera10M08Eval
 **Altera10M08Eval**
 
-Toolchain: quartus
+* Toolchain: quartus
 
-Family: MAX 10
+* Family: MAX 10
 
-Type: 10M08SAE144C8G
+* Type: 10M08SAE144C8G
 
-Package: E144
+* Package: E144
 
-Clock: 50.000Mhz (Pin:PIN_27)
+* Clock: 50.000Mhz (Pin:PIN_27)
 
 ![board.png](board.png)
 

@@ -1,19 +1,19 @@
 # OctoBot
 **RIO-OctoBot board**
 
-[https://github.com/multigcs/rio-octobot](https://github.com/multigcs/rio-octobot)
+* URL: [https://github.com/multigcs/rio-octobot](https://github.com/multigcs/rio-octobot)
 
-Toolchain: icestorm
+* Toolchain: icestorm
 
-Family: ice40
+* Family: ice40
 
-Type: hx8k
+* Type: hx8k
 
-Package: cb132
+* Package: cb132
 
-Flashcmd: iceFUNprog rio.bin
+* Flashcmd: iceFUNprog rio.bin
 
-Clock: 60.000Mhz -> PLL -> 60.000Mhz (Pin:P7)
+* Clock: 60.000Mhz -> PLL -> 60.000Mhz (Pin:P7)
 
 ![board.png](board.png)
 

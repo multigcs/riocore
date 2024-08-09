@@ -1,19 +1,19 @@
 # IceShield
 **RIO-IceShield board for Raspberry PI4**
 
-[https://github.com/multigcs/rio-iceshield](https://github.com/multigcs/rio-iceshield)
+* URL: [https://github.com/multigcs/rio-iceshield](https://github.com/multigcs/rio-iceshield)
 
-Toolchain: icestorm
+* Toolchain: icestorm
 
-Family: ice40
+* Family: ice40
 
-Type: up5k
+* Type: up5k
 
-Package: sg48
+* Package: sg48
 
-Flashcmd: ./spiflash.sh rio.bin
+* Flashcmd: ./spiflash.sh rio.bin
 
-Clock: 29.812Mhz -> PLL -> 29.812Mhz (Pin:35)
+* Clock: 29.812Mhz -> PLL -> 29.812Mhz (Pin:35)
 
 ![board.png](board.png)
 
