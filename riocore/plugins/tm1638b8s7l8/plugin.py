@@ -10,16 +10,19 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "invert": False,
                 "pull": None,
+                "description": "Select-Pin (STB)",
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
                 "pull": None,
+                "description": "Clock-Pin (CLK)",
             },
             "data": {
                 "direction": "inout",
                 "invert": False,
                 "pull": None,
+                "description": "Data-Pin (DIO)",
             },
         }
         self.INTERFACE = {
@@ -167,12 +170,14 @@ class Plugin(PluginBase):
                 "min": -6500.0,
                 "max": 6500.0,
                 "direction": "output",
+                "description": "last 6 digits (-6500.0 -> 6500.0)",
             },
             "number2": {
                 "min": 0,
                 "max": 99,
                 # "hal_type": "u32",
                 "direction": "output",
+                "description": "first 2 digits (0 -> 99)",
             },
         }
         self.INFO = "7segment display with buttons"

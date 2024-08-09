@@ -27,6 +27,7 @@ from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
 from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
 from PyQt5.QtWidgets import (
+    QSplitter,
     QMessageBox,
     QHeaderView,
     QSizePolicy,
@@ -367,10 +368,14 @@ class WinForm(QWidget):
         self.setStyleSheet(STYLESHEET)
 
         self.listFile = QListWidget()
-        layout = QGridLayout()
+        layout = QVBoxLayout()
         self.setLayout(layout)
 
+        splitter = QSplitter(Qt.Horizontal)
+        layout.addWidget(splitter)
+
         self.treeview = QTreeView()
+        splitter.addWidget(self.treeview)
         # self.treeview.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Value"])
@@ -399,10 +404,9 @@ class WinForm(QWidget):
                 exit(1)
             print(f"loading: {self.config_file}")
 
-        layout.addWidget(self.treeview, 0, 0)
-
         self.tabwidget = QTabWidget()
-        layout.addWidget(self.tabwidget, 0, 1)
+        splitter.addWidget(self.tabwidget)
+
         self.gateware_hash = None
         self.firmware_hash = None
 
@@ -466,8 +470,8 @@ class WinForm(QWidget):
         self.gateware_tabwidget = QTabWidget()
         self.tabwidget.addTab(self.gateware_tabwidget, "Gateware")
 
-        self.firmware_tabwidget = QTabWidget()
-        self.tabwidget.addTab(self.firmware_tabwidget, "Firmware")
+        # self.firmware_tabwidget = QTabWidget()
+        # self.tabwidget.addTab(self.firmware_tabwidget, "Firmware")
 
         self.hal_imagew = MyQSvgWidget()
 
@@ -494,10 +498,10 @@ class WinForm(QWidget):
             widget.clear()
             widget.insertPlainText("")
             self.gateware_tabwidget.addTab(widget, filename)
-        for filename, widget in self.firmware.items():
-            widget.clear()
-            widget.insertPlainText("")
-            self.firmware_tabwidget.addTab(widget, filename)
+        # for filename, widget in self.firmware.items():
+        #    widget.clear()
+        #    widget.insertPlainText("")
+        #    self.firmware_tabwidget.addTab(widget, filename)
         for filename, widget in self.linuxcnc.items():
             if filename != "rio-hal.svg":
                 widget.clear()
@@ -506,14 +510,15 @@ class WinForm(QWidget):
 
         container = QWidget()
         button_layout = QHBoxLayout(container)
-        layout.addWidget(container, 1, 1)
-
-        self.info_widget = QLabel("loading...")
-        layout.addWidget(self.info_widget, 1, 0)
+        layout.addWidget(container)
 
         info_container = QWidget()
         info_layout = QHBoxLayout(info_container)
-        layout.addWidget(info_container, 2, 1)
+        self.info_widget = QLabel("loading...")
+        layout.addWidget(info_container)
+
+        info_layout.addWidget(self.info_widget)
+        info_layout.addStretch()
 
         self.info_saved = QCheckBox("Saved")
         self.info_saved.setStyleSheet(STYLESHEET_CHECKBOX_GREEN_RED)
@@ -534,8 +539,6 @@ class WinForm(QWidget):
         self.info_flashed.setStyleSheet(STYLESHEET_CHECKBOX_GREEN_RED)
         info_layout.addWidget(self.info_flashed)
         self.info_flashed.setChecked(False)
-
-        info_layout.addStretch()
 
         self.button_save = QPushButton("Save")
         self.button_save.clicked.connect(self.save_config_cb)
@@ -593,6 +596,12 @@ class WinForm(QWidget):
         self.request_generate = 0
         self.request_pin_table_load = 0
         self.request_sig_table_load = 0
+
+        self.treeview.expandAll()
+        self.treeview.resizeColumnToContents(0)
+        self.treeview.resizeColumnToContents(1)
+        self.treeview.collapseAll()
+        splitter.setSizes((100, 200))
 
         self.generate_cb(preview=True)
         self.check_status()
@@ -1451,12 +1460,12 @@ class WinForm(QWidget):
 
         if self.board.get("toolchain") == "platformio":
             self.IS_FIRMWARE = True
-            self.tabwidget.setTabVisible(5, False)
-            self.tabwidget.setTabVisible(6, True)
+        #    self.tabwidget.setTabVisible(6, False)
+        #    self.tabwidget.setTabVisible(7, True)
         else:
             self.IS_FIRMWARE = False
-            self.tabwidget.setTabVisible(5, True)
-            self.tabwidget.setTabVisible(6, False)
+        #    self.tabwidget.setTabVisible(6, True)
+        #    self.tabwidget.setTabVisible(7, False)
 
         # loading plugins
         self.plugins = riocore.Plugins()
@@ -2027,8 +2036,9 @@ class WinForm(QWidget):
                 self.sig_table.setItem(row_n, col_n, pitem)
             self.sig_table.setCellWidget(row_n, 2, row[7])
 
-        # for col_n, col in enumerate(row[:5]):
-        #    self.sig_table.resizeColumnToContents(col_n)
+        for col_n, col in enumerate(row[:5]):
+            self.sig_table.resizeColumnToContents(col_n)
+        self.sig_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
     def pin_edit_cb(self, widget):
         self.generate_cb(preview=True)
@@ -2149,6 +2159,10 @@ class WinForm(QWidget):
                 pitem = QTableWidgetItem(col)
                 self.pin_table.setItem(row_n, col_n, pitem)
                 self.pin_table.resizeColumnToContents(col_n)
+
+        for col_n, col in enumerate(row[:6]):
+            self.pin_table.resizeColumnToContents(col_n)
+        self.pin_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
     def edit_item(self, obj, key, var_setup=None, cb=None):
         if var_setup is None:
