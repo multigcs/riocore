@@ -1,6 +1,7 @@
 import copy
 import glob
 import importlib
+import re
 import os
 import shutil
 import sys
@@ -172,6 +173,16 @@ class LinuxCNC:
         postgui_filter = ("pyvcp", "qtdragon", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f")
         ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
 
+        pin2sig_map = {}
+
+        def pin2sig(hal, pin, signal):
+            if pin not in pin2sig_map:
+                pin2sig_map[pin] = signal
+                hal.append(f"net {signal} <= {pin}")
+                return signal
+            else:
+                return pin2sig_map[pin]
+
         # hal
         # signal_prefix = "rios."
         signal_prefix = ""
@@ -181,27 +192,46 @@ class LinuxCNC:
                 output_postgui_tmp = []
                 in_first = ""
                 in_len = 0
-                for net_in in net["in"]:
+                for in_n, net_in in enumerate(net["in"]):
                     if not net_in.startswith("riov."):
+                        if net_in[0] == "!":
+                            net_in = net_in[1:]
+                            fname = net_in.replace(".", "-")
+                            output_hal_tmp.append("")
+                            output_hal_tmp.append(f"# not {net_in}")
+                            output_hal_tmp.append(f"loadrt not names={fname}-not")
+                            output_hal_tmp.append(f"addf {fname}-not servo-thread")
+                            if not net_in.startswith(postgui_filter):
+                                signal = pin2sig(output_hal_tmp, net_in, f"{fname}-not_in")
+                                output_hal_tmp.append(f"net {signal} => {fname}-not.in")
+                            else:
+                                # output_postgui_tmp.append(f"net {fname}-not_in <= {net_in}")
+                                # output_postgui_tmp.append(f"net {fname}-not_in => {fname}-not.in")
+                                signal = pin2sig(output_postgui_tmp, net_in, f"{fname}-not_in")
+                                output_hal_tmp.append(f"net {signal} => {fname}-not.in")
+                            net["in"][in_n] = f"{fname}-not.out"
                         if not in_first:
                             in_first = net_in
                         in_len += 1
                 if in_len == 0:
                     pass
                 elif in_len == 1:
+                    signal = f"{signal_prefix}{network}"
                     if in_first.startswith("riov."):
                         pass
                     elif not in_first.startswith(postgui_filter):
-                        output_hal_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
+                        # output_hal_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
+                        signal = pin2sig(output_hal_tmp, in_first, signal)
                     else:
-                        output_postgui_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
+                        # output_postgui_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
+                        signal = pin2sig(output_postgui_tmp, in_first, signal)
                     for out in net["out"]:
                         if out.startswith("riov."):
                             continue
                         if not out.startswith(postgui_filter):
-                            output_hal_tmp.append(f"net {signal_prefix}{network} => {out}")
+                            output_hal_tmp.append(f"net {signal} => {out}")
                         else:
-                            output_postgui_tmp.append(f"net {signal_prefix}{network} => {out}")
+                            output_postgui_tmp.append(f"net {signal} => {out}")
                 else:
                     uniq_types = set()
                     if in_first.endswith("counts") or in_first.endswith("position-s32"):
@@ -214,20 +244,24 @@ class LinuxCNC:
                             if pin_in.startswith("riov."):
                                 pass
                             elif not pin_in.startswith(postgui_filter):
-                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
-                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
+                                # output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
+                                signal = pin2sig(output_hal_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n}")
+                                output_hal_tmp.append(f"net {signal} => isum.{network}.in{in_n}")
                             else:
-                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
-                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n} => isum.{network}.in{in_n}")
-                        output_hal_tmp.append(f"net {signal_prefix}{network}_out-s <= isum.{network}.out-s")
+                                # output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
+                                signal = pin2sig(output_postgui_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n}")
+                                output_postgui_tmp.append(f"net {signal} => isum.{network}.in{in_n}")
+
+                        # output_hal_tmp.append(f"net {signal_prefix}{network}_out-s <= isum.{network}.out-s")
+                        signal = pin2sig(output_hal_tmp, f"isum.{network}.out-s", f"{signal_prefix}{network}_out-s")
                         for out in net["out"]:
                             if out.startswith("riov."):
                                 continue
                             ctype = net["options"].get(out, {}).get("type", "OR")
                             if not out.startswith(postgui_filter):
-                                output_hal_tmp.append(f"net {signal_prefix}{network}_out-s => {out}")
+                                output_hal_tmp.append(f"net {signal} => {out}")
                             else:
-                                output_postgui_tmp.append(f"net {signal_prefix}{network}_out-s => {out}")
+                                output_postgui_tmp.append(f"net {signal} => {out}")
                     else:
                         for option in net["options"].values():
                             uniq_types.add(option["type"])
@@ -243,23 +277,38 @@ class LinuxCNC:
                             if pin_in.startswith("riov."):
                                 pass
                             elif not pin_in.startswith(postgui_filter):
-                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
-                                output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
+                                if pin_in.startswith("riovs."):
+                                    output_hal_tmp.append(f"net {pin_in} => logic.{network}.in-{in_n:02d}")
+                                else:
+                                    # output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
+                                    signal = pin2sig(output_hal_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n:02d}")
+                                    output_hal_tmp.append(f"net {signal} => logic.{network}.in-{in_n:02d}")
+
                             else:
-                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
-                                output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} => logic.{network}.in-{in_n:02d}")
+                                # output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
+                                signal = pin2sig(output_hal_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n:02d}")
+                                output_postgui_tmp.append(f"net {signal} => logic.{network}.in-{in_n:02d}")
+
+                        vs_flag = False
+                        for out in net["out"]:
+                            if out.startswith("riovs."):
+                                vs_flag = True
 
                         for ctype in uniq_types:
-                            output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
-
+                            if vs_flag:
+                                output_hal_tmp.append(f"net {out} <= logic.{network}.{ctype.lower()}")
+                            else:
+                                output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
                         for out in net["out"]:
                             if out.startswith("riov."):
                                 continue
                             ctype = net["options"].get(out, {}).get("type", "OR")
-                            if not out.startswith(postgui_filter):
-                                output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
-                            else:
-                                output_postgui_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
+
+                            if not out.startswith("riovs."):
+                                if not out.startswith(postgui_filter):
+                                    output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
+                                else:
+                                    output_postgui_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
 
                 if output_hal_tmp:
                     output_hal.append("")
@@ -270,6 +319,8 @@ class LinuxCNC:
                     output_postgui.append(f"# {network}")
                     output_postgui += output_postgui_tmp
 
+        output_hal.append("")
+        output_hal.append("# setp")
         for name, value in setps.items():
             # check if pin is connected to other pin
             isFree = True
@@ -644,19 +695,23 @@ class LinuxCNC:
             output_name = output_name[1:]
         network = None
 
-        for net_name, net_nodes in self.networks.items():
-            if input_name in net_nodes["in"]:
-                network = net_name
-            elif input_name in net_nodes["out"]:
-                network = net_name
-            elif output_name in net_nodes["out"]:
-                network = net_name
-                break
-            elif output_name == net_nodes["in"][0]:
-                network = net_name
-                self.networks[network]["in"] = [input_name]
-            elif output_name == net_nodes["in"]:
-                print(f"ERROR: can not handle this constellation {input_name} -> {output_name}: output is allready in a multi input signal")
+        if signal_name and (input_name.startswith("riovs.") or output_name.startswith("riovs.")):
+            if signal_name in self.networks:
+                network = signal_name
+        else:
+            for net_name, net_nodes in self.networks.items():
+                if input_name in net_nodes["in"]:
+                    network = net_name
+                elif input_name in net_nodes["out"]:
+                    network = net_name
+                elif output_name in net_nodes["out"]:
+                    network = net_name
+                    break
+                elif output_name == net_nodes["in"][0]:
+                    network = net_name
+                    self.networks[network]["in"] = [input_name]
+                elif output_name == net_nodes["in"]:
+                    print(f"ERROR: can not handle this constellation {input_name} -> {output_name}: output is allready in a multi input signal")
 
         if not network:
             if signal_name in self.networks:
@@ -682,6 +737,7 @@ class LinuxCNC:
         if output_name not in self.networks[network]["out"]:
             self.networks[network]["out"].append(output_name)
             self.networks[network]["options"][output_name] = {"type": ctype}
+
         elif input_name not in self.networks[network]["in"]:
             self.networks[network]["in"].append(input_name)
 
@@ -830,9 +886,9 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     if not netname and setp is not None:
                         if scale:
-                            self.loadrts.append(f"setp rio.{halname}-scale {scale}")
+                            self.hal_setp_add(f"rio.{halname}-scale", scale)
                         if offset:
-                            self.loadrts.append(f"setp rio.{halname}-offset {offset}")
+                            self.hal_setp_add(f"rio.{halname}-offset", offset)
 
         # rio-functions
         self.rio_functions = {}
@@ -875,8 +931,8 @@ class LinuxCNC:
                 virtual = halname["virtual"]
                 self.loadrts.append(f"loadrt wcomp names=riof.{source}")
                 self.loadrts.append(f"addf riof.{source} servo-thread")
-                self.loadrts.append(f"setp riof.{source}.min {vmin}")
-                self.loadrts.append(f"setp riof.{source}.max {vmax}")
+                self.hal_setp_add(f"riof.{source}.min", vmin)
+                self.hal_setp_add(f"riof.{source}.max", vmax)
                 if virtual:
                     self.hal_net_add(f"riov.{source}", f"riof.{source}.in")
                 else:
@@ -985,8 +1041,8 @@ class LinuxCNC:
                                 self.loadrts.append(f"# axis {laxis} selection")
                                 self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
                                 self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                                self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.width 0.1")
-                                self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.retriggerable 0")
+                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
                                 self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
                                 self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
                                 for joint, joint_setup in joints.items():
@@ -1000,8 +1056,8 @@ class LinuxCNC:
                     self.loadrts.append(f"# axis {laxis} selection")
                     self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
                     self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                    self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.width 0.1")
-                    self.loadrts.append(f"setp riof.axisui-{laxis}-oneshot.retriggerable 0")
+                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
                     self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
                     self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
                     for joint, joint_setup in joints.items():
@@ -1059,6 +1115,9 @@ class LinuxCNC:
                         displayconfig["format"] = vformat
                     if vunit and "unit" not in displayconfig:
                         displayconfig["unit"] = vunit
+
+                    if setp:
+                        continue
 
                     if (netname and not virtual) or setp:
                         if direction == "input":
@@ -1125,7 +1184,7 @@ class LinuxCNC:
                             self.hal_net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
                             self.hal_net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
                             for vn, name in enumerate(values):
-                                self.halextras.append(f"setp mux8_{halname}.in{vn} {values[name]}")
+                                self.hal_setp_add(f"mux8_{halname}.in{vn}", values[name])
                             self.halextras.append("")
                             gui_pinname = f"mux8_{halname}.out"
 
@@ -1136,8 +1195,8 @@ class LinuxCNC:
                                 dfilter_gain = dfilter.get("gain", "0.001")
                                 self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
                                 self.halextras.append(f"addf lowpass_{halname} servo-thread")
-                                self.halextras.append(f"setp lowpass_{halname}.load 0")
-                                self.halextras.append(f"setp lowpass_{halname}.gain {dfilter_gain}")
+                                self.hal_setp_add(f"lowpass_{halname}.load", 0)
+                                self.hal_setp_add(f"lowpass_{halname}.gain", dfilter_gain)
                                 self.hal_net_add(gui_pinname, f"lowpass_{halname}.in")
                                 gui_pinname = f"lowpass_{halname}.out"
 
@@ -1176,6 +1235,27 @@ class LinuxCNC:
 
         if gui not in {"touchy", "probe_basic"}:
             self.postgui_call_list.append("custom_postgui.hal")
+
+    def resolv_logic(self, logic_name, bracket):
+        # self.hal_net_add("halui.machine.is-on", "&riovs.myand1", "myand1")
+        # self.hal_net_add("!halui.mode.is-auto", "&riovs.myand1", "myand1")
+        # self.hal_net_add(f"riovs.myand1", "|rio.wled4.0_green", "myor1")
+        # self.hal_net_add(f"halui.program.is-paused", "|rio.wled4.0_green", "myor1")
+        logic = None
+        inputs = []
+        bracket_striped = bracket.replace("(", "").replace(")", "")
+        lnum = 0
+        for part in bracket_striped.split():
+            if part == "or":
+                logic = part
+            elif part == "and":
+                logic = part
+            else:
+                inputs.append(part)
+        logic_map = {"and": "&", "or": "|"}
+        for input_p in inputs:
+            self.hal_net_add(input_p, f"{logic_map[logic]}{logic_name}", logic_name.replace("riovs.", ""))
+        return logic_name
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
@@ -1283,7 +1363,7 @@ class LinuxCNC:
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
-            self.loadrts.append(f"setp {key} {value}")
+            self.hal_setp_add(f"{key}", value)
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1308,9 +1388,9 @@ class LinuxCNC:
                         rprefix = "riov"
 
                     if scale and not virtual:
-                        self.loadrts.append(f"setp {rprefix}.{halname}-scale {scale}")
+                        self.hal_setp_add(f"{rprefix}.{halname}-scale", scale)
                     if offset and not virtual:
-                        self.loadrts.append(f"setp {rprefix}.{halname}-offset {offset}")
+                        self.hal_setp_add(f"{rprefix}.{halname}-offset", offset)
 
                     if netname:
                         if direction == "inout":
@@ -1322,9 +1402,18 @@ class LinuxCNC:
                             else:
                                 self.hal_net_add(f"{rprefix}.{halname}", netname)
                         elif direction == "output":
-                            self.hal_net_add(netname, f"{rprefix}.{halname}")
+                            target = "rio.wled4.0_green"
+                            if " and " in netname or " or " in netname:
+                                target_name = f"l_{target.replace('.', '-')}"
+                                lnum = 0
+                                for bracket in re.findall(r"(\((?:\(??[^\(]*?\)))", netname):
+                                    netname = netname.replace(bracket, self.resolv_logic(f"riovs.{target_name}{lnum}", bracket))
+                                    lnum += 1
+                                netname = self.resolv_logic(target, netname)
+                            else:
+                                self.hal_net_add(netname, f"{rprefix}.{halname}")
                     elif setp is not None:
-                        self.loadrts.append(f"setp {rprefix}.{halname} {setp}")
+                        self.hal_setp_add(f"{rprefix}.{halname}", setp)
                     elif virtual and component:
                         if direction == "input":
                             self.hal_net_add(f"{rprefix}.{halname}", f"rio.{halname}")
