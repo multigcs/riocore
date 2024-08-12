@@ -967,10 +967,10 @@ class LinuxCNC:
 
             riof_jog_default = self.project.config["jdata"].get("linuxcnc", {}).get("rio_functions", {}).get("jog", {})
 
-            def riof_jog_setup(key):
-                return riof_jog_default.get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][key]["default"])
+            def riof_jog_setup(section, key):
+                return riof_jog_default.get(section, {}).get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][section][key]["default"])
 
-            wheel_scale = riof_jog_setup("wheelscale")
+            wheel_scale = riof_jog_setup("wheel", "scale")
 
             if speed_selector:
                 wheel_scale = None
@@ -995,13 +995,13 @@ class LinuxCNC:
                     self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
 
                     if speed_selector_mux == 2:
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheelscale_0"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheelscale_1"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_0"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_1"))
                     else:
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheelscale_0"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheelscale_1"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheelscale_2"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheelscale_3"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_2"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheel", "scale_3"))
 
                     in_n = 0
                     for function, halname in self.rio_functions["jog"].items():
@@ -1023,10 +1023,10 @@ class LinuxCNC:
                         halname_wheel = f"rio.{halname}-s32"
                         break
 
-                wheelfilter = riof_jog_setup("wheelfilter")
+                wheelfilter = riof_jog_setup("wheel", "filter")
                 if halname_wheel and wheelfilter:
-                    wf_gain = riof_jog_setup("wheelfilter_gain")
-                    wf_scale = riof_jog_setup("wheelfilter_scale")
+                    wf_gain = riof_jog_setup("wheel", "filter_gain")
+                    wf_scale = riof_jog_setup("wheel", "filter_scale")
                     self.loadrts.append(f"loadrt ilowpass names=riof.jog.wheelilowpass")
                     self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
                     self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
@@ -1110,13 +1110,13 @@ class LinuxCNC:
                     self.loadrts.append("addf riof.jog.speed_mux servo-thread")
 
                     if speed_selector_mux == 2:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("jogspeed_0"))
-                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("jogspeed_1"))
+                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
                     else:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("jogspeed_0"))
-                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("jogspeed_1"))
-                        self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("jogspeed_2"))
-                        self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("jogspeed_3"))
+                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
+                        self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("keys", "speed_2"))
+                        self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("keys", "speed_3"))
 
                     in_n = 0
                     for function, halname in self.rio_functions["jog"].items():
@@ -1133,8 +1133,8 @@ class LinuxCNC:
                     self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
                     self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
             else:
-                self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("jogspeed"))
-                self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("jogspeed"))
+                self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("keys", "speed"))
+                self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("keys", "speed"))
 
             if axis_move:
                 for function, halname in self.rio_functions["jog"].items():

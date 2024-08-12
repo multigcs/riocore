@@ -2262,30 +2262,37 @@ class WinForm(QWidget):
         riof_config = self.config["linuxcnc"]["rio_functions"]
 
         riof_data = halpins.RIO_FUNCTION_DEFAULTS
-        for section, section_data in riof_data.items():
-            if section not in riof_config:
-                riof_config[section] = {}
-            section_config = riof_config[section]
-
+        for function, function_data in riof_data.items():
             aitem = MyStandardItem()
             tree_lcncriof.appendRow(
                 [
-                    MyStandardItem(section),
+                    MyStandardItem(function.title()),
                     MyStandardItem(""),
                 ]
             )
-
-            lcncsec_view = tree_lcncriof.child(tree_lcncriof.rowCount() - 1)
-            for key, var_setup in section_data.items():
-                key_title = key.title()
+            lcncfunc_view = tree_lcncriof.child(tree_lcncriof.rowCount() - 1)
+            for section, section_data in function_data.items():
+                if section not in riof_config[function]:
+                    riof_config[function][section] = {}
+                section_config = riof_config[function][section]
                 aitem = MyStandardItem()
-                lcncsec_view.appendRow(
+                lcncfunc_view.appendRow(
                     [
-                        MyStandardItem(key_title, help_text=var_setup.get("help", key)),
-                        aitem,
+                        MyStandardItem(section.title()),
+                        MyStandardItem(""),
                     ]
                 )
-                self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
+                lcncsec_view = lcncfunc_view.child(lcncfunc_view.rowCount() - 1)
+                for key, var_setup in section_data.items():
+                    key_title = key.title()
+                    aitem = MyStandardItem()
+                    lcncsec_view.appendRow(
+                        [
+                            MyStandardItem(key_title, help_text=var_setup.get("help", key)),
+                            aitem,
+                        ]
+                    )
+                    self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
 
         # linuxcnc-ini
         bitem = MyStandardItem()

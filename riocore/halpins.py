@@ -1,18 +1,22 @@
 RIO_FUNCTION_DEFAULTS = {
     "jog": {
-        "wheelfilter": {"type": bool, "default": False, "help": "activate lowpassfilter for the jog-wheel"},
-        "wheelfilter_gain": {"type": float, "default": 0.02, "help": "lowpass filter gain)"},
-        "wheelfilter_scale": {"type": float, "default": 1.0, "help": "lowpass filter scale"},
-        "wheelscale": {"type": float, "default": 0.005, "help": "default jog-wheel scale (if no scale selector is set)"},
-        "wheelscale_0": {"type": float, "default": 0.0, "help": "1. jog-wheel scale (if scale selector is set)"},
-        "wheelscale_1": {"type": float, "default": 0.001, "help": "2. jog-wheel scale (if scale selector is set)"},
-        "wheelscale_2": {"type": float, "default": 0.010, "help": "3. jog-wheel scale (if scale selector is set)"},
-        "wheelscale_3": {"type": float, "default": 0.050, "help": "4. jog-wheel scale (if scale selector is set)"},
-        "jogspeed": {"type": float, "default": 1.0, "help": "default jog-button speed (if no speed selector is set)"},
-        "jogspeed_0": {"type": float, "default": 1.0, "help": "1. jog-button speed (if speed selector is set)"},
-        "jogspeed_1": {"type": float, "default": 10.0, "help": "2. jog-button speed (if speed selector is set)"},
-        "jogspeed_2": {"type": float, "default": 100.0, "help": "3. jog-button speed (if speed selector is set)"},
-        "jogspeed_3": {"type": float, "default": 1000.0, "help": "4. jog-button speed (if speed selector is set)"},
+        "wheel": {
+            "filter": {"type": bool, "default": False, "help": "activate lowpassfilter for the jog-wheel"},
+            "filter_gain": {"type": float, "default": 0.02, "help": "lowpass filter gain)"},
+            "filter_scale": {"type": float, "default": 1.0, "help": "lowpass filter scale"},
+            "scale": {"type": float, "default": 0.005, "help": "default jog-wheel scale (if no scale selector is set)"},
+            "scale_0": {"type": float, "default": 0.0, "help": "1. jog-wheel scale (if scale selector is set)"},
+            "scale_1": {"type": float, "default": 0.001, "help": "2. jog-wheel scale (if scale selector is set)"},
+            "scale_2": {"type": float, "default": 0.010, "help": "3. jog-wheel scale (if scale selector is set)"},
+            "scale_3": {"type": float, "default": 0.050, "help": "4. jog-wheel scale (if scale selector is set)"},
+        },
+        "keys": {
+            "speed": {"type": float, "default": 1.0, "help": "default jog-button speed (if no speed selector is set)"},
+            "speed_0": {"type": float, "default": 1.0, "help": "1. jog-button speed (if speed selector is set)"},
+            "speed_1": {"type": float, "default": 10.0, "help": "2. jog-button speed (if speed selector is set)"},
+            "speed_2": {"type": float, "default": 100.0, "help": "3. jog-button speed (if speed selector is set)"},
+            "speed_3": {"type": float, "default": 1000.0, "help": "4. jog-button speed (if speed selector is set)"},
+        },
     },
 }
 
