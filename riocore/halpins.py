@@ -1,5 +1,8 @@
 RIO_FUNCTION_DEFAULTS = {
     "jog": {
+        "wheelfilter": {"type": bool, "default": False, "help": "activate lowpassfilter for the jog-wheel"},
+        "wheelfilter_gain": {"type": float, "default": 0.02, "help": "lowpass filter gain)"},
+        "wheelfilter_scale": {"type": float, "default": 1.0, "help": "lowpass filter scale"},
         "wheelscale": {"type": float, "default": 0.005, "help": "default jog-wheel scale (if no scale selector is set)"},
         "wheelscale_0": {"type": float, "default": 0.0, "help": "1. jog-wheel scale (if scale selector is set)"},
         "wheelscale_1": {"type": float, "default": 0.001, "help": "2. jog-wheel scale (if scale selector is set)"},

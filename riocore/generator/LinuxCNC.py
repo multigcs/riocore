@@ -1022,6 +1022,18 @@ class LinuxCNC:
                     if function == "wheel":
                         halname_wheel = f"rio.{halname}-s32"
                         break
+
+                wheelfilter = riof_jog_setup("wheelfilter")
+                if halname_wheel and wheelfilter:
+                    wf_gain = riof_jog_setup("wheelfilter_gain")
+                    wf_scale = riof_jog_setup("wheelfilter_scale")
+                    self.loadrts.append(f"loadrt ilowpass names=riof.jog.wheelilowpass")
+                    self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
+                    self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
+                    self.hal_setp_add("riof.jog.wheelilowpass.scale", wf_scale)
+                    self.hal_net_add(halname_wheel, "riof.jog.wheelilowpass.in")
+                    halname_wheel = "riof.jog.wheelilowpass.out"
+
                 if halname_wheel:
                     for axis_name, axis_config in self.axis_dict.items():
                         joints = axis_config["joints"]
