@@ -1369,6 +1369,29 @@ class LinuxCNC:
             if hasattr(addon, "hal"):
                 self.loadrts += addon.hal(self)
 
+        def text_in_braces(text, right):
+            chars = []
+            for c in reversed(text[:right]):
+                if c != "(":
+                    chars.append(c)
+                else:
+                    chars.append(c)
+                    break
+            return "".join(reversed(chars))
+
+        def bracket_parser(target, text):
+            ret = "#"
+            while ret:
+                ret = ""
+                for n, c in enumerate(text):
+                    if c == ")":
+                        ret = text_in_braces(text, n + 1)
+                        rid = ret.lstrip("(").rstrip(")").replace(" ", "")
+                        rid = self.resolv_logic(target, ret)
+                        text = text.replace(ret, rid)
+                        break
+            return text
+
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
@@ -1406,9 +1429,7 @@ class LinuxCNC:
                             if " and " in netname or " or " in netname:
                                 target_name = f"l_{target.replace('.', '-')}"
                                 lnum = 0
-                                for bracket in re.findall(r"(\((?:\(??[^\(]*?\)))", netname):
-                                    netname = netname.replace(bracket, self.resolv_logic(f"riovs.{target_name}{lnum}", bracket))
-                                    lnum += 1
+                                netname = bracket_parser(f"riovs.{target_name}{lnum}", netname)
                                 netname = self.resolv_logic(target, netname)
                             else:
                                 self.hal_net_add(netname, f"{rprefix}.{halname}")
