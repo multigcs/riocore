@@ -108,6 +108,8 @@ class Toolchain:
         prj_data.append("    <Version>5</Version>")
         if family == "GW1N-9C":
             prj_data.append(f'    <Device name="{family_gowin}" pn="{ftype}">gw1nr9c-004</Device>')
+        elif family == "GW1N-9C7":
+            prj_data.append(f'    <Device name="{family_gowin}" pn="{ftype}">gw1nr9c-017</Device>')
         elif family == "GW2AR-18":
             prj_data.append('    <Device name="" pn="">gw2ar18c-000</Device>')
         elif family == "GW2A-18C":

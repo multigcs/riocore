@@ -3,7 +3,7 @@
   "description": "MecanixDev",
   "type": "GW1NR-LV9QN88PC6/I5",
   "pinimage": "board.png",
-  "family": "GW1N-9C",
+  "family": "GW1N-9C7",
   "toolchain": "gowin",
   "_toolchain": "icestorm",
   "package": "",
