@@ -1402,7 +1402,7 @@ class LinuxCNC:
                             else:
                                 self.hal_net_add(f"{rprefix}.{halname}", netname)
                         elif direction == "output":
-                            target = "rio.wled4.0_green"
+                            target = f"{rprefix}.{halname}"
                             if " and " in netname or " or " in netname:
                                 target_name = f"l_{target.replace('.', '-')}"
                                 lnum = 0
