@@ -48,13 +48,7 @@ here is a small overview of the boards: [BOARDS](BOARDS.md)
 here is a small overview of the plugins: [PLUGINS](PLUGINS.md)
 
 ## supported Toolchains <a name = "toolchains"></a>
-
-* [Icestorm (yosys/nextpnr)](https://github.com/YosysHQ/oss-cad-suite-build)
-* [Gowin EDA](https://www.gowinsemi.com/en/support/home/)
-* [Intel Quartus](https://www.intel.de/content/www/de/de/products/details/fpga/development-tools/quartus-prime.html)
-* [Xilinx/AMD ISE WebPACK](https://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.html)
-* [Xilinx/AMD Vivado](https://www.xilinx.com/products/design-tools/vivado.html)
-* [Lattice Diamond](https://www.latticesemi.com/latticediamond)
+here is a small overview of the boards: [TOOLCHAINS](TOOLCHAINS.md)
 
 ## Getting Started <a name = "getting_started"></a>
 

@@ -6,6 +6,14 @@ class Toolchain:
     def __init__(self, config):
         self.config = config
 
+    def info(cls):
+        info = {
+            "url": "https://www.xilinx.com/products/design-tools/vivado.html",
+            "info": "Xilinx/AMD Vivado",
+            "description": "",
+        }
+        return info
+
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.xdc")
         pins_generator.Pins(self.config).generate(path)

@@ -6,6 +6,14 @@ class Toolchain:
     def __init__(self, config):
         self.config = config
 
+    def info(cls):
+        info = {
+            "url": "https://www.latticesemi.com/latticediamond",
+            "info": "lattice diamond",
+            "description": "",
+        }
+        return info
+
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
         pins_generator.Pins(self.config).generate(path)

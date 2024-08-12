@@ -6,6 +6,14 @@ class Toolchain:
     def __init__(self, config):
         self.config = config
 
+    def info(cls):
+        info = {
+            "url": "https://www.intel.de/content/www/de/de/products/details/fpga/development-tools/quartus-prime.html",
+            "info": "Intel Quartus",
+            "description": "",
+        }
+        return info
+
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)

@@ -7,6 +7,14 @@ class Toolchain:
     def __init__(self, config):
         self.config = config
 
+    def info(cls):
+        info = {
+            "url": "https://www.gowinsemi.com/en/support/home/",
+            "info": "Gowin EDA",
+            "description": "",
+        }
+        return info
+
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)

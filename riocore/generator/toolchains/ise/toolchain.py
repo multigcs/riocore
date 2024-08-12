@@ -6,6 +6,14 @@ class Toolchain:
     def __init__(self, config):
         self.config = config
 
+    def info(cls):
+        info = {
+            "url": "https://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.html",
+            "info": "Xilinx/AMD ISE WebPACK",
+            "description": "",
+        }
+        return info
+
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.ucf")
         pins_generator.Pins(self.config).generate(path)

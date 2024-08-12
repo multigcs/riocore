@@ -7,6 +7,14 @@ class Toolchain:
     def __init__(self, config):
         self.config = config
 
+    def info(cls):
+        info = {
+            "url": "https://github.com/YosysHQ/oss-cad-suite-build",
+            "info": "Icestorm (yosys/nextpnr)",
+            "description": "",
+        }
+        return info
+
     def generate(self, path):
         verilogs = " ".join(self.config["verilog_files"])
         family = self.config["family"]
