@@ -18,12 +18,12 @@ index.append("| --- | --- | :---: |")
 for board in sorted(glob.glob("riocore/boards/*")):
     if not os.path.isfile(f"{board}/board.json"):
         continue
-    
+
     print(f"{board}/board.json")
-    
+
     name = board.split("/")[-1]
 
-    jdata = open(f"{board}/board.json", "r").read();
+    jdata = open(f"{board}/board.json", "r").read()
     data = json.loads(jdata)
 
     readme = []
@@ -31,7 +31,7 @@ for board in sorted(glob.glob("riocore/boards/*")):
     readme.append(f"# {name}")
     description = ""
     if "description" in data:
-        description = data['description']
+        description = data["description"]
         readme.append(f"**{description}**")
     readme.append("")
 
@@ -43,32 +43,28 @@ for board in sorted(glob.glob("riocore/boards/*")):
             readme.append(f"* {key.title()}: {data[key]}")
 
     if "clock" in data:
-        speed_mhz = float(data['clock']['speed']) / 1000000
+        speed_mhz = float(data["clock"]["speed"]) / 1000000
         if "osc" in data["clock"]:
-            osc_mhz = float(data['clock']['osc']) / 1000000
+            osc_mhz = float(data["clock"]["osc"]) / 1000000
             readme.append(f"* Clock: {osc_mhz:0.3f}Mhz -> PLL -> {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
         else:
             readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
 
     readme.append("")
 
-
     if os.path.isfile(f"{board}/board.png"):
         readme.append("![board.png](board.png)")
         readme.append("")
-        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | <img src=\"riocore/boards/{name}/board.png\" height=\"48\"> |")
+        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | <img src="riocore/boards/{name}/board.png" height="48"> |')
     else:
         index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | |")
 
     readme.append("")
 
-    open(f"{board}/README.md", "w").write("\n".join(readme));
+    open(f"{board}/README.md", "w").write("\n".join(readme))
 
 index.append("")
-open(f"BOARDS.md", "w").write("\n".join(index));
-
-
-
+open(f"BOARDS.md", "w").write("\n".join(index))
 print("# TOOLCHAINS")
 output = []
 output.append("# TOOLCHAINS")
@@ -81,9 +77,9 @@ for ppath in sorted(glob.glob(f"riocore/generator/toolchains/*/toolchain.py")):
     toolchain = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{toolchain_name}")
     info = toolchain.Toolchain.info(None)
     if info:
-        url = info.get('url', '')
-        infotext = info.get('info', '')
-        description = info.get('description', '')
+        url = info.get("url", "")
+        infotext = info.get("info", "")
+        description = info.get("description", "")
         output.append(f"| [{toolchain_name}](riocore/generator/toolchains/{toolchain_name}/README.md) | {infotext} |")
 
         toutput = []
@@ -98,7 +94,6 @@ for ppath in sorted(glob.glob(f"riocore/generator/toolchains/*/toolchain.py")):
             toutput.append(f"{description}")
             toutput.append("")
         open(f"riocore/generator/toolchains/{toolchain_name}/README.md", "w").write("\n".join(toutput))
-
 
 
 output.append("")

@@ -956,6 +956,10 @@ class LinuxCNC:
                     axis_move = True
                 elif function in {"fast"}:
                     speed_selector = True
+                elif function in {"speed0"}:
+                    speed_selector = True
+                elif function in {"speed1"}:
+                    speed_selector = True
                 elif function in {"position"}:
                     position_display = True
                 elif function in {"wheel"}:
@@ -1004,18 +1008,48 @@ class LinuxCNC:
                                     self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
             if speed_selector:
-                self.loadrts.append("loadrt mux2 names=riof.jog.speed_mux")
-                self.loadrts.append("addf riof.jog.speed_mux servo-thread")
-                self.hal_setp_add("riof.jog.speed_mux.in0", 100.0)
-                self.hal_setp_add("riof.jog.speed_mux.in1", 1000.0)
+                speed_selector_mux = 1
                 for function, halname in self.rio_functions["jog"].items():
-                    if function == "fast":
-                        self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
-                (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
-                self.cfgxml_data["status"] += gout
-                self.hal_net_add("riof.jog.speed_mux.out", pname)
-                self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
-                self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
+                    if function == "speed0":
+                        speed_selector_mux *= 2
+                    elif function == "speed1":
+                        speed_selector_mux *= 2
+                    elif function == "fast":
+                        speed_selector_mux *= 2
+
+                if speed_selector_mux > 4:
+                    print("ERROR: only two speed selectors are supported")
+                    speed_selector_mux = 4
+                elif speed_selector_mux == 1:
+                    print("ERROR: no speed selectors found")
+
+                if speed_selector_mux in {2, 4}:
+                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
+                    self.loadrts.append("addf riof.jog.speed_mux servo-thread")
+
+                    if speed_selector_mux == 2:
+                        self.hal_setp_add("riof.jog.speed_mux.in0", 100.0)
+                        self.hal_setp_add("riof.jog.speed_mux.in1", 1000.0)
+                    else:
+                        self.hal_setp_add("riof.jog.speed_mux.in0", 1.0)
+                        self.hal_setp_add("riof.jog.speed_mux.in1", 10.0)
+                        self.hal_setp_add("riof.jog.speed_mux.in2", 100.0)
+                        self.hal_setp_add("riof.jog.speed_mux.in3", 1000.0)
+
+                    in_n = 0
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function in {"fast", "speed0", "speed1"}:
+                            if speed_selector_mux == 2:
+                                self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
+                            else:
+                                self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel{in_n}")
+                                in_n += 1
+
+                    (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
+                    self.cfgxml_data["status"] += gout
+                    self.hal_net_add("riof.jog.speed_mux.out", pname)
+                    self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
+                    self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
 
             if axis_move and not wheel:
                 for function, halname in self.rio_functions["jog"].items():
