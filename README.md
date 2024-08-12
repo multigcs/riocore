@@ -139,6 +139,7 @@ linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 > if you change the .ini file by hand, for example, you should make a copy of it
 > 
 > if you need an additional .hal file, you can incude it in the postgui_call_list.hal
+> 
 > rio will not overwrite this entry's
 >
 
