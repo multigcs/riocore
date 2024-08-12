@@ -1,3 +1,18 @@
+RIO_FUNCTION_DEFAULTS = {
+    "jog": {
+        "wheelscale": {"type": float, "default": 0.005, "help": "default jog-wheel scale (if no scale selector is set)"},
+        "wheelscale_0": {"type": float, "default": 0.0, "help": "1. jog-wheel scale (if scale selector is set)"},
+        "wheelscale_1": {"type": float, "default": 0.001, "help": "2. jog-wheel scale (if scale selector is set)"},
+        "wheelscale_2": {"type": float, "default": 0.010, "help": "3. jog-wheel scale (if scale selector is set)"},
+        "wheelscale_3": {"type": float, "default": 0.050, "help": "4. jog-wheel scale (if scale selector is set)"},
+        "jogspeed": {"type": float, "default": 1.0, "help": "default jog-button speed (if no speed selector is set)"},
+        "jogspeed_0": {"type": float, "default": 1.0, "help": "1. jog-button speed (if speed selector is set)"},
+        "jogspeed_1": {"type": float, "default": 10.0, "help": "2. jog-button speed (if speed selector is set)"},
+        "jogspeed_2": {"type": float, "default": 100.0, "help": "3. jog-button speed (if speed selector is set)"},
+        "jogspeed_3": {"type": float, "default": 1000.0, "help": "4. jog-button speed (if speed selector is set)"},
+    },
+}
+
 RIO_FUNCTIONS = {
     "inout": {},
     "output": {

@@ -965,7 +965,57 @@ class LinuxCNC:
                 elif function in {"wheel"}:
                     wheel = True
 
-            jog_scale = 0.1
+            riof_jog_default = self.project.config["jdata"].get("linuxcnc", {}).get("rio_functions", {}).get("jog", {})
+
+            def riof_jog_setup(key):
+                return riof_jog_default.get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][key]["default"])
+
+            wheel_scale = riof_jog_setup("wheelscale")
+
+            if speed_selector:
+                wheel_scale = None
+
+                speed_selector_mux = 1
+                for function, halname in self.rio_functions["jog"].items():
+                    if function == "speed0":
+                        speed_selector_mux *= 2
+                    elif function == "speed1":
+                        speed_selector_mux *= 2
+                    elif function == "fast":
+                        speed_selector_mux *= 2
+
+                if speed_selector_mux > 4:
+                    print("ERROR: only two speed selectors are supported")
+                    speed_selector_mux = 4
+                elif speed_selector_mux == 1:
+                    print("ERROR: no speed selectors found")
+
+                if speed_selector_mux in {2, 4}:
+                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
+                    self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
+
+                    if speed_selector_mux == 2:
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheelscale_0"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheelscale_1"))
+                    else:
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheelscale_0"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheelscale_1"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheelscale_2"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheelscale_3"))
+
+                    in_n = 0
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function in {"fast", "speed0", "speed1"}:
+                            if speed_selector_mux == 2:
+                                self.hal_net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
+                            else:
+                                self.hal_net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
+                                in_n += 1
+
+                    (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
+                    self.cfgxml_data["status"] += gout
+                    self.hal_net_add("riof.jog.wheelscale_mux.out", pname)
+
             if wheel:
                 halname_wheel = ""
                 for function, halname in self.rio_functions["jog"].items():
@@ -977,12 +1027,22 @@ class LinuxCNC:
                         joints = axis_config["joints"]
                         laxis = axis_name.lower()
                         self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-                        self.hal_setp_add(f"axis.{laxis}.jog-scale", jog_scale)
+
+                        if wheel_scale is not None:
+                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                        else:
+                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+
                         self.hal_net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
                         self.hal_net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
                         for joint, joint_setup in joints.items():
                             self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
-                            self.hal_setp_add(f"joint.{joint}.jog-scale", jog_scale)
+
+                            if wheel_scale is not None:
+                                self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                            else:
+                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+
                             self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
                             self.hal_net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
@@ -993,7 +1053,12 @@ class LinuxCNC:
                     fname = f"wheel_{laxis}"
                     if fname in self.rio_functions["jog"]:
                         self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-                        self.hal_setp_add(f"axis.{laxis}.jog-scale", jog_scale)
+
+                        if wheel_scale is not None:
+                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                        else:
+                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+
                         self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
                         for function, halname in self.rio_functions["jog"].items():
                             if function == fname:
@@ -1001,7 +1066,12 @@ class LinuxCNC:
 
                         for joint, joint_setup in joints.items():
                             self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
-                            self.hal_setp_add(f"joint.{joint}.jog-scale", jog_scale)
+
+                            if wheel_scale is not None:
+                                self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                            else:
+                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+
                             self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
@@ -1028,13 +1098,13 @@ class LinuxCNC:
                     self.loadrts.append("addf riof.jog.speed_mux servo-thread")
 
                     if speed_selector_mux == 2:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", 100.0)
-                        self.hal_setp_add("riof.jog.speed_mux.in1", 1000.0)
+                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("jogspeed_0"))
+                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("jogspeed_1"))
                     else:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", 1.0)
-                        self.hal_setp_add("riof.jog.speed_mux.in1", 10.0)
-                        self.hal_setp_add("riof.jog.speed_mux.in2", 100.0)
-                        self.hal_setp_add("riof.jog.speed_mux.in3", 1000.0)
+                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("jogspeed_0"))
+                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("jogspeed_1"))
+                        self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("jogspeed_2"))
+                        self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("jogspeed_3"))
 
                     in_n = 0
                     for function, halname in self.rio_functions["jog"].items():
@@ -1050,8 +1120,11 @@ class LinuxCNC:
                     self.hal_net_add("riof.jog.speed_mux.out", pname)
                     self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
                     self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
+            else:
+                self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("jogspeed"))
+                self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("jogspeed"))
 
-            if axis_move and not wheel:
+            if axis_move:
                 for function, halname in self.rio_functions["jog"].items():
                     if function in {"plus", "minus"}:
                         self.hal_net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
