@@ -27,20 +27,29 @@ with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segme
 ## Pins:
 *FPGA-pins*
 ### sel:
+Select-Pin (STB)
 
  * direction: output
 
 ### sclk:
+Clock-Pin (CLK)
 
  * direction: output
 
 ### data:
+Data-Pin (DIO)
 
  * direction: inout
 
 
 ## Options:
 *user-options*
+### speed:
+Data-clock
+
+ * type: int
+ * default: 1000000
+
 ### name:
 name of this plugin instance
 
@@ -131,6 +140,7 @@ name of this plugin instance
  * direction: output
 
 ### number1:
+last 6 digits (-6500.0 -> 6500.0)
 
  * type: float
  * direction: output
@@ -138,6 +148,7 @@ name of this plugin instance
  * max: 6500.0
 
 ### number2:
+first 2 digits (0 -> 99)
 
  * type: float
  * direction: output
@@ -151,81 +162,97 @@ name of this plugin instance
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### sw1:
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### sw2:
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### sw3:
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### sw4:
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### sw5:
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### sw6:
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### sw7:
 
  * size: 1 bit
  * direction: input
+ * multiplexed: True
 
 ### led0:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### led1:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### led2:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### led3:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### led4:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### led5:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### led6:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### led7:
 
  * size: 1 bit
  * direction: output
+ * multiplexed: True
 
 ### number1:
 
@@ -244,6 +271,7 @@ name of this plugin instance
 ```
 {
     "type": "tm1638b8s7l8",
+    "speed": 1000000,
     "name": "",
     "pins": {
         "sel": {

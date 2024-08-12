@@ -59,18 +59,22 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 ## Pins:
 *FPGA-pins*
 ### out:
+output data (DS on 74HC595)
 
  * direction: output
 
 ### in:
+input data (SER_OUT on 74HC165)
 
  * direction: input
 
 ### sclk:
+input data (CLK on 74HC165/ CH_CP/SRCLK on 74HC595)
 
  * direction: output
 
 ### load:
+input data (SH/LD on 74HC165/ ST_CP/RCLK on 74HC595)
 
  * direction: output
 

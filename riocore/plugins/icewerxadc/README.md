@@ -81,28 +81,28 @@ name of this plugin instance
 ### adc1:
 1. ADC channel
 
- * size: 16 bit
+ * size: 10 bit
  * direction: input
  * multiplexed: True
 
 ### adc2:
 2. ADC channel
 
- * size: 16 bit
+ * size: 10 bit
  * direction: input
  * multiplexed: True
 
 ### adc3:
 3. ADC channel
 
- * size: 16 bit
+ * size: 10 bit
  * direction: input
  * multiplexed: True
 
 ### adc4:
 4. ADC channel
 
- * size: 16 bit
+ * size: 10 bit
  * direction: input
  * multiplexed: True
 

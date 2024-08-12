@@ -17,6 +17,7 @@ verilator:
 
 plugin_docs:
 	PYTHONPATH=. bin/rio-plugininfo -g
+	PYTHONPATH=. riocore/files/update_boards_and_toolchains_readme.py
 
 dist:
 	python3 setup.py sdist
