@@ -1042,7 +1042,7 @@ class LinuxCNC:
                             if speed_selector_mux == 2:
                                 self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
                             else:
-                                self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel{in_n}")
+                                self.hal_net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
                                 in_n += 1
 
                     (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
