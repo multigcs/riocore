@@ -36,6 +36,17 @@ LinuxCNC-RIO is a code generator for using FPGA boards as Realtime-IO for LinuxC
 Furthermore, the complete configuration and hal is generated.
 a json configuration file serves as the basis
 
+* no Soft-Core / logic only
+* no jitter
+* fast and small
+* communication via SPI (with Raspberry PI 4) or Ethernet
+* generated verilog-code / setup via json files (free pin-selection)
+* using free FPGA-Toolchain or commercial (depends on the FPGA)
+* runs on many FPGA's (like ICE40, ECP5, MAX10, Artix7, Gowin, CycloneIV, ...)
+* supports Open and Closed-Loop
+* multiple and mixed joint types (like Stepper, DC-Servo, RC-Servo)
+
+
 ## Help <a name = "help"></a>
 
 * [LinuxCNC-Forum (en)](https://forum.linuxcnc.org/18-computer/49142-linuxcnc-rio-realtimeio-for-linuxcnc-based-on-fpga-ice40-ecp5)
