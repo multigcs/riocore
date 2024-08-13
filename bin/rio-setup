@@ -2263,6 +2263,9 @@ class WinForm(QWidget):
 
         riof_data = halpins.RIO_FUNCTION_DEFAULTS
         for function, function_data in riof_data.items():
+            if function not in riof_config:
+                riof_config[function] = {}
+
             aitem = MyStandardItem()
             tree_lcncriof.appendRow(
                 [
