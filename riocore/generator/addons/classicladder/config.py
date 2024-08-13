@@ -22,7 +22,7 @@ def load_tree(parent, tree_lcnc):
         ]
     )
 
-    if "classicladder" not in parent.config["linuxcnc"]:
+    if not parent.config.get("linuxcnc", {}).get("classicladder"):
         parent.config["linuxcnc"]["classicladder"] = {}
         button = QPushButton("add")
         button.clicked.connect(add_classicladder)

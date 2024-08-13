@@ -24,7 +24,7 @@ def load_tree(parent, tree_lcnc):
         ]
     )
 
-    if "hy_vfd" not in parent.config["linuxcnc"]:
+    if not parent.config.get("linuxcnc", {}).get("hy_vfd"):
         parent.config["linuxcnc"]["hy_vfd"] = {}
         button = QPushButton("add")
         button.clicked.connect(add_hy_vfd)

@@ -22,7 +22,7 @@ def load_tree(parent, tree_lcnc):
         ]
     )
 
-    if "mxmpg" not in parent.config["linuxcnc"]:
+    if not parent.config.get("linuxcnc", {}).get("mxmpg"):
         parent.config["linuxcnc"]["mxmpg"] = {}
         button = QPushButton("add")
         button.clicked.connect(add_mxmpg)
