@@ -19,7 +19,7 @@ def load_tree(parent, tree_lcnc):
                 "tabname": f"Camera-{camera_num}",
             }
         )
-        parent.load_tree()
+        parent.load_tree("/LinuxCNC/AddOn's/Camera/")
         parent.display()
 
     def del_camera(camera_num, misc):

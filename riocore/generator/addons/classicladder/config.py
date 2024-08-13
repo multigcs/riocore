@@ -11,7 +11,7 @@ def load_tree(parent, tree_lcnc):
             parent.config["linuxcnc"]["classicladder"] = {
                 "enable": False,
             }
-            parent.load_tree()
+            parent.load_tree("/LinuxCNC/AddOn's/classicladder/")
             parent.display()
 
     bitem = MyStandardItem()

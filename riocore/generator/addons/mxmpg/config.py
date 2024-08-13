@@ -9,9 +9,9 @@ def load_tree(parent, tree_lcnc):
     def add_mxmpg(widget):
         if not parent.config["linuxcnc"].get("mxmpg"):
             parent.config["linuxcnc"]["mxmpg"] = {
-                "enable": False,
+                "enable": True,
             }
-            parent.load_tree()
+            parent.load_tree("/LinuxCNC/AddOn's/mxmpg/")
             parent.display()
 
     bitem = MyStandardItem()
@@ -33,7 +33,7 @@ def load_tree(parent, tree_lcnc):
     mxmpg_config = parent.config["linuxcnc"]["mxmpg"]
     if mxmpg_config:
         for key, var_setup in {
-            "enable": {"type": bool, "default": False},
+            "enable": {"type": bool, "default": True},
             "device": {"type": str, "default": "/dev/ttyACM0"},
         }.items():
             aitem = MyStandardItem()

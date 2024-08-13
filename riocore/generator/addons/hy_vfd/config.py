@@ -13,7 +13,7 @@ def load_tree(parent, tree_lcnc):
                 "address": 1,
                 "device": "/dev/ttyUSB0",
             }
-            parent.load_tree()
+            parent.load_tree("/LinuxCNC/AddOn's/hy_vfd/")
             parent.display()
 
     bitem = MyStandardItem()

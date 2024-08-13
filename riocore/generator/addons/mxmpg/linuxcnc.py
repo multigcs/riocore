@@ -3,7 +3,7 @@ def hal(parent):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
 
     mxmpg_config = linuxcnc_config.get("mxmpg", {})
-    mxmpg_enable = mxmpg_config.get("enable", False)
+    mxmpg_enable = mxmpg_config.get("enable", True)
     mxmpg_device = mxmpg_config.get("device", "/dev/ttyACM0")
     mxmpg_buttons = mxmpg_config.get("buttons")
     if mxmpg_enable:

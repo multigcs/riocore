@@ -2038,7 +2038,7 @@ class WinForm(QWidget):
     def load_hal(self):
         print("loding hal overview")
 
-    def load_tree(self):
+    def load_tree(self, expand=None):
         while self.model.rowCount() > 0:
             self.model.removeRow(0)
 
@@ -2057,6 +2057,7 @@ class WinForm(QWidget):
             )
             self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config, key, var_setup))
 
+        # LinuxCNC
         bitem = MyStandardItem()
         self.model.appendRow(
             [
@@ -2084,9 +2085,18 @@ class WinForm(QWidget):
             )
             self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config["linuxcnc"], key, var_setup))
 
+        # linuxcnc addon's
+        bitem = MyStandardItem()
+        tree_lcnc.appendRow(
+            [
+                MyStandardItem("AddOn's", help_text="LinuxCNC generator addons"),
+                bitem,
+            ]
+        )
+        tree_lcncaddons = tree_lcnc.child(tree_lcnc.rowCount() - 1)
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "load_tree"):
-                addon.load_tree(self, tree_lcnc)
+                addon.load_tree(self, tree_lcncaddons)
 
         # rio-functions
         bitem = MyStandardItem()
@@ -2209,7 +2219,6 @@ class WinForm(QWidget):
         button.clicked.connect(self.add_module)
         button.setMaximumSize(button.sizeHint())
         self.treeview.setIndexWidget(bitem.index(), button)
-        self.treeview.expand(self.model.indexFromItem(tree_modules))
 
         for module_data in self.config.get("modules", []):
             slot_name = module_data.get("slot")
@@ -2225,7 +2234,6 @@ class WinForm(QWidget):
                 ]
             )
             module_view = tree_modules.child(tree_modules.rowCount() - 1)
-            self.treeview.expand(self.model.indexFromItem(module_view))
 
             for key, var_setup in {
                 "module": {"type": "select", "options": self.module_names},
@@ -2242,8 +2250,6 @@ class WinForm(QWidget):
 
             module_plugins_view = MyStandardItem("Plugins")
             module_view.appendRow(module_plugins_view)
-
-            # self.treeview.expand(self.model.indexFromItem(module_plugins_view))
 
             for plugin_instance in self.modules[slot_name]["instances"]:
                 self.tree_add_plugin(module_plugins_view, plugin_instance, nopins=True, expand=False)
@@ -2269,13 +2275,39 @@ class WinForm(QWidget):
 
         buttons_layout.addStretch()
         self.treeview.setIndexWidget(bitem.index(), buttons_widget)
-        self.treeview.expand(self.model.indexFromItem(self.tree_plugins))
 
         for plugin_instance in self.plugins.plugin_instances:
             self.tree_add_plugin(self.tree_plugins, plugin_instance)
 
         self.treeview.header().resizeSection(0, 300)
         self.treeview.header().resizeSection(1, 200)
+
+        if expand:
+
+            def iter_childs(entry, prefix=""):
+                row = 0
+                item = self.model.itemData(entry.child(row, 0))
+                while item:
+                    row += 1
+                    child = entry.child(row, 0)
+                    item = self.model.itemData(child)
+                    if item:
+                        title = item[0]
+                        if expand.startswith(f"{prefix}/{title}"):
+                            self.treeview.expand(child)
+                        iter_childs(child, prefix=f"{prefix}/{title}")
+
+            row = 0
+            item = self.model.itemData(self.model.index(row, 0))
+            while item:
+                row += 1
+                child = self.model.index(row, 0)
+                item = self.model.itemData(child)
+                if item:
+                    title = item[0]
+                    if expand.startswith(f"/{title}"):
+                        self.treeview.expand(child)
+                    iter_childs(self.model.index(row, 0), prefix=f"/{title}")
 
     def slot_change(self, widget):
         self.config_load()

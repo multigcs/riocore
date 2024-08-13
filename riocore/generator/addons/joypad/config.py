@@ -108,7 +108,7 @@ def load_tree(parent, tree_lcnc):
                 if halname:
                     parent.config["linuxcnc"]["joypad"][action] = halname
             parent.config["linuxcnc"]["joypad"]["name"] = selected_device
-            parent.load_tree()
+            parent.load_tree("/LinuxCNC/AddOn's/Joypad/")
             parent.display()
 
         timer.stop()
