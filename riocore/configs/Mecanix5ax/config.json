@@ -1,0 +1,17 @@
+{
+    "name": "Mecanix",
+    "description": "Mecanix 5ax board",
+    "boardcfg": "Mecanix5ax",
+    "protocol": "UART",
+    "plugins": [
+        {
+            "type": "blink",
+            "name": "LED0",
+            "pins": {
+                "led": {
+                    "pin": "LED:L0"
+                }
+            }
+        }
+    ]
+}

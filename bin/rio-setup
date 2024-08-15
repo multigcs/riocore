@@ -69,6 +69,11 @@ class PinButton(QPushButton):
         if self.parent and self.bgcolor:
             self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
 
+    def setText(self, text, rotate=False):
+        if rotate:
+            text = "\n".join(text)
+        QPushButton.setText(self, text)
+
     def enterEvent(self, event):
         if self.parent and self.pkey:
             self.parent.pinlayout_mark(self.pkey)
@@ -1231,9 +1236,14 @@ class WinForm(QWidget):
 
                     if "pos" in pin:
                         self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
-                        self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
-                        self.pinlabels[pkey].setFixedHeight(15)
-                        self.pinlabels[pkey].setText(pin_id)
+                        if pin.get("rotate"):
+                            self.pinlabels[pkey].setFixedWidth(15)
+                            self.pinlabels[pkey].setFixedHeight(len(pin_id * 15))
+                            self.pinlabels[pkey].setText(pin_id, True)
+                        else:
+                            self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
+                            self.pinlabels[pkey].setFixedHeight(15)
+                            self.pinlabels[pkey].setText(pin_id)
                         self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
                         self.pinlabels[pkey].setToolTip(tooltip)
 
@@ -1891,8 +1901,11 @@ class WinForm(QWidget):
                 self.sig_table.setItem(row_n, col_n, pitem)
             self.sig_table.setCellWidget(row_n, 2, row[7])
 
-        for col_n, col in enumerate(row[:5]):
-            self.sig_table.resizeColumnToContents(col_n)
+        for row_n, row in enumerate(table_data):
+            for col_n, col in enumerate(row[:5]):
+                self.sig_table.resizeColumnToContents(col_n)
+            break
+
         self.sig_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
     def pin_edit_cb(self, widget):
