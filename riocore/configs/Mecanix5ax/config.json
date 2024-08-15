@@ -2,7 +2,7 @@
     "name": "Mecanix",
     "description": "Mecanix 5ax board",
     "boardcfg": "Mecanix5ax",
-    "protocol": "UART",
+    "protocol": "UDP",
     "plugins": [
         {
             "type": "blink",

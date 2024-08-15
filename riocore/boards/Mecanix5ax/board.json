@@ -1,14 +1,15 @@
 {
   "name": "Mecanix5ax",
   "description": "Mecanix5ax",
-  "type": "GW1NR-LV9QN88PC6/I5",
+  "type": "GW1NR-LV9QN88PC7/I6",
   "pinimage": "board.png",
   "family": "GW1N-9C7",
   "toolchain": "gowin",
   "_toolchain": "icestorm",
   "package": "",
+  "protocol": "UDP",
   "clock": {
-    "speed": "27000000",
+    "speed": "50000000",
     "pin": "52"
   },
   "slots": [
@@ -20,7 +21,7 @@
         "default": "",
         "pins": {
             "STEP": {
-                "pin": "0",
+                "pin": "86",
                 "rotate": true,
                 "pos": [
                     110,
@@ -29,7 +30,7 @@
                 "direction": "output"
             },
             "DIR": {
-                "pin": "0",
+                "pin": "85",
                 "rotate": true,
                 "pos": [
                     130,
@@ -45,7 +46,7 @@
         "default": "",
         "pins": {
             "STEP": {
-                "pin": "0",
+                "pin": "84",
                 "rotate": true,
                 "pos": [
                     204,
@@ -54,7 +55,7 @@
                 "direction": "output"
             },
             "DIR": {
-                "pin": "0",
+                "pin": "83",
                 "rotate": true,
                 "pos": [
                     224,
@@ -70,7 +71,7 @@
         "default": "",
         "pins": {
             "STEP": {
-                "pin": "0",
+                "pin": "82",
                 "rotate": true,
                 "pos": [
                     298,
@@ -79,7 +80,7 @@
                 "direction": "output"
             },
             "DIR": {
-                "pin": "0",
+                "pin": "81",
                 "rotate": true,
                 "pos": [
                     318,
@@ -95,7 +96,7 @@
         "default": "",
         "pins": {
             "STEP": {
-                "pin": "0",
+                "pin": "80",
                 "rotate": true,
                 "pos": [
                     392,
@@ -104,7 +105,7 @@
                 "direction": "output"
             },
             "DIR": {
-                "pin": "0",
+                "pin": "79",
                 "rotate": true,
                 "pos": [
                     412,
@@ -120,7 +121,7 @@
         "default": "",
         "pins": {
             "STEP": {
-                "pin": "0",
+                "pin": "77",
                 "rotate": true,
                 "pos": [
                     486,
@@ -129,7 +130,7 @@
                 "direction": "output"
             },
             "DIR": {
-                "pin": "0",
+                "pin": "76",
                 "rotate": true,
                 "pos": [
                     506,
@@ -146,7 +147,7 @@
         "default": "",
         "pins": {
             "IN1": {
-                "pin": "0",
+                "pin": "75",
                 "rotate": true,
                 "pos": [
                     573,
@@ -155,7 +156,7 @@
                 "direction": "input"
             },
             "IN2": {
-                "pin": "0",
+                "pin": "74",
                 "rotate": true,
                 "pos": [
                     593,
@@ -164,7 +165,7 @@
                 "direction": "input"
             },
             "IN3": {
-                "pin": "0",
+                "pin": "73",
                 "rotate": true,
                 "pos": [
                     613,
@@ -173,7 +174,7 @@
                 "direction": "input"
             },
             "IN4": {
-                "pin": "0",
+                "pin": "72",
                 "rotate": true,
                 "pos": [
                     633,
@@ -182,7 +183,7 @@
                 "direction": "input"
             },
             "IN5": {
-                "pin": "0",
+                "pin": "71",
                 "rotate": true,
                 "pos": [
                     653,
@@ -191,7 +192,7 @@
                 "direction": "input"
             },
             "IN6": {
-                "pin": "0",
+                "pin": "70",
                 "rotate": true,
                 "pos": [
                     673,
@@ -202,7 +203,7 @@
 
 
             "IN7": {
-                "pin": "0",
+                "pin": "69",
                 "pos": [
                     730,
                     117
@@ -210,7 +211,7 @@
                 "direction": "input"
             },
             "IN8": {
-                "pin": "0",
+                "pin": "68",
                 "pos": [
                     730,
                     137
@@ -218,7 +219,7 @@
                 "direction": "input"
             },
             "IN9": {
-                "pin": "0",
+                "pin": "63",
                 "pos": [
                     730,
                     157
@@ -226,7 +227,7 @@
                 "direction": "input"
             },
             "IN0": {
-                "pin": "0",
+                "pin": "51",
                 "pos": [
                     730,
                     177
@@ -243,7 +244,7 @@
         "default": "",
         "pins": {
             "A": {
-                "pin": "0",
+                "pin": "11",
                 "rotate": true,
                 "pos": [
                     130,
@@ -252,7 +253,7 @@
                 "direction": "input"
             },
             "B": {
-                "pin": "0",
+                "pin": "13",
                 "rotate": true,
                 "pos": [
                     150,
@@ -261,7 +262,7 @@
                 "direction": "input"
             },
             "XSEL": {
-                "pin": "0",
+                "pin": "14",
                 "rotate": true,
                 "pos": [
                     170,
@@ -270,7 +271,7 @@
                 "direction": "input"
             },
             "YSEL": {
-                "pin": "0",
+                "pin": "15",
                 "rotate": true,
                 "pos": [
                     190,
@@ -279,7 +280,7 @@
                 "direction": "input"
             },
             "ZSEL": {
-                "pin": "0",
+                "pin": "16",
                 "rotate": true,
                 "pos": [
                     210,
@@ -288,7 +289,7 @@
                 "direction": "input"
             },
             "ASEL": {
-                "pin": "0",
+                "pin": "17",
                 "rotate": true,
                 "pos": [
                     230,
@@ -297,7 +298,7 @@
                 "direction": "input"
             },
             "BSEL": {
-                "pin": "0",
+                "pin": "18",
                 "rotate": true,
                 "pos": [
                     250,
@@ -306,7 +307,7 @@
                 "direction": "input"
             },
             "X1": {
-                "pin": "0",
+                "pin": "19",
                 "rotate": true,
                 "pos": [
                     270,
@@ -315,7 +316,7 @@
                 "direction": "input"
             },
             "X10": {
-                "pin": "0",
+                "pin": "20",
                 "rotate": true,
                 "pos": [
                     290,
@@ -324,7 +325,7 @@
                 "direction": "input"
             },
             "X100": {
-                "pin": "0",
+                "pin": "25",
                 "rotate": true,
                 "pos": [
                     310,
@@ -342,7 +343,7 @@
         "default": "",
         "pins": {
             "PWM": {
-                "pin": "0",
+                "pin": "26",
                 "rotate": true,
                 "pos": [
                     360,
@@ -351,7 +352,7 @@
                 "direction": "output"
             },
             "DIR": {
-                "pin": "0",
+                "pin": "27",
                 "rotate": true,
                 "pos": [
                     380,
@@ -360,7 +361,7 @@
                 "direction": "output"
             },
             "EN": {
-                "pin": "0",
+                "pin": "28",
                 "rotate": true,
                 "pos": [
                     400,
@@ -378,7 +379,7 @@
         "default": "",
         "pins": {
             "A": {
-                "pin": "0",
+                "pin": "37",
                 "rotate": true,
                 "pos": [
                     470,
@@ -387,7 +388,7 @@
                 "direction": "input"
             },
             "B": {
-                "pin": "0",
+                "pin": "38",
                 "rotate": true,
                 "pos": [
                     490,
@@ -396,7 +397,7 @@
                 "direction": "input"
             },
             "Z": {
-                "pin": "0",
+                "pin": "39",
                 "rotate": true,
                 "pos": [
                     510,
@@ -413,7 +414,7 @@
         "default": "",
         "pins": {
             "R1": {
-                "pin": "0",
+                "pin": "40",
                 "rotate": true,
                 "pos": [
                     585,
@@ -422,7 +423,7 @@
                 "direction": "output"
             },
             "R2": {
-                "pin": "0",
+                "pin": "41",
                 "rotate": true,
                 "pos": [
                     637,
@@ -431,7 +432,7 @@
                 "direction": "output"
             },
             "R3": {
-                "pin": "0",
+                "pin": "42",
                 "rotate": true,
                 "pos": [
                     689,
@@ -441,7 +442,7 @@
             },
 
             "R4": {
-                "pin": "0",
+                "pin": "47",
                 "pos": [
                     730,
                     485
@@ -449,7 +450,7 @@
                 "direction": "output"
             },
             "R5": {
-                "pin": "0",
+                "pin": "48",
                 "pos": [
                     730,
                     430
