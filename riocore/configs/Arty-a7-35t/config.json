@@ -1,0 +1,230 @@
+{
+    "name": "Arty-a7-35t",
+    "description": "Arty a7-35t - testing",
+    "boardcfg": "Arty-a7-35t",
+    "protocol": "UDP",
+    "axis": 3,
+    "plugins": [
+        {
+            "type": "bitout",
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "pin": "ChipKit:D8",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-x",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "ChipKit:D9"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-z",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "ChipKit:D10"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "home-none",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "ChipKit:D11"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "spindle-dir",
+            "pins": {
+                "bit": {
+                    "pin": "ChipKit:D13"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "coolant",
+            "pins": {
+                "bit": {
+                    "pin": "ChipKit:A3"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "e-stop",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "ChipKit:RST"
+                }
+            }
+        },
+        {
+            "name": "joint-0",
+            "type": "stepdir",
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "ChipKit:D2"
+                },
+                "dir": {
+                    "pin": "ChipKit:D5"
+                }
+            },
+            "axis": "Z",
+            "joint": {
+                "scale": -800,
+                "max_velocity": 40,
+                "max_acceleration": 1200,
+                "backlash": 0
+            }
+        },
+        {
+            "name": "joint-1",
+            "type": "stepdir",
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "ChipKit:D3"
+                },
+                "dir": {
+                    "pin": "ChipKit:D6"
+                }
+            },
+            "axis": "X",
+            "joint": {
+                "scale": 3200,
+                "max_velocity": 5,
+                "max_acceleration": 500,
+                "backlash": 0.1
+            }
+        },
+        {
+            "name": "joint-2",
+            "type": "stepdir",
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "ChipKit:D4"
+                },
+                "dir": {
+                    "pin": "ChipKit:D7"
+                }
+            },
+            "joint": {
+                "scale": 320,
+                "max_velocity": 20,
+                "max_acceleration": 500,
+                "backlash": 0
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "H5",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ]
+                }
+            },
+            "frequency": 1,
+            "name": "status"
+        },
+        {
+            "type": "arty_mii",
+            "mac": "AA:AF:FA:CC:E3:1C",
+            "ip": "192.168.10.195",
+            "port": 2390,
+            "pins": {
+                "phy_ref_clk": {
+                    "pin": "G18"
+                },
+                "phy_rx_clk": {
+                    "pin": "F15"
+                },
+                "phy_rxd0": {
+                    "pin": "D18"
+                },
+                "phy_rxd1": {
+                    "pin": "E17"
+                },
+                "phy_rxd2": {
+                    "pin": "E18"
+                },
+                "phy_rxd3": {
+                    "pin": "G17"
+                },
+                "phy_rx_dv": {
+                    "pin": "G16"
+                },
+                "phy_rx_er": {
+                    "pin": "C17"
+                },
+                "phy_tx_clk": {
+                    "pin": "H16"
+                },
+                "phy_txd0": {
+                    "pin": "H14"
+                },
+                "phy_txd1": {
+                    "pin": "J14"
+                },
+                "phy_txd2": {
+                    "pin": "J13"
+                },
+                "phy_txd3": {
+                    "pin": "H17"
+                },
+                "phy_tx_en": {
+                    "pin": "H15"
+                },
+                "phy_col": {
+                    "pin": "D17"
+                },
+                "phy_crs": {
+                    "pin": "G14"
+                },
+                "phy_reset_n": {
+                    "pin": "C16"
+                }
+            }
+        }
+    ]
+}

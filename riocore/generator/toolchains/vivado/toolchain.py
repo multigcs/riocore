@@ -19,7 +19,7 @@ class Toolchain:
 
     def pll(self, clock_in, clock_out):
         if self.config["jdata"]["family"] == "xc7":
-            if float(speed) == 125000000.0 and float(clock_in) == 100000000.0:
+            if float(clock_out) == 125000000.0 and float(clock_in) == 100000000.0:
                 result = subprocess.check_output(
                     f"{self.riocore_path}/files/vivado-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",
                     shell=True,

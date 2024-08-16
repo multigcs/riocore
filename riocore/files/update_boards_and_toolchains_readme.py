@@ -90,6 +90,9 @@ for ppath in sorted(glob.glob(f"riocore/generator/toolchains/*/toolchain.py")):
             toutput.append(f"* URL: [{url}]({url})")
             toutput.append("")
 
+        if hasattr(toolchain.Toolchain, "pll"):
+            toutput.append(f"* PLL: can generate PLL for some types")
+
         if description:
             toutput.append(f"{description}")
             toutput.append("")

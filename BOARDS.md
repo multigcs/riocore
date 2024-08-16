@@ -8,7 +8,6 @@
 | [Colorlight_i5-v7_0](riocore/boards/Colorlight_i5-v7_0/README.md) | minimal configuration for Colorlight_i5-v7.0 | <img src="riocore/boards/Colorlight_i5-v7_0/board.png" height="48"> |
 | [ICEBreakerV1.0e](riocore/boards/ICEBreakerV1.0e/README.md) | Small and low cost FPGA educational and development board | <img src="riocore/boards/ICEBreakerV1.0e/board.png" height="48"> |
 | [IceShield](riocore/boards/IceShield/README.md) | RIO-IceShield board for Raspberry PI4 | <img src="riocore/boards/IceShield/board.png" height="48"> |
-| [MecanixDev](riocore/boards/MecanixDev/README.md) | MecanixDev | <img src="riocore/boards/MecanixDev/board.png" height="48"> |
 | [OctoBot](riocore/boards/OctoBot/README.md) | RIO-OctoBot board | <img src="riocore/boards/OctoBot/board.png" height="48"> |
 | [Olimex-ICE40HX8K-EVB](riocore/boards/Olimex-ICE40HX8K-EVB/README.md) | Small and low cost FPGA educational and development board | <img src="riocore/boards/Olimex-ICE40HX8K-EVB/board.png" height="48"> |
 | [Spartan6](riocore/boards/Spartan6/README.md) | Spartan6 - only for testing the toolchain | |
