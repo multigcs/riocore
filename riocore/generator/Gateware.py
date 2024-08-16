@@ -14,12 +14,12 @@ class Gateware:
         self.project = project
         self.gateware_path = f"{project.config['output_path']}/Gateware"
         os.system(f"mkdir -p {self.gateware_path}/")
+        project.config["riocore_path"] = riocore_path
 
     def globals(self):
-        toolchain = self.config["toolchain"]
         # create globals.v for compatibility functions
         globals_data = []
-        globals_data.append(f'localparam TOOLCHAIN = "{toolchain}";')
+        globals_data.append(f'localparam TOOLCHAIN = "{self.toolchain}";')
         globals_data.append("")
         globals_data.append("// replacement for $clog2")
         globals_data.append("function integer clog2;")
@@ -36,6 +36,10 @@ class Gateware:
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
+        self.generate_pll = generate_pll
+        self.toolchain = self.project.config["toolchain"]
+        print(f"loading toolchain {self.toolchain}")
+        self.toolchain_generator = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{self.toolchain}").Toolchain(self.config)
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE == "expansion":
@@ -43,7 +47,6 @@ class Gateware:
                     self.expansion_pins.append(pin)
                 for pin in plugin_instance.expansion_inputs():
                     self.expansion_pins.append(pin)
-        self.generate_pll = generate_pll
         self.verilogs = []
         self.globals()
         self.top()
@@ -118,10 +121,7 @@ class Gateware:
                     else:
                         print(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
 
-        toolchain = self.config["toolchain"]
-        print(f"loading toolchain {toolchain}")
-        toolchain_generator = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{toolchain}")
-        toolchain_generator.Toolchain(self.config).generate(self.gateware_path)
+        self.toolchain_generator.generate(self.gateware_path)
 
     def top(self):
         output = []
@@ -249,50 +249,11 @@ class Gateware:
         if osc_clock:
             speed = self.project.config["speed"]
             if self.generate_pll:
-                if self.project.config["jdata"]["family"] == "ecp5":
-                    result = subprocess.check_output(f"ecppll -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}", shell=True)
-                elif self.project.config["jdata"]["type"] == "up5k":
-                    result = subprocess.check_output(f"icepll -p -m -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}", shell=True)
-                    achieved = re.findall(r"F_PLLOUT:\s*(\d*\.\d*)\s*MHz \(achieved\)", result.decode())
-                    if achieved:
-                        new_speed = int(float(achieved[0]) * 1000000)
-                        if new_speed != self.project.config["speed"]:
-                            print(f"WARNING: achieved PLL frequency is: {new_speed}")
-                            self.project.config["speed"] = new_speed
-                elif self.project.config["jdata"]["family"] == "GW1N-9C":
-                    result = subprocess.check_output(
-                        f"python3 {riocore_path}/files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}", shell=True
-                    )
-                    achieved = re.findall(r"Achieved output frequency:\s*(\d*\.\d*)\s*MHz", result.decode())
-                    if achieved:
-                        new_speed = int(float(achieved[0]) * 1000000)
-                        if new_speed != self.project.config["speed"]:
-                            print(f"WARNING: achieved PLL frequency is: {new_speed}")
-                            self.project.config["speed"] = new_speed
-                elif self.project.config["jdata"]["family"] == "MAX 10":
-                    result = subprocess.check_output(
-                        f"{riocore_path}/files/quartus-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'",
-                        shell=True,
-                    )
-                    achieved = re.findall(r"OUTPUT FREQ:\s*(\d*\.\d*)", result.decode())
-                    if achieved:
-                        new_speed = int(achieved[0].replace(".", ""))
-                        if new_speed != self.project.config["speed"]:
-                            print(f"WARNING: achieved PLL frequency is: {new_speed}")
-                            self.project.config["speed"] = new_speed
-                elif self.project.config["jdata"]["family"] == "xc7":
-                    if float(speed) == 125000000.0 and float(osc_clock) == 100000000.0:
-                        result = subprocess.check_output(
-                            f"{riocore_path}/files/vivado-pll.sh \"{self.project.config['jdata']['family']}\" {float(osc_clock) / 1000000} {float(speed) / 1000000} '{self.gateware_path}/pll.v'",
-                            shell=True,
-                        )
-                        print(result.decode())
-                    else:
-                        print("ERROR: can not generate pll for this platform")
-                        exit(1)
+                if hasattr(self.toolchain_generator, "pll"):
+                    self.toolchain_generator.pll(float(osc_clock), float(speed))
                 else:
-                    result = subprocess.check_output(f"icepll -q -m -f '{self.gateware_path}/pll.v' -i {float(osc_clock) / 1000000} -o {float(speed) / 1000000}", shell=True)
-                    print(result.decode())
+                    print(f"WARNING: can not generate pll for this platform: set speed to: {speed} Hz")
+                    self.config["speed"] = speed
             else:
                 print("INFO: preview-mode / no pll generated")
 

@@ -1,11 +1,15 @@
 import importlib
+import re
 import os
 import shutil
+import subprocess
 
 
 class Toolchain:
     def __init__(self, config):
         self.config = config
+        self.gateware_path = f"{self.config['output_path']}/Gateware"
+        self.riocore_path = config["riocore_path"]
 
     def info(cls):
         info = {
@@ -14,6 +18,21 @@ class Toolchain:
             "description": "",
         }
         return info
+
+    def pll(self, clock_in, clock_out):
+        if self.config["jdata"]["family"] == "GW1N-9C":
+            result = subprocess.check_output(
+                f"python3 {self.riocore_path}/files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{self.gateware_path}/pll.v' -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True
+            )
+            achieved = re.findall(r"Achieved output frequency:\s*(\d*\.\d*)\s*MHz", result.decode())
+            if achieved:
+                new_speed = int(float(achieved[0]) * 1000000)
+                if new_speed != self.config["speed"]:
+                    print(f"WARNING: achieved PLL frequency is: {new_speed}")
+                    self.config["speed"] = new_speed
+        else:
+            print(f"WARNING: can not generate pll for this platform: set speed to: {clock_in} Hz")
+            self.config["speed"] = clock_in
 
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")

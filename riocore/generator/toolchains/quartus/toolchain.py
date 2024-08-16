@@ -1,10 +1,14 @@
 import importlib
 import shutil
+import re
+import subprocess
 
 
 class Toolchain:
     def __init__(self, config):
         self.config = config
+        self.gateware_path = f"{self.config['output_path']}/Gateware"
+        self.riocore_path = config["riocore_path"]
 
     def info(cls):
         info = {
@@ -13,6 +17,22 @@ class Toolchain:
             "description": "",
         }
         return info
+
+    def pll(self, clock_in, clock_out):
+        if self.config["jdata"]["family"] == "MAX 10":
+            result = subprocess.check_output(
+                f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",
+                shell=True,
+            )
+            achieved = re.findall(r"OUTPUT FREQ:\s*(\d*\.\d*)", result.decode())
+            if achieved:
+                new_speed = int(achieved[0].replace(".", ""))
+                if new_speed != self.config["speed"]:
+                    print(f"WARNING: achieved PLL frequency is: {new_speed}")
+                    self.config["speed"] = new_speed
+        else:
+            print(f"WARNING: can not generate pll for this platform: set speed to: {clock_in} Hz")
+            self.config["speed"] = clock_in
 
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.qdf")

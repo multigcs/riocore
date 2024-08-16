@@ -1,10 +1,13 @@
 import importlib
 import shutil
+import subprocess
 
 
 class Toolchain:
     def __init__(self, config):
         self.config = config
+        self.gateware_path = f"{self.config['output_path']}/Gateware"
+        self.riocore_path = config["riocore_path"]
 
     def info(cls):
         info = {
