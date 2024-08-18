@@ -66,7 +66,11 @@ class Toolchain:
         makefile_data.append("	rm -rf $(PROJECT).ngc $(PROJECT).ngd $(PROJECT).ncd parout.ncd $(PROJECT).bit")
         makefile_data.append("")
         makefile_data.append("load: $(PROJECT).bit")
-        makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit")
+        flashcmd = self.config.get("flashcmd")
+        if flashcmd:
+            makefile_data.append(f"	{flashcmd}")
+        else:
+            makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f")
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
