@@ -141,8 +141,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW1",
-                    "pull": "up"
+                    "pin": "SWITCHES:SW1"
                 }
             }
         },

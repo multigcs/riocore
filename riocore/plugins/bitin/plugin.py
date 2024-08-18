@@ -7,8 +7,6 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "bit": {
                 "direction": "input",
-                "invert": True,
-                "pull": "up",
             },
         }
         self.INTERFACE = {
