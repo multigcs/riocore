@@ -8,6 +8,7 @@
     "flashcmd": "djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit",
     "clock": {
         "speed": "50000000",
+        "startup": "jtagclk",
         "pin": "B8"
     },
     "slots": [
