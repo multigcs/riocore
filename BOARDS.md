@@ -3,7 +3,7 @@
 | --- | --- | :---: |
 | [Altera10M08Eval](riocore/boards/Altera10M08Eval/README.md) | Altera10M08Eval | <img src="riocore/boards/Altera10M08Eval/board.png" height="48"> |
 | [Arty-a7-35t](riocore/boards/Arty-a7-35t/README.md) | Arty a7-35t - testing | <img src="riocore/boards/Arty-a7-35t/board.png" height="48"> |
-| [Basys2](riocore/boards/Basys2/README.md) | Small and low cost FPGA educational and development board | <img src="riocore/boards/Basys2/board.png" height="48"> |
+| [Basys2](riocore/boards/Basys2/README.md) | Digilent - Basys2 | <img src="riocore/boards/Basys2/board.png" height="48"> |
 | [Colorlight5A-75E](riocore/boards/Colorlight5A-75E/README.md) | Colorlight5A-75E | <img src="riocore/boards/Colorlight5A-75E/board.png" height="48"> |
 | [Colorlight_i5-v7_0](riocore/boards/Colorlight_i5-v7_0/README.md) | minimal configuration for Colorlight_i5-v7.0 | <img src="riocore/boards/Colorlight_i5-v7_0/board.png" height="48"> |
 | [ICEBreakerV1.0e](riocore/boards/ICEBreakerV1.0e/README.md) | Small and low cost FPGA educational and development board | <img src="riocore/boards/ICEBreakerV1.0e/board.png" height="48"> |

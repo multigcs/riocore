@@ -1,0 +1,205 @@
+{
+    "name": "Basys2",
+    "description": "Basys2 - test configuration",
+    "boardcfg": "Basys2",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LEDS:LED1"
+                }
+            }
+        },
+        {
+            "name": "w5500",
+            "type": "w5500",
+            "mac": "AA:AF:FA:CC:E3:1C",
+            "ip": "192.168.10.195",
+            "port": 2390,
+            "pins": {
+                "sclk": {
+                    "pin": "PMOD_JA:P1"
+                },
+                "sel": {
+                    "pin": "PMOD_JA:P2"
+                },
+                "mosi": {
+                    "pin": "PMOD_JA:P3"
+                },
+                "miso": {
+                    "pin": "PMOD_JA:P4"
+                }
+            }
+        },
+        {
+            "type": "dis7seg",
+            "pins": {
+                "en1": {
+                    "pin": "7SEG:EN1"
+                },
+                "en2": {
+                    "pin": "7SEG:EN2"
+                },
+                "en3": {
+                    "pin": "7SEG:EN3"
+                },
+                "en4": {
+                    "pin": "7SEG:EN4"
+                },
+                "seg_a": {
+                    "pin": "7SEG:A",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "seg_b": {
+                    "pin": "7SEG:B",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "seg_c": {
+                    "pin": "7SEG:C",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "seg_d": {
+                    "pin": "7SEG:D",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "seg_e": {
+                    "pin": "7SEG:E",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "seg_f": {
+                    "pin": "7SEG:F",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                },
+                "seg_g": {
+                    "pin": "7SEG:G",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTONS:BTN1"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTONS:BTN2"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTONS:BTN3"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTONS:BTN4"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW1"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW2"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW3"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW4"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW5"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW6"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW7"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SWITCHES:SW8"
+                }
+            }
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 # Basys2
-**Small and low cost FPGA educational and development board**
+**Digilent - Basys2**
 
 * Toolchain: ise
 * Family: xc3
