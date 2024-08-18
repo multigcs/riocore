@@ -141,7 +141,8 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW1"
+                    "pin": "SWITCHES:SW1",
+                    "pull": "up"
                 }
             }
         },
@@ -198,6 +199,62 @@
             "pins": {
                 "bit": {
                     "pin": "SWITCHES:SW8"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LEDS:LED2"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LEDS:LED3"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LEDS:LED4"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LEDS:LED5"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LEDS:LED6"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LEDS:LED7"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LEDS:LED8"
                 }
             }
         }

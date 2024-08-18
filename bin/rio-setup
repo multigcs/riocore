@@ -984,7 +984,7 @@ class WinForm(QWidget):
                 plugin_config["pins"] = {}
 
             for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                if pin_name not in plugin_config:
+                if pin_name not in plugin_config["pins"]:
                     plugin_config["pins"][pin_name] = {}
 
             if plugin_instance:
@@ -2562,7 +2562,7 @@ class WinForm(QWidget):
             plugin_config["pins"] = {}
 
         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-            if pin_name not in plugin_config:
+            if pin_name not in plugin_config["pins"]:
                 plugin_config["pins"][pin_name] = {}
             pin_config = plugin_config.get("pins", {}).get(pin_name, {})
             pin_title = pin_name
