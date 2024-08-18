@@ -208,6 +208,7 @@ class WinForm(QWidget):
     def __init__(self, args, parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("LinuxCNC-RIO - Setup-GUI")
+        # self.showMaximized()
         # self.setMinimumWidth(1400)
         # self.setMinimumHeight(900)
         self.setStyleSheet(STYLESHEET)
@@ -446,6 +447,11 @@ class WinForm(QWidget):
         self.treeview.resizeColumnToContents(0)
         self.treeview.resizeColumnToContents(1)
         self.treeview.collapseAll()
+
+        tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(0)
+        win_height = max(self.height(), 900)
+        self.resize(tree_width * 2, win_height)
+        self.treeview.resize(tree_width, win_height)
         splitter.setSizes((100, 200))
 
         self.generate_cb(preview=True)
@@ -971,7 +977,16 @@ class WinForm(QWidget):
                 }
             )
 
-            plugin_instance = self.plugins.load_plugin(plugin_id, self.config["plugins"][plugin_id], self.config)
+            plugin_config = self.config["plugins"][plugin_id]
+            plugin_instance = self.plugins.load_plugin(plugin_id, plugin_config, self.config)
+
+            if "pins" not in plugin_config:
+                plugin_config["pins"] = {}
+
+            for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                if pin_name not in plugin_config:
+                    plugin_config["pins"][pin_name] = {}
+
             if plugin_instance:
                 # auto select pins if slot is set
                 if slot_name:
@@ -2381,7 +2396,6 @@ class WinForm(QWidget):
                 "setup": module_setup,
             }
         )
-        # print("module_instance", self.config["modules"])
 
         mplugins = riocore.Plugins()
         for plugin_id, plugin_config in enumerate(module_defaults.get("plugins", [])):
@@ -2544,7 +2558,12 @@ class WinForm(QWidget):
         label.setFont(myFont)
         pins.addWidget(label)
 
+        if "pins" not in plugin_config:
+            plugin_config["pins"] = {}
+
         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+            if pin_name not in plugin_config:
+                plugin_config["pins"][pin_name] = {}
             pin_config = plugin_config.get("pins", {}).get(pin_name, {})
             pin_title = pin_name
             direction = pin_defaults["direction"]

@@ -358,6 +358,7 @@ class PluginBase:
         instance = {"module": self.NAME, "direct": direct, "parameter": {}, "arguments": {}, "predefines": []}
         instance_predefines = instance["predefines"]
         instance_arguments = instance["arguments"]
+        pin_varname = None
 
         if direct is False:
             instance_arguments["clk"] = "sysclk"
@@ -391,7 +392,7 @@ class PluginBase:
             instance_arguments["data_in"] = f"{self.expansion_prefix}_INPUT"
             instance_arguments["data_out"] = f"{self.expansion_prefix}_OUTPUT"
 
-        elif direct is True:
+        elif direct is True and pin_varname is not None:
             for interface_name, interface_setup in self.interface_data().items():
                 if interface_setup["direction"] in {"output", "inout"}:
                     instance_predefines.append(f"assign {pin_varname} = {interface_setup['variable']};")

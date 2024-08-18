@@ -1,6 +1,6 @@
 {
-    "name": "ICEBreakerV1.0e",
-    "description": "Small and low cost FPGA educational and development board",
+    "name": "Basys2",
+    "description": "Digilent - Basys2",
     "toolchain": "ise",
     "family": "xc3",
     "type": "xc3s100e-4-cp132",
