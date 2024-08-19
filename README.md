@@ -66,7 +66,6 @@ here is a small overview of the boards: [TOOLCHAINS](TOOLCHAINS.md)
 installing via git:
 ```
 git clone https://github.com/multigcs/riocore.git
-git clone https://github.com/multigcs/riogui.git
 cd riocore
 ```
 
