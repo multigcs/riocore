@@ -18,50 +18,96 @@
                 "L1": {
                     "pin": "C13",
                     "pos": [
-                        495,
-                        515
+                        751,
+                        337
                     ],
                     "direction": "output"
                 },
                 "L2": {
                     "pin": "A13",
                     "pos": [
-                        465,
-                        515
+                        751,
+                        349
                     ],
                     "direction": "output"
                 },
                 "L3": {
                     "pin": "N16",
                     "pos": [
-                        465,
-                        515
+                        751,
+                        362
                     ],
                     "direction": "output"
                 },
                 "L4": {
                     "pin": "N14",
                     "pos": [
-                        465,
-                        515
+                        751,
+                        375
                     ],
                     "direction": "output"
                 },
                 "L5": {
                     "pin": "L14",
                     "pos": [
-                        465,
-                        515
+                        751,
+                        388
                     ],
                     "direction": "output"
                 },
                 "L6": {
                     "pin": "L16",
                     "pos": [
-                        465,
-                        515
+                        751,
+                        401
                     ],
                     "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "BUTTON",
+            "comment": "BUTTON",
+            "pins": {
+                "S0": {
+                    "pin": "T10",
+                    "pos": [
+                        20,
+                        143
+                    ],
+                    "direction": "input"
+                },
+                "S1": {
+                    "pin": "T3",
+                    "pos": [
+                        20,
+                        215
+                    ],
+                    "direction": "input"
+                },
+                "S2": {
+                    "pin": "T2",
+                    "pos": [
+                        20,
+                        287
+                    ],
+                    "direction": "input"
+                },
+                "S3": {
+                    "pin": "D7",
+                    "pos": [
+                        20,
+                        360
+                    ],
+                    "direction": "input"
+                },
+                "S4": {
+                    "pin": "C7",
+                    "pos": [
+                        20,
+                        430
+                    ],
+                    "direction": "input"
                 }
             }
         },
@@ -74,8 +120,8 @@
                 "wled_expansion"
             ],
             "pos": [
-                9,
-                313
+                757,
+                71
             ],
             "pins": {
                 "DATA": {
