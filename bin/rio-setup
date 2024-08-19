@@ -3173,7 +3173,7 @@ class WinForm(QWidget):
         self.output_path = "Output"
         if preview:
             self.output_path = "OutputTMP"
-        config_name = self.config.get("name")
+
         self.generate(self.output_path, preview=preview)
         try:
             self.tabs["Gateware"].update()
