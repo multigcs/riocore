@@ -49,6 +49,7 @@ class Toolchain:
         nextpnr = shutil.which(f"nextpnr-{family}")
         if nextpnr is None:
             print(f"WARNING: can not found toolchain installation in PATH: nextpnr (nextpnr-{family})")
+            print("  example: export PATH=$PATH:/opt/oss-cad-suite/bin")
 
         if family == "ecp5":
             pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
