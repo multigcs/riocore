@@ -1,3 +1,63 @@
+JOINT_OPTIONS = {
+    "scale": {
+        "type": float,
+    },
+    "type": {
+        "type": "select",
+        "options": ["LINEAR", "ANGULAR"],
+    },
+    "ferror": {
+        "type": float,
+    },
+    "min_ferror": {
+        "type": float,
+    },
+    "min_limit": {
+        "type": float,
+    },
+    "max_limit": {
+        "type": float,
+    },
+    "max_velocity": {
+        "type": float,
+    },
+    "max_acceleration": {
+        "type": float,
+    },
+    "stepgen_maxaccel": {
+        "type": float,
+    },
+    "feedback": {
+        "type": str,
+    },
+    "home_sequence": {
+        "type": int,
+    },
+    "home": {
+        "type": float,
+    },
+    "home_offset": {
+        "type": float,
+    },
+    "home_search_vel": {
+        "type": float,
+    },
+    "home_latch_vel": {
+        "type": float,
+    },
+    "home_final_vel": {
+        "type": float,
+    },
+    "home_ignore_limits": {
+        "type": "select",
+        "options": ["YES", "NO"],
+    },
+    "home_use_index": {
+        "type": "select",
+        "options": ["YES", "NO"],
+    },
+}
+
 RIO_FUNCTION_DEFAULTS = {
     "jog": {
         "wheel": {

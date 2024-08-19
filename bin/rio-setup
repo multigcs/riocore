@@ -57,66 +57,6 @@ from PyQt5.QtWidgets import (
 riocore_path = os.path.dirname(riocore.__file__)
 mapping = {}
 
-JOINT_OPTIONS = {
-    "scale": {
-        "type": float,
-    },
-    "type": {
-        "type": "select",
-        "options": ["LINEAR", "ANGULAR"],
-    },
-    "ferror": {
-        "type": float,
-    },
-    "min_ferror": {
-        "type": float,
-    },
-    "min_limit": {
-        "type": float,
-    },
-    "max_limit": {
-        "type": float,
-    },
-    "max_velocity": {
-        "type": float,
-    },
-    "max_acceleration": {
-        "type": float,
-    },
-    "stepgen_maxaccel": {
-        "type": float,
-    },
-    "feedback": {
-        "type": str,
-    },
-    "home_sequence": {
-        "type": int,
-    },
-    "home": {
-        "type": float,
-    },
-    "home_offset": {
-        "type": float,
-    },
-    "home_search_vel": {
-        "type": float,
-    },
-    "home_latch_vel": {
-        "type": float,
-    },
-    "home_final_vel": {
-        "type": float,
-    },
-    "home_ignore_limits": {
-        "type": "select",
-        "options": ["YES", "NO"],
-    },
-    "home_use_index": {
-        "type": "select",
-        "options": ["YES", "NO"],
-    },
-}
-
 
 class PinButton(QPushButton):
     def __init__(self, widget, parent=None, pkey=None, bgcolor=None, pin=None):
@@ -2781,7 +2721,7 @@ class WinForm(QWidget):
             plugin_config["joint"] = {}
         joints_setup = plugin_config["joint"]
 
-        joint_options = copy.deepcopy(JOINT_OPTIONS)
+        joint_options = copy.deepcopy(halpins.JOINT_OPTIONS)
 
         for key, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
             key = key.lower()
@@ -3507,7 +3447,7 @@ class WinForm(QWidget):
             plugin_instance.plugin_setup["joint"] = {}
         joints_setup = plugin_instance.plugin_setup["joint"]
 
-        joint_options = copy.deepcopy(JOINT_OPTIONS)
+        joint_options = copy.deepcopy(halpins.JOINT_OPTIONS)
 
         for key, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
             key = key.lower()
