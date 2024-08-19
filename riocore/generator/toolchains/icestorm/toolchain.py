@@ -32,7 +32,7 @@ class Toolchain:
                     self.config["speed"] = new_speed
         else:
             result = subprocess.check_output(f"icepll -q -m -f '{self.gateware_path}/pll.v' -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
-            #print(result.decode())
+            # print(result.decode())
 
     def generate(self, path):
         verilogs = " ".join(self.config["verilog_files"])
