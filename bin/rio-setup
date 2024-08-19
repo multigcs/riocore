@@ -1223,7 +1223,7 @@ class WinForm(QWidget):
                 self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
                 self.pinlabels[pkey].setFixedWidth(w)
                 self.pinlabels[pkey].setFixedHeight(h)
-                self.pinlabels[pkey].setText(pin_id)
+                self.pinlabels[pkey].setText(pkey)
                 self.pinlabels[pkey].move(QPoint(int(slot["rect"][0]), int(slot["rect"][1])))
                 self.pinlabels[pkey].setToolTip(tooltip)
                 if module_name:
