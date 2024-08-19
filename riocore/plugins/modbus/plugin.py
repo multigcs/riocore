@@ -1,4 +1,4 @@
-from struct import *
+from struct import unpack
 
 from riocore.checksums import crc16
 from riocore.plugins import PluginBase

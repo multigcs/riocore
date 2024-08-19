@@ -1,5 +1,3 @@
-from struct import *
-
 from riocore.plugins import PluginBase
 
 

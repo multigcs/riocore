@@ -3344,7 +3344,7 @@ class axis:
         cfgxml_data.append('      <text>"R"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"pyvcp.{halpin_g}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)

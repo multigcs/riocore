@@ -1,5 +1,4 @@
 import os
-from struct import *
 
 from riocore.checksums import crc8, crc16
 from riocore.plugins import PluginBase

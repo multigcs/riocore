@@ -72,6 +72,7 @@ def draw_line(x1, y1, z1, x2, y2, z2, color):
     svg_out.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke:{color};stroke-width:0.5" />')
 
 
+color = "black"
 for line in output:
     result = COMMAND.match(line.strip())
     if result:
