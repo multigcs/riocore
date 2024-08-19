@@ -19,6 +19,7 @@ from functools import partial
 import graphviz
 import riocore
 from riocore import halpins
+from riocore import halgraph
 from riocore.plugins import Modifiers
 from riocore.widgets import MyQSvgWidget, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, modifier_selector, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
@@ -63,6 +64,8 @@ class PinButton(QPushButton):
         self.parent = parent
         self.pkey = pkey
         self.bgcolor = bgcolor
+        if not pin:
+            pin = {}
         self.pin = pin
         if self.parent and self.bgcolor:
             self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
@@ -281,6 +284,7 @@ class WinForm(QWidget):
         self.sig_table_sort_col = 1
 
         self.overview_img = MyQSvgWidget()
+        self.hal_img = MyQSvgWidget()
 
         self.img_container = QWidget()
         self.img_layout = QVBoxLayout(self.img_container)
@@ -299,6 +303,7 @@ class WinForm(QWidget):
 
         self.tabwidget.addTab(ipin_widget, "Board")
         self.tabwidget.addTab(self.overview_img, "Flow")
+        self.tabwidget.addTab(self.hal_img, "Hal")
         self.tabwidget.addTab(self.pin_table, "Pins")
         self.tabwidget.addTab(self.sig_table, "Signals")
 
@@ -335,7 +340,6 @@ class WinForm(QWidget):
             "custom_postgui.hal": QPlainTextEdit(),
             "rio-gui.xml": QPlainTextEdit(),
             "rio.c": QPlainTextEdit(),
-            "rio-hal.svg": self.hal_imagew,
         }
 
         for filename, widget in self.gateware.items():
@@ -347,9 +351,6 @@ class WinForm(QWidget):
         #    widget.insertPlainText("")
         #    self.firmware_tabwidget.addTab(widget, filename)
         for filename, widget in self.linuxcnc.items():
-            if filename != "rio-hal.svg":
-                widget.clear()
-                widget.insertPlainText("")
             self.linuxcnc_tabwidget.addTab(widget, filename)
 
         container = QWidget()
@@ -1119,7 +1120,7 @@ class WinForm(QWidget):
                 label.mark(color)
                 direction = label.pin.get("direction", "all")
 
-                plugin_instance, pin_name = self.get_plugin_by_pin(label.pin["pin"])
+                plugin_instance, pin_name = self.get_plugin_by_pin(label.pin.get("pin", {}))
                 pinfo = ""
                 if plugin_instance:
                     pinfo = f"-> {plugin_instance.title} ({plugin_instance.NAME}) : {pin_name}"
@@ -1135,7 +1136,7 @@ class WinForm(QWidget):
                 if key == pkey:
                     pinfo += " <-"
 
-                infotext.append(f" {splitted[1]}: {label.pin['pin']} ({direction}) {pinfo}")
+                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}) {pinfo}")
             else:
                 label.unmark()
 
@@ -3211,18 +3212,16 @@ class WinForm(QWidget):
                             self.firmware_hash = hash_md5.hexdigest()
 
             for filename, widget in self.linuxcnc.items():
-                if filename == "rio-hal.svg":
-                    if os.path.exists(f"{output_path}/{config_name}/LinuxCNC/rio.ini"):
-                        os.system(f"python3 {riocore_path}/files/hal2graphviz.py -q -o {output_path}/{config_name}/LinuxCNC/{filename} {output_path}/{config_name}/LinuxCNC/rio.ini")
-                    if os.path.exists(f"{output_path}/{config_name}/LinuxCNC/{filename}"):
-                        self.hal_imagew.load(f"{output_path}/{config_name}/LinuxCNC/{filename}")
-                        # self.hal_imagew.setFixedSize(self.hal_imagew.renderer().defaultSize())
-                else:
-                    file_content = open(f"{output_path}/{config_name}/LinuxCNC/{filename}", "r").read()
-                    widget.clear()
-                    widget.insertPlainText(file_content)
+                file_content = open(f"{output_path}/{config_name}/LinuxCNC/{filename}", "r").read()
+                widget.clear()
+                widget.insertPlainText(file_content)
+
+            if os.path.exists(f"{output_path}/{config_name}/LinuxCNC/rio.ini"):
+                self.hal_img.load(halgraph.HalGraph(f"{output_path}/{config_name}/LinuxCNC/rio.ini").svg())
+
         except Exception as error:
             print(f"ERROR loading output: {error}")
+
         if preview:
             os.system(f"rm -rf {output_path}/")
         self.info_widget.setText("generate...done")
