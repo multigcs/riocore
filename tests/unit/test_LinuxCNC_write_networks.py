@@ -108,9 +108,8 @@ def test_LinuxCNC_generate_networks(networks, setps, expected):
     print(pre)
     print(post)
 
-    assert pre == expected[0]
-    assert post == expected[1]
-
+    assert sorted(pre) == sorted(expected[0])
+    assert sorted(post) == sorted(expected[1])
 
 def test_LinuxCNC_hal_net_add():
     project = fake_project

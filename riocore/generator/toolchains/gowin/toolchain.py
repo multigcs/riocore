@@ -72,7 +72,7 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("$(PROJECT).tcl: pins.cst $(VERILOGS)")
         makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
-        makefile_data.append('	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
+        makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
         makefile_data.append('	@echo "add_file rio.sdc" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "add_file pins.cst" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "set_option -top_module $(TOP)" >> $(PROJECT).tcl')
