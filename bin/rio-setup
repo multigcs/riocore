@@ -1187,13 +1187,14 @@ class WinForm(QWidget):
         self.boardimg = QWidget()
         self.pinlabels = {}
 
-        pinimage = self.board.get("pinimage")
-        if not pinimage:
+        pinimage = self.board.get("pinimage", "board.png")
+        pinimage_path = f"{self.boardcfg_path}/{pinimage}"
+        if not pinimage or not os.path.isfile(pinimage_path):
             if self.tabwidget.tabText(0) == "Board":
                 self.tabwidget.removeTab(0)
             return
 
-        pinlayout_pixmap = QPixmap(f"{self.boardcfg_path}/{pinimage}")
+        pinlayout_pixmap = QPixmap(pinimage_path)
         self.boardimg.setFixedSize(pinlayout_pixmap.size())
 
         pinlayout_image = ImageMap(self)
