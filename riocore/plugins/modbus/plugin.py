@@ -680,23 +680,9 @@ class Plugin(PluginBase):
 
     def testgui_frameio_init(self, layout):
         from PyQt5.QtWidgets import (
-            QLineEdit,
-            QVBoxLayout,
-            QHBoxLayout,
-            QApplication,
-            QCheckBox,
-            QComboBox,
-            QDialog,
-            QDialogButtonBox,
-            QGridLayout,
             QHBoxLayout,
             QLabel,
-            QListWidget,
             QPushButton,
-            QSlider,
-            QVBoxLayout,
-            QWidget,
-            QTabWidget,
             QTextEdit,
         )
 

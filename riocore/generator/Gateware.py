@@ -1,10 +1,8 @@
 import hashlib
 import importlib
 import os
-import re
 import shutil
 import stat
-import subprocess
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 

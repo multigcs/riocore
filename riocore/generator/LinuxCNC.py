@@ -1,7 +1,6 @@
 import copy
 import glob
 import importlib
-import re
 import os
 import shutil
 import sys
@@ -625,7 +624,6 @@ class LinuxCNC:
                 position_mode = joint_config["position_mode"]
                 position_halname = joint_config["position_halname"]
                 feedback_halname = joint_config["feedback_halname"]
-                enable_halname = joint_config["enable_halname"]
                 plugin_instance = joint_config["plugin_instance"]
                 pin_num = joint_config["pin_num"]
 
@@ -772,11 +770,11 @@ class LinuxCNC:
             if gui != "qtdragon":
                 (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
                 self.cfgxml_data["status"] += gout
-                self.hal_net_add(f"kinstype.is-0", f"{pname}.legend0")
-                self.hal_net_add(f"kinstype.is-1", f"{pname}.legend1")
-            ini_setup["HALUI"][f"MDI_COMMAND|World Coord"] = "M428"
-            ini_setup["HALUI"][f"MDI_COMMAND|Joint Coord"] = "M429"
-            ini_setup["HALUI"][f"MDI_COMMAND|Gensertool"] = "M430"
+                self.hal_net_add("kinstype.is-0", f"{pname}.legend0")
+                self.hal_net_add("kinstype.is-1", f"{pname}.legend1")
+            ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
+            ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
+            ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
             (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
             self.cfgxml_data["status"] += gout
             if embed_vismach:
@@ -1027,7 +1025,7 @@ class LinuxCNC:
                 if halname_wheel and wheelfilter:
                     wf_gain = riof_jog_setup("wheel", "filter_gain")
                     wf_scale = riof_jog_setup("wheel", "filter_scale")
-                    self.loadrts.append(f"loadrt ilowpass names=riof.jog.wheelilowpass")
+                    self.loadrts.append("loadrt ilowpass names=riof.jog.wheelilowpass")
                     self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
                     self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
                     self.hal_setp_add("riof.jog.wheelilowpass.scale", wf_scale)
@@ -1448,7 +1446,7 @@ class LinuxCNC:
             self.loadrts.append("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
             self.loadrts.append("")
             os.makedirs(self.configuration_path, exist_ok=True)
-            for source in glob.glob(f"riocore/files/melfa/*"):
+            for source in glob.glob("riocore/files/melfa/*"):
                 shutil.copy(source, self.configuration_path)
 
             if not embed_vismach:

@@ -200,7 +200,6 @@ class Plugins:
                 instance_module = instance_config.get("module")
                 instance_parameter = instance_config.get("parameter")
                 instance_arguments = instance_config.get("arguments")
-                instance_predefines = instance_config.get("predefines")
                 instance_direct = instance_config.get("direct")
                 if not instance_direct:
                     if instance_arguments:
@@ -719,7 +718,7 @@ class Project:
         for plugin_instance in self.plugin_instances:
             for interface_name, interface_config in plugin_instance.interface_data().items():
                 direction = interface_config["direction"]
-                virtual = signal_config.get("virtual", False)
+                virtual = interface_config.get("virtual", False)
                 if virtual:
                     # swap direction vor virt signals
                     if direction == "input":

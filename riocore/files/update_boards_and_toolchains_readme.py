@@ -64,14 +64,14 @@ for board in sorted(glob.glob("riocore/boards/*")):
     open(f"{board}/README.md", "w").write("\n".join(readme))
 
 index.append("")
-open(f"BOARDS.md", "w").write("\n".join(index))
+open("BOARDS.md", "w").write("\n".join(index))
 print("# TOOLCHAINS")
 output = []
 output.append("# TOOLCHAINS")
 output.append("| Name | Info |")
 output.append("| --- | --- |")
 
-for ppath in sorted(glob.glob(f"riocore/generator/toolchains/*/toolchain.py")):
+for ppath in sorted(glob.glob("riocore/generator/toolchains/*/toolchain.py")):
     toolchain_name = os.path.basename(os.path.dirname(ppath))
     print(toolchain_name)
     toolchain = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{toolchain_name}")
@@ -91,7 +91,7 @@ for ppath in sorted(glob.glob(f"riocore/generator/toolchains/*/toolchain.py")):
             toutput.append("")
 
         if hasattr(toolchain.Toolchain, "pll"):
-            toutput.append(f"* PLL: can generate PLL for some types")
+            toutput.append("* PLL: can generate PLL for some types")
 
         if description:
             toutput.append(f"{description}")

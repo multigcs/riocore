@@ -111,7 +111,7 @@ for line in output:
                 color = "green"
             if last_pos:
                 last_x, last_y, last_z = last_pos
-                if not result["type"] in {"STRAIGHT_TRAVERSE"} or not args.no_g0:
+                if result["type"] not in {"STRAIGHT_TRAVERSE"} or not args.no_g0:
                     draw_line(last_x, last_y, last_z, new_x, new_y, new_z, color)
 
             last_pos = (new_x, new_y, new_z)

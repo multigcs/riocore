@@ -1,6 +1,5 @@
 import importlib
 import re
-import os
 import shutil
 import subprocess
 
@@ -41,7 +40,7 @@ class Toolchain:
         board = self.config.get("board")
         if family.startswith("GW"):
             device_family = family
-            if shutil.which(f"nextpnr-himbaechel") is not None:
+            if shutil.which("nextpnr-himbaechel") is not None:
                 family = "himbaechel"
             else:
                 family = "gowin"
@@ -173,7 +172,7 @@ class Toolchain:
                 makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs -f")
             elif board and board == "Tangoboard":
                 makefile_data.append("load: $(PROJECT).fs")
-                makefile_data.append(f"	openFPGALoader -b tangnano9k $(PROJECT).fs -f")
+                makefile_data.append("	openFPGALoader -b tangnano9k $(PROJECT).fs -f")
             else:
                 makefile_data.append(f"load: {bitfileName}")
                 makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
