@@ -448,11 +448,12 @@ class WinForm(QWidget):
         self.treeview.resizeColumnToContents(1)
         self.treeview.collapseAll()
 
-        tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(0)
+        tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(1)
+        img_width = max(self.hal_imagew.width(), 400)
         win_height = max(self.height(), 900)
-        self.resize(tree_width * 2, win_height)
+        self.resize(tree_width + img_width + 50, win_height)
         self.treeview.resize(tree_width, win_height)
-        splitter.setSizes((100, 200))
+        splitter.setSizes((tree_width, img_width))
 
         self.generate_cb(preview=True)
         self.check_status()
