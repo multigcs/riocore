@@ -1088,11 +1088,6 @@ class WinForm(QWidget):
 
     def get_plugin_by_pin(self, pinsearch):
         for plugin_instance in self.plugins.plugin_instances:
-            name = plugin_instance.plugin_setup.get("name")
-            title = plugin_instance.NAME
-            if name:
-                title = f"{name} ({plugin_instance.NAME})"
-
             for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                 pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
                 if not pin_setup and pin_defaults.get("optional") is True:
@@ -1130,10 +1125,6 @@ class WinForm(QWidget):
                     pinfo = f"-> {plugin_instance.title} ({plugin_instance.NAME}) : {pin_name}"
 
                     for signal_name, signal_config in plugin_instance.signals().items():
-                        signal_direction = signal_config["direction"]
-                        signal_halname = signal_config["halname"]
-                        is_bool = signal_config.get("bool", False)
-                        htype = "bit" if is_bool else "float"
                         if "userconfig" not in signal_config:
                             signal_config["userconfig"] = {}
                         userconfig = signal_config["userconfig"]
@@ -1219,7 +1210,7 @@ class WinForm(QWidget):
                 if module_name:
                     bgcolor = "lightgreen"
                     tooltip += f"\nmodule: {module_name}"
-                self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
+                self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor)
                 self.pinlabels[pkey].setFixedWidth(w)
                 self.pinlabels[pkey].setFixedHeight(h)
                 self.pinlabels[pkey].setText(pkey)
@@ -2654,11 +2645,8 @@ class WinForm(QWidget):
 
     def draw_joint_home(self, joints_setup, joint_options):
         HOME_SEARCH_VEL = joints_setup.get("home_search_vel", joint_options["home_search_vel"].get("default", 0.0))
-        HOME_LATCH_VEL = joints_setup.get("home_latch_vel", joint_options["home_latch_vel"].get("default", 0.0))
-        HOME_FINAL_VEL = joints_setup.get("home_final_vel", joint_options["home_final_vel"].get("default", 0.0))
         HOME_OFFSET = joints_setup.get("home_offset", joint_options["home_offset"].get("default", 0.0))
         HOME = joints_setup.get("home", joint_options["home"].get("default", 0.0))
-        HOME_SEQUENCE = joints_setup.get("home_sequence", joint_options["home_sequence"].get("default", 0.0))
 
         def svg_arrow_h(x, y, x2, color="rgb(255, 255, 255)"):
             svg_data = []
@@ -2794,7 +2782,6 @@ class WinForm(QWidget):
         label = QLabel("Joint-Homing")
         label.setFont(myFont)
         homing_layout.addWidget(label)
-        home_values = {}
         for option, option_setup in joint_options.items():
             if not option.startswith("home"):
                 continue
@@ -3112,18 +3099,11 @@ class WinForm(QWidget):
         dialog.setFixedWidth(800)
         dialog.setFixedHeight(600)
         dialog.setStyleSheet(STYLESHEET)
-
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
-
         dialog.layout = QVBoxLayout()
-
-        hlayout = QHBoxLayout()
-
-        vlayout_left = QVBoxLayout()
-
         if dialog.exec():
-            return plugin_name.text()
+            return ""
 
     def select_module(self, last_error=None, set_slot=None, set_module=None, slot_select=True):
         dialog = QDialog()

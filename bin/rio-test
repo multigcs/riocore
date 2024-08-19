@@ -143,11 +143,8 @@ class WinForm(QWidget):
                 for hdir in ("output", "input", "inout"):
                     for halname, signal in haldata.get(hdir, {}).items():
                         value = signal["value"]
-                        value_format = signal.get("format", "d")
-                        value_unit = signal.get("unit", "")
                         userconfig = signal.get("userconfig", {})
 
-                        value_str = f"%{value_format}" % (value,)
                         halname_np = halname.split(".", 1)[-1]
                         halname_np = userconfig.get("display", {}).get("title", halname_np)
 
@@ -372,7 +369,6 @@ class WinForm(QWidget):
             else:
                 self.ucount += 1
 
-            tab_num_active = self.tabwidget.currentIndex()
             for plugin_instance, haldata in self.haldata.items():
                 for halname, signal in haldata.get("output", {}).items():
                     if signal.get("bool"):

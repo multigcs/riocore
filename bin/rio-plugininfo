@@ -56,7 +56,7 @@ elif args.generate:
         text = plugins.info(plugin["name"])
         open(filename, "w").write(text)
 
-    filename = f"PLUGINS.md"
+    filename = "PLUGINS.md"
     print(filename)
     text = []
 
