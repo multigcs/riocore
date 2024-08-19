@@ -204,6 +204,78 @@ class ImageMap(QLabel):
             return configstr.text()
 
 
+class TabLinuxCNC:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.linuxcnc = {
+            "rio.ini": QPlainTextEdit(),
+            "rio.hal": QPlainTextEdit(),
+            "custom_postgui.hal": QPlainTextEdit(),
+            "rio-gui.xml": QPlainTextEdit(),
+            "rio.c": QPlainTextEdit(),
+        }
+        self.linuxcnc_tabwidget = QTabWidget()
+        for filename, widget in self.linuxcnc.items():
+            widget.clear()
+            widget.insertPlainText("")
+            self.linuxcnc_tabwidget.addTab(widget, filename)
+
+    def setTab(self, name):
+        self.linuxcnc_tabwidget.setCurrentWidget(self.linuxcnc[name])
+
+    def widget(self):
+        return self.linuxcnc_tabwidget
+
+    def timer(self):
+        pass
+
+    def update(self):
+        config_name = self.parent.config.get("name")
+
+        for filename, widget in self.linuxcnc.items():
+            file_content = open(f"{self.parent.output_path}/{config_name}/LinuxCNC/{filename}", "r").read()
+            widget.clear()
+            widget.insertPlainText(file_content)
+
+
+class TabGateware:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.gateware = {
+            "rio.v": QPlainTextEdit(),
+            "Makefile": QPlainTextEdit(),
+            "Compile-Output": QPlainTextEdit(),
+            "Flash-Output": QPlainTextEdit(),
+        }
+        self.gateware_tabwidget = QTabWidget()
+        for filename, widget in self.gateware.items():
+            widget.clear()
+            widget.insertPlainText("")
+            self.gateware_tabwidget.addTab(widget, filename)
+
+    def setTab(self, name):
+        self.gateware_tabwidget.setCurrentWidget(self.gateware[name])
+
+    def widget(self):
+        return self.gateware_tabwidget
+
+    def timer(self):
+        pass
+
+    def update(self):
+        config_name = self.parent.config.get("name")
+
+        for filename, widget in self.gateware.items():
+            if not filename.endswith("-Output"):
+                file_content = open(f"{self.parent.output_path}/{config_name}/Gateware/{filename}", "r").read()
+                widget.clear()
+                widget.insertPlainText(file_content)
+                if filename == "rio.v":
+                    hash_md5 = hashlib.md5()
+                    hash_md5.update(file_content.encode())
+                    self.parent.gateware_hash = hash_md5.hexdigest()
+
+
 class TabSignals:
     def __init__(self, parent=None):
         self.parent = parent
@@ -1058,68 +1130,23 @@ class WinForm(QWidget):
         splitter.addWidget(self.tabwidget)
 
         self.gateware_hash = None
-        self.firmware_hash = None
-
         self.compile_sub = None
         self.compile_start = 0
         self.flash_sub = None
         self.flash_start = 0
 
-        self.tabs = {}
-        self.tabs["Board"] = TabBoard(self)
-        self.tabs["Overview"] = TabOverview(self)
-        self.tabs["Pins"] = TabPins(self)
-        self.tabs["Signals"] = TabSignals(self)
-        self.tabs["Json"] = TabJson(self)
-
-        self.hal_img = MyQSvgWidget()
-
-        self.tabwidget.addTab(self.tabs["Board"].widget(), "Board")
-        self.tabwidget.addTab(self.tabs["Overview"].widget(), "Flow")
-        self.tabwidget.addTab(self.tabs["Pins"].widget(), "Pins")
-        self.tabwidget.addTab(self.tabs["Signals"].widget(), "Signals")
-        self.tabwidget.addTab(self.tabs["Json"].widget(), "Json-Preview")
-        # self.tabwidget.addTab(self.hal_img, "Hal")
-
-        self.linuxcnc_tabwidget = QTabWidget()
-        self.tabwidget.addTab(self.linuxcnc_tabwidget, "LinuxCNC")
-
-        self.gateware_tabwidget = QTabWidget()
-        self.tabwidget.addTab(self.gateware_tabwidget, "Gateware")
-
-        # self.firmware_tabwidget = QTabWidget()
-        # self.tabwidget.addTab(self.firmware_tabwidget, "Firmware")
-
-        self.hal_imagew = MyQSvgWidget()
-
-        self.gateware = {
-            "rio.v": QPlainTextEdit(),
-            "Makefile": QPlainTextEdit(),
-            "Compile-Output": QPlainTextEdit(),
-            "Flash-Output": QPlainTextEdit(),
-        }
-        self.firmware = {
-            "src/main.ino": QPlainTextEdit(),
-            "platformio.ini": QPlainTextEdit(),
-        }
-        self.linuxcnc = {
-            "rio.ini": QPlainTextEdit(),
-            "rio.hal": QPlainTextEdit(),
-            "custom_postgui.hal": QPlainTextEdit(),
-            "rio-gui.xml": QPlainTextEdit(),
-            "rio.c": QPlainTextEdit(),
+        self.tabs = {
+            "Board": TabBoard(self),
+            "Overview": TabOverview(self),
+            "Pins": TabPins(self),
+            "Signals": TabSignals(self),
+            "Json": TabJson(self),
+            "LinuxCNC": TabLinuxCNC(self),
+            "Gateware": TabGateware(self),
         }
 
-        for filename, widget in self.gateware.items():
-            widget.clear()
-            widget.insertPlainText("")
-            self.gateware_tabwidget.addTab(widget, filename)
-        # for filename, widget in self.firmware.items():
-        #    widget.clear()
-        #    widget.insertPlainText("")
-        #    self.firmware_tabwidget.addTab(widget, filename)
-        for filename, widget in self.linuxcnc.items():
-            self.linuxcnc_tabwidget.addTab(widget, filename)
+        for title, tab in self.tabs.items():
+            self.tabwidget.addTab(tab.widget(), title)
 
         container = QWidget()
         button_layout = QHBoxLayout(container)
@@ -1216,7 +1243,7 @@ class WinForm(QWidget):
         self.treeview.collapseAll()
 
         tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(1)
-        img_width = max(self.hal_imagew.width(), 400)
+        img_width = max(self.tabs["Board"].widget().width(), 400)
         win_height = max(self.height(), 900)
         self.resize(tree_width + img_width + 50, win_height)
         self.treeview.resize(tree_width, win_height)
@@ -1382,54 +1409,28 @@ class WinForm(QWidget):
 
         # checking gateware
         hash_compiled = ""
-
-        if self.IS_FIRMWARE:
-            hash_compiled_file = f"Output/{config_name}/Firmware/hash_compiled.txt"
-            if os.path.isfile(hash_compiled_file):
-                hash_compiled = open(hash_compiled_file, "r").read()
-            if hash_compiled == self.firmware_hash:
-                self.info_compiled.setChecked(True)
-                self.button_compile.setStyleSheet("background-color: green;")
-                self.button_flash.setEnabled(True)
-            else:
-                self.info_compiled.setChecked(False)
-                self.button_compile.setStyleSheet("background-color: red;")
-                self.button_flash.setEnabled(False)
-
-            hash_flashed = ""
-            hash_flashed_file = f"Output/{config_name}/Firmware/hash_flashed.txt"
-            if os.path.isfile(hash_flashed_file):
-                hash_flashed = open(hash_flashed_file, "r").read()
-            if hash_flashed == self.firmware_hash:
-                self.info_flashed.setChecked(True)
-                self.button_flash.setStyleSheet("background-color: green;")
-            else:
-                self.info_flashed.setChecked(False)
-                self.button_flash.setStyleSheet("background-color: red;")
-
+        hash_compiled_file = f"Output/{config_name}/Gateware/hash_compiled.txt"
+        if os.path.isfile(hash_compiled_file):
+            hash_compiled = open(hash_compiled_file, "r").read()
+        if hash_compiled == self.gateware_hash:
+            self.info_compiled.setChecked(True)
+            self.button_compile.setStyleSheet("background-color: green;")
+            self.button_flash.setEnabled(True)
         else:
-            hash_compiled_file = f"Output/{config_name}/Gateware/hash_compiled.txt"
-            if os.path.isfile(hash_compiled_file):
-                hash_compiled = open(hash_compiled_file, "r").read()
-            if hash_compiled == self.gateware_hash:
-                self.info_compiled.setChecked(True)
-                self.button_compile.setStyleSheet("background-color: green;")
-                self.button_flash.setEnabled(True)
-            else:
-                self.info_compiled.setChecked(False)
-                self.button_compile.setStyleSheet("background-color: red;")
-                self.button_flash.setEnabled(False)
+            self.info_compiled.setChecked(False)
+            self.button_compile.setStyleSheet("background-color: red;")
+            self.button_flash.setEnabled(False)
 
-            hash_flashed = ""
-            hash_flashed_file = f"Output/{config_name}/Gateware/hash_flashed.txt"
-            if os.path.isfile(hash_flashed_file):
-                hash_flashed = open(hash_flashed_file, "r").read()
-            if hash_flashed == self.gateware_hash:
-                self.info_flashed.setChecked(True)
-                self.button_flash.setStyleSheet("background-color: green;")
-            else:
-                self.info_flashed.setChecked(False)
-                self.button_flash.setStyleSheet("background-color: red;")
+        hash_flashed = ""
+        hash_flashed_file = f"Output/{config_name}/Gateware/hash_flashed.txt"
+        if os.path.isfile(hash_flashed_file):
+            hash_flashed = open(hash_flashed_file, "r").read()
+        if hash_flashed == self.gateware_hash:
+            self.info_flashed.setChecked(True)
+            self.button_flash.setStyleSheet("background-color: green;")
+        else:
+            self.info_flashed.setChecked(False)
+            self.button_flash.setStyleSheet("background-color: red;")
 
     def runTimer(self):
         for tab in self.tabs:
@@ -1469,7 +1470,7 @@ class WinForm(QWidget):
             self.check_status()
 
         if self.compile_sub is not None:
-            widget = self.gateware["Compile-Output"]
+            widget = self.tabs["Gateware"].gateware["Compile-Output"]
             config_name = self.config.get("name")
             logdata = open(f"Output/{config_name}/Gateware/compile.log", "r").read()
             widget.clear()
@@ -1492,7 +1493,7 @@ class WinForm(QWidget):
                 self.info_widget.setText(f"compile...({duration:0.1f}s)")
 
         if self.flash_sub is not None:
-            widget = self.gateware["Flash-Output"]
+            widget = self.tabs["Gateware"].gateware["Flash-Output"]
             config_name = self.config.get("name")
             logdata = open(f"Output/{config_name}/Gateware/flash.log", "r").read()
             widget.clear()
@@ -1915,15 +1916,6 @@ class WinForm(QWidget):
                 "instances": mplugins.plugin_instances,
             }
 
-        if self.board.get("toolchain") == "platformio":
-            self.IS_FIRMWARE = True
-        #    self.tabwidget.setTabVisible(6, False)
-        #    self.tabwidget.setTabVisible(7, True)
-        else:
-            self.IS_FIRMWARE = False
-        #    self.tabwidget.setTabVisible(6, True)
-        #    self.tabwidget.setTabVisible(7, False)
-
         # loading plugins
         self.plugins = riocore.Plugins()
         for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
@@ -2008,6 +2000,8 @@ class WinForm(QWidget):
         for path in sorted(glob.glob(f"{riocore_path}/interfaces/*")):
             self.interfaces.append(path.split("/")[-1])
         self.boards = []
+        for path in sorted(glob.glob(f"{boards_path}/*/board.json")):
+            self.boards.append(path.split("/")[-2].split(".")[0])
         for path in sorted(glob.glob(f"{boards_path}/*.json")):
             self.boards.append(path.split("/")[-1].split(".")[0])
         self.module_names = []
@@ -3207,10 +3201,10 @@ class WinForm(QWidget):
             return (combo_slot.currentText(), combo_module.currentText())
 
     def flash_cb(self):
-        self.tabwidget.setCurrentWidget(self.gateware_tabwidget)
-        self.gateware_tabwidget.setCurrentWidget(self.gateware["Flash-Output"])
+        self.tabwidget.setCurrentWidget(self.tabs["Gateware"].widget())
+        self.tabs["Gateware"].setTab("Flash-Output")
 
-        widget = self.gateware["Flash-Output"]
+        widget = self.tabs["Gateware"].gateware["Flash-Output"]
         config_name = self.config.get("name")
         widget.clear()
         widget.insertPlainText("...")
@@ -3221,10 +3215,10 @@ class WinForm(QWidget):
         self.info_widget.setText("flashing...")
 
     def compile_cb(self):
-        self.tabwidget.setCurrentWidget(self.gateware_tabwidget)
-        self.gateware_tabwidget.setCurrentWidget(self.gateware["Compile-Output"])
+        self.tabwidget.setCurrentWidget(self.tabs["Gateware"].widget())
+        self.tabs["Gateware"].setTab("Compile-Output")
 
-        widget = self.gateware["Compile-Output"]
+        widget = self.tabs["Gateware"].gateware["Compile-Output"]
         config_name = self.config.get("name")
         widget.clear()
         widget.insertPlainText("...")
@@ -3236,46 +3230,20 @@ class WinForm(QWidget):
 
     def generate_cb(self, preview=False):
         self.info_widget.setText("generate...")
-        output_path = "Output"
+        self.output_path = "Output"
         if preview:
-            output_path = "OutputTMP"
+            self.output_path = "OutputTMP"
         config_name = self.config.get("name")
-        self.generate(output_path, preview=preview)
+        self.generate(self.output_path, preview=preview)
         try:
-            if not self.IS_FIRMWARE:
-                for filename, widget in self.gateware.items():
-                    if not filename.endswith("-Output"):
-                        file_content = open(f"{output_path}/{config_name}/Gateware/{filename}", "r").read()
-                        widget.clear()
-                        widget.insertPlainText(file_content)
-                        if filename == "rio.v":
-                            hash_md5 = hashlib.md5()
-                            hash_md5.update(file_content.encode())
-                            self.gateware_hash = hash_md5.hexdigest()
-            else:
-                for filename, widget in self.firmware.items():
-                    if not filename.endswith("-Output"):
-                        file_content = open(f"{output_path}/{config_name}/Firmware/{filename}", "r").read()
-                        widget.clear()
-                        widget.insertPlainText(file_content)
-                        if filename == "src/main.ino":
-                            hash_md5 = hashlib.md5()
-                            hash_md5.update(file_content.encode())
-                            self.firmware_hash = hash_md5.hexdigest()
-
-            for filename, widget in self.linuxcnc.items():
-                file_content = open(f"{output_path}/{config_name}/LinuxCNC/{filename}", "r").read()
-                widget.clear()
-                widget.insertPlainText(file_content)
-
-            # if os.path.exists(f"{output_path}/{config_name}/LinuxCNC/rio.ini"):
-            #    self.hal_img.load(halgraph.HalGraph(f"{output_path}/{config_name}/LinuxCNC/rio.ini").svg())
+            self.tabs["Gateware"].update()
+            self.tabs["LinuxCNC"].update()
 
         except Exception as error:
             print(f"ERROR loading output: {error}")
 
         if preview:
-            os.system(f"rm -rf {output_path}/")
+            os.system(f"rm -rf {self.output_path}/")
         self.info_widget.setText("generate...done")
 
     def generate(self, output_path=None, preview=False):
@@ -3383,8 +3351,8 @@ class WinForm(QWidget):
             else:
                 if plugin_instance.SIGNALS:
                     self.tree_add_signals(plugin_view, plugin_instance, expand=expand)
-        if expand:
-            self.treeview.expand(self.model.indexFromItem(plugin_view))
+            if expand:
+                self.treeview.expand(self.model.indexFromItem(plugin_view))
 
     def callback_plugin_name(self, parent, plugin_instance, value):
         parent.setText(f"{value} ({plugin_instance.NAME})")
@@ -3596,8 +3564,6 @@ class WinForm(QWidget):
                 ]
             )
             if not nopins:
-                print(pin_name, pin_setup)
-
                 self.treeview.setIndexWidget(citem.index(), self.edit_item(pin_setup, "pin", {"type": "select", "options": self.pinlist, "default": ""}, cb=self.pin_edit_cb))
 
             pin_view = pins_view.child(pins_view.rowCount() - 1)
