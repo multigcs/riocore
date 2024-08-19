@@ -15,7 +15,7 @@ unittests:
 verilator:
 	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only
 
-plugin_docs:
+readmes:
 	PYTHONPATH=. bin/rio-plugininfo -g
 	PYTHONPATH=. riocore/files/update_boards_and_toolchains_readme.py
 
