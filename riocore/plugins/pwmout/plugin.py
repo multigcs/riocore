@@ -71,7 +71,7 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        if "dir" in self.plugin_setup.get("pins", {"dir": {}}):
+        if "dir" in self.plugin_setup.get("pins", {}):
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
         self.INFO = "pwm output"
         self.DESCRIPTION = "to control DC-Motors or for analog outputs"
@@ -92,7 +92,7 @@ class Plugin(PluginBase):
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
             vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
             vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
-            if "dir" in signal_setup:
+            if "dir" in self.plugin_setup.get("pins", {}):
                 value = int((value) * (self.system_setup["speed"] / freq) / (vmax))
             else:
                 value = int((value - vmin) * (self.system_setup["speed"] / freq) / (vmax - vmin))
@@ -103,7 +103,7 @@ class Plugin(PluginBase):
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
             vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
             vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
-            if "dir" in signal_setup:
+            if "dir" in self.plugin_setup.get("pins", {}):
                 return f"value = value * (OSC_CLOCK / {freq}) / ({vmax});"
             else:
                 return f"value = (value - {vmin}) * (OSC_CLOCK / {freq}) / ({vmax} - {vmin});"
