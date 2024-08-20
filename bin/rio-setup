@@ -1190,7 +1190,6 @@ class WinForm(QWidget):
         self.config_checked = {}
 
         self.request_load_tree = 0
-        self.request_load_hal = 0
         self.request_generate = 0
         self.request_pin_table_load = 0
         self.request_sig_table_load = 0
@@ -1405,12 +1404,6 @@ class WinForm(QWidget):
         elif self.request_load_tree == 1:
             self.load_tree()
             self.request_load_tree = 0
-
-        if self.request_load_hal > 1:
-            self.request_load_hal -= 1
-        elif self.request_load_hal == 1:
-            self.load_hal()
-            self.request_load_hal = 0
 
         if self.request_pin_table_load > 1:
             self.request_pin_table_load -= 1
@@ -2059,8 +2052,13 @@ class WinForm(QWidget):
             return edit_bool(self, obj, key, cb=cb, default=var_setup.get("default"))
         return edit_text(self, obj, key, cb=cb, default=var_setup.get("default"))
 
-    def load_hal(self):
-        print("loding hal overview")
+    def del_module(self, slot_name):
+        for mn, module_data in enumerate(self.config.get("modules", [])):
+            if slot_name == module_data.get("slot"):
+                self.config["modules"].pop(mn)
+                break
+        self.config_load()
+        self.display()
 
     def load_tree(self, expand=None):
         while self.model.rowCount() > 0:
@@ -2230,6 +2228,13 @@ class WinForm(QWidget):
                     self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
 
         # modules
+        free_slots = False
+        for slot in self.slots:
+            slot_name = slot["name"]
+            if slot_name not in self.modules:
+                free_slots = True
+                break
+
         bitem = MyStandardItem()
         self.model.appendRow(
             [
@@ -2239,10 +2244,11 @@ class WinForm(QWidget):
         )
         tree_modules = self.model.item(self.model.rowCount() - 1)
 
-        button = QPushButton("add module")
-        button.clicked.connect(self.add_module)
-        button.setMaximumSize(button.sizeHint())
-        self.treeview.setIndexWidget(bitem.index(), button)
+        if free_slots:
+            button = QPushButton("add module")
+            button.clicked.connect(self.add_module)
+            button.setMaximumSize(button.sizeHint())
+            self.treeview.setIndexWidget(bitem.index(), button)
 
         for module_data in self.config.get("modules", []):
             slot_name = module_data.get("slot")
@@ -2254,10 +2260,16 @@ class WinForm(QWidget):
             tree_modules.appendRow(
                 [
                     MyStandardItem(title),
-                    MyStandardItem(""),
+                    aitem,
                 ]
             )
             module_view = tree_modules.child(tree_modules.rowCount() - 1)
+
+            button = QPushButton("delete")
+            cb = partial(self.del_module, slot_name)
+            button.clicked.connect(cb)
+            button.setMaximumSize(button.sizeHint())
+            self.treeview.setIndexWidget(aitem.index(), button)
 
             for key, var_setup in {
                 "module": {"type": "select", "options": self.module_names},
