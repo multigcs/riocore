@@ -151,6 +151,7 @@ class LinuxCNC:
         self.postgui_call_list = []
         self.pregui_call_list = []
         self.loadrts = []
+        self.feedbacks = []
         self.axisout = []
         self.networks = {}
         self.setps = {}
@@ -1234,6 +1235,9 @@ class LinuxCNC:
                         displayconfig["unit"] = vunit
 
                     if setp:
+                        continue
+
+                    if halname in self.feedbacks:
                         continue
 
                     if (netname and not virtual) or setp:
@@ -2478,13 +2482,16 @@ class LinuxCNC:
                 if axis_name:
                     if axis_name not in self.axis_dict:
                         self.axis_dict[axis_name] = {"joints": {}}
+                    feedback = plugin_instance.plugin_setup.get("joint", {}).get("feedback")
                     self.axis_dict[axis_name]["joints"][self.num_joints] = {
                         "type": plugin_instance.NAME,
                         "axis": axis_name,
                         "joint": self.num_joints,
                         "plugin_instance": plugin_instance,
-                        "feedback": plugin_instance.plugin_setup.get("joint", {}).get("feedback", True),
+                        "feedback": feedback or True,
                     }
+                    if feedback:
+                        self.feedbacks.append(feedback.replace(":", "."))
                     self.num_joints += 1
 
         self.num_axis = len(self.axis_dict)
@@ -2575,12 +2582,11 @@ class LinuxCNC:
                                 if sub_direction != "input":
                                     print("ERROR: can not use this as feedback (no input signal):", sub_signal_config)
                                     exit(1)
-
                                 feedback_halname = f"rio.{sub_signal_config['halname']}"
-                                feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("scale", 320.0))
+                                feedback_signal = feedback_halname.split(".")[-1]
+                                feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("signals", {}).get(feedback_signal, {}).get("scale", 1.0))
                                 found = True
                                 break
-                    print("found", found)
                     if not found:
                         print(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint} not found")
                         continue

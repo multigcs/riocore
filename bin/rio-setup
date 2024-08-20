@@ -1971,6 +1971,7 @@ class WinForm(QWidget):
         self.tabs["Pins"].update()
         self.tabs["Signals"].update()
         self.display()
+        self.tree_expand("/Plugins/")
 
     def display(self):
         try:
