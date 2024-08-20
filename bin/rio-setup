@@ -903,7 +903,7 @@ class TabBoard:
                 if module_name:
                     self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
                 else:
-                    self.pinlabels[pkey].clicked.connect(partial(self.select_module, set_slot=slot_name, slot_select=False))
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.select_module, set_slot=slot_name, slot_select=False))
 
             for pin_id, pin in slot["pins"].items():
                 if isinstance(pin, dict):
