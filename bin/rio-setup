@@ -1204,7 +1204,7 @@ class WinForm(QWidget):
         tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(1)
         img_width = max(self.tabs["Board"].widget().width(), 400)
         win_height = max(self.height(), 900)
-        self.resize(tree_width + img_width + 50, win_height)
+        self.resize(tree_width + img_width + 100, win_height)
         self.treeview.resize(tree_width, win_height)
         splitter.setSizes((tree_width, img_width))
 
