@@ -1199,6 +1199,8 @@ class WinForm(QWidget):
         self.treeview.resizeColumnToContents(1)
         self.treeview.collapseAll()
 
+        self.tree_expand("/Plugins/")
+
         tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(1)
         img_width = max(self.tabs["Board"].widget().width(), 400)
         win_height = max(self.height(), 900)
@@ -2059,6 +2061,7 @@ class WinForm(QWidget):
                 break
         self.config_load()
         self.display()
+        self.tree_expand("/Modules/")
 
     def load_tree(self, expand=None):
         while self.model.rowCount() > 0:
@@ -2319,31 +2322,33 @@ class WinForm(QWidget):
         self.treeview.header().resizeSection(1, 200)
 
         if expand:
+            self.tree_expand(expand)
 
-            def iter_childs(entry, prefix=""):
-                row = 0
-                item = self.model.itemData(entry.child(row, 0))
-                while item:
-                    row += 1
-                    child = entry.child(row, 0)
-                    item = self.model.itemData(child)
-                    if item:
-                        title = item[0]
-                        if expand.startswith(f"{prefix}/{title}"):
-                            self.treeview.expand(child)
-                        iter_childs(child, prefix=f"{prefix}/{title}")
-
+    def tree_expand(self, tpath):
+        def iter_childs(entry, prefix=""):
             row = 0
-            item = self.model.itemData(self.model.index(row, 0))
+            item = self.model.itemData(entry.child(row, 0))
             while item:
                 row += 1
-                child = self.model.index(row, 0)
+                child = entry.child(row, 0)
                 item = self.model.itemData(child)
                 if item:
                     title = item[0]
-                    if expand.startswith(f"/{title}"):
+                    if tpath.startswith(f"{prefix}/{title}"):
                         self.treeview.expand(child)
-                    iter_childs(self.model.index(row, 0), prefix=f"/{title}")
+                    iter_childs(child, prefix=f"{prefix}/{title}")
+
+        row = 0
+        item = self.model.itemData(self.model.index(row, 0))
+        while item:
+            row += 1
+            child = self.model.index(row, 0)
+            item = self.model.itemData(child)
+            if item:
+                title = item[0]
+                if tpath.startswith(f"/{title}"):
+                    self.treeview.expand(child)
+                iter_childs(self.model.index(row, 0), prefix=f"/{title}")
 
     def slot_change(self, widget):
         self.config_load()
@@ -2425,6 +2430,7 @@ class WinForm(QWidget):
         }
 
         self.config_load()
+        self.tree_expand(f"/Modules/")
 
     def del_plugin(self, plugin_instance, widget, dialog=None):
         plugin_id = plugin_instance.plugin_id
