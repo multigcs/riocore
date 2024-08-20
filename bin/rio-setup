@@ -20,7 +20,7 @@ import graphviz
 import riocore
 from riocore import halpins
 
-# from riocore import halgraph
+from riocore import halgraph
 from riocore.plugins import Modifiers
 from riocore.widgets import MyQSvgWidget, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, modifier_selector, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
@@ -523,6 +523,23 @@ class TabPins:
         else:
             self.pin_table_sort_col = logicalIndex
         self.update()
+
+
+class TabHal:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.hal_img = MyQSvgWidget()
+
+    def widget(self):
+        return self.hal_img
+
+    def timer(self):
+        pass
+
+    def update(self):
+        config_name = self.parent.config.get("name")
+        svg_data = halgraph.HalGraph(f"{self.parent.output_path}/{config_name}/LinuxCNC/rio.ini").svg()
+        self.hal_img.load(svg_data)
 
 
 class TabOverview:
@@ -1078,6 +1095,7 @@ class WinForm(QWidget):
         self.tabs = {
             "Board": TabBoard(self),
             "Overview": TabOverview(self),
+            "Hal": TabHal(self),
             "Pins": TabPins(self),
             "Signals": TabSignals(self),
             "Json": TabJson(self),
@@ -3178,6 +3196,7 @@ class WinForm(QWidget):
         try:
             self.tabs["Gateware"].update()
             self.tabs["LinuxCNC"].update()
+            self.tabs["Hal"].update()
 
         except Exception as error:
             print(f"ERROR loading output: {error}")
