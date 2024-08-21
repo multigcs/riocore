@@ -12,7 +12,7 @@ print("# BOARDS")
 index = []
 
 index.append("# BOARDS")
-index.append("| Name | Info | FPGA | Toolchain | Image |")
+index.append("| Name | Info | FPGA | Toolchains | Image |")
 index.append("| --- | --- | --- |  --- | :---: |")
 
 for board in sorted(glob.glob("riocore/boards/*")):

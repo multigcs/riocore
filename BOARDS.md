@@ -1,5 +1,5 @@
 # BOARDS
-| Name | Info | FPGA | Toolchain | Image |
+| Name | Info | FPGA | Toolchains | Image |
 | --- | --- | --- |  --- | :---: |
 | [Altera10M08Eval](riocore/boards/Altera10M08Eval/README.md) | Altera10M08Eval - Evaluation Kit | MAX 10 / 10M08SAE144C8G | quartus | <img src="riocore/boards/Altera10M08Eval/board.png" height="48"> |
 | [Arty-a7-35t](riocore/boards/Arty-a7-35t/README.md) | Digilent - Arty a7-35t | xc7 / xc7a35ticsg324-1l | vivado | <img src="riocore/boards/Arty-a7-35t/board.png" height="48"> |
