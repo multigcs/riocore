@@ -59,9 +59,9 @@ for board in sorted(glob.glob("riocore/boards/*")):
     if os.path.isfile(f"{board}/board.png"):
         readme.append("![board.png](board.png)")
         readme.append("")
-        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} {fpga_type} | <img src="riocore/boards/{name}/board.png" height="48"> |')
+        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | <img src="riocore/boards/{name}/board.png" height="48"> |')
     else:
-        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} {fpga_type} | |")
+        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | |")
 
     readme.append("")
 
