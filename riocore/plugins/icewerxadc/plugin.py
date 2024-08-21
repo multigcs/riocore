@@ -4,6 +4,20 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "icewerxadc"
+        self.INFO = "4-channel adc of the iceWerx-board"
+        self.DESCRIPTION = """to read analog signals from the iceWerx-board
+
+Range: 0-3.3V -> 0-1024
+
+https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
+
+should work also with the iceFUN board
+
+        """
+        self.LIMITATIONS = {
+            "boards": ["iceWerx-iCE40-HX8K", "OctoBot"],
+        }
+
         self.VERILOGS = ["icewerxadc.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.PINDEFAULTS = {
             "tx": {
@@ -61,16 +75,6 @@ class Plugin(PluginBase):
                 "unit": "Volt",
             },
         }
-        self.INFO = "4-channel adc of the iceWerx-board"
-        self.DESCRIPTION = """to read analog signals from the iceWerx-board
-
-Range: 0-3.3V -> 0-1024
-
-https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
-
-should work also with the iceFUN board
-
-        """
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -1,6 +1,7 @@
 {
-    "name": "ICEBreakerV1.0e",
-    "description": "Small and low cost FPGA educational and development board",
+    "name": "iceWerx-iCE40-HX8K",
+    "description": "Devantech iceWerx iCE40-HX8K FPGA",
+    "url": "https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga",
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "hx8k",

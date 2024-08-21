@@ -6,6 +6,10 @@ only usable for the max10 fpga boards
 
 ![image.png](image.png)
 
+## Limitations
+* family: MAX 10
+* toolchains: quartus
+
 ## Basic-Example:
 ```
 {

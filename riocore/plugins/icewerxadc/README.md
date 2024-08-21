@@ -14,6 +14,9 @@ should work also with the iceFUN board
 
 ![image.png](image.png)
 
+## Limitations
+* boards: iceWerx-iCE40-HX8K, OctoBot
+
 ## Basic-Example:
 ```
 {

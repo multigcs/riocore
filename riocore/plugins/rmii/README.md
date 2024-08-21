@@ -6,6 +6,10 @@ rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - pr
 
 ![image.png](image.png)
 
+## Limitations
+* boards: TangPrimer20K
+* toolchains: gowin
+
 ## Basic-Example:
 ```
 {

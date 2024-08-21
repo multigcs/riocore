@@ -15,4 +15,4 @@
 | [TangNano9K](riocore/boards/TangNano9K/README.md) | TangNano9K | <img src="riocore/boards/TangNano9K/board.png" height="48"> |
 | [TangPrimer20K](riocore/boards/TangPrimer20K/README.md) | TangPrimer20K-Devboard | <img src="riocore/boards/TangPrimer20K/board.png" height="48"> |
 | [Tangoboard](riocore/boards/Tangoboard/README.md) | based on TangNano9k | <img src="riocore/boards/Tangoboard/board.png" height="48"> |
-| [iceWerx-iCE40-HX8K](riocore/boards/iceWerx-iCE40-HX8K/README.md) | Small and low cost FPGA educational and development board | <img src="riocore/boards/iceWerx-iCE40-HX8K/board.png" height="48"> |
+| [iceWerx-iCE40-HX8K](riocore/boards/iceWerx-iCE40-HX8K/README.md) | Devantech iceWerx iCE40-HX8K FPGA | <img src="riocore/boards/iceWerx-iCE40-HX8K/board.png" height="48"> |

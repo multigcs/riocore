@@ -98,6 +98,7 @@ class PluginBase:
         self.FIRMWARE_SUPPORT = False
         self.OPTIONS = {}
         self.PLUGIN_CONFIG = False
+        self.LIMITATIONS = {}
         self.system_setup = system_setup
         self.plugin_id = plugin_id
         self.plugin_setup = plugin_setup

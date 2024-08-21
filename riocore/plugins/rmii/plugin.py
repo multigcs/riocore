@@ -7,6 +7,10 @@ class Plugin(PluginBase):
         self.INFO = "rmii udp interface (experimental)"
         self.DESCRIPTION = "rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)"
         self.VERILOGS = ["udp.v", "rmii.v"]
+        self.LIMITATIONS = {
+            "boards": ["TangPrimer20K"],
+            "toolchains": ["gowin"],
+        }
         self.PINDEFAULTS = {
             "netrmii_clk50m": {
                 "direction": "input",

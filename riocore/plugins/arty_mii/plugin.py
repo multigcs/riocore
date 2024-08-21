@@ -4,6 +4,12 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "arty_mii"
+        self.INFO = "udp interface for host comunication - experimental - Arty7-35t only"
+        self.DESCRIPTION = ""
+        self.LIMITATIONS = {
+            "boards": ["Arty-a7-35t"],
+            "toolchains": ["vivado"],
+        }
         self.VERILOGS = [
             "sync_signal.v",
             "ssio_sdr_in.v",
@@ -135,8 +141,6 @@ class Plugin(PluginBase):
                 "description": "UDP-Port",
             },
         }
-        self.INFO = "udp interface for host comunication - experimental - Arty7-35t only"
-        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

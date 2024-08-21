@@ -4,6 +4,10 @@
 
 ![image.png](image.png)
 
+## Limitations
+* boards: Arty-a7-35t
+* toolchains: vivado
+
 ## Basic-Example:
 ```
 {

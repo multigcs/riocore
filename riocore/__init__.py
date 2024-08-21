@@ -41,11 +41,18 @@ class Plugins:
         if plugin.DESCRIPTION:
             output.append(plugin.DESCRIPTION)
             output.append("")
+
         plugin_path = f"{riocore_path}/plugins/{plugin_name}"
         image_path = f"{plugin_path}/image.png"
         if os.path.isfile(image_path):
             output.append("")
             output.append("![image.png](image.png)")
+            output.append("")
+
+        if plugin.LIMITATIONS:
+            output.append(f"## Limitations")
+            for key, values in plugin.LIMITATIONS.items():
+                output.append(f"* {key}: {', '.join(values)}")
             output.append("")
 
         output.append("## Basic-Example:")

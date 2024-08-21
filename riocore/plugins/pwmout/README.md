@@ -77,7 +77,7 @@ configure as joint
 
  * type: float
  * direction: output
- * min: -100
+ * min: 0
  * max: 100
  * unit: %
 

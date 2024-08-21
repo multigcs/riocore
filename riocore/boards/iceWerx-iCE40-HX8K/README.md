@@ -1,6 +1,7 @@
 # iceWerx-iCE40-HX8K
-**Small and low cost FPGA educational and development board**
+**Devantech iceWerx iCE40-HX8K FPGA**
 
+* URL: [https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga](https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga)
 * Toolchain: icestorm
 * Family: ice40
 * Type: hx8k
