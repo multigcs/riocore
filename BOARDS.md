@@ -1,6 +1,6 @@
 # BOARDS
 | Name | Info | FPGA | Image |
-| --- | --- | :---: |
+| --- | --- | --- | :---: |
 | [Altera10M08Eval](riocore/boards/Altera10M08Eval/README.md) | Altera10M08Eval - Evaluation Kit | MAX 10 10M08SAE144C8G | <img src="riocore/boards/Altera10M08Eval/board.png" height="48"> |
 | [Arty-a7-35t](riocore/boards/Arty-a7-35t/README.md) | Digilent - Arty a7-35t | xc7 xc7a35ticsg324-1l | <img src="riocore/boards/Arty-a7-35t/board.png" height="48"> |
 | [Basys2](riocore/boards/Basys2/README.md) | Digilent - Basys2 | xc3 xc3s100e-4-cp132 | <img src="riocore/boards/Basys2/board.png" height="48"> |

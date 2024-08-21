@@ -13,7 +13,7 @@ index = []
 
 index.append("# BOARDS")
 index.append("| Name | Info | FPGA | Image |")
-index.append("| --- | --- | :---: |")
+index.append("| --- | --- | --- | :---: |")
 
 for board in sorted(glob.glob("riocore/boards/*")):
     if not os.path.isfile(f"{board}/board.json"):
