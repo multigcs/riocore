@@ -39,6 +39,53 @@
                 "A7": "PIN_14",
                 "RST": "PIN_121"
             }
+        },
+        {
+            "name": "LED",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "D1": {
+                    "pin": "PIN_132",
+                    "pos": [
+                        126,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "D2": {
+                    "pin": "PIN_134",
+                    "pos": [
+                        126,
+                        73
+                    ],
+                    "direction": "output"
+                },
+                "D3": {
+                    "pin": "PIN_135",
+                    "pos": [
+                        126,
+                        91
+                    ],
+                    "direction": "output"
+                },
+                "D4": {
+                    "pin": "PIN_140",
+                    "pos": [
+                        126,
+                        109
+                    ],
+                    "direction": "output"
+                },
+                "D5": {
+                    "pin": "PIN_141",
+                    "pos": [
+                        126,
+                        127
+                    ],
+                    "direction": "output"
+                }
+            }
         }
     ]
 }
