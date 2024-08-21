@@ -54,7 +54,7 @@ for board in sorted(glob.glob("riocore/boards/*")):
             readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
 
     readme.append("")
-    
+
     fpga_type = data.get("type", "")
     fpga_family = data.get("family", "")
     toolchains = data.get("toolchains", [data.get("toolchain", "")])

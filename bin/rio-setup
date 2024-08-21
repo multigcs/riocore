@@ -55,7 +55,6 @@ from PyQt5.QtWidgets import (
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
-mapping = {}
 
 
 class PinButton(QPushButton):
@@ -99,49 +98,103 @@ class ImageMap(QLabel):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.RightButton:
-            print(int(event.pos().x()), int(event.pos().y()))
-            configstr = self.setPin(event.pos())
-            if configstr:
-                slot, name, pin = configstr.split()
-
-                if slot not in mapping:
-                    mapping[slot] = {}
-
-                mapping[slot][name] = {"pin": pin, "pos": [int(event.pos().x()) - 5, int(event.pos().y()) - 5], "direction": "output"}
-                print(configstr)
-                print("")
-
-                slots = []
-                for slot, pins in mapping.items():
-                    slots.append(
-                        {
-                            "name": slot,
-                            "comment": slot,
-                            "default": "",
-                            "pins": pins,
-                        }
-                    )
-                print(json.dumps(slots, indent=4))
+            self.setPin(event.pos())
 
     def setPin(self, pos):
+        used_pins = []
+        for slot in self.parent.slots:
+            for pin_name, pin_data in slot["pins"].items():
+                if isinstance(pin_data, str):
+                    used_pins.append(pin_data)
+                else:
+                    used_pins.append(pin_data["pin"])
+
+        pin_name_default = "P1"
+        if self.parent.slots:
+            last_slot = self.parent.slots[-1]
+            pin_name_num = 1
+            found = True
+            while found:
+                found = False
+                for pin_name in last_slot["pins"]:
+                    if f"P{pin_name_num}" == pin_name:
+                        pin_name_num += 1
+                        found = True
+            pin_name_default = f"P{pin_name_num}"
+
         dialog = QDialog()
         dialog.setWindowTitle("set pin")
-        # dialog.setStyleSheet(STYLESHEET)
-
+        dialog.setStyleSheet(STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
-
         dialog.layout = QVBoxLayout()
+
         message = QLabel("Slot:")
         dialog.layout.addWidget(message)
-        configstr = QLineEdit("JOINT STEP 0")
-        dialog.layout.addWidget(configstr)
+        slot_select = QComboBox()
+        slot_select.setEditable(True)
+        for slot in reversed(self.parent.slots):
+            slot_select.addItem(slot["name"])
+        dialog.layout.addWidget(slot_select)
+
+        message = QLabel("Pin-Name:")
+        dialog.layout.addWidget(message)
+        pin_name = QLineEdit(pin_name_default)
+        dialog.layout.addWidget(pin_name)
+
+        message = QLabel("FPGA-Pin:")
+        dialog.layout.addWidget(message)
+        pin_select = QComboBox()
+        pin_select.setEditable(True)
+        for pin in self.parent.pinlist:
+            if ":" not in pin and pin not in used_pins:
+                pin_select.addItem(pin)
+        dialog.layout.addWidget(pin_select)
+
+        message = QLabel("Direction:")
+        dialog.layout.addWidget(message)
+        direction = QComboBox()
+        direction.addItem("all")
+        direction.addItem("output")
+        direction.addItem("input")
+        dialog.layout.addWidget(direction)
 
         dialog.layout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
-            return configstr.text()
+            slot_name = slot_select.currentText()
+            name = pin_name.text()
+            pin = pin_select.currentText()
+            direction_str = direction.currentText()
+            if direction_str == "all":
+                direction_str = ""
+
+            if slot_name and name and pin:
+                pin_cfg = {"pin": pin, "pos": [int(pos.x()), int(pos.y())], "direction": direction_str}
+
+                slot_n = -1
+                for sn, slot in enumerate(self.parent.slots):
+                    if slot["name"] == slot_name:
+                        slot_n = sn
+                        break
+
+                if slot_n == -1:
+                    self.parent.slots.append(
+                        {
+                            "name": slot_name,
+                            "comment": "",
+                            "default": "",
+                            "pins": {name: pin_cfg},
+                        }
+                    )
+                else:
+                    self.parent.slots[slot_n]["pins"][name] = pin_cfg
+
+                print(json.dumps(self.parent.slots, indent=4))
+                self.parent.request_pin_table_load = 1
+            else:
+                print("ERROR: missing informations")
 
 
 class TabLinuxCNC:
@@ -1411,6 +1464,7 @@ class WinForm(QWidget):
             self.request_pin_table_load -= 1
         elif self.request_pin_table_load == 1:
             self.tabs["Pins"].update()
+            self.tabs["Board"].update()
             self.request_pin_table_load = 0
 
         if self.request_sig_table_load > 1:
