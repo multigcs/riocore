@@ -920,7 +920,7 @@ class TabBoard:
                 if module_name:
                     self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
                 else:
-                    self.pinlabels[pkey].clicked.connect(partial(self.parent.select_module, set_slot=slot_name, slot_select=False))
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.add_module, slot_name=slot_name, slot_select=False))
 
             for pin_id, pin in slot["pins"].items():
                 if isinstance(pin, dict):
@@ -2363,12 +2363,10 @@ class WinForm(QWidget):
         self.tree_add_modifier(parent, pin_setup, modifier_id, modifier)
         self.display()
 
-    def add_module(self, widget):
+    def add_module(self, widget, slot_name=None, module_name=None, slot_select=True):
         last_error = None
-        slot_name = None
-        module_name = None
         while True:
-            ret = self.select_module(last_error=last_error, set_slot=slot_name, set_module=module_name)
+            ret = self.select_module(last_error=last_error, set_slot=slot_name, set_module=module_name, slot_select=slot_select)
             if not ret:
                 return
             slot_name, module_name = ret
