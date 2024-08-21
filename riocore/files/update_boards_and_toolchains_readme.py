@@ -40,7 +40,10 @@ for board in sorted(glob.glob("riocore/boards/*")):
 
     for key in ("toolchain", "family", "type", "package", "flashcmd"):
         if key in data:
-            readme.append(f"* {key.title()}: {data[key]}")
+            if key == "toolchain" and "toolchains" in data:
+                readme.append(f"* {key.title()}: {data[key]} ({', '.join(data['toolchains'])})")
+            else:
+                readme.append(f"* {key.title()}: {data[key]}")
 
     if "clock" in data:
         speed_mhz = float(data["clock"]["speed"]) / 1000000
