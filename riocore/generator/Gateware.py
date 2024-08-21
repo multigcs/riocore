@@ -49,6 +49,38 @@ class Gateware:
         self.globals()
         self.top()
         self.makefile()
+        self.interface_html()
+
+    def interface_html(self):
+        output = []
+        output.append("<h1>Interface</h1>")
+
+        output.append("<h3>FPGA to Host</h3>")
+        output.append("<table width='100%' style=\"font-size:12px; border-collapse: collapse;\">")
+        output.append('    <tr style="font-size:12px;">')
+        for data in self.iface_in:
+            output.append(f"<td>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td>")
+        output.append("    </tr>")
+        output.append('    <tr style="font-size:16px;">')
+        for data in self.iface_in:
+            name = "_".join(data[0].split("_")[1:])
+            output.append(f"<td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td>")
+        output.append("    </tr>")
+        output.append("</table>")
+
+        output.append("<h3>Host to FPGA</h3>")
+        output.append("<table width='100%' style=\"font-size:12px; border-collapse: collapse;\">")
+        output.append('    <tr style="font-size:12px">')
+        for data in self.iface_out:
+            output.append(f"<td>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td>")
+        output.append("    </tr>")
+        output.append('    <tr style="font-size:16px;">')
+        for data in self.iface_out:
+            name = "_".join(data[0].split("_")[1:])
+            output.append(f"<td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td>")
+        output.append("    </tr>")
+        output.append("</table>")
+        open(f"{self.gateware_path}/interface.html", "w").write("\n".join(output))
 
     def makefile(self):
         flashcmd = self.config.get("flashcmd")
@@ -125,6 +157,8 @@ class Gateware:
         output = []
         input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
         output_variables_list = []
+        self.iface_in = []
+        self.iface_out = []
         output_pos = self.project.buffer_size
 
         variable_name = "header_rx"
@@ -134,6 +168,8 @@ class Gateware:
             pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
             output_pos -= 8
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+        self.iface_out.append(["RX_HEADER", size])
+        self.iface_in.append(["TX_HEADER", size])
 
         if self.project.multiplexed_input:
             variable_name = "MULTIPLEXED_INPUT_VALUE"
@@ -142,12 +178,14 @@ class Gateware:
             for bit_num in range(0, size, 8):
                 pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
+            self.iface_in.append([variable_name, size])
             variable_name = "MULTIPLEXED_INPUT_ID"
             size = 8
             pack_list = []
             for bit_num in range(0, size, 8):
                 pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
+            self.iface_in.append([variable_name, size])
 
         if self.project.multiplexed_output:
             variable_name = "MULTIPLEXED_OUTPUT_VALUE"
@@ -157,6 +195,7 @@ class Gateware:
                 pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+            self.iface_out.append([variable_name, size])
             variable_name = "MULTIPLEXED_OUTPUT_ID"
             size = 8
             pack_list = []
@@ -164,6 +203,7 @@ class Gateware:
                 pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+            self.iface_out.append([variable_name, size])
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
@@ -178,6 +218,7 @@ class Gateware:
                 else:
                     pack_list.append(f"{variable_name}")
                 input_variables_list.append(f"{', '.join(pack_list)}")
+                self.iface_in.append([variable_name, size])
             elif data_config["direction"] == "output":
                 pack_list = []
                 if size >= 8:
@@ -188,6 +229,7 @@ class Gateware:
                     pack_list.append(f"rx_data[{output_pos-1}]")
                     output_pos -= 1
                 output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+                self.iface_out.append([variable_name, size])
 
         if self.project.buffer_size > self.project.input_size:
             diff = self.project.buffer_size - self.project.input_size
@@ -337,7 +379,6 @@ class Gateware:
         output_variables_string = "\n    ".join(output_variables_list)
         output.append(f"    {output_variables_string}")
         output.append("")
-
         output.append("    assign tx_data = {")
         input_variables_string = ",\n        ".join(input_variables_list)
         output.append(f"        {input_variables_string}")
