@@ -1,6 +1,7 @@
 {
     "name": "TangNano9K",
-    "description": "TangNano9K",
+    "description": "TangNano9K - cheap GW1NR-9 Devboard",
+    "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html",
     "board": "TangNano9K",
     "type": "GW1NR-LV9QN88PC6/I5",
     "family": "GW1N-9C",

@@ -1,6 +1,7 @@
 {
     "name": "Colorlight5A-75E",
-    "description": "Colorlight5A-75E",
+    "description": "Lattice ECP5 board",
+    "url": "https://github.com/q3k/chubby75/blob/master/5a-75e/README.md",
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",

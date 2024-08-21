@@ -1,6 +1,7 @@
 {
     "name": "Arty-a7-35t",
-    "description": "Arty a7-35t - testing",
+    "description": "Digilent - Arty a7-35t",
+    "url": "https://digilent.com/reference/programmable-logic/arty-a7/start",
     "toolchain": "vivado",
     "family": "xc7",
     "type": "xc7a35ticsg324-1l",

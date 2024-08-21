@@ -1,6 +1,7 @@
 # Basys2
 **Digilent - Basys2**
 
+* URL: [https://digilent.com/reference/programmable-logic/basys-2/start](https://digilent.com/reference/programmable-logic/basys-2/start)
 * Toolchain: ise
 * Family: xc3
 * Type: xc3s100e-4-cp132

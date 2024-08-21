@@ -12,7 +12,7 @@ print("# BOARDS")
 index = []
 
 index.append("# BOARDS")
-index.append("| Name | Info | Image |")
+index.append("| Name | Info | FPGA | Image |")
 index.append("| --- | --- | :---: |")
 
 for board in sorted(glob.glob("riocore/boards/*")):
@@ -51,13 +51,17 @@ for board in sorted(glob.glob("riocore/boards/*")):
             readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
 
     readme.append("")
+    
+    fpga_type = data.get("type", "")
+    fpga_family = data.get("family", "")
+    
 
     if os.path.isfile(f"{board}/board.png"):
         readme.append("![board.png](board.png)")
         readme.append("")
-        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | <img src="riocore/boards/{name}/board.png" height="48"> |')
+        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} {fpga_type} | <img src="riocore/boards/{name}/board.png" height="48"> |')
     else:
-        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | |")
+        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} {fpga_type} | |")
 
     readme.append("")
 

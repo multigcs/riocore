@@ -1,6 +1,7 @@
 {
     "name": "ICEBreakerV1.0e",
     "description": "Small and low cost FPGA educational and development board",
+    "url": "https://github.com/icebreaker-fpga/icebreaker",
     "pinimage": "board.png",
     "toolchain": "icestorm",
     "family": "ice40",

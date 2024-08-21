@@ -1,6 +1,7 @@
 {
     "name": "Colorlight_i5-v7_0",
-    "description": "minimal configuration for Colorlight_i5-v7.0",
+    "description": "Lattice ECP5 on SODIMM-200P board",
+    "url": "https://github.com/wuxx/Colorlight-FPGA-Projects",
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",

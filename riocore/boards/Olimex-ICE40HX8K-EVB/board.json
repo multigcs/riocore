@@ -1,6 +1,7 @@
 {
-    "name": "ICEBreakerV1.0e",
-    "description": "Small and low cost FPGA educational and development board",
+    "name": "Olimex-ICE40HX8K-EVB",
+    "description": "ICE40HX8K FPGA development board",
+    "url": "https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/open-source-hardware",
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "hx8k",

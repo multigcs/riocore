@@ -1,6 +1,7 @@
 # Colorlight5A-75E
-**Colorlight5A-75E**
+**Lattice ECP5 board**
 
+* URL: [https://github.com/q3k/chubby75/blob/master/5a-75e/README.md](https://github.com/q3k/chubby75/blob/master/5a-75e/README.md)
 * Toolchain: icestorm
 * Family: ecp5
 * Type: 25k

@@ -1,6 +1,7 @@
 {
     "name": "Basys2",
     "description": "Digilent - Basys2",
+    "url": "https://digilent.com/reference/programmable-logic/basys-2/start",
     "pinimage": "board.png",
     "toolchain": "ise",
     "family": "xc3",

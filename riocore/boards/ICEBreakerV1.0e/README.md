@@ -1,6 +1,7 @@
 # ICEBreakerV1.0e
 **Small and low cost FPGA educational and development board**
 
+* URL: [https://github.com/icebreaker-fpga/icebreaker](https://github.com/icebreaker-fpga/icebreaker)
 * Toolchain: icestorm
 * Family: ice40
 * Type: up5k
