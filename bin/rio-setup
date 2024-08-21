@@ -101,6 +101,11 @@ class ImageMap(QLabel):
             self.setPin(event.pos())
 
     def setPin(self, pos):
+        grid = 5
+        pos_x = pos.x()
+        pos_y = pos.y()
+        used_pos_x = set()
+        used_pos_y = set()
         used_pins = []
         for slot in self.parent.slots:
             for pin_name, pin_data in slot["pins"].items():
@@ -108,6 +113,19 @@ class ImageMap(QLabel):
                     used_pins.append(pin_data)
                 else:
                     used_pins.append(pin_data["pin"])
+                    if "pos" in pin_data:
+                        used_pos_x.add(pin_data["pos"][0])
+                        used_pos_y.add(pin_data["pos"][1])
+
+        # align to other positions +-grid size
+        for pos in used_pos_x:
+            if abs(pos - pos_x) <= grid:
+                pos_x = pos
+                break
+        for pos in used_pos_y:
+            if abs(pos - pos_y) <= grid:
+                pos_y = pos
+                break
 
         pin_name_default = "P1"
         if self.parent.slots:
@@ -159,6 +177,24 @@ class ImageMap(QLabel):
         direction.addItem("input")
         dialog.layout.addWidget(direction)
 
+        message = QLabel("PosX:")
+        dialog.layout.addWidget(message)
+        posx = QComboBox()
+        posx.setEditable(True)
+        posx.addItem(str(pos_x))
+        for pos in used_pos_x:
+            posx.addItem(str(pos))
+        dialog.layout.addWidget(posx)
+
+        message = QLabel("PosY:")
+        dialog.layout.addWidget(message)
+        posy = QComboBox()
+        posy.setEditable(True)
+        posy.addItem(str(pos_y))
+        for pos in used_pos_y:
+            posy.addItem(str(pos))
+        dialog.layout.addWidget(posy)
+
         dialog.layout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
@@ -167,11 +203,13 @@ class ImageMap(QLabel):
             name = pin_name.text()
             pin = pin_select.currentText()
             direction_str = direction.currentText()
+            pos_x = posx.currentText()
+            pos_y = posy.currentText()
             if direction_str == "all":
                 direction_str = ""
 
             if slot_name and name and pin:
-                pin_cfg = {"pin": pin, "pos": [int(pos.x()), int(pos.y())], "direction": direction_str}
+                pin_cfg = {"pin": pin, "pos": [int(pos_x), int(pos_y)], "direction": direction_str}
 
                 slot_n = -1
                 for sn, slot in enumerate(self.parent.slots):
