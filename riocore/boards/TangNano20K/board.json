@@ -4,6 +4,7 @@
     "url": "https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html",
     "type": "GW2AR-LV18QN88C8/I7",
     "family": "GW2AR-18C",
+    "toolchains": ["gowin", "icestorm"],
     "toolchain": "gowin",
     "package": "QN88",
     "clock": {

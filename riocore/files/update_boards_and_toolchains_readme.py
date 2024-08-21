@@ -12,8 +12,8 @@ print("# BOARDS")
 index = []
 
 index.append("# BOARDS")
-index.append("| Name | Info | FPGA | Image |")
-index.append("| --- | --- | --- | :---: |")
+index.append("| Name | Info | FPGA | Toolchain | Image |")
+index.append("| --- | --- | --- |  --- | :---: |")
 
 for board in sorted(glob.glob("riocore/boards/*")):
     if not os.path.isfile(f"{board}/board.json"):
@@ -54,14 +54,14 @@ for board in sorted(glob.glob("riocore/boards/*")):
     
     fpga_type = data.get("type", "")
     fpga_family = data.get("family", "")
-    
+    toolchains = data.get("toolchains", [data.get("toolchain", "")])
 
     if os.path.isfile(f"{board}/board.png"):
         readme.append("![board.png](board.png)")
         readme.append("")
-        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | <img src="riocore/boards/{name}/board.png" height="48"> |')
+        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | {", ".join(toolchains)} | <img src="riocore/boards/{name}/board.png" height="48"> |')
     else:
-        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | |")
+        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | {', '.join(toolchains)} | |")
 
     readme.append("")
 

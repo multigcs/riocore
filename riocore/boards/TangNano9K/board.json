@@ -5,8 +5,8 @@
     "board": "TangNano9K",
     "type": "GW1NR-LV9QN88PC6/I5",
     "family": "GW1N-9C",
+    "toolchains": ["gowin", "icestorm"],
     "toolchain": "gowin",
-    "_toolchain": "icestorm",
     "package": "",
     "clock": {
         "speed": "27000000",

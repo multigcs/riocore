@@ -5,7 +5,7 @@
     "type": "GW1NR-LV9QN88PC6/I5",
     "family": "GW1N-9C",
     "pinimage": "board.png",
-    "_toolchain": "icestorm",
+    "toolchains": ["gowin", "icestorm"],
     "toolchain": "gowin",
     "package": "",
     "clock": {
