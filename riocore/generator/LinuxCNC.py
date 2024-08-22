@@ -983,6 +983,7 @@ class LinuxCNC:
                     elif function == "fast":
                         speed_selector_mux *= 2
 
+                # TODO: using mux-gen ?
                 if speed_selector_mux > 4:
                     print("ERROR: only two speed selectors are supported")
                     speed_selector_mux = 4
@@ -994,8 +995,8 @@ class LinuxCNC:
                     self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
 
                     if speed_selector_mux == 2:
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_0"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_1"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
                     else:
                         self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
                         self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
