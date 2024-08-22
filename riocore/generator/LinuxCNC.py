@@ -1355,8 +1355,7 @@ class LinuxCNC:
             else:
                 open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
 
-        if gui not in {"__touchy", "probe_basic"}:
-            self.postgui_call_list.append("custom_postgui.hal")
+        self.postgui_call_list.append("custom_postgui.hal")
 
     def resolv_logic(self, logic_name, bracket):
         # self.hal_net_add("halui.machine.is-on", "&riovs.myand1", "myand1")
