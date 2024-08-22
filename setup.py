@@ -40,7 +40,7 @@ setup(
     packages=packages,
     package_data=package_data,
     scripts=scripts,
-    url="https://github.com/multigcs/LinuxCNC-RIO/",
+    url="https://github.com/multigcs/riocore/",
     license="LICENSE",
     description="riocore",
     long_description=open("README.md").read(),
