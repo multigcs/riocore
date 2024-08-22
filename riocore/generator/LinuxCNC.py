@@ -749,610 +749,613 @@ class LinuxCNC:
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
         if gui == "qtdragon":
             self.gui_gen = qtdragon()
-        else:
+        elif gui == "axis":
             self.gui_gen = axis()
+        else:
+            self.gui_gen = None
 
-        custom = []
-        self.cfgxml_data = {
-            "status": [],
-        }
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    userconfig = signal_config.get("userconfig", {})
-                    displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                    section = displayconfig.get("section", "").lower()
-                    if section and section not in self.cfgxml_data:
-                        self.cfgxml_data[section] = []
-        self.cfgxml_data["inputs"] = []
-        self.cfgxml_data["outputs"] = []
+        if self.gui_gen:
+            custom = []
+            self.cfgxml_data = {
+                "status": [],
+            }
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                    for signal_name, signal_config in plugin_instance.signals().items():
+                        userconfig = signal_config.get("userconfig", {})
+                        displayconfig = userconfig.get("display", signal_config.get("display", {}))
+                        section = displayconfig.get("section", "").lower()
+                        if section and section not in self.cfgxml_data:
+                            self.cfgxml_data[section] = []
+            self.cfgxml_data["inputs"] = []
+            self.cfgxml_data["outputs"] = []
 
-        if machinetype == "melfa":
+            if machinetype == "melfa":
+                if gui != "qtdragon":
+                    (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
+                    self.cfgxml_data["status"] += gout
+                    self.hal_net_add("kinstype.is-0", f"{pname}.legend0")
+                    self.hal_net_add("kinstype.is-1", f"{pname}.legend1")
+                ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
+                ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
+                ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
+                (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
+                self.cfgxml_data["status"] += gout
+                if embed_vismach:
+                    self.hal_net_add(pname, f"{embed_vismach}.plotclear")
+                else:
+                    self.hal_net_add(pname, "vismach.plotclear")
+
+                self.cfgxml_data["status"].append("<hbox>")
+                self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
+                self.cfgxml_data["status"].append("  <bd>2</bd>")
+                for joint in range(6):
+                    (pname, gout) = self.gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
+                    self.cfgxml_data["status"] += gout
+                    self.hal_net_add(f"joint.{joint}.pos-fb", pname)
+                    if joint == 2:
+                        self.cfgxml_data["status"].append("</hbox>")
+                        self.cfgxml_data["status"].append("<hbox>")
+                        self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
+                        self.cfgxml_data["status"].append("  <bd>2</bd>")
+                self.cfgxml_data["status"].append("</hbox>")
+
+            # buttons
             if gui != "qtdragon":
-                (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
-                self.cfgxml_data["status"] += gout
-                self.hal_net_add("kinstype.is-0", f"{pname}.legend0")
-                self.hal_net_add("kinstype.is-1", f"{pname}.legend1")
-            ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
-            ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
-            ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
-            (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
-            self.cfgxml_data["status"] += gout
-            if embed_vismach:
-                self.hal_net_add(pname, f"{embed_vismach}.plotclear")
-            else:
-                self.hal_net_add(pname, "vismach.plotclear")
-
-            self.cfgxml_data["status"].append("<hbox>")
-            self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
-            self.cfgxml_data["status"].append("  <bd>2</bd>")
-            for joint in range(6):
-                (pname, gout) = self.gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
-                self.cfgxml_data["status"] += gout
-                self.hal_net_add(f"joint.{joint}.pos-fb", pname)
-                if joint == 2:
-                    self.cfgxml_data["status"].append("</hbox>")
-                    self.cfgxml_data["status"].append("<hbox>")
-                    self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
-                    self.cfgxml_data["status"].append("  <bd>2</bd>")
-            self.cfgxml_data["status"].append("</hbox>")
-
-        # buttons
-        if gui != "qtdragon":
-            mdi_xml = []
-            mdi_xml.append('  <labelframe text="MDI-Commands">')
-            mdi_xml.append("    <relief>RAISED</relief>")
-            mdi_xml.append('    <font>("Helvetica", 10)</font>')
-            mdi_xml.append("    <vbox>")
-            mdi_xml.append("      <relief>RIDGE</relief>")
-            mdi_xml.append("      <bd>2</bd>")
-            mdi_num = 0
-            mdi_groups = {}
-            for mdi_num, command in enumerate(ini_setup["HALUI"]):
-                if command.startswith("MDI_COMMAND|"):
-                    """config Example
-                    "linuxcnc": {
-                        "ini": {
-                            "HALUI": {
-                                "MDI_COMMAND|Go to Zero": "G0 X0 Y0",
-                            }
-                        },
-                    },
-                    """
-                    mdi_title = command.split("|")[-1]
-                    halpin = f"halui.mdi-command-{mdi_num:02d}"
-                    (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
-                    if command.startswith("MDI_COMMAND||"):
-                        """config Example (Horizontal grouping)
+                mdi_xml = []
+                mdi_xml.append('  <labelframe text="MDI-Commands">')
+                mdi_xml.append("    <relief>RAISED</relief>")
+                mdi_xml.append('    <font>("Helvetica", 10)</font>')
+                mdi_xml.append("    <vbox>")
+                mdi_xml.append("      <relief>RIDGE</relief>")
+                mdi_xml.append("      <bd>2</bd>")
+                mdi_num = 0
+                mdi_groups = {}
+                for mdi_num, command in enumerate(ini_setup["HALUI"]):
+                    if command.startswith("MDI_COMMAND|"):
+                        """config Example
                         "linuxcnc": {
                             "ini": {
                                 "HALUI": {
-                                    "MDI_COMMAND||Gripper|0%": "M68 E0 Q-100",
-                                    "MDI_COMMAND||Gripper|50%": "M68 E0 Q0",
-                                    "MDI_COMMAND||Gripper|100%": "M68 E0 Q100"
+                                    "MDI_COMMAND|Go to Zero": "G0 X0 Y0",
                                 }
                             },
                         },
                         """
-                        mdi_group = command.split("|")[-2]
-                        if mdi_group not in mdi_groups:
-                            mdi_groups[mdi_group] = []
-                        mdi_groups[mdi_group].append(gout)
+                        mdi_title = command.split("|")[-1]
+                        halpin = f"halui.mdi-command-{mdi_num:02d}"
+                        (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
+                        if command.startswith("MDI_COMMAND||"):
+                            """config Example (Horizontal grouping)
+                            "linuxcnc": {
+                                "ini": {
+                                    "HALUI": {
+                                        "MDI_COMMAND||Gripper|0%": "M68 E0 Q-100",
+                                        "MDI_COMMAND||Gripper|50%": "M68 E0 Q0",
+                                        "MDI_COMMAND||Gripper|100%": "M68 E0 Q100"
+                                    }
+                                },
+                            },
+                            """
+                            mdi_group = command.split("|")[-2]
+                            if mdi_group not in mdi_groups:
+                                mdi_groups[mdi_group] = []
+                            mdi_groups[mdi_group].append(gout)
+                        else:
+                            mdi_xml += gout
+                        self.hal_net_add(pname, halpin)
+
+                for group_name, mdi_commands in mdi_groups.items():
+                    self.cfgxml_data["status"].append(f'  <labelframe text="{group_name}">')
+                    self.cfgxml_data["status"].append("    <relief>RAISED</relief>")
+                    self.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
+                    self.cfgxml_data["status"].append("    <hbox>")
+                    self.cfgxml_data["status"].append("      <bd>2</bd>")
+                    for bn, mdi_command in enumerate(mdi_commands, 1):
+                        if bn % 6 == 0:
+                            self.cfgxml_data["status"].append("    </hbox>")
+                            self.cfgxml_data["status"].append("    <hbox>")
+                            self.cfgxml_data["status"].append("      <bd>2</bd>")
+                        self.cfgxml_data["status"] += mdi_command
+                    self.cfgxml_data["status"].append("    </hbox>")
+                    self.cfgxml_data["status"].append("  </labelframe>")
+
+                mdi_xml.append("    </vbox>")
+                mdi_xml.append("  </labelframe>")
+                self.cfgxml_data["status"] += mdi_xml
+
+            for addon_name, addon in self.addons.items():
+                if hasattr(addon, "gui"):
+                    custom += addon.gui(self)
+
+            for plugin_instance in self.project.plugin_instances:
+                if hasattr(plugin_instance, "linuxcnc_gui"):
+                    plugin_instance.linuxcnc_gui(self)
+
+            # scale and offset
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                    for signal_name, signal_config in plugin_instance.signals().items():
+                        halname = signal_config["halname"]
+                        varname = signal_config["varname"]
+                        netname = signal_config["netname"]
+                        hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                        direction = signal_config["direction"]
+                        boolean = signal_config.get("bool")
+                        userconfig = signal_config.get("userconfig")
+                        scale = userconfig.get("scale")
+                        offset = userconfig.get("offset")
+                        setp = userconfig.get("setp")
+                        if not netname and setp is not None:
+                            if scale:
+                                self.hal_setp_add(f"rio.{halname}-scale", scale)
+                            if offset:
+                                self.hal_setp_add(f"rio.{halname}-offset", offset)
+
+            # rio-functions
+            self.rio_functions = {}
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                    for signal_name, signal_config in plugin_instance.signals().items():
+                        halname = signal_config["halname"]
+                        varname = signal_config["varname"]
+                        netname = signal_config["netname"]
+                        direction = signal_config["direction"]
+                        boolean = signal_config.get("bool")
+                        virtual = signal_config.get("virtual")
+                        userconfig = signal_config.get("userconfig")
+                        function = userconfig.get("function", "")
+                        rio_function = function.split(".", 1)
+                        if function and rio_function[0] in {"jog"}:
+                            if rio_function[0] not in self.rio_functions:
+                                self.rio_functions[rio_function[0]] = {}
+                            self.rio_functions[rio_function[0]][rio_function[1]] = halname
+                        elif function and rio_function[0] in {"wcomp"}:
+                            if rio_function[0] not in self.rio_functions:
+                                self.rio_functions[rio_function[0]] = {}
+                            values = rio_function[1].split(".")
+                            vmin = values[0]
+                            vmax = values[-1]
+                            self.rio_functions[rio_function[0]][halname] = {
+                                "source": halname,
+                                "vmin": vmin,
+                                "vmax": vmax,
+                                "virtual": virtual,
+                            }
+
+            if "wcomp" in self.rio_functions:
+                self.loadrts.append("")
+                self.loadrts.append("# wcomp")
+                for function, halname in self.rio_functions["wcomp"].items():
+                    source = halname["source"]
+                    vmin = halname["vmin"]
+                    vmax = halname["vmax"]
+                    virtual = halname["virtual"]
+                    self.loadrts.append(f"loadrt wcomp names=riof.{source}")
+                    self.loadrts.append(f"addf riof.{source} servo-thread")
+                    self.hal_setp_add(f"riof.{source}.min", vmin)
+                    self.hal_setp_add(f"riof.{source}.max", vmax)
+                    if virtual:
+                        self.hal_net_add(f"riov.{source}", f"riof.{source}.in")
                     else:
-                        mdi_xml += gout
-                    self.hal_net_add(pname, halpin)
+                        self.hal_net_add(f"rio.{source}", f"riof.{source}.in")
 
-            for group_name, mdi_commands in mdi_groups.items():
-                self.cfgxml_data["status"].append(f'  <labelframe text="{group_name}">')
-                self.cfgxml_data["status"].append("    <relief>RAISED</relief>")
-                self.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
-                self.cfgxml_data["status"].append("    <hbox>")
-                self.cfgxml_data["status"].append("      <bd>2</bd>")
-                for bn, mdi_command in enumerate(mdi_commands, 1):
-                    if bn % 6 == 0:
-                        self.cfgxml_data["status"].append("    </hbox>")
-                        self.cfgxml_data["status"].append("    <hbox>")
-                        self.cfgxml_data["status"].append("      <bd>2</bd>")
-                    self.cfgxml_data["status"] += mdi_command
-                self.cfgxml_data["status"].append("    </hbox>")
-                self.cfgxml_data["status"].append("  </labelframe>")
-
-            mdi_xml.append("    </vbox>")
-            mdi_xml.append("  </labelframe>")
-            self.cfgxml_data["status"] += mdi_xml
-
-        for addon_name, addon in self.addons.items():
-            if hasattr(addon, "gui"):
-                custom += addon.gui(self)
-
-        for plugin_instance in self.project.plugin_instances:
-            if hasattr(plugin_instance, "linuxcnc_gui"):
-                plugin_instance.linuxcnc_gui(self)
-
-        # scale and offset
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
-                    varname = signal_config["varname"]
-                    netname = signal_config["netname"]
-                    hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
-                    direction = signal_config["direction"]
-                    boolean = signal_config.get("bool")
-                    userconfig = signal_config.get("userconfig")
-                    scale = userconfig.get("scale")
-                    offset = userconfig.get("offset")
-                    setp = userconfig.get("setp")
-                    if not netname and setp is not None:
-                        if scale:
-                            self.hal_setp_add(f"rio.{halname}-scale", scale)
-                        if offset:
-                            self.hal_setp_add(f"rio.{halname}-offset", offset)
-
-        # rio-functions
-        self.rio_functions = {}
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
-                    varname = signal_config["varname"]
-                    netname = signal_config["netname"]
-                    direction = signal_config["direction"]
-                    boolean = signal_config.get("bool")
-                    virtual = signal_config.get("virtual")
-                    userconfig = signal_config.get("userconfig")
-                    function = userconfig.get("function", "")
-                    rio_function = function.split(".", 1)
-                    if function and rio_function[0] in {"jog"}:
-                        if rio_function[0] not in self.rio_functions:
-                            self.rio_functions[rio_function[0]] = {}
-                        self.rio_functions[rio_function[0]][rio_function[1]] = halname
-                    elif function and rio_function[0] in {"wcomp"}:
-                        if rio_function[0] not in self.rio_functions:
-                            self.rio_functions[rio_function[0]] = {}
-                        values = rio_function[1].split(".")
-                        vmin = values[0]
-                        vmax = values[-1]
-                        self.rio_functions[rio_function[0]][halname] = {
-                            "source": halname,
-                            "vmin": vmin,
-                            "vmax": vmax,
-                            "virtual": virtual,
-                        }
-
-        if "wcomp" in self.rio_functions:
-            self.loadrts.append("")
-            self.loadrts.append("# wcomp")
-            for function, halname in self.rio_functions["wcomp"].items():
-                source = halname["source"]
-                vmin = halname["vmin"]
-                vmax = halname["vmax"]
-                virtual = halname["virtual"]
-                self.loadrts.append(f"loadrt wcomp names=riof.{source}")
-                self.loadrts.append(f"addf riof.{source} servo-thread")
-                self.hal_setp_add(f"riof.{source}.min", vmin)
-                self.hal_setp_add(f"riof.{source}.max", vmax)
-                if virtual:
-                    self.hal_net_add(f"riov.{source}", f"riof.{source}.in")
-                else:
-                    self.hal_net_add(f"rio.{source}", f"riof.{source}.in")
-
-        if "jog" in self.rio_functions:
-            self.loadrts.append("")
-            self.loadrts.append("# Jogging")
-            speed_selector = False
-            axis_selector = False
-            axis_leds = False
-            axis_move = False
-            wheel = False
-            position_display = False
-            for function, halname in self.rio_functions["jog"].items():
-                if function.startswith("select-"):
-                    axis_selector = True
-                elif function.startswith("selected-"):
-                    axis_leds = True
-                elif function in {"plus", "minus"}:
-                    axis_move = True
-                elif function in {"fast"}:
-                    speed_selector = True
-                elif function in {"speed0"}:
-                    speed_selector = True
-                elif function in {"speed1"}:
-                    speed_selector = True
-                elif function in {"position"}:
-                    position_display = True
-                elif function in {"wheel"}:
-                    wheel = True
-
-            riof_jog_default = self.project.config["jdata"].get("linuxcnc", {}).get("rio_functions", {}).get("jog", {})
-
-            def riof_jog_setup(section, key):
-                return riof_jog_default.get(section, {}).get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][section][key]["default"])
-
-            wheel_scale = riof_jog_setup("wheel", "scale")
-
-            if speed_selector:
-                wheel_scale = None
-
-                speed_selector_mux = 1
+            if "jog" in self.rio_functions:
+                self.loadrts.append("")
+                self.loadrts.append("# Jogging")
+                speed_selector = False
+                axis_selector = False
+                axis_leds = False
+                axis_move = False
+                wheel = False
+                position_display = False
                 for function, halname in self.rio_functions["jog"].items():
-                    if function == "speed0":
-                        speed_selector_mux *= 2
-                    elif function == "speed1":
-                        speed_selector_mux *= 2
-                    elif function == "fast":
-                        speed_selector_mux *= 2
+                    if function.startswith("select-"):
+                        axis_selector = True
+                    elif function.startswith("selected-"):
+                        axis_leds = True
+                    elif function in {"plus", "minus"}:
+                        axis_move = True
+                    elif function in {"fast"}:
+                        speed_selector = True
+                    elif function in {"speed0"}:
+                        speed_selector = True
+                    elif function in {"speed1"}:
+                        speed_selector = True
+                    elif function in {"position"}:
+                        position_display = True
+                    elif function in {"wheel"}:
+                        wheel = True
 
-                # TODO: using mux-gen ?
-                if speed_selector_mux > 4:
-                    print("ERROR: only two speed selectors are supported")
-                    speed_selector_mux = 4
-                elif speed_selector_mux == 1:
-                    print("ERROR: no speed selectors found")
+                riof_jog_default = self.project.config["jdata"].get("linuxcnc", {}).get("rio_functions", {}).get("jog", {})
 
-                if speed_selector_mux in {2, 4}:
-                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
-                    self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
+                def riof_jog_setup(section, key):
+                    return riof_jog_default.get(section, {}).get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][section][key]["default"])
 
-                    self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
-                    self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
-                    if speed_selector_mux == 4:
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_2"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheel", "scale_3"))
+                wheel_scale = riof_jog_setup("wheel", "scale")
 
-                    in_n = 0
+                if speed_selector:
+                    wheel_scale = None
+
+                    speed_selector_mux = 1
                     for function, halname in self.rio_functions["jog"].items():
-                        if function in {"fast", "speed0", "speed1"}:
-                            if speed_selector_mux == 2:
-                                self.hal_net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
+                        if function == "speed0":
+                            speed_selector_mux *= 2
+                        elif function == "speed1":
+                            speed_selector_mux *= 2
+                        elif function == "fast":
+                            speed_selector_mux *= 2
+
+                    # TODO: using mux-gen ?
+                    if speed_selector_mux > 4:
+                        print("ERROR: only two speed selectors are supported")
+                        speed_selector_mux = 4
+                    elif speed_selector_mux == 1:
+                        print("ERROR: no speed selectors found")
+
+                    if speed_selector_mux in {2, 4}:
+                        self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
+                        self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
+
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
+                        if speed_selector_mux == 4:
+                            self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_2"))
+                            self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheel", "scale_3"))
+
+                        in_n = 0
+                        for function, halname in self.rio_functions["jog"].items():
+                            if function in {"fast", "speed0", "speed1"}:
+                                if speed_selector_mux == 2:
+                                    self.hal_net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
+                                else:
+                                    self.hal_net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
+                                    in_n += 1
+
+                        (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
+                        self.cfgxml_data["status"] += gout
+                        self.hal_net_add("riof.jog.wheelscale_mux.out", pname)
+
+                if wheel:
+                    halname_wheel = ""
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function == "wheel":
+                            halname_wheel = f"rio.{halname}-s32"
+                            break
+
+                    wheelfilter = riof_jog_setup("wheel", "filter")
+                    if halname_wheel and wheelfilter:
+                        wf_gain = riof_jog_setup("wheel", "filter_gain")
+                        wf_scale = riof_jog_setup("wheel", "filter_scale")
+                        self.loadrts.append("loadrt ilowpass names=riof.jog.wheelilowpass")
+                        self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
+                        self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
+                        self.hal_setp_add("riof.jog.wheelilowpass.scale", wf_scale)
+                        self.hal_net_add(halname_wheel, "riof.jog.wheelilowpass.in")
+                        halname_wheel = "riof.jog.wheelilowpass.out"
+
+                    if halname_wheel:
+                        for axis_name, axis_config in self.axis_dict.items():
+                            joints = axis_config["joints"]
+                            laxis = axis_name.lower()
+                            self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
+
+                            if wheel_scale is not None:
+                                self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
                             else:
-                                self.hal_net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
-                                in_n += 1
+                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
 
-                    (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
-                    self.cfgxml_data["status"] += gout
-                    self.hal_net_add("riof.jog.wheelscale_mux.out", pname)
+                            self.hal_net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
+                            self.hal_net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+                            for joint, joint_setup in joints.items():
+                                self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
 
-            if wheel:
-                halname_wheel = ""
-                for function, halname in self.rio_functions["jog"].items():
-                    if function == "wheel":
-                        halname_wheel = f"rio.{halname}-s32"
-                        break
+                                if wheel_scale is not None:
+                                    self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                else:
+                                    self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
 
-                wheelfilter = riof_jog_setup("wheel", "filter")
-                if halname_wheel and wheelfilter:
-                    wf_gain = riof_jog_setup("wheel", "filter_gain")
-                    wf_scale = riof_jog_setup("wheel", "filter_scale")
-                    self.loadrts.append("loadrt ilowpass names=riof.jog.wheelilowpass")
-                    self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
-                    self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
-                    self.hal_setp_add("riof.jog.wheelilowpass.scale", wf_scale)
-                    self.hal_net_add(halname_wheel, "riof.jog.wheelilowpass.in")
-                    halname_wheel = "riof.jog.wheelilowpass.out"
+                                self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
+                                self.hal_net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
-                if halname_wheel:
+                else:
                     for axis_name, axis_config in self.axis_dict.items():
                         joints = axis_config["joints"]
                         laxis = axis_name.lower()
-                        self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-
-                        if wheel_scale is not None:
-                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
-                        else:
-                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
-
-                        self.hal_net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
-                        self.hal_net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
-                        for joint, joint_setup in joints.items():
-                            self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
+                        fname = f"wheel_{laxis}"
+                        if fname in self.rio_functions["jog"]:
+                            self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
 
                             if wheel_scale is not None:
-                                self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
                             else:
-                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
 
-                            self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
-                            self.hal_net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
-
-            else:
-                for axis_name, axis_config in self.axis_dict.items():
-                    joints = axis_config["joints"]
-                    laxis = axis_name.lower()
-                    fname = f"wheel_{laxis}"
-                    if fname in self.rio_functions["jog"]:
-                        self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-
-                        if wheel_scale is not None:
-                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
-                        else:
-                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
-
-                        self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
-                        for function, halname in self.rio_functions["jog"].items():
-                            if function == fname:
-                                self.hal_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
-
-                        for joint, joint_setup in joints.items():
-                            self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
-
-                            if wheel_scale is not None:
-                                self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
-                            else:
-                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
-
-                            self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
+                            self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
-                                    self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                                    self.hal_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
 
-            if speed_selector:
-                speed_selector_mux = 1
-                for function, halname in self.rio_functions["jog"].items():
-                    if function == "speed0":
-                        speed_selector_mux *= 2
-                    elif function == "speed1":
-                        speed_selector_mux *= 2
-                    elif function == "fast":
-                        speed_selector_mux *= 2
+                            for joint, joint_setup in joints.items():
+                                self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
 
-                if speed_selector_mux > 4:
-                    print("ERROR: only two speed selectors are supported")
-                    speed_selector_mux = 4
-                elif speed_selector_mux == 1:
-                    print("ERROR: no speed selectors found")
+                                if wheel_scale is not None:
+                                    self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                else:
+                                    self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
 
-                if speed_selector_mux in {2, 4}:
-                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
-                    self.loadrts.append("addf riof.jog.speed_mux servo-thread")
+                                self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
+                                for function, halname in self.rio_functions["jog"].items():
+                                    if function == fname:
+                                        self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
-                    if speed_selector_mux == 2:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
-                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
-                    else:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
-                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
-                        self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("keys", "speed_2"))
-                        self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("keys", "speed_3"))
-
-                    in_n = 0
+                if speed_selector:
+                    speed_selector_mux = 1
                     for function, halname in self.rio_functions["jog"].items():
-                        if function in {"fast", "speed0", "speed1"}:
-                            if speed_selector_mux == 2:
-                                self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
-                            else:
-                                self.hal_net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
-                                in_n += 1
+                        if function == "speed0":
+                            speed_selector_mux *= 2
+                        elif function == "speed1":
+                            speed_selector_mux *= 2
+                        elif function == "fast":
+                            speed_selector_mux *= 2
 
-                    (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
-                    self.cfgxml_data["status"] += gout
-                    self.hal_net_add("riof.jog.speed_mux.out", pname)
-                    self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
-                    self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
-            else:
-                self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("keys", "speed"))
-                self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("keys", "speed"))
+                    if speed_selector_mux > 4:
+                        print("ERROR: only two speed selectors are supported")
+                        speed_selector_mux = 4
+                    elif speed_selector_mux == 1:
+                        print("ERROR: no speed selectors found")
 
-            if axis_move:
-                for function, halname in self.rio_functions["jog"].items():
-                    if function in {"plus", "minus"}:
-                        self.hal_net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
-                        self.hal_net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
+                    if speed_selector_mux in {2, 4}:
+                        self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
+                        self.loadrts.append("addf riof.jog.speed_mux servo-thread")
 
-            if axis_selector:
-                joint_n = 0
-                for function, halname in self.rio_functions["jog"].items():
-                    if function.startswith("select-"):
-                        axis_name = function.split("-")[-1]
-                        self.hal_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
-                        self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
-                        (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
-                        self.cfgxml_data["status"] += gout
-                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", pname)
-                        for axis_id, axis_config in self.axis_dict.items():
-                            joints = axis_config["joints"]
-                            laxis = axis_id.lower()
-                            if axis_name == laxis:
-                                self.loadrts.append("")
-                                self.loadrts.append(f"# axis {laxis} selection")
-                                self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                                self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
-                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
-                                self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
-                                self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
-                                for joint, joint_setup in joints.items():
-                                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
-                        joint_n += 1
-            else:
-                for axis_id, axis_config in self.axis_dict.items():
-                    joints = axis_config["joints"]
-                    laxis = axis_id.lower()
-                    self.loadrts.append("")
-                    self.loadrts.append(f"# axis {laxis} selection")
-                    self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                    self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
-                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
-                    self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
-                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
-                    for joint, joint_setup in joints.items():
-                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
-
-            if axis_selector and position_display:
-                self.loadrts.append("")
-                self.loadrts.append("# display position")
-                self.loadrts.append("loadrt mux16 names=riof.jog.position_mux")
-                self.loadrts.append("addf riof.jog.position_mux servo-thread")
-                mux_select = 0
-                mux_input = 1
-                for function, halname in self.rio_functions["jog"].items():
-                    if function.startswith("select-"):
-                        axis_name = function.split("-")[-1]
-                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
-                        self.hal_net_add(f"halui.axis.{axis_name}.pos-relative", f"riof.jog.position_mux.in{mux_input:02d}")
-                        mux_select += 1
-                        mux_input = mux_input * 2
-                    elif function == "position":
-                        self.hal_net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
-
-            if axis_leds:
-                for function, halname in self.rio_functions["jog"].items():
-                    if function.startswith("selected-"):
-                        axis_name = function.split("-")[-1]
-                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
-
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
-                    varname = signal_config["varname"]
-                    netname = signal_config["netname"]
-                    direction = signal_config["direction"]
-                    userconfig = signal_config.get("userconfig", {})
-                    boolean = signal_config.get("bool")
-                    virtual = signal_config.get("virtual")
-                    setp = userconfig.get("setp")
-                    function = userconfig.get("function", "")
-                    displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                    if function and not virtual:
-                        continue
-                    if signal_config.get("helper", False) and not displayconfig:
-                        continue
-                    vmin = signal_config.get("min", -1000)
-                    vmax = signal_config.get("max", 1000)
-                    vformat = signal_config.get("format")
-                    vunit = signal_config.get("unit")
-                    if "min" not in displayconfig:
-                        displayconfig["min"] = vmin
-                    if "max" not in displayconfig:
-                        displayconfig["max"] = vmax
-                    if vformat and "format" not in displayconfig:
-                        displayconfig["format"] = vformat
-                    if vunit and "unit" not in displayconfig:
-                        displayconfig["unit"] = vunit
-
-                    if setp:
-                        continue
-
-                    if halname in self.feedbacks:
-                        continue
-
-                    if (netname and not virtual) or setp:
-                        if direction == "input":
-                            section = displayconfig.get("section", "inputs").lower()
-                        elif direction == "output":
-                            section = displayconfig.get("section", "outputs").lower()
-                        if not boolean:
-                            dtype = displayconfig.get("type", "number")
+                        if speed_selector_mux == 2:
+                            self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                            self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
                         else:
-                            dtype = displayconfig.get("type", "led")
+                            self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                            self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
+                            self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("keys", "speed_2"))
+                            self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("keys", "speed_3"))
 
-                    elif virtual:
-                        section = displayconfig.get("section", "virtual").lower()
-                        if direction == "output":
+                        in_n = 0
+                        for function, halname in self.rio_functions["jog"].items():
+                            if function in {"fast", "speed0", "speed1"}:
+                                if speed_selector_mux == 2:
+                                    self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
+                                else:
+                                    self.hal_net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
+                                    in_n += 1
+
+                        (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
+                        self.cfgxml_data["status"] += gout
+                        self.hal_net_add("riof.jog.speed_mux.out", pname)
+                        self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
+                        self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
+                else:
+                    self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("keys", "speed"))
+                    self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("keys", "speed"))
+
+                if axis_move:
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function in {"plus", "minus"}:
+                            self.hal_net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
+                            self.hal_net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
+
+                if axis_selector:
+                    joint_n = 0
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function.startswith("select-"):
+                            axis_name = function.split("-")[-1]
+                            self.hal_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
+                            self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
+                            (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
+                            self.cfgxml_data["status"] += gout
+                            self.hal_net_add(f"halui.axis.{axis_name}.is-selected", pname)
+                            for axis_id, axis_config in self.axis_dict.items():
+                                joints = axis_config["joints"]
+                                laxis = axis_id.lower()
+                                if axis_name == laxis:
+                                    self.loadrts.append("")
+                                    self.loadrts.append(f"# axis {laxis} selection")
+                                    self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                                    self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
+                                    self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
+                                    for joint, joint_setup in joints.items():
+                                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
+                            joint_n += 1
+                else:
+                    for axis_id, axis_config in self.axis_dict.items():
+                        joints = axis_config["joints"]
+                        laxis = axis_id.lower()
+                        self.loadrts.append("")
+                        self.loadrts.append(f"# axis {laxis} selection")
+                        self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                        self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                        self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                        self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
+                        self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
+                        for joint, joint_setup in joints.items():
+                            self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
+
+                if axis_selector and position_display:
+                    self.loadrts.append("")
+                    self.loadrts.append("# display position")
+                    self.loadrts.append("loadrt mux16 names=riof.jog.position_mux")
+                    self.loadrts.append("addf riof.jog.position_mux servo-thread")
+                    mux_select = 0
+                    mux_input = 1
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function.startswith("select-"):
+                            axis_name = function.split("-")[-1]
+                            self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
+                            self.hal_net_add(f"halui.axis.{axis_name}.pos-relative", f"riof.jog.position_mux.in{mux_input:02d}")
+                            mux_select += 1
+                            mux_input = mux_input * 2
+                        elif function == "position":
+                            self.hal_net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
+
+                if axis_leds:
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function.startswith("selected-"):
+                            axis_name = function.split("-")[-1]
+                            self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
+
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                    for signal_name, signal_config in plugin_instance.signals().items():
+                        halname = signal_config["halname"]
+                        varname = signal_config["varname"]
+                        netname = signal_config["netname"]
+                        direction = signal_config["direction"]
+                        userconfig = signal_config.get("userconfig", {})
+                        boolean = signal_config.get("bool")
+                        virtual = signal_config.get("virtual")
+                        setp = userconfig.get("setp")
+                        function = userconfig.get("function", "")
+                        displayconfig = userconfig.get("display", signal_config.get("display", {}))
+                        if function and not virtual:
+                            continue
+                        if signal_config.get("helper", False) and not displayconfig:
+                            continue
+                        vmin = signal_config.get("min", -1000)
+                        vmax = signal_config.get("max", 1000)
+                        vformat = signal_config.get("format")
+                        vunit = signal_config.get("unit")
+                        if "min" not in displayconfig:
+                            displayconfig["min"] = vmin
+                        if "max" not in displayconfig:
+                            displayconfig["max"] = vmax
+                        if vformat and "format" not in displayconfig:
+                            displayconfig["format"] = vformat
+                        if vunit and "unit" not in displayconfig:
+                            displayconfig["unit"] = vunit
+
+                        if setp:
+                            continue
+
+                        if halname in self.feedbacks:
+                            continue
+
+                        if (netname and not virtual) or setp:
+                            if direction == "input":
+                                section = displayconfig.get("section", "inputs").lower()
+                            elif direction == "output":
+                                section = displayconfig.get("section", "outputs").lower()
                             if not boolean:
                                 dtype = displayconfig.get("type", "number")
                             else:
                                 dtype = displayconfig.get("type", "led")
+
+                        elif virtual:
+                            section = displayconfig.get("section", "virtual").lower()
+                            if direction == "output":
+                                if not boolean:
+                                    dtype = displayconfig.get("type", "number")
+                                else:
+                                    dtype = displayconfig.get("type", "led")
+                            elif direction == "input":
+                                if not boolean:
+                                    dtype = displayconfig.get("type", "scale")
+                                else:
+                                    dtype = displayconfig.get("type", "checkbutton")
+
                         elif direction == "input":
+                            section = displayconfig.get("section", "inputs").lower()
+                            if not boolean:
+                                dtype = displayconfig.get("type", "number")
+                            else:
+                                dtype = displayconfig.get("type", "led")
+                        elif direction == "output":
+                            section = displayconfig.get("section", "outputs").lower()
                             if not boolean:
                                 dtype = displayconfig.get("type", "scale")
                             else:
                                 dtype = displayconfig.get("type", "checkbutton")
 
-                    elif direction == "input":
-                        section = displayconfig.get("section", "inputs").lower()
-                        if not boolean:
-                            dtype = displayconfig.get("type", "number")
-                        else:
-                            dtype = displayconfig.get("type", "led")
-                    elif direction == "output":
-                        section = displayconfig.get("section", "outputs").lower()
-                        if not boolean:
-                            dtype = displayconfig.get("type", "scale")
-                        else:
-                            dtype = displayconfig.get("type", "checkbutton")
+                        if hasattr(self.gui_gen, f"draw_{dtype}"):
+                            (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                            if section not in self.cfgxml_data:
+                                self.cfgxml_data[section] = []
 
-                    if hasattr(self.gui_gen, f"draw_{dtype}"):
-                        (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
-                        if section not in self.cfgxml_data:
-                            self.cfgxml_data[section] = []
+                            # fselect handling
+                            if dtype == "fselect":
+                                values = displayconfig.get("values", {"v0": 0, "v1": 1})
+                                n_values = len(values)
+                                self.halextras.append(f"loadrt conv_s32_u32 names=conv_s32_u32_{halname}")
+                                self.halextras.append(f"addf conv_s32_u32_{halname} servo-thread")
+                                self.hal_net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
+                                self.halextras.append("")
+                                self.halextras.append(f"loadrt demux names=demux_{halname} personality={n_values}")
+                                self.halextras.append(f"addf demux_{halname} servo-thread")
+                                self.hal_net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
+                                for nv in range(n_values):
+                                    self.hal_net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
+                                self.halextras.append("")
+                                self.halextras.append(f"loadrt bitslice names=bitslice_{halname} personality=3")
+                                self.halextras.append(f"addf bitslice_{halname} servo-thread")
+                                self.hal_net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
+                                self.halextras.append("")
+                                self.halextras.append(f"loadrt mux8 names=mux8_{halname}")
+                                self.halextras.append(f"addf mux8_{halname} servo-thread")
+                                self.hal_net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
+                                self.hal_net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
+                                self.hal_net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
+                                for vn, name in enumerate(values):
+                                    self.hal_setp_add(f"mux8_{halname}.in{vn}", values[name])
+                                self.halextras.append("")
+                                gui_pinname = f"mux8_{halname}.out"
 
-                        # fselect handling
-                        if dtype == "fselect":
-                            values = displayconfig.get("values", {"v0": 0, "v1": 1})
-                            n_values = len(values)
-                            self.halextras.append(f"loadrt conv_s32_u32 names=conv_s32_u32_{halname}")
-                            self.halextras.append(f"addf conv_s32_u32_{halname} servo-thread")
-                            self.hal_net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
-                            self.halextras.append("")
-                            self.halextras.append(f"loadrt demux names=demux_{halname} personality={n_values}")
-                            self.halextras.append(f"addf demux_{halname} servo-thread")
-                            self.hal_net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
-                            for nv in range(n_values):
-                                self.hal_net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
-                            self.halextras.append("")
-                            self.halextras.append(f"loadrt bitslice names=bitslice_{halname} personality=3")
-                            self.halextras.append(f"addf bitslice_{halname} servo-thread")
-                            self.hal_net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
-                            self.halextras.append("")
-                            self.halextras.append(f"loadrt mux8 names=mux8_{halname}")
-                            self.halextras.append(f"addf mux8_{halname} servo-thread")
-                            self.hal_net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
-                            self.hal_net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
-                            self.hal_net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
-                            for vn, name in enumerate(values):
-                                self.hal_setp_add(f"mux8_{halname}.in{vn}", values[name])
-                            self.halextras.append("")
-                            gui_pinname = f"mux8_{halname}.out"
+                            if direction == "input":
+                                dfilter = displayconfig.get("filter", {})
+                                dfilter_type = dfilter.get("type")
+                                if dfilter_type == "LOWPASS":
+                                    dfilter_gain = dfilter.get("gain", "0.001")
+                                    self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
+                                    self.halextras.append(f"addf lowpass_{halname} servo-thread")
+                                    self.hal_setp_add(f"lowpass_{halname}.load", 0)
+                                    self.hal_setp_add(f"lowpass_{halname}.gain", dfilter_gain)
+                                    self.hal_net_add(gui_pinname, f"lowpass_{halname}.in")
+                                    gui_pinname = f"lowpass_{halname}.out"
 
-                        if direction == "input":
-                            dfilter = displayconfig.get("filter", {})
-                            dfilter_type = dfilter.get("type")
-                            if dfilter_type == "LOWPASS":
-                                dfilter_gain = dfilter.get("gain", "0.001")
-                                self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
-                                self.halextras.append(f"addf lowpass_{halname} servo-thread")
-                                self.hal_setp_add(f"lowpass_{halname}.load", 0)
-                                self.hal_setp_add(f"lowpass_{halname}.gain", dfilter_gain)
-                                self.hal_net_add(gui_pinname, f"lowpass_{halname}.in")
-                                gui_pinname = f"lowpass_{halname}.out"
+                            self.cfgxml_data[section] += gout
+                            if virtual and direction == "input":
+                                self.hal_net_add(gui_pinname, f"riov.{halname}")
+                            elif virtual and direction == "output":
+                                self.hal_net_add(f"riov.{halname}", gui_pinname)
+                            elif netname or setp or direction == "input":
+                                self.hal_net_add(f"rio.{halname}", gui_pinname)
+                            elif direction == "output":
+                                self.hal_net_add(gui_pinname, f"rio.{halname}")
 
-                        self.cfgxml_data[section] += gout
-                        if virtual and direction == "input":
-                            self.hal_net_add(gui_pinname, f"riov.{halname}")
-                        elif virtual and direction == "output":
-                            self.hal_net_add(f"riov.{halname}", gui_pinname)
-                        elif netname or setp or direction == "input":
-                            self.hal_net_add(f"rio.{halname}", gui_pinname)
-                        elif direction == "output":
-                            self.hal_net_add(gui_pinname, f"rio.{halname}")
+                        elif dtype != "none":
+                            print(f"WARNING: 'draw_{dtype}' not found")
 
-                    elif dtype != "none":
-                        print(f"WARNING: 'draw_{dtype}' not found")
+            titles = []
+            for section in self.cfgxml_data:
+                if self.cfgxml_data[section]:
+                    titles.append(section.title())
+            cfgxml_adata = []
+            cfgxml_adata += self.gui_gen.draw_begin()
+            cfgxml_adata += self.gui_gen.draw_tabs_begin(titles)
+            for section in self.cfgxml_data:
+                if self.cfgxml_data[section]:
+                    cfgxml_adata += self.gui_gen.draw_tab_begin(section.title())
+                    cfgxml_adata += self.cfgxml_data[section]
+                    cfgxml_adata += self.gui_gen.draw_tab_end()
+            cfgxml_adata += self.gui_gen.draw_tabs_end()
+            cfgxml_adata += self.gui_gen.draw_end()
 
-        titles = []
-        for section in self.cfgxml_data:
-            if self.cfgxml_data[section]:
-                titles.append(section.title())
-        cfgxml_adata = []
-        cfgxml_adata += self.gui_gen.draw_begin()
-        cfgxml_adata += self.gui_gen.draw_tabs_begin(titles)
-        for section in self.cfgxml_data:
-            if self.cfgxml_data[section]:
-                cfgxml_adata += self.gui_gen.draw_tab_begin(section.title())
-                cfgxml_adata += self.cfgxml_data[section]
-                cfgxml_adata += self.gui_gen.draw_tab_end()
-        cfgxml_adata += self.gui_gen.draw_tabs_end()
-        cfgxml_adata += self.gui_gen.draw_end()
+            if gui == "qtdragon":
+                open(f"{self.configuration_path}/rio-gui.ui", "w").write("\n".join(cfgxml_adata))
+            else:
+                open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
 
-        if gui == "qtdragon":
-            open(f"{self.configuration_path}/rio-gui.ui", "w").write("\n".join(cfgxml_adata))
-        else:
-            open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
-
-        if gui not in {"touchy", "probe_basic"}:
+        if gui not in {"__touchy", "probe_basic"}:
             self.postgui_call_list.append("custom_postgui.hal")
 
     def resolv_logic(self, logic_name, bracket):
