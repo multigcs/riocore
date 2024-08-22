@@ -161,17 +161,19 @@ you need the toolchain for your FPGA or in some cases the https://github.com/Yos
 ## Flow <a name = "flow"></a>
 ```mermaid
 graph LR;
-    JSON--rio-generator-->Output;
-    Output-->Gateware;
-    Gateware-->Makefile;
-    Gateware-->verilog-files;
-    Gateware-->pins.*;
+    BOARD.JSON--rio-setup-->CONFIG.JSON;
+    CONFIG.JSON--rio-generator-->/Output;
+    /Output-->/Gateware;
+    /Gateware-->Makefile;
+    /Gateware-->verilog-files;
+    /Gateware-->pins.*;
     Makefile--make-->Bitfile;
-    Output-->LinuxCNC;
-    LinuxCNC-->rio.c;
-    LinuxCNC-->rio.ini
-    LinuxCNC-->rio-gui.xml
-    LinuxCNC-->*.hal;
+    Bitfile--make load-->FPGA;
+    /Output-->/LinuxCNC;
+    /LinuxCNC-->rio.c;
+    /LinuxCNC-->rio.ini
+    /LinuxCNC-->rio-gui.xml
+    /LinuxCNC-->*.hal;
     rio.c--halcompile-->hal-component;
 ```
 
