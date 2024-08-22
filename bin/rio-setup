@@ -205,8 +205,8 @@ class ImageMap(QLabel):
             direction_str = direction.currentText()
             pos_x = posx.currentText()
             pos_y = posy.currentText()
-            if direction_str == "all":
-                direction_str = ""
+            if direction_str == "":
+                direction_str = "all"
 
             if slot_name and name and pin:
                 pin_cfg = {"pin": pin, "pos": [int(pos_x), int(pos_y)], "direction": direction_str}
@@ -1103,7 +1103,7 @@ class TabBoard:
             if splitted[0] == slot_name:
                 color = "darkCyan"
                 label.mark(color)
-                direction = label.pin.get("direction", "all")
+                direction = label.pin.get("direction") or "all"
 
                 plugin_instance, pin_name = self.parent.get_plugin_by_pin(label.pin.get("pin", {}))
                 pinfo = ""
@@ -1686,7 +1686,7 @@ class WinForm(QWidget):
                         }
                         for _pin_id, pin in slot["pins"].items():
                             if isinstance(pin, dict):
-                                direction = pin.get("direction", "all")
+                                direction = pin.get("direction") or "all"
                                 slot_has[f"{direction}s"] += 1
 
                         for pname, plugin_data in plugin_needs.items():
@@ -1816,7 +1816,7 @@ class WinForm(QWidget):
                         "all": [],
                     }
                     for spin_name, spin in slot.get("pins", {}).items():
-                        direction = spin.get("direction", "all")
+                        direction = spin.get("direction") or "all"
                         if self.get_plugin_by_pin(spin["pin"]) == (None, None):
                             if direction:
                                 slotpins[direction].append(spin_name)
@@ -1834,7 +1834,7 @@ class WinForm(QWidget):
                             optional = pin_defaults.get("optional")
                             if optional is True:
                                 continue
-                            direction = pin_defaults.get("direction", "all")
+                            direction = pin_defaults.get("direction") or "all"
                             pinconfig = {"pin": f"{slot_name}:{pin_id}"}
                             if direction in slotpins and pin_id in slotpins[direction]:
                                 slotpins[direction].remove(pin_id)
@@ -1845,7 +1845,7 @@ class WinForm(QWidget):
                             optional = pin_defaults.get("optional")
                             if optional is True:
                                 continue
-                            direction = pin_defaults.get("direction", "all")
+                            direction = pin_defaults.get("direction") or "all"
                             pinconfig = {"pin": ""}
                             # find matching pins by name
                             found = False
@@ -1880,7 +1880,7 @@ class WinForm(QWidget):
                             optional = pin_defaults.get("optional", False)
                             if optional is False:
                                 continue
-                            direction = pin_defaults.get("direction", "all")
+                            direction = pin_defaults.get("direction") or "all"
                             pinconfig = {"pin": None}
                             # find matching pins by name
                             found = False
