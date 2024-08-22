@@ -1035,12 +1035,20 @@ class TabBoard:
                     if "pos" in pin:
                         self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
                         if pin.get("rotate"):
-                            self.pinlabels[pkey].setFixedWidth(15)
-                            self.pinlabels[pkey].setFixedHeight(len(pin_id * 15))
+                            if len(pin["pos"]) == 4:
+                                self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
+                                self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
+                            else:
+                                self.pinlabels[pkey].setFixedWidth(15)
+                                self.pinlabels[pkey].setFixedHeight(len(pin_id * 15))
                             self.pinlabels[pkey].setText(pin_id, True)
                         else:
-                            self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
-                            self.pinlabels[pkey].setFixedHeight(15)
+                            if len(pin["pos"]) == 4:
+                                self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
+                                self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
+                            else:
+                                self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
+                                self.pinlabels[pkey].setFixedHeight(15)
                             self.pinlabels[pkey].setText(pin_id)
                         self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
                         self.pinlabels[pkey].setToolTip(tooltip)
