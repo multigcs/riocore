@@ -2216,7 +2216,7 @@ class WinForm(QWidget):
             "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"]},
             "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual"},
             "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic"], "default": "axis"},
-            "embed_vismach": {"type": "select", "options": ["", "fanuc_200f", "gantry_5axis", "millturn", "mill_xyz", "scara"], "default": ""},
+            "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
         }.items():
             aitem = MyStandardItem()
             tree_lcnc.appendRow(

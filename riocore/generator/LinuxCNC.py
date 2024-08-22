@@ -1479,8 +1479,9 @@ class LinuxCNC:
             }
 
         if embed_vismach:
-            for joint in range(len(self.axis_dict)):
-                self.hal_net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}")
+            if embed_vismach in {"fanuc_200f"}:
+                for joint in range(len(self.axis_dict)):
+                    self.hal_net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}")
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
