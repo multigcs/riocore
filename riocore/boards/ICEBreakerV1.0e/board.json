@@ -18,23 +18,86 @@
             "name": "UART",
             "comment": "USB UART",
             "pins": {
-                "RX": "6",
-                "TX": "9"
+                "RX": {
+                    "pin": "6",
+                    "pos": [
+                        105,
+                        35
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "9",
+                    "pos": [
+                        125,
+                        35
+                    ],
+                    "direction": "output"
+                }
             }
         },
         {
             "name": "LED",
             "comment": "LED",
             "pins": {
-                "G": "37",
-                "R": "11"
+                "R": {
+                    "pin": "11",
+                    "pos": [
+                        65,
+                        65
+                    ]
+                },
+                "G": {
+                    "pin": "37",
+                    "pos": [
+                        80,
+                        65
+                    ]
+                }
             }
         },
         {
             "name": "BUTTON",
             "comment": "BUTTON",
             "pins": {
-                "1": "10"
+                "1": {
+                    "pin": "10",
+                    "pos": [
+                        65,
+                        25
+                    ]
+                }
+            }
+        },
+        {
+            "name": "RGB",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "GRN": {
+                    "pin": "40",
+                    "pos": [
+                        15,
+                        95
+                    ],
+                    "direction": "all"
+                },
+                "RED": {
+                    "pin": "39",
+                    "pos": [
+                        45,
+                        95
+                    ],
+                    "direction": "all"
+                },
+                "BLU": {
+                    "pin": "41",
+                    "pos": [
+                        15,
+                        110
+                    ],
+                    "direction": "all"
+                }
             }
         },
         {
@@ -73,6 +136,14 @@
                         240
                     ],
                     "direction": "input"
+                },
+                "IO3": {
+                    "pin": "13",
+                    "pos": [
+                        15,
+                        255
+                    ],
+                    "direction": "all"
                 }
             }
         },
