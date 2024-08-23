@@ -455,8 +455,13 @@ class TabSignals:
         self.sig_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
     def sig_edit_cb(self, widget):
+        print("update..")
+
+        self.parent.config_load()
+
         self.parent.generate_cb(preview=True)
-        self.parent.request_load_tree = 3
+        self.parent.request_load_tree = 2
+
         self.update()
         self.parent.tabs["Json"].update()
 
@@ -1581,6 +1586,17 @@ class WinForm(QWidget):
         if "plugins" not in self.config:
             self.config["plugins"] = []
 
+        # loading board config
+        boardcfg = self.config.get("boardcfg")
+        self.boardcfg_path = None
+        if boardcfg:
+            board_file = self.get_boardpath(boardcfg)
+            self.boardcfg_path = os.path.dirname(board_file)
+            self.board = {}
+            print(f"loading board: {board_file}")
+            boardJsonStr = open(board_file, "r").read()
+            self.board = json.loads(boardJsonStr)
+
         self.config_load()
 
     def closeEvent(self, event):
@@ -1934,17 +1950,6 @@ class WinForm(QWidget):
 
     def config_load(self):
         self.info_widget.setText(self.config_file)
-
-        # loading board config
-        boardcfg = self.config.get("boardcfg")
-        self.boardcfg_path = None
-        if boardcfg:
-            board_file = self.get_boardpath(boardcfg)
-            self.boardcfg_path = os.path.dirname(board_file)
-            self.board = {}
-            print(f"loading board: {board_file}")
-            boardJsonStr = open(board_file, "r").read()
-            self.board = json.loads(boardJsonStr)
 
         slot_pinmapping = {}
         self.slots = self.board.get("slots", []) + self.config.get("slots", [])
@@ -3386,7 +3391,8 @@ class WinForm(QWidget):
         title = plugin_instance.NAME
         if name:
             title = f"{name} ({plugin_instance.NAME})"
-
+        else:
+            title = f"{plugin_instance.title} ({plugin_instance.NAME})"
         help_text = plugin_instance.INFO
 
         aitem = MyStandardItem()
