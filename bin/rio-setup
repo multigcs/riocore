@@ -1071,7 +1071,7 @@ class TabBoard:
                         if module_name:
                             self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
                         elif plugin_instance:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
+                            self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance))
                         else:
                             self.pinlabels[pkey].clicked.connect(partial(self.parent.add_plugin, pin_id, slot_name=slot_name))
 
@@ -1902,7 +1902,7 @@ class WinForm(QWidget):
                 self.tree_add_plugin(self.tree_plugins, plugin_instance, expand=True)
                 self.display()
 
-                self.edit_plugin(plugin_instance, plugin_instance.plugin_id, None, is_new=True)
+                self.edit_plugin(plugin_instance, None, is_new=True)
 
             return dialog.selected
 
@@ -3157,8 +3157,8 @@ class WinForm(QWidget):
         options_tab.setWidget(options_widget)
         return options_tab
 
-    def edit_plugin(self, plugin_instance, plugin_id, widget, is_new=False):
-        plugin_config = self.config["plugins"][plugin_id]
+    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False):
+        plugin_config = plugin_instance.plugin_setup
         plugin_config_backup = copy.deepcopy(plugin_config)
 
         dialog = QDialog()
@@ -3174,7 +3174,7 @@ class WinForm(QWidget):
             pyvcp_button.clicked.connect(self.open_pyvcp)
             dialog_buttonBox.addButton(pyvcp_button, QDialogButtonBox.ActionRole)
 
-        if not is_new:
+        if not nopins:
             remove_button = QPushButton(self.tr("Remove"))
             remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
@@ -3184,10 +3184,11 @@ class WinForm(QWidget):
         options_tab = self.edit_plugin_options(plugin_instance, plugin_config)
         tab_widget.addTab(options_tab, "Plugin")
 
-        pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config)
-        tab_widget.addTab(pins_tab, "Pins")
-        if is_new:
-            tab_widget.setCurrentWidget(pins_tab)
+        if not nopins:
+            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config)
+            tab_widget.addTab(pins_tab, "Pins")
+            if is_new:
+                tab_widget.setCurrentWidget(pins_tab)
 
         if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
             joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
@@ -3220,7 +3221,7 @@ class WinForm(QWidget):
             self.display()
             return
         if not dialog.is_removed:
-            self.config["plugins"][plugin_id] = plugin_config_backup
+            plugin_config = plugin_config_backup
 
     def config_plugin(self, plugin_instance, plugin_id, widget):
         if os.path.isfile(f"{riocore_path}/plugins/{plugin_instance.NAME}/config.py"):
@@ -3409,13 +3410,13 @@ class WinForm(QWidget):
         buttons_widget = QWidget()
         buttons_widget.setLayout(buttons_layout)
 
-        if not nopins:
-            button_edit = QPushButton("edit")
-            cb = partial(self.edit_plugin, plugin_instance, plugin_instance.plugin_id)
-            button_edit.clicked.connect(cb)
-            button_edit.setMaximumSize(button_edit.sizeHint())
-            buttons_layout.addWidget(button_edit)
+        button_edit = QPushButton("edit")
+        cb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
+        button_edit.clicked.connect(cb)
+        button_edit.setMaximumSize(button_edit.sizeHint())
+        buttons_layout.addWidget(button_edit)
 
+        if not nopins:
             button_delete = QPushButton("delete")
             cb = partial(self.del_plugin, plugin_instance)
             button_delete.clicked.connect(cb)
@@ -3431,198 +3432,8 @@ class WinForm(QWidget):
         buttons_layout.addStretch()
         self.treeview.setIndexWidget(aitem.index(), buttons_widget)
 
-        # only for slot/module configs until i can use edit_plugin for it
-        if nopins:
-            plugin_view = parent.child(parent.rowCount() - 1)
-            self.tree_add_options(plugin_view, plugin_instance, expand=expand)
-            self.tree_add_pins(plugin_view, plugin_instance, expand=expand, nopins=nopins)
-            if plugin_instance.TYPE == "joint" and plugin_instance.plugin_setup.get("is_joint", False):
-                self.tree_add_joint(plugin_view, plugin_instance, expand=expand)
-                if plugin_instance.SIGNALS:
-                    self.tree_add_signals(plugin_view, plugin_instance, expand=expand)
-            else:
-                if plugin_instance.SIGNALS:
-                    self.tree_add_signals(plugin_view, plugin_instance, expand=expand)
-            if expand:
-                self.treeview.expand(self.model.indexFromItem(plugin_view))
-
     def callback_plugin_name(self, parent, plugin_instance, value):
         parent.setText(f"{value} ({plugin_instance.NAME})")
-
-    def tree_add_options(self, parent, plugin_instance, expand=False):
-        for option_name, option_defaults in plugin_instance.OPTIONS.items():
-            title = option_name.title()
-            unit = option_defaults.get("unit")
-            if unit:
-                title = f"{title} ({unit})"
-            help_text = option_defaults.get("description", title)
-            aitem = MyStandardItem()
-            parent.appendRow(
-                [
-                    MyStandardItem(title, help_text=help_text),
-                    aitem,
-                ]
-            )
-            cb = partial(self.callback_plugin_name, parent, plugin_instance)
-            self.treeview.setIndexWidget(aitem.index(), self.edit_item(plugin_instance.plugin_setup, option_name, option_defaults, cb=cb))
-
-            options_view = parent.child(parent.rowCount() - 1)
-            if expand:
-                self.treeview.expand(self.model.indexFromItem(options_view))
-
-    def tree_add_modifier(self, parent, pin_setup, modifier_id, modifier):
-        mitem = MyStandardItem()
-        parent.appendRow(
-            [
-                MyStandardItem("Modifier"),
-                mitem,
-                MyStandardItem(""),
-            ]
-        )
-        modifier_view = parent.child(parent.rowCount() - 1)
-        self.treeview.setIndexWidget(mitem.index(), modifier_selector(self, pin_setup, modifier_id, modifier_view))
-
-    def tree_add_signals(self, parent, plugin_instance, expand=False):
-        signals_view = MyStandardItem("Signals", help_text="signal-configuration for this plugin instance")
-        parent.appendRow(signals_view)
-        if expand:
-            self.treeview.expand(self.model.indexFromItem(signals_view))
-
-        if "signals" not in plugin_instance.plugin_setup:
-            plugin_instance.plugin_setup["signals"] = {}
-        signals_setup = plugin_instance.plugin_setup["signals"]
-
-        for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
-            if signal_name not in signals_setup:
-                signals_setup[signal_name] = {}
-            help_text = f"{signal_name} config"
-
-            signal_view = MyStandardItem(signal_name, help_text="signal-configuration for this plugin instance")
-            signals_view.appendRow(signal_view)
-            if expand:
-                self.treeview.expand(self.model.indexFromItem(signal_view))
-
-            signal_setup = signal_defaults.get("setup", {})
-            signal_direction = signal_defaults["direction"]
-            is_bool = signal_defaults.get("bool", False)
-
-            options_net = []
-            for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
-                if is_bool:
-                    if halpin_info.get("type") == bool:
-                        options_net.append(halpin)
-                elif halpin_info.get("type") != bool:
-                    options_net.append(halpin)
-
-            options_func = []
-            for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
-                if is_bool:
-                    if halpin_info.get("type") == bool:
-                        options_func.append(halpin)
-                elif halpin_info.get("type") != bool:
-                    options_func.append(halpin)
-
-            signal_setup["net"] = {"type": "select", "options": options_net}
-            signal_setup["function"] = {"type": "select", "options": options_func}
-
-            if "source" not in signal_defaults and not signal_defaults.get("bool"):
-                signal_setup["scale"] = {"type": float, "default": 1.0}
-                signal_setup["offset"] = {"type": float, "default": 0.0}
-
-            if signal_direction == "output":
-                signal_setup["setp"] = {"type": str, "default": ""}
-
-            for option, option_setup in signal_setup.items():
-                help_text = f"{option} config"
-                citem = MyStandardItem()
-                signal_view.appendRow(
-                    [
-                        MyStandardItem(option, help_text=help_text),
-                        citem,
-                    ]
-                )
-                signal_option_view = signal_view.child(signal_view.rowCount() - 1)
-                cb = None
-                self.treeview.setIndexWidget(citem.index(), self.edit_item(signals_setup[signal_name], option, option_setup, cb=cb))
-                if expand:
-                    self.treeview.expand(self.model.indexFromItem(signal_option_view))
-
-            display_view = MyStandardItem("Display", help_text="display-configuration for this signal")
-            signal_view.appendRow(display_view)
-            if expand:
-                self.treeview.expand(self.model.indexFromItem(display_view))
-
-            if signal_defaults["direction"] == "input" or signals_setup[signal_name].get("net"):
-                if signal_defaults.get("bool"):
-                    type_options = ["none", "led", "rectled"]
-                else:
-                    type_options = ["none", "number", "bar", "meter"]
-            else:
-                if signal_defaults.get("bool"):
-                    type_options = ["none", "checkbutton", "button"]
-                else:
-                    type_options = ["none", "scale", "spinbox", "dial", "jogwheel"]
-
-            if "display" not in signals_setup[signal_name]:
-                signals_setup[signal_name]["display"] = {}
-
-            display_setup = {
-                "title": {"type": str},
-                "section": {"type": str},
-                "type": {"type": "select", "options": type_options},
-                "min": {"type": float, "default": None},
-                "max": {"type": float, "default": None},
-            }
-
-            for option, option_setup in display_setup.items():
-                help_text = f"{option} config"
-                citem = MyStandardItem()
-                display_view.appendRow(
-                    [
-                        MyStandardItem(option, help_text=help_text),
-                        citem,
-                    ]
-                )
-                signal_option_view = display_view.child(display_view.rowCount() - 1)
-                cb = None
-                self.treeview.setIndexWidget(citem.index(), self.edit_item(signals_setup[signal_name]["display"], option, option_setup, cb=cb))
-                if expand:
-                    self.treeview.expand(self.model.indexFromItem(signal_option_view))
-
-    def tree_add_joint(self, parent, plugin_instance, expand=False):
-        joint_view = MyStandardItem("Joint", help_text="joint-configuration for this plugin instance")
-        parent.appendRow(joint_view)
-        if expand:
-            self.treeview.expand(self.model.indexFromItem(joint_view))
-
-        if "joint" not in plugin_instance.plugin_setup:
-            plugin_instance.plugin_setup["joint"] = {}
-        joints_setup = plugin_instance.plugin_setup["joint"]
-
-        joint_options = copy.deepcopy(halpins.JOINT_OPTIONS)
-
-        for key, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
-            key = key.lower()
-            if key == "scale_out":
-                key = "scale"
-            if key in joint_options:
-                joint_options[key.lower()]["default"] = value
-
-        for option, option_setup in joint_options.items():
-            help_text = f"{option} config"
-            citem = MyStandardItem()
-            joint_view.appendRow(
-                [
-                    MyStandardItem(option, help_text=help_text),
-                    citem,
-                ]
-            )
-            joint_option_view = joint_view.child(joint_view.rowCount() - 1)
-            # cb = partial(self.callback_plugin_name, parent, plugin_instance)
-            cb = None
-            self.treeview.setIndexWidget(citem.index(), self.edit_item(joints_setup, option, option_setup, cb=cb))
-            if expand:
-                self.treeview.expand(self.model.indexFromItem(joint_option_view))
 
     def pin_edit_cb(self, widget):
         print("pin_edit_cb")
@@ -3631,93 +3442,6 @@ class WinForm(QWidget):
         self.tabs["Overview"].update()
         self.tabs["Pins"].update()
         self.tabs["Json"].update()
-
-    def tree_add_pins(self, parent, plugin_instance, expand=False, nopins=False):
-        if not plugin_instance.PINDEFAULTS:
-            return
-        pins_view = MyStandardItem("Pins", help_text="pin-configuration for this plugin instance")
-        parent.appendRow(pins_view)
-        if expand:
-            self.treeview.expand(self.model.indexFromItem(pins_view))
-        for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-            pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
-            direction = pin_defaults["direction"]
-            optional = pin_defaults.get("optional")
-            help_text = f"location for {direction} pin: {pin_name}"
-            if optional:
-                help_text = f"{help_text} (optional)"
-
-            pin_title = f"{pin_name} ({direction})"
-            citem = MyStandardItem()
-            pins_view.appendRow(
-                [
-                    MyStandardItem(pin_title, help_text=help_text),
-                    citem,
-                ]
-            )
-            if not nopins:
-                self.treeview.setIndexWidget(citem.index(), self.edit_item(pin_setup, "pin", {"type": "select", "options": self.pinlist, "default": ""}, cb=self.pin_edit_cb))
-
-            pin_view = pins_view.child(pins_view.rowCount() - 1)
-            if expand:
-                self.treeview.expand(self.model.indexFromItem(pin_view))
-
-            if direction == "input":
-                pitem = MyStandardItem()
-                pin_view.appendRow(
-                    [
-                        MyStandardItem("Pull", help_text="activate pullup/pulldown resistor for this pin"),
-                        pitem,
-                    ]
-                )
-                self.treeview.setIndexWidget(pitem.index(), self.edit_item(pin_setup, "pull", {"type": "select", "options": [None, "up", "down"], "default": None}))
-            else:
-                pitem = MyStandardItem()
-                pin_view.appendRow(
-                    [
-                        MyStandardItem("slew", help_text="set slew for this pin"),
-                        pitem,
-                    ]
-                )
-                self.treeview.setIndexWidget(pitem.index(), self.edit_item(pin_setup, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW"}))
-
-                pitem = MyStandardItem()
-                pin_view.appendRow(
-                    [
-                        MyStandardItem("drive", help_text="set drive strength for this pin (not all values works on all FPGA's)"),
-                        pitem,
-                    ]
-                )
-                self.treeview.setIndexWidget(pitem.index(), self.edit_item(pin_setup, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4"}))
-                pitem = MyStandardItem()
-                pin_view.appendRow(
-                    [
-                        MyStandardItem("iostandard", help_text="set iostandard for this pin (not all values works on all FPGA's)"),
-                        pitem,
-                    ]
-                )
-                self.treeview.setIndexWidget(
-                    pitem.index(), self.edit_item(pin_setup, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL"})
-                )
-
-            bitem = MyStandardItem()
-            pin_view.appendRow(
-                [
-                    MyStandardItem("Modifiers", help_text="pin modifier chain"),
-                    bitem,
-                ]
-            )
-            button = QPushButton("add")
-            button.setMaximumSize(button.sizeHint())
-            self.treeview.setIndexWidget(bitem.index(), button)
-            modifiers_view = pin_view.child(pin_view.rowCount() - 1)
-            button.clicked.connect(partial(self.add_modifier, modifiers_view, pin_setup))
-            if expand:
-                self.treeview.expand(self.model.indexFromItem(modifiers_view))
-
-            for modifier_id, modifier in enumerate(pin_setup.get("modifier", [])):
-                self.tree_add_modifier(modifiers_view, pin_setup, modifier_id, modifier)
-            self.treeview.expand(self.model.indexFromItem(modifiers_view))
 
 
 if __name__ == "__main__":
