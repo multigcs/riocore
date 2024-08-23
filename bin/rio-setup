@@ -1180,7 +1180,6 @@ class WinForm(QWidget):
             else:
                 print(f"can not load: {args.config}")
                 exit(1)
-            print(f"loading: {self.config_file}")
 
         self.tabwidget = QTabWidget()
         splitter.addWidget(self.tabwidget)
@@ -1267,7 +1266,7 @@ class WinForm(QWidget):
         button_layout.addWidget(button)
 
         button = QPushButton("reload config")
-        button.clicked.connect(self.config_load)
+        button.clicked.connect(self.json_load)
         button_layout.addWidget(button)
 
         button = QPushButton("test-gui")
@@ -1284,7 +1283,6 @@ class WinForm(QWidget):
             self.addons[addon_name] = importlib.import_module(".config", f"riocore.generator.addons.{addon_name}")
 
         self.json_load()
-        self.config_load()
         self.config_original = self.clean_config(self.config)
         self.config_checked = {}
 
@@ -1297,7 +1295,6 @@ class WinForm(QWidget):
         self.treeview.resizeColumnToContents(0)
         self.treeview.resizeColumnToContents(1)
         self.treeview.collapseAll()
-
         self.tree_expand("/Plugins/")
 
         tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(1)
@@ -1332,10 +1329,11 @@ class WinForm(QWidget):
             board_path = board_list[idx]
             if board_path.endswith(".json"):
                 board_name = board_path.split("/")[-1].replace(".json", "")
-                board_raw = open(board_path, "r").read()
             else:
                 board_name = board_path.split("/")[-1]
-                board_raw = open(f"{board_path}/board.json", "r").read()
+                board_path = f"{board_path}/board.json"
+
+            board_raw = open(board_path, "r").read()
             board_config = json.loads(board_raw)
 
             pinimage = board_config.get("pinimage", "board.png")
@@ -1573,6 +1571,7 @@ class WinForm(QWidget):
     def json_load(self):
         # loading json config
         if self.config_file:
+            print(f"loading config: {self.config_file}")
             configJsonStr = open(self.config_file, "r").read()
             if self.config_file.endswith(".yml"):
                 self.config = yaml.load(configJsonStr)
@@ -1581,6 +1580,8 @@ class WinForm(QWidget):
 
         if "plugins" not in self.config:
             self.config["plugins"] = []
+
+        self.config_load()
 
     def closeEvent(self, event):
         if self.config_original != self.clean_config(self.config):
@@ -1941,6 +1942,7 @@ class WinForm(QWidget):
             board_file = self.get_boardpath(boardcfg)
             self.boardcfg_path = os.path.dirname(board_file)
             self.board = {}
+            print(f"loading board: {board_file}")
             boardJsonStr = open(board_file, "r").read()
             self.board = json.loads(boardJsonStr)
 
@@ -2087,7 +2089,6 @@ class WinForm(QWidget):
         self.tabs["Pins"].update()
         self.tabs["Signals"].update()
         self.display()
-        self.tree_expand("/Plugins/")
 
     def display(self):
         try:
@@ -2440,6 +2441,8 @@ class WinForm(QWidget):
 
         if expand:
             self.tree_expand(expand)
+        else:
+            self.tree_expand("/Plugins/")
 
     def tree_expand(self, tpath):
         def iter_childs(entry, prefix=""):
