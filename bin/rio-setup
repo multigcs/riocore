@@ -349,14 +349,14 @@ class TabSignals:
                     if "userconfig" not in signal_config:
                         signal_config["userconfig"] = {}
                     userconfig = signal_config["userconfig"]
-                    
+
                     if "net" not in userconfig:
                         userconfig["net"] = ""
                     if "function" not in userconfig:
                         userconfig["function"] = ""
                     if "setp" not in userconfig:
                         userconfig["setp"] = ""
-                    
+
                     signal_net = userconfig.get("net", "")
                     signal_function = userconfig.get("function", "")
                     signal_setp = str(userconfig.get("setp", ""))
@@ -463,13 +463,9 @@ class TabSignals:
         self.sig_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
     def sig_edit_cb(self, widget):
-        print("update..")
-
         self.parent.config_load()
-
         self.parent.generate_cb(preview=True)
         self.parent.request_load_tree = 2
-
         self.update()
         self.parent.tabs["Json"].update()
 
@@ -479,7 +475,7 @@ class TabSignals:
             self.sig_table_sort_col = -logicalIndex
         else:
             self.sig_table_sort_col = logicalIndex
-        self.sig_table_load()
+        self.update()
 
 
 class TabPins:
@@ -525,8 +521,8 @@ class TabPins:
 
                 mapped = ""
                 if pin in self.parent.pinmapping_rev:
-                    pin_real = self.parent.pinmapping_rev[pin]
-                    mapped = pin
+                    pin_real = pin
+                    mapped = self.parent.pinmapping_rev[pin]
                 elif pin in self.parent.pinmapping:
                     pin_real = self.parent.pinmapping[pin]
                     mapped = pin
@@ -539,7 +535,9 @@ class TabPins:
                         mlist.add(modifier["type"])
                     comment = f"{','.join(mlist)}"
                 in_use.add(pin_real)
-                table_data.append((pin_real, title, pin_name, mapped, pin_defaults["direction"], comment))
+
+                widget = self.parent.edit_item(pin_setup, "pin", {"type": "select", "options": self.parent.pinlist, "default": ""}, cb=None)
+                table_data.append((pin_real, title, pin_name, mapped, pin_defaults["direction"], comment, widget))
 
         for module_data in self.parent.config.get("modules", []):
             slot_name = module_data.get("slot")
@@ -567,8 +565,8 @@ class TabPins:
 
                     mapped = ""
                     if pin in self.parent.pinmapping_rev:
-                        pin_real = self.parent.pinmapping_rev[pin]
-                        mapped = pin
+                        pin_real = pin
+                        mapped = self.parent.pinmapping_rev[pin]
                     elif pin in self.parent.pinmapping:
                         pin_real = self.parent.pinmapping[pin]
                         mapped = pin
@@ -581,7 +579,8 @@ class TabPins:
                             mlist.add(modifier["type"])
                         comment = f"{','.join(mlist)}"
                     in_use.add(pin_real)
-                    table_data.append((pin_real, title, pin_name, mapped, pin_defaults["direction"], comment))
+
+                    table_data.append((pin_real, title, pin_name, mapped, pin_defaults["direction"], comment, None))
 
         for pin in self.parent.pinlist:
             if pin not in in_use:
@@ -591,7 +590,7 @@ class TabPins:
                     if self.parent.pinmapping_rev[pin] in in_use:
                         continue
                 in_use.add(pin)
-                table_data.append((pin, "", "", "", "", "unused"))
+                table_data.append((pin, "", "", "", "", "unused", None))
 
         def sort_key(a):
             col = a[idx]
@@ -611,10 +610,11 @@ class TabPins:
 
         for row_n, row in enumerate(table_data):
             self.pin_table.setRowCount(row_n + 1)
-            for col_n, col in enumerate(row):
+            for col_n, col in enumerate(row[:6]):
                 pitem = QTableWidgetItem(col)
                 self.pin_table.setItem(row_n, col_n, pitem)
                 self.pin_table.resizeColumnToContents(col_n)
+            self.pin_table.setCellWidget(row_n, 3, row[6])
 
         for col_n, col in enumerate(row[:6]):
             self.pin_table.resizeColumnToContents(col_n)
