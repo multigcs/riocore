@@ -3233,18 +3233,6 @@ class WinForm(QWidget):
         self.load_tree()
         self.display()
 
-    def plugin_config(self, plugin_instance=None):
-        dialog = QDialog()
-        dialog.setWindowTitle("Plugin-Config")
-        dialog.setFixedWidth(800)
-        dialog.setFixedHeight(600)
-        dialog.setStyleSheet(STYLESHEET)
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-        dialog.layout = QVBoxLayout()
-        if dialog.exec():
-            return ""
-
     def select_module(self, last_error=None, set_slot=None, set_module=None, slot_select=True):
         dialog = QDialog()
         dialog.setWindowTitle("add Module")
