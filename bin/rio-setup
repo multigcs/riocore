@@ -3238,7 +3238,11 @@ class WinForm(QWidget):
             self.display()
             return
         if not dialog.is_removed:
-            plugin_config = plugin_config_backup
+            for key in plugin_config:
+                if key not in plugin_config_backup:
+                    del plugin_config[key]
+            for key in plugin_config_backup:
+                plugin_config[key] = plugin_config_backup[key]
 
     def config_plugin(self, plugin_instance, plugin_id, widget):
         if os.path.isfile(f"{riocore_path}/plugins/{plugin_instance.NAME}/config.py"):
