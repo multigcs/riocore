@@ -413,8 +413,6 @@ def load_halfile(basepath, filepath):
 
         elif line.startswith("net "):
             parts = line.split()
-            source = None
-            targets = []
             signalname = ""
             next_dir = ""
             for part in parts[1:]:

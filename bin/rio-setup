@@ -22,7 +22,7 @@ from riocore import halpins
 
 from riocore import halgraph
 from riocore.plugins import Modifiers
-from riocore.widgets import MyQSvgWidget, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, modifier_selector, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
+from riocore.widgets import MyQSvgWidget, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
 
 from PyQt5 import QtSvg
@@ -2545,7 +2545,7 @@ class WinForm(QWidget):
         }
 
         self.config_load()
-        self.tree_expand(f"/Modules/")
+        self.tree_expand("/Modules/")
 
     def del_plugin(self, plugin_instance, widget, dialog=None):
         plugin_id = plugin_instance.plugin_id

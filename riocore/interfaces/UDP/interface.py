@@ -37,7 +37,7 @@ class Interface:
     def check(cls, cstr):
         try:
             addr, port = cstr.split(":")
-            ipa = ipaddress.ip_address(addr)
+            ipaddress.ip_address(addr)
             return True
         except ValueError:
             return False

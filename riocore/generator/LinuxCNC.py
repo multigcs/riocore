@@ -526,9 +526,6 @@ class LinuxCNC:
         jdata = self.project.config["jdata"]
         json_path = self.project.config["json_path"]
         linuxcnc_config = jdata.get("linuxcnc", {})
-        gui = linuxcnc_config.get("gui", "axis")
-        machinetype = linuxcnc_config.get("machinetype")
-
         dios = 16
         aios = 16
         for net_name, net_nodes in self.networks.items():
@@ -626,7 +623,6 @@ class LinuxCNC:
                 position_halname = joint_config["position_halname"]
                 feedback_halname = joint_config["feedback_halname"]
                 plugin_instance = joint_config["plugin_instance"]
-                pin_num = joint_config["pin_num"]
 
                 output.append(f"[JOINT_{joint}]")
                 output.append(f"# {plugin_instance.instances_name}")
@@ -877,9 +873,7 @@ class LinuxCNC:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
                     for signal_name, signal_config in plugin_instance.signals().items():
                         halname = signal_config["halname"]
-                        varname = signal_config["varname"]
                         netname = signal_config["netname"]
-                        hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
                         direction = signal_config["direction"]
                         boolean = signal_config.get("bool")
                         userconfig = signal_config.get("userconfig")
@@ -898,7 +892,6 @@ class LinuxCNC:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
                     for signal_name, signal_config in plugin_instance.signals().items():
                         halname = signal_config["halname"]
-                        varname = signal_config["varname"]
                         netname = signal_config["netname"]
                         direction = signal_config["direction"]
                         boolean = signal_config.get("bool")
@@ -1209,7 +1202,6 @@ class LinuxCNC:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
                     for signal_name, signal_config in plugin_instance.signals().items():
                         halname = signal_config["halname"]
-                        varname = signal_config["varname"]
                         netname = signal_config["netname"]
                         direction = signal_config["direction"]
                         userconfig = signal_config.get("userconfig", {})
@@ -1365,7 +1357,6 @@ class LinuxCNC:
         logic = None
         inputs = []
         bracket_striped = bracket.replace("(", "").replace(")", "")
-        lnum = 0
         for part in bracket_striped.split():
             if part == "or":
                 logic = part
@@ -1518,14 +1509,12 @@ class LinuxCNC:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
-                    varname = signal_config["varname"]
                     netname = signal_config["netname"]
                     userconfig = signal_config.get("userconfig", {})
                     scale = userconfig.get("scale")
                     offset = userconfig.get("offset")
                     setp = userconfig.get("setp")
                     direction = signal_config["direction"]
-                    boolean = signal_config.get("bool")
                     virtual = signal_config.get("virtual")
                     component = signal_config.get("component")
                     rprefix = "rio"
@@ -1844,7 +1833,6 @@ class LinuxCNC:
                         output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
-                            signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
                             ctype = "float"
@@ -1865,7 +1853,6 @@ class LinuxCNC:
                         output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
-                            signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
                             output.append(f"        *data->{varname} = value_{signal_name};")
@@ -1966,7 +1953,6 @@ class LinuxCNC:
                         output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
-                            signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
                             virtual = signal_config.get("virtual")
@@ -1990,7 +1976,6 @@ class LinuxCNC:
                         output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
-                            signal_values = signal_config.get("values", 1)
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
                             output.append(f"    *data->{varname} = value_{signal_name};")
@@ -2455,7 +2440,6 @@ class LinuxCNC:
     def create_axis_config(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
-        max_axis = linuxcnc_config.get("num_axis", 9)
         pin_num = 0
         self.num_joints = 0
         self.num_axis = 0
@@ -2473,7 +2457,6 @@ class LinuxCNC:
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint"):
-                axis_num = len(self.axis_dict)
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if not axis_name:
                     for name in self.AXIS_NAMES:
@@ -2516,7 +2499,6 @@ class LinuxCNC:
                 position_mode = None
                 joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
                 position_scale = float(joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"])))
-                max_velocity = float(joint_config.get("max_velocity", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("max_velocity", self.JOINT_DEFAULTS["MAX_VELOCITY"])))
                 if machinetype == "lathe":
                     home_sequence_default = 2
                     if axis_name == "X":
@@ -2547,7 +2529,6 @@ class LinuxCNC:
                 position = joint_signals.get("position")
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
-                pos_cmd = None
                 if enable:
                     enable_halname = f"rio.{enable['halname']}"
                 if velocity:
@@ -2843,16 +2824,13 @@ class qtdragon:
 
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        resolution = setup.get("resolution", 0.1)
         cfgxml_data = []
         cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
         cfgxml_data.append("    <item>")
         cfgxml_data.append('     <widget class="QLabel" name="label_22">')
         cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{name}</string>")
+        cfgxml_data.append(f"       <string>{title}</string>")
         cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="indent">')
         cfgxml_data.append("       <number>4</number>")
@@ -3426,7 +3404,6 @@ class axis:
         return (f"pyvcp.{halpin}", cfgxml_data)
 
     def draw_multilabel(self, name, halpin, setup={}):
-        title = setup.get("title", name)
         legends = setup.get("legends", ["LABEL1", "LABEL2", "LABEL3", "LABEL4"])
         cfgxml_data = []
         cfgxml_data.append("  <multilabel>")

@@ -69,7 +69,6 @@ class Firmware:
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
-                    direction = interface["direction"]
                     variable_size = interface["size"]
                     if interface["direction"] == "input":
                         if variable_size > 1:
@@ -79,7 +78,6 @@ class Firmware:
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
-                    direction = interface["direction"]
                     variable_size = interface["size"]
                     if interface["direction"] == "output":
                         if variable_size > 1:
@@ -89,7 +87,6 @@ class Firmware:
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
-                    direction = interface["direction"]
                     variable_size = interface["size"]
                     if interface["direction"] == "output":
                         if variable_size > 1:
@@ -99,7 +96,6 @@ class Firmware:
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
-                    direction = interface["direction"]
                     variable_size = interface["size"]
                     if interface["direction"] == "input":
                         if variable_size > 1:
@@ -111,7 +107,6 @@ class Firmware:
 
                 for iname, interface in plugin_instance.INTERFACE.items():
                     variable = interface["variable"]
-                    direction = interface["direction"]
                     variable_size = interface["size"]
                     if interface["direction"] == "input":
                         output.append(f"    data.{variable} = value_{iname};")
@@ -418,8 +413,6 @@ void resetSteps() {
 
         board = self.project.config["jdata"].get("board")
         platform = self.project.config["jdata"].get("platform")
-        btype = self.project.config["jdata"].get("type")
-        family = self.project.config["jdata"].get("family")
 
         platformio_ini = []
         platformio_ini.append("")

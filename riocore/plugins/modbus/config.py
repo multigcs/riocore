@@ -369,7 +369,6 @@ class config:
             description.clear()
             description.insertPlainText(description_text)
 
-        selected = ""
         infotext = ""
         descriptiontext = ""
 

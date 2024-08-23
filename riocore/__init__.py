@@ -50,7 +50,7 @@ class Plugins:
             output.append("")
 
         if plugin.LIMITATIONS:
-            output.append(f"## Limitations")
+            output.append("## Limitations")
             for key, values in plugin.LIMITATIONS.items():
                 output.append(f"* {key}: {', '.join(values)}")
             output.append("")

@@ -1,4 +1,3 @@
-import argparse
 import os.path
 import graphviz
 
@@ -98,8 +97,6 @@ class HalGraph:
 
         for group_name, pins in groups.items():
             cgroup = group_name.split(".")[0]
-            check = False
-
             pin_strs = []
             for pin in pins:
                 port = pin.split("=")[0]
@@ -222,8 +219,6 @@ class HalGraph:
 
             elif line.startswith("net "):
                 parts = line.split()
-                source = None
-                targets = []
                 signalname = ""
                 next_dir = ""
                 for part in parts[1:]:

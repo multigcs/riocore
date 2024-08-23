@@ -332,7 +332,6 @@ class PluginBase:
 
     def gateware_pin_modifiers(self, instances, instance, pin_name, pin_config, pin_varname):
         instance_predefines = instance["predefines"]
-        instance_arguments = instance["arguments"]
         direction = pin_config["direction"]
         modifier_list = pin_config.get("modifier", [])
         pin_varname_org = pin_varname

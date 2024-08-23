@@ -245,7 +245,6 @@ class Gateware:
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
                     arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
 
-        output_name = ""
         output.append("/*")
         output.append(f"    ######### {self.project.config['name']} #########")
         output.append("")
