@@ -349,6 +349,14 @@ class TabSignals:
                     if "userconfig" not in signal_config:
                         signal_config["userconfig"] = {}
                     userconfig = signal_config["userconfig"]
+                    
+                    if "net" not in userconfig:
+                        userconfig["net"] = ""
+                    if "function" not in userconfig:
+                        userconfig["function"] = ""
+                    if "setp" not in userconfig:
+                        userconfig["setp"] = ""
+                    
                     signal_net = userconfig.get("net", "")
                     signal_function = userconfig.get("function", "")
                     signal_setp = str(userconfig.get("setp", ""))
