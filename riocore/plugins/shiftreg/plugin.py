@@ -76,9 +76,9 @@ jitter measured with a EPM240 as 40bit Shiftreg:
         instances = self.gateware_instances_base()
 
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
 
         speed = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
         bits = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))

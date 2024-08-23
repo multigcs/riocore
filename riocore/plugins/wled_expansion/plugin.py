@@ -54,7 +54,7 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
         num_leds = self.plugin_setup.get("leds", 1)
         level = self.plugin_setup.get("level", 127)

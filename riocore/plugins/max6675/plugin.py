@@ -40,9 +40,9 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
-        instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["predefines"]
+        instance["parameter"]
+        instance["arguments"]
         # example
         # frequency = int(self.plugin_setup.get("frequency", 100))
         # divider = self.system_setup["speed"] // frequency

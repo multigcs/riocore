@@ -43,7 +43,6 @@ class Plugin(PluginBase):
     def firmware_setup(self):
         output = []
         for pin_name, pin_config in self.pins().items():
-            pin = pin_config["pin"]
             direction = pin_config["direction"]
             pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
             output.append(f"    pinMode({pin_define_name}, {direction.upper()});")
@@ -52,7 +51,6 @@ class Plugin(PluginBase):
     def firmware_loop(self):
         output = []
         for pin_name, pin_config in self.pins().items():
-            pin = pin_config["pin"]
             direction = pin_config["direction"]
             pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
             output.append(f"    digitalWrite({pin_define_name}, value_bit);")

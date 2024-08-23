@@ -29,16 +29,11 @@ class Plugin(PluginBase):
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
-
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
-
         baud = int(self.system_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["BUFFER_SIZE"] = self.system_setup["buffer_size"]
         instance_parameter["MSGID"] = "32'h74697277"
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
-
         return instances

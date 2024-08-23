@@ -196,18 +196,13 @@ class Plugin(PluginBase):
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
-
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
-
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["RX_BUFFERSIZE"] = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
         instance_parameter["TX_BUFFERSIZE"] = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
-
         self.arduino_example()
         return instances
 
@@ -251,7 +246,6 @@ class Plugin(PluginBase):
                             value = 0
                             signal_size = signal_setup["signal_size"]
                             signal_bfmt = signal_setup["signal_bfmt"]
-                            signal_signed = signal_setup["signal_signed"]
                             bytesize = signal_size // 8
                             if signal_bfmt == "lsb":
                                 for byte in range(0, bytesize):
@@ -269,7 +263,6 @@ class Plugin(PluginBase):
                             value = 0
                             signal_size = signal_setup["signal_size"]
                             signal_bfmt = signal_setup["signal_bfmt"]
-                            signal_signed = signal_setup["signal_signed"]
                             bytesize = signal_size // 8
                             if signal_bfmt == "lsb":
                                 for byte in range(0, bytesize):
@@ -307,7 +300,6 @@ class Plugin(PluginBase):
                 value = signal_setup["value"]
                 signal_size = signal_setup["signal_size"]
                 signal_bfmt = signal_setup["signal_bfmt"]
-                signal_signed = signal_setup["signal_signed"]
                 bytesize = signal_size // 8
                 if signal_bfmt == "lsb":
                     for byte in range(0, bytesize):
@@ -363,9 +355,6 @@ class Plugin(PluginBase):
             if signal_setup["direction"] == "output":
                 if signal_name != "rx_csum" and signal_name != "tx_csum":
                     signal_size = signal_setup["signal_size"]
-                    signal_bfmt = signal_setup["signal_bfmt"]
-                    signal_signed = signal_setup["signal_signed"]
-                    bytesize = signal_size // 8
                     output.append(f"    uint{signal_size}_t {signal_name};")
         output.append("    uint8_t csum;")
         output.append("};")
@@ -375,9 +364,6 @@ class Plugin(PluginBase):
             if signal_setup["direction"] == "input":
                 if signal_name != "rx_csum" and signal_name != "tx_csum":
                     signal_size = signal_setup["signal_size"]
-                    signal_bfmt = signal_setup["signal_bfmt"]
-                    signal_signed = signal_setup["signal_signed"]
-                    bytesize = signal_size // 8
                     output.append(f"    uint{signal_size}_t {signal_name};")
         output.append("    uint8_t csum;")
         output.append("};")
@@ -418,9 +404,6 @@ class Plugin(PluginBase):
             if signal_setup["direction"] == "output":
                 if signal_name != "rx_csum" and signal_name != "tx_csum":
                     signal_size = signal_setup["signal_size"]
-                    signal_bfmt = signal_setup["signal_bfmt"]
-                    signal_signed = signal_setup["signal_signed"]
-                    bytesize = signal_size // 8
                     output.append(f'        sprintf(tmp_str, "{signal_name:10} %9d", rx_frame.data.{signal_name});')
                     output.append(f"        lcd.setCursor(0, {line_n});")
                     output.append("        lcd.print(tmp_str);")
@@ -438,9 +421,6 @@ class Plugin(PluginBase):
             if signal_setup["direction"] == "input":
                 if signal_name != "rx_csum" and signal_name != "tx_csum":
                     signal_size = signal_setup["signal_size"]
-                    signal_bfmt = signal_setup["signal_bfmt"]
-                    signal_signed = signal_setup["signal_signed"]
-                    bytesize = signal_size // 8
                     output.append(f"    tx_frame.data.{signal_name} = {value_n + 1};")
                     value_n += 1
         output.append("    crc.restart();")

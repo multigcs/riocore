@@ -31,9 +31,9 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
 
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
 
         speed = self.system_setup["speed"] // 1000000 // 2
         instance_parameter["SPEED"] = speed

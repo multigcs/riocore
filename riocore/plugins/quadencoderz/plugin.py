@@ -83,9 +83,9 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
         quad_type = self.plugin_setup.get("quad_type", self.OPTIONS["quad_type"]["default"])
         instance_parameter["QUAD_TYPE"] = quad_type
         return instances

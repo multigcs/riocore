@@ -54,9 +54,9 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
         brightness = self.plugin_setup.get("brightness", self.OPTIONS["brightness"]["default"])
         instance_parameter["BRIGHTNESS"] = f"8'h0{brightness:x}"
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))

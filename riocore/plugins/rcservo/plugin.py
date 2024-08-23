@@ -54,9 +54,7 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // freq
         instance_parameter["DIVIDER"] = divider
@@ -93,22 +91,14 @@ class Plugin(PluginBase):
     def firmware_setup(self):
         output = []
         for pin_name, pin_config in self.pins().items():
-            pin = pin_config["pin"]
             direction = pin_config["direction"]
             pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
-            freq = 5000
-            resolution = 8
             output.append(f"    servo_{self.instances_name}.attach({pin_define_name});")
 
         return "\n".join(output)
 
     def firmware_loop(self):
         output = []
-        channel = 0
         for pin_name, pin_config in self.pins().items():
-            pin = pin_config["pin"]
-            direction = pin_config["direction"]
-            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
             output.append(f"    servo_{self.instances_name}.write(value_{pin_name});")
-            channel += 1
         return "\n".join(output)

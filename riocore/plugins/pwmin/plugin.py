@@ -49,9 +49,9 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
         freq_min = int(self.plugin_setup.get("freq_min", self.OPTIONS["freq_min"]["default"]))
         instance_parameter["RESET_CNT"] = self.system_setup["speed"] // freq_min
         return instances

@@ -34,8 +34,8 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
 
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
-        instance_parameter = instance["parameter"]
+        instance["predefines"]
+        instance["parameter"]
         instance_arguments = instance["arguments"]
 
         instance_arguments["disabled"] = "ERROR"

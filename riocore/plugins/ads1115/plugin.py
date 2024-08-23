@@ -109,9 +109,9 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
         address = self.plugin_setup.get("address", self.option_default("address"))
         instance_parameter["ADDRESS"] = f"7'b100100{address}"
         return instances

@@ -80,16 +80,15 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
 
         mac = self.plugin_setup.get("mac", self.option_default("mac"))
         ip = self.plugin_setup.get("ip", self.option_default("ip"))
         gw = self.plugin_setup.get("gw", self.option_default("gw"))
         mask = self.plugin_setup.get("mask", self.option_default("mask"))
         port = self.plugin_setup.get("port", self.option_default("port"))
-        speed = self.plugin_setup.get("speed", self.option_default("speed"))
 
         macl = mac.split(":")
         ipl = ip.split(".")

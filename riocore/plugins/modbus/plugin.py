@@ -201,9 +201,9 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["RX_BUFFERSIZE"] = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
         instance_parameter["TX_BUFFERSIZE"] = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
@@ -265,9 +265,7 @@ class Plugin(PluginBase):
             if frame_len > 4:
                 address = frame_data[0]
                 ctype = frame_data[1]
-                data_len = frame_data[2]
                 csum = crc16()
-                cmd = []
                 csum.update(frame_data[:-2])
                 csum_calc = csum.intdigest()
                 if csum_calc != frame_data[-2:]:
@@ -431,15 +429,11 @@ class Plugin(PluginBase):
         sn = 0
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             direction = signal_config["direction"]
-            delay = signal_config.get("delay", self.DELAY)
-            timeout = signal_config.get("timeout", self.TIMEOUT) + delay
             address = signal_config["address"]
             ctype = signal_config["type"]
             vscale = signal_config.get("scale", 1.0)
             self.is_float = signal_config.get("is_float", False)
             self.signal_values = signal_config.get("values", 1)
-            register = self.int2list(signal_config["register"])
-            n_values = self.int2list(self.signal_values)
             self.signal_name = signal_name
             self.signal_address = address
             if ctype == 101:
@@ -535,7 +529,6 @@ class Plugin(PluginBase):
             timeout = signal_config.get("timeout", self.TIMEOUT) + delay
             address = signal_config["address"]
             ctype = signal_config["type"]
-            vscale = signal_config.get("scale", 1.0)
             self.signal_values = signal_config.get("values", 1)
             register = self.int2list(signal_config["register"])
             n_values = self.int2list(self.signal_values)

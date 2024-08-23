@@ -79,9 +79,9 @@ should work also with the iceFUN board
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         return instances
 

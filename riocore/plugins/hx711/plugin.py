@@ -67,9 +67,9 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance_predefines = instance["predefines"]
+        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance_arguments = instance["arguments"]
+        instance["arguments"]
         mode = self.plugin_setup.get("mode", self.OPTIONS["mode"]["default"])
         mode_num = self.OPTIONS["mode"]["options"].index(mode)
         instance_parameter["MODE"] = mode_num + 24
