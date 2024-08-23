@@ -3194,8 +3194,9 @@ class WinForm(QWidget):
             joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
             tab_widget.addTab(joint_tab, "Joint")
         elif plugin_instance.TYPE != "interface":
-            signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config)
-            tab_widget.addTab(signals_tab, "Signals")
+            if plugin_instance.SIGNALS:
+                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config)
+                tab_widget.addTab(signals_tab, "Signals")
 
         right_layout = QVBoxLayout()
         plugin_path = f"{riocore_path}/plugins/{plugin_instance.NAME}"
