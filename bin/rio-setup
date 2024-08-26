@@ -616,8 +616,9 @@ class TabPins:
                 self.pin_table.resizeColumnToContents(col_n)
             self.pin_table.setCellWidget(row_n, 3, row[6])
 
-        for col_n, col in enumerate(row[:6]):
-            self.pin_table.resizeColumnToContents(col_n)
+        for row_n, row in enumerate(table_data):
+            for col_n, col in enumerate(row[:6]):
+                self.pin_table.resizeColumnToContents(col_n)
         self.pin_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
     def onHeaderClickedPins(self, logicalIndex):
