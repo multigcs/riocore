@@ -2197,6 +2197,24 @@ class WinForm(QWidget):
         self.display()
         self.tree_expand("/Modules/")
 
+    def split_module(self, slot_name):
+        for mn, module_data in enumerate(self.config.get("modules", [])):
+            if slot_name == module_data.get("slot"):
+                # split module into plugins
+                for sname, setup_data in module_data.get("setup", {}).items():
+                    for pin_name, pin_data in setup_data.get("pins", {}).items():
+                        pin_mapped = pin_data.get("pin_mapped")
+                        if pin_mapped:
+                            setup_data["pins"][pin_name]["pin"] = f"{slot_name}:{pin_mapped}"
+                            del setup_data["pins"][pin_name]["pin_mapped"]
+                    self.config["plugins"].append(copy.deepcopy(setup_data))
+                # remove module
+                self.config["modules"].pop(mn)
+                break
+        self.config_load()
+        self.display()
+        self.tree_expand("/Modules/")
+
     def load_tree(self, expand=None):
         while self.model.rowCount() > 0:
             self.model.removeRow(0)
@@ -2402,11 +2420,27 @@ class WinForm(QWidget):
             )
             module_view = tree_modules.child(tree_modules.rowCount() - 1)
 
-            button = QPushButton("delete")
+            buttons_layout = QHBoxLayout()
+            buttons_layout.setContentsMargins(0, 0, 0, 0)
+            buttons_widget = QWidget()
+            buttons_widget.setLayout(buttons_layout)
+            self.treeview.setIndexWidget(aitem.index(), buttons_widget)
+
+            button_delete = QPushButton("delete")
             cb = partial(self.del_module, slot_name)
-            button.clicked.connect(cb)
-            button.setMaximumSize(button.sizeHint())
-            self.treeview.setIndexWidget(aitem.index(), button)
+            button_delete.clicked.connect(cb)
+            button_delete.setToolTip("delete module")
+            button_delete.setMaximumSize(button_delete.sizeHint())
+            buttons_layout.addWidget(button_delete)
+
+            button_split = QPushButton("split")
+            cb = partial(self.split_module, slot_name)
+            button_split.setToolTip("split module into single plugins")
+            button_split.clicked.connect(cb)
+            button_split.setMaximumSize(button_split.sizeHint())
+            buttons_layout.addWidget(button_split)
+
+            buttons_layout.addStretch()
 
             for key, var_setup in {
                 "module": {"type": "select", "options": self.module_names},
@@ -3241,7 +3275,7 @@ class WinForm(QWidget):
             self.display()
             return
         if not dialog.is_removed:
-            for key in plugin_config:
+            for key in list(plugin_config.keys()):
                 if key not in plugin_config_backup:
                     del plugin_config[key]
             for key in plugin_config_backup:
