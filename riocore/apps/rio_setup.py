@@ -3454,7 +3454,7 @@ class WinForm(QWidget):
         self.tabs["Json"].update()
 
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
 
     parser = argparse.ArgumentParser()
@@ -3468,3 +3468,6 @@ if __name__ == "__main__":
     form = WinForm(args)
     form.show()
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
