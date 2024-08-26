@@ -3355,7 +3355,7 @@ class WinForm(QWidget):
         try:
             if preview:
                 open(f"{self.config_file}_tmp.json", "w").write(json.dumps(config, indent=4))
-                os.system(f"python3 -m apps/rio-generator -p {self.config_file}_tmp.json {output_path} >/dev/null")
+                os.system(f"python3 -m rio-generator -p {self.config_file}_tmp.json {output_path} >/dev/null")
                 os.system(f"rm {self.config_file}_tmp.json")
             else:
                 os.system(f"python3 -m rio-generator {self.config_file} {output_path}")
