@@ -1340,22 +1340,25 @@ class WinForm(QWidget):
 
         def show_board_info(idx):
             board_path = board_list[idx]
+            board_folder = None
             if board_path.endswith(".json"):
                 board_name = board_path.split("/")[-1].replace(".json", "")
             else:
                 board_name = board_path.split("/")[-1]
+                board_folder = board_path
                 board_path = f"{board_path}/board.json"
 
             board_raw = open(board_path, "r").read()
             board_config = json.loads(board_raw)
 
-            pinimage = board_config.get("pinimage", "board.png")
-            image_path = f"{board_path}/{pinimage}"
-            if os.path.isfile(image_path):
-                pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
-                image_label.setPixmap(pixmap)
-            else:
-                image_label.clear()
+            if board_folder:
+                pinimage = board_config.get("pinimage", "board.png")
+                image_path = f"{board_folder}/{pinimage}"
+                if os.path.isfile(image_path):
+                    pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
+                    image_label.setPixmap(pixmap)
+                else:
+                    image_label.clear()
 
             name_label.setText(board_name)
             description = []
