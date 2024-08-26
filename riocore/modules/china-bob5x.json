@@ -1,0 +1,175 @@
+{
+  "comment": "5Axis China-BOB",
+  "plugins": [
+    {
+      "type": "bitout",
+      "name": "enable",
+      "pins": {
+        "bit": {
+          "pin": "P14",
+          "modifier": [
+              {
+                  "type": "invert"
+              },
+              {
+                  "type": "onerror"
+              },
+              {
+                  "type": "invert"
+              }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-x",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P12"
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.0.home-sw-in"
+          }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-y",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P13"
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.1.home-sw-in"
+          }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-z",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P15"
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.2.home-sw-in"
+          }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "spindle-enable",
+      "pins": {
+        "bit": {
+          "pin": "P17",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "spindle.0.on"
+          }
+      }
+    },
+    {
+      "type": "pwmout",
+      "name": "pwm",
+      "pins": {
+        "pwm": {
+          "pin": "P1",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "e-stop",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P10"
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "probe",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P11"
+        }
+      }
+    },
+    {
+      "name": "joint-0",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "P2"
+        },
+        "dir": {
+          "pin": "P3"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-1",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "P4"
+        },
+        "dir": {
+          "pin": "P5"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-2",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "P6"
+        },
+        "dir": {
+          "pin": "P7"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-3",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "P8"
+        },
+        "dir": {
+          "pin": "P9"
+        }
+      },
+      "is_joint": true
+    }
+  ]
+}
