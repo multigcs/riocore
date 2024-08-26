@@ -1641,11 +1641,11 @@ class WinForm(QWidget):
         exit(1)
 
     def testgui(self):
-        print("starting testgui..", f"{os.path.dirname(__file__)}/rio-test")
+        testgui_path = f"{riocore_path}/apps/rio_test.py"
+        print("starting testgui..", testgui_path)
         filename = f"{self.config_file}.test-gui-temp.json"
         self.save_config(filename)
-        testgui_path = f"{os.path.dirname(__file__)}/rio-test"
-        os.system(f"({testgui_path} {filename} ; rm {filename}) &")
+        os.system(f"(python3 -m rio-test {filename} ; rm {filename}) &")
 
     def add_plugin(self, pin_id, slot_name=None):
         boardcfg = self.config.get("boardcfg")
@@ -3355,10 +3355,10 @@ class WinForm(QWidget):
         try:
             if preview:
                 open(f"{self.config_file}_tmp.json", "w").write(json.dumps(config, indent=4))
-                os.system(f"{riocore_path}/../bin/rio-generator -p {self.config_file}_tmp.json {output_path} >/dev/null")
+                os.system(f"python3 -m apps/rio-generator -p {self.config_file}_tmp.json {output_path} >/dev/null")
                 os.system(f"rm {self.config_file}_tmp.json")
             else:
-                os.system(f"{riocore_path}/../bin/rio-generator {self.config_file} {output_path}")
+                os.system(f"python3 -m rio-generator {self.config_file} {output_path}")
                 self.check_status()
         except Exception as error:
             print(f"ERROR generating output: {error}")
@@ -3468,6 +3468,7 @@ def main():
     form = WinForm(args)
     form.show()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

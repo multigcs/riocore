@@ -4,7 +4,7 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	find ./riocore/ ./tests/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff format -q
+	find ./riocore/ ./tests/ -type f | grep ".py$$" | xargs -r -l ruff format -q
 
 check:
 	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check
@@ -16,7 +16,7 @@ verilator:
 	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only
 
 readmes:
-	PYTHONPATH=. bin/rio-plugininfo -g
+	PYTHONPATH=. python3 -m rio-plugininfo -g
 	PYTHONPATH=. riocore/files/update_boards_and_toolchains_readme.py
 
 dist:
@@ -32,5 +32,5 @@ pyvenv: clean dist
 	python3 -m venv pyvenv
 	pyvenv/bin/python -m pip install -r requirements.txt
 	pyvenv/bin/python -m pip install dist/riocore*
-	pyvenv/bin/python bin/rio-generator Altera10M08Eval/config-test.json
+	pyvenv/bin/python -m rio-enerator Altera10M08Eval/config.json
 

@@ -10,7 +10,6 @@ import riocore
 riocore_path = os.path.dirname(riocore.__file__)
 
 def main():
-
     parser = argparse.ArgumentParser()
     parser.add_argument("config", help="json config file", nargs="?", type=str, default=None)
     parser.add_argument("output", help="output directory", nargs="?", type=str, default=None)
@@ -65,6 +64,7 @@ def main():
             plugins = riocore.Plugins()
             for line in plugins.list():
                 print(line)
+
 
 if __name__ == '__main__':
     main()

@@ -11,7 +11,6 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 
 def main():
-    
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", "-l", help="list all plugins", default=False, action="store_true")
     parser.add_argument("--generate", "-g", help="generate readme files for all plugins", default=False, action="store_true")
