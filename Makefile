@@ -30,7 +30,14 @@ pypi: clean dist
 
 pyvenv: clean dist
 	python3 -m venv pyvenv
-	pyvenv/bin/python -m pip install -r requirements.txt
-	pyvenv/bin/python -m pip install dist/riocore*
-	pyvenv/bin/python -m rio-generator Altera10M08Eval/config.json
+	.  pyvenv/bin/activate; \
+	pip install -r requirements.txt; \
+	pip install dist/riocore*;\
+	rio-generator Altera10M08Eval/config.json
 
+devvenv: clean dist
+	python3 -m venv pyvenv
+	.  pyvenv/bin/activate; \
+	pip install -r requirements.txt; \
+	pip install -e .; \
+	rio-generator Altera10M08Eval/config.json
