@@ -3368,6 +3368,10 @@ class WinForm(QWidget):
         self.info_widget.setText("compiling...")
 
     def generate_cb(self, preview=False):
+        if not self.config["plugins"]:
+            print("WARNING: no plugins configured")
+            return
+
         self.info_widget.setText("generate...")
         self.output_path = "Output"
         if preview:

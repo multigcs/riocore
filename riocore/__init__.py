@@ -121,9 +121,11 @@ class Plugins:
             print("##################################")
 
     def load_plugins(self, config, system_setup=None):
-        for plugin_id, plugin_config in enumerate(config["plugins"]):
-            self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)
-        return self.plugin_instances
+        if config["plugins"]:
+            for plugin_id, plugin_config in enumerate(config["plugins"]):
+                self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)
+            return self.plugin_instances
+        return None
 
     def testbench_builder(self, plugin_type, plugin_instance):
         print(f"try to build testbench for {plugin_type}")
