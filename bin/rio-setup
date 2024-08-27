@@ -2080,7 +2080,6 @@ class WinForm(QWidget):
             }
 
             if fpga_type in gwin_mapping:
-                print(gwin_mapping[fpga_type])
                 fpga_type, package = gwin_mapping[fpga_type]
                 check_path = f"riocore/chipdata/{fpga_type}.json"
 
