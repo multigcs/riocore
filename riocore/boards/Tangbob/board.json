@@ -14,6 +14,83 @@
     },
     "slots": [
         {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "10",
+                    "pos": [
+                        360,
+                        245
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "11",
+                    "pos": [
+                        360,
+                        260
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "13",
+                    "pos": [
+                        360,
+                        275
+                    ],
+                    "direction": "output"
+                },
+                "L4": {
+                    "pin": "14",
+                    "pos": [
+                        360,
+                        290
+                    ],
+                    "direction": "output"
+                },
+                "L5": {
+                    "pin": "15",
+                    "pos": [
+                        360,
+                        305
+                    ],
+                    "direction": "output"
+                },
+                "L6": {
+                    "pin": "16",
+                    "pos": [
+                        360,
+                        320
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "UART",
+            "default": "",
+            "pins": {
+                "RX": {
+                    "pin": "16",
+                    "pos": [
+                        260,
+                        275
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "17",
+                    "pos": [
+                        260,
+                        300
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
             "name": "WLED",
             "compatible": [
                 "wled",
@@ -62,18 +139,18 @@
             "default": "",
             "pins": {
                 "sda": {
-                    "pin": "55",
-                    "pos": [
-                        79,
-                        582
-                    ],
-                    "direction": "all"
-                },
-                "scl": {
                     "pin": "56",
                     "pos": [
                         79,
                         603
+                    ],
+                    "direction": "all"
+                },
+                "scl": {
+                    "pin": "55",
+                    "pos": [
+                        79,
+                        582
                     ],
                     "direction": "output"
                 }
@@ -360,7 +437,7 @@
                     "direction": "all"
                 },
                 "P12": {
-                    "pin": "27",
+                    "pin": "37",
                     "pos": [
                         109,
                         74
