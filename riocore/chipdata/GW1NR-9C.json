@@ -1,0 +1,3186 @@
+{
+    "GW1NR-9C": {
+        "MBGA100PD": {
+            "A3": {
+                "comment": "NAME: IOT13A, BANK: 0, PAIR: IOT13B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "A4": {
+                "comment": "NAME: IOT13B, BANK: 0, PAIR: IOT13A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "A6": {
+                "comment": "NAME: IOT25B, BANK: 0, PAIR: IOT25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "A7": {
+                "comment": "NAME: IOT28A, BANK: 0, CFG: GCLKT_0, PAIR: IOT28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "A10": {
+                "comment": "NAME: IOR3A, BANK: 1, PAIR: IOR3B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B1": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B2": {
+                "comment": "NAME: IOL4B, BANK: 3, PAIR: IOL4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B3": {
+                "comment": "NAME: IOL5B, BANK: 3, CFG: LPLL_C_IN, PAIR: IOL5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B4": {
+                "comment": "NAME: IOT15B, BANK: 0, PAIR: IOT15A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B5": {
+                "comment": "NAME: IOT21B, BANK: 0, PAIR: IOT21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B6": {
+                "comment": "NAME: IOT23B, BANK: 0, PAIR: IOT23A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B7": {
+                "comment": "NAME: IOT29A, BANK: 0, CFG: GCLKT_1, PAIR: IOT29B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B8": {
+                "comment": "NAME: IOT31B, BANK: 0, PAIR: IOT31A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B9": {
+                "comment": "NAME: IOT35B, BANK: 0, PAIR: IOT35A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "B10": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C1": {
+                "comment": "NAME: IOL8B, BANK: 3, PAIR: IOL8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C2": {
+                "comment": "NAME: IOL9A, BANK: 3, CFG: GCLKT_7, PAIR: IOL9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C3": {
+                "comment": "NAME: IOL9B, BANK: 3, CFG: GCLKC_7, PAIR: IOL9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C4": {
+                "comment": "NAME: IOT15A, BANK: 0, PAIR: IOT15B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C5": {
+                "comment": "NAME: IOT21A, BANK: 0, PAIR: IOT21B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C6": {
+                "comment": "NAME: IOT23A, BANK: 0, PAIR: IOT23B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C7": {
+                "comment": "NAME: IOT29B, BANK: 0, CFG: GCLKC_1, PAIR: IOT29A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C8": {
+                "comment": "NAME: IOT33B, BANK: 0, PAIR: IOT33A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C9": {
+                "comment": "NAME: IOR5B, BANK: 1, CFG: RPLL_C_IN, PAIR: IOR5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "C10": {
+                "comment": "NAME: IOR3B, BANK: 1, PAIR: IOR3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D1": {
+                "comment": "NAME: IOL14B, BANK: 3, CFG: READY, PAIR: IOL14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D2": {
+                "comment": "NAME: IOL18B, BANK: 3, PAIR: IOL18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D3": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D4": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D5": {
+                "comment": "NAME: IOT17A, BANK: 0, PAIR: IOT17B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D6": {
+                "comment": "NAME: IOT17B, BANK: 0, PAIR: IOT17A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D7": {
+                "comment": "NAME: IOT33A, BANK: 0, PAIR: IOT33B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D8": {
+                "comment": "NAME: IOT35A, BANK: 0, PAIR: IOT35B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D9": {
+                "comment": "NAME: IOR7A, BANK: 1, PAIR: IOR7B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "D10": {
+                "comment": "NAME: IOR7B, BANK: 1, PAIR: IOR7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E2": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E3": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E4": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E5": {
+                "comment": "NAME: IOB28B, BANK: 2, CFG: GCLKC_5, PAIR: IOB28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E6": {
+                "comment": "NAME: IOT28B, BANK: 0, CFG: GCLKC_0, PAIR: IOT28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E7": {
+                "comment": "NAME: IOT31A, BANK: 0, PAIR: IOT31B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E8": {
+                "comment": "NAME: IOR9A, BANK: 1, CFG: GCLKT_2, PAIR: IOR9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "E10": {
+                "comment": "NAME: IOR13A, BANK: 1, CFG: FASTRD_N/D3, PAIR: IOR13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F1": {
+                "comment": "NAME: IOL18A, BANK: 3, PAIR: IOL18B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F2": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F3": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F4": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F5": {
+                "comment": "NAME: IOB28A, BANK: 2, CFG: GCLKT_5, PAIR: IOB28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F6": {
+                "comment": "NAME: IOB35A, BANK: 2, PAIR: IOB35B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F7": {
+                "comment": "NAME: IOB39A, BANK: 2, PAIR: IOB39B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F8": {
+                "comment": "NAME: IOR15B, BANK: 1, CFG: DOUT/WE_N, PAIR: IOR15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F9": {
+                "comment": "NAME: IOR9B, BANK: 1, CFG: GCLKC_2, PAIR: IOR9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "F10": {
+                "comment": "NAME: IOR15A, BANK: 1, CFG: DIN/CLKHOLD_N, PAIR: IOR15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G1": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G2": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G3": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G4": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G5": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G6": {
+                "comment": "NAME: IOB35B, BANK: 2, PAIR: IOB35A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G7": {
+                "comment": "NAME: IOB39B, BANK: 2, PAIR: IOB39A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G8": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G9": {
+                "comment": "NAME: IOR13B, BANK: 1, CFG: SI/D2, PAIR: IOR13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "G10": {
+                "comment": "NAME: IOR22B, BANK: 1, PAIR: IOR22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H1": {
+                "comment": "NAME: IOB2B, BANK: 2, PAIR: IOB2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H2": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H3": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H4": {
+                "comment": "NAME: IOB17B, BANK: 2, PAIR: IOB17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H5": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H6": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H7": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H8": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H9": {
+                "comment": "NAME: IOR22A, BANK: 1, PAIR: IOR22B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "H10": {
+                "comment": "NAME: IOR26A, BANK: 1, PAIR: IOR26B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "J3": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "J4": {
+                "comment": "NAME: IOB17A, BANK: 2, PAIR: IOB17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "J6": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "J7": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "J10": {
+                "comment": "NAME: IOR26B, BANK: 1, PAIR: IOR26A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K1": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K2": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K3": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K4": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K5": {
+                "comment": "NAME: IOB21A, BANK: 2, PAIR: IOB21B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K6": {
+                "comment": "NAME: IOB21B, BANK: 2, PAIR: IOB21A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K7": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K8": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K9": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            },
+            "K10": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PD.json"
+            }
+        },
+        "MBGA100PA": {
+            "A3": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "A4": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "A6": {
+                "comment": "NAME: IOT28A, BANK: 0, CFG: GCLKT_0, PAIR: IOT28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "A7": {
+                "comment": "NAME: IOT28B, BANK: 0, CFG: GCLKC_0, PAIR: IOT28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "A10": {
+                "comment": "NAME: IOT45B, BANK: 1, PAIR: IOT45A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B1": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B2": {
+                "comment": "NAME: IOL4B, BANK: 3, PAIR: IOL4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B3": {
+                "comment": "NAME: IOL5B, BANK: 3, CFG: LPLL_C_IN, PAIR: IOL5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B4": {
+                "comment": "NAME: IOT11B, BANK: 3, PAIR: IOT11A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B5": {
+                "comment": "NAME: IOT17B, BANK: 0, PAIR: IOT17A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B6": {
+                "comment": "NAME: IOT21B, BANK: 0, PAIR: IOT21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B7": {
+                "comment": "NAME: IOT33B, BANK: 0, PAIR: IOT33A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B8": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B9": {
+                "comment": "NAME: IOT45A, BANK: 1, PAIR: IOT45B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "B10": {
+                "comment": "NAME: IOR3B, BANK: 1, PAIR: IOR3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C1": {
+                "comment": "NAME: IOL8B, BANK: 3, PAIR: IOL8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C2": {
+                "comment": "NAME: IOL9A, BANK: 3, CFG: GCLKT_7, PAIR: IOL9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C3": {
+                "comment": "NAME: IOL9B, BANK: 3, CFG: GCLKC_7, PAIR: IOL9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C4": {
+                "comment": "NAME: IOT11A, BANK: 3, PAIR: IOT11B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C5": {
+                "comment": "NAME: IOT17A, BANK: 0, PAIR: IOT17B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C6": {
+                "comment": "NAME: IOT21A, BANK: 0, PAIR: IOT21B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C7": {
+                "comment": "NAME: IOT33A, BANK: 0, PAIR: IOT33B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C8": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C9": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "C10": {
+                "comment": "NAME: IOR2B, BANK: 1, PAIR: IOR2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D1": {
+                "comment": "NAME: IOL14B, BANK: 3, CFG: READY, PAIR: IOL14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D2": {
+                "comment": "NAME: IOL18B, BANK: 3, PAIR: IOL18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D3": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D4": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D5": {
+                "comment": "NAME: IOT13A, BANK: 0, PAIR: IOT13B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D6": {
+                "comment": "NAME: IOT13B, BANK: 0, PAIR: IOT13A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D7": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D8": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D9": {
+                "comment": "NAME: IOR5B, BANK: 1, CFG: RPLL_C_IN, PAIR: IOR5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "D10": {
+                "comment": "NAME: IOR7B, BANK: 1, PAIR: IOR7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E2": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E3": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E4": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E5": {
+                "comment": "NAME: IOB28B, BANK: 2, CFG: GCLKC_5, PAIR: IOB28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E6": {
+                "comment": "NAME: IOT29A, BANK: 0, CFG: GCLKT_1, PAIR: IOT29B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E7": {
+                "comment": "NAME: IOT29B, BANK: 0, CFG: GCLKC_1, PAIR: IOT29A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E8": {
+                "comment": "NAME: IOR9A, BANK: 1, CFG: GCLKT_2, PAIR: IOR9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "E10": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F1": {
+                "comment": "NAME: IOL18A, BANK: 3, PAIR: IOL18B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F2": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F3": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F4": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F5": {
+                "comment": "NAME: IOB28A, BANK: 2, CFG: GCLKT_5, PAIR: IOB28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F6": {
+                "comment": "NAME: IOB35A, BANK: 2, PAIR: IOB35B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F7": {
+                "comment": "NAME: IOB39A, BANK: 2, PAIR: IOB39B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F8": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F9": {
+                "comment": "NAME: IOR9B, BANK: 1, CFG: GCLKC_2, PAIR: IOR9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "F10": {
+                "comment": "NAME: IOR16B, BANK: 1, PAIR: IOR16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G1": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G2": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G3": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G4": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G5": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G6": {
+                "comment": "NAME: IOB35B, BANK: 2, PAIR: IOB35A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G7": {
+                "comment": "NAME: IOB39B, BANK: 2, PAIR: IOB39A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G8": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G9": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "G10": {
+                "comment": "NAME: IOR21B, BANK: 1, PAIR: IOR21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H1": {
+                "comment": "NAME: IOB3B, BANK: 2, PAIR: IOB3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H2": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H3": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H4": {
+                "comment": "NAME: IOB17B, BANK: 2, PAIR: IOB17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H5": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H6": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H7": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H8": {
+                "comment": "NAME: IOR18B, BANK: 1, PAIR: IOR18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H9": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "H10": {
+                "comment": "NAME: IOR25B, BANK: 1, PAIR: IOR25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "J3": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "J4": {
+                "comment": "NAME: IOB17A, BANK: 2, PAIR: IOB17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "J6": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "J7": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "J10": {
+                "comment": "NAME: IOB43A, BANK: 2, PAIR: IOB43B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K1": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K2": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K3": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K4": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K5": {
+                "comment": "NAME: IOB21A, BANK: 2, PAIR: IOB21B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K6": {
+                "comment": "NAME: IOB21B, BANK: 2, PAIR: IOB21A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K7": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K8": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K9": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            },
+            "K10": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PA.json"
+            }
+        },
+        "MBGA100PF": {
+            "A3": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "A4": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "A6": {
+                "comment": "NAME: IOT28A, BANK: 0, CFG: GCLKT_0, PAIR: IOT28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "A7": {
+                "comment": "NAME: IOT28B, BANK: 0, CFG: GCLKC_0, PAIR: IOT28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "A10": {
+                "comment": "NAME: IOT45B, BANK: 1, PAIR: IOT45A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B1": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B2": {
+                "comment": "NAME: IOL4B, BANK: 3, PAIR: IOL4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B3": {
+                "comment": "NAME: IOL5B, BANK: 3, CFG: LPLL_C_IN, PAIR: IOL5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B4": {
+                "comment": "NAME: IOT11B, BANK: 3, PAIR: IOT11A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B5": {
+                "comment": "NAME: IOT17B, BANK: 0, PAIR: IOT17A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B6": {
+                "comment": "NAME: IOT21B, BANK: 0, PAIR: IOT21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B7": {
+                "comment": "NAME: IOT33B, BANK: 0, PAIR: IOT33A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B8": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B9": {
+                "comment": "NAME: IOT45A, BANK: 1, PAIR: IOT45B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "B10": {
+                "comment": "NAME: IOR3B, BANK: 1, PAIR: IOR3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C1": {
+                "comment": "NAME: IOL8B, BANK: 3, PAIR: IOL8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C2": {
+                "comment": "NAME: IOL9A, BANK: 3, CFG: GCLKT_7, PAIR: IOL9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C3": {
+                "comment": "NAME: IOL9B, BANK: 3, CFG: GCLKC_7, PAIR: IOL9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C4": {
+                "comment": "NAME: IOT11A, BANK: 3, PAIR: IOT11B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C5": {
+                "comment": "NAME: IOT17A, BANK: 0, PAIR: IOT17B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C6": {
+                "comment": "NAME: IOT21A, BANK: 0, PAIR: IOT21B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C7": {
+                "comment": "NAME: IOT33A, BANK: 0, PAIR: IOT33B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C8": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C9": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "C10": {
+                "comment": "NAME: IOR2B, BANK: 1, PAIR: IOR2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D1": {
+                "comment": "NAME: IOL14B, BANK: 3, CFG: READY, PAIR: IOL14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D2": {
+                "comment": "NAME: IOL18B, BANK: 3, PAIR: IOL18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D3": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D4": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D5": {
+                "comment": "NAME: IOT13A, BANK: 0, PAIR: IOT13B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D6": {
+                "comment": "NAME: IOT13B, BANK: 0, PAIR: IOT13A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D7": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D8": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D9": {
+                "comment": "NAME: IOR5B, BANK: 1, CFG: RPLL_C_IN, PAIR: IOR5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "D10": {
+                "comment": "NAME: IOR7B, BANK: 1, PAIR: IOR7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E2": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E3": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E4": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E5": {
+                "comment": "NAME: IOB28B, BANK: 2, CFG: GCLKC_5, PAIR: IOB28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E6": {
+                "comment": "NAME: IOT29A, BANK: 0, CFG: GCLKT_1, PAIR: IOT29B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E7": {
+                "comment": "NAME: IOT29B, BANK: 0, CFG: GCLKC_1, PAIR: IOT29A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E8": {
+                "comment": "NAME: IOR9A, BANK: 1, CFG: GCLKT_2, PAIR: IOR9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "E10": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F1": {
+                "comment": "NAME: IOL18A, BANK: 3, PAIR: IOL18B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F2": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F3": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F4": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F5": {
+                "comment": "NAME: IOB28A, BANK: 2, CFG: GCLKT_5, PAIR: IOB28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F6": {
+                "comment": "NAME: IOB35A, BANK: 2, PAIR: IOB35B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F7": {
+                "comment": "NAME: IOB39A, BANK: 2, PAIR: IOB39B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F8": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F9": {
+                "comment": "NAME: IOR9B, BANK: 1, CFG: GCLKC_2, PAIR: IOR9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "F10": {
+                "comment": "NAME: IOR16B, BANK: 1, PAIR: IOR16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G1": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G2": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G3": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G4": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G5": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G6": {
+                "comment": "NAME: IOB35B, BANK: 2, PAIR: IOB35A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G7": {
+                "comment": "NAME: IOB39B, BANK: 2, PAIR: IOB39A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G8": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G9": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "G10": {
+                "comment": "NAME: IOR21B, BANK: 1, PAIR: IOR21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H1": {
+                "comment": "NAME: IOB3B, BANK: 2, PAIR: IOB3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H2": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H3": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H4": {
+                "comment": "NAME: IOB17B, BANK: 2, PAIR: IOB17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H5": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H6": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H7": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H8": {
+                "comment": "NAME: IOR18B, BANK: 1, PAIR: IOR18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H9": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "H10": {
+                "comment": "NAME: IOR25B, BANK: 1, PAIR: IOR25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "J3": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "J4": {
+                "comment": "NAME: IOB17A, BANK: 2, PAIR: IOB17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "J6": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "J7": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "J10": {
+                "comment": "NAME: IOB43A, BANK: 2, PAIR: IOB43B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K1": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K2": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K3": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K4": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K5": {
+                "comment": "NAME: IOB21A, BANK: 2, PAIR: IOB21B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K6": {
+                "comment": "NAME: IOB21B, BANK: 2, PAIR: IOB21A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K7": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K8": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K9": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            },
+            "K10": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PF.json"
+            }
+        },
+        "LQFP144P": {
+            "3": {
+                "comment": "NAME: IOT2A, BANK: 3, PAIR: IOT2B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "4": {
+                "comment": "NAME: IOT2B, BANK: 3, PAIR: IOT2A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "5": {
+                "comment": "NAME: IOL3B, BANK: 3, PAIR: IOL3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "6": {
+                "comment": "NAME: IOL4B, BANK: 3, PAIR: IOL4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "7": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "8": {
+                "comment": "NAME: IOL5B, BANK: 3, CFG: LPLL_C_IN, PAIR: IOL5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "10": {
+                "comment": "NAME: IOL7B, BANK: 3, PAIR: IOL7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "11": {
+                "comment": "NAME: IOL8B, BANK: 3, PAIR: IOL8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "12": {
+                "comment": "NAME: IOL9B, BANK: 3, CFG: GCLKC_7, PAIR: IOL9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "13": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "14": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "15": {
+                "comment": "NAME: IOL12A, BANK: 3, CFG: SCLK, PAIR: IOL12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "16": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "18": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "20": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "21": {
+                "comment": "NAME: IOL14A, BANK: 3, CFG: DONE, PAIR: IOL14B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "22": {
+                "comment": "NAME: IOL14B, BANK: 3, CFG: READY, PAIR: IOL14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "23": {
+                "comment": "NAME: IOL15B, BANK: 3, CFG: GCLKC_6, PAIR: IOL15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "24": {
+                "comment": "NAME: IOL16B, BANK: 3, PAIR: IOL16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "25": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "26": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "27": {
+                "comment": "NAME: IOL24B, BANK: 3, PAIR: IOL24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "28": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "29": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "30": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "32": {
+                "comment": "NAME: IOB6A, BANK: 2, PAIR: IOB6B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "34": {
+                "comment": "NAME: IOB6B, BANK: 2, PAIR: IOB6A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "38": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "39": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "40": {
+                "comment": "NAME: IOB9A, BANK: 2, PAIR: IOB9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "41": {
+                "comment": "NAME: IOB9B, BANK: 2, PAIR: IOB9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "42": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "43": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "44": {
+                "comment": "NAME: IOB12A, BANK: 2, PAIR: IOB12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "45": {
+                "comment": "NAME: IOB12B, BANK: 2, PAIR: IOB12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "46": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "47": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "48": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "49": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "50": {
+                "comment": "NAME: IOB17A, BANK: 2, PAIR: IOB17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "51": {
+                "comment": "NAME: IOB17B, BANK: 2, PAIR: IOB17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "52": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "54": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "56": {
+                "comment": "NAME: IOB28A, BANK: 2, CFG: GCLKT_5, PAIR: IOB28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "57": {
+                "comment": "NAME: IOB28B, BANK: 2, CFG: GCLKC_5, PAIR: IOB28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "58": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "59": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "60": {
+                "comment": "NAME: IOB30A, BANK: 2, PAIR: IOB30B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "61": {
+                "comment": "NAME: IOB30B, BANK: 2, PAIR: IOB30A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "62": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "63": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "64": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "65": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "66": {
+                "comment": "NAME: IOB35A, BANK: 2, PAIR: IOB35B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "67": {
+                "comment": "NAME: IOB35B, BANK: 2, PAIR: IOB35A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "68": {
+                "comment": "NAME: IOB37A, BANK: 2, PAIR: IOB37B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "69": {
+                "comment": "NAME: IOB37B, BANK: 2, PAIR: IOB37A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "70": {
+                "comment": "NAME: IOB39A, BANK: 2, PAIR: IOB39B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "71": {
+                "comment": "NAME: IOB39B, BANK: 2, PAIR: IOB39A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "72": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "75": {
+                "comment": "NAME: IOB42B, BANK: 2, PAIR: IOB42A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "76": {
+                "comment": "NAME: IOB43B, BANK: 2, PAIR: IOB43A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "78": {
+                "comment": "NAME: IOB43A, BANK: 2, PAIR: IOB43B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "79": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "80": {
+                "comment": "NAME: IOR23B, BANK: 1, PAIR: IOR23A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "81": {
+                "comment": "NAME: IOR22B, BANK: 1, PAIR: IOR22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "82": {
+                "comment": "NAME: IOR21B, BANK: 1, PAIR: IOR21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "83": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "84": {
+                "comment": "NAME: IOR16B, BANK: 1, PAIR: IOR16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "85": {
+                "comment": "NAME: IOR15B, BANK: 1, CFG: DOUT/WE_N, PAIR: IOR15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "86": {
+                "comment": "NAME: IOR15A, BANK: 1, CFG: DIN/CLKHOLD_N, PAIR: IOR15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "87": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "88": {
+                "comment": "NAME: IOR14A, BANK: 1, CFG: SO/D1, PAIR: IOR14B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "90": {
+                "comment": "NAME: IOR13B, BANK: 1, CFG: SI/D2, PAIR: IOR13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "92": {
+                "comment": "NAME: IOR13A, BANK: 1, CFG: FASTRD_N/D3, PAIR: IOR13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "93": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "94": {
+                "comment": "NAME: IOR12A, BANK: 1, CFG: MCS_N/D5, PAIR: IOR12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "95": {
+                "comment": "NAME: IOR11B, BANK: 1, CFG: MO/D6, PAIR: IOR11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "96": {
+                "comment": "NAME: IOR11A, BANK: 1, CFG: MI/D7, PAIR: IOR11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "97": {
+                "comment": "NAME: IOR9B, BANK: 1, CFG: GCLKC_2, PAIR: IOR9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "98": {
+                "comment": "NAME: IOR9A, BANK: 1, CFG: GCLKT_2, PAIR: IOR9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "99": {
+                "comment": "NAME: IOR8B, BANK: 1, PAIR: IOR8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "100": {
+                "comment": "NAME: IOR7B, BANK: 1, PAIR: IOR7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "101": {
+                "comment": "NAME: IOR6B, BANK: 1, CFG: RPLL_C_FB, PAIR: IOR6A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "102": {
+                "comment": "NAME: IOR6A, BANK: 1, CFG: RPLL_T_FB, PAIR: IOR6B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "104": {
+                "comment": "NAME: IOR5B, BANK: 1, CFG: RPLL_C_IN, PAIR: IOR5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "106": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "110": {
+                "comment": "NAME: IOT42B, BANK: 1, PAIR: IOT42A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "111": {
+                "comment": "NAME: IOT42A, BANK: 1, PAIR: IOT42B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "112": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "113": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "114": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "115": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "116": {
+                "comment": "NAME: IOT37B, BANK: 1, PAIR: IOT37A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "117": {
+                "comment": "NAME: IOT37A, BANK: 1, PAIR: IOT37B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "118": {
+                "comment": "NAME: IOT34B, BANK: 0, PAIR: IOT34A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "119": {
+                "comment": "NAME: IOT34A, BANK: 0, PAIR: IOT34B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "120": {
+                "comment": "NAME: IOT32B, BANK: 0, PAIR: IOT32A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "121": {
+                "comment": "NAME: IOT32A, BANK: 0, PAIR: IOT32B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "122": {
+                "comment": "NAME: IOT29B, BANK: 0, CFG: GCLKC_1, PAIR: IOT29A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "123": {
+                "comment": "NAME: IOT29A, BANK: 0, CFG: GCLKT_1, PAIR: IOT29B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "124": {
+                "comment": "NAME: IOT27B, BANK: 0, PAIR: IOT27A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "125": {
+                "comment": "NAME: IOT27A, BANK: 0, PAIR: IOT27B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "126": {
+                "comment": "NAME: IOT24B, BANK: 0, PAIR: IOT24A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "128": {
+                "comment": "NAME: IOT24A, BANK: 0, PAIR: IOT24B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "129": {
+                "comment": "NAME: IOT22B, BANK: 0, PAIR: IOT22A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "130": {
+                "comment": "NAME: IOT22A, BANK: 0, PAIR: IOT22B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "131": {
+                "comment": "NAME: IOT20B, BANK: 0, PAIR: IOT20A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "132": {
+                "comment": "NAME: IOT20A, BANK: 0, PAIR: IOT20B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "133": {
+                "comment": "NAME: IOT17B, BANK: 0, PAIR: IOT17A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "134": {
+                "comment": "NAME: IOT17A, BANK: 0, PAIR: IOT17B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "135": {
+                "comment": "NAME: IOT15B, BANK: 0, PAIR: IOT15A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "136": {
+                "comment": "NAME: IOT15A, BANK: 0, PAIR: IOT15B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "137": {
+                "comment": "NAME: IOT12B, BANK: 3, PAIR: IOT12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "138": {
+                "comment": "NAME: IOT12A, BANK: 3, PAIR: IOT12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "139": {
+                "comment": "NAME: IOT10B, BANK: 3, PAIR: IOT10A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "140": {
+                "comment": "NAME: IOT10A, BANK: 3, PAIR: IOT10B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "141": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "142": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "143": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            },
+            "144": {
+                "comment": "NAME: IOT5A, BANK: 3, CFG: MODE0, PAIR: IOT5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/LQFP144P.json"
+            }
+        },
+        "QFN88": {
+            "3": {
+                "comment": "NAME: IOL2A, BANK: 3, PAIR: IOL2B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "4": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "5": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "6": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "7": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "8": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "9": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "10": {
+                "comment": "NAME: IOL14A, BANK: 3, CFG: DONE, PAIR: IOL14B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "11": {
+                "comment": "NAME: IOL15A, BANK: 3, CFG: GCLKT_6, PAIR: IOL15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "13": {
+                "comment": "NAME: IOL22A, BANK: 3, PAIR: IOL22B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "14": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "15": {
+                "comment": "NAME: IOL26A, BANK: 3, PAIR: IOL26B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "16": {
+                "comment": "NAME: IOL26B, BANK: 3, PAIR: IOL26A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "17": {
+                "comment": "NAME: IOB2A, BANK: 2, PAIR: IOB2B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "18": {
+                "comment": "NAME: IOB2B, BANK: 2, PAIR: IOB2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "19": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "20": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "25": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "26": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "27": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "28": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "29": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "30": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "31": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "32": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "33": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "34": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "35": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "36": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "37": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "38": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "39": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "40": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "41": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "42": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "47": {
+                "comment": "NAME: IOB43B, BANK: 2, PAIR: IOB43A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "48": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "49": {
+                "comment": "NAME: IOR24A, BANK: 1, PAIR: IOR24B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "50": {
+                "comment": "NAME: IOR22B, BANK: 1, PAIR: IOR22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "51": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "52": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "53": {
+                "comment": "NAME: IOR15B, BANK: 1, CFG: DOUT/WE_N, PAIR: IOR15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "54": {
+                "comment": "NAME: IOR15A, BANK: 1, CFG: DIN/CLKHOLD_N, PAIR: IOR15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "55": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "56": {
+                "comment": "NAME: IOR14A, BANK: 1, CFG: SO/D1, PAIR: IOR14B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "57": {
+                "comment": "NAME: IOR13A, BANK: 1, CFG: FASTRD_N/D3, PAIR: IOR13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "59": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "60": {
+                "comment": "NAME: IOR12A, BANK: 1, CFG: MCS_N/D5, PAIR: IOR12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "61": {
+                "comment": "NAME: IOR11B, BANK: 1, CFG: MO/D6, PAIR: IOR11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "62": {
+                "comment": "NAME: IOR11A, BANK: 1, CFG: MI/D7, PAIR: IOR11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "63": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "68": {
+                "comment": "NAME: IOT42B, BANK: 1, PAIR: IOT42A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "69": {
+                "comment": "NAME: IOT42A, BANK: 1, PAIR: IOT42B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "70": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "71": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "72": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "73": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "74": {
+                "comment": "NAME: IOT38B, BANK: 1, PAIR: IOT38A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "75": {
+                "comment": "NAME: IOT38A, BANK: 1, PAIR: IOT38B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "76": {
+                "comment": "NAME: IOT37B, BANK: 1, PAIR: IOT37A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "77": {
+                "comment": "NAME: IOT37A, BANK: 1, PAIR: IOT37B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "79": {
+                "comment": "NAME: IOT12B, BANK: 3, PAIR: IOT12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "80": {
+                "comment": "NAME: IOT12A, BANK: 3, PAIR: IOT12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "81": {
+                "comment": "NAME: IOT11B, BANK: 3, PAIR: IOT11A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "82": {
+                "comment": "NAME: IOT11A, BANK: 3, PAIR: IOT11B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "83": {
+                "comment": "NAME: IOT10B, BANK: 3, PAIR: IOT10A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "84": {
+                "comment": "NAME: IOT10A, BANK: 3, PAIR: IOT10B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "85": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "86": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "87": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            },
+            "88": {
+                "comment": "NAME: IOT5A, BANK: 3, CFG: MODE0, PAIR: IOT5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88.json"
+            }
+        },
+        "QFN88P": {
+            "3": {
+                "comment": "NAME: IOT2A, BANK: 3, PAIR: IOT2B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "4": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "5": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "6": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "7": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "8": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "9": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "10": {
+                "comment": "NAME: IOL15A, BANK: 3, CFG: GCLKT_6, PAIR: IOL15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "11": {
+                "comment": "NAME: IOL16B, BANK: 3, PAIR: IOL16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "13": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "14": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "15": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "16": {
+                "comment": "NAME: IOL26B, BANK: 3, PAIR: IOL26A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "17": {
+                "comment": "NAME: IOB2A, BANK: 2, PAIR: IOB2B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "18": {
+                "comment": "NAME: IOB2B, BANK: 2, PAIR: IOB2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "19": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "20": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "25": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "26": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "27": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "28": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "29": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "30": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "31": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "32": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "33": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "34": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "35": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "36": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "37": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "38": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "39": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "40": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "41": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "42": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "47": {
+                "comment": "NAME: IOB43B, BANK: 2, PAIR: IOB43A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "48": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "49": {
+                "comment": "NAME: IOR24A, BANK: 1, PAIR: IOR24B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "50": {
+                "comment": "NAME: IOR22B, BANK: 1, PAIR: IOR22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "51": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "52": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "53": {
+                "comment": "NAME: IOR15B, BANK: 1, CFG: DOUT/WE_N, PAIR: IOR15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "54": {
+                "comment": "NAME: IOR15A, BANK: 1, CFG: DIN/CLKHOLD_N, PAIR: IOR15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "55": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "56": {
+                "comment": "NAME: IOR14A, BANK: 1, CFG: SO/D1, PAIR: IOR14B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "57": {
+                "comment": "NAME: IOR13A, BANK: 1, CFG: FASTRD_N/D3, PAIR: IOR13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "59": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "60": {
+                "comment": "NAME: IOR12A, BANK: 1, CFG: MCS_N/D5, PAIR: IOR12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "61": {
+                "comment": "NAME: IOR11B, BANK: 1, CFG: MO/D6, PAIR: IOR11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "62": {
+                "comment": "NAME: IOR11A, BANK: 1, CFG: MI/D7, PAIR: IOR11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "63": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "68": {
+                "comment": "NAME: IOT42B, BANK: 1, PAIR: IOT42A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "69": {
+                "comment": "NAME: IOT42A, BANK: 1, PAIR: IOT42B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "70": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "71": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "72": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "73": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "74": {
+                "comment": "NAME: IOT38B, BANK: 1, PAIR: IOT38A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "75": {
+                "comment": "NAME: IOT38A, BANK: 1, PAIR: IOT38B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "76": {
+                "comment": "NAME: IOT37B, BANK: 1, PAIR: IOT37A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "77": {
+                "comment": "NAME: IOT37A, BANK: 1, PAIR: IOT37B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "79": {
+                "comment": "NAME: IOT12B, BANK: 3, PAIR: IOT12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "80": {
+                "comment": "NAME: IOT12A, BANK: 3, PAIR: IOT12B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "81": {
+                "comment": "NAME: IOT11B, BANK: 3, PAIR: IOT11A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "82": {
+                "comment": "NAME: IOT11A, BANK: 3, PAIR: IOT11B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "83": {
+                "comment": "NAME: IOT10B, BANK: 3, PAIR: IOT10A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "84": {
+                "comment": "NAME: IOT10A, BANK: 3, PAIR: IOT10B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "85": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "86": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "87": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            },
+            "88": {
+                "comment": "NAME: IOT5A, BANK: 3, CFG: MODE0, PAIR: IOT5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/QFN88P.json"
+            }
+        },
+        "MBGA100PS": {
+            "A3": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "A4": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "A6": {
+                "comment": "NAME: IOT28A, BANK: 0, CFG: GCLKT_0, PAIR: IOT28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "A7": {
+                "comment": "NAME: IOT28B, BANK: 0, CFG: GCLKC_0, PAIR: IOT28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "A10": {
+                "comment": "NAME: IOT45B, BANK: 1, PAIR: IOT45A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B1": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B2": {
+                "comment": "NAME: IOL4B, BANK: 3, PAIR: IOL4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B3": {
+                "comment": "NAME: IOL5B, BANK: 3, CFG: LPLL_C_IN, PAIR: IOL5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B4": {
+                "comment": "NAME: IOT11B, BANK: 3, PAIR: IOT11A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B5": {
+                "comment": "NAME: IOT17B, BANK: 0, PAIR: IOT17A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B6": {
+                "comment": "NAME: IOT21B, BANK: 0, PAIR: IOT21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B7": {
+                "comment": "NAME: IOT33B, BANK: 0, PAIR: IOT33A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B8": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B9": {
+                "comment": "NAME: IOT45A, BANK: 1, PAIR: IOT45B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "B10": {
+                "comment": "NAME: IOR3B, BANK: 1, PAIR: IOR3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C1": {
+                "comment": "NAME: IOL8B, BANK: 3, PAIR: IOL8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C2": {
+                "comment": "NAME: IOL9A, BANK: 3, CFG: GCLKT_7, PAIR: IOL9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C3": {
+                "comment": "NAME: IOL9B, BANK: 3, CFG: GCLKC_7, PAIR: IOL9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C4": {
+                "comment": "NAME: IOT11A, BANK: 3, PAIR: IOT11B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C5": {
+                "comment": "NAME: IOT17A, BANK: 0, PAIR: IOT17B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C6": {
+                "comment": "NAME: IOT21A, BANK: 0, PAIR: IOT21B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C7": {
+                "comment": "NAME: IOT33A, BANK: 0, PAIR: IOT33B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C8": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C9": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "C10": {
+                "comment": "NAME: IOR2B, BANK: 1, PAIR: IOR2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D1": {
+                "comment": "NAME: IOL14B, BANK: 3, CFG: READY, PAIR: IOL14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D2": {
+                "comment": "NAME: IOL18B, BANK: 3, PAIR: IOL18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D3": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D4": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D5": {
+                "comment": "NAME: IOT13A, BANK: 0, PAIR: IOT13B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D6": {
+                "comment": "NAME: IOT13B, BANK: 0, PAIR: IOT13A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D7": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D8": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D9": {
+                "comment": "NAME: IOR5B, BANK: 1, CFG: RPLL_C_IN, PAIR: IOR5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "D10": {
+                "comment": "NAME: IOR7B, BANK: 1, PAIR: IOR7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E2": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E3": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E4": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E5": {
+                "comment": "NAME: IOB28B, BANK: 2, CFG: GCLKC_5, PAIR: IOB28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E6": {
+                "comment": "NAME: IOT29A, BANK: 0, CFG: GCLKT_1, PAIR: IOT29B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E7": {
+                "comment": "NAME: IOT29B, BANK: 0, CFG: GCLKC_1, PAIR: IOT29A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E8": {
+                "comment": "NAME: IOR9A, BANK: 1, CFG: GCLKT_2, PAIR: IOR9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "E10": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F1": {
+                "comment": "NAME: IOL18A, BANK: 3, PAIR: IOL18B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F2": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F3": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F4": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F5": {
+                "comment": "NAME: IOB28A, BANK: 2, CFG: GCLKT_5, PAIR: IOB28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F6": {
+                "comment": "NAME: IOB35A, BANK: 2, PAIR: IOB35B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F7": {
+                "comment": "NAME: IOB39A, BANK: 2, PAIR: IOB39B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F8": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F9": {
+                "comment": "NAME: IOR9B, BANK: 1, CFG: GCLKC_2, PAIR: IOR9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "F10": {
+                "comment": "NAME: IOR16B, BANK: 1, PAIR: IOR16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G1": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G2": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G3": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G4": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G5": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G6": {
+                "comment": "NAME: IOB35B, BANK: 2, PAIR: IOB35A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G7": {
+                "comment": "NAME: IOB39B, BANK: 2, PAIR: IOB39A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G8": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G9": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "G10": {
+                "comment": "NAME: IOR21B, BANK: 1, PAIR: IOR21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H1": {
+                "comment": "NAME: IOB3B, BANK: 2, PAIR: IOB3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H2": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H3": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H4": {
+                "comment": "NAME: IOB17B, BANK: 2, PAIR: IOB17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H5": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H6": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H7": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H8": {
+                "comment": "NAME: IOR18B, BANK: 1, PAIR: IOR18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H9": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "H10": {
+                "comment": "NAME: IOR25B, BANK: 1, PAIR: IOR25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "J3": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "J4": {
+                "comment": "NAME: IOB17A, BANK: 2, PAIR: IOB17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "J6": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "J7": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "J10": {
+                "comment": "NAME: IOB43A, BANK: 2, PAIR: IOB43B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K1": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K2": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K3": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K4": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K5": {
+                "comment": "NAME: IOB21A, BANK: 2, PAIR: IOB21B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K6": {
+                "comment": "NAME: IOB21B, BANK: 2, PAIR: IOB21A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K7": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K8": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K9": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            },
+            "K10": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PS.json"
+            }
+        },
+        "MBGA100PT": {
+            "A3": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "A4": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "A6": {
+                "comment": "NAME: IOT27A, BANK: 0, PAIR: IOT27B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "A7": {
+                "comment": "NAME: IOT27B, BANK: 0, PAIR: IOT27A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "A10": {
+                "comment": "NAME: IOT45B, BANK: 1, PAIR: IOT45A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B1": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B2": {
+                "comment": "NAME: IOL4B, BANK: 3, PAIR: IOL4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B3": {
+                "comment": "NAME: IOL5B, BANK: 3, CFG: LPLL_C_IN, PAIR: IOL5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B4": {
+                "comment": "NAME: IOT11B, BANK: 3, PAIR: IOT11A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B5": {
+                "comment": "NAME: IOT17B, BANK: 0, PAIR: IOT17A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B6": {
+                "comment": "NAME: IOT21B, BANK: 0, PAIR: IOT21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B7": {
+                "comment": "NAME: IOT33B, BANK: 0, PAIR: IOT33A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B8": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B9": {
+                "comment": "NAME: IOT45A, BANK: 1, PAIR: IOT45B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "B10": {
+                "comment": "NAME: IOR3B, BANK: 1, PAIR: IOR3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C1": {
+                "comment": "NAME: IOL7B, BANK: 3, PAIR: IOL7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C2": {
+                "comment": "NAME: IOL8B, BANK: 3, PAIR: IOL8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C3": {
+                "comment": "NAME: IOL9B, BANK: 3, CFG: GCLKC_7, PAIR: IOL9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C4": {
+                "comment": "NAME: IOT11A, BANK: 3, PAIR: IOT11B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C5": {
+                "comment": "NAME: IOT17A, BANK: 0, PAIR: IOT17B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C6": {
+                "comment": "NAME: IOT21A, BANK: 0, PAIR: IOT21B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C7": {
+                "comment": "NAME: IOT33A, BANK: 0, PAIR: IOT33B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C8": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C9": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "C10": {
+                "comment": "NAME: IOR2B, BANK: 1, PAIR: IOR2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D1": {
+                "comment": "NAME: IOL14B, BANK: 3, CFG: READY, PAIR: IOL14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D2": {
+                "comment": "NAME: IOL16B, BANK: 3, PAIR: IOL16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D3": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D4": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D5": {
+                "comment": "NAME: IOT13A, BANK: 0, PAIR: IOT13B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D6": {
+                "comment": "NAME: IOT13B, BANK: 0, PAIR: IOT13A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D7": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D8": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D9": {
+                "comment": "NAME: IOR5B, BANK: 1, CFG: RPLL_C_IN, PAIR: IOR5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "D10": {
+                "comment": "NAME: IOR7B, BANK: 1, PAIR: IOR7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E2": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E3": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E4": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E5": {
+                "comment": "NAME: IOB28B, BANK: 2, CFG: GCLKC_5, PAIR: IOB28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E6": {
+                "comment": "NAME: IOT29A, BANK: 0, CFG: GCLKT_1, PAIR: IOT29B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E7": {
+                "comment": "NAME: IOT29B, BANK: 0, CFG: GCLKC_1, PAIR: IOT29A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E8": {
+                "comment": "NAME: IOR9A, BANK: 1, CFG: GCLKT_2, PAIR: IOR9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "E10": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F1": {
+                "comment": "NAME: IOL15B, BANK: 3, CFG: GCLKC_6, PAIR: IOL15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F2": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F3": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F4": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F5": {
+                "comment": "NAME: IOB28A, BANK: 2, CFG: GCLKT_5, PAIR: IOB28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F6": {
+                "comment": "NAME: IOB35A, BANK: 2, PAIR: IOB35B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F7": {
+                "comment": "NAME: IOB39A, BANK: 2, PAIR: IOB39B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F8": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F9": {
+                "comment": "NAME: IOR11B, BANK: 1, CFG: MO/D6, PAIR: IOR11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "F10": {
+                "comment": "NAME: IOR16B, BANK: 1, PAIR: IOR16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G1": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G2": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G3": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G4": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G5": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G6": {
+                "comment": "NAME: IOB35B, BANK: 2, PAIR: IOB35A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G7": {
+                "comment": "NAME: IOB39B, BANK: 2, PAIR: IOB39A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G8": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G9": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "G10": {
+                "comment": "NAME: IOR21B, BANK: 1, PAIR: IOR21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H1": {
+                "comment": "NAME: IOB3B, BANK: 2, PAIR: IOB3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H2": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H3": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H4": {
+                "comment": "NAME: IOB17B, BANK: 2, PAIR: IOB17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H5": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H6": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H7": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H8": {
+                "comment": "NAME: IOR18B, BANK: 1, PAIR: IOR18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H9": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "H10": {
+                "comment": "NAME: IOR25B, BANK: 1, PAIR: IOR25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "J3": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "J4": {
+                "comment": "NAME: IOB17A, BANK: 2, PAIR: IOB17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "J6": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "J7": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "J10": {
+                "comment": "NAME: IOB43A, BANK: 2, PAIR: IOB43B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K1": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K2": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K3": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K4": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K5": {
+                "comment": "NAME: IOB21A, BANK: 2, PAIR: IOB21B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K6": {
+                "comment": "NAME: IOB21B, BANK: 2, PAIR: IOB21A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K7": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K8": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K9": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            },
+            "K10": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100PT.json"
+            }
+        },
+        "MBGA100P": {
+            "A3": {
+                "comment": "NAME: IOT8A, BANK: 3, PAIR: IOT8B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "A4": {
+                "comment": "NAME: IOT8B, BANK: 3, PAIR: IOT8A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "A6": {
+                "comment": "NAME: IOT27A, BANK: 0, PAIR: IOT27B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "A7": {
+                "comment": "NAME: IOT27B, BANK: 0, PAIR: IOT27A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "A10": {
+                "comment": "NAME: IOT45B, BANK: 1, PAIR: IOT45A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B1": {
+                "comment": "NAME: IOL5A, BANK: 3, CFG: JTAGSEL_N/LPLL_T_IN, PAIR: IOL5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B2": {
+                "comment": "NAME: IOL4B, BANK: 3, PAIR: IOL4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B3": {
+                "comment": "NAME: IOL5B, BANK: 3, CFG: LPLL_C_IN, PAIR: IOL5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B4": {
+                "comment": "NAME: IOT11B, BANK: 3, PAIR: IOT11A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B5": {
+                "comment": "NAME: IOT17B, BANK: 0, PAIR: IOT17A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B6": {
+                "comment": "NAME: IOT21B, BANK: 0, PAIR: IOT21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B7": {
+                "comment": "NAME: IOT33B, BANK: 0, PAIR: IOT33A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B8": {
+                "comment": "NAME: IOT39A, BANK: 1, PAIR: IOT39B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B9": {
+                "comment": "NAME: IOT45A, BANK: 1, PAIR: IOT45B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "B10": {
+                "comment": "NAME: IOR3B, BANK: 1, PAIR: IOR3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C1": {
+                "comment": "NAME: IOL7B, BANK: 3, PAIR: IOL7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C2": {
+                "comment": "NAME: IOL8B, BANK: 3, PAIR: IOL8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C3": {
+                "comment": "NAME: IOL9B, BANK: 3, CFG: GCLKC_7, PAIR: IOL9A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C4": {
+                "comment": "NAME: IOT11A, BANK: 3, PAIR: IOT11B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C5": {
+                "comment": "NAME: IOT17A, BANK: 0, PAIR: IOT17B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C6": {
+                "comment": "NAME: IOT21A, BANK: 0, PAIR: IOT21B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C7": {
+                "comment": "NAME: IOT33A, BANK: 0, PAIR: IOT33B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C8": {
+                "comment": "NAME: IOT39B, BANK: 1, PAIR: IOT39A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C9": {
+                "comment": "NAME: IOR5A, BANK: 1, CFG: RPLL_T_IN, PAIR: IOR5B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "C10": {
+                "comment": "NAME: IOR2B, BANK: 1, PAIR: IOR2A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D1": {
+                "comment": "NAME: IOL14B, BANK: 3, CFG: READY, PAIR: IOL14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D2": {
+                "comment": "NAME: IOL16B, BANK: 3, PAIR: IOL16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D3": {
+                "comment": "NAME: IOL13B, BANK: 3, CFG: RECONFIG_N, PAIR: IOL13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D4": {
+                "comment": "NAME: IOT6B, BANK: 3, CFG: MODE1, PAIR: IOT6A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D5": {
+                "comment": "NAME: IOT13A, BANK: 0, PAIR: IOT13B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D6": {
+                "comment": "NAME: IOT13B, BANK: 0, PAIR: IOT13A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D7": {
+                "comment": "NAME: IOT41A, BANK: 1, PAIR: IOT41B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D8": {
+                "comment": "NAME: IOT41B, BANK: 1, PAIR: IOT41A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D9": {
+                "comment": "NAME: IOR5B, BANK: 1, CFG: RPLL_C_IN, PAIR: IOR5A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "D10": {
+                "comment": "NAME: IOR7B, BANK: 1, PAIR: IOR7A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E2": {
+                "comment": "NAME: IOL11A, BANK: 3, CFG: TMS, PAIR: IOL11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E3": {
+                "comment": "NAME: IOL11B, BANK: 3, CFG: TCK, PAIR: IOL11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E4": {
+                "comment": "NAME: IOB13A, BANK: 2, PAIR: IOB13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E5": {
+                "comment": "NAME: IOB28B, BANK: 2, CFG: GCLKC_5, PAIR: IOB28A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E6": {
+                "comment": "NAME: IOT29A, BANK: 0, CFG: GCLKT_1, PAIR: IOT29B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E7": {
+                "comment": "NAME: IOT29B, BANK: 0, CFG: GCLKC_1, PAIR: IOT29A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E8": {
+                "comment": "NAME: IOR9A, BANK: 1, CFG: GCLKT_2, PAIR: IOR9B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "E10": {
+                "comment": "NAME: IOR12B, BANK: 1, CFG: MCLK/D4, PAIR: IOR12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F1": {
+                "comment": "NAME: IOL15B, BANK: 3, CFG: GCLKC_6, PAIR: IOL15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F2": {
+                "comment": "NAME: IOL13A, BANK: 3, CFG: TDO, PAIR: IOL13B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F3": {
+                "comment": "NAME: IOL12B, BANK: 3, CFG: TDI, PAIR: IOL12A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F4": {
+                "comment": "NAME: IOB13B, BANK: 2, PAIR: IOB13A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F5": {
+                "comment": "NAME: IOB28A, BANK: 2, CFG: GCLKT_5, PAIR: IOB28B",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F6": {
+                "comment": "NAME: IOB35A, BANK: 2, PAIR: IOB35B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F7": {
+                "comment": "NAME: IOB39A, BANK: 2, PAIR: IOB39B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F8": {
+                "comment": "NAME: IOR17A, BANK: 1, CFG: GCLKT_3, PAIR: IOR17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F9": {
+                "comment": "NAME: IOR11B, BANK: 1, CFG: MO/D6, PAIR: IOR11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "F10": {
+                "comment": "NAME: IOR16B, BANK: 1, PAIR: IOR16A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G1": {
+                "comment": "NAME: IOL22B, BANK: 3, PAIR: IOL22A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G2": {
+                "comment": "NAME: IOL21B, BANK: 3, PAIR: IOL21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G3": {
+                "comment": "NAME: IOB8B, BANK: 2, PAIR: IOB8A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G4": {
+                "comment": "NAME: IOB8A, BANK: 2, PAIR: IOB8B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G5": {
+                "comment": "NAME: IOB23B, BANK: 2, PAIR: IOB23A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G6": {
+                "comment": "NAME: IOB35B, BANK: 2, PAIR: IOB35A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G7": {
+                "comment": "NAME: IOB39B, BANK: 2, PAIR: IOB39A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G8": {
+                "comment": "NAME: IOR17B, BANK: 1, CFG: GCLKC_3, PAIR: IOR17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G9": {
+                "comment": "NAME: IOR14B, BANK: 1, CFG: SSPI_CS_N/D0, PAIR: IOR14A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "G10": {
+                "comment": "NAME: IOR21B, BANK: 1, PAIR: IOR21A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H1": {
+                "comment": "NAME: IOB3B, BANK: 2, PAIR: IOB3A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H2": {
+                "comment": "NAME: IOL25B, BANK: 3, PAIR: IOL25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H3": {
+                "comment": "NAME: IOB11B, BANK: 2, PAIR: IOB11A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H4": {
+                "comment": "NAME: IOB17B, BANK: 2, PAIR: IOB17A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H5": {
+                "comment": "NAME: IOB23A, BANK: 2, PAIR: IOB23B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H6": {
+                "comment": "NAME: IOB29B, BANK: 2, CFG: GCLKC_4, PAIR: IOB29A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H7": {
+                "comment": "NAME: IOB33B, BANK: 2, PAIR: IOB33A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H8": {
+                "comment": "NAME: IOR18B, BANK: 1, PAIR: IOR18A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H9": {
+                "comment": "NAME: IOR24B, BANK: 1, PAIR: IOR24A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "H10": {
+                "comment": "NAME: IOR25B, BANK: 1, PAIR: IOR25A",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "J3": {
+                "comment": "NAME: IOB11A, BANK: 2, PAIR: IOB11B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "J4": {
+                "comment": "NAME: IOB17A, BANK: 2, PAIR: IOB17B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "J6": {
+                "comment": "NAME: IOB29A, BANK: 2, CFG: GCLKT_4, PAIR: IOB29B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "J7": {
+                "comment": "NAME: IOB33A, BANK: 2, PAIR: IOB33B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "J10": {
+                "comment": "NAME: IOB43A, BANK: 2, PAIR: IOB43B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K1": {
+                "comment": "NAME: IOB4A, BANK: 2, PAIR: IOB4B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K2": {
+                "comment": "NAME: IOB4B, BANK: 2, PAIR: IOB4A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K3": {
+                "comment": "NAME: IOB15A, BANK: 2, PAIR: IOB15B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K4": {
+                "comment": "NAME: IOB15B, BANK: 2, PAIR: IOB15A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K5": {
+                "comment": "NAME: IOB21A, BANK: 2, PAIR: IOB21B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K6": {
+                "comment": "NAME: IOB21B, BANK: 2, PAIR: IOB21A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K7": {
+                "comment": "NAME: IOB31A, BANK: 2, PAIR: IOB31B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K8": {
+                "comment": "NAME: IOB31B, BANK: 2, PAIR: IOB31A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K9": {
+                "comment": "NAME: IOB41B, BANK: 2, PAIR: IOB41A, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            },
+            "K10": {
+                "comment": "NAME: IOB41A, BANK: 2, PAIR: IOB41B, TRUELVDS: True",
+                "source": "/opt/gowin/IDE/data/device/GW1NR-9C/MBGA100P.json"
+            }
+        }
+    }
+}

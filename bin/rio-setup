@@ -2067,6 +2067,23 @@ class WinForm(QWidget):
             package = board.get("package")
             check_name = family.lower().replace(" ", "_")
             check_path = f"riocore/chipdata/{check_name}.json"
+
+            gwin_mapping = {
+                "GW1NSR-LV4CQN48PC6/I5": ("GW1NSR-4C", "QFN48P"),
+                "GW1N-LV9QN48C6/I5": ("GW1N-9C", "QFN48"),
+                "GW1N-UV9QN48C6/I5": ("GW1N-9C", "QFN48"),
+                "GW1NR-LV9QN88PC6/I5": ("GW1NR-9C", "QFN88P"),
+                "GW2A-LV18PG256C8/I7": ("GW2A-18C", "PBGA256"),
+                "GW2AR-LV18QN88PC8/I7": ("GW2AR-18C", "QFN88P"),
+                "GW1NZ-LV1QN48C6/I5": ("GW1NZ-1", "QFN48"),
+                "GW2AR-LV18QN88C8/I7": ("GW2AR-18C", "QFN88"),
+            }
+
+            if fpga_type in gwin_mapping:
+                print(gwin_mapping[fpga_type])
+                fpga_type, package = gwin_mapping[fpga_type]
+                check_path = f"riocore/chipdata/{fpga_type}.json"
+
             if os.path.isfile(check_path):
                 chipJsonStr = open(check_path, "r").read()
                 chipData = json.loads(chipJsonStr)
