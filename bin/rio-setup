@@ -1705,8 +1705,8 @@ class WinForm(QWidget):
                         possible_plugins = compatible
                     else:
                         default = slot.get("default")
-                        if default:
-                            possible_plugins.append(default)
+                        # if default:
+                        #    possible_plugins.append(default)
                         slot_has = {
                             "inputs": 0,
                             "outputs": 0,

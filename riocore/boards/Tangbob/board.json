@@ -19,49 +19,55 @@
             "pins": {
                 "L1": {
                     "pin": "10",
+                    "rotate": true,
                     "pos": [
-                        360,
-                        245
+                        430,
+                        108
                     ],
                     "direction": "output"
                 },
                 "L2": {
                     "pin": "11",
+                    "rotate": true,
                     "pos": [
-                        360,
-                        260
+                        415,
+                        108
                     ],
                     "direction": "output"
                 },
                 "L3": {
                     "pin": "13",
+                    "rotate": true,
                     "pos": [
-                        360,
-                        275
+                        400,
+                        108
                     ],
                     "direction": "output"
                 },
                 "L4": {
                     "pin": "14",
+                    "rotate": true,
                     "pos": [
-                        360,
-                        290
+                        385,
+                        108
                     ],
                     "direction": "output"
                 },
                 "L5": {
                     "pin": "15",
+                    "rotate": true,
                     "pos": [
-                        360,
-                        305
+                        370,
+                        108
                     ],
                     "direction": "output"
                 },
                 "L6": {
                     "pin": "16",
+                    "rotate": true,
                     "pos": [
-                        360,
-                        320
+                        355,
+                        108
                     ],
                     "direction": "output"
                 }
@@ -69,22 +75,22 @@
         },
         {
             "name": "UART",
-            "comment": "UART",
+            "comment": "USB-UART",
             "default": "",
             "pins": {
                 "RX": {
                     "pin": "16",
                     "pos": [
-                        260,
-                        275
+                        370,
+                        38
                     ],
                     "direction": "input"
                 },
                 "TX": {
                     "pin": "17",
                     "pos": [
-                        260,
-                        300
+                        390,
+                        38
                     ],
                     "direction": "output"
                 }
@@ -109,7 +115,7 @@
             }
         },
         {
-            "name": "modbus",
+            "name": "MODBUS",
             "compatible": [
                 "modbus",
                 "uartbridge"
@@ -134,9 +140,8 @@
             }
         },
         {
-            "name": "i2c",
-            "comment": "",
-            "default": "",
+            "name": "I2C",
+            "comment": "5V I2C port",
             "pins": {
                 "sda": {
                     "pin": "56",
@@ -158,8 +163,8 @@
         },
         {
             "name": "SPI",
-            "comment": "",
-            "default": "",
+            "comment": "spi port of the w5500 header",
+            "default": "w5500",
             "pins": {
                 "MOSI": {
                     "pin": "32",
@@ -196,9 +201,9 @@
             }
         },
         {
-            "name": "RC",
-            "comment": "",
-            "default": "w5500",
+            "name": "RIGHT",
+            "comment": "right bob adapter",
+            "default_module": "china-bob5x",
             "rect": [
                 640, 20, 70, 360
             ],
@@ -343,7 +348,9 @@
 
         },
         {
-            "name": "LC",
+            "name": "LEFT",
+            "comment": "left  bob adapter",
+            "default_module": "china-bob5x",
             "rect": [
                 75, 20, 70, 360
             ],

@@ -33,13 +33,13 @@
             "type": "modbus",
             "pins": {
                 "tx": {
-                    "pin": "modbus:TX"
+                    "pin": "MODBUS:TX"
                 },
                 "rx": {
-                    "pin": "modbus:RX"
+                    "pin": "MODBUS:RX"
                 },
                 "tx_enable": {
-                    "pin": "modbus:TX_ENABLE"
+                    "pin": "MODBUS:TX_ENABLE"
                 }
             },
             "config": {
@@ -78,22 +78,11 @@
                     "pin": "10"
                 }
             }
-        },
-        {
-            "type": "ads1115",
-            "pins": {
-                "sda": {
-                    "pin": "i2c:sda"
-                },
-                "scl": {
-                    "pin": "i2c:scl"
-                }
-            }
         }
     ],
     "modules": [
         {
-            "slot": "RC",
+            "slot": "RIGHT",
             "module": "china-bob5x",
             "setup": {
                 "enable": {
@@ -231,150 +220,6 @@
                 },
                 "joint-3": {
                     "name": "joint-3",
-                    "type": "stepdir",
-                    "is_joint": true
-                }
-            }
-        },
-        {
-            "slot": "LC",
-            "module": "china-bob5x",
-            "setup": {
-                "enable": {
-                    "type": "bitout",
-                    "name": "enable",
-                    "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                },
-                                {
-                                    "type": "onerror"
-                                },
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "home-x": {
-                    "type": "bitin",
-                    "name": "home-x",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.0.home-sw-in",
-                            "function": "",
-                            "setp": ""
-                        }
-                    }
-                },
-                "home-y": {
-                    "type": "bitin",
-                    "name": "home-y",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.1.home-sw-in",
-                            "function": "",
-                            "setp": ""
-                        }
-                    }
-                },
-                "home-z": {
-                    "type": "bitin",
-                    "name": "home-z",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.2.home-sw-in",
-                            "function": "",
-                            "setp": ""
-                        }
-                    }
-                },
-                "spindle-enable": {
-                    "type": "bitout",
-                    "name": "spindle-enable",
-                    "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "spindle.0.on",
-                            "function": "",
-                            "setp": ""
-                        }
-                    }
-                },
-                "pwm": {
-                    "type": "pwmout",
-                    "name": "pwm",
-                    "pins": {
-                        "pwm": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    }
-                },
-                "e-stop": {
-                    "type": "bitin",
-                    "name": "e-stop",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    }
-                },
-                "probe": {
-                    "type": "bitin",
-                    "name": "probe",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    }
-                },
-                "joint-0": {
-                    "name": "joint-0b",
-                    "type": "stepdir",
-                    "is_joint": true
-                },
-                "joint-1": {
-                    "name": "joint-1b",
-                    "type": "stepdir",
-                    "is_joint": true
-                },
-                "joint-2": {
-                    "name": "joint-2b",
-                    "type": "stepdir",
-                    "is_joint": true
-                },
-                "joint-3": {
-                    "name": "joint-3b",
                     "type": "stepdir",
                     "is_joint": true
                 }
