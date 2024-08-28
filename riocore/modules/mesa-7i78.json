@@ -1,0 +1,111 @@
+{
+  "comment": "mesa 7I78 STEP/DIR PLUS I/O DAUGHTERCARD - untested",
+  "plugins": [
+    {
+      "type": "pwmout",
+      "name": "spindle",
+      "pins": {
+        "pwm": {
+          "pin": "P5",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        },
+        "en": {
+          "pin": "P6",
+          "modifier": [
+            {
+              "type": "invert"
+            }
+          ]
+        },
+        "dir": {
+          "pin": "P7"
+        }
+      }
+    },
+    {
+      "name": "joint-0",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "P14"
+        },
+        "dir": {
+          "pin": "P1"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-1",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "P15"
+        },
+        "dir": {
+          "pin": "P2"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-2",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "P3"
+        },
+        "dir": {
+          "pin": "P16"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "type": "stepdir",
+      "name": "joint-3",
+      "pins": {
+        "step": {
+          "pin": "P4"
+        },
+        "dir": {
+          "pin": "P17"
+        }
+      },
+      "is_joint": true
+    },
+    {
+        "name": "encoder",
+        "type": "quadencoderz",
+        "pins": {
+            "a": {
+                "pin": "P13"
+            },
+            "b": {
+                "pin": "P12"
+            },
+            "z": {
+                "pin": "P11"
+            }
+        }
+    },
+    {
+        "type": "modbus",
+        "pins": {
+            "tx": {
+                "pin": "P8"
+            },
+            "rx": {
+                "pin": "P10"
+            },
+            "tx_enable": {
+                "pin": "P9"
+            }
+        }
+    }
+  ]
+}
