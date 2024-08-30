@@ -1979,7 +1979,7 @@ class WinForm(QWidget):
             slot_name = module.get("slot")
             module_name = module.get("module")
             module_setup = module.get("setup", {})
-            module_path = self.get_path(f"modules/{module_name}.json")
+            module_path = self.get_path(f"modules/{module_name}/module.json")
             moduleJsonStr = open(module_path, "r").read()
             module_defaults = json.loads(moduleJsonStr)
 
@@ -2109,8 +2109,8 @@ class WinForm(QWidget):
         for path in sorted(glob.glob(f"{boards_path}/*.json")):
             self.boards.append(path.split("/")[-1].split(".")[0])
         self.module_names = []
-        for path in sorted(glob.glob(f"{modules_path}/*.json")):
-            self.module_names.append(path.split("/")[-1].split(".")[0])
+        for path in sorted(glob.glob(f"{modules_path}/*/module.json")):
+            self.module_names.append(path.split("/")[-2])
         self.slotnames = []
         for slot in self.slots:
             slot_name = slot.get("name")
@@ -2559,7 +2559,7 @@ class WinForm(QWidget):
             if not module_name or not slot_name:
                 return
 
-            module_path = self.get_path(f"modules/{module_name}.json")
+            module_path = self.get_path(f"modules/{module_name}/module.json")
             moduleJsonStr = open(module_path, "r").read()
             module_defaults = json.loads(moduleJsonStr)
 

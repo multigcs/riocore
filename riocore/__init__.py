@@ -556,8 +556,8 @@ class Project:
         # loading modules
         project["modules"] = {}
         modules_path = self.get_path("modules")
-        for path in sorted(glob.glob(f"{modules_path}/*.json")):
-            module = path.split("/")[-1].split(".")[0]
+        for path in sorted(glob.glob(f"{modules_path}/*/module.json")):
+            module = path.split("/")[-2]
             mdata = open(path, "r").read()
             project["modules"][module] = json.loads(mdata)
 
