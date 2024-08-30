@@ -444,7 +444,8 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["LATHE"] = 1
 
         coordinates = []
-        for axis_name, joints in axis_dict.items():
+        for axis_name, axis_config in axis_dict.items():
+            joints = axis_config["joints"]
             for joint, joint_setup in joints.items():
                 coordinates.append(axis_name)
 
@@ -487,7 +488,7 @@ class LinuxCNC:
         ini_setup["EMCMOT"]["NUM_DIO"] = dios
         ini_setup["EMCMOT"]["NUM_AIO"] = aios
 
-        for axis_name, joints in axis_dict.items():
+        for axis_name, axis_config in axis_dict.items():
             ini_setup["HALUI"][f"MDI_COMMAND|Zero-{axis_name}"] = f"G92 {axis_name}0"
             if "motion.probe-input" in netlist:
                 if machinetype == "lathe":
@@ -1441,8 +1442,14 @@ class LinuxCNC:
             self.loadrts.append("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
             self.loadrts.append("")
             os.makedirs(self.configuration_path, exist_ok=True)
+
             for source in glob.glob("riocore/files/melfa/*"):
-                shutil.copy(source, self.configuration_path)
+                basename = os.path.basename(source)
+                target = f"{self.configuration_path}/{basename}"
+                if os.path.isfile(source):
+                    shutil.copy(source, target)
+                elif not os.path.isdir(target):
+                    shutil.copytree(source, target)
 
             if not embed_vismach:
                 for joint in range(6):
