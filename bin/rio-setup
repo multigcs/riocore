@@ -3309,28 +3309,56 @@ class WinForm(QWidget):
 
     def select_module(self, last_error=None, set_slot=None, set_module=None, slot_select=True):
         dialog = QDialog()
-        dialog.setWindowTitle("add Module")
+        dialog.setWindowTitle("select module")
         dialog.setStyleSheet(STYLESHEET)
 
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-        dialog_buttonBox.rejected.connect(dialog.reject)
-
         dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog.setLayout(dialog.layout)
+
+        def show_module_info(idx):
+            module_name = self.module_names[idx]
+            module_path = f"{riocore_path}/modules/{module_name}"
+            image_path = f"{module_path}/module.png"
+            if os.path.isfile(image_path):
+                pixmap = QPixmap(image_path)
+                image_label.setPixmap(pixmap)
+            else:
+                image_label.clear()
+
+            description = "---"
+            description_label.setText(description)
+            dialog.selected = module_name
+
+        module_table = QTableWidget()
+        module_table.setColumnCount(1)
+        module_table.setHorizontalHeaderItem(0, QTableWidgetItem("Modules"))
+        module_table.setRowCount(len(self.module_names))
+
+        for row, module_name in enumerate(self.module_names):
+            pitem = QTableWidgetItem(module_name)
+            module_table.setItem(row, 0, pitem)
+
+        # module_table.setFixedWidth(200)
+        module_table.cellClicked.connect(show_module_info)
+        module_table.currentCellChanged.connect(show_module_info)
+
+        left_layout = QVBoxLayout()
+        left_widget = QWidget()
+        # left_widget.setFixedWidth(400)
+        left_widget.setLayout(left_layout)
+
         if last_error:
             message = QLabel(last_error)
             dialog.layout.addWidget(message)
 
-        label = QLabel("Slot:")
-        dialog.layout.addWidget(label)
+        combo_label = QLabel("Slot:")
+        left_layout.addWidget(combo_label)
         combo_slot = QComboBox(self)
         combo_slot.setDisabled(not slot_select)
-        dialog.layout.addWidget(combo_slot)
-
-        label = QLabel("Module:")
-        dialog.layout.addWidget(label)
-        combo_module = QComboBox(self)
-
+        left_layout.addWidget(combo_slot)
+        left_layout.addWidget(module_table)
         item = 0
         for slot in self.slots:
             slot_name = slot["name"]
@@ -3340,20 +3368,41 @@ class WinForm(QWidget):
                     combo_slot.setCurrentIndex(item)
                 item += 1
 
-        item = 0
-        for module_name in self.module_names:
-            combo_module.addItem(module_name)
-            if module_name == set_module:
-                combo_module.setCurrentIndex(item)
-            item += 1
+        mid_layout = QVBoxLayout()
+        mid_widget = QWidget()
+        mid_widget.setFixedWidth(400)
+        mid_widget.setLayout(mid_layout)
+        name_label = QLabel("name")
+        name_label_font = QFont()
+        name_label_font.setBold(True)
+        name_label.setFont(name_label_font)
 
-        dialog.layout.addWidget(combo_module)
+        mid_layout.addWidget(name_label)
+        info_label = QLabel("info")
+        mid_layout.addWidget(info_label)
+        description_label = QLabel("description")
+        mid_layout.addWidget(description_label)
+        mid_layout.addStretch()
 
+        right_layout = QVBoxLayout()
+        right_widget = QWidget()
+        right_widget.setLayout(right_layout)
+        image_label = QLabel(self)
+        right_layout.addWidget(image_label)
+        right_layout.addStretch()
+
+        infos = QHBoxLayout()
+        infos.addWidget(left_widget, stretch=0)
+        infos.addWidget(mid_widget, stretch=3)
+        infos.addWidget(right_widget, stretch=1)
+
+        dialog.layout.addLayout(infos)
         dialog.layout.addWidget(dialog_buttonBox)
-        dialog.setLayout(dialog.layout)
+
+        show_module_info(0)
 
         if dialog.exec():
-            return (combo_slot.currentText(), combo_module.currentText())
+            return (combo_slot.currentText(), dialog.selected)
 
     def flash_cb(self):
         self.tabwidget.setCurrentWidget(self.tabs["Gateware"].widget())
