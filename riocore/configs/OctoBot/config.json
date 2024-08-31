@@ -114,6 +114,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN1:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -133,6 +134,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN2:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -152,6 +154,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN3:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -171,6 +174,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN4:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -190,6 +194,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN5:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -209,6 +214,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN6:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -228,6 +234,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN7:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
@@ -242,6 +249,7 @@
             "pins": {
                 "bit": {
                     "pin": "IN8:BIT",
+                    "pull": "up",
                     "modifier": [
                         {
                             "type": "invert"
