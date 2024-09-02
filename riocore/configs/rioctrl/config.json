@@ -31,6 +31,12 @@
                 },
                 "sel": {
                     "pin": "SPI:SEL"
+                },
+                "rst": {
+                    "pin": "SPI:RST"
+                },
+                "int": {
+                    "pin": "SPI:INT"
                 }
             }
         }
