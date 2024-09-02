@@ -560,7 +560,8 @@ class TabPins:
                         continue
 
                     pin = pin_setup.get("pin", pin_setup.get("pin_mapped", "???"))
-                    pin = f"{slot_name}:{pin}"
+                    if "[" not in pin:
+                        pin = f"{slot_name}:{pin}"
                     pin_real = pin
 
                     mapped = ""
@@ -1992,8 +1993,10 @@ class WinForm(QWidget):
                 if "pins" in module_setup[plugin_name]:
                     for pin in module_setup[plugin_name]["pins"]:
                         if "pin" in module_setup[plugin_name]["pins"][pin]:
-                            module_setup[plugin_name]["pins"][pin]["pin_mapped"] = module_setup[plugin_name]["pins"][pin]["pin"]
-                            del module_setup[plugin_name]["pins"][pin]["pin"]
+                            pname = module_setup[plugin_name]["pins"][pin]["pin"]
+                            if "[" not in pname:
+                                module_setup[plugin_name]["pins"][pin]["pin_mapped"] = pname
+                                del module_setup[plugin_name]["pins"][pin]["pin"]
 
                 mplugins.load_plugin(plugin_id, module_setup[plugin_name], self.config)
 
@@ -2573,7 +2576,8 @@ class WinForm(QWidget):
             for plugin in module_defaults.get("plugins"):
                 for pin_name, pin_config in plugin.get("pins", {}).items():
                     pin_location = pin_config.get("pin")
-                    # print(pin_location, slot_pins)
+                    if "[" in pin_location:
+                        continue
                     if pin_location not in slot_pins:
                         check = False
 
