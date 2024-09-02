@@ -3321,29 +3321,59 @@ class WinForm(QWidget):
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog.setLayout(dialog.layout)
 
+        dialog.module_names = []
+
         def show_module_info(idx):
-            module_name = self.module_names[idx]
+            module_name = dialog.module_names[idx]
             module_path = f"{riocore_path}/modules/{module_name}"
+            moduleJsonStr = open(f"{module_path}/module.json", "r").read()
+            module_defaults = json.loads(moduleJsonStr)
             image_path = f"{module_path}/module.png"
             if os.path.isfile(image_path):
                 pixmap = QPixmap(image_path)
                 image_label.setPixmap(pixmap)
             else:
                 image_label.clear()
-
-            description = "---"
+            name_label.setText(f"Name: {module_name}")
+            description = module_defaults.get("comment", "")
             description_label.setText(description)
             dialog.selected = module_name
 
         module_table = QTableWidget()
         module_table.setColumnCount(1)
         module_table.setHorizontalHeaderItem(0, QTableWidgetItem("Modules"))
-        module_table.setRowCount(len(self.module_names))
 
-        for row, module_name in enumerate(self.module_names):
-            pitem = QTableWidgetItem(module_name)
-            module_table.setItem(row, 0, pitem)
+        if not slot_select:
+            slot_setup = {}
+            for slot in self.slots:
+                if set_slot == slot["name"]:
+                    slot_setup = slot
+            slot_pins = slot_setup.get("pins", {})
 
+        row_n = 0
+        for module_name in self.module_names:
+            check = True
+            if not slot_select:
+                module_path = self.get_path(f"modules/{module_name}/module.json")
+                moduleJsonStr = open(module_path, "r").read()
+                module_defaults = json.loads(moduleJsonStr)
+                for plugin in module_defaults.get("plugins"):
+                    for pin_name, pin_config in plugin.get("pins", {}).items():
+                        pin_location = pin_config.get("pin")
+                        if "[" in pin_location:
+                            continue
+                        if pin_location not in slot_pins:
+                            check = False
+
+            if check is True:
+                module_table.setRowCount(row_n + 1)
+                pitem = QTableWidgetItem(module_name)
+                module_table.setItem(row_n, 0, pitem)
+                dialog.module_names.append(module_name)
+                row_n += 1
+
+        header = module_table.horizontalHeader()
+        header.setStretchLastSection(True)
         # module_table.setFixedWidth(200)
         module_table.cellClicked.connect(show_module_info)
         module_table.currentCellChanged.connect(show_module_info)
@@ -3376,7 +3406,7 @@ class WinForm(QWidget):
         mid_widget = QWidget()
         mid_widget.setFixedWidth(400)
         mid_widget.setLayout(mid_layout)
-        name_label = QLabel("name")
+        name_label = QLabel("Name:")
         name_label_font = QFont()
         name_label_font.setBold(True)
         name_label.setFont(name_label_font)
