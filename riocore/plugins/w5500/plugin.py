@@ -29,6 +29,14 @@ class Plugin(PluginBase):
                 "invert": False,
                 "pull": None,
             },
+            "rst": {
+                "direction": "output",
+                "optional": True,
+            },
+            "int": {
+                "direction": "input",
+                "optional": True,
+            },
         }
         self.OPTIONS = {
             "mac": {

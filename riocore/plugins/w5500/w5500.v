@@ -17,6 +17,8 @@ module w5500
          input miso,
          output sclk,
          output sel,
+         input int,
+         output reg rst = 1,
          input [BUFFER_SIZE-1:0] tx_data,
          output [BUFFER_SIZE-1:0] rx_data,
          output reg sync = 0
