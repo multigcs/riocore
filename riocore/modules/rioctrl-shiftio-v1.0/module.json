@@ -1,0 +1,113 @@
+{
+  "comment": "rioctrl-shiftio-v1.0",
+  "plugins": [
+        {
+            "type": "shiftreg",
+            "name": "shiftout",
+            "pins": {
+                "out": {
+                    "pin": "S0"
+                },
+                "in": {
+                    "pin": "S6"
+                },
+                "sclk": {
+                    "pin": "S1"
+                },
+                "load": {
+                    "pin": "S2"
+                }
+            }
+        },
+        {
+            "type": "shiftreg",
+            "name": "shiftin",
+            "pins": {
+                "in": {
+                    "pin": "S3"
+                },
+                "out": {
+                    "pin": "S7"
+                },
+                "sclk": {
+                    "pin": "S4"
+                },
+                "load": {
+                    "pin": "S5"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input0",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[0]"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input1",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[1]"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input2",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[2]"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input3",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[3]"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input4",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[4]"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input5",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[5]"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input6",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[6]"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input7",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[7]"
+                }
+            }
+        }
+    ]
+}

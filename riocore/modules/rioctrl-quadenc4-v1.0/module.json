@@ -1,0 +1,69 @@
+{
+  "comment": "rioctrl-quadenc4-v1.0",
+  "plugins": [
+    {
+      "name": "encoder-0",
+      "type": "quadencoderz",
+      "pins": {
+        "a": {
+          "pin": "S2"
+        },
+        "b": {
+          "pin": "S1"
+        },
+        "z": {
+          "pin": "S0"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "encoder-1",
+      "type": "quadencoderz",
+      "pins": {
+        "a": {
+          "pin": "S5"
+        },
+        "b": {
+          "pin": "S4"
+        },
+        "z": {
+          "pin": "S3"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "encoder-2",
+      "type": "quadencoderz",
+      "pins": {
+        "a": {
+          "pin": "S8"
+        },
+        "b": {
+          "pin": "S7"
+        },
+        "z": {
+          "pin": "S6"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "encoder-3",
+      "type": "quadencoderz",
+      "pins": {
+        "a": {
+          "pin": "S11"
+        },
+        "b": {
+          "pin": "S10"
+        },
+        "z": {
+          "pin": "S9"
+        }
+      },
+      "is_joint": true
+    }
+  ]
+}

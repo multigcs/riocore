@@ -1,0 +1,69 @@
+{
+  "comment": "rioctrl-stepdir4-v1.0",
+  "plugins": [
+    {
+      "name": "joint-0",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "S0"
+        },
+        "dir": {
+          "pin": "S1"
+        },
+        "en": {
+          "pin": "S2"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-1",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "S3"
+        },
+        "dir": {
+          "pin": "S4"
+        },
+        "en": {
+          "pin": "S5"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-2",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "S6"
+        },
+        "dir": {
+          "pin": "S7"
+        },
+        "en": {
+          "pin": "S8"
+        }
+      },
+      "is_joint": true
+    },
+    {
+      "name": "joint-3",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "S9"
+        },
+        "dir": {
+          "pin": "S10"
+        },
+        "en": {
+          "pin": "S11"
+        }
+      },
+      "is_joint": true
+    }
+  ]
+}
