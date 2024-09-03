@@ -14,5 +14,7 @@
 | [TangNano20K](riocore/boards/TangNano20K/README.md) | TangNano20K - GW2AR-18 devboard | GW2AR-18C / GW2AR-LV18QN88C8/I7 | gowin, icestorm | <img src="riocore/boards/TangNano20K/board.png" height="48"> |
 | [TangNano9K](riocore/boards/TangNano9K/README.md) | TangNano9K - cheap GW1NR-9 Devboard | GW1N-9C / GW1NR-LV9QN88PC6/I5 | gowin, icestorm | <img src="riocore/boards/TangNano9K/board.png" height="48"> |
 | [TangPrimer20K](riocore/boards/TangPrimer20K/README.md) | TangPrimer20K-Devboard on Dock ext-board | GW2A-18C / GW2A-LV18PG256C8/I7 | gowin, icestorm | <img src="riocore/boards/TangPrimer20K/board.png" height="48"> |
+| [Tangbob](riocore/boards/Tangbob/README.md) | TangNano9K - cheap GW1NR-9 Devboard | GW1N-9C / GW1NR-LV9QN88PC6/I5 | gowin, icestorm | <img src="riocore/boards/Tangbob/board.png" height="48"> |
 | [Tangoboard](riocore/boards/Tangoboard/README.md) | based on TangNano9k | GW1N-9C / GW1NR-LV9QN88PC6/I5 | gowin, icestorm | <img src="riocore/boards/Tangoboard/board.png" height="48"> |
 | [iceWerx-iCE40-HX8K](riocore/boards/iceWerx-iCE40-HX8K/README.md) | Devantech iceWerx iCE40-HX8K FPGA | ice40 / hx8k | icestorm | <img src="riocore/boards/iceWerx-iCE40-HX8K/board.png" height="48"> |
+| [rioctrl](riocore/boards/rioctrl/README.md) | rioctrl- a modular hardware for riocore | ecp5 / 25k | icestorm | <img src="riocore/boards/rioctrl/board.png" height="48"> |

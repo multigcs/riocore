@@ -1,6 +1,8 @@
 # pwmin
 **pwm input**
 
+measuring pulse len
+
 
 ![image.png](image.png)
 

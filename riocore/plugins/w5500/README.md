@@ -22,6 +22,12 @@ w5500 driver for the interface communication over UDP
         },
         "sel": {
             "pin": "3"
+        },
+        "rst": {
+            "pin": "4"
+        },
+        "int": {
+            "pin": "5"
         }
     }
 }
@@ -44,6 +50,16 @@ w5500 driver for the interface communication over UDP
 ### sel:
 
  * direction: output
+
+### rst:
+
+ * direction: output
+ * optional: True
+
+### int:
+
+ * direction: input
+ * optional: True
 
 
 ## Options:
@@ -141,6 +157,25 @@ name of this plugin instance
         "sel": {
             "pin": "3",
             "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "rst": {
+            "pin": "4",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "int": {
+            "pin": "5",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
