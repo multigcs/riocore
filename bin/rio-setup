@@ -1540,7 +1540,11 @@ class WinForm(QWidget):
         if self.compile_sub is not None:
             widget = self.tabs["Gateware"].gateware["Compile-Output"]
             config_name = self.config.get("name")
-            logdata = open(f"Output/{config_name}/Gateware/compile.log", "r").read()
+            log_path = f"Output/{config_name}/Gateware/compile.log"
+            if os.path.isfile(log_path):
+                logdata = open(log_path, "r").read()
+            else:
+                logdata = f"logfile not found: {logdata}"
             widget.clear()
             duration = time.time() - self.compile_start
 
@@ -1563,7 +1567,11 @@ class WinForm(QWidget):
         if self.flash_sub is not None:
             widget = self.tabs["Gateware"].gateware["Flash-Output"]
             config_name = self.config.get("name")
-            logdata = open(f"Output/{config_name}/Gateware/flash.log", "r").read()
+            log_path = f"Output/{config_name}/Gateware/flash.log"
+            if os.path.isfile(log_path):
+                logdata = open(log_path, "r").read()
+            else:
+                logdata = f"logfile not found: {logdata}"
             widget.clear()
             duration = time.time() - self.flash_start
 
@@ -1592,6 +1600,7 @@ class WinForm(QWidget):
             configJsonStr = open(self.config_file, "r").read()
             if self.config_file.endswith(".yml"):
                 import yaml
+
                 self.config = yaml.load(configJsonStr)
             else:
                 self.config = json.loads(configJsonStr)

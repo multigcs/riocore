@@ -56,7 +56,7 @@ docker-run-debian11_deb:
 	#docker build --no-cache -t riocore_debian11 -f dockerfiles/Dockerfile.debian11-min .
 	docker build -t riocore_debian11 -f dockerfiles/Dockerfile.debian11-min .
 	docker rm riocore_debian11 || true
-	docker run --net=host -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore_debian11 -v $(CURDIR):/usr/src/riocore -t -i riocore_debian11 /bin/bash -c "cd /usr/src/riocore; apt-get install --no-install-recommends -y ./debian-packages/python3-riocore_*-bullseye_amd64.deb; cd ~ ; rio-setup"
+	docker run --net=host -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore_debian11 -v $(CURDIR):/usr/src/riocore -t -i riocore_debian11 /bin/bash -c "cd /usr/src/riocore; apt-get install --no-install-recommends -y ./debian-packages/python3-riocore_*-bullseye_amd64.deb; cd ~ ; PATH=$$PATH:/opt/oss-cad-suite/bin/ rio-setup"
 
 docker-build-debian12_deb:
 	sudo rm -rf dist/ deb_dist/
