@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "wled"
+        self.INFO = "ws2812b interface"
+        self.DESCRIPTION = "simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each led"
+        self.ORIGIN = "https://github.com/mattvenn/ws2812-core"
         self.VERILOGS = ["ws2812.v", "wled.v"]
         self.PINDEFAULTS = {
             "data": {
@@ -37,8 +40,6 @@ class Plugin(PluginBase):
                     "direction": "output",
                     "bool": True,
                 }
-        self.INFO = "ws2812b interface"
-        self.DESCRIPTION = "simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each led"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

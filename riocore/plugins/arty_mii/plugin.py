@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "arty_mii"
         self.INFO = "udp interface for host comunication - experimental - Arty7-35t only"
         self.DESCRIPTION = ""
+        self.ORIGIN = "https://github.com/alexforencich/verilog-ethernet"
         self.LIMITATIONS = {
             "boards": ["Arty-a7-35t"],
             "toolchains": ["vivado"],

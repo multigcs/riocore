@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "signal"
+        self.INFO = "virtual signal"
+        self.DESCRIPTION = "virtual signal"
+        self.ORIGIN = ""
         self.VERILOGS = []
         self.OPTIONS = {
             "dir": {
@@ -19,13 +22,9 @@ class Plugin(PluginBase):
                 "description": "signal type",
             },
         }
-        self.INFO = "virtual signal"
-        self.DESCRIPTION = "virtual signal"
         self.SIGNALS = {}
-
         direction = self.plugin_setup.get("dir", self.OPTIONS["dir"]["default"])
         vtype = self.plugin_setup.get("vtype", self.OPTIONS["vtype"]["default"])
-
         self.SIGNALS["value"] = {
             "direction": direction,
             "virtual": True,

@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "counter"
+        self.INFO = "pulse counter input"
+        self.DESCRIPTION = "to counting digital pulses, supporting up,down and reset signals"
+        self.ORIGIN = ""
         self.VERILOGS = ["counter.v"]
         self.PINDEFAULTS = {
             "up": {
@@ -39,5 +42,3 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
-        self.INFO = "pulse counter input"
-        self.DESCRIPTION = "to counting digital pulses, supporting up,down and reset signals"

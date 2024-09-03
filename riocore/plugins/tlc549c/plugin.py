@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "tlc549c"
+        self.INFO = "spi adc input"
+        self.DESCRIPTION = "Analog input via tlc549 ADC"
+        self.ORIGIN = ""
         self.VERILOGS = ["tlc549c.v"]
         self.PINDEFAULTS = {
             "miso": {
@@ -35,8 +38,6 @@ class Plugin(PluginBase):
                 "description": "measured voltage",
             },
         }
-        self.INFO = "spi adc input"
-        self.DESCRIPTION = "Analog input via tlc549 ADC"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

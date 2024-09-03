@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "bitin"
+        self.INFO = "single input pin"
+        self.DESCRIPTION = "to read switches or other 1bit signals"
+        self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {
                 "direction": "input",
@@ -21,8 +24,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.INFO = "single input pin"
-        self.DESCRIPTION = "to read switches or other 1bit signals"
         self.FIRMWARE_SUPPORT = True
 
     def gateware_instances(self):

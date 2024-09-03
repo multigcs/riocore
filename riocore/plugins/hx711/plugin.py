@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "hx711"
+        self.INFO = "digital weight sensor"
+        self.DESCRIPTION = "to measure weight's"
+        self.ORIGIN = ""
         self.VERILOGS = ["hx711.v"]
         self.PINDEFAULTS = {
             "miso": {
@@ -61,8 +64,6 @@ class Plugin(PluginBase):
                 "description": "sensor mode",
             },
         }
-        self.INFO = "digital weight sensor"
-        self.DESCRIPTION = "to measure weight's"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

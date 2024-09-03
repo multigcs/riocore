@@ -10,6 +10,9 @@ class Plugin(PluginBase):
 
     def setup(self):
         self.NAME = "modbus"
+        self.INFO = "generic modbus plugin"
+        self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
+        self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.VERILOGS = ["modbus.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.PINDEFAULTS = {
             "tx": {
@@ -55,8 +58,6 @@ class Plugin(PluginBase):
         self.PLUGIN_CONFIG = True
         self.TIMEOUT = 200.0
         self.DELAY = 90.0
-        self.INFO = "generic modbus plugin"
-        self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
         self.rx_buffersize = 128
         self.tx_buffersize = 128
         self.OPTIONS["rx_buffersize"]["default"] = self.rx_buffersize

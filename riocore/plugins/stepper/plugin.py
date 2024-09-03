@@ -4,8 +4,11 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "stepper"
-        self.TYPE = "joint"
+        self.INFO = "stepper driver output for H-Bridges like L298"
+        self.DESCRIPTION = "direct stepper driver with 4pin's directly controlled by the FPGA"
+        self.ORIGIN = ""
         self.VERILOGS = ["stepper.v"]
+        self.TYPE = "joint"
         self.PINDEFAULTS = {
             "a1": {
                 "direction": "output",
@@ -61,8 +64,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.INFO = "stepper driver output for H-Bridges like L298"
-        self.DESCRIPTION = "direct stepper driver with 4pin's directly controlled by the FPGA"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

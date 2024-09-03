@@ -5,6 +5,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "ads1115"
+        self.INFO = "4-channel adc via I2C"
+        self.DESCRIPTION = "to read analog signals with cheap ads1115 chips"
+        self.ORIGIN = "https://learn.lushaylabs.com/i2c-adc-micro-procedures/#the-i2c-protocol"
         self.VERILOGS = ["ads1115.v"]
         self.PINDEFAULTS = {
             "sda": {
@@ -94,9 +97,6 @@ class Plugin(PluginBase):
                 "description": "Sensor-Type",
             },
         }
-        self.INFO = "4-channel adc via I2C"
-        self.DESCRIPTION = "to read analog signals with cheap ads1115 chips"
-
         for sn in range(4):
             stype = self.plugin_setup.get(f"sensor{sn}", self.option_default(f"sensor{sn}"))
             if stype == "NTC":

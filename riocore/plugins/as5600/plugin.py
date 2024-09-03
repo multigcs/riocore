@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "as5600"
+        self.INFO = "magnetic absolute encoder"
+        self.DESCRIPTION = "for position feedbacks"
+        self.ORIGIN = "https://learn.lushaylabs.com/i2c-adc-micro-procedures/#the-i2c-protocol"
         self.VERILOGS = ["as5600.v"]
         self.PINDEFAULTS = {
             "sda": {
@@ -28,5 +31,3 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
-        self.INFO = "magnetic absolute encoder"
-        self.DESCRIPTION = "for position feedbacks"

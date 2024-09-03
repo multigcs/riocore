@@ -4,8 +4,11 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rcservo"
-        self.TYPE = "joint"
+        self.INFO = "rc-servo output"
+        self.DESCRIPTION = "to control rc-servos, usable as joint or as variable/analog output in LinuxCNC"
+        self.ORIGIN = ""
         self.VERILOGS = ["rcservo.v"]
+        self.TYPE = "joint"
         self.PINDEFAULTS = {
             "pwm": {
                 "direction": "output",
@@ -47,8 +50,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.INFO = "rc-servo output"
-        self.DESCRIPTION = "to control rc-servos, usable as joint or as variable/analog output in LinuxCNC"
         self.FIRMWARE_SUPPORT = True
 
     def gateware_instances(self):

@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "udpoti"
+        self.INFO = "digital-poti with up/down+dir interface"
+        self.DESCRIPTION = "controling digital poti for analog outputs"
+        self.ORIGIN = ""
         self.VERILOGS = ["udpoti.v"]
         self.PINDEFAULTS = {
             "updown": {
@@ -45,8 +48,6 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
-        self.INFO = "digital-poti with up/down+dir interface"
-        self.DESCRIPTION = "controling digital poti for analog outputs"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "freqin"
+        self.INFO = "frequency input"
+        self.DESCRIPTION = "to messurement digital frequencies"
+        self.ORIGIN = ""
         self.VERILOGS = ["freqin.v"]
         self.PINDEFAULTS = {
             "freq": {
@@ -42,8 +45,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.INFO = "frequency input"
-        self.DESCRIPTION = "to messurement digital frequencies"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

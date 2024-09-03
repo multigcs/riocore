@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "freqout"
+        self.INFO = "frequency output"
+        self.DESCRIPTION = "to output variable frequency signals"
+        self.ORIGIN = ""
         self.VERILOGS = ["freqout.v"]
         self.PINDEFAULTS = {
             "freq": {
@@ -27,8 +30,6 @@ class Plugin(PluginBase):
                 "description": "output frequency",
             },
         }
-        self.INFO = "frequency output"
-        self.DESCRIPTION = "to output variable frequency signals"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

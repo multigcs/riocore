@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "w5500"
+        self.INFO = "udp interface for host comunication"
+        self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
+        self.ORIGIN = "https://github.com/harout/concurrent-data-capture"
         self.TYPE = "interface"
         self.VERILOGS = ["w5500.v"]
         self.PINDEFAULTS = {
@@ -70,9 +73,6 @@ class Plugin(PluginBase):
                 "description": "SPI clock",
             },
         }
-        self.INFO = "udp interface for host comunication"
-        self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
-
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.TIMING_CONSTRAINTS = {
             "mclk": speed,

@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "tm1638b8s7l8"
+        self.INFO = "7segment display with buttons"
+        self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)"
+        self.ORIGIN = ""
         self.VERILOGS = ["tm1638b8s7l8.v"]
         self.PINDEFAULTS = {
             "sel": {
@@ -203,8 +206,6 @@ class Plugin(PluginBase):
                 "description": "Data-clock",
             },
         }
-        self.INFO = "7segment display with buttons"
-        self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)"
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.TIMING_CONSTRAINTS = {
             "mclk": speed,

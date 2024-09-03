@@ -4,8 +4,11 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "pwmout"
-        self.TYPE = "joint"
+        self.INFO = "pwm output"
+        self.DESCRIPTION = "to control DC-Motors or for analog outputs"
+        self.ORIGIN = ""
         self.VERILOGS = ["pwmout.v"]
+        self.TYPE = "joint"
         self.PINDEFAULTS = {
             "pwm": {
                 "direction": "output",
@@ -73,8 +76,6 @@ class Plugin(PluginBase):
         }
         if "dir" in self.plugin_setup.get("pins", {}):
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
-        self.INFO = "pwm output"
-        self.DESCRIPTION = "to control DC-Motors or for analog outputs"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

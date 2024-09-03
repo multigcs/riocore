@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "pwmin"
+        self.INFO = "pwm input"
+        self.DESCRIPTION = "measuring pulse len"
+        self.ORIGIN = ""
         self.VERILOGS = ["pwmin.v"]
         self.PINDEFAULTS = {
             "pwm": {
@@ -43,8 +46,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.INFO = "pwm input"
-        self.DESCRIPTION = ""
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

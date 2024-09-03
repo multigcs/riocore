@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "quadencoderz"
+        self.INFO = "quadencoder with index pin"
+        self.DESCRIPTION = "usable as spindle-encoder for rigid tapping and thread cutting"
+        self.ORIGIN = "https://www.fpga4fun.com/QuadratureDecoder.html"
         self.VERILOGS = ["quadencoderz.v"]
         self.PINDEFAULTS = {
             "a": {
@@ -77,8 +80,6 @@ class Plugin(PluginBase):
                 "description": "calculates revolutions per minute",
             },
         }
-        self.INFO = "quadencoder with index pin"
-        self.DESCRIPTION = "usable as spindle-encoder for rigid tapping and thread cutting"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

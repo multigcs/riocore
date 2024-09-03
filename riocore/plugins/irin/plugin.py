@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "irin"
+        self.INFO = "IR-Remote input"
+        self.DESCRIPTION = "that was just a gimmick, not really useful"
+        self.ORIGIN = "https://github.com/douggilliland/MultiComp/blob/master/MultiComp_On_Cyclone%20IV%20VGA%20Card/Card%20docs%20ZRTech-C/3-Example%20Code/5-example_IR_1/ir.v"
         self.VERILOGS = ["irin.v"]
         self.PINDEFAULTS = {
             "ir": {
@@ -23,8 +26,6 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
-        self.INFO = "IR-Remote input"
-        self.DESCRIPTION = "that was just a gimmick, not really useful"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

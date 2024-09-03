@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "max10adc"
         self.INFO = "MAX10 ADC inputs"
         self.DESCRIPTION = "only usable for the max10 fpga boards"
+        self.ORIGIN = "ACDS version 16.0 211"
         self.LIMITATIONS = {
             "family": ["MAX 10"],
             "toolchains": ["quartus"],

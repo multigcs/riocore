@@ -4,6 +4,10 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "wled"
+        self.INFO = "ws2812b interface acting as an expansion port"
+        self.DESCRIPTION = "simple ws2812b led driver / same as the wled plugin but integrated as an expansion to combinate with other plugins"
+        self.ORIGIN = "https://github.com/mattvenn/ws2812-core"
+        self.TYPE = "expansion"
         self.VERILOGS = ["ws2812.v", "wled.v"]
         self.PINDEFAULTS = {
             "data": {
@@ -26,9 +30,6 @@ class Plugin(PluginBase):
                 "description": "LED brighness",
             },
         }
-        self.TYPE = "expansion"
-        self.INFO = "ws2812b interface acting as an expansion port"
-        self.DESCRIPTION = "simple ws2812b led driver / same as the wled plugin but integrated as an expansion to combinate with other plugins"
 
     def gateware_defines(self, direct=False):
         defines = []

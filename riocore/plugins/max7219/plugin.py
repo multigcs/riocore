@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "max7219"
+        self.INFO = "7segment display based on max7219"
+        self.DESCRIPTION = "to display values from LinuxCNC on 7segment display's"
+        self.ORIGIN = ""
         self.VERILOGS = ["max7219.v"]
         self.PINDEFAULTS = {
             "mosi": {
@@ -48,8 +51,6 @@ class Plugin(PluginBase):
                 "description": "interface clock frequency",
             },
         }
-        self.INFO = "7segment display based on max7219"
-        self.DESCRIPTION = "to display values from LinuxCNC on 7segment display's"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

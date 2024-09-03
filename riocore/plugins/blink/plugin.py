@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "blink"
+        self.INFO = "blinking output pin"
+        self.DESCRIPTION = "outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals"
+        self.ORIGIN = ""
         self.VERILOGS = ["blink.v"]
         self.PINDEFAULTS = {
             "led": {
@@ -19,8 +22,6 @@ class Plugin(PluginBase):
                 "description": "blink frequency in Hz",
             },
         }
-        self.INFO = "blinking output pin"
-        self.DESCRIPTION = "outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "spipoti"
+        self.INFO = "spi digital poti"
+        self.DESCRIPTION = "Analog-Outout via spi digital poti"
+        self.ORIGIN = ""
         self.VERILOGS = ["spipoti.v"]
         self.PINDEFAULTS = {
             "mosi": {
@@ -33,8 +36,6 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
-        self.INFO = "spi digital poti"
-        self.DESCRIPTION = "Analog-Outout via spi digital poti"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

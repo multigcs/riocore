@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "dis7seg"
+        self.INFO = "7segment display with buttons"
+        self.DESCRIPTION = "only usable for devboards with 7segment display / better using other 7seg plugins"
+        self.ORIGIN = ""
         self.VERILOGS = ["dis7seg.v"]
         self.PINDEFAULTS = {
             "en1": {
@@ -84,5 +87,3 @@ class Plugin(PluginBase):
                 "description": "number to display",
             },
         }
-        self.INFO = "7segment display with buttons"
-        self.DESCRIPTION = "only usable for devboards with 7segment display / better using other 7seg plugins"

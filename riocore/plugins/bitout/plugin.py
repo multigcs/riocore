@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "bitout"
+        self.INFO = "singe bit output pin"
+        self.DESCRIPTION = "to control relais, leds, valves, ...."
+        self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {
                 "direction": "output",
@@ -23,8 +26,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.INFO = "singe bit output pin"
-        self.DESCRIPTION = "to control relais, leds, valves, ...."
         self.FIRMWARE_SUPPORT = True
 
     def gateware_instances(self):

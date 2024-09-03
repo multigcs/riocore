@@ -4,6 +4,38 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "shiftreg"
+        self.INFO = "Expansion to add I/O's via shiftregister's"
+        self.DESCRIPTION = """
+do not use this for high frequency signals !!!
+
+jitter measured with a EPM240 as 40bit Shiftreg:
+```
+@10Mhz clock and 5 byte data ~= 3.7us jitter
+```
+
+## Output-Expansion with 74HC595:
+
+| EXP | 74HC595 | FUNC |
+| --- | --- | --- |
+| out | 14 | DS |
+| in |  | |
+| sclk | 11 | SH_CP / SRCLK |
+| load | 12 | ST_CP / RCLK |
+
+## Input-Expansion with 74HC165:
+
+| EXP | 74HC165 | FUNC |
+| --- | --- | --- |
+| out |  | |
+| in |  | SER |
+| sclk | 2 | CLK |
+| load |  | SH/LD |
+
+### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
+[![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
+
+        """
+        self.ORIGIN = ""
         self.VERILOGS = ["shiftreg.v"]
         self.PINDEFAULTS = {
             "out": {
@@ -40,37 +72,6 @@ class Plugin(PluginBase):
                 "description": "number of bits (IO's)",
             },
         }
-        self.INFO = "Expansion to add I/O's via shiftregister's"
-        self.DESCRIPTION = """
-do not use this for high frequency signals !!!
-
-jitter measured with a EPM240 as 40bit Shiftreg:
-```
-@10Mhz clock and 5 byte data ~= 3.7us jitter
-```
-
-## Output-Expansion with 74HC595:
-
-| EXP | 74HC595 | FUNC |
-| --- | --- | --- |
-| out | 14 | DS |
-| in |  | |
-| sclk | 11 | SH_CP / SRCLK |
-| load | 12 | ST_CP / RCLK |
-
-## Input-Expansion with 74HC165:
-
-| EXP | 74HC165 | FUNC |
-| --- | --- | --- |
-| out |  | |
-| in |  | SER |
-| sclk | 2 | CLK |
-| load |  | SH/LD |
-
-### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
-[![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
-
-        """
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

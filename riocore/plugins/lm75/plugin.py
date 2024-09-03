@@ -4,6 +4,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "lm75"
+        self.INFO = "I2C Temperature-Sensor"
+        self.DESCRIPTION = "simple temperure sensor"
+        self.ORIGIN = "https://learn.lushaylabs.com/i2c-adc-micro-procedures/#the-i2c-protocol"
         self.VERILOGS = ["lm75.v"]
         self.PINDEFAULTS = {
             "sda": {
@@ -29,5 +32,3 @@ class Plugin(PluginBase):
                 "unit": "°C",
             },
         }
-        self.INFO = "I2C Temperature-Sensor"
-        self.DESCRIPTION = "simple temperure sensor"
