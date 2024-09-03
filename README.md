@@ -1,12 +1,5 @@
 [LinuxCNC-RIO](https://github.com/multigcs/LinuxCNC-RIO) - rewrite
 
-in progress but ready for testing
-
----
-
-
-# 
-
 <h3 align="center">LinuxCNC-RIO</h3>
 
 <div align="center">
