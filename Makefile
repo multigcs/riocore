@@ -46,7 +46,7 @@ docker-build-debian11_deb:
 	#docker build --no-cache -t riocore_build_debian11 -f dockerfiles/Dockerfile.debian11 .
 	docker build -t riocore_build_debian11 -f dockerfiles/Dockerfile.debian11 .
 	docker rm riocore_build_debian11 || true
-	docker run --net=host --name riocore_build_debian11 -v $(CURDIR):/usr/src/riocore -t -i riocore_build_debian11 /bin/bash -c "cd /usr/src/riocore; SETUPTOOLS_USE_DISTUTILS=stdlib python3 setup.py --command-packages=stdeb.command sdist_dsc && cd deb_dist/riocore-*/ && sed -i 's|Depends: |Depends: python3-pyqt5, python3-pyqt5.qtsvg, |g' debian/control && dpkg-buildpackage -rfakeroot -uc -us"
+	docker run --net=host --name riocore_build_debian11 -v $(CURDIR):/usr/src/riocore -t -i riocore_build_debian11 /bin/bash -c "cd /usr/src/riocore; SETUPTOOLS_USE_DISTUTILS=stdlib python3 setup.py --command-packages=stdeb.command sdist_dsc && cd deb_dist/riocore-*/ && sed -i 's|Depends: |Depends: python3-pyqt5, python3-pyqt5.qtsvg, make, |g' debian/control && dpkg-buildpackage -rfakeroot -uc -us"
 	mkdir -p debian-packages/
 	cp deb_dist/*.deb debian-packages/python3-riocore_${VERSION}-bullseye_amd64.deb
 	sudo rm -rf dist/ deb_dist/
@@ -63,7 +63,7 @@ docker-build-debian12_deb:
 	#docker build --no-cache -t riocore_build_debian12 -f dockerfiles/Dockerfile.debian12 .
 	docker build -t riocore_build_debian12 -f dockerfiles/Dockerfile.debian12 .
 	docker rm riocore_build_debian12 || true
-	docker run --net=host --name riocore_build_debian12 -v $(CURDIR):/usr/src/riocore -t -i riocore_build_debian12 /bin/bash -c "cd /usr/src/riocore; SETUPTOOLS_USE_DISTUTILS=stdlib python3 setup.py --command-packages=stdeb.command sdist_dsc && cd deb_dist/riocore-*/ && sed -i 's|Depends: |Depends: python3-pyqt5, python3-pyqt5.qtsvg, |g' debian/control && dpkg-buildpackage -rfakeroot -uc -us"
+	docker run --net=host --name riocore_build_debian12 -v $(CURDIR):/usr/src/riocore -t -i riocore_build_debian12 /bin/bash -c "cd /usr/src/riocore; SETUPTOOLS_USE_DISTUTILS=stdlib python3 setup.py --command-packages=stdeb.command sdist_dsc && cd deb_dist/riocore-*/ && sed -i 's|Depends: |Depends: python3-pyqt5, python3-pyqt5.qtsvg, make, |g' debian/control && dpkg-buildpackage -rfakeroot -uc -us"
 	mkdir -p debian-packages/
 	cp deb_dist/*.deb debian-packages/python3-riocore_${VERSION}-bookworm_amd64.deb
 	sudo rm -rf dist/ deb_dist/
@@ -73,4 +73,4 @@ docker-run-debian12_deb:
 	#docker build --no-cache -t riocore_debian12 -f dockerfiles/Dockerfile.debian12-min .
 	docker build -t riocore_debian12 -f dockerfiles/Dockerfile.debian12-min .
 	docker rm riocore_debian12 || true
-	docker run --net=host -v /tmp/.X12-unix:/tmp/.X12-unix -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore_debian12 -v $(CURDIR):/usr/src/riocore -t -i riocore_debian12 /bin/bash -c "cd /usr/src/riocore; apt-get install --no-install-recommends -y ./debian-packages/python3-riocore_*-bookworm_amd64.deb; cd ~ ; rio-setup"
+	docker run --net=host -v /tmp/.X12-unix:/tmp/.X12-unix -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore_debian12 -v $(CURDIR):/usr/src/riocore -t -i riocore_debian12 /bin/bash -c "cd /usr/src/riocore; apt-get install --no-install-recommends -y ./debian-packages/python3-riocore_*-bookworm_amd64.deb; cd ~ ; PATH=$$PATH:/opt/oss-cad-suite/bin/ rio-setup"
