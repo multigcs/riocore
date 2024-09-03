@@ -15,7 +15,7 @@ package_data = {
         "files/*",
         "boards/*",
         "boards/*/*",
-        "modules/*",
+        "modules/*/*",
         "configs/*/*",
     ],
 }

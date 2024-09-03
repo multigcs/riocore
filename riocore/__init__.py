@@ -483,7 +483,7 @@ class Project:
             return path
         elif os.path.exists(f"{riocore_path}/{path}"):
             return f"{riocore_path}/{path}"
-        print(f"path not found : {path}")
+        print(f"path not found: {path} or {riocore_path}/{path}")
         exit(1)
 
     def get_boardpath(self, board):

@@ -32,5 +32,7 @@ pyvenv: clean dist
 	python3 -m venv pyvenv
 	pyvenv/bin/python -m pip install -r requirements.txt
 	pyvenv/bin/python -m pip install dist/riocore*
+
+pyvenv_test:
 	pyvenv/bin/python bin/rio-generator Altera10M08Eval/config.json
 
