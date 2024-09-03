@@ -33,6 +33,27 @@ pyvenv: clean dist
 	pyvenv/bin/python -m pip install -r requirements.txt
 	pyvenv/bin/python -m pip install dist/riocore*
 
-pyvenv_test:
+pyvenv_test_generator:
 	pyvenv/bin/python bin/rio-generator Altera10M08Eval/config.json
 
+pyvenv_test_setup:
+	pyvenv/bin/python bin/rio-setup Altera10M08Eval/config.json
+
+docker-build-debian11_deb:
+	$(eval VERSION = v$(shell ls dist/riocore-*.tar.gz | cut -d"-" -f2 | cut -d"." -f1-3))
+	sudo rm -rf dist/ deb_dist/
+	#docker build --no-cache -t riocore_build_debian11 -f dockerfiles/Dockerfile.debian11 .
+	docker build -t riocore_build_debian11 -f dockerfiles/Dockerfile.debian11 .
+	docker rm riocore_build_debian11 || true
+	docker run --net=host --name riocore_build_debian11 -v $(CURDIR):/usr/src/riocore -t -i riocore_build_debian11 /bin/bash -c "cd /usr/src/riocore; SETUPTOOLS_USE_DISTUTILS=stdlib python3 setup.py --command-packages=stdeb.command sdist_dsc && cd deb_dist/riocore-*/ && dpkg-buildpackage -rfakeroot -uc -us"
+	mkdir -p debian-packages/
+	cp deb_dist/*.deb debian-packages/python3-riocore_${VERSION}-bullseye_amd64.deb
+	sudo rm -rf dist/ deb_dist/
+	ls debian-packages/*deb
+
+docker-run-debian11_deb:
+	$(eval VERSION = v$(shell ls dist/riocore-*.tar.gz | cut -d"-" -f2 | cut -d"." -f1-3))
+	#docker build --no-cache -t riocore_debian11 -f dockerfiles/Dockerfile.debian11-min .
+	docker build -t riocore_debian11 -f dockerfiles/Dockerfile.debian11-min .
+	docker rm riocore_debian11 || true
+	docker run --net=host -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore_debian11 -v $(CURDIR):/usr/src/riocore -t -i riocore_debian11 /bin/bash -c "cd /usr/src/riocore; apt-get install --no-install-recommends -y ./debian-packages/python3-riocore_*-bullseye_amd64.deb; cd ~ ; rio-setup"

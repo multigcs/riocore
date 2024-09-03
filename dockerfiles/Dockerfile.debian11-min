@@ -1,0 +1,7 @@
+
+FROM debian:11
+
+RUN apt-get update
+
+CMD ["/bin/bash"]
+
