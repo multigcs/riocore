@@ -14,6 +14,7 @@
 
 ## Table of Contents
 - [About](#about)
+- [About](#disclaimer)
 - [Help](#help)
 - [Boards](#boards)
 - [Plugins/Drivers](#plugins)
@@ -39,6 +40,15 @@ a json configuration file serves as the basis
 * supports Open and Closed-Loop
 * multiple and mixed joint types (like Stepper, DC-Servo, RC-Servo)
 
+
+## DISCLAIMER <a name = "disclaimer"></a>
+THE AUTHORS OF THIS SOFTWARE ACCEPT ABSOLUTELY NO LIABILITY FOR ANY HARM OR LOSS RESULTING FROM ITS USE.
+IT IS EXTREMELY UNWISE TO RELY ON SOFTWARE ALONE FOR SAFETY.
+Any machinery capable of harming persons must have provisions
+for completely removing power from all motors, etc, before persons enter any danger area.
+All machinery must be designed to comply with local and national safety codes,
+and the authors of this software can not,
+and do not, take any responsibility for such compliance
 
 ## Help <a name = "help"></a>
 
