@@ -7,7 +7,7 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "uartbridge"
-        self.INFO = "uart bridge"
+        self.INFO = "uart bridge - experimental - python only"
         self.DESCRIPTION = "uart bridge to send and receive custom frames via uart port"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.VERILOGS = ["uartbridge.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
@@ -49,12 +49,12 @@ class Plugin(PluginBase):
                 "description": "max tx buffer size",
             },
             "tx_frame": {
-                "default": "",
+                "default": "tx1:u8|tx2:u8",
                 "type": str,
                 "description": "tx frame format",
             },
             "rx_frame": {
-                "default": "",
+                "default": "rx1:u8|rx2:u8",
                 "type": str,
                 "description": "rx frame format",
             },
