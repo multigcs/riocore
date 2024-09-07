@@ -22,8 +22,13 @@ if filename:
 else:
     exit(1)
 
+# force adding file end to nc files to prevent rs274 loop
+content += "\n\n\nM02\n"
+open(f"/tmp/.tmp.ngc", "w").write(content)
+
+
 svg_out = []
-p = os.popen(f"rs274 -n 0 -g '{filename}'")
+p = os.popen(f"rs274 -n 0 -g '/tmp/.tmp.ngc' 2>&1")
 output = p.readlines()
 r = p.close()
 last_pos = ()
@@ -32,6 +37,11 @@ pos_min_y = 9999999999
 pos_max_x = 0
 pos_max_y = 0
 for line in output:
+    
+    if "File ended with no" in line:
+        print("no file end")
+        exit(1)
+    
     result = COMMAND.match(line.strip())
     if result:
         if result["type"] in {"ARC_FEED", "STRAIGHT_FEED", "STRAIGHT_TRAVERSE"}:
