@@ -707,6 +707,9 @@ class Project:
                 connection = interface.Interface(cstr)
                 break
 
+        if connection is None:
+            print(f"ERROR: no interface found for connection-string: {cstr}")
+            exit(1)
         self.connection = connection
         return connection
 

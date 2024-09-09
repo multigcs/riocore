@@ -37,11 +37,10 @@ pos_min_y = 9999999999
 pos_max_x = 0
 pos_max_y = 0
 for line in output:
-    
     if "File ended with no" in line:
         print("no file end")
         exit(1)
-    
+
     result = COMMAND.match(line.strip())
     if result:
         if result["type"] in {"ARC_FEED", "STRAIGHT_FEED", "STRAIGHT_TRAVERSE"}:

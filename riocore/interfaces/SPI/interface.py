@@ -20,6 +20,6 @@ class Interface:
 
     @classmethod
     def check(cls, cstr):
-        if cstr.startswith("/dev/spidev"):
+        if cstr.startswith("/dev/spidev") or cstr == "SPI":
             return True
         return False
