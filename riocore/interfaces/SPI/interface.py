@@ -1,13 +1,13 @@
 class Interface:
     def __init__(self, cstr):
-        import spidev
 
         if cstr:
-            (bus, device) = cstr.split("/")[-1][-3].split(".")
+            (bus, device) = cstr.split("/")[-1][-3:].split(".")
         else:
             bus = 0
             device = 1
 
+        import spidev
         self.spi = spidev.SpiDev()
         self.spi.open(bus, device)
         self.spi.max_speed_hz = 2000000
