@@ -417,7 +417,7 @@ def load_halfile(basepath, filepath):
             next_dir = ""
             for part in parts[1:]:
                 if not signalname:
-                    signalname = part
+                    signalname = part.replace(":", "_")
                     if signalname not in signals:
                         signals[signalname] = {
                             "source": "",
@@ -435,10 +435,11 @@ def load_halfile(basepath, filepath):
                 elif next_dir == "inout":
                     signals[signalname]["targets"].append(part)
 
-                elif (part in LINUXCNC_SIGNALS["input"] and part not in LINUXCNC_SIGNALS["output"]) or next_dir == "input":
+                elif (part in LINUXCNC_SIGNALS["input"] and part not in LINUXCNC_SIGNALS["output"]) and next_dir == "input":
                     if (part in LINUXCNC_SIGNALS["input"] and part not in LINUXCNC_SIGNALS["output"]) and next_dir == "output":
                         print(f"WARNING: {signalname}: wrong direction-marker: {part}")
                     signals[signalname]["targets"].append(part)
+
                 else:
                     if not signals[signalname]["source"]:
                         signals[signalname]["source"] = part
@@ -448,7 +449,8 @@ def load_halfile(basepath, filepath):
                             signals[signalname]["targets"].append(signals[signalname]["source"])
                             signals[signalname]["source"] = part
                         else:
-                            print("ERROR: double input", signalname, part, signals[signalname]["source"])
+                            print("ERROR: double input", signalname, part, signals[signalname]["source"], signals[signalname]["targets"])
+                            signals[signalname]["targets"].append(part)
 
 
 section = None

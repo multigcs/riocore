@@ -1,0 +1,18 @@
+{
+    "name": "Colorlight_i9plus-v6.1",
+    "description": "Colorlight_i9plus-v6.1 - testing",
+    "boardcfg": "Colorlight_i9plus-v6.1",
+    "protocol": "SPI",
+    "axis": 3,
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G"
+                }
+            },
+            "frequency": 1
+        }
+    ]
+}
