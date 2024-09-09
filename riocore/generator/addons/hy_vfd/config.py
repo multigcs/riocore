@@ -5,6 +5,14 @@ from PyQt5.QtWidgets import (
 from riocore.widgets import MyStandardItem
 
 
+def info():
+    return {
+        "title": "hy_vfd",
+        "url": "",
+        "comment": "hy_vfd support",
+    }
+
+
 def load_tree(parent, tree_lcnc):
     def add_hy_vfd(widget):
         if not parent.config["linuxcnc"].get("hy_vfd"):

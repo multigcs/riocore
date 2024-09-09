@@ -20,6 +20,14 @@ from PyQt5.QtWidgets import (
 from riocore.widgets import MyStandardItem
 
 
+def info():
+    return {
+        "title": "joypad",
+        "url": "",
+        "comment": "joypad support",
+    }
+
+
 def device_get_name(device_path):
     try:
         f = os.open(device_path, os.O_RDWR)

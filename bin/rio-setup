@@ -261,7 +261,6 @@ class TabLinuxCNC:
 
     def update(self):
         config_name = self.parent.config.get("name")
-
         for filename, widget in self.linuxcnc.items():
             file_content = open(f"{self.parent.output_path}/{config_name}/LinuxCNC/{filename}", "r").read()
             widget.clear()
@@ -2294,7 +2293,7 @@ class WinForm(QWidget):
             "num_axis": {"type": int, "min": 0, "max": 9, "default": 3},
             "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"]},
             "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual"},
-            "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic"], "default": "axis"},
+            "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic", "gmoccapy"], "default": "axis"},
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
         }.items():
             aitem = MyStandardItem()

@@ -5,6 +5,14 @@ from PyQt5.QtWidgets import (
 from riocore.widgets import MyStandardItem
 
 
+def info():
+    return {
+        "title": "classicladder",
+        "url": "",
+        "comment": "classicladder support",
+    }
+
+
 def load_tree(parent, tree_lcnc):
     def add_classicladder(widget):
         if not parent.config["linuxcnc"].get("classicladder"):

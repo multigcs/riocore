@@ -6,7 +6,7 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	find ./riocore/ ./tests/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff format -q
+	find ./riocore/ ./tests/ ./bin/ -type f | grep "\.py$$\|bin/" | xargs -r -l ruff format -q
 
 check:
 	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check

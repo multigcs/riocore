@@ -6,6 +6,14 @@ from PyQt5.QtWidgets import (
 from riocore.widgets import MyStandardItem
 
 
+def info():
+    return {
+        "title": "camera",
+        "url": "",
+        "comment": "camera support",
+    }
+
+
 def load_tree(parent, tree_lcnc):
     def add_camera(widget):
         if "camera" not in parent.config["linuxcnc"]:

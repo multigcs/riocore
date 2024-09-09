@@ -500,9 +500,7 @@ class LinuxCNC:
                     if axis_name == "Z":
                         ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
 
-        if gui in {"tklinuxcnc", "touchy", "probe_basic"}:
-            ini_setup["DISPLAY"]["DISPLAY"] = gui
-        elif gui == "qtdragon":
+        if gui == "qtdragon":
             qtdragon_setup = {
                 "DISPLAY": {
                     "DISPLAY": "qtvcp qtdragon",
@@ -520,7 +518,8 @@ class LinuxCNC:
                     ini_setup[section] = {}
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
-
+        else:
+            ini_setup["DISPLAY"]["DISPLAY"] = gui
         return ini_setup
 
     def ini(self):

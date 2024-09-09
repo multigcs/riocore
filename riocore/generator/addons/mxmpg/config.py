@@ -5,6 +5,14 @@ from PyQt5.QtWidgets import (
 from riocore.widgets import MyStandardItem
 
 
+def info():
+    return {
+        "title": "mxmpg",
+        "url": "https://github.com/multigcs/linuxcnc-mpg",
+        "comment": "mxmpg support",
+    }
+
+
 def load_tree(parent, tree_lcnc):
     def add_mxmpg(widget):
         if not parent.config["linuxcnc"].get("mxmpg"):
