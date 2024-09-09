@@ -1,0 +1,23 @@
+{
+    "name": "Colorlight_i5-v7.0",
+    "description": "only for testing",
+    "boardcfg": "Colorlight_i5-v7_0",
+    "flashcmd": "ecpdap flash write rio.bit",
+    "protocol": "SPI",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

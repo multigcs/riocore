@@ -1,6 +1,5 @@
 class Interface:
     def __init__(self, cstr):
-
         if cstr:
             (bus, device) = cstr.split("/")[-1][-3:].split(".")
         else:
@@ -10,6 +9,7 @@ class Interface:
         print(f"SPI: using bus:{bus} and device:{device}")
 
         import spidev
+
         self.spi = spidev.SpiDev()
         self.spi.open(int(bus), int(device))
         self.spi.max_speed_hz = 2000000

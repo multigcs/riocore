@@ -985,8 +985,8 @@ class TabBoard:
         pinimage = self.parent.board.get("pinimage", "board.png")
         pinimage_path = f"{self.parent.boardcfg_path}/{pinimage}"
         if not pinimage or not os.path.isfile(pinimage_path):
-            if self.tabwidget.tabText(0) == "Board":
-                self.tabwidget.removeTab(0)
+            if self.parent.tabwidget.tabText(0) == "Board":
+                self.parent.tabwidget.removeTab(0)
             return
 
         pinlayout_pixmap = QPixmap(pinimage_path)
@@ -2230,13 +2230,28 @@ class WinForm(QWidget):
         for mn, module_data in enumerate(self.config.get("modules", [])):
             if slot_name == module_data.get("slot"):
                 # split module into plugins
-                for sname, setup_data in module_data.get("setup", {}).items():
-                    for pin_name, pin_data in setup_data.get("pins", {}).items():
-                        pin_mapped = pin_data.get("pin_mapped")
-                        if pin_mapped:
-                            setup_data["pins"][pin_name]["pin"] = f"{slot_name}:{pin_mapped}"
-                            del setup_data["pins"][pin_name]["pin_mapped"]
-                    self.config["plugins"].append(copy.deepcopy(setup_data))
+                if module_data.get("setup") is None:
+                    module_name = module_data.get("module")
+                    module_setup = module_data.get("setup", {})
+                    module_path = self.get_path(f"modules/{module_name}/module.json")
+                    moduleJsonStr = open(module_path, "r").read()
+                    module_defaults = json.loads(moduleJsonStr)
+                    module_data["setup"] = {}
+                    for plugin in module_defaults.get("plugins", []):
+                        new_plugin = copy.deepcopy(plugin)
+                        for pin_name, pin_data in new_plugin.get("pins", {}).items():
+                            pin = pin_data["pin"]
+                            new_plugin["pins"][pin_name]["pin"] = f"{slot_name}:{pin}"
+                        self.config["plugins"].append(new_plugin)
+                else:
+                    for sname, setup_data in module_data.get("setup", {}).items():
+                        for pin_name, pin_data in setup_data.get("pins", {}).items():
+                            pin_mapped = pin_data.get("pin_mapped")
+                            if pin_mapped:
+                                setup_data["pins"][pin_name]["pin"] = f"{slot_name}:{pin_mapped}"
+                                del setup_data["pins"][pin_name]["pin_mapped"]
+                        self.config["plugins"].append(copy.deepcopy(setup_data))
+
                 # remove module
                 self.config["modules"].pop(mn)
                 break
