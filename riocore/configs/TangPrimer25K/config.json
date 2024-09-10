@@ -2,8 +2,7 @@
     "name": "TangPrimer25K",
     "description": "TangPrimer25K",
     "boardcfg": "TangPrimer25K",
-    "transport": "UDP",
-    "ip": "192.168.10.194",
+    "protocol": "UDP",
     "plugins": [
         {
             "type": "blink",
@@ -73,19 +72,31 @@
             "setup": {
                 "axis1": {
                     "name": "axis1",
-                    "type": "stepdir"
+                    "type": "stepdir",
+                    "is_joint": true
                 },
                 "axis2": {
                     "name": "axis2",
-                    "type": "stepdir"
+                    "type": "stepdir",
+                    "is_joint": true
                 },
                 "axis3": {
                     "name": "axis3",
-                    "type": "stepdir"
+                    "type": "stepdir",
+                    "is_joint": true
                 },
                 "enable": {
                     "name": "enable",
-                    "type": "bitout"
+                    "type": "bitout",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "onerror"
+                                }
+                            ]
+                        }
+                    }
                 }
             }
         },

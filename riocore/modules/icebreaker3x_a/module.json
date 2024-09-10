@@ -11,7 +11,8 @@
                 "dir": {
                     "pin": "P10"
                 }
-            }
+            },
+            "is_joint": true
         },
         {
             "name": "axis2",
@@ -23,7 +24,8 @@
                 "dir": {
                     "pin": "P9"
                 }
-            }
+            },
+            "is_joint": true
         },
         {
             "name": "axis3",
@@ -35,7 +37,8 @@
                 "dir": {
                     "pin": "P8"
                 }
-            }
+            },
+            "is_joint": true
         },
         {
             "name": "enable",
