@@ -16,6 +16,14 @@ class Toolchain:
             "url": "https://www.gowinsemi.com/en/support/home/",
             "info": "Gowin EDA",
             "description": "",
+            "install": """```
+mkdir -p /opt/gowin
+cd /opt/gowin
+wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.9.03_Education_linux.tar.gz"
+tar xzvpf Gowin_V1.9.9.03_Education_linux.tar.gz
+rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
+```
+""",
         }
         return info
 

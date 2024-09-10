@@ -1,0 +1,73 @@
+{
+  "comment": "icebreaker3x_b - IO's",
+  "plugins": [
+        {
+            "name": "out1",
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "P1"
+                }
+            }
+        },
+        {
+            "name": "out2",
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "P7"
+                }
+            }
+        },
+        {
+            "name": "in1",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "P4",
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "name": "in2",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "P2",
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "name": "in3",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "P3",
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "name": "in4",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "P10",
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "name": "in5",
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "P9",
+                    "pull": "up"
+                }
+            }
+        }
+    ]
+}

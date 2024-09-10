@@ -1,5 +1,5 @@
 # uartbridge
-**uart bridge**
+**uart bridge - experimental - python only**
 
 uart bridge to send and receive custom frames via uart port
 
@@ -57,7 +57,7 @@ max rx buffer size
  * type: int
  * min: 32
  * max: 255
- * default: 24
+ * default: 40
  * unit: bits
 
 ### tx_buffersize:
@@ -66,20 +66,20 @@ max tx buffer size
  * type: int
  * min: 32
  * max: 255
- * default: 16
+ * default: 32
  * unit: bits
 
 ### tx_frame:
 tx frame format
 
  * type: str
- * default: 
+ * default: tx1:u8|tx2:u8
 
 ### rx_frame:
 rx frame format
 
  * type: str
- * default: 
+ * default: rx1:u8|rx2:u8
 
 ### name:
 name of this plugin instance
@@ -97,12 +97,12 @@ the signals of this plugin are user configurable
 *transport layer*
 ### rxdata:
 
- * size: 24 bit
+ * size: 40 bit
  * direction: input
 
 ### txdata:
 
- * size: 16 bit
+ * size: 32 bit
  * direction: output
 
 
@@ -111,10 +111,10 @@ the signals of this plugin are user configurable
 {
     "type": "uartbridge",
     "baud": 9600,
-    "rx_buffersize": 24,
-    "tx_buffersize": 16,
-    "tx_frame": "",
-    "rx_frame": "",
+    "rx_buffersize": 40,
+    "tx_buffersize": 32,
+    "tx_frame": "tx1:u8|tx2:u8",
+    "rx_frame": "rx1:u8|rx2:u8",
     "name": "",
     "pins": {
         "tx": {
@@ -145,7 +145,52 @@ the signals of this plugin are user configurable
             ]
         }
     },
-    "signals": {}
+    "signals": {
+        "tx1": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "tx1",
+                "section": "outputs",
+                "type": "scale"
+            }
+        },
+        "tx2": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "tx2",
+                "section": "outputs",
+                "type": "scale"
+            }
+        },
+        "rx1": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "rx1",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "rx2": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "rx2",
+                "section": "inputs",
+                "type": "meter"
+            }
+        }
+    }
 }
 ```
 

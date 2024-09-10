@@ -72,6 +72,7 @@ for board in sorted(glob.glob("riocore/boards/*")):
 
 index.append("")
 open("BOARDS.md", "w").write("\n".join(index))
+
 print("# TOOLCHAINS")
 output = []
 output.append("# TOOLCHAINS")
@@ -87,6 +88,7 @@ for ppath in sorted(glob.glob("riocore/generator/toolchains/*/toolchain.py")):
         url = info.get("url", "")
         infotext = info.get("info", "")
         description = info.get("description", "")
+        install = info.get("install", "")
         output.append(f"| [{toolchain_name}](riocore/generator/toolchains/{toolchain_name}/README.md) | {infotext} |")
 
         toutput = []
@@ -103,6 +105,15 @@ for ppath in sorted(glob.glob("riocore/generator/toolchains/*/toolchain.py")):
         if description:
             toutput.append(f"{description}")
             toutput.append("")
+
+        if install:
+            toutput.append("")
+            toutput.append("## Installation")
+            toutput.append(f"{install}")
+            toutput.append("")
+
+
+        toutput.append("")
         open(f"riocore/generator/toolchains/{toolchain_name}/README.md", "w").write("\n".join(toutput))
 
 

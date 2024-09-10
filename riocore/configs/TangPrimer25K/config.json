@@ -1,0 +1,166 @@
+{
+    "name": "TangPrimer25K",
+    "description": "TangPrimer25K",
+    "boardcfg": "TangPrimer25K",
+    "transport": "UDP",
+    "ip": "192.168.10.194",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:G1",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            },
+            "name": "status"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:G2"
+                }
+            },
+            "name": "LED"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTON:S1",
+                    "pull": "down"
+                }
+            },
+            "name": "SW1"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTON:S2",
+                    "pull": "down"
+                }
+            },
+            "name": "SW2"
+        }
+    ],
+    "modules": [
+        {
+            "slot": "PMOD3",
+            "module": "w5500_pmod",
+            "setup": {
+                "w5500": {
+                    "name": "w5500",
+                    "type": "w5500",
+                    "mac": "AA:AF:FA:CC:E3:1C",
+                    "ip": "192.168.10.195",
+                    "port": 2390
+                }
+            }
+        },
+        {
+            "slot": "PMOD2",
+            "module": "icebreaker3x_a",
+            "setup": {
+                "axis1": {
+                    "name": "axis1",
+                    "type": "stepdir"
+                },
+                "axis2": {
+                    "name": "axis2",
+                    "type": "stepdir"
+                },
+                "axis3": {
+                    "name": "axis3",
+                    "type": "stepdir"
+                },
+                "enable": {
+                    "name": "enable",
+                    "type": "bitout",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "onerror"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "slot": "PMOD1",
+            "module": "icebreaker3x_b",
+            "setup": {
+                "out1": {
+                    "name": "out1",
+                    "type": "bitout"
+                },
+                "out2": {
+                    "name": "out2",
+                    "type": "bitout"
+                },
+                "in1": {
+                    "name": "in1",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                },
+                "in2": {
+                    "name": "in2",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                },
+                "in3": {
+                    "name": "in3",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                },
+                "in4": {
+                    "name": "in4",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                },
+                "in5": {
+                    "name": "in5",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "linuxcnc": {
+        "probe_screen": {
+            "enable": false
+        }
+    }
+}

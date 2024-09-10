@@ -78,6 +78,222 @@
                     "direction": "input"
                 }
             }
+        },
+        {
+            "name": "PMOD1",
+            "rect": [
+                70, 320, 140, 60
+            ],
+            "pins": {
+                "P10": {
+                    "pin": "J5",
+                    "pos": [
+                        78,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "H7",
+                    "pos": [
+                        111,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "G8",
+                    "pos": [
+                        146,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "G5",
+                    "pos": [
+                        178,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "H5",
+                    "pos": [
+                        78,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "H8",
+                    "pos": [
+                        111,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "G7",
+                    "pos": [
+                        146,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P1": {
+                    "pin": "F5",
+                    "pos": [
+                        178,
+                        330
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "PMOD2",
+            "rect": [
+                352, 320, 140, 60
+            ],
+            "pins": {
+                "P10": {
+                    "pin": "K5",
+                    "pos": [
+                        360,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "L11",
+                    "pos": [
+                        395,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "E10",
+                    "pos": [
+                        428,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "A10",
+                    "pos": [
+                        460,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "L5",
+                    "pos": [
+                        360,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "K11",
+                    "pos": [
+                        395,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "E11",
+                    "pos": [
+                        420,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P1": {
+                    "pin": "A11",
+                    "pos": [
+                        460,
+                        330
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "PMOD3",
+            "rect": [
+                634, 320, 140, 60
+            ],
+            "pins": {
+                "P10": {
+                    "pin": "C10",
+                    "pos": [
+                        642,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "B10",
+                    "pos": [
+                        675,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "D10",
+                    "pos": [
+                        711,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "G10",
+                    "pos": [
+                        742,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "C11",
+                    "pos": [
+                        642,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "B11",
+                    "pos": [
+                        675,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "D11",
+                    "pos": [
+                        711,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P1": {
+                    "pin": "G11",
+                    "pos": [
+                        742,
+                        330
+                    ],
+                    "direction": "all"
+                }
+            }
         }
     ]
 }

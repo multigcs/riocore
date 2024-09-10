@@ -40,6 +40,6 @@
 |  | [wled](riocore/plugins/wled/README.md) | ws2812b interface | <img src="riocore/plugins/wled/image.png" height="48"> |
 |  | [wled_bar](riocore/plugins/wled_bar/README.md) | ws2812b interface for bar-displays | <img src="riocore/plugins/wled_bar/image.png" height="48"> |
 | FrameIO | [modbus](riocore/plugins/modbus/README.md) | generic modbus plugin | <img src="riocore/plugins/modbus/image.png" height="48"> |
-|  | [uartbridge](riocore/plugins/uartbridge/README.md) | uart bridge | <img src="riocore/plugins/uartbridge/image.png" height="48"> |
+|  | [uartbridge](riocore/plugins/uartbridge/README.md) | uart bridge - experimental - python only | <img src="riocore/plugins/uartbridge/image.png" height="48"> |
 | Expansions | [shiftreg](riocore/plugins/shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="riocore/plugins/shiftreg/image.png" height="48"> |
 |  | [wled](riocore/plugins/wled/README.md) | ws2812b interface acting as an expansion port | <img src="riocore/plugins/wled/image.png" height="48"> |

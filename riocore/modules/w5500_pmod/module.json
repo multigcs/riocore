@@ -1,0 +1,26 @@
+{
+  "comment": "W5500-Ethernet PMOD",
+  "plugins": [
+        {
+            "name": "w5500",
+            "type": "w5500",
+            "mac": "AA:AF:FA:CC:E3:1C",
+            "ip": "192.168.10.195",
+            "port": 2390,
+            "pins": {
+                "mosi": {
+                    "pin": "P3"
+                },
+                "miso": {
+                    "pin": "P4"
+                },
+                "sclk": {
+                    "pin": "P1"
+                },
+                "sel": {
+                    "pin": "P2"
+                }
+            }
+        }
+    ]
+}

@@ -18,6 +18,53 @@
                     ]
                 }
             }
+        },
+        {
+            "type": "spi",
+            "pins": {
+                "mosi": {
+                    "pin": "R1"
+                },
+                "miso": {
+                    "pin": "T1"
+                },
+                "sclk": {
+                    "pin": "U1"
+                },
+                "sel": {
+                    "pin": "Y2"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "M1",
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "N2"
+                }
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "W1"
+                }
+            }
         }
-    ]
+    ],
+    "linuxcnc": {
+        "probe_screen": {
+            "enable": false
+        }
+    }
 }

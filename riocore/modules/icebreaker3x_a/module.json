@@ -1,0 +1,55 @@
+{
+  "comment": "icebreaker3x_a - steppers",
+  "plugins": [
+        {
+            "name": "axis1",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P4"
+                },
+                "dir": {
+                    "pin": "P10"
+                }
+            }
+        },
+        {
+            "name": "axis2",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P3"
+                },
+                "dir": {
+                    "pin": "P9"
+                }
+            }
+        },
+        {
+            "name": "axis3",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P2"
+                },
+                "dir": {
+                    "pin": "P8"
+                }
+            }
+        },
+        {
+            "name": "enable",
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        }
+                    ],
+                    "pin": "P1"
+                }
+            }
+        }
+    ]
+}
