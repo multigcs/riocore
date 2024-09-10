@@ -80,15 +80,18 @@ class Toolchain:
         makefile_data.append('	@echo "set_option -vhdl_std vhd2008" >> $(PROJECT).tcl')
         set_options = self.config.get(
             "set_options",
-            (
+            [
                 "use_sspi_as_gpio",
                 "use_mspi_as_gpio",
                 "use_done_as_gpio",
                 "use_ready_as_gpio",
                 "use_reconfign_as_gpio",
                 "use_i2c_as_gpio",
-            ),
+            ],
         )
+        if family in {"GW5A-25A", "GW5A-25B"}:
+            set_options.append("use_cpu_as_gpio")
+
         for set_option in set_options:
             makefile_data.append(f'	@echo "set_option -{set_option} 1" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "run all" >> $(PROJECT).tcl')
@@ -130,6 +133,8 @@ class Toolchain:
             prj_data.append(f'    <Device name="{family_gowin}" pn="{ftype}">gw1nr9c-004</Device>')
         elif family == "GW1N-9C7":
             prj_data.append(f'    <Device name="{family_gowin}" pn="{ftype}">gw1nr9c-017</Device>')
+        elif family in {"GW5A-25A", "GW5A-25B"}:
+            prj_data.append(f'    <Device name="{family_gowin}" pn="{ftype}">gw5a25b-003</Device>')
         elif family == "GW2AR-18":
             prj_data.append('    <Device name="" pn="">gw2ar18c-000</Device>')
         elif family == "GW2A-18C":

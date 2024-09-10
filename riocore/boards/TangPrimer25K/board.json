@@ -1,0 +1,83 @@
+{
+    "name": "TangPrimer25K",
+    "description": "TangPrimer25K-Devboard on Dev-Board",
+    "url": "https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html",
+    "type": "GW5A-LV25MG121NC1/I0",
+    "family": "GW5A-25A",
+    "toolchains": ["gowin", "icestorm"],
+    "toolchain": "gowin",
+    "package": "PG256",
+    "clock": {
+        "speed": "50000000",
+        "pin": "E2"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "G1": {
+                    "pin": "E8",
+                    "pos": [
+                        153,
+                        110
+                    ],
+                    "direction": "output"
+                },
+                "G2": {
+                    "pin": "D7",
+                    "pos": [
+                        153,
+                        130
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "BUTTON",
+            "comment": "BUTTON",
+            "pins": {
+                "S1": {
+                    "pin": "H11",
+                    "pos": [
+                        720,
+                        90
+                    ],
+                    "direction": "input"
+                },
+                "S2": {
+                    "pin": "H10",
+                    "pos": [
+                        720,
+                        145
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "UART2USB",
+            "default": "uart",
+            "pins": {
+                "TX": {
+                    "pin": "C3",
+                    "pos": [
+                        720,
+                        230
+                    ],
+                    "direction": "output"
+                },
+                "RX": {
+                    "pin": "B3",
+                    "pos": [
+                        720,
+                        250
+                    ],
+                    "direction": "input"
+                }
+            }
+        }
+    ]
+}
