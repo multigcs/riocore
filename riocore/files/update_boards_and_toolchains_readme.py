@@ -112,7 +112,6 @@ for ppath in sorted(glob.glob("riocore/generator/toolchains/*/toolchain.py")):
             toutput.append(f"{install}")
             toutput.append("")
 
-
         toutput.append("")
         open(f"riocore/generator/toolchains/{toolchain_name}/README.md", "w").write("\n".join(toutput))
 
