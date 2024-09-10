@@ -85,16 +85,7 @@
                 },
                 "enable": {
                     "name": "enable",
-                    "type": "bitout",
-                    "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "onerror"
-                                }
-                            ]
-                        }
-                    }
+                    "type": "bitout"
                 }
             }
         },
@@ -115,7 +106,12 @@
                     "type": "bitin",
                     "pins": {
                         "bit": {
-                            "pull": "up"
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
                         }
                     }
                 },
@@ -124,7 +120,12 @@
                     "type": "bitin",
                     "pins": {
                         "bit": {
-                            "pull": "up"
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
                         }
                     }
                 },
@@ -133,7 +134,12 @@
                     "type": "bitin",
                     "pins": {
                         "bit": {
-                            "pull": "up"
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
                         }
                     }
                 },
@@ -142,7 +148,12 @@
                     "type": "bitin",
                     "pins": {
                         "bit": {
-                            "pull": "up"
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
                         }
                     }
                 },
@@ -151,7 +162,12 @@
                     "type": "bitin",
                     "pins": {
                         "bit": {
-                            "pull": "up"
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
                         }
                     }
                 }

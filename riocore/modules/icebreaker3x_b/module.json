@@ -25,7 +25,12 @@
             "pins": {
                 "bit": {
                     "pin": "P4",
-                    "pull": "up"
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -35,7 +40,12 @@
             "pins": {
                 "bit": {
                     "pin": "P2",
-                    "pull": "up"
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -45,7 +55,12 @@
             "pins": {
                 "bit": {
                     "pin": "P3",
-                    "pull": "up"
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -55,7 +70,12 @@
             "pins": {
                 "bit": {
                     "pin": "P10",
-                    "pull": "up"
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -65,7 +85,12 @@
             "pins": {
                 "bit": {
                     "pin": "P9",
-                    "pull": "up"
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         }
