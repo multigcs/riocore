@@ -4,6 +4,7 @@
     "boardcfg": "Colorlight_i5-v7_0",
     "flashcmd": "ecpdap flash write rio.bit",
     "protocol": "SPI",
+    "generic_spi": true,
     "plugins": [
         {
             "type": "blink",

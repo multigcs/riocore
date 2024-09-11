@@ -1,0 +1,123 @@
+#include "rtapi.h"			/* RTAPI realtime OS API */
+#include "rtapi_app.h"		/* RTAPI realtime module decls */
+
+#include <stdint.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <getopt.h>
+#include <fcntl.h>
+#include <time.h>
+#include <sys/ioctl.h>
+#include <linux/ioctl.h>
+#include <sys/stat.h>
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
+
+int spi_fd = -1;
+static const char *device = "/dev/spidev0.0";
+static uint32_t mode = 0;
+static uint8_t bits = 8;
+static uint32_t speed = 1000000;
+static uint16_t delay = 0;
+
+
+
+static void transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len) {
+	int ret;
+	int out_fd;
+	struct spi_ioc_transfer tr = {
+		.tx_buf = (unsigned long)tx,
+		.rx_buf = (unsigned long)rx,
+		.len = len,
+		.delay_usecs = delay,
+		.speed_hz = speed,
+		.bits_per_word = bits,
+	};
+
+	if (mode & SPI_TX_OCTAL)
+		tr.tx_nbits = 8;
+	else if (mode & SPI_TX_QUAD)
+		tr.tx_nbits = 4;
+	else if (mode & SPI_TX_DUAL)
+		tr.tx_nbits = 2;
+	if (mode & SPI_RX_OCTAL)
+		tr.rx_nbits = 8;
+	else if (mode & SPI_RX_QUAD)
+		tr.rx_nbits = 4;
+	else if (mode & SPI_RX_DUAL)
+		tr.rx_nbits = 2;
+	if (!(mode & SPI_LOOP)) {
+		if (mode & (SPI_TX_OCTAL | SPI_TX_QUAD | SPI_TX_DUAL))
+			tr.rx_buf = 0;
+		else if (mode & (SPI_RX_OCTAL | SPI_RX_QUAD | SPI_RX_DUAL))
+			tr.tx_buf = 0;
+	}
+
+	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
+	if (ret < 1)
+		rtapi_print("can't send spi message\n");
+
+}
+
+
+
+int spi_init(void) {
+    rtapi_print("Info: Initialize SPI connection\n");
+	int ret = 0;
+
+	spi_fd = open(device, O_RDWR);
+	if (spi_fd < 0)
+		rtapi_print("can't open device\n");
+        return -1;
+
+	ret = ioctl(spi_fd, SPI_IOC_WR_MODE32, &mode);
+	if (ret == -1)
+		rtapi_print("can't set spi mode\n");
+        return -1;
+
+	ret = ioctl(spi_fd, SPI_IOC_RD_MODE32, &mode);
+	if (ret == -1)
+		rtapi_print("can't get spi mode\n");
+        return -1;
+
+
+	/*
+	 * bits per word
+	 */
+	ret = ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+	if (ret == -1)
+		rtapi_print("can't set bits per word\n");
+        return -1;
+
+	ret = ioctl(spi_fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
+	if (ret == -1)
+		rtapi_print("can't get bits per word\n");
+        return -1;
+
+	/*
+	 * max speed hz
+	 */
+	ret = ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+	if (ret == -1)
+		rtapi_print("can't set max speed hz\n");
+        return -1;
+
+	ret = ioctl(spi_fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
+	if (ret == -1)
+		rtapi_print("can't get max speed hz\n");
+        return -1;
+
+	rtapi_print("spi mode: 0x%x\n", mode);
+	rtapi_print("bits per word: %u\n", bits);
+	rtapi_print("max speed: %u Hz (%u kHz)\n", speed, speed/1000);
+
+}
+
+int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
+    transfer(spi_fd, txBuffer, rxBuffer, size);
+    return 1;
+}
+

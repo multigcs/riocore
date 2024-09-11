@@ -2331,12 +2331,22 @@ class LinuxCNC:
         output.append("")
 
         output += self.component_variables()
-        for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c"):
-            if protocol == ppath.split("/")[-2]:
-                output.append("/*")
-                output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                output.append("*/")
-                output.append(open(ppath, "r").read())
+
+        generic_spi = jdata = self.project.config["jdata"].get("generic_spi", False)
+        if protocol == "SPI" and generic_spi is True:
+            for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c_generic"):
+                if protocol == ppath.split("/")[-2]:
+                    output.append("/*")
+                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                    output.append("*/")
+                    output.append(open(ppath, "r").read())
+        else:
+            for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c"):
+                if protocol == ppath.split("/")[-2]:
+                    output.append("/*")
+                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                    output.append("*/")
+                    output.append(open(ppath, "r").read())
 
         output.append("int interface_init(void) {")
         if protocol == "UART":
