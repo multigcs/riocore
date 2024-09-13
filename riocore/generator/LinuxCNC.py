@@ -71,6 +71,7 @@ class LinuxCNC:
             "INTRO_GRAPHIC": "linuxcnc.gif",
             "INTRO_TIME": 2,
             "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
+            "ANGULAR_INCREMENTS": "1, 5, 10, 30, 45, 90, 180, 360",
             "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
             "SPINDLES": 1,
             "MAX_FEED_OVERRIDE": 5.0,
@@ -511,6 +512,9 @@ class LinuxCNC:
                     "EMBED_TAB_NAME|RIO": "RIO",
                     "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
                     "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
+                    "ICON": "silver_dragon.png",
+                    "INTRO_GRAPHIC": "silver_dragon.png",
+                    "INTRO_TIME": "2",
                 },
             }
             for section, sdata in qtdragon_setup.items():
@@ -518,6 +522,10 @@ class LinuxCNC:
                     ini_setup[section] = {}
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
+        elif gui == "qtplasmac":
+            ini_setup["EMC"]["MACHINE"] = "qtplasmac-metric"
+            ini_setup["DISPLAY"]["DISPLAY"] = "qtvcp qtplasmac"
+            ini_setup["RS274NGC"]["RS274NGC_STARTUP_CODE"] = "G21 G40 G49 G80 G90 G92.1 G94 G97 M52P1"
         else:
             ini_setup["DISPLAY"]["DISPLAY"] = gui
         return ini_setup
@@ -526,6 +534,7 @@ class LinuxCNC:
         jdata = self.project.config["jdata"]
         json_path = self.project.config["json_path"]
         linuxcnc_config = jdata.get("linuxcnc", {})
+        gui = linuxcnc_config.get("gui", "axis")
         dios = 16
         aios = 16
         for net_name, net_nodes in self.networks.items():
@@ -608,6 +617,8 @@ class LinuxCNC:
                 axis_setup["MAX_LIMIT"] = axis_max_limit
                 axis_setup["BACKLASH"] = axis_backlash
                 axis_setup["FERROR"] = axis_ferror
+                if gui == "qtplasmac":
+                    axis_setup["OFFSET_AV_RATIO"] = 0.5
 
                 for key in axis_setup:
                     if key in axis_config:
