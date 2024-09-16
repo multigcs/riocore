@@ -1751,8 +1751,20 @@ class WinForm(QWidget):
         dialog.setStyleSheet(STYLESHEET)
 
         dialog.layout = QVBoxLayout()
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+
+        if slot_name:
+
+            def add_module():
+                dialog.close()
+                self.add_module(None, slot_name=slot_name, slot_select=False)
+
+            slot_button = QPushButton(self.tr("use module selection"))
+            slot_button.clicked.connect(add_module)
+            dialog_buttonBox.addButton(slot_button, QDialogButtonBox.ActionRole)
+
         dialog.setLayout(dialog.layout)
 
         def show_plugin_info(idx):
@@ -3340,8 +3352,9 @@ class WinForm(QWidget):
         dialog.setStyleSheet(STYLESHEET)
 
         dialog.layout = QVBoxLayout()
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
         dialog.setLayout(dialog.layout)
 
         dialog.module_names = []
