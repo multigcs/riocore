@@ -579,7 +579,6 @@ class Plugin(PluginBase):
             output.append(f"                delay = {delay};")
             output.append(f"                timeout = {timeout};")
             if ctype == 101:
-                print("handle hy_vfd ...")
                 output.append("                // handle hy_vfd")
                 output += signal_config["instance"].frameio_tx_c()
             elif direction == "output":
