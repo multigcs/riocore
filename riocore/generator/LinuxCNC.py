@@ -4,6 +4,7 @@ import importlib
 import os
 import shutil
 import sys
+import stat
 
 from riocore import halpins
 
@@ -338,12 +339,29 @@ class LinuxCNC:
 
         return (output_hal, output_postgui)
 
+    def startscript(self):
+        output = ["#!/bin/sh"]
+        output.append("")
+        output.append("set -e")
+        output.append("set -x")
+        output.append("")
+        output.append("DIRNAME=`dirname \"$0\"`")
+        output.append("halcompile --install \"$DIRNAME/rio.c\"")
+        output.append("")
+        output.append("linuxcnc \"$DIRNAME/rio.ini\" $@")
+        output.append("")
+        os.makedirs(self.component_path, exist_ok=True)
+        target = f"{self.component_path}/start.sh"
+        open(target, "w").write("\n".join(output))
+        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
     def generator(self):
         jdata = self.project.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         for network, net in linuxcnc_config.get("halsignals", {}).items():
             self.networks[network] = net
 
+        self.startscript()
         self.component()
         self.hal()
         self.gui()
