@@ -345,14 +345,20 @@ class LinuxCNC:
         output.append("set -e")
         output.append("set -x")
         output.append("")
-        output.append("DIRNAME=`dirname \"$0\"`")
-        output.append("halcompile --install \"$DIRNAME/rio.c\"")
+        output.append('DIRNAME=`dirname "$0"`')
+        output.append('halcompile --install "$DIRNAME/rio.c"')
         output.append("")
-        output.append("linuxcnc \"$DIRNAME/rio.ini\" $@")
+        output.append('linuxcnc "$DIRNAME/rio.ini" $@')
         output.append("")
         os.makedirs(self.component_path, exist_ok=True)
         target = f"{self.component_path}/start.sh"
         open(target, "w").write("\n".join(output))
+        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
+    def precompile(self):
+        source = f"{riocore_path}/files/rio_precompile"
+        target = f"{self.component_path}/rio_precompile"
+        shutil.copy(source, target)
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
     def generator(self):
@@ -362,6 +368,7 @@ class LinuxCNC:
             self.networks[network] = net
 
         self.startscript()
+        self.precompile()
         self.component()
         self.hal()
         self.gui()
@@ -1471,7 +1478,7 @@ class LinuxCNC:
             self.loadrts.append("")
             os.makedirs(self.configuration_path, exist_ok=True)
 
-            for source in glob.glob("riocore/files/melfa/*"):
+            for source in glob.glob(f"{riocore_path}/files/melfa/*"):
                 basename = os.path.basename(source)
                 target = f"{self.configuration_path}/{basename}"
                 if os.path.isfile(source):
