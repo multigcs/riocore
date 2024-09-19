@@ -29,7 +29,12 @@ class Pins:
                 slew = pin_config.get("slew", "SLOW").upper()
 
                 if pin_config["direction"] == "input":
-                    data.append(f"IOBUF PORT \"{pin_config['varname']}\" IO_TYPE={iostandard};")
+                    PULL = ""
+                    if pin_config.get("pullup", False) or pin_config.get("pull") == "up":
+                        PULL = "PULLMODE=UP"
+                    elif pin_config.get("pull") == "down":
+                        PULL = "PULLMODE=DOWN"
+                    data.append(f"IOBUF PORT \"{pin_config['varname']}\" {PULL} IO_TYPE={iostandard};")
                 else:
                     data.append(f"IOBUF PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} DRIVE={drive} SLEWRATE={slew};")
 
