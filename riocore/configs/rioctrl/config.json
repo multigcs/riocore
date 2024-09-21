@@ -1,12 +1,13 @@
 {
     "name": "rioctrl",
     "boardcfg": "rioctrl",
+    "flashcmd": "openFPGALoader -c dirtyJtag --write-flash --unprotect-flash rio.bit",
     "plugins": [
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:OK",
+                    "pin": "LED:ERR",
                     "modifier": [
                         {
                             "type": "onerror",
@@ -16,6 +17,30 @@
                 }
             },
             "frequency": 1.0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:OK",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": false
+                        }
+                    ]
+                }
+            },
+            "frequency": 2.0
+        },
+        {
+            "type": "bitout",
+            "name": "SlotEN",
+            "pins": {
+                "bit": {
+                    "pin": "SlotControl:EN"
+                }
+            }
         },
         {
             "type": "w5500",
@@ -38,7 +63,10 @@
                 "int": {
                     "pin": "SPI:INT"
                 }
-            }
+            },
+            "gw": "192.168.66.1",
+            "ip": "192.168.66.49"
         }
-    ]
+    ],
+    "protocol": "UDP"
 }
