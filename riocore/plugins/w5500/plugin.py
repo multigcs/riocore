@@ -36,7 +36,7 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "optional": True,
             },
-            "int": {
+            "intr": {
                 "direction": "input",
                 "optional": True,
             },

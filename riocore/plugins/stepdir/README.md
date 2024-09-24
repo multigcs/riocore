@@ -46,7 +46,7 @@ to control motor drivers via step/dir pin's and an optional enable pin
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 ### axis:
 axis name (X,Y,Z,...)

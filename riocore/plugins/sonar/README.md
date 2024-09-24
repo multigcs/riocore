@@ -38,7 +38,7 @@ to messure distance via cheap ultra-sonic sensors (like filling level of bigger 
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

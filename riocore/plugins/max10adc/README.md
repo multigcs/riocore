@@ -28,7 +28,7 @@ only usable for the max10 fpga boards
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

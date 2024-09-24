@@ -17,5 +17,11 @@ class Pins:
                 elif pin_config.get("pullup", False):
                     print('WARNING: please change your pin-config to : "pull": "up"')
                     data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin_config['varname']}")
+
+                iostandard = pin_config.get("iostandard", "3.3-V LVTTL").upper()
+                # drive = pin_config.get("drive", "4")
+                # slew = pin_config.get("slew", "SLOW").upper()
+                data.append(f"set_instance_assignment -name IO_STANDARD \"{iostandard}\" -to {pin_config['varname']}")
+
             data.append("")
         open(f"{path}/pins.qdf", "w").write("\n".join(data))

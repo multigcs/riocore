@@ -129,7 +129,7 @@ UDP-Port
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

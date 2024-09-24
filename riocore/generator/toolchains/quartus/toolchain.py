@@ -14,7 +14,20 @@ class Toolchain:
         info = {
             "url": "https://www.intel.de/content/www/de/de/products/details/fpga/development-tools/quartus-prime.html",
             "info": "Intel Quartus",
-            "description": "",
+            "description": """## add device support
+```
+select version -> individual Files -> Devices -> .qdz
+```
+bin/quartus
+
+* Tools -> Install Device...
+
+* Next -> Select Download-Folder -> Selct Device .... -> Exit
+
+## I/O standards Definition (.qdf)
+https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/glossary/def_iostandard-1.htm
+
+""",
         }
         return info
 
@@ -43,7 +56,7 @@ class Toolchain:
             print("  example: export PATH=$PATH:/opt/intelFPGA_lite/22.1std/quartus/bin/")
 
         verilogs = " ".join(self.config["verilog_files"])
-        clkname = "sysclk"
+        clkname = "sysclk_in"
         family = self.config["family"]
         ftype = self.config["type"]
 
@@ -89,6 +102,10 @@ class Toolchain:
         makefile_data.append("	$(QC) --prepare -f $(FAMILY) -t $(TOP) $(PROJECT)")
         makefile_data.append("	echo >> $(PROJECT).qsf")
         makefile_data.append('	echo "set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005" >> $(PROJECT).qsf')
+        makefile_data.append('	echo "set_global_assignment -name ON_CHIP_BITSTREAM_DECOMPRESSION OFF" >> $(PROJECT).qsf')
+        makefile_data.append('	echo "set_global_assignment -name GENERATE_RBF_FILE ON" >> $(PROJECT).qsf')
+        makefile_data.append('	echo "set_global_assignment -name GENERATE_SVF_FILE ON" >> $(PROJECT).qsf')
+        makefile_data.append('	echo "set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION \\"USE AS REGULAR IO\\"" >> $(PROJECT).qsf')
         makefile_data.append("	echo >> $(PROJECT).qsf")
         makefile_data.append("	cat pins.qdf >> $(PROJECT).qsf")
         makefile_data.append("")
@@ -128,7 +145,13 @@ class Toolchain:
         makefile_data.append("	rm -rf db incremental_db")
         makefile_data.append("	rm -f smart.log *.rpt *.sof *.chg *.qsf *.qpf *.summary *.smsg *.pin *.jdi")
         makefile_data.append("")
-        makefile_data.append("load: prog")
+        makefile_data.append("load: $(PROJECT).svf")
+        makefile_data.append("	openFPGALoader -m $(PROJECT).svf -f")
+        makefile_data.append("")
+        makefile_data.append("sload: $(PROJECT).svf")
+        makefile_data.append("	openFPGALoader -m $(PROJECT).svf")
+        makefile_data.append("")
+        makefile_data.append("qpload:")
         makefile_data.append("prog: $(PROJECT).sof")
         makefile_data.append('	$(Q)$(ECHO) "Programming."')
         makefile_data.append('	$(QP) --no_banner --mode=jtag -o "P;$(PROJECT).sof"')

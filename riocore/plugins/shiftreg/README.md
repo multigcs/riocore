@@ -101,7 +101,7 @@ number of bits (IO's)
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:
