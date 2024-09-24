@@ -108,11 +108,10 @@
         {
             "name": "FTDI",
             "comment": "",
-            "default": "",
+            "default": "uart",
             "pins": {
                 "BDBUS0": {
                     "pin": "PIN_R7",
-                    "comment": "TX",
                     "pos": [
                         126,
                         100
@@ -121,7 +120,6 @@
                 },
                 "BDBUS1": {
                     "pin": "PIN_T7",
-                    "comment": "RX",
                     "pos": [
                         126,
                         115
@@ -232,6 +230,220 @@
                     ],
                     "direction": "all"
                 }
+            }
+        },
+        {
+            "name": "HEADER",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "AI": {
+                    "pin": "T12",
+                    "pos": [
+                        275,
+                        250
+                    ],
+                    "direction": "all"
+                },
+                "A7": {
+                    "pin": "R11",
+                    "pos": [
+                        345,
+                        250
+                    ],
+                    "direction": "all"
+                },
+
+                "AREF": {
+                    "pin": "P11",
+                    "pos": [
+                        270,
+                        290
+                    ],
+                    "direction": "all"
+                },
+
+                "A0": {
+                    "pin": "PIN_R12",
+                    "pos": [
+                        310,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "A1": {
+                    "pin": "PIN_T13",
+                    "pos": [
+                        345,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "A2": {
+                    "pin": "PIN_R13",
+                    "pos": [
+                        380,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "A3": {
+                    "pin": "PIN_T14",
+                    "pos": [
+                        415,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "A4": {
+                    "pin": "PIN_P14",
+                    "pos": [
+                        450,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "A5": {
+                    "pin": "PIN_R14",
+                    "pos": [
+                        482,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "A6": {
+                    "pin": "PIN_T15",
+                    "pos": [
+                        515,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "D0": {
+                    "pin": "PIN_N16",
+                    "pos": [
+                        550,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "D1": {
+                    "pin": "PIN_L15",
+                    "pos": [
+                        580,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "D2": {
+                    "pin": "PIN_L16",
+                    "pos": [
+                        610,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "D3": {
+                    "pin": "PIN_K15",
+                    "pos": [
+                        645,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "D4": {
+                    "pin": "PIN_K16",
+                    "pos": [
+                        680,
+                        290
+                    ],
+                    "direction": "all"
+                },
+                "D5": {
+                    "pin": "PIN_J14",
+                    "pos": [
+                        710,
+                        290
+                    ],
+                    "direction": "all"
+                },
+
+
+
+                "D14": {
+                    "pin": "PIN_R1",
+                    "pos": [
+                        450,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D13": {
+                    "pin": "PIN_P1",
+                    "pos": [
+                        482,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D12": {
+                    "pin": "PIN_L2",
+                    "pos": [
+                        515,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D11": {
+                    "pin": "PIN_K2",
+                    "pos": [
+                        550,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D10": {
+                    "pin": "PIN_J2",
+                    "pos": [
+                        580,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D9": {
+                    "pin": "PIN_J1",
+                    "pos": [
+                        610,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D8": {
+                    "pin": "PIN_P2",
+                    "pos": [
+                        645,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D7": {
+                    "pin": "PIN_N1",
+                    "pos": [
+                        680,
+                        25
+                    ],
+                    "direction": "all"
+                },
+                "D6": {
+                    "pin": "PIN_N2",
+                    "pos": [
+                        710,
+                        25
+                    ],
+                    "direction": "all"
+                }
+
+
             }
         }
     ]
