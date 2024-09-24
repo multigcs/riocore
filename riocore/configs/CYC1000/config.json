@@ -1,0 +1,84 @@
+{
+    "name": "CYC1000",
+    "boardcfg": "CYC1000",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D1"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SW:S1",
+                    "pull": "up"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:D2"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:D3"
+                }
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "LED:D4"
+                },
+                "dir": {
+                    "pin": "LED:D5"
+                },
+                "en": {
+                    "pin": "LED:D6"
+                }
+            }
+        },
+        {
+            "type": "freqout",
+            "pins": {
+                "freq": {
+                    "pin": "LED:D7"
+                }
+            }
+        },
+        {
+            "type": "freqout",
+            "pins": {
+                "freq": {
+                    "pin": "LED:D8"
+                }
+            }
+        }
+    ],
+    "modules": [
+        {
+            "slot": "PMOD",
+            "module": "w5500_pmod",
+            "setup": {
+                "w5500": {
+                    "name": "w5500",
+                    "type": "w5500",
+                    "mac": "AA:AF:FA:CC:E3:1C",
+                    "ip": "192.168.10.195",
+                    "port": 2390
+                }
+            }
+        }
+    ]
+}
