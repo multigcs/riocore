@@ -419,11 +419,14 @@ class WinForm(QWidget):
                 if len(rxdata) != self.project.buffer_bytes:
                     print(f"ERROR: reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
                     # return
-                if rxdata[0] != 0x61 or rxdata[1] != 0x74 or rxdata[2] != 0x61 and rxdata[3] != 0x64:
+                if not rxdata:
+                    print(f"ERROR: no data reveived")
+                elif rxdata[0] != 0x61 or rxdata[1] != 0x74 or rxdata[2] != 0x61 and rxdata[3] != 0x64:
                     print(f"ERROR: reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
                     # return
 
-            self.project.rxdata_set(rxdata)
+            if rxdata:
+                self.project.rxdata_set(rxdata)
 
             if args.graphs:
                 self.time = self.time[1:]

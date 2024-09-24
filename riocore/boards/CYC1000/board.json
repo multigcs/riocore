@@ -7,7 +7,8 @@
     "type": "10CL025YU256C8G",
     "package": "BG256",
     "clock": {
-        "speed": "12000000",
+        "osc": "12000000",
+        "speed": "48000000",
         "pin": "PIN_M2"
     },
     "slots": [
