@@ -1,6 +1,6 @@
 {
     "name": "EP2C5T144",
-    "description": "EP2C5T144 dev-board\nfor this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)",
+    "description": "EP2C5T144 dev-board - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)",
     "url": "",
     "toolchain": "quartus",
     "family": "Cyclone II",
