@@ -14,7 +14,7 @@
 
 ## Table of Contents
 - [About](#about)
-- [About](#disclaimer)
+- [Disclaimer](#disclaimer)
 - [Help](#help)
 - [Boards](#boards)
 - [Plugins/Drivers](#plugins)
