@@ -9,8 +9,7 @@
 | [Colorlight5A-75E](riocore/boards/Colorlight5A-75E/README.md) | Lattice ECP5 board | ecp5 / 25k | icestorm | <img src="riocore/boards/Colorlight5A-75E/board.png" height="48"> |
 | [Colorlight_i5-v7_0](riocore/boards/Colorlight_i5-v7_0/README.md) | Lattice ECP5 on SODIMM-200P board | ecp5 / 25k | icestorm | <img src="riocore/boards/Colorlight_i5-v7_0/board.png" height="48"> |
 | [Colorlight_i9plus-v6.1](riocore/boards/Colorlight_i9plus-v6.1/README.md) | Artix7 on SODIMM-200P board | xc7 / xc7a50tifgg484-1l | vivado | <img src="riocore/boards/Colorlight_i9plus-v6.1/board.png" height="48"> |
-| [EP2C5T144](riocore/boards/EP2C5T144/README.md) | EP2C5T144 dev-board
-for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1) | Cyclone II / EP2C5T144C8 | quartus | <img src="riocore/boards/EP2C5T144/board.png" height="48"> |
+| [EP2C5T144](riocore/boards/EP2C5T144/README.md) | EP2C5T144 dev-board - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1) | Cyclone II / EP2C5T144C8 | quartus | <img src="riocore/boards/EP2C5T144/board.png" height="48"> |
 | [ICEBreakerV1.0e](riocore/boards/ICEBreakerV1.0e/README.md) | Small and low cost FPGA educational and development board | ice40 / up5k | icestorm | <img src="riocore/boards/ICEBreakerV1.0e/board.png" height="48"> |
 | [IceShield](riocore/boards/IceShield/README.md) | RIO-IceShield board for Raspberry PI4 | ice40 / up5k | icestorm | <img src="riocore/boards/IceShield/board.png" height="48"> |
 | [OctoBot](riocore/boards/OctoBot/README.md) | RIO-OctoBot board | ice40 / hx8k | icestorm | <img src="riocore/boards/OctoBot/board.png" height="48"> |

@@ -1,6 +1,5 @@
 # EP2C5T144
-**EP2C5T144 dev-board
-for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)**
+**EP2C5T144 dev-board - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)**
 
 * URL: []()
 * Toolchain: quartus
