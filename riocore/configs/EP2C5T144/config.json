@@ -1,0 +1,43 @@
+{
+    "name": "EP2C5T144",
+    "boardcfg": "EP2C5T144",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D1"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:D2"
+                }
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "LED:D3"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SW:S1"
+                }
+            }
+        }
+    ],
+    "linuxcnc": {
+        "probe_screen": {
+            "enable": false
+        }
+    }
+}

@@ -1,0 +1,57 @@
+{
+    "name": "EP2C5T144",
+    "description": "EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)",
+    "url": "",
+    "toolchain": "quartus",
+    "family": "Cyclone II",
+    "type": "EP2C5T144C8",
+    "package": "TQFP144",
+    "clock": {
+        "speed": "50000000",
+        "pin": "PIN_17"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "D1": {
+                    "pin": "PIN_3",
+                    "pos": [
+                        260,
+                        23
+                    ]
+                },
+                "D2": {
+                    "pin": "PIN_7",
+                    "pos": [
+                        230,
+                        23
+                    ]
+                },
+                "D3": {
+                    "pin": "PIN_9",
+                    "pos": [
+                        200,
+                        23
+                    ]
+                }
+            }
+        },
+        {
+            "name": "SW",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "S1": {
+                    "pin": "PIN_144",
+                    "pos": [
+                        108,
+                        23
+                    ]
+                }
+            }
+        }
+    ]
+}
