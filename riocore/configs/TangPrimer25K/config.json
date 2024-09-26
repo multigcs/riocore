@@ -184,10 +184,5 @@
                 }
             }
         }
-    ],
-    "linuxcnc": {
-        "probe_screen": {
-            "enable": false
-        }
-    }
+    ]
 }

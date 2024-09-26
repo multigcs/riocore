@@ -64,22 +64,21 @@
                     "pin": "LED:D8"
                 }
             }
-        },
+        }
+    ],
+    "modules": [
         {
-            "type": "uart",
-            "pins": {
-                "rx": {
-                    "pin": "FTDI:BDBUS0"
-                },
-                "tx": {
-                    "pin": "FTDI:BDBUS1"
+            "slot": "PMOD",
+            "module": "w5500_pmod",
+            "setup": {
+                "w5500": {
+                    "name": "w5500",
+                    "type": "w5500",
+                    "mac": "AA:AF:FA:CC:E3:1C",
+                    "ip": "192.168.10.194",
+                    "port": 2390
                 }
             }
         }
-    ],
-    "linuxcnc": {
-        "probe_screen": {
-            "enable": false
-        }
-    }
+    ]
 }
