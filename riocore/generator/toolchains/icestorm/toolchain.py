@@ -61,6 +61,9 @@ rm -rf oss-cad-suite-linux-x64-20240910.tgz
         if family == "ecp5":
             pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
             bitfileName = "$(PROJECT).bit"
+        elif family == "gatemate":
+            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.ccf")
+            bitfileName = "$(PROJECT).bit"
         elif family in {"gowin", "himbaechel"}:
             pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
             bitfileName = "$(PROJECT).fs"
@@ -97,12 +100,18 @@ rm -rf oss-cad-suite-linux-x64-20240910.tgz
         makefile_data.append("")
         makefile_data.append(f"all: {bitfileName}")
         makefile_data.append("")
-        makefile_data.append("$(PROJECT).json: $(VERILOGS)")
         if self.config["type"] == "up5k":
+            makefile_data.append("$(PROJECT).json: $(VERILOGS)")
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -dsp -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
+        elif self.config["type"] == "gatemate":
+            makefile_data.append("net/$(PROJECT).v: $(VERILOGS)")
+            makefile_data.append("	mkdir -p net/")
+            makefile_data.append(f"	yosys -q -l yosys.log -p 'read_verilog $(VERILOGS) ; synth_$(FAMILY) -top $(TOP) -nomx8 -json $(PROJECT).json -vlog net/$(PROJECT).v'")
         elif family in {"gowin", "himbaechel"}:
+            makefile_data.append("$(PROJECT).json: $(VERILOGS)")
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         else:
+            makefile_data.append("$(PROJECT).json: $(VERILOGS)")
             makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         makefile_data.append("")
         if family == "ecp5":
@@ -122,6 +131,16 @@ rm -rf oss-cad-suite-linux-x64-20240910.tgz
             makefile_data.append("")
             makefile_data.append("clean:")
             makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            makefile_data.append("")
+        elif family == "gatemate":
+            makefile_data.append("$(PROJECT).bit: net/$(PROJECT).v pins.ccf")
+            makefile_data.append(f"	p_r -i net/$(PROJECT).v -o $(PROJECT) -ccf pins.ccf -cCP")
+            makefile_data.append('	@echo ""')
+            makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            makefile_data.append('	@echo ""')
+            makefile_data.append("")
+            makefile_data.append("clean:")
+            makefile_data.append(f"	rm -rf {bitfileName} net/ $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
         elif family in {"gowin", "himbaechel"}:
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
