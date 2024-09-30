@@ -15,6 +15,9 @@ import sys
 import time
 from functools import partial
 
+if os.path.isfile("./riocore/__init__.py"):
+	sys.path.insert(0, "./")
+
 import graphviz
 import riocore
 from riocore import halpins
