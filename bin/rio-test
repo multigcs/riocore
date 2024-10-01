@@ -317,7 +317,7 @@ class WinForm(QWidget):
 
         ip = "192.168.10.194"
         port = 2390
-        protocol = self.project.config["jdata"].get("protocol")
+        protocol = self.project.config["jdata"].get("protocol", "SPI")
         if protocol:
             for n in range(0, device.count()):
                 if device.itemText(n) == protocol:

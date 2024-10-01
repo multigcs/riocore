@@ -3,7 +3,6 @@
     "description": "Octobot-Board on Parol6 (melfa)",
     "boardcfg": "OctoBot",
     "protocol": "UDP",
-    "transport": "UDP",
     "plugins": [
         {
             "type": "w5500",

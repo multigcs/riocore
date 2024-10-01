@@ -2,7 +2,7 @@
     "name": "TangPrimer20K",
     "description": "TangPrimer20K",
     "boardcfg": "TangPrimer20K",
-    "transport": "UDP",
+    "protocol": "UDP",
     "ip": "192.168.10.194",
     "plugins": [
         {

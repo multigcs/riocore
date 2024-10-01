@@ -234,7 +234,7 @@ class Firmware:
 
     def component(self):
         output = []
-        protocol = self.project.config["jdata"].get("protocol")
+        protocol = self.project.config["jdata"].get("protocol", "SPI")
 
         header_list = ["Arduino.h"]
         if protocol == "UDP":
