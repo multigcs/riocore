@@ -1587,7 +1587,7 @@ class LinuxCNC:
                                 netname = self.resolv_logic(target, netname)
                             else:
                                 self.hal_net_add(netname, f"{rprefix}.{halname}")
-                    elif setp is not None:
+                    elif setp:
                         self.hal_setp_add(f"{rprefix}.{halname}", setp)
                     elif virtual and component:
                         if direction == "input":
