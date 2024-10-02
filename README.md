@@ -134,12 +134,10 @@ make load
 
 You can find all the LinuxCNC related files in 'Output/BOARD_NAME/LinuxCNC/',
 
-to start LinuxCNC, you have to install the new component first:
+to start LinuxCNC, you have to install the rio component first:
 ```
-halcompile --install Output/BOARD_NAME/LinuxCNC/rio.c
+sudo halcompile --install riocore/files/rio.c
 ```
-*this step is necessary after every configuration change !*
-
 
 then you can start LinuxCNC with your new .ini file:
 ```

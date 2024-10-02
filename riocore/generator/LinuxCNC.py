@@ -346,7 +346,6 @@ class LinuxCNC:
         output.append("set -x")
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')
-        output.append('halcompile --install "$DIRNAME/rio.c"')
         output.append("")
         output.append('linuxcnc "$DIRNAME/rio.ini" $@')
         output.append("")
@@ -368,7 +367,7 @@ class LinuxCNC:
             self.networks[network] = net
 
         self.startscript()
-        self.precompile()
+        #self.precompile()
         self.component()
         self.hal()
         self.gui()
@@ -1414,7 +1413,7 @@ class LinuxCNC:
         self.loadrts.append("# load the realtime components")
         self.loadrts.append("loadrt [KINS]KINEMATICS")
         self.loadrts.append("loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO")
-        self.loadrts.append("loadusr -W ./rio_precompile")
+        #self.loadrts.append("loadusr -W ./rio_precompile")
         self.loadrts.append("loadrt rio")
         self.loadrts.append("")
 
@@ -2488,7 +2487,7 @@ class LinuxCNC:
         output.append("")
 
         os.makedirs(self.component_path, exist_ok=True)
-        open(f"{self.component_path}/rio.c", "w").write("\n".join(output))
+        open(f"{self.component_path}/riocomp.c", "w").write("\n".join(output))
 
     def create_axis_config(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
