@@ -86,6 +86,8 @@ try:
         h.newpin(f"joint.{joint}.jog-counts", hal.HAL_S32, hal.HAL_OUT)
         h.newpin(f"joint.{joint}.position", hal.HAL_FLOAT, hal.HAL_IN)
         h.newpin(f"joint.{joint}.scale", hal.HAL_FLOAT, hal.HAL_IN)
+        h.newpin(f"joint.{joint}.min_limit", hal.HAL_FLOAT, hal.HAL_IN)
+        h.newpin(f"joint.{joint}.max_limit", hal.HAL_FLOAT, hal.HAL_IN)
         h[f"joint.{joint}.jog-counts"] = 0
     h.ready()
     no_hal = False
@@ -95,7 +97,9 @@ except Exception:
     for joint in range(JOINTS):
         h[f"joint.{joint}.jog-counts"] = 0
         h[f"joint.{joint}.position"] = 0
-        h[f"joint.{joint}.scale"] = 10.0
+        h[f"joint.{joint}.scale"] = 100.0
+        h[f"joint.{joint}.min_limit"] = -180.0
+        h[f"joint.{joint}.max_limit"] = 180.0
 
 
 class WinForm(QWidget):
@@ -122,56 +126,64 @@ class WinForm(QWidget):
         self.setLayout(layout)
 
         def slide_stop(joint):
-            #print("stop update")
-            self.jdata[joint]["active"] = False
-            self.jdata[joint]["last"] = self.jdata[joint]["slider"].value()
+            self.jogdata[joint]["active"] = False
+            self.jogdata[joint]["last"] = self.jogdata[joint]["slider"].value()
 
         def slide_start(joint):
-            #print("start update")
-            self.jdata[joint]["active"] = True
+            self.jogdata[joint]["active"] = True
 
         def slide_move(joint, pos):
-            #print(f"joint.{joint}.jog-counts", int(pos - self.jdata[joint]["last"]))
-            h[f"joint.{joint}.jog-counts"] += int(pos - self.jdata[joint]["last"])
-            self.jdata[joint]["last"] = pos
+            scale = abs(h[f"joint.{joint}.scale"])
+            #print(f"joint.{joint}.jog-counts", int(pos - self.jogdata[joint]["last"]))
+            h[f"joint.{joint}.jog-counts"] += int(pos - self.jogdata[joint]["last"])
+            self.jogdata[joint]["label"].setText(f"J0: {pos / scale:0.3f}")
+            self.jogdata[joint]["last"] = pos
 
-
-        self.jdata = []
+        self.jogdata = []
         for joint in range(self.joints):
-            jdata = {
+            jogdata = {
                 "last": 0,
                 "active": True,
                 "label": None,
                 "slider": None,
             }
             #print(joint, h[f"joint.{joint}.scale"])
-            jdata["label"] = QLabel(f"j{joint}: --")
-            jdata["slider"] = QSlider(Qt.Horizontal)
-            jdata["slider"].setFixedWidth(250)
-            jdata["slider"].setMinimum(int(-45 * abs(h[f"joint.{joint}.scale"])))
-            jdata["slider"].setMaximum(int(45 * abs(h[f"joint.{joint}.scale"])))
-            jdata["slider"].setSingleStep(1)
-            jdata["slider"].sliderPressed.connect(partial(slide_stop, joint))
-            jdata["slider"].sliderReleased.connect(partial(slide_start, joint))
-            jdata["slider"].sliderMoved.connect(partial(slide_move, joint))
+            jogdata["label"] = QLabel(f"J{joint}: --")
+            jogdata["slider"] = QSlider(Qt.Horizontal)
+            jogdata["slider"].setFixedWidth(250)
+            jogdata["min_limit"] = -180.0
+            jogdata["max_limit"] = +180.0
+            jogdata["slider"].setMinimum(int(jogdata["min_limit"] * 100.0))
+            jogdata["slider"].setMaximum(int(jogdata["max_limit"] * 100.0))
+            jogdata["slider"].setSingleStep(1)
+            jogdata["slider"].sliderPressed.connect(partial(slide_stop, joint))
+            jogdata["slider"].sliderReleased.connect(partial(slide_start, joint))
+            jogdata["slider"].sliderMoved.connect(partial(slide_move, joint))
+            layout.addWidget(jogdata["label"])
+            layout.addWidget(jogdata["slider"])
+            self.jogdata.append(jogdata)
 
-            layout.addWidget(jdata["label"])
-            layout.addWidget(jdata["slider"])
-
-            self.jdata.append(jdata)
-
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.runTimer)
-        self.timer.start(300)
+        if not no_hal:
+            self.timer = QTimer()
+            self.timer.timeout.connect(self.runTimer)
+            self.timer.start(300)
 
     def runTimer(self):
         for joint in range(self.joints):
-            jdata = self.jdata[joint]
-            #print(joint, jdata)
+            jogdata = self.jogdata[joint]
+            #print(joint, jogdata)
             pos = h[f"joint.{joint}.position"]
-            jdata["label"].setText(f"J0: {pos:0.3f}")
-            if self.jdata[joint]["active"]:
-                jdata["slider"].setValue(int(pos * abs(h[f"joint.{joint}.scale"])))
+            scale = abs(h[f"joint.{joint}.scale"])
+            if jogdata["min_limit"] != h[f"joint.{joint}.min_limit"]:
+                jogdata["min_limit"] = h[f"joint.{joint}.min_limit"]
+                jogdata["slider"].setMinimum(int(jogdata["min_limit"] * scale))
+            if jogdata["max_limit"] != h[f"joint.{joint}.max_limit"]:
+                jogdata["max_limit"] = h[f"joint.{joint}.max_limit"]
+                jogdata["slider"].setMaximum(int(jogdata["max_limit"] * scale))
+
+            if self.jogdata[joint]["active"]:
+                jogdata["label"].setText(f"J{joint}: {pos:0.3f}")
+                jogdata["slider"].setValue(int(pos * scale))
 
 
 if __name__ == "__main__":

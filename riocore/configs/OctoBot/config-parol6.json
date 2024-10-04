@@ -747,6 +747,9 @@
                 "min_limit": -170,
                 "max_limit": 170
             }
+        },
+        "robojog": {
+            "enable": true
         }
     }
 }
