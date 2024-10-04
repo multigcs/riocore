@@ -171,10 +171,9 @@ graph LR;
     Makefile--make-->Bitfile;
     Bitfile--make load-->FPGA;
     /Output-->/LinuxCNC;
-    /LinuxCNC-->rio.c;
+    /LinuxCNC-->riocomp.c;
     /LinuxCNC-->rio.ini
     /LinuxCNC-->rio-gui.xml
     /LinuxCNC-->*.hal;
-    rio.c--halcompile-->hal-component;
 ```
 

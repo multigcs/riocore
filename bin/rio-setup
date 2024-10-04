@@ -245,7 +245,7 @@ class TabLinuxCNC:
             "rio.hal": QPlainTextEdit(),
             "custom_postgui.hal": QPlainTextEdit(),
             "rio-gui.xml": QPlainTextEdit(),
-            "rio.c": QPlainTextEdit(),
+            "riocomp.c": QPlainTextEdit(),
         }
         self.linuxcnc_tabwidget = QTabWidget()
         for filename, widget in self.linuxcnc.items():
