@@ -149,6 +149,8 @@ class LinuxCNC:
         },
     }
 
+    POSTGUI_COMPONENTS = ("pyvcp", "qtdragon", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f")
+
     def __init__(self, project):
         self.postgui_call_list = []
         self.pregui_call_list = []
@@ -168,13 +170,14 @@ class LinuxCNC:
             addon_name = addon_path.split("/")[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
+    def postgui_components_add(self, component):
+        if component not in self.POSTGUI_COMPONENTS:
+            self.POSTGUI_COMPONENTS = tuple(list(self.POSTGUI_COMPONENTS) + [component])
+
     def generate_networks(self, networks, setps):
         output_hal = []
         output_postgui = []
-
-        postgui_filter = ("pyvcp", "qtdragon", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f")
         ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
-
         pin2sig_map = {}
 
         def pin2sig(hal, pin, signal):
@@ -203,7 +206,7 @@ class LinuxCNC:
                             output_hal_tmp.append(f"# not {net_in}")
                             output_hal_tmp.append(f"loadrt not names={fname}-not")
                             output_hal_tmp.append(f"addf {fname}-not servo-thread")
-                            if not net_in.startswith(postgui_filter):
+                            if not net_in.startswith(self.POSTGUI_COMPONENTS):
                                 signal = pin2sig(output_hal_tmp, net_in, f"{fname}-not_in")
                                 output_hal_tmp.append(f"net {signal} => {fname}-not.in")
                             else:
@@ -221,7 +224,7 @@ class LinuxCNC:
                     signal = f"{signal_prefix}{network}"
                     if in_first.startswith("riov."):
                         pass
-                    elif not in_first.startswith(postgui_filter):
+                    elif not in_first.startswith(self.POSTGUI_COMPONENTS):
                         # output_hal_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
                         signal = pin2sig(output_hal_tmp, in_first, signal)
                     else:
@@ -230,7 +233,7 @@ class LinuxCNC:
                     for out in net["out"]:
                         if out.startswith("riov."):
                             continue
-                        if not out.startswith(postgui_filter):
+                        if not out.startswith(self.POSTGUI_COMPONENTS):
                             output_hal_tmp.append(f"net {signal} => {out}")
                         else:
                             output_postgui_tmp.append(f"net {signal} => {out}")
@@ -245,7 +248,7 @@ class LinuxCNC:
                         for in_n, pin_in in enumerate(net["in"]):
                             if pin_in.startswith("riov."):
                                 pass
-                            elif not pin_in.startswith(postgui_filter):
+                            elif not pin_in.startswith(self.POSTGUI_COMPONENTS):
                                 # output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
                                 signal = pin2sig(output_hal_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n}")
                                 output_hal_tmp.append(f"net {signal} => isum.{network}.in{in_n}")
@@ -260,7 +263,7 @@ class LinuxCNC:
                             if out.startswith("riov."):
                                 continue
                             ctype = net["options"].get(out, {}).get("type", "OR")
-                            if not out.startswith(postgui_filter):
+                            if not out.startswith(self.POSTGUI_COMPONENTS):
                                 output_hal_tmp.append(f"net {signal} => {out}")
                             else:
                                 output_postgui_tmp.append(f"net {signal} => {out}")
@@ -278,7 +281,7 @@ class LinuxCNC:
                         for in_n, pin_in in enumerate(net["in"]):
                             if pin_in.startswith("riov."):
                                 pass
-                            elif not pin_in.startswith(postgui_filter):
+                            elif not pin_in.startswith(self.POSTGUI_COMPONENTS):
                                 if pin_in.startswith("riovs."):
                                     output_hal_tmp.append(f"net {pin_in} => logic.{network}.in-{in_n:02d}")
                                 else:
@@ -307,7 +310,7 @@ class LinuxCNC:
                             ctype = net["options"].get(out, {}).get("type", "OR")
 
                             if not out.startswith("riovs."):
-                                if not out.startswith(postgui_filter):
+                                if not out.startswith(self.POSTGUI_COMPONENTS):
                                     output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
                                 else:
                                     output_postgui_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
@@ -332,7 +335,7 @@ class LinuxCNC:
                         isFree = False
                         break
             if isFree:
-                if not name.startswith(postgui_filter):
+                if not name.startswith(self.POSTGUI_COMPONENTS):
                     output_hal.append(f"setp {name} {value}")
                 else:
                     output_postgui.append(f"setp {name} {value}")
