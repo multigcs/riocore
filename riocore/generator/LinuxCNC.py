@@ -183,7 +183,8 @@ class LinuxCNC:
         def pin2sig(hal, pin, signal):
             if pin not in pin2sig_map:
                 pin2sig_map[pin] = signal
-                hal.append(f"net {signal} <= {pin}")
+                if pin != signal:
+                    hal.append(f"net {signal} <= {pin}")
                 return signal
             else:
                 return pin2sig_map[pin]
