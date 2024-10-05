@@ -45,7 +45,7 @@ Analog input via tlc549 ADC
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

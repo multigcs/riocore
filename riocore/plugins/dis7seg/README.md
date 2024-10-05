@@ -108,7 +108,7 @@ only usable for devboards with 7segment display / better using other 7seg plugin
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

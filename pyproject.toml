@@ -1,5 +1,8 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [tool.ruff]
-# Allow lines to be as long as 120.
 line-length = 200
 
 [tool.ruff.lint.isort]

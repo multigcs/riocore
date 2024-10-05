@@ -3166,6 +3166,11 @@ class WinForm(QWidget):
 
             if "display" not in signals_setup[signal_name]:
                 signals_setup[signal_name]["display"] = {}
+
+            expand = False
+            if signals_setup[signal_name]["display"]:
+                expand = True
+
             direction = signal_defaults["direction"]
             virtual = signal_defaults.get("virtual", False)
             if virtual:
@@ -3198,6 +3203,10 @@ class WinForm(QWidget):
                 display_rows.addLayout(display_cols)
                 display_cols.addWidget(QLabel(option.title()), stretch=1)
                 display_cols.addWidget(self.edit_item(signals_setup[signal_name]["display"], option, option_setup, cb=None), stretch=5)
+
+            if expand is True:
+                display_frame.setChecked(True)
+                toggleGroup(display_frame)
 
         signals_widget = QWidget()
         signals.addStretch()

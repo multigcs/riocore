@@ -24,14 +24,24 @@ class Pins:
                     continue
                 data.append(f"LOCATE COMP \"{pin_config['varname']}\" SITE \"{pin_config['pin']}\";")
 
-                iostandard = pin_config.get("iostandard", "LVCMOS33").upper()
-                drive = pin_config.get("drive", "4")
-                slew = pin_config.get("slew", "SLOW").upper()
+                options = []
 
                 if pin_config["direction"] == "input":
-                    data.append(f"IOBUF PORT \"{pin_config['varname']}\" IO_TYPE={iostandard};")
+                    if pin_config.get("pullup", False) or pin_config.get("pull") == "up":
+                        options.append(f"PULLMODE=UP")
+                    elif pin_config.get("pull") == "down":
+                        options.append(f"PULLMODE=DOWN")
+
                 else:
-                    data.append(f"IOBUF PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} DRIVE={drive} SLEWRATE={slew};")
+                    drive = pin_config.get("drive", "4")
+                    options.append(f"DRIVE={drive}")
+                    slew = pin_config.get("slew", "SLOW").upper()
+                    options.append(f"SLEWRATE={slew}")
+
+                iostandard = pin_config.get("iostandard", "LVCMOS33").upper()
+                options.append(f"IO_TYPE={iostandard}")
+
+                data.append(f"IOBUF PORT \"{pin_config['varname']}\" {' '.join(options)};")
 
             data.append("")
         data.append("")

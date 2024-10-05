@@ -30,6 +30,14 @@ pypi: clean dist
 	git tag -a ${VERSION} -m "version ${VERSION}"
 	git push origin ${VERSION}
 
+exifclean:
+	exiftool -all= riocore/boards/*/*.png
+	rm -rf riocore/boards/*/*.png_original
+	exiftool -all= riocore/plugins/*/*.png
+	rm -rf riocore/plugins/*/*.png_original
+	exiftool -all= riocore/modules/*/*.png
+	rm -rf riocore/modules/*/*.png_original
+
 pyvenv: clean dist
 	python3 -m venv pyvenv
 	pyvenv/bin/python -m pip install -r requirements.txt

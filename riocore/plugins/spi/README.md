@@ -52,7 +52,7 @@ for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

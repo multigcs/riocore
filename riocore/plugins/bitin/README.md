@@ -31,7 +31,7 @@ to read switches or other 1bit signals
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

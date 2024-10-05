@@ -4,6 +4,7 @@ import importlib
 import os
 import shutil
 import sys
+import stat
 
 from riocore import halpins
 
@@ -338,12 +339,36 @@ class LinuxCNC:
 
         return (output_hal, output_postgui)
 
+    def startscript(self):
+        output = ["#!/bin/sh"]
+        output.append("")
+        output.append("set -e")
+        output.append("set -x")
+        output.append("")
+        output.append('DIRNAME=`dirname "$0"`')
+        output.append('halcompile --install "$DIRNAME/rio.c"')
+        output.append("")
+        output.append('linuxcnc "$DIRNAME/rio.ini" $@')
+        output.append("")
+        os.makedirs(self.component_path, exist_ok=True)
+        target = f"{self.component_path}/start.sh"
+        open(target, "w").write("\n".join(output))
+        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
+    def precompile(self):
+        source = f"{riocore_path}/files/rio_precompile"
+        target = f"{self.component_path}/rio_precompile"
+        shutil.copy(source, target)
+        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
     def generator(self):
         jdata = self.project.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         for network, net in linuxcnc_config.get("halsignals", {}).items():
             self.networks[network] = net
 
+        self.startscript()
+        self.precompile()
         self.component()
         self.hal()
         self.gui()
@@ -1389,6 +1414,7 @@ class LinuxCNC:
         self.loadrts.append("# load the realtime components")
         self.loadrts.append("loadrt [KINS]KINEMATICS")
         self.loadrts.append("loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO")
+        self.loadrts.append("loadusr -W ./rio_precompile")
         self.loadrts.append("loadrt rio")
         self.loadrts.append("")
 
@@ -1453,7 +1479,7 @@ class LinuxCNC:
             self.loadrts.append("")
             os.makedirs(self.configuration_path, exist_ok=True)
 
-            for source in glob.glob("riocore/files/melfa/*"):
+            for source in glob.glob(f"{riocore_path}/files/melfa/*"):
                 basename = os.path.basename(source)
                 target = f"{self.configuration_path}/{basename}"
                 if os.path.isfile(source):

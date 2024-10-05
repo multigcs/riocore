@@ -45,7 +45,7 @@ Analog-Outout via spi digital poti
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

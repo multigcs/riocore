@@ -26,7 +26,7 @@ w5500 driver for the interface communication over UDP
         "rst": {
             "pin": "4"
         },
-        "int": {
+        "intr": {
             "pin": "5"
         }
     }
@@ -56,7 +56,7 @@ w5500 driver for the interface communication over UDP
  * direction: output
  * optional: True
 
-### int:
+### intr:
 
  * direction: input
  * optional: True
@@ -104,7 +104,7 @@ SPI clock
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:
@@ -170,7 +170,7 @@ name of this plugin instance
                 }
             ]
         },
-        "int": {
+        "intr": {
             "pin": "5",
             "modifiers": [
                 {

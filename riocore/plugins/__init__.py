@@ -121,6 +121,7 @@ class PluginBase:
             self.OPTIONS["name"] = {
                 "type": str,
                 "description": "name of this plugin instance",
+                "default": "",
             }
 
         if self.TYPE == "joint":
@@ -141,7 +142,8 @@ class PluginBase:
 
         if self.TYPE == "expansion":
             expansion_id = len(self.expansions)
-            self.expansion_prefix = self.plugin_setup.get("name", f"EXPANSION{expansion_id}").upper()
+            ename = self.plugin_setup.get("name") or f"EXPANSION{expansion_id}"
+            self.expansion_prefix = ename.upper()
             self.expansions.append(self.expansion_prefix)
 
     def update_title(self):
@@ -274,7 +276,7 @@ class PluginBase:
             for key in setup:
                 if key in self.plugin_setup:
                     setup[key] = self.plugin_setup[key]
-            signal_prefix = self.plugin_setup.get("name", self.instances_name)
+            signal_prefix = self.plugin_setup.get("name") or self.instances_name
             halname = f"{signal_prefix}.{name}"
             direction_short = setup["direction"].upper().replace("PUT", "")
             signals[name]["signal_prefix"] = signal_prefix

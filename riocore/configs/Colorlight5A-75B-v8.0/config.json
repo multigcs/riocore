@@ -1,0 +1,27 @@
+{
+    "name": "Colorlight5A-75B-v8.0",
+    "boardcfg": "Colorlight5A-75B-v8.0",
+    "plugins": [
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTON:1"
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:1"
+                }
+            }
+        }
+    ],
+    "linuxcnc": {
+        "probe_screen": {
+            "enable": false
+        }
+    }
+}

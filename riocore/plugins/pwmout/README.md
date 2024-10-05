@@ -56,7 +56,7 @@ PWM frequency
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 ### axis:
 axis name (X,Y,Z,...)

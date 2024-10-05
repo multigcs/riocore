@@ -45,7 +45,7 @@ to messurement very high temperatures of up to 1250 degrees Celsius
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

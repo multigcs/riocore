@@ -31,7 +31,7 @@ that was just a gimmick, not really useful
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 
 ## Signals:

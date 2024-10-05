@@ -52,7 +52,7 @@ direct stepper driver with 4pin's directly controlled by the FPGA
 name of this plugin instance
 
  * type: str
- * default: None
+ * default: 
 
 ### axis:
 axis name (X,Y,Z,...)
