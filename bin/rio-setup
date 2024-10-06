@@ -2274,6 +2274,8 @@ class WinForm(QWidget):
         self.tree_expand("/Modules/")
 
     def load_tree(self, expand=None):
+        toolchain = self.board.get("toolchain")
+
         while self.model.rowCount() > 0:
             self.model.removeRow(0)
 
@@ -2281,6 +2283,7 @@ class WinForm(QWidget):
             "name": {"type": str},
             "description": {"type": str},
             "boardcfg": {"type": "select", "options": self.boards},
+            "toolchain": {"type": "select", "options": self.board.get("toolchains", []), "default": toolchain},
             "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
         }.items():
             aitem = MyStandardItem()
