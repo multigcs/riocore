@@ -6,35 +6,19 @@
       "type": "stepdir",
       "pins": {
         "step": {
-          "pin": "S0"
+          "pin": "S9"
         },
         "dir": {
-          "pin": "S1"
+          "pin": "S10"
         },
         "en": {
-          "pin": "S2"
+          "pin": "S11"
         }
       },
       "is_joint": true
     },
     {
       "name": "joint-1",
-      "type": "stepdir",
-      "pins": {
-        "step": {
-          "pin": "S3"
-        },
-        "dir": {
-          "pin": "S4"
-        },
-        "en": {
-          "pin": "S5"
-        }
-      },
-      "is_joint": true
-    },
-    {
-      "name": "joint-2",
       "type": "stepdir",
       "pins": {
         "step": {
@@ -50,17 +34,33 @@
       "is_joint": true
     },
     {
+      "name": "joint-2",
+      "type": "stepdir",
+      "pins": {
+        "step": {
+          "pin": "S3"
+        },
+        "dir": {
+          "pin": "S4"
+        },
+        "en": {
+          "pin": "S5"
+        }
+      },
+      "is_joint": true
+    },
+    {
       "name": "joint-3",
       "type": "stepdir",
       "pins": {
         "step": {
-          "pin": "S9"
+          "pin": "S0"
         },
         "dir": {
-          "pin": "S10"
+          "pin": "S1"
         },
         "en": {
-          "pin": "S11"
+          "pin": "S2"
         }
       },
       "is_joint": true

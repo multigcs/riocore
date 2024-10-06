@@ -1,6 +1,6 @@
 {
-  "comment": "rioctrl-shiftio-v1.0",
-  "plugins": [
+    "comment": "rioctrl-shiftio-v1.0\n16 optically isolated outputs in banks of 8\n16 optically isolated inputs in banks of 8",
+    "plugins": [
         {
             "type": "shiftreg",
             "name": "shiftout",
@@ -17,7 +17,8 @@
                 "load": {
                     "pin": "S2"
                 }
-            }
+            },
+            "bits": 16
         },
         {
             "type": "shiftreg",
@@ -35,14 +36,20 @@
                 "load": {
                     "pin": "S5"
                 }
-            }
+            },
+            "bits": 16
         },
         {
             "type": "bitin",
             "name": "input0",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[0]"
+                    "pin": "SHIFTIN_INPUT[7]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -51,7 +58,12 @@
             "name": "input1",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[1]"
+                    "pin": "SHIFTIN_INPUT[6]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -60,7 +72,12 @@
             "name": "input2",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[2]"
+                    "pin": "SHIFTIN_INPUT[5]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -69,7 +86,12 @@
             "name": "input3",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[3]"
+                    "pin": "SHIFTIN_INPUT[4]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -78,7 +100,12 @@
             "name": "input4",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[4]"
+                    "pin": "SHIFTIN_INPUT[3]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -87,7 +114,12 @@
             "name": "input5",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[5]"
+                    "pin": "SHIFTIN_INPUT[2]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -96,7 +128,12 @@
             "name": "input6",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[6]"
+                    "pin": "SHIFTIN_INPUT[1]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             }
         },
@@ -105,7 +142,268 @@
             "name": "input7",
             "pins": {
                 "bit": {
-                    "pin": "SHIFTIN_INPUT[7]"
+                    "pin": "SHIFTIN_INPUT[0]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input8",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[15]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input9",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[14]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input10",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[13]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input11",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[12]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input12",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[11]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input13",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[10]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input14",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[9]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "name": "input15",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTIN_INPUT[8]",
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output0",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[0]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output1",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[1]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output2",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[2]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output3",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[3]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output4",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[4]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output5",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[5]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output6",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[6]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output7",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[7]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output8",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[8]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output9",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[9]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output10",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[10]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output11",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[11]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output12",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[12]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output13",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[13]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output14",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[14]"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "output15",
+            "pins": {
+                "bit": {
+                    "pin": "SHIFTOUT_OUTPUT[15]"
                 }
             }
         }

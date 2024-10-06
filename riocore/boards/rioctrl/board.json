@@ -5,10 +5,10 @@
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",
-    "package": "CABGA381",
+    "package": "CABGA256",
     "clock": {
         "speed": "25000000",
-        "pin": "P3"
+        "pin": "A7"
     },
     "slots": [
         {
@@ -30,6 +30,14 @@
                         95,
                         301
                     ]
+                }
+            }
+        },
+        {
+            "name": "SlotControl",
+            "pins": {
+                "EN": {
+                    "pin": "A4"
                 }
             }
         },
