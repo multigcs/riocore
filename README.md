@@ -72,6 +72,8 @@ git clone https://github.com/multigcs/riocore.git
 cd riocore
 ```
 
+Using a TangNano9k or other board supported by the open-cad-suite? Check out the docker setup for an easy to use all in one way to run the riocore ui and generator, including flashing: [DOCKER](DOCKER.md)
+
 make sure that the toolchain matching your fpga is in the path:
 ```
 export PATH=$PATH:/opt/oss-cad-suite/bin/
