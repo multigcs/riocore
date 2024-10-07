@@ -86,7 +86,15 @@ docker-run-debian12_deb:
 docker-run:
 	docker build -t riocore -f dockerfiles/Dockerfile.debian12-run .
 	xhost local:root || true
-	docker run --privileged --net=host -v /dev:/dev -v /tmp/.X11-unix:/tmp/.X11-unix -v $(CURDIR):/usr/src/riocore -v $(CURDIR):/workspace -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore -t -i riocore /bin/bash -c "cd /usr/src/riocore; PATH=$$PATH:/opt/oss-cad-suite/bin/ PYTHONPATH=. bin/rio-setup $(CONFIG)"
+	docker rm -f riocore || true
+	docker run --privileged --net=host -v /dev:/dev -v /tmp/.X11-unix:/tmp/.X11-unix -v $(CURDIR):/usr/src/riocore -v $(CURDIR):/workspace -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore -t -i riocore /bin/bash -c "cd /usr/src/riocore; PATH=$$PATH:/opt/oss-cad-suite/bin/ bin/rio-setup $(CONFIG)"
+	docker rm -f riocore || true
+
+docker-run-gowin:
+	docker build -t riocore -f dockerfiles/Dockerfile.debian12-run-gowin .
+	xhost local:root || true
+	docker rm -f riocore || true
+	docker run --privileged --net=host -v /dev:/dev -v /tmp/.X11-unix:/tmp/.X11-unix -v $(CURDIR):/usr/src/riocore -v $(CURDIR):/workspace -e DISPLAY=$$DISPLAY -v $$HOME/.Xauthority:/root/.Xauthority --name riocore -t -i riocore /bin/bash -c "cd /usr/src/riocore; PATH=$$PATH:/opt/oss-cad-suite/bin/:/opt/gowin/IDE/bin/ bin/rio-setup $(CONFIG)"
 	docker rm -f riocore || true
 
 update:
@@ -94,4 +102,3 @@ update:
 	git submodule update --init --recursive
 	make clean
 	docker rmi -f riocore || true
-	
