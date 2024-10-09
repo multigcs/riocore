@@ -2168,8 +2168,8 @@ class WinForm(QWidget):
                 self.info_widget.setText("ERROR: linuxcnc is running")
             else:
                 self.generate_cb(preview=True)
-                if "rio-gui.xml" in self.linuxcnc:
-                    xml_data = self.linuxcnc["rio-gui.xml"].toPlainText()
+                if "rio-gui.xml" in self.tabs["LinuxCNC"].linuxcnc:
+                    xml_data = self.tabs["LinuxCNC"].linuxcnc["rio-gui.xml"].toPlainText()
                     if xml_data:
                         tmp_file = ".tmp_rio-gui.xml"
                         os.system('ps fax | grep "pyvcp .tmp_rio-gui.xml" | grep -v grep | cut -d" " -f1 | xargs -r -l kill -4')
