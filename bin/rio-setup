@@ -3571,7 +3571,7 @@ class WinForm(QWidget):
 
         if name[0]:
             if not name[0].endswith(".json"):
-                name[0] = f"{name[0]}.json"
+                name = [f"{name[0]}.json"]
             self.save_config(name[0])
             self.config_file = name[0]
             self.config_original = self.clean_config(self.config)
