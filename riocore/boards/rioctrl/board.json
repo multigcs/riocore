@@ -7,7 +7,8 @@
     "type": "25k",
     "package": "CABGA256",
     "clock": {
-        "speed": "25000000",
+        "osc": "25000000",
+        "speed": "100000000",
         "pin": "A7"
     },
     "slots": [

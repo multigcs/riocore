@@ -1272,6 +1272,7 @@ class LinuxCNC:
                         if halname in self.feedbacks:
                             continue
 
+                        dtype = None
                         if (netname and not virtual) or setp:
                             if direction == "input":
                                 section = displayconfig.get("section", "inputs").lower()
