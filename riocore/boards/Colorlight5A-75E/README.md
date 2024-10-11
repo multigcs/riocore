@@ -8,6 +8,7 @@
 * Package: CABGA256
 * Flashcmd: openFPGALoader -c usb-blaster -m rio.bit
 * Clock: 25.000Mhz (Pin:P6)
+* RIO Support Status: Networking Ports are not supported by RIO. Pins can only be used as Outputs.
 
 ![board.png](board.png)
 
