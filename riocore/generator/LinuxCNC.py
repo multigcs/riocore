@@ -292,7 +292,7 @@ class LinuxCNC:
 
                             else:
                                 # output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
-                                signal = pin2sig(output_hal_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n:02d}")
+                                signal = pin2sig(output_postgui_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n:02d}")
                                 output_postgui_tmp.append(f"net {signal} => logic.{network}.in-{in_n:02d}")
 
                         vs_flag = False
