@@ -5,8 +5,8 @@
 * Toolchain: icestorm
 * Family: ecp5
 * Type: 25k
-* Package: CABGA381
-* Clock: 25.000Mhz (Pin:P3)
+* Package: CABGA256
+* Clock: 25.000Mhz -> PLL -> 100.000Mhz (Pin:A7)
 
 ![board.png](board.png)
 

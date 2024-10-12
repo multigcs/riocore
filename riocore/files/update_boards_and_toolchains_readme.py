@@ -35,6 +35,11 @@ for board in sorted(glob.glob("riocore/boards/*")):
         readme.append(f"**{description}**")
     readme.append("")
 
+    if "comment" in data:
+        comment = data["comment"]
+        readme.append(comment)
+        readme.append("")
+
     if "url" in data:
         readme.append(f"* URL: [{data['url']}]({data['url']})")
 

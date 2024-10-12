@@ -1,6 +1,7 @@
 {
     "name": "Colorlight5A-75E",
     "description": "Lattice ECP5 board",
+    "comment": "> [!WARNING]\n> Networking Interfaces are not supported by RIO\n> Pins can only be used as output without hardware modifications",
     "url": "https://github.com/q3k/chubby75/blob/master/5a-75e/README.md",
     "toolchain": "icestorm",
     "family": "ecp5",

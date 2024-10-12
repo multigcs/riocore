@@ -2,6 +2,7 @@
     "name": "Colorlight_i9plus-v6.1",
     "description": "Artix7 on SODIMM-200P board",
     "url": "https://github.com/wuxx/Colorlight-FPGA-Projects/blob/master/colorlight_i9plus_v6.1.md",
+    "comment": "> [!WARNING]\n> Networking Interfaces are not supported by RIO\n> UNTESTED",
     "toolchain": "vivado",
     "family": "xc7",
     "type": "xc7a50tifgg484-1l",
