@@ -41,7 +41,7 @@ def load_tree(parent, tree_lcnc):
     robojog_config = parent.config["linuxcnc"]["robojog"]
     if robojog_config:
         for key, var_setup in {
-            "enable": {"type": bool, "default": True},
+            "enable": {"type": bool, "default": False},
             "tabname": {"type": str, "default": "RoboJog"},
         }.items():
             aitem = MyStandardItem()
