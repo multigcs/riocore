@@ -673,6 +673,9 @@ class LinuxCNC:
                 elif position_halname and feedback_halname:
                     pid_setup = self.PID_DEFAULTS.copy()
                     for key, value in pid_setup.items():
+                        setup_value = joint_config.get("PID", {}).get(key.lower())
+                        if setup_value:
+                            value = setup_value
                         output.append(f"{key:18s} = {value}")
                     output.append("")
                     for key, value in joint_setup.items():
