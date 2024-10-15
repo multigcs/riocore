@@ -99,7 +99,7 @@ class edit_float(QDoubleSpinBox):
         if help_text:
             self.setToolTip(help_text)
         if decimals is None:
-            decimals = 3
+            decimals = 5
         self.setDecimals(decimals)
         steps = 1.0
         if decimals > 1:

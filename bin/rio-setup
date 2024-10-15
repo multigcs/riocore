@@ -3065,7 +3065,6 @@ class WinForm(QWidget):
         homing_tab.setLayout(homing_layout)
         joint_tabs.addTab(homing_tab, "Homing")
 
-
         pid_layout = QVBoxLayout()
         label = QLabel("Joint-PID")
         label.setFont(myFont)
@@ -3086,7 +3085,6 @@ class WinForm(QWidget):
         pid_tab = QWidget()
         pid_tab.setLayout(pid_layout)
         joint_tabs.addTab(pid_tab, "PID")
-
 
         return joint_tabs
 
