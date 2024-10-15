@@ -2997,6 +2997,12 @@ class WinForm(QWidget):
             if key in joint_options:
                 joint_options[key.lower()]["default"] = value
 
+        for key, value in riocore.generator.LinuxCNC.LinuxCNC.PID_DEFAULTS.items():
+            pkey = f"pid_{key.lower()}"
+            joint_options[pkey] = {}
+            joint_options[pkey]["type"] = float
+            joint_options[pkey]["default"] = value
+
         joint_tabs = QTabWidget()
 
         general_layout = QVBoxLayout()
@@ -3006,6 +3012,8 @@ class WinForm(QWidget):
 
         for option, option_setup in joint_options.items():
             if option.startswith("home"):
+                continue
+            if option.startswith("pid_"):
                 continue
             tootltip = halpins.INI_HELPTEXT["JOINT_NUM"].get(option.upper(), f"{option} config")
             option_row = QHBoxLayout()
@@ -3056,6 +3064,29 @@ class WinForm(QWidget):
         homing_tab = QWidget()
         homing_tab.setLayout(homing_layout)
         joint_tabs.addTab(homing_tab, "Homing")
+
+
+        pid_layout = QVBoxLayout()
+        label = QLabel("Joint-PID")
+        label.setFont(myFont)
+        pid_layout.addWidget(label)
+        for option, option_setup in joint_options.items():
+            if not option.startswith("pid_"):
+                continue
+            tootltip = halpins.INI_HELPTEXT["JOINT_NUM"].get(option.upper(), f"{option} config")
+            option_row = QHBoxLayout()
+            option_label = QLabel(option.replace("_", "-").title())
+            option_label.setToolTip(tootltip)
+            option_row.addWidget(option_label, stretch=1)
+            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+            option_row.addWidget(option_widget, stretch=3)
+            pid_layout.addLayout(option_row)
+        pid_layout.addStretch()
+
+        pid_tab = QWidget()
+        pid_tab.setLayout(pid_layout)
+        joint_tabs.addTab(pid_tab, "PID")
+
 
         return joint_tabs
 
