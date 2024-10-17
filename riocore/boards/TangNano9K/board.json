@@ -11,5 +11,417 @@
     "clock": {
         "speed": "27000000",
         "pin": "52"
-    }
+    },
+    "slots": [
+        {
+            "name": "PIN",
+            "pins": {
+                "63": {
+                    "pin": "63",
+                    "pos": [
+                        20,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "86": {
+                    "pin": "86",
+                    "pos": [
+                        49,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "85": {
+                    "pin": "85",
+                    "pos": [
+                        78,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "84": {
+                    "pin": "84",
+                    "pos": [
+                        107,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "83": {
+                    "pin": "83",
+                    "pos": [
+                        136,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "82": {
+                    "pin": "82",
+                    "pos": [
+                        165,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "81": {
+                    "pin": "81",
+                    "pos": [
+                        194,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "80": {
+                    "pin": "80",
+                    "pos": [
+                        223,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "79": {
+                    "pin": "79",
+                    "pos": [
+                        252,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "77": {
+                    "pin": "77",
+                    "pos": [
+                        281,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "76": {
+                    "pin": "76",
+                    "pos": [
+                        310,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "75": {
+                    "pin": "75",
+                    "pos": [
+                        339,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "74": {
+                    "pin": "74",
+                    "pos": [
+                        368,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "73": {
+                    "pin": "73",
+                    "pos": [
+                        397,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "72": {
+                    "pin": "72",
+                    "pos": [
+                        426,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "71": {
+                    "pin": "71",
+                    "pos": [
+                        455,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "70": {
+                    "pin": "70",
+                    "pos": [
+                        484,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "48": {
+                    "pin": "48",
+                    "pos": [
+                        542,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "49": {
+                    "pin": "49",
+                    "pos": [
+                        571,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "31": {
+                    "pin": "31",
+                    "pos": [
+                        600,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "32": {
+                    "pin": "32",
+                    "pos": [
+                        629,
+                        10
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "38": {
+                    "pin": "38",
+                    "pos": [
+                        20,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "37": {
+                    "pin": "37",
+                    "pos": [
+                        49,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "36": {
+                    "pin": "36",
+                    "pos": [
+                        78,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "39": {
+                    "pin": "39",
+                    "pos": [
+                        107,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "25": {
+                    "pin": "25",
+                    "pos": [
+                        136,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "26": {
+                    "pin": "26",
+                    "pos": [
+                        165,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "27": {
+                    "pin": "27",
+                    "pos": [
+                        194,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "28": {
+                    "pin": "28",
+                    "pos": [
+                        223,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "29": {
+                    "pin": "29",
+                    "pos": [
+                        252,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "30": {
+                    "pin": "30",
+                    "pos": [
+                        281,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "33": {
+                    "pin": "33",
+                    "pos": [
+                        310,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "34": {
+                    "pin": "34",
+                    "pos": [
+                        339,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "40": {
+                    "pin": "40",
+                    "pos": [
+                        368,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "35": {
+                    "pin": "35",
+                    "pos": [
+                        397,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "41": {
+                    "pin": "41",
+                    "pos": [
+                        426,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "42": {
+                    "pin": "42",
+                    "pos": [
+                        455,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "51": {
+                    "pin": "51",
+                    "pos": [
+                        484,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "53": {
+                    "pin": "53",
+                    "pos": [
+                        513,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "54": {
+                    "pin": "54",
+                    "pos": [
+                        542,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "55": {
+                    "pin": "55",
+                    "pos": [
+                        571,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "56": {
+                    "pin": "56",
+                    "pos": [
+                        600,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "57": {
+                    "pin": "57",
+                    "pos": [
+                        629,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "68": {
+                    "pin": "68",
+                    "pos": [
+                        658,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "69": {
+                    "pin": "69",
+                    "pos": [
+                        687,
+                        310
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                }
+            }
+        }
+    ]
 }
