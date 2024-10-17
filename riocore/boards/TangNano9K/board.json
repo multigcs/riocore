@@ -438,6 +438,104 @@
                     "direction": "all"
                 }
             }
+        },
+        {
+            "name": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "10",
+                    "pos": [
+                        206,
+                        120
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "11",
+                    "pos": [
+                        206,
+                        140
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "13",
+                    "pos": [
+                        206,
+                        160
+                    ],
+                    "direction": "output"
+                },
+                "L4": {
+                    "pin": "14",
+                    "pos": [
+                        206,
+                        180
+                    ],
+                    "direction": "output"
+                },
+                "L5": {
+                    "pin": "15",
+                    "pos": [
+                        206,
+                        200
+                    ],
+                    "direction": "output"
+                },
+                "L6": {
+                    "pin": "16",
+                    "pos": [
+                        206,
+                        220
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "over USB",
+            "pins": {
+                "RX": {
+                    "pin": "18",
+                    "pos": [
+                        20,
+                        150
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "17",
+                    "pos": [
+                        20,
+                        170
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "SW",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "S1": {
+                    "pin": "3",
+                    "pos": [
+                        26,
+                        54
+                    ],
+                    "direction": "input"
+                },
+                "S2": {
+                    "pin": "4",
+                    "pos": [
+                        26,
+                        268
+                    ],
+                    "direction": "input"
+                }
+            }
         }
     ]
 }
