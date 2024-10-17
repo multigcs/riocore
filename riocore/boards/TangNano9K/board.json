@@ -32,6 +32,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "85": {
@@ -41,6 +42,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "84": {
@@ -50,6 +52,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "83": {
@@ -59,6 +62,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "82": {
@@ -68,6 +72,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "81": {
@@ -77,6 +82,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "80": {
@@ -86,6 +92,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "79": {
@@ -95,6 +102,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "1.8V only",
                     "direction": "all"
                 },
                 "77": {
@@ -122,6 +130,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 },
                 "74": {
@@ -131,6 +140,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 },
                 "73": {
@@ -140,6 +150,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 },
                 "72": {
@@ -149,6 +160,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 },
                 "71": {
@@ -158,6 +170,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 },
                 "70": {
@@ -167,6 +180,7 @@
                         10
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 },
                 "48": {
@@ -410,6 +424,7 @@
                         310
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 },
                 "69": {
@@ -419,6 +434,7 @@
                         310
                     ],
                     "rotate": true,
+                    "comment": "HDMI-Filter",
                     "direction": "all"
                 }
             }

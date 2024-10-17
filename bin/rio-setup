@@ -1121,6 +1121,9 @@ class TabBoard:
                 color = "darkCyan"
                 label.mark(color)
                 direction = label.pin.get("direction") or "all"
+                comment = label.pin.get("comment") or ""
+                if comment:
+                    comment = f" - {comment}"
 
                 plugin_instance, pin_name = self.parent.get_plugin_by_pin(label.pin.get("pin", {}))
                 pinfo = ""
@@ -1139,7 +1142,7 @@ class TabBoard:
                     pinfo += " <-"
                     infoline = ln
 
-                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}) {pinfo}")
+                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}{comment}) {pinfo}")
                 ln += 1
             else:
                 label.unmark()
