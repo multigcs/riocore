@@ -1113,7 +1113,8 @@ class TabBoard:
         infotext = [f"Slot: {slot_name}"]
         infotext.append("Pins:")
         networks = []
-
+        infoline = 0
+        ln = 0
         for key, label in self.pinlabels.items():
             splitted = key.split(":")
             if splitted[0] == slot_name:
@@ -1136,8 +1137,10 @@ class TabBoard:
 
                 if key == pkey:
                     pinfo += " <-"
+                    infoline = ln
 
                 infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}) {pinfo}")
+                ln += 1
             else:
                 label.unmark()
 
@@ -1146,7 +1149,13 @@ class TabBoard:
                 infotext.append("Networks:")
                 for net in networks:
                     infotext.append(f" {net}")
-            self.pininfo.setText("\n".join(infotext))
+
+            start = 0
+            end = 9
+            if infoline > 3:
+                start = infoline - 3
+                end = infoline + 6
+            self.pininfo.setText("\n".join(infotext[start:end]))
             self.pininfo_timer = 0
         else:
             self.pininfo_timer = 3
