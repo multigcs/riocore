@@ -1771,7 +1771,6 @@ class WinForm(QWidget):
         dialog_buttonBox.rejected.connect(dialog.reject)
 
         if slot_name:
-
             def add_module():
                 dialog.close()
                 self.add_module(None, slot_name=slot_name, slot_select=False)
@@ -1894,6 +1893,10 @@ class WinForm(QWidget):
                             continue
                         num_mandatory += 1
 
+                    # workaround for too many pins on slot
+                    if len(slot.get("pins", {}).keys()) > 10:
+                        num_mandatory = 1
+
                     if num_mandatory == 1:
                         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                             optional = pin_defaults.get("optional")
@@ -1904,6 +1907,7 @@ class WinForm(QWidget):
                             if direction in slotpins and pin_id in slotpins[direction]:
                                 slotpins[direction].remove(pin_id)
                             self.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
+                            break
                     else:
                         # first mandatory pins
                         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
@@ -2805,7 +2809,8 @@ class WinForm(QWidget):
 
     def edit_plugin_pins(self, plugin_instance, plugin_config):
         def update(arg):
-            print("#update", arg, plugin_config)
+            pass
+            #print("#update", arg, plugin_config)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -3102,7 +3107,8 @@ class WinForm(QWidget):
 
     def edit_plugin_signals(self, plugin_instance, plugin_config):
         def update(arg):
-            print("#update", arg, plugin_config)
+            pass
+            #print("#update", arg, plugin_config)
 
         def toggleGroup(ctrl):
             state = ctrl.isChecked()
