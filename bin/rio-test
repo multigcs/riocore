@@ -423,7 +423,7 @@ class WinForm(QWidget):
                     print(f"ERROR: reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
                     # return
                 if not rxdata:
-                    print(f"ERROR: no data reveived")
+                    print("ERROR: no data reveived")
                 elif rxdata[0] != 0x61 or rxdata[1] != 0x74 or rxdata[2] != 0x61 and rxdata[3] != 0x64:
                     print(f"ERROR: reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
                     # return

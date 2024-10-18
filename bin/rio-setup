@@ -371,17 +371,17 @@ class TabSignals:
                     options_net = []
                     for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
                         if is_bool:
-                            if halpin_info.get("type") == bool:
+                            if halpin_info.get("type") is bool:
                                 options_net.append(halpin)
-                        elif halpin_info.get("type") != bool:
+                        elif halpin_info.get("type") is not bool:
                             options_net.append(halpin)
 
                     options_func = []
                     for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
                         if is_bool:
-                            if halpin_info.get("type") == bool:
+                            if halpin_info.get("type") is bool:
                                 options_func.append(halpin)
-                        elif halpin_info.get("type") != bool:
+                        elif halpin_info.get("type") is not bool:
                             options_func.append(halpin)
 
                     if key == "function":
@@ -418,17 +418,17 @@ class TabSignals:
                 options_net = []
                 for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
                     if is_bool:
-                        if halpin_info.get("type") == bool:
+                        if halpin_info.get("type") is bool:
                             options_net.append(halpin)
-                    elif halpin_info.get("type") != bool:
+                    elif halpin_info.get("type") is not bool:
                         options_net.append(halpin)
 
                 options_func = []
                 for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
                     if is_bool:
-                        if halpin_info.get("type") == bool:
+                        if halpin_info.get("type") is bool:
                             options_func.append(halpin)
-                    elif halpin_info.get("type") != bool:
+                    elif halpin_info.get("type") is not bool:
                         options_func.append(halpin)
 
                 if key == "function":
@@ -1728,7 +1728,7 @@ class WinForm(QWidget):
                     if compatible:
                         possible_plugins = compatible
                     else:
-                        default = slot.get("default")
+                        # default = slot.get("default")
                         # if default:
                         #    possible_plugins.append(default)
                         slot_has = {
@@ -2240,11 +2240,11 @@ class WinForm(QWidget):
 
         if var_setup["type"] == "select":
             return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, default=var_setup.get("default"))
-        elif var_setup["type"] == int:
+        elif var_setup["type"] is int:
             return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, default=var_setup.get("default"))
-        elif var_setup["type"] == float:
+        elif var_setup["type"] is float:
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
-        elif var_setup["type"] == bool:
+        elif var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, default=var_setup.get("default"))
         return edit_text(self, obj, key, cb=cb, default=var_setup.get("default"))
 
@@ -2263,7 +2263,6 @@ class WinForm(QWidget):
                 # split module into plugins
                 if module_data.get("setup") is None:
                     module_name = module_data.get("module")
-                    module_setup = module_data.get("setup", {})
                     module_path = self.get_path(f"modules/{module_name}/module.json")
                     moduleJsonStr = open(module_path, "r").read()
                     module_defaults = json.loads(moduleJsonStr)
@@ -3144,17 +3143,17 @@ class WinForm(QWidget):
             options_net = []
             for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
                 if is_bool:
-                    if halpin_info.get("type") == bool:
+                    if halpin_info.get("type") is bool:
                         options_net.append(halpin)
-                elif halpin_info.get("type") != bool:
+                elif halpin_info.get("type") is not bool:
                     options_net.append(halpin)
 
             options_func = []
             for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
                 if is_bool:
-                    if halpin_info.get("type") == bool:
+                    if halpin_info.get("type") is bool:
                         options_func.append(halpin)
-                elif halpin_info.get("type") != bool:
+                elif halpin_info.get("type") is not bool:
                     options_func.append(halpin)
 
             frame = QGroupBox(self)
@@ -3539,7 +3538,7 @@ class WinForm(QWidget):
             msg.setText("no matching modules found")
             msg.setWindowTitle("Warning")
             msg.setStandardButtons(QMessageBox.Ok)
-            retval = msg.exec_()
+            msg.exec_()
         else:
             show_module_info(0)
             if dialog.exec():
