@@ -30,8 +30,8 @@ def test_generator(config, target, protocol):
         assert False
 
     if protocol == "SPI":
-        rio_c = open(f"tests/unit/output/{target}/LinuxCNC/rio.c", "r").read()
-        if "spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);" not in rio_c:
+        riocomp_c = open(f"tests/unit/output/{target}/LinuxCNC/riocomp.c", "r").read()
+        if "spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);" not in riocomp_c:
             assert False
         rio_v = open(f"tests/unit/output/{target}/Gateware/rio.v", "r").read()
         if "spi #(" not in rio_v:
