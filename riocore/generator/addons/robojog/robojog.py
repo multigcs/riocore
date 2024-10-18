@@ -81,6 +81,7 @@ JOINTS = 6
 
 try:
     import hal
+
     h = hal.component("robojog")
     for joint in range(JOINTS):
         h.newpin(f"joint.{joint}.jog-counts", hal.HAL_S32, hal.HAL_OUT)
@@ -118,7 +119,7 @@ class WinForm(QWidget):
             from qtvcp.lib import xembed
 
             window = xembed.reparent_qt_to_x11(self, args.xid)
-            forward = os.environ.get('AXIS_FORWARD_EVENTS_TO', None)
+            forward = os.environ.get("AXIS_FORWARD_EVENTS_TO", None)
             if forward:
                 xembed.XEmbedForwarding(window, forward)
 
@@ -134,7 +135,7 @@ class WinForm(QWidget):
 
         def slide_move(joint, pos):
             scale = abs(h[f"joint.{joint}.scale"])
-            #print(f"joint.{joint}.jog-counts", int(pos - self.jogdata[joint]["last"]))
+            # print(f"joint.{joint}.jog-counts", int(pos - self.jogdata[joint]["last"]))
             h[f"joint.{joint}.jog-counts"] += int(pos - self.jogdata[joint]["last"])
             self.jogdata[joint]["label"].setText(f"J0: {pos / scale:0.3f}")
             self.jogdata[joint]["last"] = pos
@@ -147,7 +148,7 @@ class WinForm(QWidget):
                 "label": None,
                 "slider": None,
             }
-            #print(joint, h[f"joint.{joint}.scale"])
+            # print(joint, h[f"joint.{joint}.scale"])
             jogdata["label"] = QLabel(f"J{joint}: --")
             jogdata["slider"] = QSlider(Qt.Horizontal)
             jogdata["slider"].setFixedWidth(250)
@@ -171,7 +172,7 @@ class WinForm(QWidget):
     def runTimer(self):
         for joint in range(self.joints):
             jogdata = self.jogdata[joint]
-            #print(joint, jogdata)
+            # print(joint, jogdata)
             pos = h[f"joint.{joint}.position"]
             scale = abs(h[f"joint.{joint}.scale"])
             if jogdata["min_limit"] != h[f"joint.{joint}.min_limit"]:

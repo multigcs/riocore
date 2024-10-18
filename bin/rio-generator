@@ -7,7 +7,7 @@ import os
 import sys
 
 if os.path.isfile("./riocore/__init__.py"):
-	sys.path.insert(0, "./")
+    sys.path.insert(0, "./")
 
 import riocore
 

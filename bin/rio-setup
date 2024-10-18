@@ -16,7 +16,7 @@ import time
 from functools import partial
 
 if os.path.isfile("./riocore/__init__.py"):
-	sys.path.insert(0, "./")
+    sys.path.insert(0, "./")
 
 import graphviz
 import riocore
@@ -1771,6 +1771,7 @@ class WinForm(QWidget):
         dialog_buttonBox.rejected.connect(dialog.reject)
 
         if slot_name:
+
             def add_module():
                 dialog.close()
                 self.add_module(None, slot_name=slot_name, slot_select=False)
@@ -2810,7 +2811,7 @@ class WinForm(QWidget):
     def edit_plugin_pins(self, plugin_instance, plugin_config):
         def update(arg):
             pass
-            #print("#update", arg, plugin_config)
+            # print("#update", arg, plugin_config)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -3108,7 +3109,7 @@ class WinForm(QWidget):
     def edit_plugin_signals(self, plugin_instance, plugin_config):
         def update(arg):
             pass
-            #print("#update", arg, plugin_config)
+            # print("#update", arg, plugin_config)
 
         def toggleGroup(ctrl):
             state = ctrl.isChecked()
@@ -3532,10 +3533,17 @@ class WinForm(QWidget):
         dialog.layout.addLayout(infos)
         dialog.layout.addWidget(dialog_buttonBox)
 
-        show_module_info(0)
-
-        if dialog.exec():
-            return (combo_slot.currentText(), dialog.selected)
+        if not dialog.module_names:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("no matching modules found")
+            msg.setWindowTitle("Warning")
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_()
+        else:
+            show_module_info(0)
+            if dialog.exec():
+                return (combo_slot.currentText(), dialog.selected)
 
     def flash_cb(self):
         self.tabwidget.setCurrentWidget(self.tabs["Gateware"].widget())

@@ -1,9 +1,9 @@
-
 import os
 import shutil
 import stat
 
 addon_path = os.path.dirname(__file__)
+
 
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
@@ -43,10 +43,10 @@ def hal(parent):
         for axis_name, axis_config in parent.axis_dict.items():
             joints = axis_config["joints"]
             axis_low = axis_name.lower()
-            #parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
-            #parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
-            #parent.hal_setp_add(f"axis.{axis_low}.jog-scale", 0.01)
-            #parent.hal_net_add(f"robojog.joint.{joint}.jog-counts", f"axis.{axis_low}.jog-counts")
+            # parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
+            # parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
+            # parent.hal_setp_add(f"axis.{axis_low}.jog-scale", 0.01)
+            # parent.hal_net_add(f"robojog.joint.{joint}.jog-counts", f"axis.{axis_low}.jog-counts")
             for joint, joint_setup in joints.items():
                 min_limit = joint_setup.get("MIN_LIMIT", -180)
                 max_limit = joint_setup.get("MAX_LIMIT", 180)

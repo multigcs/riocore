@@ -11,7 +11,7 @@ import traceback
 from functools import partial
 
 if os.path.isfile("./riocore/__init__.py"):
-	sys.path.insert(0, "./")
+    sys.path.insert(0, "./")
 
 import riocore
 from PyQt5.QtCore import Qt, QTimer

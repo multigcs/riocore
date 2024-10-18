@@ -65,6 +65,7 @@ import cv2
 
 try:
     import hal
+
     h = hal.component("camjog")
     h.newpin("axis.x.jog-counts", hal.HAL_S32, hal.HAL_OUT)
     h.newpin("axis.y.jog-counts", hal.HAL_S32, hal.HAL_OUT)
@@ -75,15 +76,18 @@ except Exception:
 
 TWO_PI = math.pi * 2
 
+
 def line_center_2d(p_1, p_2):
     """gets the center point between 2 points in 2D."""
     center_x = (p_1[0] + p_2[0]) / 2
     center_y = (p_1[1] + p_2[1]) / 2
     return (center_x, center_y)
 
+
 def angle_of_line(p_1, p_2):
     """gets the angle of a single line."""
     return math.atan2(p_2[1] - p_1[1], p_2[0] - p_1[0])
+
 
 def angle_2d(p_1, p_2):
     """gets the angle of a single line (2nd version)."""
@@ -95,6 +99,7 @@ def angle_2d(p_1, p_2):
     while dtheta < -math.pi:
         dtheta += TWO_PI
     return dtheta
+
 
 def is_inside_polygon(polygon, point):
     """checks if a point is inside an polygon."""
@@ -120,7 +125,7 @@ class MyImage(QLabel):
 
     def resizeEvent(self, event):
         pass
-        #print(self.width(), self.height())
+        # print(self.width(), self.height())
 
     def wheelEvent(self, event):
         delta = event.angleDelta()
@@ -138,7 +143,6 @@ class MyImage(QLabel):
         self.parent.zoom_label.setText(f"{self.parent.options['zoom']:0.1f}")
 
     def mousePressEvent(self, event):
-
         if event.button() == Qt.LeftButton:
             self.new_x = event.pos().x()
             self.new_y = event.pos().y()
@@ -222,10 +226,9 @@ class WinForm(QWidget):
             from qtvcp.lib import xembed
 
             window = xembed.reparent_qt_to_x11(self, args.xid)
-            forward = os.environ.get('AXIS_FORWARD_EVENTS_TO', None)
+            forward = os.environ.get("AXIS_FORWARD_EVENTS_TO", None)
             if forward:
                 xembed.XEmbedForwarding(window, forward)
-
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -245,7 +248,6 @@ class WinForm(QWidget):
 
         self.zoom_label = QLabel("1.0")
         setup_layout.addWidget(self.zoom_label)
-
 
         ctrl_container = QWidget()
         ctrl_layout = QHBoxLayout(ctrl_container)
@@ -273,9 +275,6 @@ class WinForm(QWidget):
         self.camera.image.connect(self.update_image)
         self.camera.start()
 
-
-
-
     def clear_cb(self, w):
         self.options["points"] = []
         self.options["edges"] = []
@@ -285,8 +284,6 @@ class WinForm(QWidget):
         self.camera.image.connect(self.update_image)
         self.camera.start()
 
-
-
     def change_mode(self, mode):
         self.options["mode"] = mode
         if mode == "edges" or mode == "touch":
@@ -295,7 +292,6 @@ class WinForm(QWidget):
 
     def change_view(self, view):
         self.options["view"] = view
-
 
     def convert_to_cam(self, point):
         x = point[0]
@@ -316,14 +312,12 @@ class WinForm(QWidget):
         offset_y = int((y - cy) // s)
         return (offset_x, offset_y)
 
-
     def convert_to_screen(self, point):
         s = self.options["scale"]
         z = self.options["zoom"]
         cx = self.options["width"] / 2
         cy = self.options["height"] / 2
         return (int((point[0] + cx) * s * z), int((point[1] + cy) * s * z))
-
 
     def update_image(self, frame):
         if self.options["view"] == "edge":
@@ -340,7 +334,7 @@ class WinForm(QWidget):
             contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
             for cnt in contours:
-                approx = cv2.approxPolyDP(cnt, 0.009 * cv2.arcLength(cnt, True), True) 
+                approx = cv2.approxPolyDP(cnt, 0.009 * cv2.arcLength(cnt, True), True)
                 cv2.drawContours(frame, [approx], 0, (0, 0, 255), 1)
 
             """
@@ -353,10 +347,8 @@ class WinForm(QWidget):
                 cv2.rectangle(frame, (x - offset, y - offset), (x + offset, y + offset), (36, 255, 12), 1)
             """
 
-
         elif self.options["view"] == "gray":
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
 
         s = self.options["scale"]
         z = self.options["zoom"]
@@ -365,15 +357,14 @@ class WinForm(QWidget):
         cx = w // 2
         cy = h // 2
 
-
         # scale image
         nw = int(w * s * z)
         nh = int(h * s * z)
         frame = cv2.resize(frame, (nw, nh), interpolation=cv2.INTER_LINEAR)
 
         # draw center lines
-        cv2.line(frame, (0, nh//2), (nw, nh//2), (255, 0, 0), 1)
-        cv2.line(frame, (nw//2, 0), (nw//2, nh), (255, 0, 0), 1)
+        cv2.line(frame, (0, nh // 2), (nw, nh // 2), (255, 0, 0), 1)
+        cv2.line(frame, (nw // 2, 0), (nw // 2, nh), (255, 0, 0), 1)
 
         # draw points
         last_point = None
@@ -384,7 +375,6 @@ class WinForm(QWidget):
                 cv2.line(frame, last_point, point, (0, 255, 0), 2)
             last_point = point
 
-
         if len(self.options["points"]) == 3:
             self.options["edges"] = self.options["points"]
         elif len(self.options["points"]) == 4:
@@ -392,15 +382,12 @@ class WinForm(QWidget):
         else:
             self.options["edges"] = []
 
-
-
         if self.options["edges"]:
             # create polygon
             polygon = []
             for point in self.options["edges"]:
                 point = self.convert_to_screen(point)
                 polygon.append(point)
-
 
             # check polygon direction
             last_point = polygon[0]
@@ -412,7 +399,6 @@ class WinForm(QWidget):
             aoff = 0.0
             if is_inside_polygon(polygon, (ap_x, ap_y)):
                 aoff = math.pi
-
 
             # calc offsets and vectors
             radius = 40
@@ -427,7 +413,7 @@ class WinForm(QWidget):
 
                     angle = angle_of_line(last_point, point) + aoff
                     agrid = int(((angle * 180 / math.pi) + 45) / 90) * 90
-                    #print(agrid)
+                    # print(agrid)
 
                     ap_x = center[0] + radius * math.sin(agrid * math.pi / 180.0)
                     ap_y = center[1] - radius * math.cos(agrid * math.pi / 180.0)
@@ -435,12 +421,9 @@ class WinForm(QWidget):
                     ap2_x = center[0] + -radius * math.sin(agrid * math.pi / 180.0)
                     ap2_y = center[1] - -radius * math.cos(agrid * math.pi / 180.0)
 
-                    
                     cv2.line(frame, (int(ap_x), int(ap_y)), (int(ap2_x), int(ap2_y)), (0, 0, 255), 3)
-                    
 
                 last_point = point
-
 
         if self.options["touch"]:
             point = self.convert_to_screen(self.options["touch"])

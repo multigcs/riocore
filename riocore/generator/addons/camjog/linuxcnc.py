@@ -1,9 +1,9 @@
-
 import os
 import shutil
 import stat
 
 addon_path = os.path.dirname(__file__)
+
 
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
@@ -65,9 +65,9 @@ def hal(parent):
     output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
     gui = parent.project.config["jdata"].get("gui", "axis")
-    
+
     parent.postgui_components_add("camjog")
-    
+
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
             camjog_device = camjog.get("device", f"/dev/video{camjog_num}")
