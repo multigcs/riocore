@@ -969,8 +969,14 @@ class TabBoard:
         ipin_layout.addWidget(self.pininfo)
         ipin_layout.addStretch()
 
+        self.scroll_widget = QScrollArea()
+        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setWidgetResizable(True)
+        self.scroll_widget.setWidget(self.ipin_widget)
+
     def widget(self):
-        return self.ipin_widget
+        return self.scroll_widget
 
     def timer(self):
         if self.pininfo_timer == 1:
@@ -1158,9 +1164,13 @@ class TabBoard:
             if infoline > 3:
                 start = infoline - 3
                 end = infoline + 6
-            self.pininfo.setText("\n".join(infotext[start:end]))
+            displayed = infotext[start:end]
+            fill = 10 - len(displayed)
+            displayed += [""] * fill
+            self.pininfo.setText("\n".join(displayed))
             self.pininfo_timer = 0
         else:
+            self.pininfo.setText("\n".join([""] * 10))
             self.pininfo_timer = 3
 
 
