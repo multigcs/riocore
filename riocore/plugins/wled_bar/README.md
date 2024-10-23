@@ -3,6 +3,8 @@
 
 simple ws2812b driver with variable input to build led-bars
 
+Keywords: led rgb status info
+
 
 ![image.png](image.png)
 

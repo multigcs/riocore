@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "signal"
         self.INFO = "virtual signal"
         self.DESCRIPTION = "virtual signal"
+        self.KEYWORDS = "virtual"
         self.ORIGIN = ""
         self.VERILOGS = []
         self.OPTIONS = {

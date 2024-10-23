@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "stepper"
         self.INFO = "stepper driver output for H-Bridges like L298"
         self.DESCRIPTION = "direct stepper driver with 4pin's directly controlled by the FPGA"
+        self.KEYWORDS = "stepper joint hbridge"
         self.ORIGIN = ""
         self.VERILOGS = ["stepper.v"]
         self.TYPE = "joint"

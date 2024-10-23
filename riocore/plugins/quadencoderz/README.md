@@ -3,6 +3,8 @@
 
 usable as spindle-encoder for rigid tapping and thread cutting
 
+Keywords: feedback encoder rotary linear glassscale  index
+
 
 ![image.png](image.png)
 

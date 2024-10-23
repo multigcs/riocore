@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "irin"
         self.INFO = "IR-Remote input"
         self.DESCRIPTION = "that was just a gimmick, not really useful"
+        self.KEYWORDS = "remote control keyboard"
         self.ORIGIN = "https://github.com/douggilliland/MultiComp/blob/master/MultiComp_On_Cyclone%20IV%20VGA%20Card/Card%20docs%20ZRTech-C/3-Example%20Code/5-example_IR_1/ir.v"
         self.VERILOGS = ["irin.v"]
         self.PINDEFAULTS = {

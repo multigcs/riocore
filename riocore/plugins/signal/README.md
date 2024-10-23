@@ -3,6 +3,8 @@
 
 virtual signal
 
+Keywords: virtual
+
 
 ![image.png](image.png)
 

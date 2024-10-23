@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "bitin"
         self.INFO = "single input pin"
         self.DESCRIPTION = "to read switches or other 1bit signals"
+        self.KEYWORDS = "switch limit estop keyboard"
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {

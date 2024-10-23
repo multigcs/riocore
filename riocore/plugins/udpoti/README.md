@@ -3,6 +3,8 @@
 
 controling digital poti for analog outputs
 
+Keywords: analog dac poti
+
 
 ![image.png](image.png)
 

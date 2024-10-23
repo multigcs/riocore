@@ -32,6 +32,8 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
         
 
+Keywords: expansion digital io
+
 
 ![image.png](image.png)
 

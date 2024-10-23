@@ -3,6 +3,8 @@
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 
+Keywords: modbus vfd spindle expansion analog digital
+
 
 ![image.png](image.png)
 

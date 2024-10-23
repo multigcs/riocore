@@ -41,6 +41,9 @@ class Plugins:
         if plugin.DESCRIPTION:
             output.append(plugin.DESCRIPTION)
             output.append("")
+        if plugin.KEYWORDS:
+            output.append(f"Keywords: {plugin.KEYWORDS}")
+            output.append("")
 
         plugin_path = f"{riocore_path}/plugins/{plugin_name}"
         image_path = f"{plugin_path}/image.png"

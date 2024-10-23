@@ -1,7 +1,9 @@
 # lm75
 **I2C Temperature-Sensor**
 
-simple temperure sensor
+simple temperature sensor
+
+Keywords: analog adc temperature
 
 
 ![image.png](image.png)

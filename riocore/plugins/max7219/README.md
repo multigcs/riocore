@@ -3,6 +3,8 @@
 
 to display values from LinuxCNC on 7segment display's
 
+Keywords: info display
+
 
 ![image.png](image.png)
 

@@ -3,6 +3,8 @@
 
 to read analog signals with cheap ads1115 chips
 
+Keywords: adc analog temperature ampere voltage
+
 
 ![image.png](image.png)
 

@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "sonar"
         self.INFO = "sonar sensor for distance measurement"
         self.DESCRIPTION = "to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)"
+        self.KEYWORDS = "distance ultrasonic level oil water"
         self.ORIGIN = ""
         self.VERILOGS = ["sonar.v"]
         self.PINDEFAULTS = {

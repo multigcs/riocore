@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "spi"
         self.INFO = "spi interface for host comunication"
         self.DESCRIPTION = "for direct connections to Raspberry-PI or over UDB2SPI-Bridges"
+        self.KEYWORDS = "interface spi raspberry rpi"
         self.ORIGIN = "https://www.fpga4fun.com/SPI2.html"
         self.VERILOGS = ["spi.v"]
         self.PINDEFAULTS = {

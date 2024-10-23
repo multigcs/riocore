@@ -5,6 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "shiftreg"
         self.INFO = "Expansion to add I/O's via shiftregister's"
+        self.KEYWORDS = "expansion digital io"
         self.DESCRIPTION = """
 do not use this for high frequency signals !!!
 

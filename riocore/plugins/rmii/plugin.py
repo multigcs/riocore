@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "rmii"
         self.INFO = "rmii udp interface (experimental)"
         self.DESCRIPTION = "rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)"
+        self.KEYWORDS = "interface network ethernet udp"
         self.ORIGIN = "https://github.com/sipeed/TangPrimer-20K-example/tree/main/Ethernet/verilog_UDP"
         self.VERILOGS = ["udp.v", "rmii.v"]
         self.LIMITATIONS = {

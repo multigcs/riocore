@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.NAME = "ads1115"
         self.INFO = "4-channel adc via I2C"
         self.DESCRIPTION = "to read analog signals with cheap ads1115 chips"
+        self.KEYWORDS = "adc analog temperature ampere voltage"
         self.ORIGIN = "https://learn.lushaylabs.com/i2c-adc-micro-procedures/#the-i2c-protocol"
         self.VERILOGS = ["ads1115.v"]
         self.PINDEFAULTS = {

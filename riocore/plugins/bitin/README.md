@@ -3,6 +3,8 @@
 
 to read switches or other 1bit signals
 
+Keywords: switch limit estop keyboard
+
 
 ![image.png](image.png)
 

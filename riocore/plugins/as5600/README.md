@@ -3,6 +3,8 @@
 
 for position feedbacks
 
+Keywords: encoder scale feedback absolute
+
 
 ![image.png](image.png)
 

@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "bitout"
         self.INFO = "singe bit output pin"
         self.DESCRIPTION = "to control relais, leds, valves, ...."
+        self.KEYWORDS = "led relais valve lamp motor magnet"
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {

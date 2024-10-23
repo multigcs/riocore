@@ -3,6 +3,8 @@
 
 rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)
 
+Keywords: interface network ethernet udp
+
 
 ![image.png](image.png)
 

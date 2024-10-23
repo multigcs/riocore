@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "freqout"
         self.INFO = "frequency output"
         self.DESCRIPTION = "to output variable frequency signals"
+        self.KEYWORDS = "frequency"
         self.ORIGIN = ""
         self.VERILOGS = ["freqout.v"]
         self.PINDEFAULTS = {

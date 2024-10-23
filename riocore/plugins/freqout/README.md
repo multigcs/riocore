@@ -3,6 +3,8 @@
 
 to output variable frequency signals
 
+Keywords: frequency
+
 
 ![image.png](image.png)
 

@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "spipoti"
         self.INFO = "spi digital poti"
         self.DESCRIPTION = "Analog-Outout via spi digital poti"
+        self.KEYWORDS = "analog poti dac"
         self.ORIGIN = ""
         self.VERILOGS = ["spipoti.v"]
         self.PINDEFAULTS = {

@@ -3,6 +3,8 @@
 
 direct stepper driver with 4pin's directly controlled by the FPGA
 
+Keywords: stepper joint hbridge
+
 
 ![image.png](image.png)
 

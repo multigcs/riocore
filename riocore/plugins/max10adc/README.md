@@ -3,6 +3,8 @@
 
 only usable for the max10 fpga boards
 
+Keywords: analog adc voltage ampere
+
 
 ![image.png](image.png)
 

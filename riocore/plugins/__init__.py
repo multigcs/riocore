@@ -93,7 +93,8 @@ class PluginBase:
         self.TYPE = "io"
         self.INFO = ""
         self.DESCRIPTION = ""
-        self.DESCRIPTION = ""
+        self.KEYWORDS = ""
+        self.ORIGIN = ""
         self.GATEWARE_SUPPORT = True
         self.FIRMWARE_SUPPORT = False
         self.OPTIONS = {}

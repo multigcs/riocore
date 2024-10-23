@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "quadencoder"
         self.INFO = "quadencoder"
         self.DESCRIPTION = "usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites"
+        self.KEYWORDS = "feedback encoder rotary linear glassscale"
         self.ORIGIN = "https://www.fpga4fun.com/QuadratureDecoder.html"
         self.VERILOGS = ["quadencoder.v"]
         self.PINDEFAULTS = {

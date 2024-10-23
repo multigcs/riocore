@@ -11,6 +11,8 @@ should work also with the iceFUN board
 
         
 
+Keywords: analog adc voltage ampere
+
 
 ![image.png](image.png)
 

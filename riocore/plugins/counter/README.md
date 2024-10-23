@@ -3,6 +3,8 @@
 
 to counting digital pulses, supporting up,down and reset signals
 
+Keywords: counter pulse
+
 
 ![image.png](image.png)
 

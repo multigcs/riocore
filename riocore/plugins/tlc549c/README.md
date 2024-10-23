@@ -3,6 +3,8 @@
 
 Analog input via tlc549 ADC
 
+Keywords: analog adc
+
 
 ![image.png](image.png)
 

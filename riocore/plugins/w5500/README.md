@@ -3,6 +3,8 @@
 
 w5500 driver for the interface communication over UDP
 
+Keywords: ethernet network udp interface
+
 
 ![image.png](image.png)
 

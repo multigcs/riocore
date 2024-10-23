@@ -8,6 +8,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "uartbridge"
         self.INFO = "uart bridge - experimental - python only"
+        self.KEYWORDS = "serial uart"
         self.DESCRIPTION = "uart bridge to send and receive custom frames via uart port"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.VERILOGS = ["uartbridge.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]

@@ -3,6 +3,8 @@
 
 usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
 
+Keywords: feedback encoder rotary linear glassscale
+
 
 ![image.png](image.png)
 

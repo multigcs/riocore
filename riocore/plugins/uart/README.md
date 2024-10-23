@@ -3,6 +3,8 @@
 
 simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
 
+Keywords: serial uart interface
+
 
 ![image.png](image.png)
 

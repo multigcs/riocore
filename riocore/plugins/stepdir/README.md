@@ -3,6 +3,8 @@
 
 to control motor drivers via step/dir pin's and an optional enable pin
 
+Keywords: stepper servo joint
+
 
 ![image.png](image.png)
 

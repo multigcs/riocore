@@ -3,6 +3,8 @@
 
 for cheap 1wire temperature sensor's, only one per pin is supported at the moment
 
+Keywords: adc analog temperature
+
 
 ![image.png](image.png)
 

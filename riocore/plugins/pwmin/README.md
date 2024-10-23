@@ -3,6 +3,8 @@
 
 measuring pulse len
 
+Keywords: pulse digital
+
 
 ![image.png](image.png)
 

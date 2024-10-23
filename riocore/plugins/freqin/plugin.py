@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "freqin"
         self.INFO = "frequency input"
         self.DESCRIPTION = "to messurement digital frequencies"
+        self.KEYWORDS = "frequency"
         self.ORIGIN = ""
         self.VERILOGS = ["freqin.v"]
         self.PINDEFAULTS = {

@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "pwmin"
         self.INFO = "pwm input"
         self.DESCRIPTION = "measuring pulse len"
+        self.KEYWORDS = "pulse digital"
         self.ORIGIN = ""
         self.VERILOGS = ["pwmin.v"]
         self.PINDEFAULTS = {

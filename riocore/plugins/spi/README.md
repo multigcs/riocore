@@ -3,6 +3,8 @@
 
 for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 
+Keywords: interface spi raspberry rpi
+
 
 ![image.png](image.png)
 

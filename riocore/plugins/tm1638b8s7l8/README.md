@@ -3,6 +3,8 @@
 
 with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)
 
+Keywords: display info status keyboard buttons
+
 
 ![image.png](image.png)
 

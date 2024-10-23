@@ -3,6 +3,8 @@
 
 Analog-Outout via spi digital poti
 
+Keywords: analog poti dac
+
 
 ![image.png](image.png)
 

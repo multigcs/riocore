@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "udpoti"
         self.INFO = "digital-poti with up/down+dir interface"
         self.DESCRIPTION = "controling digital poti for analog outputs"
+        self.KEYWORDS = "analog dac poti"
         self.ORIGIN = ""
         self.VERILOGS = ["udpoti.v"]
         self.PINDEFAULTS = {

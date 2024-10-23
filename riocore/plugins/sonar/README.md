@@ -3,6 +3,8 @@
 
 to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
 
+Keywords: distance ultrasonic level oil water
+
 
 ![image.png](image.png)
 

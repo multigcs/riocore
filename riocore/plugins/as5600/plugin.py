@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "as5600"
         self.INFO = "magnetic absolute encoder"
         self.DESCRIPTION = "for position feedbacks"
+        self.KEYWORDS = "encoder scale feedback absolute"
         self.ORIGIN = "https://learn.lushaylabs.com/i2c-adc-micro-procedures/#the-i2c-protocol"
         self.VERILOGS = ["as5600.v"]
         self.PINDEFAULTS = {

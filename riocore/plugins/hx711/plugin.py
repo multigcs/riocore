@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "hx711"
         self.INFO = "digital weight sensor"
         self.DESCRIPTION = "to measure weight's"
+        self.KEYWORDS = "adc analog weight"
         self.ORIGIN = ""
         self.VERILOGS = ["hx711.v"]
         self.PINDEFAULTS = {

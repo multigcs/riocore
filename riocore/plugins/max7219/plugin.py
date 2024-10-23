@@ -5,6 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "max7219"
         self.INFO = "7segment display based on max7219"
+        self.KEYWORDS = "info display"
         self.DESCRIPTION = "to display values from LinuxCNC on 7segment display's"
         self.ORIGIN = ""
         self.VERILOGS = ["max7219.v"]

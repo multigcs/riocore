@@ -3,6 +3,8 @@
 
 simple ws2812b led driver / same as the wled plugin but integrated as an expansion to combinate with other plugins
 
+Keywords: expansion led rgb status info
+
 
 ![image.png](image.png)
 

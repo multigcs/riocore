@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "max6675"
         self.INFO = "SPI temperature sensor"
         self.DESCRIPTION = "to messurement very high temperatures of up to 1250 degrees Celsius"
+        self.KEYWORDS = "analog adc"
         self.ORIGIN = ""
         self.VERILOGS = ["max6675.v"]
         self.PINDEFAULTS = {

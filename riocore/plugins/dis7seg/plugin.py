@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "dis7seg"
         self.INFO = "7segment display with buttons"
         self.DESCRIPTION = "only usable for devboards with 7segment display / better using other 7seg plugins"
+        self.KEYWORDS = "info display"
         self.ORIGIN = ""
         self.VERILOGS = ["dis7seg.v"]
         self.PINDEFAULTS = {

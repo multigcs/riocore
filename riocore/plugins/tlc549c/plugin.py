@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "tlc549c"
         self.INFO = "spi adc input"
         self.DESCRIPTION = "Analog input via tlc549 ADC"
+        self.KEYWORDS = "analog adc"
         self.ORIGIN = ""
         self.VERILOGS = ["tlc549c.v"]
         self.PINDEFAULTS = {

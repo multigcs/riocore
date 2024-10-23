@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "w5500"
         self.INFO = "udp interface for host comunication"
         self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
+        self.KEYWORDS = "ethernet network udp interface"
         self.ORIGIN = "https://github.com/harout/concurrent-data-capture"
         self.TYPE = "interface"
         self.VERILOGS = ["w5500.v"]

@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "ds18b20"
         self.INFO = "1Wire Temperature sensor"
         self.DESCRIPTION = "for cheap 1wire temperature sensor's, only one per pin is supported at the moment"
+        self.KEYWORDS = "adc analog temperature"
         self.ORIGIN = "https://github.com/Prajjalak/FPGA_Thermometer/blob/main/ds18b20_drive.v"
         self.VERILOGS = ["ds18b20.v"]
         self.PINDEFAULTS = {

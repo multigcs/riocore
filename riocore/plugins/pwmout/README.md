@@ -1,7 +1,9 @@
 # pwmout
 **pwm output**
 
-to control DC-Motors or for analog outputs
+to control AC/DC-Motors or for analog outputs
+
+Keywords: joint dcservo acservo 10v 5v dac analog
 
 
 ![image.png](image.png)

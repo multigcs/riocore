@@ -1,6 +1,8 @@
 # arty_mii
 **udp interface for host comunication - experimental - Arty7-35t only**
 
+Keywords: network ethernet interface udp
+
 
 ![image.png](image.png)
 

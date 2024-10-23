@@ -5,7 +5,8 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "pwmout"
         self.INFO = "pwm output"
-        self.DESCRIPTION = "to control DC-Motors or for analog outputs"
+        self.DESCRIPTION = "to control AC/DC-Motors or for analog outputs"
+        self.KEYWORDS = "joint dcservo acservo 10v 5v dac analog"
         self.ORIGIN = ""
         self.VERILOGS = ["pwmout.v"]
         self.TYPE = "joint"

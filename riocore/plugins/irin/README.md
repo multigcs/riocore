@@ -3,6 +3,8 @@
 
 that was just a gimmick, not really useful
 
+Keywords: remote control keyboard
+
 
 ![image.png](image.png)
 

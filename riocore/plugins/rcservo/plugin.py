@@ -6,6 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "rcservo"
         self.INFO = "rc-servo output"
         self.DESCRIPTION = "to control rc-servos, usable as joint or as variable/analog output in LinuxCNC"
+        self.KEYWORDS = "joint rcservo"
         self.ORIGIN = ""
         self.VERILOGS = ["rcservo.v"]
         self.TYPE = "joint"

@@ -3,6 +3,8 @@
 
 to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 
+Keywords: joint rcservo
+
 
 ![image.png](image.png)
 

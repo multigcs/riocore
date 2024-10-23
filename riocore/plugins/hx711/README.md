@@ -3,6 +3,8 @@
 
 to measure weight's
 
+Keywords: adc analog weight
+
 
 ![image.png](image.png)
 
