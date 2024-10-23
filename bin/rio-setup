@@ -1824,8 +1824,8 @@ class WinForm(QWidget):
             plugin_table.setRowCount(0)
             row = 0
             for plugin_name in possible_plugins:
-                description = plugin_infos[plugin_name]["description"]
-                if search_str not in plugin_name and search_str not in description:
+                stext = plugin_name + plugin_infos[plugin_name].get("info", "") + plugin_infos[plugin_name].get("description", "")
+                if search_str not in stext:
                     continue
                 pitem = QTableWidgetItem(plugin_name)
                 plugin_table.setRowCount(row + 1)
