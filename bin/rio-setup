@@ -1792,7 +1792,10 @@ class WinForm(QWidget):
         dialog.setLayout(dialog.layout)
 
         def show_plugin_info(idx):
-            plugin_name = possible_plugins[idx]
+            if not plugin_table.item(idx, 0):
+                return
+
+            plugin_name = plugin_table.item(idx, 0).text()
             plugin_path = f"{riocore_path}/plugins/{plugin_name}"
             image_path = f"{plugin_path}/image.png"
             if os.path.isfile(image_path):
@@ -1817,6 +1820,18 @@ class WinForm(QWidget):
             description_label.setText(description)
             dialog.selected = plugin_name
 
+        def search(search_str):
+            plugin_table.setRowCount(0)
+            row = 0
+            for plugin_name in possible_plugins:
+                description = plugin_infos[plugin_name]["description"]
+                if search_str not in plugin_name and search_str not in description:
+                    continue
+                pitem = QTableWidgetItem(plugin_name)
+                plugin_table.setRowCount(row + 1)
+                plugin_table.setItem(row, 0, pitem)
+                row += 1
+
         plugin_table = QTableWidget()
         plugin_table.setColumnCount(1)
         plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugins"))
@@ -1827,6 +1842,8 @@ class WinForm(QWidget):
         plugin_table.setFixedWidth(200)
         plugin_table.cellClicked.connect(show_plugin_info)
         plugin_table.currentCellChanged.connect(show_plugin_info)
+        header = plugin_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
 
         mid_layout = QVBoxLayout()
         mid_widget = QWidget()
@@ -1851,8 +1868,17 @@ class WinForm(QWidget):
         right_layout.addWidget(image_label)
         right_layout.addStretch()
 
+        left_layout = QVBoxLayout()
+        left_widget = QWidget()
+        left_widget.setLayout(left_layout)
+        plugin_search = QLineEdit("")
+        plugin_search.textChanged.connect(search)
+        left_layout.addWidget(plugin_search)
+        left_layout.addWidget(plugin_table)
+        left_layout.addStretch()
+
         infos = QHBoxLayout()
-        infos.addWidget(plugin_table, stretch=1)
+        infos.addWidget(left_widget, stretch=1)
         infos.addWidget(mid_widget, stretch=3)
         infos.addWidget(right_widget, stretch=1)
 
