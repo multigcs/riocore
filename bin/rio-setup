@@ -981,7 +981,7 @@ class TabBoard:
     def timer(self):
         if self.pininfo_timer == 1:
             self.pininfo_timer = 0
-            self.pininfo.setText("")
+            self.pininfo.setText("\n".join([""] * 10))
         elif self.pininfo_timer > 1:
             self.pininfo_timer -= 1
 
@@ -1170,7 +1170,6 @@ class TabBoard:
             self.pininfo.setText("\n".join(displayed))
             self.pininfo_timer = 0
         else:
-            self.pininfo.setText("\n".join([""] * 10))
             self.pininfo_timer = 3
 
 
