@@ -16,6 +16,7 @@
 - [About](#about)
 - [Prerequisites](#prerequisites)
 - [Build and Run](#run)
+- [FAQ](#faq)
 
 ## About <a name = "about"></a>
 
@@ -33,11 +34,8 @@ NOTE: this is only tested with a TangNano9k using the TangNano9k-icestorm board 
 You require 2 things:
 - A linux system. You probably already have this, since you're working with linuxcnc
 - Docker. Most distributions of linux including those for the Raspberry Pi distribute Docker through their package manager.
-  - Ubuntu/debian: sudo apt-get -y install docker.io
-  - It helps to have your user in the `docker` group.
-  - You should probably restart your computer so you ensure your user is in the correct group.
 
-Note: you only need to be running docker while you're working with the riocore ui or generator, you may disable it when you're done to save resources if you prefer.
+Note: More information in the [FAQ](#faq).  
 
 ## Build and Run <a name = "run"></a>
 
@@ -68,3 +66,21 @@ NOTE: any files created by the container will be owned by root, so if that's a h
 ```
 cd /path/to/riocore/repo
 sudo chown -R cnc:cnc ./
+```
+
+## FAQ <a name = "faq"></a>
+
+- How to install Docker?  Ubuntu/debian: `sudo apt-get -y install docker.io`
+- I get permission errors when I start `make docker-run`. I tried `sudo make docker-run` and it won't start either.
+
+	Your Linux user need to have the rights to run docker. Add your user to the docker group, give access to docker and restart your system.
+
+```bash
+sudo usermod -aG docker $USER
+sudo chown root:docker /var/run/docker.sock
+sudo chown -R root:docker /var/run/docker
+sudo reboot
+````
+- Do I need to keep docker once I am done with flashing the FPGA?
+No, you only need to be running docker while you're working with the riocore ui or generator, you may disable it when you're done to save resources if you prefer.
+- I want to use a different toolchain for the Tang Nano 9k? To use the Icewind toolchain use `make docker-run` to use the Gowin toolchain use `make docker-run-gowin`. 
