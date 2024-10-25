@@ -3389,6 +3389,10 @@ class WinForm(QWidget):
 
         tab_widget = QTabWidget()
 
+        if is_new and plugin_instance.TYPE == "joint":
+            if "position" in plugin_instance.SIGNALS:
+                plugin_config["is_joint"] = True
+
         options_tab = self.edit_plugin_options(plugin_instance, plugin_config)
         tab_widget.addTab(options_tab, "Plugin")
 
