@@ -66,13 +66,18 @@ here is a small overview of the boards: [TOOLCHAINS](TOOLCHAINS.md)
 
 ## Getting Started <a name = "getting_started"></a>
 
-installing via git:
+There are 2 ways of getting started. 
+
+ 1. Install riocore on the linux  [host](#host).
+ 2. Use [docker](DOCKER.md).
+
+### Install ricore on the host <a name = "host"></a>
+
+- installing via git:
 ```
 git clone https://github.com/multigcs/riocore.git
 cd riocore
 ```
-
-Using a TangNano9k or other board supported by the open-cad-suite? Check out the docker setup for an easy to use all in one way to run the riocore ui and generator, including flashing: [DOCKER](DOCKER.md)
 
 make sure that the toolchain matching your fpga is in the path:
 ```
@@ -87,6 +92,11 @@ than copy a config file that is near to your setup:
 ```
 cp riocore/configs/Tangoboard/config-spi.json my_config.json
 ```
+
+## [DOCKER](DOCKER.md)
+
+Using a TangNano9k or other board supported by the open-cad-suite? Check out the docker setup for an easy to use all in one way to run the riocore ui and generator, including flashing: [DOCKER](DOCKER.md)
+
 
 ## Usage <a name="usage"></a>
 
