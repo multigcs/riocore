@@ -65,7 +65,6 @@ class LinuxCNC:
             "EDITOR": "gedit",
             "POSITION_OFFSET": "RELATIVE",
             "POSITION_FEEDBACK": "ACTUAL",
-            "PYVCP": "rio-gui.xml",
             "PREFERENCE_FILE_PATH": None,
             "ARCDIVISION": 64,
             "GRIDS": "10mm 20mm 50mm 100mm",
@@ -529,7 +528,9 @@ class LinuxCNC:
                     if axis_name == "Z":
                         ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
 
-        if gui == "qtdragon":
+        if gui == "axis":
+            ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+        elif gui == "qtdragon":
             qtdragon_setup = {
                 "DISPLAY": {
                     "DISPLAY": "qtvcp qtdragon",
@@ -2898,7 +2899,7 @@ class qtdragon:
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
         cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="Slider" name="{halpin}">')
+        cfgxml_data.append(f'     <widget class="QSlider" name="{halpin}">')
         cfgxml_data.append('      <property name="maximum">')
         cfgxml_data.append("       <number>100</number>")
         cfgxml_data.append("      </property>")
