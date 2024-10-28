@@ -68,6 +68,16 @@ cd /path/to/riocore/repo
 sudo chown -R cnc:cnc ./
 ```
 
+Once you are done flashing the FPGA you need to complie the LinuxCNC module. This only needs to happen once. 
+```
+sudo halcompile --install riocore/files/rio.c
+```
+
+Then you can start LinuxCNC with your new .ini file:
+```
+linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
+```
+
 ## FAQ <a name = "faq"></a>
 
 - How to install Docker?  Ubuntu/debian: `sudo apt-get -y install docker.io`
