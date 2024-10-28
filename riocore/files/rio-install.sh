@@ -2,6 +2,9 @@
 #
 # install script for riocore
 #
+#  wget -q -O- https://raw.githubusercontent.com/multigcs/riocore/refs/heads/dev/riocore/files/rio-install.sh | bash
+#
+
 
 UNAME_M="`uname -m`"
 APT_PACKAGES="wget git tar python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-stdeb dh-python python3-pyqt5 python3-pyqt5.qtsvg make"
