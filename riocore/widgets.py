@@ -181,6 +181,7 @@ class edit_int(QSpinBox):
 class edit_text(QLineEdit):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
         super().__init__()
+        self.setMaxLength(25)
         self.win = win
         self.cb = cb
         self.obj = obj

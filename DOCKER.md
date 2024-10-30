@@ -93,4 +93,4 @@ sudo reboot
 ````
 - Do I need to keep docker once I am done with flashing the FPGA?
 No, you only need to be running docker while you're working with the riocore ui or generator, you may disable it when you're done to save resources if you prefer.
-- I want to use a different toolchain for the Tang Nano 9k? To use the Icewind toolchain use `make docker-run` to use the Gowin toolchain use `make docker-run-gowin`. 
+- I want to use a different toolchain for the Tang Nano 9k? To use the icestorm toolchain use `make docker-run` to use also the Gowin toolchain use `make docker-run-gowin`. 
