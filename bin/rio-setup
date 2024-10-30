@@ -2268,21 +2268,20 @@ class WinForm(QWidget):
         self.struct_clean(config)
         return config
 
-    def edit_item(self, obj, key, var_setup=None, cb=None):
+    def edit_item(self, obj, key, var_setup=None, cb=None, help_text=None):
         if var_setup is None:
             var_setup = {}
-        # if key not in obj and "default" in var_setup:
-        #    obj[key] = var_setup["default"]
-
+        if help_text is None:
+            help_text = var_setup.get("help_text", var_setup.get("description"))
         if var_setup["type"] == "select":
-            return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, default=var_setup.get("default"))
+            return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] is int:
-            return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, default=var_setup.get("default"))
+            return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] is float:
-            return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
+            return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
         elif var_setup["type"] is bool:
-            return edit_bool(self, obj, key, cb=cb, default=var_setup.get("default"))
-        return edit_text(self, obj, key, cb=cb, default=var_setup.get("default"))
+            return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
 
     def del_module(self, slot_name):
         for mn, module_data in enumerate(self.config.get("modules", [])):
@@ -2892,6 +2891,7 @@ class WinForm(QWidget):
             pin_cols = QHBoxLayout()
             pin_rows.addLayout(pin_cols)
             pin_cols.addWidget(QLabel("Pin:"), stretch=2)
+
             pin_cols.addWidget(self.edit_item(pin_config, "pin", {"type": "select", "options": self.pinlist, "default": ""}, cb=update), stretch=6)
             if direction == "input":
                 pin_cols.addWidget(QLabel("Pull:"), stretch=1)
@@ -2919,19 +2919,23 @@ class WinForm(QWidget):
             # IO-Standart
             pin_cols = QHBoxLayout()
             pin_rows.addLayout(pin_cols)
-
+            tooltip = "FPGA level IO config / optional / better do not use :)"
             io_label = QLabel("IO-Standart:")
-            io_label.setToolTip("FPGA level IO config / optional / better do not use :)")
+            io_label.setToolTip(tooltip)
             pin_cols.addWidget(io_label, stretch=1)
 
             pin_cols.addWidget(
-                self.edit_item(pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL"}, cb=update), stretch=3
+                self.edit_item(pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL", "help_text": tooltip}, cb=update), stretch=3
             )
             if direction == "output":
-                pin_cols.addWidget(QLabel("Slew:"), stretch=1)
-                pin_cols.addWidget(self.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW"}, cb=update), stretch=3)
-                pin_cols.addWidget(QLabel("Drive:"), stretch=1)
-                pin_cols.addWidget(self.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4"}, cb=update), stretch=3)
+                label = QLabel("Slew:")
+                label.setToolTip(tooltip)
+                pin_cols.addWidget(label, stretch=1)
+                pin_cols.addWidget(self.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW", "help_text": tooltip}, cb=update), stretch=3)
+                label = QLabel("Drive:")
+                label.setToolTip(tooltip)
+                pin_cols.addWidget(label, stretch=1)
+                pin_cols.addWidget(self.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4", "help_text": tooltip}, cb=update), stretch=3)
             else:
                 pin_cols.addWidget(QLabel(""), stretch=8)
 
@@ -3081,9 +3085,9 @@ class WinForm(QWidget):
                         if signal_name == "position":
                             options.append(f"{plugin_instance.title}:{signal_name}")
                 option_setup = {"type": "select", "options": options, "default": ""}
-                option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+                option_widget = self.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             else:
-                option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+                option_widget = self.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
 
             option_row.addWidget(option_widget, stretch=3)
             general_layout.addLayout(option_row)
@@ -3105,7 +3109,7 @@ class WinForm(QWidget):
             option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=1)
-            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             option_row.addWidget(option_widget, stretch=3)
             homing_layout.addLayout(option_row)
 
@@ -3130,7 +3134,7 @@ class WinForm(QWidget):
             option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=1)
-            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update)
+            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             option_row.addWidget(option_widget, stretch=3)
             pid_layout.addLayout(option_row)
         pid_layout.addStretch()
