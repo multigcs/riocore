@@ -946,11 +946,7 @@ class TabOverview:
                 self.map[instance] = (int(begin[0]), int(begin[1]), int(end[0]), int(end[1]))
 
         png_data = gAll.pipe()
-        pixmap = QPixmap()
-        pixmap.loadFromData(png_data, "png")
-        self.overview_img.setAlignment(Qt.AlignRight | Qt.AlignTop)
-        self.overview_img.setFixedSize(pixmap.size())
-        self.overview_img.setPixmap(pixmap)
+        self.overview_img.load(png_data)
 
     def on_click(self, x, y):
         for instance, pos in self.map.items():

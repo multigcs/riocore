@@ -1,8 +1,8 @@
 import riocore
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import QStandardItem
+from PyQt5.QtCore import QRect, Qt, QSize
+from PyQt5.QtGui import QStandardItem, QPixmap
 from PyQt5.QtWidgets import (
     QLabel,
     QCheckBox,
@@ -40,9 +40,36 @@ class MyQLabel(QLabel):
     def __init__(self, parent):
         super(QLabel, self).__init__()
         self.parent = parent
+        self.pixmap = QPixmap()
+        self.png_data = None
+        self.scale = 1.0
 
     def mousePressEvent(self, event):
-        self.parent.on_click(event.pos().x(), event.pos().y())
+        x = int(event.pos().x() / self.scale)
+        y = int(event.pos().y() / self.scale)
+        self.parent.on_click(x, y)
+
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
+        delta = event.angleDelta()
+        if delta.y() < 0:
+            if self.scale > 0.1:
+                self.scale -= 0.1
+        else:
+            if self.scale < 10.0:
+                self.scale += 0.1
+        self.load(None)
+
+    def load(self, png_data):
+        if png_data:
+            self.png_data = png_data
+        if self.png_data:
+            self.pixmap.loadFromData(self.png_data, "png")
+            w = int(self.pixmap.size().width() * self.scale)
+            h = int(self.pixmap.size().height() * self.scale)
+            pixmap = self.pixmap.scaled(QSize(w, h), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.setAlignment(Qt.AlignRight | Qt.AlignTop)
+            self.setFixedSize(pixmap.size())
+            self.setPixmap(pixmap)
 
 
 class MyQSvgWidget(QtSvg.QSvgWidget):
