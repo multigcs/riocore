@@ -4,6 +4,7 @@ from PyQt5 import QtGui, QtSvg
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import (
+    QLabel,
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
@@ -33,6 +34,15 @@ STYLESHEET_CHECKBOX_GREEN_RED = """
         background-color: red;
     }
 """
+
+
+class MyQLabel(QLabel):
+    def __init__(self, parent):
+        super(QLabel, self).__init__()
+        self.parent = parent
+
+    def mousePressEvent(self, event):
+        self.parent.on_click(event.pos().x(), event.pos().y())
 
 
 class MyQSvgWidget(QtSvg.QSvgWidget):

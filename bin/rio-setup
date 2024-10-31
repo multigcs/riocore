@@ -24,11 +24,11 @@ from riocore import halpins
 
 from riocore import halgraph
 from riocore.plugins import Modifiers
-from riocore.widgets import MyQSvgWidget, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
+from riocore.widgets import MyQSvgWidget, MyQLabel, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
 
 from PyQt5 import QtSvg
-from PyQt5.QtCore import QTimer, QPoint, Qt
+from PyQt5.QtCore import QTimer, QPoint, QRect, Qt
 from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
 from PyQt5.QtWidgets import (
     QSplitter,
@@ -654,10 +654,16 @@ class TabHal:
 class TabOverview:
     def __init__(self, parent=None):
         self.parent = parent
-        self.overview_img = MyQSvgWidget()
+        self.overview_img = MyQLabel(self)
+        self.scroll_widget = QScrollArea()
+        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setWidgetResizable(True)
+        self.scroll_widget.setWidget(self.overview_img)
+        self.map = None
 
     def widget(self):
-        return self.overview_img
+        return self.scroll_widget
 
     def timer(self):
         pass
@@ -666,7 +672,7 @@ class TabOverview:
         num = 0
         fpga_name = f"{self.parent.config.get('boardcfg')}"
 
-        gAll = graphviz.Digraph("G", format="svg")
+        gAll = graphviz.Digraph("G", format="png")
         gAll.attr(rankdir="LR")
         gAll.attr(bgcolor="black")
 
@@ -807,6 +813,7 @@ class TabOverview:
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",
+                URL=f"instance:{name}",
             )
 
             if plugin_instance.plugin_setup.get("is_joint", False):
@@ -821,7 +828,7 @@ class TabOverview:
 
             for plugin_instance in self.parent.modules[slot_name]["instances"]:
                 pports = []
-                name = plugin_instance.plugin_setup.get("name")
+                name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
                 title = plugin_instance.NAME
                 if name:
                     title = f"{name} ({plugin_instance.NAME})"
@@ -910,6 +917,7 @@ class TabOverview:
                     fontsize="11pt",
                     style="rounded, filled",
                     fillcolor="lightblue",
+                    URL=f"instance:{name}",
                 )
 
                 if plugin_instance.plugin_setup.get("is_joint", False):
@@ -928,8 +936,37 @@ class TabOverview:
             fillcolor="lightgreen",
         )
 
-        self.overview_img.load(gAll.pipe())
-        # self.overview_img.setFixedSize(self.overview_img.renderer().defaultSize())
+        self.map = {}
+        for line in gAll.pipe(format="imap").decode().split("\n"):
+            if line.startswith("rect "):
+                parts = line.split()
+                instance = parts[1].split(":")[1]
+                begin = parts[2].split(",")
+                end = parts[3].split(",")
+                self.map[instance] = (int(begin[0]), int(begin[1]), int(end[0]), int(end[1]))
+
+        png_data = gAll.pipe()
+        pixmap = QPixmap()
+        pixmap.loadFromData(png_data, "png")
+        self.overview_img.setAlignment(Qt.AlignRight | Qt.AlignTop)
+        self.overview_img.setFixedSize(pixmap.size())
+        self.overview_img.setPixmap(pixmap)
+
+    def on_click(self, x, y):
+        for instance, pos in self.map.items():
+            if x >= pos[0] and x <= pos[2] and y >= pos[1] and y <= pos[3]:
+                for plugin_instance in self.parent.plugins.plugin_instances:
+                    name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
+                    if name == instance:
+                        self.parent.edit_plugin(plugin_instance, None, is_new=False)
+                        return
+                for module_data in self.parent.config.get("modules", []):
+                    slot_name = module_data.get("slot")
+                    for plugin_instance in self.parent.modules[slot_name]["instances"]:
+                        name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
+                        if name == instance:
+                            self.parent.edit_plugin(plugin_instance, None, is_new=False)
+                            return
 
 
 class TabJson:
