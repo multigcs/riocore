@@ -2930,7 +2930,10 @@ class WinForm(QWidget):
             pin_cols.addWidget(io_label, stretch=1)
 
             pin_cols.addWidget(
-                self.edit_item(pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL", "help_text": tooltip}, cb=update), stretch=3
+                self.edit_item(
+                    pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL", "help_text": tooltip}, cb=update
+                ),
+                stretch=3,
             )
             if direction == "output":
                 label = QLabel("Slew:")
