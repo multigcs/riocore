@@ -265,9 +265,11 @@ class TabLinuxCNC:
     def update(self):
         config_name = self.parent.config.get("name")
         for filename, widget in self.linuxcnc.items():
-            file_content = open(f"{self.parent.output_path}/{config_name}/LinuxCNC/{filename}", "r").read()
             widget.clear()
-            widget.insertPlainText(file_content)
+            file_path = f"{self.parent.output_path}/{config_name}/LinuxCNC/{filename}"
+            if os.path.isfile(file_path):
+                file_content = open(file_path, "r").read()
+                widget.insertPlainText(file_content)
 
 
 class TabGateware:
