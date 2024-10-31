@@ -148,7 +148,7 @@ class LinuxCNC:
         },
     }
 
-    POSTGUI_COMPONENTS = ("pyvcp", "qtdragon", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f")
+    POSTGUI_COMPONENTS = ("pyvcp", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f")
 
     def __init__(self, project):
         self.postgui_call_list = []
@@ -538,9 +538,9 @@ class LinuxCNC:
                     "MDI_HISTORY_FILE": "mdi_history.dat",
                     "MACHINE_LOG_PATH": "machine_log.dat",
                     "LOG_FILE": "qtdragon.log",
-                    "EMBED_TAB_NAME|RIO": "RIO",
-                    "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
-                    "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
+                    #"EMBED_TAB_NAME|RIO": "RIO",
+                    #"EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
+                    #"EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
                     "ICON": "silver_dragon.png",
                     "INTRO_GRAPHIC": "silver_dragon.png",
                     "INTRO_TIME": "2",
@@ -786,10 +786,10 @@ class LinuxCNC:
         embed_vismach = linuxcnc_config.get("embed_vismach")
         gui = linuxcnc_config.get("gui", "axis")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
-        if gui == "qtdragon":
-            self.gui_gen = qtdragon()
-        elif gui == "axis":
+        if gui == "axis":
             self.gui_gen = axis()
+        # elif gui == "qtdragon":
+        #    self.gui_gen = qtvcp()
         else:
             self.gui_gen = None
 
@@ -2696,7 +2696,7 @@ class LinuxCNC:
                 axis_config[key] = value
 
 
-class qtdragon:
+class qtvcp:
     #
     # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
     #
@@ -2881,7 +2881,7 @@ class qtdragon:
         return cfgxml_data
 
     def draw_button(self, name, halpin, setup={}):
-        return (f"qtdragon.rio-gui.{halpin}", [])
+        return (f"qtvcp.rio-gui.{halpin}", [])
 
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -2910,7 +2910,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.rio-gui.{halpin}-f", cfgxml_data)
+        return (f"qtvcp.rio-gui.{halpin}-f", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_max = setup.get("max", vmax)
@@ -2964,7 +2964,7 @@ class qtdragon:
         cfgxml_data.append("      </property>")
         cfgxml_data.append("       </widget>")
         cfgxml_data.append("   </item>")
-        return (f"qtdragon.rio-gui.{halpin}_value", cfgxml_data)
+        return (f"qtvcp.rio-gui.{halpin}_value", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
@@ -3008,7 +3008,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.rio-gui.{halpin}", cfgxml_data)
+        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -3035,7 +3035,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.rio-gui.{halpin}", cfgxml_data)
+        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -3092,7 +3092,7 @@ class qtdragon:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtdragon.rio-gui.{halpin}", cfgxml_data)
+        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
 
 
 class axis:
