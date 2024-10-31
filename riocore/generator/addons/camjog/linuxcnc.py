@@ -17,7 +17,7 @@ def ini(parent, ini_setup):
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
             camjog_device = camjog.get("device", f"/dev/video{camjog_num}")
-            width = camjog.get("height", 640)
+            width = camjog.get("width", 640)
             height = camjog.get("height", 480)
             scale = camjog.get("scale", 1.0)
             tabname = camjog.get("tabname", f"camjog-{camjog_num}")
