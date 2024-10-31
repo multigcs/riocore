@@ -7,6 +7,7 @@
     "family": "ice40",
     "type": "up5k",
     "package": "sg48",
+    "startup": "gpio mode 7 clock\ngpio clock 7 5000000",
     "flashcmd": "./spiflash.sh rio.bin",
     "clock": {
         "osc": "18000000",

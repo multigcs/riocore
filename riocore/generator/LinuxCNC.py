@@ -343,6 +343,8 @@ class LinuxCNC:
         return (output_hal, output_postgui)
 
     def startscript(self):
+        jdata = self.project.config["jdata"]
+        startup = jdata.get("startup")
         output = ["#!/bin/sh"]
         output.append("")
         output.append("set -e")
@@ -350,6 +352,9 @@ class LinuxCNC:
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
+        if startup:
+            output.append(startup)
+            output.append("")
         output.append('linuxcnc "$DIRNAME/rio.ini" $@')
         output.append("")
         os.makedirs(self.component_path, exist_ok=True)
