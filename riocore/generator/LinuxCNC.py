@@ -362,12 +362,6 @@ class LinuxCNC:
         open(target, "w").write("\n".join(output))
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
-    def precompile(self):
-        source = f"{riocore_path}/files/rio_precompile"
-        target = f"{self.component_path}/rio_precompile"
-        shutil.copy(source, target)
-        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
-
     def generator(self):
         jdata = self.project.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
@@ -375,7 +369,6 @@ class LinuxCNC:
             self.networks[network] = net
 
         self.startscript()
-        # self.precompile()
         self.component()
         self.hal()
         self.gui()
@@ -1427,7 +1420,6 @@ class LinuxCNC:
         self.loadrts.append("# load the realtime components")
         self.loadrts.append("loadrt [KINS]KINEMATICS")
         self.loadrts.append("loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO")
-        # self.loadrts.append("loadusr -W ./rio_precompile")
         self.loadrts.append("loadrt rio")
         self.loadrts.append("")
         self.loadrts.append("# if you need to test rio without hardware, set it to 1")
