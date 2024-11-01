@@ -33,31 +33,19 @@ setp axis.y.jog-scale -0.15
 
 import math
 import argparse
-import glob
 import os
 import sys
-import time
-import traceback
 from functools import partial
 
-from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import (
-    QLineEdit,
     QApplication,
-    QCheckBox,
-    QComboBox,
-    QDialog,
-    QDialogButtonBox,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
-    QListWidget,
     QPushButton,
-    QSlider,
     QVBoxLayout,
     QWidget,
-    QTabWidget,
 )
 
 import numpy as np
@@ -129,8 +117,8 @@ class MyImage(QLabel):
 
     def wheelEvent(self, event):
         delta = event.angleDelta()
-        mp_x = event.pos().x()
-        mp_y = event.pos().y()
+        # mp_x = event.pos().x()
+        # mp_y = event.pos().y()
         if delta.y() < 0:
             if self.parent.options["zoom"] > 1.0:
                 self.parent.options["zoom"] -= 0.1

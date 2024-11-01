@@ -16,16 +16,16 @@ def ini(parent, ini_setup):
         shutil.copy(source, target)
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
-        tabname = robojog_config.get("tabname", f"robojog")
+        tabname = robojog_config.get("tabname", "robojog")
         tablocation = robojog_config.get("tablocation", "Pyngcgui")
-        ini_setup["DISPLAY"][f"EMBED_TAB_NAME|robojog"] = tabname
+        ini_setup["DISPLAY"]["EMBED_TAB_NAME|robojog"] = tabname
         if gui != "axis":
-            ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|robojog"] = tablocation
+            ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|robojog"] = tablocation
 
         cmd_args = ["halcmd loadusr -Wn robojog ./robojog.py"]
         cmd_args.append("--xid {XID}")
         cmd_args.append(f"--joints {6}")
-        ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|robojog"] = f"{' '.join(cmd_args)}"
+        ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|robojog"] = f"{' '.join(cmd_args)}"
 
 
 def hal(parent):
@@ -42,7 +42,7 @@ def hal(parent):
         # jog axis
         for axis_name, axis_config in parent.axis_dict.items():
             joints = axis_config["joints"]
-            axis_low = axis_name.lower()
+            # axis_low = axis_name.lower()
             # parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
             # parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
             # parent.hal_setp_add(f"axis.{axis_low}.jog-scale", 0.01)

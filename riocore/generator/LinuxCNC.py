@@ -1582,7 +1582,7 @@ class LinuxCNC:
                             self.loadrts.append(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
                         elif direction == "input":
                             net_type = halpins.LINUXCNC_SIGNALS[direction].get(netname, {}).get("type", float)
-                            if net_type == int:
+                            if net_type is int:
                                 self.hal_net_add(f"{rprefix}.{halname}-s32", netname)
                             else:
                                 self.hal_net_add(f"{rprefix}.{halname}", netname)
@@ -2388,7 +2388,7 @@ class LinuxCNC:
 
         output += self.component_variables()
 
-        generic_spi = jdata = self.project.config["jdata"].get("generic_spi", False)
+        generic_spi = self.project.config["jdata"].get("generic_spi", False)
         if protocol == "SPI" and generic_spi is True:
             for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c_generic"):
                 if protocol == ppath.split("/")[-2]:

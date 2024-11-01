@@ -11,9 +11,9 @@ class Pins:
 
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False) or pin_config.get("pull") == "up":
-                        options.append(f"PULLUP=true")
+                        options.append("PULLUP=true")
                     elif pin_config.get("pull") == "down":
-                        options.append(f"PULLDOWN=true")
+                        options.append("PULLDOWN=true")
 
                 else:
                     drive = pin_config.get("drive", "4")

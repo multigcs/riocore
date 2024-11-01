@@ -64,19 +64,9 @@ def gui(parent):
 def hal(parent):
     output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = parent.project.config["jdata"].get("gui", "axis")
-
     parent.postgui_components_add("camjog")
-
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
-            camjog_device = camjog.get("device", f"/dev/video{camjog_num}")
-            width = camjog.get("height", 640)
-            height = camjog.get("height", 480)
-            scale = camjog.get("scale", 1.0)
-            tabname = camjog.get("tabname", f"camjog-{camjog_num}")
-            tablocation = camjog.get("tablocation", "Pyngcgui")
-
             # jog axis
             for axis_name, axis_config in parent.axis_dict.items():
                 if axis_name not in {"X", "Y"}:

@@ -434,11 +434,11 @@ class PluginBase:
 
         for option_name, option_setup in self.OPTIONS.items():
             default = ""
-            if option_setup["type"] == int:
+            if option_setup["type"] is int:
                 default = 0
-            elif option_setup["type"] == float:
+            elif option_setup["type"] is float:
                 default = 0.0
-            elif option_setup["type"] == bool:
+            elif option_setup["type"] is bool:
                 default = False
             full_config[option_name] = option_setup.get("default", default)
 

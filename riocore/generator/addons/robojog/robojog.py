@@ -48,33 +48,18 @@ setp robojog.joint.4.scale 100.0
 
 """
 
-import math
 import argparse
-import glob
 import os
 import sys
-import time
-import traceback
 from functools import partial
 
-from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import (
-    QLineEdit,
     QApplication,
-    QCheckBox,
-    QComboBox,
-    QDialog,
-    QDialogButtonBox,
-    QGridLayout,
-    QHBoxLayout,
     QLabel,
-    QListWidget,
-    QPushButton,
     QSlider,
     QVBoxLayout,
     QWidget,
-    QTabWidget,
 )
 
 JOINTS = 6

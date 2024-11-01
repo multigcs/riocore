@@ -24,11 +24,11 @@ else:
 
 # force adding file end to nc files to prevent rs274 loop
 content += "\n\n\nM02\n"
-open(f"/tmp/.tmp.ngc", "w").write(content)
+open("/tmp/.tmp.ngc", "w").write(content)
 
 
 svg_out = []
-p = os.popen(f"rs274 -n 0 -g '/tmp/.tmp.ngc' 2>&1")
+p = os.popen("rs274 -n 0 -g '/tmp/.tmp.ngc' 2>&1")
 output = p.readlines()
 r = p.close()
 last_pos = ()
