@@ -256,11 +256,11 @@ class config:
                 for n in range(0, data["widget"].count()):
                     if data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
-            elif data["type"] == bool:
+            elif data["type"] is bool:
                 data["widget"].setChecked(value)
-            elif data["type"] == int:
+            elif data["type"] is int:
                 data["widget"].setValue(value)
-            elif data["type"] == float:
+            elif data["type"] is float:
                 data["widget"].setValue(value)
             else:
                 data["widget"].setText(str(value))
@@ -285,11 +285,11 @@ class config:
                 value = data["widget"].currentText().split()[0]
                 if value.isnumeric():
                     value = int(value)
-            elif data["type"] == bool:
+            elif data["type"] is bool:
                 value = data["widget"].isChecked()
-            elif data["type"] == int:
+            elif data["type"] is int:
                 value = data["widget"].value()
-            elif data["type"] == float:
+            elif data["type"] is float:
                 value = data["widget"].value()
             else:
                 value = data["widget"].text()
@@ -329,11 +329,11 @@ class config:
                 for n in range(0, data["widget"].count()):
                     if data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
-            elif data["type"] == bool:
+            elif data["type"] is bool:
                 data["widget"].setChecked(value)
-            elif data["type"] == int:
+            elif data["type"] is int:
                 data["widget"].setValue(value)
-            elif data["type"] == float:
+            elif data["type"] is float:
                 data["widget"].setValue(value)
             else:
                 data["widget"].setText(str(value))
@@ -470,15 +470,15 @@ class config:
                     data["widget"].addItem(option)
                 if name == "type":
                     data["widget"].activated.connect(self.on_type_change)
-            elif data["type"] == bool:
+            elif data["type"] is bool:
                 data["widget"] = QCheckBox()
                 data["widget"].setChecked(data["default"])
-            elif data["type"] == int:
+            elif data["type"] is int:
                 data["widget"] = QSpinBox()
                 data["widget"].setValue(data["default"])
                 data["widget"].setMinimum(data["min"])
                 data["widget"].setMaximum(data["max"])
-            elif data["type"] == float:
+            elif data["type"] is float:
                 data["widget"] = QDoubleSpinBox()
                 data["widget"].setValue(data["default"])
                 data["widget"].setDecimals(data["decimals"])

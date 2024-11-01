@@ -2,7 +2,7 @@
 FROM debian:12
 
 RUN apt-get update
-RUN apt-get -y install wget tar python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-stdeb dh-python python3-pyqt5 python3-pyqt5.qtsvg make
+RUN apt-get -y install wget tar python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-stdeb dh-python python3-pyqt5 python3-pyqt5.qtsvg python3-lxml make
 
 RUN (cd /opt/ && wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2024-09-03/oss-cad-suite-linux-arm64-20240903.tgz && tar xzvpf oss-cad-suite-linux-arm64-20240903.tgz && rm -rf oss-cad-suite-linux-arm64-20240903.tgz)
 
