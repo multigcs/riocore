@@ -3630,11 +3630,6 @@ class WinForm(QWidget):
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog_buttonBox.rejected.connect(dialog.reject)
 
-        if self.config["linuxcnc"].get("gui", "axis") == "axis":
-            pyvcp_button = QPushButton(self.tr("PyVCP-Preview"))
-            pyvcp_button.clicked.connect(self.open_pyvcp)
-            dialog_buttonBox.addButton(pyvcp_button, QDialogButtonBox.ActionRole)
-
         if not nopins:
             remove_button = QPushButton(self.tr("Remove"))
             remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
