@@ -3415,8 +3415,8 @@ class axis:
         elif halpin.endswith(".B"):
             cfgxml_data.append('      <on_color>"blue"</on_color>')
         else:
-            cfgxml_data.append('      <on_color>"green"</on_color>')
-        cfgxml_data.append('      <off_color>"black"</off_color>')
+            cfgxml_data.append('      <on_color>"yellow"</on_color>')
+        cfgxml_data.append('      <off_color>"red"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
         return (f"pyvcp.{halpin}", cfgxml_data)
