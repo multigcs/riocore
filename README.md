@@ -189,3 +189,22 @@ graph LR;
     /LinuxCNC-->*.hal;
 ```
 
+
+## Directory Structure
+
+```
+riocore
+├── bin ······ common code
+├── doc ········ documentation
+├── dockerfiles ··· files to run the docker container
+├┬─ ricore ······ main directory 
+|├── boards ···· channel server for xrdp
+|├── chipdata ··
+|├──  configs ··
+|├──  files ··
+|├──  generator ··
+|├──  interfaces ··
+|├──  modules ··
+|├──  plugins ··
+├── tests ··· code testing
+```
