@@ -96,7 +96,7 @@ int udp_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
         if (ret == BUFFER_SIZE) {
             memcpy(rxBuffer, rxBufferTmp, BUFFER_SIZE);
         } else {
-            rtapi_print("wronng size = %d\n", ret);
+            rtapi_print("wrong size = %d\n", ret);
             for (i = 0; i < ret; i++) {
                 rtapi_print("%d ", rxBufferTmp[i]);
             }

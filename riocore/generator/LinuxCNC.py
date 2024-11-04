@@ -2482,9 +2482,9 @@ class LinuxCNC:
         output.append("                err_counter += 1;")
         if protocol == "UDP":
             output.append("                if (ret != BUFFER_SIZE) {")
-            output.append('                rtapi_print("wronng data size (%i %i/3): ", ret, err_counter);')
+            output.append('                rtapi_print("wrong data size (%i %i/3): ", ret, err_counter);')
             output.append("                } else {")
-            output.append('                rtapi_print("wronng header (%i/3): ", err_counter);')
+            output.append('                rtapi_print("wrong header (%i/3): ", err_counter);')
             output.append("                }")
         else:
             output.append('            rtapi_print("wronng data (%i/3): ", err_counter);')
@@ -3430,8 +3430,8 @@ class axis:
         elif halpin.endswith(".B"):
             cfgxml_data.append('      <on_color>"blue"</on_color>')
         else:
-            cfgxml_data.append('      <on_color>"green"</on_color>')
-        cfgxml_data.append('      <off_color>"black"</off_color>')
+            cfgxml_data.append('      <on_color>"yellow"</on_color>')
+        cfgxml_data.append('      <off_color>"red"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
         return (f"pyvcp.{halpin}", cfgxml_data)
