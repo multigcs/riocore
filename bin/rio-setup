@@ -827,7 +827,7 @@ class TabOverview:
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",
-                URL=f"instance:{name}",
+                URL=f"instance:{name.replace(' ', '#')}",
             )
 
             if plugin_instance.plugin_setup.get("is_joint", False):
@@ -931,7 +931,7 @@ class TabOverview:
                     fontsize="11pt",
                     style="rounded, filled",
                     fillcolor="lightblue",
-                    URL=f"instance:{name}",
+                    URL=f"instance:{name.replace(' ', '#')}",
                 )
 
                 if plugin_instance.plugin_setup.get("is_joint", False):
@@ -954,7 +954,7 @@ class TabOverview:
         for line in gAll.pipe(format="imap").decode().split("\n"):
             if line.startswith("rect "):
                 parts = line.split()
-                instance = parts[1].split(":")[1]
+                instance = parts[1].split(":")[1].replace("#", " ")
                 begin = parts[2].split(",")
                 end = parts[3].split(",")
                 self.map[instance] = (int(begin[0]), int(begin[1]), int(end[0]), int(end[1]))
