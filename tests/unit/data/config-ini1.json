@@ -1,0 +1,259 @@
+{
+    "name": "TangIni1",
+    "boardcfg": "TangNano9K",
+    "plugins": [
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "26"
+                },
+                "miso": {
+                    "pin": "37"
+                },
+                "sclk": {
+                    "pin": "25"
+                },
+                "sel": {
+                    "pin": "39"
+                }
+            },
+            "ip": "192.168.20.194",
+            "gw": "192.168.20.1"
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "27"
+                },
+                "dir": {
+                    "pin": "28"
+                },
+                "en": {
+                    "pin": "29"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 80.0,
+                "min_ferror": 0.25,
+                "max_velocity": 60.0,
+                "max_acceleration": 1250.0,
+                "stepgen_maxaccel": 1562.5,
+                "home": 10.0,
+                "home_offset": 0.0,
+                "home_latch_vel": -0.5,
+                "home_final_vel": 10.0,
+                "min_limit": 0.0,
+                "max_limit": 540.0,
+                "home_sequence": -1
+            },
+            "axis": "X",
+            "name": "X Axis Joint 0"
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "33"
+                },
+                "dir": {
+                    "pin": "34"
+                },
+                "en": {
+                    "pin": "40"
+                }
+            },
+            "is_joint": true,
+            "name": "Y Axis Joint 1 L screw",
+            "axis": "Y",
+            "joint": {
+                "scale": 200.0,
+                "min_ferror": 0.25,
+                "min_limit": 5.0,
+                "max_limit": 905.0,
+                "max_velocity": 30.0,
+                "max_acceleration": 1250.0,
+                "stepgen_maxaccel": 1187.5,
+                "home": 10.0,
+                "home_offset": 0.0,
+                "home_search_vel": -40.0,
+                "home_latch_vel": -0.5,
+                "home_sequence": -2
+            }
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "41"
+                },
+                "dir": {
+                    "pin": "42"
+                },
+                "en": {
+                    "pin": "51"
+                }
+            },
+            "is_joint": true,
+            "name": "Y Axis Joint 2 R screw",
+            "axis": "Y",
+            "joint": {
+                "scale": 200.0,
+                "min_ferror": 0.25,
+                "min_limit": 5.0,
+                "max_limit": 905.0,
+                "max_velocity": 30.0,
+                "max_acceleration": 1250.0,
+                "stepgen_maxaccel": 1187.5,
+                "home": 10.0,
+                "home_offset": 0.0,
+                "home_search_vel": -40.0,
+                "home_latch_vel": -0.5,
+                "home_sequence": -3
+            }
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "54"
+                },
+                "dir": {
+                    "pin": "55"
+                },
+                "en": {
+                    "pin": "56"
+                }
+            },
+            "is_joint": true,
+            "name": "Z Axis Joint 3",
+            "axis": "Z",
+            "joint": {
+                "scale": 100.0,
+                "min_ferror": 0.25,
+                "min_limit": -150.0,
+                "max_limit": 12.0,
+                "max_acceleration": 1050.0,
+                "stepgen_maxaccel": 937.5,
+                "home": -5.0,
+                "home_offset": 3.0,
+                "home_search_vel": 20.5,
+                "home_latch_vel": 0.5,
+                "home_final_vel": 10.0,
+                "home_sequence": -4                
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "30",
+                    "pull": "down"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "Joint 0 Home Switch"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "35",
+                    "pull": "up"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            },
+            "name": "Joint 1 Home Switch"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "53",
+                    "pull": "down"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            },
+            "name": "Joint 2 Home Switch"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "57",
+                    "pull": "down"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in"
+                }
+            },
+            "name": "Joint 3 Home Switch"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:L1"
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L4"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "PIN:68"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "halui.machine.is-on"
+                }
+            }
+        }
+    ],
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "DEFAULT_LINEAR_VELOCITY": 60.0,
+                "MAX_LINEAR_VELOCITY": 60.0,
+                "INCREMENTS": "5mm 1mm .5mm .1mm .05mm .01mm"
+            },
+            "KINS": {
+                "JOINTS": 4,
+                "KINEMATICS": "trivkins coordinates=XYYZ kinstype=B"
+            },
+            "TRAJ": {
+                "COORDINATES": "X YY Z",
+                "DEFAULT_LINEAR_VELOCITY": 5.0,
+                "MAX_LINEAR_VELOCITY": 60.0
+            }
+        },
+        "machinetype": "mill"
+    },
+    "protocol": "UDP",
+    "description": "Volksfraese mit Tang"
+}
