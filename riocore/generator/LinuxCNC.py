@@ -1445,10 +1445,12 @@ class LinuxCNC:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     direction = signal_config["direction"]
-                    netname = signal_config["netname"]
-                    if netname == "iocontrol.0.emc-enable-in" and direction == "input":
-                        has_estop = True
-                        break
+                    netname = signal_config["netname"] or ""
+                    for net in netname.split(","):
+                        net = net.strip()
+                        if net == "iocontrol.0.emc-enable-in" and direction == "input":
+                            has_estop = True
+                            break
         if not has_estop:
             self.hal_net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
 
@@ -1581,11 +1583,13 @@ class LinuxCNC:
                         if direction == "inout":
                             self.loadrts.append(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
                         elif direction == "input":
-                            net_type = halpins.LINUXCNC_SIGNALS[direction].get(netname, {}).get("type", float)
-                            if net_type is int:
-                                self.hal_net_add(f"{rprefix}.{halname}-s32", netname)
-                            else:
-                                self.hal_net_add(f"{rprefix}.{halname}", netname)
+                            for net in netname.split(","):
+                                net = net.strip()
+                                net_type = halpins.LINUXCNC_SIGNALS[direction].get(net, {}).get("type", float)
+                                if net_type is int:
+                                    self.hal_net_add(f"{rprefix}.{halname}-s32", net)
+                                else:
+                                    self.hal_net_add(f"{rprefix}.{halname}", net)
                         elif direction == "output":
                             target = f"{rprefix}.{halname}"
                             if " and " in netname or " or " in netname:
