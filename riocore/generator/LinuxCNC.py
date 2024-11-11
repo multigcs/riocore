@@ -2599,7 +2599,9 @@ class LinuxCNC:
                     home_sequence_default = 2
                     if axis_name == "Z":
                         home_sequence_default = 1
-                home_sequence = int(joint_config.get("home_sequence", home_sequence_default))
+                home_sequence = joint_config.get("home_sequence", home_sequence_default)
+                if home_sequence == "auto":
+                    home_sequence = home_sequence_default
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
