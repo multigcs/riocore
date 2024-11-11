@@ -42,95 +42,105 @@ class HalGraph:
                         self.load_halfile(base_dir, value)
 
     def svg(self):
-        groups = {}
-        for signal_name, parts in self.signals.items():
-            source_parts = parts["source"].split(".")
-            source_value = parts.get("source_value", "")
-            source_group = ".".join(source_parts[:-1])
-            source_pin = source_parts[-1]
+        try:
+            groups = {}
+            for signal_name, parts in self.signals.items():
+                source_parts = parts["source"].split(".")
+                source_value = parts.get("source_value", "")
+                source_group = ".".join(source_parts[:-1])
+                source_pin = source_parts[-1]
 
-            if not source_group:
-                source_group = source_pin
+                if not source_group:
+                    source_group = source_pin
 
-            source = f"{source_group}:{source_pin}"
+                source = f"{source_group}:{source_pin}"
 
-            if not source_group:
-                source_group = source_parts[0]
+                if not source_group:
+                    source_group = source_parts[0]
 
-            if source_group:
-                if source_group not in groups:
-                    groups[source_group] = []
+                if source_group:
+                    if source_group not in groups:
+                        groups[source_group] = []
 
-                if source_value:
-                    groups[source_group].append(f"{source_pin}={source_value}")
-                else:
-                    groups[source_group].append(source_pin)
-
-            for target in parts["targets"]:
-                target_parts = target.split(".")
-                target_group = ".".join(target_parts[:-1])
-                target_pin = target_parts[-1]
-                target_name = f"{target_group}:{target_pin}"
-
-                if not target_group:
-                    target_group = target_parts[0]
-
-                if target_group not in groups:
-                    groups[target_group] = []
-                groups[target_group].append(target_pin)
-
-                elabel = ""
-                # if args.elabel:
-                #    elabel = signal_name
-
-                source_name = source.split("=")[0]
-
-                if source.startswith("pyvcp"):
-                    self.gAll.edge(target_name, source_name, dir="back", label=elabel)
-                elif target.startswith("pyvcp"):
-                    self.gAll.edge(source_name, target_name, label=elabel)
-
-                elif source.startswith("rio."):
-                    self.gAll.edge(target_name, source_name, dir="back", label=elabel)
-                else:
-                    self.gAll.edge(source_name, target_name, label=elabel)
-
-        for group_name, pins in groups.items():
-            cgroup = group_name.split(".")[0]
-            pin_strs = []
-            for pin in pins:
-                port = pin.split("=")[0]
-                pin_str = f"<{port}>{pin}"
-                pin_strs.append(pin_str)
-
-            color = "lightyellow"
-            title = group_name
-            if group_name in self.components:
-                comp = self.components[group_name]
-                title = f"{group_name}\\n--{comp}--"
-                color = "lightgray"
-
-            for setp, value in self.setps.items():
-                if setp.startswith(group_name):
-                    setp = setp.split(".")[-1]
-                    if not cgroup:
-                        pin_str = f"<{setp}>{setp}={value}"
+                    if source_value:
+                        groups[source_group].append(f"{source_pin}={source_value}")
                     else:
-                        pin_str = f"<{setp}>{setp}={value}"
+                        groups[source_group].append(source_pin)
+
+                for target in parts["targets"]:
+                    target_parts = target.split(".")
+                    target_group = ".".join(target_parts[:-1])
+                    target_pin = target_parts[-1]
+                    target_name = f"{target_group}:{target_pin}"
+
+                    if not target_group:
+                        target_group = target_parts[0]
+
+                    if target_group not in groups:
+                        groups[target_group] = []
+                    groups[target_group].append(target_pin)
+
+                    elabel = ""
+                    # if args.elabel:
+                    #    elabel = signal_name
+
+                    source_name = source.split("=")[0]
+
+                    if source.startswith("pyvcp"):
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel)
+                    elif target.startswith("pyvcp"):
+                        self.gAll.edge(source_name, target_name, label=elabel)
+
+                    elif source.startswith("rio."):
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel)
+                    else:
+                        self.gAll.edge(source_name, target_name, label=elabel)
+
+            for group_name, pins in groups.items():
+                cgroup = group_name.split(".")[0]
+                pin_strs = []
+                for pin in pins:
+                    port = pin.split("=")[0]
+                    pin_str = f"<{port}>{pin}"
                     pin_strs.append(pin_str)
 
-            label = f"{title} | {'|'.join(pin_strs)} "
+                color = "lightyellow"
+                title = group_name
+                if group_name in self.components:
+                    comp = self.components[group_name]
+                    title = f"{group_name}\\n--{comp}--"
+                    color = "lightgray"
 
-            cluster = None
-            for title, prefixes in clusters.items():
-                if cgroup in prefixes:
-                    cluster = title
-                    break
+                for setp, value in self.setps.items():
+                    if setp.startswith(group_name):
+                        setp = setp.split(".")[-1]
+                        if not cgroup:
+                            pin_str = f"<{setp}>{setp}={value}"
+                        else:
+                            pin_str = f"<{setp}>{setp}={value}"
+                        pin_strs.append(pin_str)
 
-            if cluster:
-                with self.gAll.subgraph(name=f"cluster_{cluster}") as gr:
-                    gr.attr(label=cluster, style="rounded, filled")
-                    gr.node(
+                label = f"{title} | {'|'.join(pin_strs)} "
+
+                cluster = None
+                for title, prefixes in clusters.items():
+                    if cgroup in prefixes:
+                        cluster = title
+                        break
+
+                if cluster:
+                    with self.gAll.subgraph(name=f"cluster_{cluster}") as gr:
+                        gr.attr(label=cluster, style="rounded, filled")
+                        gr.node(
+                            group_name,
+                            shape="record",
+                            label=label,
+                            fontsize="11pt",
+                            style="rounded, filled",
+                            fillcolor=color,
+                        )
+                else:
+                    self.gAll.node(
                         group_name,
                         shape="record",
                         label=label,
@@ -138,17 +148,12 @@ class HalGraph:
                         style="rounded, filled",
                         fillcolor=color,
                     )
-            else:
-                self.gAll.node(
-                    group_name,
-                    shape="record",
-                    label=label,
-                    fontsize="11pt",
-                    style="rounded, filled",
-                    fillcolor=color,
-                )
 
-        return self.gAll.pipe()
+            return self.gAll.pipe()
+
+        except Exception as error:
+            print(f"ERROR(HAL_GRAPH): {error}")
+        return None
 
     def load_halfile(self, basepath, filepath):
         if filepath.startswith("LIB:"):

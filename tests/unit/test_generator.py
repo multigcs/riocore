@@ -56,7 +56,7 @@ def test_generator(config, target, protocol):
                 "COORDINATES": "X YY Z",
                 "DEFAULT_LINEAR_VELOCITY": "5.0",
                 "MAX_LINEAR_VELOCITY": "60.0",
-            }
+            },
         ),
     ),
 )
@@ -71,7 +71,7 @@ def test_generator_ini(config, target, protocol, ip, home_sequence, ini_values):
 
     if protocol == "UDP":
         riocomp_c = open(f"tests/unit/output/{target}/LinuxCNC/riocomp.c", "r").read()
-        if f"#define UDP_IP \"{ip}\"" not in riocomp_c:
+        if f'#define UDP_IP "{ip}"' not in riocomp_c:
             assert False
         if "udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);" not in riocomp_c:
             assert False
