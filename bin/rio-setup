@@ -15,12 +15,6 @@ import sys
 import time
 from functools import partial
 
-try:
-    from lxml import etree
-except Exception:
-    etree = None
-    print("INFO: can not loat lxml")
-
 if os.path.isfile("./riocore/__init__.py"):
     sys.path.insert(0, "./")
 
@@ -30,6 +24,7 @@ from riocore import halpins
 
 from riocore import axisgraph
 from riocore import halgraph
+from riocore import vcp
 from riocore.plugins import Modifiers
 from riocore.widgets import MyQSvgWidget, MyQLabel, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
@@ -38,11 +33,6 @@ from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
 from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
 from PyQt5.QtWidgets import (
-    QDial,
-    QProgressBar,
-    QDoubleSpinBox,
-    QSlider,
-    QRadioButton,
     QSplitter,
     QMessageBox,
     QHeaderView,
@@ -1243,207 +1233,6 @@ class TabBoard:
             self.pininfo_timer = 3
 
 
-class MyVCP:
-    widget_tab = None
-    active_tab = None
-
-    def __init__(self):
-        self.dialog = QDialog()
-        self.dialog.setWindowTitle("VCP-Preview")
-        self.dialog_layout = QVBoxLayout()
-        self.dialog.setLayout(self.dialog_layout)
-        # self.dialog.show()
-
-    def close(self):
-        self.dialog.close()
-
-    def toggle(self):
-        if self.dialog.isVisible():
-            self.hide()
-        else:
-            self.show()
-
-    def show(self):
-        self.dialog.show()
-
-    def hide(self):
-        self.dialog.hide()
-
-    def load(self, filename):
-        layout = self.dialog_layout
-
-        for i in reversed(range(layout.count())):
-            layout.itemAt(i).widget().setParent(None)
-
-        xml = open(filename, "rb").read()
-        root = etree.fromstring(xml, parser=etree.XMLParser(remove_comments=True))
-
-        if self.widget_tab:
-            index = self.widget_tab.indexOf(self.widget_tab.currentWidget())
-            self.active_tab = self.widget_tab.tabText(index)
-
-        for child in root.iterchildren():
-            self.show_element(child, layout)
-
-    def show_element(self, element, layout):
-        if hasattr(self, f"show_{element.tag}"):
-            getattr(self, f"show_{element.tag}")(element, layout)
-        else:
-            print(f"missing type: {element.tag}")
-            layout.addWidget(QLabel(f"## {element.tag} ##"))
-
-    def show_radiobutton(self, element, layout):
-        choices = []
-        for child in element.iterchildren():
-            if child.tag == "choices":
-                for name in child.text.strip("[").strip("]").split(","):
-                    title = name.strip().strip("'").strip('"')
-                    choices.append(title)
-                    radio = QRadioButton(title)
-                    layout.addWidget(radio)
-
-    def show_scale(self, element, layout):
-        orient = "HORIZONTAL"
-        for child in element.iterchildren():
-            if child.tag == "orient":
-                orient = child.text
-        if orient == "HORIZONTAL":
-            slider = QSlider(Qt.Horizontal)
-        else:
-            slider = QSlider(Qt.Vertical)
-            slider.setMinimumHeight(50)
-
-        for child in element.iterchildren():
-            if child.tag == "min":
-                slider.setMinimum(float(child.text))
-            if child.tag == "max":
-                slider.setMaximum(float(child.text))
-        layout.addWidget(slider)
-
-    def show_bar(self, element, layout):
-        bar = QProgressBar()
-
-        for child in element.iterchildren():
-            if child.tag == "min":
-                bar.setMinimum(float(child.text))
-            if child.tag == "max":
-                bar.setMaximum(float(child.text))
-
-        # bar.setOrientation(1)
-        bar.setValue(1)
-        layout.addWidget(bar)
-
-    def show_dial(self, element, layout):
-        label = QDial()
-        layout.addWidget(label)
-
-    def show_jogwheel(self, element, layout):
-        label = QDial()
-        layout.addWidget(label)
-
-    def show_button(self, element, layout):
-        text = ""
-        for child in element.iterchildren():
-            if child.tag == "text":
-                text = child.text.strip('"')
-        label = QPushButton(text)
-        layout.addWidget(label)
-
-    def show_checkbutton(self, element, layout):
-        text = ""
-        for child in element.iterchildren():
-            if child.tag == "text":
-                text = child.text.strip('"')
-        label = QCheckBox(text)
-        layout.addWidget(label)
-
-    def show_label(self, element, layout):
-        text = ""
-        for child in element.iterchildren():
-            if child.tag == "text":
-                text = child.text.strip('"')
-        label = QLabel(text)
-        layout.addWidget(label)
-
-    def show_u32(self, element, layout):
-        self.show_number(element, layout)
-
-    def show_s32(self, element, layout):
-        self.show_number(element, layout)
-
-    def show_number(self, element, layout):
-        fmt = "0.1f"
-        for child in element.iterchildren():
-            if child.tag == "format":
-                fmt = child.text.strip('"')
-        label = QLabel(f"%{fmt}" % (0.00,))
-        layout.addWidget(label)
-
-    def show_spinbox(self, element, layout):
-        spinbox = QDoubleSpinBox()
-        layout.addWidget(spinbox)
-
-    def show_led(self, element, layout):
-        label = QLabel("*")
-        layout.addWidget(label)
-
-    def show_labelframe(self, element, layout):
-        gbox_layout = QVBoxLayout()
-        gbox_widget = QGroupBox()
-        gbox_widget.setTitle(element.get("text", ""))
-        gbox_widget.setLayout(gbox_layout)
-        layout.addWidget(gbox_widget)
-        for child in element.iterchildren():
-            if child.tag not in {"relief", "font", "bd"}:
-                self.show_element(child, gbox_layout)
-        layout.addStretch()
-
-    def show_vbox(self, element, layout):
-        vbox_layout = QVBoxLayout()
-        vbox_widget = QWidget()
-        vbox_widget.setLayout(vbox_layout)
-        layout.addWidget(vbox_widget)
-        for child in element.iterchildren():
-            if child.tag not in {"relief", "font", "bd"}:
-                self.show_element(child, vbox_layout)
-        layout.addStretch()
-
-    def show_hbox(self, element, layout):
-        hbox_layout = QHBoxLayout()
-        hbox_widget = QWidget()
-        hbox_widget.setLayout(hbox_layout)
-        layout.addWidget(hbox_widget)
-        for child in element.iterchildren():
-            if child.tag not in {"relief", "font", "bd"}:
-                self.show_element(child, hbox_layout)
-        layout.addStretch()
-
-    def show_tabs(self, element, layout):
-        tab_names = []
-        for child in element.iterchildren():
-            if child.tag == "names":
-                for name in child.text.strip("[").strip("]").split(","):
-                    tab_names.append(name.strip().strip("'").strip('"'))
-
-        tabwidget = QTabWidget()
-        layout.addWidget(tabwidget)
-        self.widget_tab = tabwidget
-
-        tab_n = 0
-        for child in element.iterchildren():
-            if child.tag == "names":
-                continue
-
-            tab_inner_widget = QWidget()
-            tab_inner_layout = QVBoxLayout()
-            tab_inner_widget.setLayout(tab_inner_layout)
-            tabwidget.addTab(tab_inner_widget, tab_names[tab_n])
-            if self.active_tab == tab_names[tab_n]:
-                tabwidget.setCurrentWidget(tab_inner_widget)
-            tab_n += 1
-            self.show_element(child, tab_inner_layout)
-
-
 class WinForm(QWidget):
     def __init__(self, args, parent=None):
         super(WinForm, self).__init__(parent)
@@ -1489,9 +1278,10 @@ class WinForm(QWidget):
                 print(f"can not load: {args.config}")
                 exit(1)
 
-        if etree is not None:
-            self.vcp = MyVCP()
-        else:
+        try:
+            self.vcp = vcp.MyVCP()
+        except Exception as error:
+            print(f"ERROR(VCP): {error}")
             self.vcp = None
 
         self.tabwidget = QTabWidget()

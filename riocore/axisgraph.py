@@ -1,4 +1,3 @@
-import os.path
 import graphviz
 
 
@@ -7,7 +6,6 @@ class AxisGraph:
         self.gAll = graphviz.Digraph("G", format="svg")
         self.gAll.attr(rankdir="LR")
         self.gAll.attr(bgcolor="black")
-        base_dir = os.path.dirname(ini_file)
         self.hal_data = open(hal_file, "r").read()
         self.ini_data = open(ini_file, "r").read()
 
