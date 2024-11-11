@@ -665,7 +665,7 @@ class LinuxCNC:
                 output.append(f"[JOINT_{joint}]")
                 output.append(f"# {plugin_instance.instances_name}")
                 if position_mode == "absolute":
-                    for key, value in joint_setup.items():
+                    for key, value in joint_config.items():
                         if key in self.JOINT_DEFAULTS:
                             output.append(f"{key:18s} = {value}")
 
@@ -677,7 +677,7 @@ class LinuxCNC:
                             value = setup_value
                         output.append(f"{key:18s} = {value}")
                     output.append("")
-                    for key, value in joint_setup.items():
+                    for key, value in joint_config.items():
                         if key in self.JOINT_DEFAULTS:
                             if key.endswith("_VELOCITY"):
                                 output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
