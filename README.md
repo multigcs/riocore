@@ -194,19 +194,19 @@ graph LR;
 
 ```
 riocore
-├── bin ················ common code
+├── bin ················ user tools / gui's
 ├── doc ················ documentation
 ├── dockerfiles ········ files to run the docker container
 ├┬─ ricore ············· main directory 
-|├── boards ············ 
-|├── chipdata ·········· configurations about different FPGAs
-|├── configs ··········· config for supported boards and FPGAs
-|├── files ············· scripts and files for configuration
-|├┬── generator ········ support files for creating the output 
-||├── addons ··········· addons for LinuxCNC
-||├── pins ············· 
-||├── toolchains ······· location of the different toolchains
+|├── boards ············ board configurations
+|├── chipdata ·········· pin-information about the different FPGAs
+|├── configs ··········· some demo configurations
+|├── files ············· helper scripts and files
+|├┬── generator ········ the generators for the GateWare and LinuxCNC configuration
+||├── addons ··········· generator addons for LinuxCNC (like joystick/mpg/...)
+||├── pins ············· the different pin generators, used by the toolchains
+||├── toolchains ······· location of the different toolchain generators
 |├── modules ··········· break out board and external modules configuration
-|├── plugins ··········· location of the plugin configurations
-├── tests ·············· code testing
+|├── plugins ··········· location of the plugins
+├── tests ·············· unit tests
 ```
