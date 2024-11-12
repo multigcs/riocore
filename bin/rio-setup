@@ -3171,7 +3171,7 @@ class WinForm(QWidget):
             option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=1)
             if option == "home_sequence":
-                option_setup = {"default": "auto", "type": "select", "options":  ["auto"] + [str(n) for n in range(-9, 9)]}
+                option_setup = {"default": "auto", "type": "select", "options": ["auto"] + [str(n) for n in range(-9, 9)]}
             option_widget = self.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             option_row.addWidget(option_widget, stretch=3)
             homing_layout.addLayout(option_row)
