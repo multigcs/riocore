@@ -189,3 +189,24 @@ graph LR;
     /LinuxCNC-->*.hal;
 ```
 
+
+## Directory Structure
+
+```
+riocore
+├── bin ················ common code
+├── doc ················ documentation
+├── dockerfiles ········ files to run the docker container
+├┬─ ricore ············· main directory 
+|├── boards ············ 
+|├── chipdata ·········· configurations about different FPGAs
+|├── configs ··········· config for supported boards and FPGAs
+|├── files ············· scripts and files for configuration
+|├┬── generator ········ support files for creating the output 
+||├── addons ··········· addons for LinuxCNC
+||├── pins ············· 
+||├── toolchains ······· location of the different toolchains
+|├── modules ··········· break out board and external modules configuration
+|├── plugins ··········· location of the plugin configurations
+├── tests ·············· code testing
+```
