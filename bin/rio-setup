@@ -20,6 +20,7 @@ if os.path.isfile("./riocore/__init__.py"):
 
 import graphviz
 import riocore
+from riocore import VERSION
 from riocore import halpins
 
 from riocore import axisgraph
@@ -1409,11 +1410,55 @@ class WinForm(QWidget):
         self.treeview.resize(tree_width, win_height)
         splitter.setSizes((tree_width, img_width))
 
+        self.show()
+
         self.generate_cb(preview=True)
         self.check_status()
+
+        self.startup_window_show()
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
+
+    def startup_window_show(self):
+        self.startup_dialog = QDialog()
+        self.startup_dialog.setWindowTitle("Wellcome")
+        self.startup_dialog.setMinimumWidth(320)
+        self.startup_dialog.setMinimumHeight(160)
+        self.startup_dialog.setStyleSheet(STYLESHEET)
+
+        hlayout = QHBoxLayout()
+        self.startup_dialog.setLayout(hlayout)
+
+        vlayout = QVBoxLayout()
+        hlayout.addLayout(vlayout)
+
+        label = QLabel("LinuxCNC - RIO")
+        label.setFont(QFont("Arial", 16))
+        vlayout.addWidget(label)
+        vlayout.addStretch()
+
+        label = QLabel(f"v {VERSION.VERSION}")
+        label.setFont(QFont("Arial", 12))
+        vlayout.addWidget(label)
+
+        label = QLabel("GPL-2.0 license ")
+        label.setFont(QFont("Arial", 12))
+        vlayout.addWidget(label)
+
+        hlayout.addStretch()
+
+        label = QLabel()
+        pixmap = QPixmap(
+            f"{riocore_path}/files/rio-logo-128x128.png",
+        )
+        label.setPixmap(pixmap)
+        hlayout.addWidget(label)
+
+        self.startup_dialog_timer = 2
+
+        self.startup_dialog.show()
 
     def select_board(self):
         def load_config_from():
@@ -1597,6 +1642,11 @@ class WinForm(QWidget):
             self.button_flash.setStyleSheet("background-color: red;")
 
     def runTimer(self):
+        if self.startup_dialog_timer > 1:
+            self.startup_dialog_timer -= 1
+        elif self.startup_dialog_timer == 1:
+            self.startup_dialog.hide()
+
         for tab in self.tabs:
             self.tabs[tab].timer()
 
@@ -3820,5 +3870,4 @@ if __name__ == "__main__":
         STYLESHEET = ""
 
     form = WinForm(args)
-    form.show()
     sys.exit(app.exec_())
