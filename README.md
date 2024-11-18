@@ -4,6 +4,8 @@
 
 <div align="center">
 
+  ![rio-logo](./riocore/file/rio-logo-96x96.png)
+
   [![License](https://img.shields.io/badge/license-GPL2-blue.svg)](/LICENSE)
 
 </div>
