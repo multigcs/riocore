@@ -4,7 +4,7 @@
 
 <div align="center">
 
-  ![rio-logo](./riocore/files/rio-logo-96x96.png)
+  ![rio-logo](./riocore/files/rio-logo-128x128.png)
 
   [![License](https://img.shields.io/badge/license-GPL2-blue.svg)](/LICENSE)
 
