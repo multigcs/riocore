@@ -57,6 +57,10 @@ try:
     h = hal.component("camjog")
     h.newpin("axis.x.jog-counts", hal.HAL_S32, hal.HAL_OUT)
     h.newpin("axis.y.jog-counts", hal.HAL_S32, hal.HAL_OUT)
+    h.newpin("axis.x.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+    h.newpin("axis.y.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+    h.newpin("axis.x.cal", hal.HAL_FLOAT, hal.HAL_IN)
+    h.newpin("axis.y.cal", hal.HAL_FLOAT, hal.HAL_IN)
     h.ready()
     no_hal = False
 except Exception:
@@ -142,8 +146,8 @@ class MyImage(QLabel):
             (offset_x, offset_y) = self.parent.convert_to_cam((self.new_x, self.new_y))
 
             if self.parent.options["mode"] == "goto":
-                h["axis.x.jog-counts"] += offset_x
-                h["axis.y.jog-counts"] += offset_y
+                h["axis.x.jog-counts"] += int(offset_x / h["axis.x.jog-scale"] * h["axis.x.cal"])
+                h["axis.y.jog-counts"] += int(offset_y / h["axis.y.jog-scale"] * h["axis.y.cal"])
 
             elif self.parent.options["mode"] == "touch":
                 self.parent.options["points"] = []
@@ -165,8 +169,10 @@ class MyImage(QLabel):
             diff_y = self.old_y - event.pos().y()
             s = self.parent.options["scale"]
             z = self.parent.options["zoom"]
-            h["axis.x.jog-counts"] = self.old_counts_x + int(diff_x / z / s)
-            h["axis.y.jog-counts"] = self.old_counts_y + int(diff_y / z / s)
+            offset_x = int(diff_x / z / s)
+            offset_y = int(diff_y / z / s)
+            h["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / h["axis.x.jog-scale"] * h["axis.x.cal"])
+            h["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / h["axis.y.jog-scale"] * h["axis.y.cal"])
 
 
 class WinForm(QWidget):

@@ -328,13 +328,19 @@ class LinuxCNC:
         output_hal.append("# setp")
         for name, value in setps.items():
             # check if pin is connected to other pin
+            hasSignal = None
             isFree = True
             for network, net in networks.items():
                 if net["in"] and net["out"]:
                     if name in net["out"]:
                         isFree = False
                         break
-            if isFree:
+                    elif name in net["in"]:
+                        hasSignal = network
+                        break
+            if hasSignal:
+                output_hal.append(f"sets {hasSignal} {value}")
+            elif isFree:
                 if not name.startswith(self.POSTGUI_COMPONENTS):
                     output_hal.append(f"setp {name} {value}")
                 else:
