@@ -111,6 +111,8 @@ def load_tree(parent, tree_lcnc):
         timer.start(300)
 
         if dialog.exec():
+            if "joypad" not in parent.config["linuxcnc"]:
+                parent.config["linuxcnc"]["joypad"] = {}
             for action, atype in ALL_ACTIONS.items():
                 halname = actions[action].text()
                 if halname:

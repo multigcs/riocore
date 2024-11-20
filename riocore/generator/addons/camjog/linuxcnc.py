@@ -72,16 +72,17 @@ def hal(parent):
                 if axis_name not in {"X", "Y"}:
                     continue
 
+                jscale = camjog.get(f"{axis_name.lower()}_scale", 0.01)
                 joints = axis_config["joints"]
                 axis_low = axis_name.lower()
                 parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
                 parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
-                parent.hal_setp_add(f"axis.{axis_low}.jog-scale", 0.01)
+                parent.hal_setp_add(f"axis.{axis_low}.jog-scale", jscale)
                 parent.hal_net_add(f"camjog.axis.{axis_low}.jog-counts", f"axis.{axis_low}.jog-counts")
                 for joint, joint_setup in joints.items():
                     parent.hal_setp_add(f"joint.{joint}.jog-vel-mode", 0)
                     parent.hal_setp_add(f"joint.{joint}.jog-enable", 1)
-                    parent.hal_setp_add(f"joint.{joint}.jog-scale", 0.01)
+                    parent.hal_setp_add(f"joint.{joint}.jog-scale", jscale)
                     parent.hal_net_add(f"camjog.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
 
             output.append("")

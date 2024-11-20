@@ -77,6 +77,8 @@ def load_tree(parent, tree_lcnc):
             "width": {"type": int, "default": 640},
             "height": {"type": int, "default": 480},
             "scale": {"type": float, "default": 1.0},
+            "x_scale": {"type": float, "default": 0.01},
+            "y_scale": {"type": float, "default": 0.01},
         }.items():
             aitem = MyStandardItem()
             tree_lcnccamjog_n.appendRow(
