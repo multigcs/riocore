@@ -3217,6 +3217,7 @@ class axis:
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
+        display_initval = setup.get("initval", 0.0)
         resolution = setup.get("resolution", 0.1)
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
@@ -3225,7 +3226,7 @@ class axis:
         cfgxml_data.append("    <spinbox>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
         cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
-        cfgxml_data.append("      <initval>0</initval>")
+        cfgxml_data.append(f"      <initval>{display_initval}</initval>")
         cfgxml_data.append(f"      <min_>{display_min}</min_>")
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")

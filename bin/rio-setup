@@ -3405,6 +3405,7 @@ class WinForm(QWidget):
             if not signal_defaults.get("bool", False):
                 display_setup["min"] = {"type": float, "default": None}
                 display_setup["max"] = {"type": float, "default": None}
+                display_setup["initval"] = {"type": float, "default": 0.0}
             for option, option_setup in display_setup.items():
                 display_cols = QHBoxLayout()
                 display_rows.addLayout(display_cols)
