@@ -277,7 +277,18 @@ class Gateware:
         output.append(f"    parameter BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size//8} bytes")
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
-        output.append("    reg ESTOP = 0;")
+
+        estop_pin = None
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                if plugin_instance.NAME == "bitin" and plugin_instance.title.lower() == "estop":
+                    for data_name, data_config in plugin_instance.interface_data().items():
+                        estop_pin = data_config["variable"]
+                        break
+        if estop_pin is not None:
+            output.append(f"    assign ESTOP = {estop_pin};")
+        else:
+            output.append("    reg ESTOP = 0;")
         output.append("    wire ERROR;")
         output.append("    wire INTERFACE_SYNC;")
         output.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
