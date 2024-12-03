@@ -57,13 +57,33 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
+        self.OPTIONS = {
+            "pulse_len": {
+                "default": 20,
+                "type": int,
+                "min": 1,
+                "max": 10000,
+                "unit": "us",
+                "description": "step pulse len",
+            },
+            "dir_delay": {
+                "default": 10,
+                "type": int,
+                "min": 1,
+                "max": 10000,
+                "unit": "us",
+                "description": "delay after dir change",
+            },
+        }
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance["predefines"]
-        instance["parameter"]
-        instance["arguments"]
+        instance_parameter = instance["parameter"]
+        pulse_len = int(self.plugin_setup.get("pulse_len", self.OPTIONS["pulse_len"]["default"]))
+        instance_parameter["PULSE_LEN"] = int(self.system_setup["speed"] / 1000000 * pulse_len)
+        dir_delay = int(self.plugin_setup.get("dir_delay", self.OPTIONS["dir_delay"]["default"]))
+        instance_parameter["DIR_DELAY"] = int(self.system_setup["speed"] / 1000000 * dir_delay)
         return instances
 
     def convert(self, signal_name, signal_setup, value):
