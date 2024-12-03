@@ -44,6 +44,24 @@ Keywords: stepper servo joint
 
 ## Options:
 *user-options*
+### pulse_len:
+step pulse len (0 = 50% duty)
+
+ * type: float
+ * min: 0.0
+ * max: 1000.0
+ * default: 0
+ * unit: us
+
+### dir_delay:
+delay after dir change
+
+ * type: float
+ * min: 0.1
+ * max: 1000.0
+ * default: 0.7
+ * unit: us
+
 ### name:
 name of this plugin instance
 
@@ -109,6 +127,8 @@ position feedback
 ```
 {
     "type": "stepdir",
+    "pulse_len": 0,
+    "dir_delay": 0.7,
     "name": "",
     "axis": "",
     "is_joint": false,

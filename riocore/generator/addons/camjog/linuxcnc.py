@@ -73,7 +73,7 @@ def hal(parent):
                     continue
 
                 cal = camjog.get(f"{axis_name.lower()}_cal", 0.1)
-                joints = axis_config["joints"]
+                # joints = axis_config["joints"]
                 axis_low = axis_name.lower()
                 parent.hal_setp_add(f"camjog.axis.{axis_low}.cal", cal)
                 parent.hal_net_add(f"axis.{axis_low}.jog-scale", f"camjog.axis.{axis_low}.jog-scale")

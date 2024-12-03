@@ -88,7 +88,7 @@ class AxisGraph:
                 infos = "|".join(kins.split())
                 label = f"{{{{Kins|{infos}}}}}"
                 self.gAll.node(
-                    f"kins",
+                    "kins",
                     shape="record",
                     label=label,
                     fontsize="11pt",
