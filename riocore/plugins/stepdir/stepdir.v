@@ -1,6 +1,6 @@
 
 module stepdir
-    #(parameter PULSE_LEN = 10, parameter DIR_DELAY = 2)
+    #(parameter PULSE_LEN = 2, parameter DIR_DELAY = 1)
     (
         input clk,
         input enable,
@@ -15,7 +15,7 @@ module stepdir
     reg dir_changed = 0;
     reg [31:0] jointCounter = 32'd0;
     reg [31:0] velocityAbs = 32'd0;
-    reg [31:0] pulsePos = 32'd0;
+    reg [31:0] pulseEnd = 32'd0;
     reg signed [31:0] positionMem = 32'd0;
     assign en = enable;
     assign position = positionMem;
@@ -25,6 +25,12 @@ module stepdir
             velocityAbs <= velocity;
         end else begin
             velocityAbs <= -velocity;
+        end
+
+        if (PULSE_LEN == 0) begin
+            pulseEnd <= velocityAbs / 2;
+        end else begin
+            pulseEnd <= PULSE_LEN;
         end
 
         if ((velocity == 0 || enable == 0) && step == 0) begin
@@ -53,7 +59,7 @@ module stepdir
                     end
                 end
 
-                if (jointCounter < PULSE_LEN) begin
+                if (jointCounter < pulseEnd) begin
                     step <= 1;
                 end else begin
                     step <= 0;

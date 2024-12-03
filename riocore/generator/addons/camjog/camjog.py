@@ -319,7 +319,6 @@ class WinForm(QWidget):
 
     def update_image(self, frame):
         try:
-
             if self.options["view"] == "edge":
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 frame = cv2.Canny(gray, 70, 135)
@@ -469,14 +468,15 @@ class CameraThread(QThread):
             except Exception as err:
                 print("ERROR: camjog", err)
 
-
     def stop(self):
         self.stop_capture()
         super().stop()
 
+
 def sigint_handler(signal, frame):
     print("INFO: camjog Interrupted")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, sigint_handler)

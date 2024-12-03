@@ -59,16 +59,16 @@ class Plugin(PluginBase):
         }
         self.OPTIONS = {
             "pulse_len": {
-                "default": 20,
-                "type": int,
-                "min": 1,
+                "default": 0,
+                "type": float,
+                "min": 0,
                 "max": 10000,
                 "unit": "us",
-                "description": "step pulse len",
+                "description": "step pulse len (0 = 50% duty)",
             },
             "dir_delay": {
-                "default": 10,
-                "type": int,
+                "default": 0.7,
+                "type": float,
                 "min": 1,
                 "max": 10000,
                 "unit": "us",
@@ -80,10 +80,12 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        pulse_len = int(self.plugin_setup.get("pulse_len", self.OPTIONS["pulse_len"]["default"]))
-        instance_parameter["PULSE_LEN"] = int(self.system_setup["speed"] / 1000000 * pulse_len)
-        dir_delay = int(self.plugin_setup.get("dir_delay", self.OPTIONS["dir_delay"]["default"]))
-        instance_parameter["DIR_DELAY"] = int(self.system_setup["speed"] / 1000000 * dir_delay)
+        pulse_len = self.plugin_setup.get("pulse_len", self.OPTIONS["pulse_len"]["default"])
+        instance_parameter["PULSE_LEN"] = int(self.system_setup["speed"] * pulse_len / 1000000)
+        if instance_parameter["PULSE_LEN"] == 0 and pulse_len > 0:
+            instance_parameter["PULSE_LEN"] = 1
+        dir_delay = self.plugin_setup.get("dir_delay", self.OPTIONS["dir_delay"]["default"])
+        instance_parameter["DIR_DELAY"] = int(self.system_setup["speed"] * dir_delay / 1000000)
         return instances
 
     def convert(self, signal_name, signal_setup, value):
