@@ -58,16 +58,14 @@ module stepdir
                 end else begin
                     step <= 0;
                 end
+
+                jointCounter <= jointCounter + 1;
+
             end
 
-            jointCounter <= jointCounter + 1;
         end else begin
-
             jointCounter <= 0;
-
         end
-
-
     end
 endmodule
 
