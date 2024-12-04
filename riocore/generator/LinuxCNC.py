@@ -710,13 +710,13 @@ class LinuxCNC:
         open(os.path.join(self.configuration_path, "rio.ini"), "w").write("\n".join(output))
 
     def misc(self):
-        if not os.path.isfile(f"{self.configuration_path}/tool.tbl"):
+        if not os.path.isfile(os.path.join(self.configuration_path, "tool.tbl")):
             tooltbl = []
             tooltbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
             tooltbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
             tooltbl.append("T3 P3 D0.201000 Z+1.273000 ;#7 tap drill")
             os.makedirs(self.configuration_path, exist_ok=True)
-            open(f"{self.configuration_path}/tool.tbl", "w").write("\n".join(tooltbl))
+            open(os.path.join(self.configuration_path, "tool.tbl"), "w").write("\n".join(tooltbl))
 
     def hal_setp_add(self, output_name, value):
         if output_name not in self.setps:
@@ -1391,9 +1391,9 @@ class LinuxCNC:
             cfgxml_adata += self.gui_gen.draw_end()
 
             if gui == "qtdragon":
-                open(f"{self.configuration_path}/rio-gui.ui", "w").write("\n".join(cfgxml_adata))
+                open(os.path.join(self.configuration_path, "rio-gui.ui"), "w").write("\n".join(cfgxml_adata))
             else:
-                open(f"{self.configuration_path}/rio-gui.xml", "w").write("\n".join(cfgxml_adata))
+                open(os.path.join(self.configuration_path, "rio-gui.xml"), "w").write("\n".join(cfgxml_adata))
 
         self.postgui_call_list.append("custom_postgui.hal")
 
@@ -1495,9 +1495,9 @@ class LinuxCNC:
             self.loadrts.append("")
             os.makedirs(self.configuration_path, exist_ok=True)
 
-            for source in glob.glob(f"{riocore_path}/files/melfa/*"):
+            for source in glob.glob(os.path.join(riocore_path, "files", "melfa", "*")):
                 basename = os.path.basename(source)
-                target = f"{self.configuration_path}/{basename}"
+                target = os.path.join(self.configuration_path, basename)
                 if os.path.isfile(source):
                     shutil.copy(source, target)
                 elif not os.path.isdir(target):
@@ -2400,15 +2400,15 @@ class LinuxCNC:
 
         generic_spi = self.project.config["jdata"].get("generic_spi", False)
         if protocol == "SPI" and generic_spi is True:
-            for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c_generic"):
-                if protocol == ppath.split("/")[-2]:
+            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_generic")):
+                if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                     output.append("*/")
                     output.append(open(ppath, "r").read())
         else:
-            for ppath in glob.glob(f"{riocore_path}/interfaces/*/*.c"):
-                if protocol == ppath.split("/")[-2]:
+            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c")):
+                if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                     output.append("*/")
@@ -2432,7 +2432,7 @@ class LinuxCNC:
         output.append("    hal functions")
         output.append("*/")
 
-        output.append(open(f"{riocore_path}/files/hal_functions.c", "r").read())
+        output.append(open(os.path.join(riocore_path, "files", "hal_functions.c"), "r").read())
 
         output.append("")
         output.append("/***********************************************************************")
@@ -2521,7 +2521,7 @@ class LinuxCNC:
         output.append("")
 
         os.makedirs(self.component_path, exist_ok=True)
-        open(f"{self.component_path}/riocomp.c", "w").write("\n".join(output))
+        open(os.path.join(self.component_path, "riocomp.c"), "w").write("\n".join(output))
 
     def create_axis_config(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
