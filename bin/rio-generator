@@ -23,22 +23,24 @@ parser.add_argument("--start", "-s", help="start linuxcnc", default=False, actio
 args = parser.parse_args()
 
 if args.config:
-    if args.config.endswith(".json"):
-        if os.path.isfile(args.config):
-            config_file = args.config
-        elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
-            config_file = f"{riocore_path}/configs/{args.config}"
+    if args.config[0].endswith(".json"):
+        if os.path.isfile(args.config[0]):
+            config_file = args.config[0]
+        elif os.path.isfile(f"{riocore_path}/configs/{args.config[0]}"):
+            config_file = f"{riocore_path}/configs/{args.config[0]}"
         else:
-            print(f"can not load: {args.config}")
+            print(f"can not load: {args.config[0]}")
             exit(1)
         print(f"loading: {config_file}")
         project = riocore.Project(config_file, args.output)
         project.generator(preview=args.preview)
 
         config_name = project.config.get("name")
+        gateware_path = os.path.join("Output", config_name, "Gateware")
+        startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
 
         if args.build:
-            cmd = f"(cd Output/{config_name}/Gateware/ ; make clean all)"
+            cmd = f"(cd {gateware_path} ; make clean all)"
             print("")
             print("running:")
             print(f"  {cmd}")
@@ -48,7 +50,7 @@ if args.config:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
         if args.flash:
-            cmd = f"(cd Output/{config_name}/Gateware/ ; make load)"
+            cmd = f"(cd {gateware_path} ; make load)"
             print("")
             print("running:")
             print(f"  {cmd}")
@@ -58,7 +60,7 @@ if args.config:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
         if args.start:
-            cmd = f"sh Output/{config_name}/LinuxCNC/start.sh"
+            cmd = f"sh {startsh_path}"
             print("")
             print("running:")
             print(f"  {cmd}")
@@ -68,19 +70,19 @@ if args.config:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
 
-    elif args.config.startswith("testbench:"):
-        plugin = args.config.split(":")[-1]
+    elif args.config[0].startswith("testbench:"):
+        plugin = args.config[0].split(":")[-1]
         plugins = riocore.Plugins()
         plugin_instance = plugins.load_plugin(plugin, {"type": plugin}, {"speed": 1000000, "jdata": {"clock": {"speed": 1000000}}})
         plugins.testbench_builder(plugin, plugin_instance)
 
-    elif args.config.startswith("plugininfo:"):
-        plugin = args.config.split(":")[-1]
+    elif args.config[0].startswith("plugininfo:"):
+        plugin = args.config[0].split(":")[-1]
         plugins = riocore.Plugins()
         print(plugins.info(plugin))
 
-    elif args.config.startswith("pluginlist"):
-        plugin = args.config.split(":")[-1]
+    elif args.config[0].startswith("pluginlist"):
+        plugin = args.config[0].split(":")[-1]
         plugins = riocore.Plugins()
         for line in plugins.list():
             print(line)
