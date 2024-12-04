@@ -11,7 +11,6 @@ import traceback
 
 from .generator.Gateware import Gateware
 from .generator.LinuxCNC import LinuxCNC
-from .generator.Firmware import Firmware
 
 riocore_path = os.path.dirname(__file__)
 
@@ -465,10 +464,7 @@ class Project:
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
-        if self.config["toolchain"] == "platformio":
-            self.generator_firmware = Firmware(self)
-        else:
-            self.generator_gateware = Gateware(self)
+        self.generator_gateware = Gateware(self)
 
         # check names
         varnames = {}
@@ -897,10 +893,7 @@ class Project:
         generate_pll = True
         if preview:
             generate_pll = False
-        if self.config["toolchain"] == "platformio":
-            self.generator_firmware.generator()
-        else:
-            self.generator_gateware.generator(generate_pll=generate_pll)
+        self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
         target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)
