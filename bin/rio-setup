@@ -10,6 +10,7 @@ import importlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -3752,7 +3753,7 @@ class WinForm(QWidget):
             print(f"ERROR loading output: {error}")
 
         if preview and self.output_path and os.path.isdir(self.output_path):
-            os.system(f"rm -rf {self.output_path}")
+            shutil.rmtree(self.output_path)
         self.info_widget.setText("generate...done")
 
     def generate(self, output_path=None, preview=False):
@@ -3760,7 +3761,7 @@ class WinForm(QWidget):
         if not output_path:
             output_path = "Output"
         try:
-            generator_path = os.path.join(riocore_path, "..", "bin", "rio-generator")
+            generator_path = os.path.join(os.path.dirname(riocore_path), "bin", "rio-generator")
             if not os.path.isfile(generator_path):
                 generator_path = "rio-generator"
 
