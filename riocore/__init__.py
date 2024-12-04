@@ -622,7 +622,7 @@ class Project:
         self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc", 0))
         self.config["sysclk_pin"] = project["jdata"]["clock"]["pin"]
         self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
-        self.config["output_path"] = os.path.join(output_path, project['jdata']['name'])
+        self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
         self.config["toolchain"] = project["jdata"]["toolchain"]
         self.config["family"] = project["jdata"].get("family", "UNKNOWN")
@@ -902,5 +902,5 @@ class Project:
         else:
             self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
-        target = os.path.join(self.config['output_path'], ".config.json")
+        target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)

@@ -1052,7 +1052,7 @@ class TabBoard:
         self.pinlabels = {}
 
         pinimage = self.parent.board.get("pinimage", "board.png")
-        pinimage_path = f"{self.parent.boardcfg_path}/{pinimage}"
+        pinimage_path = os.path.join(self.parent.boardcfg_path, pinimage)
         if not pinimage or not os.path.isfile(pinimage_path):
             if self.parent.tabwidget.tabText(0) == "Board":
                 self.parent.tabwidget.removeTab(0)
@@ -1273,8 +1273,8 @@ class WinForm(QWidget):
         else:
             if os.path.isfile(args.config):
                 self.config_file = args.config
-            elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
-                self.config_file = f"{riocore_path}/configs/{args.config}"
+            elif os.path.isfile(os.path.join(riocore_path, "configs", args.config)):
+                self.config_file = os.path.join(riocore_path, "configs", args.config)
             else:
                 print(f"can not load: {args.config}")
                 exit(1)
@@ -1384,8 +1384,8 @@ class WinForm(QWidget):
             button_layout.addWidget(button)
 
         self.addons = {}
-        for addon_path in sorted(glob.glob(f"{riocore_path}/generator/addons/*/config.py")):
-            addon_name = addon_path.split("/")[-2]
+        for addon_path in sorted(glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "config.py"))):
+            addon_name = addon_path.split(os.sep)[-2]
             self.addons[addon_name] = importlib.import_module(".config", f"riocore.generator.addons.{addon_name}")
 
         self.json_load()
@@ -1451,9 +1451,7 @@ class WinForm(QWidget):
         hlayout.addStretch()
 
         label = QLabel()
-        pixmap = QPixmap(
-            f"{riocore_path}/files/rio-logo-128x128.png",
-        )
+        pixmap = QPixmap(os.path.join(riocore_path, "files", "rio-logo-128x128.png"))
         label.setPixmap(pixmap)
         hlayout.addWidget(label)
 
@@ -1468,7 +1466,7 @@ class WinForm(QWidget):
             name = file_dialog.getOpenFileName(
                 self,
                 "Load Config",
-                f"{riocore_path}/configs/",
+                os.path.join(riocore_path, "configs"),
                 f"config ( {' '.join(suffix_list)} )" "Load Config",
                 "",
             )
@@ -1480,18 +1478,18 @@ class WinForm(QWidget):
             board_path = board_list[idx]
             board_folder = None
             if board_path.endswith(".json"):
-                board_name = board_path.split("/")[-1].replace(".json", "")
+                board_name = board_path.split(os.sep)[-1].replace(".json", "")
             else:
-                board_name = board_path.split("/")[-1]
+                board_name = board_path.split(os.sep)[-1]
                 board_folder = board_path
-                board_path = f"{board_path}/board.json"
+                board_path = os.path.join(board_path, "board.json")
 
             board_raw = open(board_path, "r").read()
             board_config = json.loads(board_raw)
 
             if board_folder:
                 pinimage = board_config.get("pinimage", "board.png")
-                image_path = f"{board_folder}/{pinimage}"
+                image_path = os.path.join(board_folder, pinimage)
                 if os.path.isfile(image_path):
                     pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
                     image_label.setPixmap(pixmap)
@@ -1530,14 +1528,14 @@ class WinForm(QWidget):
 
         board_list = []
         board_n = 0
-        for path in sorted(glob.glob(f"{riocore_path}/boards/*")):
+        for path in sorted(glob.glob(os.path.join(riocore_path, "boards", "*"))):
             if path.endswith(".json"):
-                board_name = path.split("/")[-1].replace(".json", "")
+                board_name = path.split(os.sep)[-1].replace(".json", "")
             else:
-                if not os.path.isfile(f"{path}/board.json"):
+                if not os.path.isfile(os.path.join(path, "board.json")):
                     print(f"WARNING: can not found board.json in {path}")
                     continue
-                board_name = path.split("/")[-1]
+                board_name = path.split(os.sep)[-1]
             board_table.setRowCount(board_n + 1)
             board_list.append(path)
             pitem = QTableWidgetItem(board_name)
@@ -1604,8 +1602,9 @@ class WinForm(QWidget):
             self.button_generate.setEnabled(True)
 
             # checking generated config
-            if os.path.isfile(f"Output/{config_name}/.config.json"):
-                ret = os.system(f"diff {self.config_file} Output/{config_name}/.config.json >/dev/null")
+            path_config_json = os.path.join("Output", config_name, ".config.json")
+            if os.path.isfile(path_config_json):
+                ret = os.system(f"diff {self.config_file} {path_config_json} >/dev/null")
             else:
                 ret = 1
             if ret == 0:
@@ -1619,7 +1618,7 @@ class WinForm(QWidget):
 
         # checking gateware
         hash_compiled = ""
-        hash_compiled_file = f"Output/{config_name}/Gateware/hash_compiled.txt"
+        hash_compiled_file = os.path.join("Output", config_name, "Gateware", "hash_compiled.txt")
         if os.path.isfile(hash_compiled_file):
             hash_compiled = open(hash_compiled_file, "r").read()
         if hash_compiled == self.gateware_hash:
@@ -1632,7 +1631,7 @@ class WinForm(QWidget):
             self.button_flash.setEnabled(False)
 
         hash_flashed = ""
-        hash_flashed_file = f"Output/{config_name}/Gateware/hash_flashed.txt"
+        hash_flashed_file = os.path.join("Output", config_name, "Gateware", "hash_flashed.txt")
         if os.path.isfile(hash_flashed_file):
             hash_flashed = open(hash_flashed_file, "r").read()
         if hash_flashed == self.gateware_hash:
@@ -1682,7 +1681,7 @@ class WinForm(QWidget):
         if self.compile_sub is not None:
             widget = self.tabs["Gateware"].gateware["Compile-Output"]
             config_name = self.config.get("name")
-            log_path = f"Output/{config_name}/Gateware/compile.log"
+            log_path = os.path.join("Output", config_name, "Gateware", "compile.log")
             if os.path.isfile(log_path):
                 logdata = open(log_path, "r").read()
             else:
@@ -1709,7 +1708,7 @@ class WinForm(QWidget):
         if self.flash_sub is not None:
             widget = self.tabs["Gateware"].gateware["Flash-Output"]
             config_name = self.config.get("name")
-            log_path = f"Output/{config_name}/Gateware/flash.log"
+            log_path = os.path.join("Output", config_name, "Gateware", "flash.log")
             if os.path.isfile(log_path):
                 logdata = open(log_path, "r").read()
             else:
@@ -1779,10 +1778,8 @@ class WinForm(QWidget):
     def get_path(self, path):
         if os.path.exists(path):
             return path
-        elif os.path.exists(f"{riocore_path}/{path}"):
-            return f"{riocore_path}/{path}"
-        elif os.path.exists(f"{riocore_path}/{path}"):
-            return f"{riocore_path}/{path}"
+        elif os.path.exists(os.path.join(riocore_path, path)):
+            return os.path.join(riocore_path, path)
         print(f"can not find path: {path}")
         exit(1)
 
