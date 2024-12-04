@@ -14,11 +14,12 @@ import riocore
 riocore_path = os.path.dirname(riocore.__file__)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("config", help="json config file", nargs="?", type=str, default=None)
+parser.add_argument("config", help="json config file", nargs=1, type=str, default=None)
 parser.add_argument("output", help="output directory", nargs="?", type=str, default=None)
 parser.add_argument("--preview", "-p", help="generate preview / no pll config", default=False, action="store_true")
 parser.add_argument("--build", "-b", help="build gateware", default=False, action="store_true")
 parser.add_argument("--flash", "-f", help="flash gateware", default=False, action="store_true")
+parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
 args = parser.parse_args()
 
 if args.config:
@@ -42,14 +43,30 @@ if args.config:
             print("running:")
             print(f"  {cmd}")
             print("")
-            os.system(cmd)
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
         if args.flash:
             cmd = f"(cd Output/{config_name}/Gateware/ ; make load)"
             print("")
             print("running:")
             print(f"  {cmd}")
             print("")
-            os.system(cmd)
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
+        if args.start:
+            cmd = f"sh Output/{config_name}/LinuxCNC/start.sh"
+            print("")
+            print("running:")
+            print(f"  {cmd}")
+            print("")
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
 
     elif args.config.startswith("testbench:"):
         plugin = args.config.split(":")[-1]
