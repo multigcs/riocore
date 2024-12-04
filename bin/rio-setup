@@ -3770,6 +3770,7 @@ class WinForm(QWidget):
                 if sys.platform == "linux":
                     os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
                 else:
+                    print(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path}")
                     os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path}")
                 os.remove(f"{self.config_file}_tmp.json")
             else:
