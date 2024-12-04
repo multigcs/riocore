@@ -24,7 +24,7 @@ try:
     from lxml import etree
 except Exception:
     etree = None
-    print("INFO: can not loat lxml")
+    print("INFO: can not load lxml")
 
 
 class MyGauge(QWidget):
