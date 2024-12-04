@@ -27,6 +27,17 @@
                 "data": {
                     "pin": "WLED:DATA"
                 }
+            },
+            "signals": {
+                "0_green": {
+                    "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused"
+                },
+                "0_red": {
+                    "net": "axisui.error"
+                },
+                "0_blue": {
+                    "net": "halui.mode.is-auto"
+                }
             }
         },
         {
