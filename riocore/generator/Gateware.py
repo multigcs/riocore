@@ -11,7 +11,7 @@ class Gateware:
     def __init__(self, project):
         self.project = project
         self.gateware_path = os.path.join(project.config["output_path"], "Gateware")
-        os.system(f"mkdir -p {self.gateware_path}")
+        os.makedirs(self.gateware_path, exist_ok=True)
         project.config["riocore_path"] = riocore_path
 
     def globals(self):
