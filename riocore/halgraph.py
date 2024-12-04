@@ -174,8 +174,8 @@ class HalGraph:
 
             return
 
-        if not os.path.exists(f"{basepath}/{filepath}"):
-            if os.path.exists(f"{self.LIB_PATH}/{filepath}"):
+        if not os.path.exists(os.path.join(basepath, filepath)):
+            if os.path.exists(os.path.join(self.LIB_PATH, filepath)):
                 basepath = "/usr/share/linuxcnc/hallib"
             else:
                 print(f"ERROR: file: {filepath} not found")
@@ -184,7 +184,7 @@ class HalGraph:
         # if not args.quiet:
         #    print(f"loading {basepath}/{filepath}")
 
-        halfile_data = open(f"{basepath}/{filepath}", "r").read()
+        halfile_data = open(os.path.join(basepath, filepath), "r").read()
         for line in halfile_data.split("\n"):
             line = line.strip()
 
