@@ -1807,7 +1807,7 @@ class WinForm(QWidget):
         print(f"starting testgui.. ({testgui_path})")
         filename = f"{self.config_file}.test-gui-temp.json"
         self.save_config(filename)
-        os.system(f"({testgui_path} {filename} ; rm {filename}) &")
+        os.system(f"({sys.executable} {testgui_path} {filename} ; rm {filename}) &")
 
     def add_plugin(self, pin_id, slot_name=None):
         boardcfg = self.config.get("boardcfg")
@@ -3767,7 +3767,7 @@ class WinForm(QWidget):
 
             if preview:
                 open(f"{self.config_file}_tmp.json", "w").write(json.dumps(config, indent=4))
-                os.system(f"{generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
+                os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
                 os.remove(f"{self.config_file}_tmp.json")
             else:
                 os.system(f"{generator_path} {self.config_file} {output_path}")
