@@ -81,8 +81,8 @@ class WinForm(QWidget):
 
         if os.path.isfile(args.config):
             self.config_file = args.config
-        elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
-            self.config_file = f"{riocore_path}/configs/{args.config}"
+        elif os.path.isfile(os.path.join(riocore_path, "configs", args.config)):
+            self.config_file = os.path.join(riocore_path, "configs", args.config)
         else:
             print(f"can not load: {args.config}")
             exit(1)
@@ -124,8 +124,8 @@ class WinForm(QWidget):
             tab_layout = QVBoxLayout()
             tab_layout1.addLayout(tab_layout, stretch=3)
 
-            plugin_path = f"{riocore_path}/plugins/{plugin_type}"
-            image_path = f"{plugin_path}/image.png"
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_type)
+            image_path = os.path.join(plugin_path, "image.png")
             if os.path.isfile(image_path):
                 ilabel = QLabel(self)
                 pixmap = QPixmap(image_path)

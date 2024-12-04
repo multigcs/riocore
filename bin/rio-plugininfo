@@ -55,7 +55,7 @@ if args.list:
 elif args.generate:
     plugins = riocore.Plugins()
     for plugin in plugins.list():
-        filename = os.path.join("riocore", "plugins", plugin['name'], "README.md")
+        filename = os.path.join("riocore", "plugins", plugin["name"], "README.md")
         print(filename)
         text = plugins.info(plugin["name"])
         open(filename, "w").write(text)
