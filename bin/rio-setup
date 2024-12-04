@@ -1415,7 +1415,8 @@ class WinForm(QWidget):
         self.generate_cb(preview=True)
         self.check_status()
 
-        self.startup_window_show()
+        self.startup_dialog_timer = 0
+        # self.startup_window_show()
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
