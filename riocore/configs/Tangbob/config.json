@@ -43,32 +43,6 @@
                 }
             },
             "config": {
-                "do2": {
-                    "address": 11,
-                    "type": 15,
-                    "register": 0,
-                    "values": 2,
-                    "scale": 1.0,
-                    "unit": "",
-                    "error_values": "0 0",
-                    "format": "d",
-                    "timeout": 100,
-                    "delay": 60,
-                    "direction": "output"
-                },
-                "di4": {
-                    "address": 11,
-                    "type": 2,
-                    "register": 0,
-                    "values": 4,
-                    "scale": 1.0,
-                    "unit": "",
-                    "error_values": "",
-                    "format": "d",
-                    "timeout": 100,
-                    "delay": 60,
-                    "direction": "input"
-                },
                 "voltage": {
                     "address": 16,
                     "type": 4,

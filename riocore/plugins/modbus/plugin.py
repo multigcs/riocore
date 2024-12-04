@@ -129,6 +129,7 @@ class Plugin(PluginBase):
                         "min": vmin,
                         "max": vmax,
                         "bool": is_bool,
+                        "display": {"section": "modbus", "title": signal_name.title()},
                     }
                     if config["direction"] == "input":
                         self.SIGNALS[f"{signal_name}_valid"] = {
