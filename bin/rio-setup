@@ -3768,7 +3768,7 @@ class WinForm(QWidget):
             if preview:
                 open(f"{self.config_file}_tmp.json", "w").write(json.dumps(config, indent=4))
                 os.system(f"{generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
-                os.system(f"rm {self.config_file}_tmp.json")
+                os.remove(f"{self.config_file}_tmp.json")
             else:
                 os.system(f"{generator_path} {self.config_file} {output_path}")
                 self.check_status()
