@@ -1252,7 +1252,7 @@ class WinForm(QWidget):
         self.setLayout(layout)
 
         splitter = QSplitter(Qt.Horizontal)
-        layout.addWidget(splitter)
+        layout.addWidget(splitter, stretch=1)
 
         self.treeview = QTreeView()
         splitter.addWidget(self.treeview)
