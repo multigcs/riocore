@@ -160,13 +160,13 @@ class LinuxCNC:
         self.setps = {}
         self.halextras = []
         self.project = project
-        self.base_path = f"{self.project.config['output_path']}/LinuxCNC"
+        self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
         self.create_axis_config()
         self.addons = {}
-        for addon_path in glob.glob(f"{riocore_path}/generator/addons/*/linuxcnc.py"):
-            addon_name = addon_path.split("/")[-2]
+        for addon_path in glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "linuxcnc.py")):
+            addon_name = addon_path.split(os.sep)[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
     def postgui_components_add(self, component):
@@ -364,7 +364,7 @@ class LinuxCNC:
         output.append('linuxcnc "$DIRNAME/rio.ini" $@')
         output.append("")
         os.makedirs(self.component_path, exist_ok=True)
-        target = f"{self.component_path}/start.sh"
+        target = os.path.join(self.component_path, "start.sh")
         open(target, "w").write("\n".join(output))
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
@@ -397,13 +397,13 @@ class LinuxCNC:
 
         output_hal.append("")
         output_hal += self.axisout
-        open(f"{self.configuration_path}/rio.hal", "w").write("\n".join(output_hal))
-        open(f"{self.configuration_path}/custom_postgui.hal", "w").write("\n".join(output_postgui))
+        open(os.path.join(self.configuration_path, "rio.hal"), "w").write("\n".join(output_hal))
+        open(os.path.join(self.configuration_path, "custom_postgui.hal"), "w").write("\n".join(output_postgui))
 
         extra_data = []
-        if os.path.isfile(f"{self.configuration_path}/postgui_call_list.hal"):
+        if os.path.isfile(os.path.join(self.configuration_path, "postgui_call_list.hal")):
             # read existing file to keep custom entry's
-            cl_data = open(f"{self.configuration_path}/postgui_call_list.hal", "r").read()
+            cl_data = open(os.path.join(self.configuration_path, "postgui_call_list.hal"), "r").read()
             for line in cl_data.split("\n"):
                 if line.startswith("source "):
                     source = " ".join(line.split()[1:])
@@ -415,12 +415,12 @@ class LinuxCNC:
             cl_output.append(f"source {halfile}")
         for line in extra_data:
             cl_output.append(line)
-        open(f"{self.configuration_path}/postgui_call_list.hal", "w").write("\n".join(cl_output))
+        open(os.path.join(self.configuration_path, "postgui_call_list.hal"), "w").write("\n".join(cl_output))
 
         extra_data = []
-        if os.path.isfile(f"{self.configuration_path}/pregui_call_list.hal"):
+        if os.path.isfile(os.path.join(self.configuration_path, "pregui_call_list.hal")):
             # read existing file to keep custom entry's
-            cl_data = open(f"{self.configuration_path}/pregui_call_list.hal", "r").read()
+            cl_data = open(os.path.join(self.configuration_path, "pregui_call_list.hal"), "r").read()
             for line in cl_data.split("\n"):
                 if line.startswith("source "):
                     source = " ".join(line.split()[1:])
@@ -432,7 +432,7 @@ class LinuxCNC:
             cl_output.append(f"source {halfile}")
         for line in extra_data:
             cl_output.append(line)
-        open(f"{self.configuration_path}/pregui_call_list.hal", "w").write("\n".join(cl_output))
+        open(os.path.join(self.configuration_path, "pregui_call_list.hal"), "w").write("\n".join(cl_output))
 
         print(f"writing linuxcnc files to: {self.base_path}")
 
@@ -692,22 +692,22 @@ class LinuxCNC:
 
         path_subroutines = ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH")
         if path_subroutines and path_subroutines.startswith("./"):
-            os.makedirs(f"{self.configuration_path}/{path_subroutines}", exist_ok=True)
-            for subroutine in glob.glob(f"{json_path}/subroutines/*"):
-                target_path = f"{self.configuration_path}/{path_subroutines}/{os.path.basename(subroutine)}"
+            os.makedirs(os.path.join(self.configuration_path, path_subroutines), exist_ok=True)
+            for subroutine in glob.glob(os.path.join(json_path, "subroutines", "*")):
+                target_path = os.path.join(self.configuration_path, path_subroutines, os.path.basename(subroutine))
                 if not os.path.isfile(target_path):
                     shutil.copy(subroutine, target_path)
 
         path_mcodes = ini_setup.get("RS274NGC", {}).get("mcode_PATH")
         if path_mcodes and path_mcodes.startswith("./"):
-            os.makedirs(f"{self.configuration_path}/{path_mcodes}", exist_ok=True)
-            for mcode in glob.glob(f"{json_path}/mcodes/*"):
-                target_path = f"{self.configuration_path}/{path_mcodes}/{os.path.basename(mcode)}"
+            os.makedirs(os.path.join(self.configuration_path, path_mcodes), exist_ok=True)
+            for mcode in glob.glob(os.path.join(json_path, "mcodes", "*")):
+                target_path = os.path.join(self.configuration_path, path_mcodes, os.path.basename(mcode))
                 if not os.path.isfile(target_path):
                     shutil.copy(mcode, target_path)
 
         os.makedirs(self.configuration_path, exist_ok=True)
-        open(f"{self.configuration_path}/rio.ini", "w").write("\n".join(output))
+        open(os.path.join(self.configuration_path, "rio.ini"), "w").write("\n".join(output))
 
     def misc(self):
         if not os.path.isfile(f"{self.configuration_path}/tool.tbl"):
