@@ -1315,12 +1315,12 @@ class WinForm(QWidget):
 
         container = QWidget()
         button_layout = QHBoxLayout(container)
-        layout.addWidget(container)
+        layout.addWidget(container, stretch=0)
 
         info_container = QWidget()
         info_layout = QHBoxLayout(info_container)
         self.info_widget = QLabel("loading...")
-        layout.addWidget(info_container)
+        layout.addWidget(info_container, stretch=0)
 
         info_layout.addWidget(self.info_widget)
         info_layout.addStretch()
