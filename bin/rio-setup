@@ -1786,8 +1786,8 @@ class WinForm(QWidget):
     def get_boardpath(self, board):
         pathes = [
             f"{board}.json",
-            f"{riocore_path}/boards/{board}.json",
-            f"{riocore_path}/boards/{board}/board.json",
+            os.path.join(riocore_path, "boards", f"{board}.json"),
+            os.path.join(riocore_path, "boards", board, "board.json"),
         ]
         for path in pathes:
             if os.path.exists(path):
@@ -1796,10 +1796,10 @@ class WinForm(QWidget):
         exit(1)
 
     def testgui(self):
-        print("starting testgui..", f"{os.path.dirname(__file__)}/rio-test")
+        testgui_path = os.path.join(os.path.dirname(__file__), "rio-test")
+        print(f"starting testgui.. ({testgui_path})")
         filename = f"{self.config_file}.test-gui-temp.json"
         self.save_config(filename)
-        testgui_path = f"{os.path.dirname(__file__)}/rio-test"
         os.system(f"({testgui_path} {filename} ; rm {filename}) &")
 
     def add_plugin(self, pin_id, slot_name=None):
@@ -1915,8 +1915,8 @@ class WinForm(QWidget):
                 return
 
             plugin_name = plugin_table.item(idx, 0).text()
-            plugin_path = f"{riocore_path}/plugins/{plugin_name}"
-            image_path = f"{plugin_path}/image.png"
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+            image_path = os.path.join(plugin_path, "image.png")
             if os.path.isfile(image_path):
                 pixmap = QPixmap(image_path)
                 image_label.setPixmap(pixmap)
@@ -2174,7 +2174,7 @@ class WinForm(QWidget):
             slot_name = module.get("slot")
             module_name = module.get("module")
             module_setup = module.get("setup", {})
-            module_path = self.get_path(f"modules/{module_name}/module.json")
+            module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
             moduleJsonStr = open(module_path, "r").read()
             module_defaults = json.loads(moduleJsonStr)
 
@@ -2263,7 +2263,7 @@ class WinForm(QWidget):
             fpga_type = board.get("type")
             package = board.get("package")
             check_name = family.lower().replace(" ", "_")
-            check_path = f"riocore/chipdata/{check_name}.json"
+            check_path = os.path.join("riocore", "chipdata", f"{check_name}.json")
 
             gwin_mapping = {
                 "GW1NSR-LV4CQN48PC6/I5": ("GW1NSR-4C", "QFN48P"),
@@ -2278,7 +2278,7 @@ class WinForm(QWidget):
 
             if fpga_type in gwin_mapping:
                 fpga_type, package = gwin_mapping[fpga_type]
-                check_path = f"riocore/chipdata/{fpga_type}.json"
+                check_path = os.path.join("riocore", "chipdata", f"{fpga_type}.json")
 
             if os.path.isfile(check_path):
                 chipJsonStr = open(check_path, "r").read()
@@ -2294,20 +2294,20 @@ class WinForm(QWidget):
         load_pins(self.board)
         self.pinlist.sort(key=sort_key)
 
-        boards_path = self.get_path("boards/")
-        modules_path = self.get_path("modules/")
+        boards_path = self.get_path("boards")
+        modules_path = self.get_path("modules")
 
         self.interfaces = []
-        for path in sorted(glob.glob(f"{riocore_path}/interfaces/*")):
-            self.interfaces.append(path.split("/")[-1])
+        for path in sorted(glob.glob(os.path.join(riocore_path, "interfaces", "*"))):
+            self.interfaces.append(path.split(os.sep)[-1])
         self.boards = []
-        for path in sorted(glob.glob(f"{boards_path}/*/board.json")):
-            self.boards.append(path.split("/")[-2].split(".")[0])
-        for path in sorted(glob.glob(f"{boards_path}/*.json")):
-            self.boards.append(path.split("/")[-1].split(".")[0])
+        for path in sorted(glob.glob(os.path.join(boards_path, "*", "board.json"))):
+            self.boards.append(path.split(os.sep)[-2].split(".")[0])
+        for path in sorted(glob.glob(os.path.join(boards_path, "*.json"))):
+            self.boards.append(path.split(os.sep)[-1].split(".")[0])
         self.module_names = []
-        for path in sorted(glob.glob(f"{modules_path}/*/module.json")):
-            self.module_names.append(path.split("/")[-2])
+        for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
+            self.module_names.append(path.split(os.sep)[-2])
         self.slotnames = []
         for slot in self.slots:
             slot_name = slot.get("name")
@@ -2401,7 +2401,7 @@ class WinForm(QWidget):
                 # split module into plugins
                 if module_data.get("setup") is None:
                     module_name = module_data.get("module")
-                    module_path = self.get_path(f"modules/{module_name}/module.json")
+                    module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
                     moduleJsonStr = open(module_path, "r").read()
                     module_defaults = json.loads(moduleJsonStr)
                     module_data["setup"] = {}
@@ -2758,7 +2758,7 @@ class WinForm(QWidget):
             if not module_name or not slot_name:
                 return
 
-            module_path = self.get_path(f"modules/{module_name}/module.json")
+            module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
             moduleJsonStr = open(module_path, "r").read()
             module_defaults = json.loads(moduleJsonStr)
 
@@ -3522,8 +3522,8 @@ class WinForm(QWidget):
                 tab_widget.addTab(signals_tab, "Signals")
 
         right_layout = QVBoxLayout()
-        plugin_path = f"{riocore_path}/plugins/{plugin_instance.NAME}"
-        image_path = f"{plugin_path}/image.png"
+        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+        image_path = os.path.join(plugin_path, "image.png")
         if os.path.isfile(image_path):
             ilabel = QLabel(self)
             pixmap = QPixmap(image_path)
@@ -3552,7 +3552,7 @@ class WinForm(QWidget):
                 plugin_config[key] = plugin_config_backup[key]
 
     def config_plugin(self, plugin_instance, plugin_id, widget):
-        if os.path.isfile(f"{riocore_path}/plugins/{plugin_instance.NAME}/config.py"):
+        if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
             config_box = plugin_config.config(plugin_instance, styleSheet=STYLESHEET)
             config_box.run()
@@ -3575,10 +3575,10 @@ class WinForm(QWidget):
 
         def show_module_info(idx):
             module_name = dialog.module_names[idx]
-            module_path = f"{riocore_path}/modules/{module_name}"
-            moduleJsonStr = open(f"{module_path}/module.json", "r").read()
+            module_path = os.path.join(riocore_path, "modules", module_name)
+            moduleJsonStr = open(os.path.join(module_path, "module.json"), "r").read()
             module_defaults = json.loads(moduleJsonStr)
-            image_path = f"{module_path}/module.png"
+            image_path = os.path.join(module_path, "module.png")
             if os.path.isfile(image_path):
                 pixmap = QPixmap(image_path)
                 image_label.setPixmap(pixmap)
@@ -3604,7 +3604,7 @@ class WinForm(QWidget):
         for module_name in self.module_names:
             check = True
             if not slot_select:
-                module_path = self.get_path(f"modules/{module_name}/module.json")
+                module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
                 moduleJsonStr = open(module_path, "r").read()
                 module_defaults = json.loads(moduleJsonStr)
                 for plugin in module_defaults.get("plugins"):
@@ -3705,7 +3705,8 @@ class WinForm(QWidget):
         widget.insertPlainText("...")
 
         self.flash_start = time.time()
-        self.flash_sub = subprocess.Popen(f"(cd Output/{config_name}/Gateware/ ; make load 2>&1 | tee flash.log)", shell=True, close_fds=True)
+        gw_path = os.path.join("Output", config_name, "Gateware")
+        self.flash_sub = subprocess.Popen(f"(cd {gw_path} ; make load 2>&1 | tee flash.log)", shell=True, close_fds=True)
         self.button_flash.setEnabled(False)
         self.info_widget.setText("flashing...")
 
@@ -3719,7 +3720,8 @@ class WinForm(QWidget):
         widget.insertPlainText("...")
 
         self.compile_start = time.time()
-        self.compile_sub = subprocess.Popen(f"(cd Output/{config_name}/Gateware/ ; make clean all 2>&1 | tee compile.log)", shell=True, close_fds=True)
+        gw_path = os.path.join("Output", config_name, "Gateware")
+        self.compile_sub = subprocess.Popen(f"(cd {gw_path} ; make clean all 2>&1 | tee compile.log)", shell=True, close_fds=True)
         self.button_compile.setEnabled(False)
         self.info_widget.setText("compiling...")
 
@@ -3743,8 +3745,8 @@ class WinForm(QWidget):
         except Exception as error:
             print(f"ERROR loading output: {error}")
 
-        if preview:
-            os.system(f"rm -rf {self.output_path}/")
+        if preview and self.output_path and os.path.isdir(self.output_path):
+            os.system(f"rm -rf {self.output_path}")
         self.info_widget.setText("generate...done")
 
     def generate(self, output_path=None, preview=False):
@@ -3752,7 +3754,7 @@ class WinForm(QWidget):
         if not output_path:
             output_path = "Output"
         try:
-            generator_path = f"{riocore_path}/../bin/rio-generator"
+            generator_path = os.path.join(riocore_path, "..", "bin", "rio-generator")
             if not os.path.isfile(generator_path):
                 generator_path = "rio-generator"
 
@@ -3773,7 +3775,7 @@ class WinForm(QWidget):
         if self.config_file:
             name = file_dialog.getSaveFileName(self, "Save File", self.config_file, "json (*.json)")
         else:
-            name = file_dialog.getSaveFileName(self, "Save File", f"{riocore_path}/configs/", "json (*.json)")
+            name = file_dialog.getSaveFileName(self, "Save File", os.path.join(riocore_path, "configs"), "json (*.json)")
 
         if name[0]:
             if not name[0].endswith(".json"):
