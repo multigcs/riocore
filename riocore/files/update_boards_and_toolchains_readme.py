@@ -15,15 +15,16 @@ index.append("# BOARDS")
 index.append("| Name | Info | FPGA | Toolchains | Image |")
 index.append("| --- | --- | --- |  --- | :---: |")
 
-for board in sorted(glob.glob("riocore/boards/*")):
-    if not os.path.isfile(f"{board}/board.json"):
+for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
+    board_path = os.path.join(board, "board.json")
+    if not os.path.isfile(board_path):
         continue
 
-    print(f"{board}/board.json")
+    print(board_path)
 
-    name = board.split("/")[-1]
+    name = board.split(os.sep)[-1]
 
-    jdata = open(f"{board}/board.json", "r").read()
+    jdata = open(board_path, "r").read()
     data = json.loads(jdata)
 
     readme = []
@@ -64,7 +65,7 @@ for board in sorted(glob.glob("riocore/boards/*")):
     fpga_family = data.get("family", "")
     toolchains = data.get("toolchains", [data.get("toolchain", "")])
 
-    if os.path.isfile(f"{board}/board.png"):
+    if os.path.isfile(os.path.join(board, "board.png")):
         readme.append("![board.png](board.png)")
         readme.append("")
         index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | {", ".join(toolchains)} | <img src="riocore/boards/{name}/board.png" height="48"> |')
@@ -84,7 +85,7 @@ output.append("# TOOLCHAINS")
 output.append("| Name | Info |")
 output.append("| --- | --- |")
 
-for ppath in sorted(glob.glob("riocore/generator/toolchains/*/toolchain.py")):
+for ppath in sorted(glob.glob(os.path.join("riocore", "generator", "toolchains", "*", "toolchain.py"))):
     toolchain_name = os.path.basename(os.path.dirname(ppath))
     print(toolchain_name)
     toolchain = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{toolchain_name}")
@@ -118,7 +119,7 @@ for ppath in sorted(glob.glob("riocore/generator/toolchains/*/toolchain.py")):
             toutput.append("")
 
         toutput.append("")
-        open(f"riocore/generator/toolchains/{toolchain_name}/README.md", "w").write("\n".join(toutput))
+        open(os.path.join("riocore", "generator", "toolchains", toolchain_name, "README.md"), "w").write("\n".join(toutput))
 
 
 output.append("")
