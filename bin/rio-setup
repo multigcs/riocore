@@ -3871,7 +3871,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("config", help="config", nargs="?", type=str, default=None)
-    parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
+    if sys.platform == "linux":
+        parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
+    else:
+        parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=True, action="store_true")
     args = parser.parse_args()
 
     if args.nostyle:
