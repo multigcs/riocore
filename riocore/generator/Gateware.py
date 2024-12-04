@@ -286,7 +286,7 @@ class Gateware:
                         estop_pin = data_config["variable"]
                         break
         if estop_pin is not None:
-            output.append(f"    wire ESTOP;")
+            output.append("    wire ESTOP;")
             output.append(f"    assign ESTOP = {estop_pin};")
         else:
             output.append("    reg ESTOP = 0;")
