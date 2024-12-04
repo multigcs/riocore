@@ -200,14 +200,15 @@ class MyVCP:
             layout.itemAt(i).widget().setParent(None)
 
         xml = open(filename, "rb").read()
-        root = etree.fromstring(xml, parser=etree.XMLParser(remove_comments=True))
+        if etree is not None:
+            root = etree.fromstring(xml, parser=etree.XMLParser(remove_comments=True))
 
-        if self.widget_tab:
-            index = self.widget_tab.indexOf(self.widget_tab.currentWidget())
-            self.active_tab = self.widget_tab.tabText(index)
+            if self.widget_tab:
+                index = self.widget_tab.indexOf(self.widget_tab.currentWidget())
+                self.active_tab = self.widget_tab.tabText(index)
 
-        for child in root.iterchildren():
-            self.show_element(child, layout)
+            for child in root.iterchildren():
+                self.show_element(child, layout)
 
     def show_element(self, element, layout):
         if hasattr(self, f"show_{element.tag}"):
