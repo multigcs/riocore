@@ -186,6 +186,13 @@
                                 }
                             ]
                         }
+                    },
+                    "signals": {
+                        "bit": {
+                            "net": "halui.machine.is-on",
+                            "function": "",
+                            "setp": ""
+                        }
                     }
                 },
                 "home-x": {

@@ -30,7 +30,7 @@ class LinuxCNC:
         "FF0": 0.0,
         "FF1": 0.0,
         "FF2": 0.0,
-        "DEADBAND": 0.0001,
+        "DEADBAND": 0.01,
         "MAXOUTPUT": 300,
     }
     JOINT_DEFAULTS = {
