@@ -15,8 +15,8 @@ import sys
 import time
 from functools import partial
 
-if os.path.isfile("./riocore/__init__.py"):
-    sys.path.insert(0, "./")
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
 
 import graphviz
 import riocore
