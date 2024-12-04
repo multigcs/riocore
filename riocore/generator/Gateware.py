@@ -10,8 +10,8 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 class Gateware:
     def __init__(self, project):
         self.project = project
-        self.gateware_path = f"{project.config['output_path']}/Gateware"
-        os.system(f"mkdir -p {self.gateware_path}/")
+        self.gateware_path = os.path.join(project.config["output_path"], "Gateware")
+        os.system(f"mkdir -p {self.gateware_path}")
         project.config["riocore_path"] = riocore_path
 
     def globals(self):
@@ -29,7 +29,7 @@ class Gateware:
         globals_data.append("  end")
         globals_data.append("endfunction")
         globals_data.append("")
-        open(f"{self.gateware_path}/globals.v", "w").write("\n".join(globals_data))
+        open(os.path.join(self.gateware_path, "globals.v"), "w").write("\n".join(globals_data))
         self.verilogs.append("globals.v")
 
     def generator(self, generate_pll=True):
@@ -80,7 +80,7 @@ class Gateware:
             output.append(f"<td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td>")
         output.append("    </tr>")
         output.append("</table>")
-        open(f"{self.gateware_path}/interface.html", "w").write("\n".join(output))
+        open(os.path.join(self.gateware_path, "interface.html"), "w").write("\n".join(output))
 
     def makefile(self):
         flashcmd = self.config.get("flashcmd")
@@ -88,10 +88,10 @@ class Gateware:
             if flashcmd.startswith("./") and self.project.config["json_path"]:
                 flashcmd_script = flashcmd.split()[0].replace("./", "")
                 json_path = self.project.config["json_path"]
-                flashcmd_script_path = f"{json_path}/{flashcmd_script}"
+                flashcmd_script_path = os.path.join(json_path, flashcmd_script)
                 print(flashcmd_script_path)
                 if os.path.isfile(flashcmd_script_path):
-                    target = f"{self.gateware_path}/{flashcmd_script}"
+                    target = os.path.join(self.gateware_path, flashcmd_script)
                     shutil.copy(flashcmd_script_path, target)
                     os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
@@ -100,14 +100,14 @@ class Gateware:
                 if verilog in self.verilogs:
                     continue
                 self.verilogs.append(verilog)
-                ipv_path = f"{riocore_path}/plugins/{plugin_instance.NAME}/{verilog}"
-                target = f"{self.gateware_path}/{verilog}"
+                ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, verilog)
+                target = os.path.join(self.gateware_path, verilog)
                 shutil.copy(ipv_path, target)
 
         for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v"):
             self.verilogs.append(extrafile)
-            source = f"{riocore_path}/files/{extrafile}"
-            target = f"{self.gateware_path}/{extrafile}"
+            source = os.path.join(riocore_path, "files", extrafile)
+            target = os.path.join(self.gateware_path, extrafile)
             shutil.copy(source, target)
         self.verilogs.append("rio.v")
         self.config["verilog_files"] = self.verilogs
@@ -491,21 +491,21 @@ class Gateware:
         output.append("endmodule")
         output.append("")
         print(f"writing gateware to: {self.gateware_path}")
-        open(f"{self.gateware_path}/rio.v", "w").write("\n".join(output))
+        open(os.path.join(self.gateware_path, "rio.v"), "w").write("\n".join(output))
 
         # write hash of rio.v to filesystem
-        hash_file_compiled = f"{self.gateware_path}/hash_compiled.txt"
+        hash_file_compiled = os.path.join(self.gateware_path, "hash_compiled.txt")
         hash_compiled = ""
         if os.path.isfile(hash_file_compiled):
             hash_compiled = open(hash_file_compiled, "r").read()
 
-        hash_file_flashed = f"{self.gateware_path}/hash_flashed.txt"
+        hash_file_flashed = os.path.join(self.gateware_path, "hash_flashed.txt")
         hash_flashed = ""
         if os.path.isfile(hash_file_flashed):
             hash_flashed = open(hash_file_flashed, "r").read()
 
         hash_md5 = hashlib.md5()
-        with open(f"{self.gateware_path}/rio.v", "rb") as f:
+        with open(os.path.join(self.gateware_path, "rio.v"), "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_md5.update(chunk)
         hash_new = hash_md5.hexdigest()
@@ -514,5 +514,5 @@ class Gateware:
             print("!!! gateware changed: needs to be build and flash |||")
         elif hash_flashed != hash_new:
             print("!!! gateware changed: needs to flash |||")
-        hash_file_new = f"{self.gateware_path}/hash_new.txt"
+        hash_file_new = os.path.join(self.gateware_path, "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
