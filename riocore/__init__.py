@@ -23,7 +23,7 @@ class Plugins:
 
     def list(self):
         plugins = []
-        for plugin_path in sorted(glob.glob(f"{riocore_path}/plugins/*/plugin.py")):
+        for plugin_path in sorted(glob.glob(os.path.join(riocore_path, "plugins", "*", "plugin.py"))):
             plugin_name = os.path.basename(os.path.dirname(plugin_path))
             plugins.append({"name": plugin_name, "path": plugin_path})
         return plugins
@@ -45,8 +45,8 @@ class Plugins:
             output.append(f"Keywords: {plugin.KEYWORDS}")
             output.append("")
 
-        plugin_path = f"{riocore_path}/plugins/{plugin_name}"
-        image_path = f"{plugin_path}/image.png"
+        plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+        image_path = os.path.join(plugin_path, "image.png")
         if os.path.isfile(image_path):
             output.append("")
             output.append("![image.png](image.png)")
@@ -95,11 +95,10 @@ class Plugins:
         try:
             plugin_type = plugin_config["type"]
             if plugin_type not in self.plugin_modules:
-                if os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/plugin.py"):
-                    # print(f"loading plugin {plugin_type}")
+                if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_type, "plugin.py")):
                     self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
-                elif os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v"):
-                    if self.plugin_builder(plugin_type, f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v", plugin_config):
+                elif os.path.isfile(os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v")):
+                    if self.plugin_builder(plugin_type, os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v"), plugin_config):
                         self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
                 elif not plugin_type or plugin_type[0] != "_":
                     print(f"WARNING: plugin not found: {plugin_type}")
@@ -239,7 +238,7 @@ class Plugins:
             tbfile.append("")
             tbfile.append("endmodule")
             tbfile.append("")
-            open(f"{riocore_path}/plugins/{plugin_type}/testb.v", "w").write("\n".join(tbfile))
+            open(os.path.join(riocore_path, "plugins", plugin_type, "testb.v"), "w").write("\n".join(tbfile))
 
             gtkwfile = []
             gtkwfile.append("[*]")
@@ -267,7 +266,7 @@ class Plugins:
                 pn += 1
 
             gtkwfile.append("")
-            open(f"{riocore_path}/plugins/{plugin_type}/testb.gtkw", "w").write("\n".join(gtkwfile))
+            open(os.path.join(riocore_path, "plugins", plugin_type, "testb.gtkw"), "w").write("\n".join(gtkwfile))
 
             makefile = []
             makefile.append("")
@@ -282,9 +281,9 @@ class Plugins:
             makefile.append("clean:")
             makefile.append("	rm -rf testb.out testb.vcd")
             makefile.append("")
-            open(f"{riocore_path}/plugins/{plugin_type}/Makefile", "w").write("\n".join(makefile))
+            open(os.path.join(riocore_path, "plugins", plugin_type, "Makefile"), "w").write("\n".join(makefile))
 
-            print(f"(cd {riocore_path}/plugins/{plugin_type} ; make)")
+            print(f"(cd {os.path.join(riocore_path, 'plugins', plugin_type)} ; make)")
 
             return True
 
@@ -430,13 +429,13 @@ class Plugins:
                         initfile.append(f"        # instance_parameter[\"{parameter_name}\"] = self.plugin_setup.get(\"{parameter_name.lower()}\", \"{parameter_setup['default']}\")")
                     initfile.append("        return instances")
                     initfile.append("")
-                if os.path.isfile(f"{riocore_path}/plugins/{plugin_name}/plugin.py"):
-                    print(f"WARNING: file allready exsits: {riocore_path}/plugins/{plugin_name}/plugin.py")
+                if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py")):
+                    print(f"WARNING: file allready exsits: {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')}")
                     print("\n".join(initfile))
                     print("")
                 else:
-                    print(f"INFO: writing plugin setup to {riocore_path}/plugins/{plugin_name}/plugin.py (please edit)")
-                    open(f"{riocore_path}/plugins/{plugin_name}/plugin.py", "w").write("\n".join(initfile))
+                    print(f"INFO: writing plugin setup to {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')} (please edit)")
+                    open(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py"), "w").write("\n".join(initfile))
                     print("")
 
                 if plugin_config.get("init") is True:
@@ -484,17 +483,13 @@ class Project:
     def get_path(self, path):
         if os.path.exists(path):
             return path
-        elif os.path.exists(f"{riocore_path}/{path}"):
-            return f"{riocore_path}/{path}"
-        print(f"path not found: {path} or {riocore_path}/{path}")
+        elif os.path.exists(os.path.join(riocore_path, path)):
+            return os.path.join(riocore_path, path)
+        print(f"path not found: {path} or {os.path.join(riocore_path, path)}")
         exit(1)
 
     def get_boardpath(self, board):
-        pathes = [
-            f"{board}.json",
-            f"{riocore_path}/boards/{board}.json",
-            f"{riocore_path}/boards/{board}/board.json",
-        ]
+        pathes = [f"{board}.json", os.path.join(riocore_path, "boards", f"{board}.json"), os.path.join(riocore_path, "boards", board, "board.json")]
         for path in pathes:
             if os.path.exists(path):
                 return path
@@ -559,8 +554,8 @@ class Project:
         # loading modules
         project["modules"] = {}
         modules_path = self.get_path("modules")
-        for path in sorted(glob.glob(f"{modules_path}/*/module.json")):
-            module = path.split("/")[-2]
+        for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
+            module = path.split(os.sep)[-2]
             mdata = open(path, "r").read()
             project["modules"][module] = json.loads(mdata)
 
@@ -627,7 +622,7 @@ class Project:
         self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc", 0))
         self.config["sysclk_pin"] = project["jdata"]["clock"]["pin"]
         self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
-        self.config["output_path"] = f"{output_path}/{project['jdata']['name']}"
+        self.config["output_path"] = os.path.join(output_path, project['jdata']['name'])
         self.config["name"] = project["jdata"]["name"]
         self.config["toolchain"] = project["jdata"]["toolchain"]
         self.config["family"] = project["jdata"].get("family", "UNKNOWN")
@@ -702,7 +697,7 @@ class Project:
 
     def connect(self, cstr):
         connection = None
-        for ppath in sorted(glob.glob(f"{os.path.dirname(__file__)}/interfaces/*/*.py")):
+        for ppath in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "interfaces", "*", "*.py"))):
             plugin = os.path.basename(os.path.dirname(ppath))
             interface = importlib.import_module(".interface", f"riocore.interfaces.{plugin}")
             if interface.Interface.check(cstr):
@@ -907,5 +902,5 @@ class Project:
         else:
             self.generator_gateware.generator(generate_pll=generate_pll)
         self.generator_linuxcnc.generator()
-        target = f"{self.config['output_path']}/.config.json"
+        target = os.path.join(self.config['output_path'], ".config.json")
         shutil.copy(self.config["json_file"], target)
