@@ -67,6 +67,9 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             family_gowin = "GW1NR-9C"
         else:
             family_gowin = family
+        board_id = board.lower()
+        if board_id == "tangoboard":
+            board_id = "tangnano9k"
 
         makefile_data = []
         makefile_data.append("")
@@ -121,6 +124,8 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
             makefile_data.append("")
             makefile_data.append("load: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
+            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         else:
             makefile_data.append('	@echo set_device -name $(FAMILY_GOWIN) $(DEVICE) > $(PROJECT).tcl')
             for verilog in self.config["verilog_files"]:
@@ -154,13 +159,9 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             # makefile_data.append('	type impl\\pnr\\project.rpt.txt')
             makefile_data.append("")
             makefile_data.append("load: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs -f")
+            makefile_data.append("	copy hash_new.txt hash_flashed.txt")
 
-
-        board_id = board.lower()
-        if board_id == "tangoboard":
-            board_id = "tangnano9k"
-        makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
-        makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
