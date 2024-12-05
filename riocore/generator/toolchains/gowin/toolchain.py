@@ -122,8 +122,6 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append("")
             makefile_data.append("load: impl/pnr/project.fs")
         else:
-
-
             makefile_data.append('	@echo set_device -name $(FAMILY_GOWIN) $(DEVICE) > $(PROJECT).tcl')
             for verilog in self.config["verilog_files"]:
                 makefile_data.append(f'	@echo add_file {verilog} >> $(PROJECT).tcl')

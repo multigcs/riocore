@@ -18,13 +18,14 @@ class Pins:
 
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False) or pin_config.get("pull") == "up":
-                        data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} PULL_MODE=UP;")
+                        data.append(f"IO_PORT \"{pin_config['varname']}\" PULL_MODE=UP;")
                     elif pin_config.get("pulldown", False) or pin_config.get("pull") == "down":
-                        data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} PULL_MODE=DOWN;")
+                        data.append(f"IO_PORT \"{pin_config['varname']}\" PULL_MODE=DOWN;")
                     else:
-                        data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard};")
+                        data.append(f"IO_PORT \"{pin_config['varname']}\";")
                 else:
-                    data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard} DRIVE={drive};")
+                    data.append(f"IO_PORT \"{pin_config['varname']}\" DRIVE={drive};")
+                    # IO_TYPE={iostandard} 
 
             data.append("")
         data.append("")
