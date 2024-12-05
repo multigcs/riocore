@@ -1,4 +1,5 @@
 import importlib
+import sys
 import os
 import re
 import shutil
@@ -131,7 +132,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
             )
             makefile_data.append('	@echo ""')
-            makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            if sys.platform == "linux":
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append(f"{bitfileName}: $(PROJECT).config")
@@ -147,7 +149,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append("$(PROJECT).bit: net/$(PROJECT).v pins.ccf")
             makefile_data.append("	p_r -i net/$(PROJECT).v -o $(PROJECT) -ccf pins.ccf -cCP")
             makefile_data.append('	@echo ""')
-            makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            if sys.platform == "linux":
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("clean:")
@@ -164,7 +167,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                     "	nextpnr-gowin -q -l nextpnr.log --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
                 )
             makefile_data.append('	@echo ""')
-            makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            if sys.platform == "linux":
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
@@ -180,7 +184,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
             )
             makefile_data.append('	@echo ""')
-            makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            if sys.platform == "linux":
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append(f"{bitfileName}: $(PROJECT).asc")
