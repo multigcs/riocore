@@ -127,14 +127,14 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         else:
-            makefile_data.append('	@echo set_device -name $(FAMILY_GOWIN) $(DEVICE) > $(PROJECT).tcl')
+            makefile_data.append("	@echo set_device -name $(FAMILY_GOWIN) $(DEVICE) > $(PROJECT).tcl")
             for verilog in self.config["verilog_files"]:
-                makefile_data.append(f'	@echo add_file {verilog} >> $(PROJECT).tcl')
-            makefile_data.append('	@echo add_file rio.sdc >> $(PROJECT).tcl')
-            makefile_data.append('	@echo add_file pins.cst >> $(PROJECT).tcl')
-            makefile_data.append('	@echo set_option -top_module $(TOP) >> $(PROJECT).tcl')
-            makefile_data.append('	@echo set_option -verilog_std v2001 >> $(PROJECT).tcl')
-            makefile_data.append('	@echo set_option -vhdl_std vhd2008 >> $(PROJECT).tcl')
+                makefile_data.append(f"	@echo add_file {verilog} >> $(PROJECT).tcl")
+            makefile_data.append("	@echo add_file rio.sdc >> $(PROJECT).tcl")
+            makefile_data.append("	@echo add_file pins.cst >> $(PROJECT).tcl")
+            makefile_data.append("	@echo set_option -top_module $(TOP) >> $(PROJECT).tcl")
+            makefile_data.append("	@echo set_option -verilog_std v2001 >> $(PROJECT).tcl")
+            makefile_data.append("	@echo set_option -vhdl_std vhd2008 >> $(PROJECT).tcl")
             set_options = self.config.get(
                 "set_options",
                 [
@@ -150,8 +150,8 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
                 set_options.append("use_cpu_as_gpio")
 
             for set_option in set_options:
-                makefile_data.append(f'	@echo set_option -{set_option} 1 >> $(PROJECT).tcl')
-            makefile_data.append('	@echo run all >> $(PROJECT).tcl')
+                makefile_data.append(f"	@echo set_option -{set_option} 1 >> $(PROJECT).tcl")
+            makefile_data.append("	@echo run all >> $(PROJECT).tcl")
             makefile_data.append("")
             makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
             makefile_data.append("	gw_sh $(PROJECT).tcl")

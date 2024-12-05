@@ -25,7 +25,7 @@ class Pins:
                     #     data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard};")
                 else:
                     data.append(f"IO_PORT \"{pin_config['varname']}\" DRIVE={drive};")
-                    # IO_TYPE={iostandard} 
+                    # IO_TYPE={iostandard}
 
             data.append("")
         data.append("")

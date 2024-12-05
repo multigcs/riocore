@@ -179,10 +179,13 @@ def load_tree(parent, tree_lcnc):
         button_add.clicked.connect(add_joypad)
         button_add.setMaximumSize(button_add.sizeHint())
         buttons_layout.addWidget(button_add)
-    button_wizard = QPushButton("wizard")
-    button_wizard.clicked.connect(wiz_joypad)
-    button_wizard.setMaximumSize(button_wizard.sizeHint())
-    buttons_layout.addWidget(button_wizard)
+
+    if sys.platform == "linux":
+        button_wizard = QPushButton("wizard")
+        button_wizard.clicked.connect(wiz_joypad)
+        button_wizard.setMaximumSize(button_wizard.sizeHint())
+        buttons_layout.addWidget(button_wizard)
+
     buttons_layout.addStretch()
     parent.treeview.setIndexWidget(bitem.index(), buttons_widget)
 
