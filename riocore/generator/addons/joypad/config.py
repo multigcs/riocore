@@ -1,5 +1,5 @@
 import os
-import fcntl
+import sys
 import glob
 from functools import partial
 
@@ -16,6 +16,9 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget,
 )
+
+if sys.platform == "linux":
+    import fcntl
 
 from riocore.widgets import MyStandardItem
 
