@@ -21,8 +21,8 @@ class Pins:
                         data.append(f"IO_PORT \"{pin_config['varname']}\" PULL_MODE=UP;")
                     elif pin_config.get("pulldown", False) or pin_config.get("pull") == "down":
                         data.append(f"IO_PORT \"{pin_config['varname']}\" PULL_MODE=DOWN;")
-                    else:
-                        data.append(f"IO_PORT \"{pin_config['varname']}\";")
+                    # else:
+                    #     data.append(f"IO_PORT \"{pin_config['varname']}\" IO_TYPE={iostandard};")
                 else:
                     data.append(f"IO_PORT \"{pin_config['varname']}\" DRIVE={drive};")
                     # IO_TYPE={iostandard} 
