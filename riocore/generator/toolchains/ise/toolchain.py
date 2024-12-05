@@ -1,4 +1,5 @@
 import importlib
+import os
 import shutil
 
 
@@ -74,4 +75,4 @@ class Toolchain:
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

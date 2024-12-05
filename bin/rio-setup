@@ -2470,16 +2470,17 @@ class WinForm(QWidget):
             self.config["linuxcnc"] = {}
 
         for key, var_setup in {
-            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3},
-            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"]},
-            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual"},
-            "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic", "gmoccapy"], "default": "axis"},
+            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
+            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the mashine"},
+            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
+            "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic", "gmoccapy"], "default": "axis", "help_text": "linuxcnc gui to use"},
+            "pyvcp_pos": {"type": "select", "options": ["RIGHT", "BOTTOM", "TAB"], "default": "RIGHT", "help_text": "position of the pyvcp gui for extra controls"},
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
         }.items():
             aitem = MyStandardItem()
             tree_lcnc.appendRow(
                 [
-                    MyStandardItem(key.title()),
+                    MyStandardItem(key.title().replace("_", "-")),
                     aitem,
                 ]
             )

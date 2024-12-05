@@ -118,7 +118,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
         # generating timing constraints (.sdc)
         speed_ns = 1000000000 / self.config["speed"]
@@ -128,7 +128,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             speed_ns = 1000000000 / int(value)
             sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name {key} [get_ports {{{key}}}]")
         sdc_data.append("")
-        open(f"{path}/rio.sdc", "w").write("\n".join(sdc_data))
+        open(os.path.join(path, "rio.sdc"), "w").write("\n".join(sdc_data))
 
         # generating project file for the gowin toolchain
         prj_data = []
@@ -155,9 +155,9 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         prj_data.append('    <File path="pins.cst" type="file.cst" enable="1"/>')
         prj_data.append("    </FileList>")
         prj_data.append("</Project>")
-        open(f"{path}/rio.gprj", "w").write("\n".join(prj_data))
+        open(os.path.join(path, "rio.gprj"), "w").write("\n".join(prj_data))
 
-        os.makedirs(f"{path}/impl", exist_ok=True)
+        os.makedirs(os.path.join(path, "impl"), exist_ok=True)
         pps_data = """{
  "Allow_Duplicate_Modules" : false,
  "Annotated_Properties_for_Analyst" : true,
@@ -242,4 +242,4 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
  "show_all_warnings" : false,
  "turn_off_bg" : false
 }"""
-        open(f"{path}/impl/project_process_config.json", "w").write("\n".join(pps_data))
+        open(os.path.join(path, "impl", "project_process_config.json"), "w").write("\n".join(pps_data))

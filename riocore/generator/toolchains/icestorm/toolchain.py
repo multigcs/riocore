@@ -1,4 +1,5 @@
 import importlib
+import os
 import re
 import shutil
 import subprocess
@@ -7,7 +8,7 @@ import subprocess
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = f"{self.config['output_path']}/Gateware"
+        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
         self.riocore_path = config["riocore_path"]
 
     def info(cls):
@@ -91,7 +92,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             prepack_data.append(f'ctx.addClock("{key}", {int(value)/1000000})')
 
         prepack_data.append("")
-        open(f"{path}/prepack.py", "w").write("\n".join(prepack_data))
+        open(os.path.join(path, "prepack.py"), "w").write("\n".join(prepack_data))
 
         verilogs = " ".join(self.config["verilog_files"])
         makefile_data = []
@@ -216,4 +217,4 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

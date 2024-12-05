@@ -750,6 +750,7 @@
         },
         "robojog": {
             "enable": true
-        }
+        },
+        "pyvcp_pos": "RIGHT"
     }
 }
