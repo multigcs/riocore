@@ -134,6 +134,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append('	@echo ""')
             if sys.platform == "linux":
                 makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            else:
+                makefile_data.append('	@type nextpnr.log | findstr "%"')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append(f"{bitfileName}: $(PROJECT).config")
@@ -157,6 +159,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append('	@echo ""')
             if sys.platform == "linux":
                 makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            else:
+                makefile_data.append('	@type nextpnr.log | findstr "%"')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("clean:")
@@ -178,6 +182,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append('	@echo ""')
             if sys.platform == "linux":
                 makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            else:
+                makefile_data.append('	@type nextpnr.log | findstr "%"')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
@@ -201,6 +207,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append('	@echo ""')
             if sys.platform == "linux":
                 makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+            else:
+                makefile_data.append('	@type nextpnr.log | findstr "%"')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append(f"{bitfileName}: $(PROJECT).asc")
