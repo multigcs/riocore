@@ -1,11 +1,12 @@
 import importlib
+import os
 import shutil
 
 
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = f"{self.config['output_path']}/Gateware"
+        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
         self.riocore_path = config["riocore_path"]
 
     def info(cls):
@@ -72,4 +73,4 @@ class Toolchain:
         makefile_data.append("	rm -rf build $(PROJECT).ldf $(PROJECT).tcl syn.tcl")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

@@ -1,3 +1,6 @@
+import os
+
+
 class Pins:
     def __init__(self, config):
         self.config = config
@@ -24,4 +27,4 @@ class Pins:
                 else:
                     data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} | DRIVE = {drive} | SLEW = {slew} ;")
             data.append("")
-        open(f"{path}/pins.ucf", "w").write("\n".join(data))
+        open(os.path.join(path, "pins.ucf"), "w").write("\n".join(data))

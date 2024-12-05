@@ -1,4 +1,5 @@
 import importlib
+import os
 import shutil
 
 
@@ -41,7 +42,7 @@ class Toolchain:
         makefile_data.append("	rm -rf obj_dir")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
         top_arguments = []
         for pname in sorted(list(self.config["pinlists"])):
@@ -171,4 +172,4 @@ int main(int argc, char** argv) {
         """
         )
 
-        open(f"{path}/main.cpp", "w").write("\n".join(main_cpp))
+        open(os.path.join(path, "main.cpp"), "w").write("\n".join(main_cpp))

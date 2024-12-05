@@ -1,4 +1,5 @@
 import importlib
+import os
 import shutil
 import re
 import subprocess
@@ -158,7 +159,7 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
         clock = self.config["speed"]
         sdc_data = []
@@ -167,4 +168,4 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         sdc_data.append("derive_pll_clocks")
         sdc_data.append("derive_clock_uncertainty")
         sdc_data.append("")
-        open(f"{path}/rio.sdc", "w").write("\n".join(sdc_data))
+        open(os.path.join(path, "rio.sdc"), "w").write("\n".join(sdc_data))

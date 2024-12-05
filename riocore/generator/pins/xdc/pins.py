@@ -1,3 +1,6 @@
+import os
+
+
 class Pins:
     def __init__(self, config):
         self.config = config
@@ -16,4 +19,4 @@ class Pins:
                     print('WARNING: please change your pin-config to : "pull": "up"')
                     data.append(f"set_property PULLUP TRUE [get_ports {pin_config['varname']}]")
             data.append("")
-        open(f"{path}/pins.xdc", "w").write("\n".join(data))
+        open(os.path.join(path, "pins.xdc"), "w").write("\n".join(data))

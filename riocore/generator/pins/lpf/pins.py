@@ -1,3 +1,6 @@
+import os
+
+
 class Pins:
     def __init__(self, config):
         self.config = config
@@ -45,4 +48,4 @@ class Pins:
 
             data.append("")
         data.append("")
-        open(f"{path}/pins.lpf", "w").write("\n".join(data))
+        open(os.path.join(path, "pins.lpf"), "w").write("\n".join(data))

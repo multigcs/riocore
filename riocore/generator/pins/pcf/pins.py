@@ -1,3 +1,6 @@
+import os
+
+
 class Pins:
     def __init__(self, config):
         self.config = config
@@ -22,4 +25,4 @@ class Pins:
 
                 data.append(f"set_io {' '.join(options)}")
             data.append("")
-        open(f"{path}/pins.pcf", "w").write("\n".join(data))
+        open(os.path.join(path, "pins.pcf"), "w").write("\n".join(data))

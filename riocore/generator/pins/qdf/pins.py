@@ -1,3 +1,6 @@
+import os
+
+
 class Pins:
     def __init__(self, config):
         self.config = config
@@ -27,4 +30,4 @@ class Pins:
                     data.append(f"set_instance_assignment -name IO_STANDARD \"{iostandard}\" -to {pin_config['varname']}")
 
             data.append("")
-        open(f"{path}/pins.qdf", "w").write("\n".join(data))
+        open(os.path.join(path, "pins.qdf"), "w").write("\n".join(data))
