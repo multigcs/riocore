@@ -93,7 +93,6 @@ class LinuxCNC:
             "MIN_ANGULAR_VELOCITY": 0.0,
             "DEFAULT_ANGULAR_VELOCITY": 2.5,
             "MAX_ANGULAR_VELOCITY": 5.0,
-            "PYVCP_POSITION": "RIGHT",
         },
         "KINS": {
             "JOINTS": None,
@@ -533,7 +532,14 @@ class LinuxCNC:
                         ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
 
         if gui == "axis":
-            ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+            pyvcp_pos = linuxcnc_config.get("pyvcp_pos", "RIGHT")
+            if pyvcp_pos == "TAB":
+                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
+                ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
+            else:
+                ini_setup["DISPLAY"]["PYVCP_POSITION"] = pyvcp_pos
+                ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+
         elif gui == "qtdragon":
             qtdragon_setup = {
                 "DISPLAY": {
