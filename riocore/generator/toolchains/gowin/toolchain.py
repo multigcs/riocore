@@ -151,7 +151,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
             makefile_data.append("	gw_sh $(PROJECT).tcl")
             makefile_data.append("	copy hash_new.txt hash_compiled.txt")
-            makefile_data.append('	# type impl\\pnr\\project.rpt.txt')
+            # makefile_data.append('	type impl\\pnr\\project.rpt.txt')
             makefile_data.append("")
             makefile_data.append("load: impl/pnr/project.fs")
 
