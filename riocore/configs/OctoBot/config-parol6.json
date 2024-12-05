@@ -751,6 +751,6 @@
         "robojog": {
             "enable": true
         },
-        "pyvcp_pos": "TAB"
+        "pyvcp_pos": "RIGHT"
     }
 }
