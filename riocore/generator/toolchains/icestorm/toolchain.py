@@ -146,7 +146,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append(f"$(PROJECT).svf: {bitfileName}")
             makefile_data.append("")
             makefile_data.append("clean:")
-            makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            if sys.platform == "linux":
+                makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            else:
+                makefile_data.append(f"	del /q {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
         elif family == "gatemate":
             makefile_data.append("$(PROJECT).bit: net/$(PROJECT).v pins.ccf")
@@ -157,7 +160,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("clean:")
-            makefile_data.append(f"	rm -rf {bitfileName} net/ $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            if sys.platform == "linux":
+                makefile_data.append(f"	rm -rf {bitfileName} net/ $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            else:
+                makefile_data.append(f"	del /q {bitfileName} net/ $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
         elif family in {"gowin", "himbaechel"}:
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
@@ -182,7 +188,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 makefile_data.append("	copy hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")
-            makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
+            if sys.platform == "linux":
+                makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
+            else:
+                makefile_data.append("	del /q $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
@@ -202,7 +211,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 makefile_data.append("	copy hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")
-            makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).asc $(PROJECT).json yosys.log nextpnr.log")
+            if sys.platform == "linux":
+                makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).asc $(PROJECT).json yosys.log nextpnr.log")
+            else:
+                makefile_data.append(f"	del /q {bitfileName} $(PROJECT).asc $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
         makefile_data.append("check:")
         makefile_data.append("	verilator --top-module $(PROJECT) --lint-only -Wall *.v")
