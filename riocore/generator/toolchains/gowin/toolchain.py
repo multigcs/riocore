@@ -30,7 +30,8 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
     def pll(self, clock_in, clock_out):
         if self.config["jdata"]["family"] == "GW1N-9C":
             result = subprocess.check_output(
-                f"python3 {self.riocore_path}/files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{self.gateware_path}/pll.v' -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True
+                f"python3 {os.path.join(self.riocore_path, 'files', 'gowin-pll.py')} -d 'GW1NR-9 C6/I5' -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}",
+                shell=True,
             )
             achieved = re.findall(r"Achieved output frequency:\s*(\d*\.\d*)\s*MHz", result.decode())
             if achieved:
