@@ -12,8 +12,8 @@ class Pins:
             for pin, pin_config in pins.items():
                 data.append(f"IO_LOC \"{pin_config['varname']}\" {pin_config['pin']};")
 
-                iostandard = pin_config.get("iostandard", "LVCMOS33").upper()
                 drive = pin_config.get("drive", "4")
+                # iostandard = pin_config.get("iostandard", "LVCMOS33").upper()
                 # slew = pin_config.get("slew", "SLOW").upper()
 
                 if pin_config["direction"] == "input":

@@ -19,7 +19,8 @@ parser.add_argument("output", help="output directory", nargs="?", type=str, defa
 parser.add_argument("--preview", "-p", help="generate preview / no pll config", default=False, action="store_true")
 parser.add_argument("--build", "-b", help="build gateware", default=False, action="store_true")
 parser.add_argument("--flash", "-f", help="flash gateware", default=False, action="store_true")
-parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
+if sys.platform == "linux":
+    parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
 args = parser.parse_args()
 
 if args.config:
@@ -40,26 +41,30 @@ if args.config:
         startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
 
         if args.build:
-            cmd = f"(cd {gateware_path} ; make clean all)"
+            cmd = f"(cd {gateware_path} && make clean all)"
             print("")
             print("running:")
             print(f"  {cmd}")
+            if sys.platform != "linux":
+                print(f"  cd {os.getcwd()}")
             print("")
             ret = os.system(cmd)
             if ret != 0:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
         if args.flash:
-            cmd = f"(cd {gateware_path} ; make load)"
+            cmd = f"(cd {gateware_path} && make load)"
             print("")
             print("running:")
             print(f"  {cmd}")
+            if sys.platform != "linux":
+                print(f"  cd {os.getcwd()}")
             print("")
             ret = os.system(cmd)
             if ret != 0:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
-        if args.start:
+        if sys.platform == "linux" and args.start:
             cmd = f"sh {startsh_path}"
             print("")
             print("running:")
