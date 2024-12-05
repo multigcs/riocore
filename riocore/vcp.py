@@ -201,7 +201,7 @@ class MyVCP:
 
         xml = open(filename, "rb").read()
         if etree is not None:
-            root = etree.fromstring(xml, parser=etree.XMLParser(remove_comments=True))
+            root = etree.fromstring(xml.decode("latin-1"), parser=etree.XMLParser(remove_comments=True))
 
             if self.widget_tab:
                 index = self.widget_tab.indexOf(self.widget_tab.currentWidget())
