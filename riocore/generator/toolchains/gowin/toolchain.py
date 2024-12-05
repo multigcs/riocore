@@ -1,5 +1,6 @@
 import importlib
 import re
+import sys
 import os
 import shutil
 import subprocess
@@ -82,40 +83,80 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         makefile_data.append("all: impl/pnr/project.fs")
         makefile_data.append("")
         makefile_data.append("clean:")
-        makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
+        if sys.platform == "linux":
+            makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
+        else:
+            makefile_data.append("	del /q $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
         makefile_data.append("")
         makefile_data.append("$(PROJECT).tcl: pins.cst $(VERILOGS)")
-        makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
-        makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
-        makefile_data.append('	@echo "add_file rio.sdc" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "add_file pins.cst" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "set_option -top_module $(TOP)" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "set_option -verilog_std v2001" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "set_option -vhdl_std vhd2008" >> $(PROJECT).tcl')
-        set_options = self.config.get(
-            "set_options",
-            [
-                "use_sspi_as_gpio",
-                "use_mspi_as_gpio",
-                "use_done_as_gpio",
-                "use_ready_as_gpio",
-                "use_reconfign_as_gpio",
-                "use_i2c_as_gpio",
-            ],
-        )
-        if family in {"GW5A-25A", "GW5A-25B"}:
-            set_options.append("use_cpu_as_gpio")
+        if sys.platform == "linux":
+            makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
+            makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
+            makefile_data.append('	@echo "add_file rio.sdc" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "add_file pins.cst" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "set_option -top_module $(TOP)" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "set_option -verilog_std v2001" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "set_option -vhdl_std vhd2008" >> $(PROJECT).tcl')
+            set_options = self.config.get(
+                "set_options",
+                [
+                    "use_sspi_as_gpio",
+                    "use_mspi_as_gpio",
+                    "use_done_as_gpio",
+                    "use_ready_as_gpio",
+                    "use_reconfign_as_gpio",
+                    "use_i2c_as_gpio",
+                ],
+            )
+            if family in {"GW5A-25A", "GW5A-25B"}:
+                set_options.append("use_cpu_as_gpio")
 
-        for set_option in set_options:
-            makefile_data.append(f'	@echo "set_option -{set_option} 1" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "run all" >> $(PROJECT).tcl')
-        makefile_data.append("")
-        makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
-        makefile_data.append("	gw_sh $(PROJECT).tcl")
-        makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
-        makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
-        makefile_data.append("")
-        makefile_data.append("load: impl/pnr/project.fs")
+            for set_option in set_options:
+                makefile_data.append(f'	@echo "set_option -{set_option} 1" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "run all" >> $(PROJECT).tcl')
+            makefile_data.append("")
+            makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
+            makefile_data.append("	gw_sh $(PROJECT).tcl")
+            makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
+            makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
+            makefile_data.append("")
+            makefile_data.append("load: impl/pnr/project.fs")
+        else:
+
+
+            makefile_data.append('	@echo set_device -name $(FAMILY_GOWIN) $(DEVICE) > $(PROJECT).tcl')
+            for verilog in self.config["verilog_files"]:
+                makefile_data.append(f'	@echo add_file {verilog} >> $(PROJECT).tcl')
+            makefile_data.append('	@echo add_file rio.sdc >> $(PROJECT).tcl')
+            makefile_data.append('	@echo add_file pins.cst >> $(PROJECT).tcl')
+            makefile_data.append('	@echo set_option -top_module $(TOP) >> $(PROJECT).tcl')
+            makefile_data.append('	@echo set_option -verilog_std v2001 >> $(PROJECT).tcl')
+            makefile_data.append('	@echo set_option -vhdl_std vhd2008 >> $(PROJECT).tcl')
+            set_options = self.config.get(
+                "set_options",
+                [
+                    "use_sspi_as_gpio",
+                    "use_mspi_as_gpio",
+                    "use_done_as_gpio",
+                    "use_ready_as_gpio",
+                    "use_reconfign_as_gpio",
+                    "use_i2c_as_gpio",
+                ],
+            )
+            if family in {"GW5A-25A", "GW5A-25B"}:
+                set_options.append("use_cpu_as_gpio")
+
+            for set_option in set_options:
+                makefile_data.append(f'	@echo set_option -{set_option} 1 >> $(PROJECT).tcl')
+            makefile_data.append('	@echo run all >> $(PROJECT).tcl')
+            makefile_data.append("")
+            makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
+            makefile_data.append("	gw_sh $(PROJECT).tcl")
+            makefile_data.append("	copy hash_new.txt hash_compiled.txt")
+            makefile_data.append('	type impl/pnr/project.rpt.txt')
+            makefile_data.append("")
+            makefile_data.append("load: impl/pnr/project.fs")
+
 
         board_id = board.lower()
         if board_id == "tangoboard":
