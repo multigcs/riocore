@@ -3774,7 +3774,7 @@ class WinForm(QWidget):
                     os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path}")
                 os.remove(f"{self.config_file}_tmp.json")
             else:
-                os.system(f"{generator_path} {self.config_file} {output_path}")
+                os.system(f"{sys.executable} {generator_path} {self.config_file} {output_path}")
                 self.check_status()
         except Exception as error:
             print(f"ERROR generating output: {error}")
