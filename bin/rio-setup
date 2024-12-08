@@ -1427,7 +1427,7 @@ class WinForm(QWidget):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(1000)
+        self.timer.start(2000)
 
     def startup_window_show(self):
         self.startup_dialog = QDialog()
@@ -1662,6 +1662,7 @@ class WinForm(QWidget):
             self.request_generate -= 1
         elif self.request_generate == 1:
             self.generate_cb(preview=True)
+            self.tabs["Overview"].update()
             self.request_generate = 0
 
         if self.request_load_tree > 1:
@@ -2333,9 +2334,8 @@ class WinForm(QWidget):
             self.request_generate = 2
             self.request_pin_table_load = 2
             self.request_sig_table_load = 2
-            self.tabs["Overview"].update()
-            self.tabs["Json"].update()
             self.info_widget.setText(self.config_file)
+            self.tabs["Json"].update()
         except Exception as error:
             print(f"ERROR: {error}")
             self.info_widget.setText(f"ERROR: {error}")
