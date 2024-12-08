@@ -4,6 +4,7 @@ import stat
 
 addon_path = os.path.dirname(__file__)
 
+
 def hal(parent):
     output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})

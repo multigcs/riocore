@@ -1463,8 +1463,9 @@ class LinuxCNC:
                         if net == "iocontrol.0.emc-enable-in" and direction == "input":
                             has_estop = True
                             break
-        if not has_estop:
-            self.hal_net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
+        # if not has_estop:
+        #    self.hal_net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
+        self.hal_net_add("rio.sys-status", "&iocontrol.0.emc-enable-in")
 
         if toolchange == "manual":
             self.loadrts.append("loadusr -W hal_manualtoolchange")

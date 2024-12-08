@@ -39,6 +39,7 @@ setp axis.c.jog-scale 0.01
 
 
 """
+
 import sys
 import spacenav
 import atexit
@@ -86,12 +87,24 @@ while not stop:
         h[f"button.{event.button}"] = event.pressed
     else:
         mapping = {
-            "x": {"axis": "x",},
-            "y": {"axis": "z",},
-            "z": {"axis": "y",},
-            "rx": {"axis": "a",},
-            "ry": {"axis": "c",},
-            "rz": {"axis": "b",},
+            "x": {
+                "axis": "x",
+            },
+            "y": {
+                "axis": "z",
+            },
+            "z": {
+                "axis": "y",
+            },
+            "rx": {
+                "axis": "a",
+            },
+            "ry": {
+                "axis": "c",
+            },
+            "rz": {
+                "axis": "b",
+            },
         }
         for in_axis, setup in mapping.items():
             value = getattr(event, in_axis)
@@ -99,4 +112,3 @@ while not stop:
                 out_axis = setup["axis"]
                 scale = h[f"axis.{out_axis}.scale"]
                 h[f"axis.{out_axis}.jog-counts"] += int(value * scale)
-
