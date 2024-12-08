@@ -704,7 +704,7 @@ class LinuxCNC:
                 if not os.path.isfile(target_path):
                     shutil.copy(subroutine, target_path)
 
-        path_mcodes = ini_setup.get("RS274NGC", {}).get("mcode_PATH")
+        path_mcodes = ini_setup.get("RS274NGC", {}).get("USER_M_PATH")
         if path_mcodes and path_mcodes.startswith("./"):
             os.makedirs(os.path.join(self.configuration_path, path_mcodes), exist_ok=True)
             for mcode in glob.glob(os.path.join(json_path, "mcodes", "*")):
