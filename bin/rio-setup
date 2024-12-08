@@ -1614,15 +1614,15 @@ class WinForm(QWidget):
             if os.path.isfile(path_config_json) and os.path.isfile(self.config_file):
                 old = open(self.config_file, "r").read()
                 new = open(path_config_json, "r").read()
-                diffs = (old == new)
+                diffs = (old != new)
             if diffs:
-                self.info_generated.setChecked(True)
-                self.button_generate.setStyleSheet("background-color: green;")
-                self.button_compile.setEnabled(True)
-            else:
                 self.info_generated.setChecked(False)
                 self.button_generate.setStyleSheet("background-color: red;")
                 self.button_compile.setEnabled(False)
+            else:
+                self.info_generated.setChecked(True)
+                self.button_generate.setStyleSheet("background-color: green;")
+                self.button_compile.setEnabled(True)
 
         # checking gateware
         hash_compiled = ""
