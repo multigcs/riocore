@@ -13,7 +13,7 @@ class Toolchain:
         self.riocore_path = config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("icestorm", "")
         if self.toolchain_path:
-            self.toolchain_path = os.path.join(self.toolchain_path, "bin")
+            self.toolchain_path = [os.path.join(self.toolchain_path, "bin"), os.path.join(self.toolchain_path, "lib")]
 
     def info(cls):
         info = {
@@ -44,7 +44,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
     def pll(self, clock_in, clock_out):
         prefix = ""
         if self.toolchain_path:
-            prefix = self.toolchain_path + os.sep
+            prefix = self.toolchain_path[0] + os.sep
 
         if self.config["jdata"]["family"] == "ecp5":
             result = subprocess.check_output(f"{prefix}ecppll -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
@@ -108,7 +108,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append("# Toolchain: Icestorm")
         makefile_data.append("")
         if self.toolchain_path:
-            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append(f"PATH     := {':'.join(self.toolchain_path)}:$(PATH)")
             makefile_data.append("")
         makefile_data.append("PROJECT   := rio")
         makefile_data.append("TOP       := rio")
