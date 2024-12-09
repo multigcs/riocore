@@ -39,6 +39,19 @@ class Gateware:
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
         if os.path.isfile(toolchains_json_path):
             self.config["toolchains_json"] = json.loads(open(toolchains_json_path, "r").read())
+        else:
+            open(toolchains_json_path, "w").write(
+                json.dumps(
+                    {
+                        "gowin": "",
+                        "diamond": "",
+                        "quartus": "",
+                        "icestorm": "",
+                        "ise": "",
+                    },
+                    indent=4,
+                )
+            )
 
         self.generate_pll = generate_pll
         self.toolchain = self.project.config["toolchain"]
