@@ -39,6 +39,10 @@ class Gateware:
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
         if os.path.isfile(toolchains_json_path):
             self.config["toolchains_json"] = json.loads(open(toolchains_json_path, "r").read())
+            if self.config["toolchains_json"]:
+                for toolchain, path in self.config["toolchains_json"].items():
+                    if path and not os.path.isdir(path):
+                        print(f"WARNING: toolchains.json: path for '{toolchain}' not found: {path}")
         else:
             open(toolchains_json_path, "w").write(
                 json.dumps(
