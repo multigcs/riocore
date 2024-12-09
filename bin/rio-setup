@@ -2725,16 +2725,22 @@ class WinForm(QWidget):
     def tree_expand(self, tpath):
         def iter_childs(entry, prefix=""):
             row = 0
-            item = self.model.itemData(entry.child(row, 0))
+            child = entry.child(row, 0)
+            item = self.model.itemData(child)
             while item:
+                if item:
+                    title = item[0]
+                    if prefix:
+                        newpath = f"{prefix}/{title}"
+                    else:
+                        newpath = title
+                    if tpath.lower().startswith(newpath.lower()):
+                        self.treeview.expand(child)
+                        iter_childs(child, prefix=newpath)
+
                 row += 1
                 child = entry.child(row, 0)
                 item = self.model.itemData(child)
-                if item:
-                    title = item[0]
-                    if tpath.startswith(f"{prefix}/{title}"):
-                        self.treeview.expand(child)
-                    iter_childs(child, prefix=f"{prefix}/{title}")
 
         row = 0
         item = self.model.itemData(self.model.index(row, 0))
@@ -2746,7 +2752,7 @@ class WinForm(QWidget):
                 title = item[0]
                 if tpath.startswith(f"/{title}"):
                     self.treeview.expand(child)
-                iter_childs(self.model.index(row, 0), prefix=f"/{title}")
+                iter_childs(child, prefix=f"/{title}")
 
     def slot_change(self, widget):
         self.config_load()
