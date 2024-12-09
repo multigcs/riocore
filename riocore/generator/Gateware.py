@@ -45,6 +45,7 @@ class Gateware:
                     {
                         "gowin": "",
                         "diamond": "",
+                        "vivado": "",
                         "quartus": "",
                         "icestorm": "",
                         "ise": "",

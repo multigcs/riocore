@@ -11,6 +11,9 @@ class Toolchain:
         self.config = config
         self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
         self.riocore_path = config["riocore_path"]
+        self.toolchain_path = self.config.get("toolchains_json", {}).get("icestorm", "")
+        if self.toolchain_path:
+            self.toolchain_path = os.path.join(self.toolchain_path, "bin")
 
     def info(cls):
         info = {
@@ -39,10 +42,14 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         return info
 
     def pll(self, clock_in, clock_out):
+        prefix = ""
+        if self.toolchain_path:
+            prefix = self.toolchain_path + os.sep
+
         if self.config["jdata"]["family"] == "ecp5":
-            result = subprocess.check_output(f"ecppll -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
+            result = subprocess.check_output(f"{prefix}ecppll -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
         elif self.config["jdata"]["type"] == "up5k":
-            result = subprocess.check_output(f"icepll -p -m -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
+            result = subprocess.check_output(f"{prefix}icepll -p -m -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
             achieved = re.findall(r"F_PLLOUT:\s*(\d*\.\d*)\s*MHz \(achieved\)", result.decode())
             if achieved:
                 new_speed = int(float(achieved[0]) * 1000000)
@@ -50,7 +57,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                     print(f"WARNING: achieved PLL frequency is: {new_speed}")
                     self.config["speed"] = new_speed
         else:
-            result = subprocess.check_output(f"icepll -q -m -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
+            result = subprocess.check_output(f"{prefix}icepll -q -m -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
             # print(result.decode())
 
     def generate(self, path):
@@ -100,6 +107,9 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append("")
         makefile_data.append("# Toolchain: Icestorm")
         makefile_data.append("")
+        if self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append("")
         makefile_data.append("PROJECT   := rio")
         makefile_data.append("TOP       := rio")
         makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
