@@ -61,6 +61,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             # print(result.decode())
 
     def generate(self, path):
+        prefix = ""
+        if self.toolchain_path:
+            prefix = self.toolchain_path[0] + os.sep
+
         verilogs = " ".join(self.config["verilog_files"])
         family = self.config["family"]
         device_family = None
@@ -72,7 +76,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             else:
                 family = "gowin"
 
-        nextpnr = shutil.which(f"nextpnr-{family}")
+        nextpnr = shutil.which(f"{prefix}nextpnr-{family}")
         if nextpnr is None:
             print(f"WARNING: can not found toolchain installation in PATH: nextpnr (nextpnr-{family})")
             print("  example: export PATH=$PATH:/opt/oss-cad-suite/bin")
