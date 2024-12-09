@@ -3725,9 +3725,9 @@ class WinForm(QWidget):
         self.flash_start = time.time()
         gw_path = os.path.join("Output", config_name, "Gateware")
         if sys.platform == "linux":
-            self.flash_sub = subprocess.Popen(f"(cd {gw_path} ; make load 2>&1 | tee flash.log)", shell=True, close_fds=True)
+            self.flash_sub = subprocess.Popen(f"(cd {gw_path} && make load 2>&1 | tee flash.log)", shell=True, close_fds=True)
         else:
-            self.flash_sub = subprocess.Popen(f"cd {gw_path} ; make load > flash.log", shell=True, close_fds=True)
+            self.flash_sub = subprocess.Popen(f"(cd {gw_path} && make load > flash.log)", shell=True, close_fds=True)
         self.button_flash.setEnabled(False)
         self.info_widget.setText("flashing...")
 
@@ -3743,10 +3743,10 @@ class WinForm(QWidget):
         self.compile_start = time.time()
         gw_path = os.path.join("Output", config_name, "Gateware")
         if sys.platform == "linux":
-            self.compile_sub = subprocess.Popen(f"(cd {gw_path} ; make clean all 2>&1 | tee compile.log)", shell=True, close_fds=True)
+            self.compile_sub = subprocess.Popen(f"(cd {gw_path} && make clean all 2>&1 | tee compile.log)", shell=True, close_fds=True)
         else:
-            print(f"cd {gw_path} ; make clean all > compile.log")
-            self.compile_sub = subprocess.Popen(f"cd {gw_path} ; make clean all > compile.log", shell=True, close_fds=True)
+            print(f"cd {gw_path} && make clean all > compile.log")
+            self.compile_sub = subprocess.Popen(f"(cd {gw_path} && make clean all > compile.log)", shell=True, close_fds=True)
         self.button_compile.setEnabled(False)
         self.info_widget.setText("compiling...")
 
