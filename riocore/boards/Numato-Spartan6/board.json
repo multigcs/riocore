@@ -1,0 +1,25 @@
+{
+    "name": "Spartan6",
+    "description": "Spartan6 - only for testing the toolchain",
+    "url": "https://numato.com/product/mimas-spartan-6-fpga-development-board/",
+    "toolchain": "ise",
+    "family": "xc6",
+    "type": "xc6slx9-2tqg144",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+    "package": "tqg144",
+    "clock": {
+        "speed": "50000000",
+        "pin": "p126",
+        "startup": "CClk"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LEDs",
+            "pins": {
+                "LED1": "p118",
+                "LED2": "p119"
+            }
+        }
+    ]
+}
