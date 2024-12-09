@@ -1697,7 +1697,7 @@ class WinForm(QWidget):
             if os.path.isfile(log_path):
                 logdata = open(log_path, "r").read()
             else:
-                logdata = f"logfile not found: {logdata}"
+                logdata = f"logfile not found: {log_path}"
             widget.clear()
             duration = time.time() - self.compile_start
 
@@ -1724,7 +1724,7 @@ class WinForm(QWidget):
             if os.path.isfile(log_path):
                 logdata = open(log_path, "r").read()
             else:
-                logdata = f"logfile not found: {logdata}"
+                logdata = f"logfile not found: {log_path}"
             widget.clear()
             duration = time.time() - self.flash_start
 
