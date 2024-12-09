@@ -208,7 +208,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             if self.toolchain_path:
                 build_data.append(f"SET PATH=%PATH%;{self.toolchain_path}")
                 build_data.append("")
-            build_data.append("del /q rio.fs rio.json rio_pnr.json rio.tcl abc.history impl")
+            build_data.append("del /q rio.fs rio.json rio_pnr.json abc.history impl")
             build_data.append("gw_sh rio.tcl")
             build_data.append("copy hash_new.txt hash_compiled.txt")
             build_data.append("")
