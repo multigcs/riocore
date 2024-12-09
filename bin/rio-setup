@@ -1422,6 +1422,7 @@ class WinForm(QWidget):
         self.show()
 
         self.generate_cb(preview=True)
+        self.tabs["Overview"].update()
         self.check_status()
 
         self.startup_dialog_timer = 0
