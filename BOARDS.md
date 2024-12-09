@@ -13,6 +13,7 @@
 | [IceShield](riocore/boards/IceShield/README.md) | RIO-IceShield board for Raspberry PI4 | ice40 / up5k | icestorm | <img src="riocore/boards/IceShield/board.png" height="48"> |
 | [OctoBot](riocore/boards/OctoBot/README.md) | RIO-OctoBot board | ice40 / hx8k | icestorm | <img src="riocore/boards/OctoBot/board.png" height="48"> |
 | [Olimex-ICE40HX8K-EVB](riocore/boards/Olimex-ICE40HX8K-EVB/README.md) | ICE40HX8K FPGA development board | ice40 / hx8k | icestorm | <img src="riocore/boards/Olimex-ICE40HX8K-EVB/board.png" height="48"> |
+| [Numato-Spartan6](riocore/boards/Spartan6/README.md) | Spartan6 - only for testing the toolchain | xc6 / xc6slx9-2tqg144 | ise | <img src="riocore/boards/Numato-Spartan6/board.png" height="48">  |
 | [Spartan6](riocore/boards/Spartan6/README.md) | Spartan6 - only for testing the toolchain | xc6 / xc6slx9-2tqg144 | ise | |
 | [TangNano20K](riocore/boards/TangNano20K/README.md) | TangNano20K - GW2AR-18 devboard | GW2AR-18C / GW2AR-LV18QN88C8/I7 | gowin, icestorm | <img src="riocore/boards/TangNano20K/board.png" height="48"> |
 | [TangNano9K](riocore/boards/TangNano9K/README.md) | TangNano9K - cheap GW1NR-9 Devboard | GW1N-9C / GW1NR-LV9QN88PC6/I5 | gowin, icestorm | <img src="riocore/boards/TangNano9K/board.png" height="48"> |
