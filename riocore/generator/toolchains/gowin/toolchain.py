@@ -173,6 +173,56 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
+        if sys.platform.startswith("win"):
+            tcl_data = []
+            tcl_data.append(f"set_device -name {family_gowin} {ftype}")
+            for verilog in self.config["verilog_files"]:
+                tcl_data.append(f"add_file {verilog}")
+            tcl_data.append("add_file rio.sdc")
+            tcl_data.append("add_file pins.cst")
+            tcl_data.append("set_option -top_module rio")
+            tcl_data.append("set_option -verilog_std v2001")
+            tcl_data.append("set_option -vhdl_std vhd2008")
+            set_options = self.config.get(
+                "set_options",
+                [
+                    "use_sspi_as_gpio",
+                    "use_mspi_as_gpio",
+                    "use_done_as_gpio",
+                    "use_ready_as_gpio",
+                    "use_reconfign_as_gpio",
+                    "use_i2c_as_gpio",
+                ],
+            )
+            if family in {"GW5A-25A", "GW5A-25B"}:
+                set_options.append("use_cpu_as_gpio")
+
+            for set_option in set_options:
+                tcl_data.append(f"set_option -{set_option} 1")
+            tcl_data.append("run all")
+            tcl_data.append("")
+            open(os.path.join(path, "rio.tcl"), "w").write("\n".join(tcl_data))
+
+            build_data = []
+            build_data.append("")
+            if self.toolchain_path:
+                build_data.append(f"SET PATH=%PATH%;{self.toolchain_path}")
+                build_data.append("")
+            build_data.append("del /q rio.fs rio.json rio_pnr.json rio.tcl abc.history impl")
+            build_data.append("gw_sh rio.tcl")
+            build_data.append("copy hash_new.txt hash_compiled.txt")
+            build_data.append("")
+            build_data.append("")
+            open(os.path.join(path, "build.bat"), "w").write("\n".join(build_data))
+
+            flash_data = []
+            flash_data.append("")
+            flash_data.append(f"openFPGALoader -b {board_id} impl\\pnr\\project.fs -f")
+            flash_data.append("copy hash_new.txt hash_flashed.txt")
+            flash_data.append("")
+            flash_data.append("")
+            open(os.path.join(path, "flash.bat"), "w").write("\n".join(flash_data))
+
         # generating timing constraints (.sdc)
         speed_ns = 1000000000 / self.config["speed"]
         sdc_data = [f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name sysclk_in [get_ports {{sysclk_in}}]"]
