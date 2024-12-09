@@ -19,13 +19,13 @@ def load_tree(parent, tree_lcnc):
             parent.config["linuxcnc"]["spnav"] = {
                 "enable": True,
             }
-            parent.load_tree("/LinuxCNC/AddOn's/spnav/")
+            parent.load_tree("/LinuxCNC/AddOn's/Spacemouse/")
             parent.display()
 
     bitem = MyStandardItem()
     tree_lcnc.appendRow(
         [
-            MyStandardItem("spnav", help_text="LinuxCNC spnav-Setup"),
+            MyStandardItem("Spacemouse", help_text="LinuxCNC Spacemouse-Setup"),
             bitem,
         ]
     )

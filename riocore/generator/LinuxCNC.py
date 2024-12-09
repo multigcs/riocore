@@ -1451,20 +1451,6 @@ class LinuxCNC:
         self.loadrts.append("")
         self.hal_net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
         self.hal_net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
-
-        has_estop = False
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    direction = signal_config["direction"]
-                    netname = signal_config["netname"] or ""
-                    for net in netname.split(","):
-                        net = net.strip()
-                        if net == "iocontrol.0.emc-enable-in" and direction == "input":
-                            has_estop = True
-                            break
-        # if not has_estop:
-        #    self.hal_net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
         self.hal_net_add("rio.sys-status", "&iocontrol.0.emc-enable-in")
 
         if toolchange == "manual":

@@ -22,7 +22,7 @@ def hal(parent):
     spnav_button1 = spnav_config.get("botton-1", "")
 
     if spnav_enable:
-        output.append(f"loadusr -Wn spnav ./spnav.py")
+        output.append("loadusr -Wn spnav ./spnav.py")
         output.append("")
 
         source = f"{addon_path}/spnav.py"
