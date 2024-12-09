@@ -40,10 +40,11 @@ class Toolchain:
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.xdc")
         pins_generator.Pins(self.config).generate(path)
 
-        vivado = shutil.which("vivado")
-        if vivado is None:
-            print("WARNING: can not found toolchain installation in PATH: vivado")
-            print("  example: export PATH=$PATH:/opt/Xilinx/Vivado/2023.1/bin")
+        if sys.platform == "linux":
+            vivado = shutil.which("vivado")
+            if vivado is None:
+                print("WARNING: can not found toolchain installation in PATH: vivado")
+                print("  example: export PATH=$PATH:/opt/Xilinx/Vivado/2023.1/bin")
 
         verilogs = " ".join(self.config["verilog_files"])
         makefile_data = []

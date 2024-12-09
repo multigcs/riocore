@@ -54,10 +54,11 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
-        quartus_sh = shutil.which("quartus_sh")
-        if quartus_sh is None:
-            print("WARNING: can not found toolchain installation in PATH: quartus")
-            print("  example: export PATH=$PATH:/opt/intelFPGA_lite/22.1std/quartus/bin/")
+        if sys.platform == "linux":
+            quartus_sh = shutil.which("quartus_sh")
+            if quartus_sh is None:
+                print("WARNING: can not found toolchain installation in PATH: quartus")
+                print("  example: export PATH=$PATH:/opt/intelFPGA_lite/22.1std/quartus/bin/")
 
         verilogs = " ".join(self.config["verilog_files"])
         clkname = "sysclk_in"

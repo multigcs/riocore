@@ -56,10 +56,11 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)
 
-        gw_sh = shutil.which("gw_sh")
-        if gw_sh is None:
-            print("WARNING: can not found toolchain installation in PATH: gowin (gw_sh)")
-            print("  example: export PATH=$PATH:/opt/gowin/IDE/bin")
+        if sys.platform == "linux":
+            gw_sh = shutil.which("gw_sh")
+            if gw_sh is None:
+                print("WARNING: can not found toolchain installation in PATH: gowin (gw_sh)")
+                print("  example: export PATH=$PATH:/opt/gowin/IDE/bin")
 
         verilogs = " ".join(self.config["verilog_files"])
 
