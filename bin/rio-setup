@@ -1425,6 +1425,9 @@ class WinForm(QWidget):
         self.startup_dialog_timer = 0
         # self.startup_window_show()
 
+        if args.expand:
+            self.load_tree(args.expand)
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(2000)
@@ -3875,7 +3878,8 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("config", help="config", nargs="?", type=str, default=None)
+    parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
+    parser.add_argument("expand", help="expand tree", nargs="?", type=str, default=None)
     if sys.platform == "linux":
         parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
     else:
