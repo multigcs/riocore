@@ -3,6 +3,7 @@ import importlib
 import os
 import shutil
 import stat
+import json
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -34,6 +35,11 @@ class Gateware:
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
+
+        toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
+        if os.path.isfile(toolchains_json_path):
+            self.config["toolchains_json"] = json.loads(open(toolchains_json_path, "r").read())
+
         self.generate_pll = generate_pll
         self.toolchain = self.project.config["toolchain"]
         print(f"loading toolchain {self.toolchain}")

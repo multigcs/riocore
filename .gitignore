@@ -165,3 +165,5 @@ cython_debug/
 
 testb.out
 testb.vcd
+riocore/toolchains.json
+
