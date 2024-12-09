@@ -45,7 +45,7 @@ if args.config:
             print("")
             print("running:")
             print(f"  {cmd}")
-            if sys.platform != "linux":
+            if sys.platform.startswith("win"):
                 print(f"  cd {os.getcwd()}")
             print("")
             ret = os.system(cmd)
@@ -57,7 +57,7 @@ if args.config:
             print("")
             print("running:")
             print(f"  {cmd}")
-            if sys.platform != "linux":
+            if sys.platform.startswith("win"):
                 print(f"  cd {os.getcwd()}")
             print("")
             ret = os.system(cmd)

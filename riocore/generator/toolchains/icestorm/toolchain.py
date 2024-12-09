@@ -147,42 +147,42 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
             )
             makefile_data.append('	@echo ""')
-            if sys.platform == "linux":
-                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append('	@type nextpnr.log | findstr "%%"')
+            else:
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append(f"{bitfileName}: $(PROJECT).config")
             makefile_data.append(f"	ecppack --svf $(PROJECT).svf $(PROJECT).config {bitfileName}")
-            if sys.platform == "linux":
-                makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append("	copy hash_new.txt hash_compiled.txt")
+            else:
+                makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append(f"$(PROJECT).svf: {bitfileName}")
             makefile_data.append("")
             makefile_data.append("clean:")
-            if sys.platform == "linux":
-                makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append(f"	del /q {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            else:
+                makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
         elif family == "gatemate":
             makefile_data.append("$(PROJECT).bit: net/$(PROJECT).v pins.ccf")
             makefile_data.append("	p_r -i net/$(PROJECT).v -o $(PROJECT) -ccf pins.ccf -cCP")
             makefile_data.append('	@echo ""')
-            if sys.platform == "linux":
-                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append('	@type nextpnr.log | findstr "%%"')
+            else:
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("clean:")
-            if sys.platform == "linux":
-                makefile_data.append(f"	rm -rf {bitfileName} net/ $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append(f"	del /q {bitfileName} net/ $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
+            else:
+                makefile_data.append(f"	rm -rf {bitfileName} net/ $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
         elif family in {"gowin", "himbaechel"}:
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
@@ -195,24 +195,24 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                     "	nextpnr-gowin -q -l nextpnr.log --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
                 )
             makefile_data.append('	@echo ""')
-            if sys.platform == "linux":
-                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append('	@type nextpnr.log | findstr "%%"')
+            else:
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
             makefile_data.append("	gowin_pack -d ${DEVICE_FAMILY} -o $(PROJECT).fs $(PROJECT)_pnr.json")
-            if sys.platform == "linux":
-                makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append("	copy hash_new.txt hash_compiled.txt")
+            else:
+                makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")
-            if sys.platform == "linux":
-                makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append("	del /q $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
+            else:
+                makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
@@ -220,24 +220,24 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
             )
             makefile_data.append('	@echo ""')
-            if sys.platform == "linux":
-                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append('	@type nextpnr.log | findstr "%%"')
+            else:
+                makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
             makefile_data.append('	@echo ""')
             makefile_data.append("")
             makefile_data.append(f"{bitfileName}: $(PROJECT).asc")
             makefile_data.append(f"	icepack $(PROJECT).asc {bitfileName}")
-            if sys.platform == "linux":
-                makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append("	copy hash_new.txt hash_compiled.txt")
+            else:
+                makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")
-            if sys.platform == "linux":
-                makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).asc $(PROJECT).json yosys.log nextpnr.log")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append(f"	del /q {bitfileName} $(PROJECT).asc $(PROJECT).json yosys.log nextpnr.log")
+            else:
+                makefile_data.append(f"	rm -rf {bitfileName} $(PROJECT).asc $(PROJECT).json yosys.log nextpnr.log")
             makefile_data.append("")
         makefile_data.append("check:")
         makefile_data.append("	verilator --top-module $(PROJECT) --lint-only -Wall *.v")
@@ -263,10 +263,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 makefile_data.append(f"load: {bitfileName}")
                 makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
 
-            if sys.platform == "linux":
-                makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
-            else:
+            if sys.platform.startswith("win"):
                 makefile_data.append("	copy hash_new.txt hash_flashed.txt")
+            else:
+                makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
