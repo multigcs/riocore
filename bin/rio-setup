@@ -313,7 +313,9 @@ class TabGateware:
                 widget.insertPlainText(file_content)
                 if filename == "rio.v":
                     hash_md5 = hashlib.md5()
-                    hash_md5.update(file_content.encode())
+                    with open(os.path.join(self.parent.output_path, config_name, "Gateware", filename), "rb") as f:
+                        for chunk in iter(lambda: f.read(4096), b""):
+                            hash_md5.update(chunk)
                     self.parent.gateware_hash = hash_md5.hexdigest()
 
 
