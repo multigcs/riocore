@@ -6,12 +6,13 @@ from riocore import halpins
 
 clusters = {
     "MPG": ["mpg"],
+    "RoboJog": ["robojog"],
     "GUI": ["pyvcp", "qtdragon"],
     "RIO": ["rio"],
     "Joints": ["joint", "pid"],
     "UI": ["halui", "axisui"],
     "IOcontrol": ["iocontrol"],
-    "Spindle": ["spindle", "hal_manualtoolchange"],
+    "Spindle": ["spindle"],
 }
 
 
