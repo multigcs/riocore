@@ -748,12 +748,6 @@
                 "max_limit": 170
             }
         },
-        "robojog": {
-            "enable": true
-        },
-        "pyvcp_pos": "RIGHT",
-        "spnav": {
-            "enable": true
-        }
+        "pyvcp_pos": "RIGHT"
     }
 }
