@@ -3,7 +3,6 @@
     "description": "RIO-IceShield on Raspberry PI4",
     "boardcfg": "IceShield",
     "protocol": "SPI",
-    "rpi5": true,
     "plugins": [
         {
             "type": "blink",
