@@ -8,7 +8,10 @@ clusters = {
     "MPG": ["mpg"],
     "GUI": ["pyvcp", "qtdragon"],
     "RIO": ["rio"],
-    "Joints": ["joint"],
+    "Joints": ["joint", "pid"],
+    "UI": ["halui", "axisui"],
+    "IOcontrol": ["iocontrol"],
+    "Spindle": ["spindle", "hal_manualtoolchange"],
 }
 
 
