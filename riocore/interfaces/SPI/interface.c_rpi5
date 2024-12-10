@@ -1,0 +1,57 @@
+#include <linux/spi/spidev.h>
+#include <sys/ioctl.h>  
+int spifd;
+static uint8_t mode = SPI_MODE_0;
+static uint8_t bits = 8;
+static uint32_t speed = 1500000;
+
+
+int spi_init(void) {
+    rtapi_print("Info: Initialize SPI5 connection\n");
+    spifd = open("/dev/spidev0.0", O_RDWR);
+    if (spifd < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR,"Failed to open SPI device\n");
+        return -1;
+    }
+    // Set SPI mode
+    if (ioctl(spifd, SPI_IOC_WR_MODE, &mode) == -1) {
+        rtapi_print_msg(RTAPI_MSG_ERR,"Failed to set SPI mode\n");
+        close(spifd);
+        return -1;
+    }
+    // Set bits per word
+    if (ioctl(spifd, SPI_IOC_WR_BITS_PER_WORD, &bits) == -1) {
+        rtapi_print_msg(RTAPI_MSG_ERR,"Failed to set bits per word\n");
+        close(spifd);
+        return -1;
+    }
+    // Set max speed
+    if (ioctl(spifd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) == -1) {
+        rtapi_print_msg(RTAPI_MSG_ERR,"Failed to set max speed\n");
+        close(spifd);
+        return -1;
+    }
+}
+
+void spi_exit(void) {
+    close(spifd);
+}
+
+int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
+    struct spi_ioc_transfer tr = {
+        .tx_buf = (uint64_t)txBuffer,
+        .rx_buf = (uint64_t)rxBuffer,
+        .len = size,
+        .speed_hz = speed,
+        .delay_usecs = 0,
+        .bits_per_word = bits,
+    };
+
+    // Perform SPI transfer
+    if (ioctl(spifd, SPI_IOC_MESSAGE(1), &tr) == -1) {
+        rtapi_print_msg(RTAPI_MSG_ERR,"Failed to perform SPI transfer\n");
+    }
+    return 1;
+}
+
+

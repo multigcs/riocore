@@ -2432,8 +2432,16 @@ class LinuxCNC:
         output += self.component_variables()
 
         generic_spi = self.project.config["jdata"].get("generic_spi", False)
+        rpi5 = self.project.config["jdata"].get("rpi5", False)
         if protocol == "SPI" and generic_spi is True:
             for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_generic")):
+                if protocol == ppath.split(os.sep)[-2]:
+                    output.append("/*")
+                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                    output.append("*/")
+                    output.append(open(ppath, "r").read())
+        elif protocol == "SPI" and rpi5 is True:
+            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_rpi5")):
                 if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
@@ -2457,6 +2465,16 @@ class LinuxCNC:
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)
+        output.append("}")
+        output.append("")
+
+        output.append("void interface_exit(void) {")
+        if protocol == "UART":
+            output.append("    uart_exit();")
+        elif protocol == "SPI":
+            output.append("    spi_exit();")
+        elif protocol == "UDP":
+            output.append("    udp_exit();")
         output.append("}")
         output.append("")
 

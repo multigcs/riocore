@@ -55,6 +55,7 @@ int rtapi_app_main(void) {
 }
 
 void rtapi_app_exit(void) {
+    interface_exit();
     hal_exit(comp_id);
 }
 
