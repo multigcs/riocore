@@ -8,7 +8,7 @@ def hal(parent):
     mxmpg_config = linuxcnc_config.get("mxmpg", {})
     mxmpg_enable = mxmpg_config.get("enable", False)
     mxmpg_device = mxmpg_config.get("device", "/dev/ttyACM0")
-    mxmpg_buttons = mxmpg_config.get("buttons", [])
+    mxmpg_buttons = mxmpg_config.get("buttons", {})
     if mxmpg_enable:
         output.append(f"loadusr -W mpg -d {mxmpg_device} -s")
         output.append("")
