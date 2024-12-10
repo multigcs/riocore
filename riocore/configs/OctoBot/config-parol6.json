@@ -751,6 +751,9 @@
         "robojog": {
             "enable": true
         },
-        "pyvcp_pos": "RIGHT"
+        "pyvcp_pos": "RIGHT",
+        "spnav": {
+            "enable": true
+        }
     }
 }

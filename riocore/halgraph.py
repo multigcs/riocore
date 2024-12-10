@@ -7,6 +7,8 @@ from riocore import halpins
 clusters = {
     "MPG": ["mpg"],
     "RoboJog": ["robojog"],
+    "Spacemouse": ["spnav"],
+    "Axis": ["axis"],
     "GUI": ["pyvcp", "qtdragon"],
     "RIO": ["rio"],
     "Joints": ["joint", "pid"],
