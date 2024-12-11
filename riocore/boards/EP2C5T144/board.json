@@ -1,57 +1,148 @@
 {
-    "name": "EP2C5T144",
-    "description": "EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)",
-    "url": "",
-    "toolchain": "quartus",
-    "family": "Cyclone II",
-    "type": "EP2C5T144C8",
-    "package": "TQFP144",
-    "clock": {
-        "speed": "50000000",
-        "pin": "PIN_17"
+  "name": "EP2C5T144",
+  "description": "EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)",
+  "url": "",
+  "toolchain": "quartus",
+  "family": "Cyclone II",
+  "type": "EP2C5T144C8",
+  "package": "TQFP144",
+  "clock": {"speed": "50000000", "pin": "PIN_17"},
+  "slots": [
+    {
+      "name": "LED",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "D1": { "pin": "PIN_3", "pos": [292, 63] },
+        "D2": { "pin": "PIN_7", "pos": [327, 63] },
+        "D3": { "pin": "PIN_9", "pos": [366, 63] }
+      }
     },
-    "slots": [
-        {
-            "name": "LED",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "D1": {
-                    "pin": "PIN_3",
-                    "pos": [
-                        260,
-                        23
-                    ]
-                },
-                "D2": {
-                    "pin": "PIN_7",
-                    "pos": [
-                        230,
-                        23
-                    ]
-                },
-                "D3": {
-                    "pin": "PIN_9",
-                    "pos": [
-                        200,
-                        23
-                    ]
-                }
-            }
-        },
-        {
-            "name": "SW",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "S1": {
-                    "pin": "PIN_144",
-                    "pos": [
-                        108,
-                        23
-                    ]
-                }
-            }
-        }
-    ]
+    {
+      "name": "SW",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "S1": { "pin": "PIN_144", "pos": [182, 64] }
+      }
+    },
+    {
+      "name": "GPIO_LEFT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "L3": { "pin":  "PIN_3", "pos":  [340, 185] },
+        "L4": { "pin":  "PIN_4", "pos":  [375, 185] },
+        "L5": { "pin":  "PIN_7", "pos":  [340, 220] },
+        "L6": { "pin":  "PIN_8", "pos":  [375, 220] },
+        "L7": { "pin":  "PIN_9", "pos":  [340, 255] },
+        "L11": { "pin": "PIN_18", "pos": [340, 325] },
+        "L12": { "pin": "PIN_17", "pos": [375, 325] },
+        "L13": { "pin": "PIN_22", "pos": [340, 360] },
+        "L14": { "pin": "PIN_21", "pos": [375, 360] },
+        "L15": { "pin": "PIN_25", "pos": [340, 395] },
+        "L16": { "pin": "PIN_24", "pos": [375, 395] },
+        "L17": { "pin": "PIN_27", "pos": [340, 430] },
+        "L18": { "pin": "PIN_26", "pos": [375, 430] },
+        "L21": { "pin": "PIN_30", "pos": [340, 500] },
+        "L22": { "pin": "PIN_28", "pos": [375, 500] },
+        "L23": { "pin": "PIN_32", "pos": [340, 535] },
+        "L24": { "pin": "PIN_31", "pos": [375, 535] }
+
+      }
+    },
+    {
+      "name": "GPIO_BOTTOM",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "B1": { "pin":  "PIN_40", "pos": [430, 708] },
+        "B2": { "pin":  "PIN_41", "pos": [430, 678] },
+        "B3": { "pin":  "PIN_42", "pos": [470, 708] },
+        "B4": { "pin":  "PIN_43", "pos": [470, 678] },
+        "B5": { "pin":  "PIN_44", "pos": [510, 708] },
+        "B6": { "pin":  "PIN_45", "pos": [510, 678] },
+        "B7": { "pin":  "PIN_47", "pos": [550, 708] },
+        "B8": { "pin":  "PIN_48", "pos": [550, 678] },
+        "B9": { "pin":  "PIN_51", "pos": [590, 708] },
+        "B10": { "pin": "PIN_52", "pos": [590, 678] },
+        "B11": { "pin": "PIN_53", "pos": [630, 708] },
+        "B12": { "pin": "PIN_55", "pos": [630, 678] },
+        "B13": { "pin": "PIN_57", "pos": [670, 708] },
+        "B14": { "pin": "PIN_58", "pos": [670, 678] },
+        "B15": { "pin": "PIN_59", "pos": [710, 708] },
+        "B16": { "pin": "PIN_60", "pos": [710, 678] },
+        "B17": { "pin": "PIN_63", "pos": [750, 708] },
+        "B18": { "pin": "PIN_64", "pos": [750, 678] },
+        "B19": { "pin": "PIN_65", "pos": [790, 708] },
+        "B20": { "pin": "PIN_67", "pos": [790, 678] },
+        "B21": { "pin": "PIN_69", "pos": [830, 708] },
+        "B22": { "pin": "PIN_70", "pos": [830, 678] },
+        "B23": { "pin": "PIN_71", "pos": [870, 708] },
+        "B24": { "pin": "PIN_72", "pos": [870, 678] }
+        
+      }
+    },
+    {
+      "name": "GPIO_RIGHT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "R3": { "pin":  "PIN_73", "pos":  [1010, 575] },
+        "R4": { "pin":  "PIN_74", "pos":  [ 970, 575] },
+        "R5": { "pin":  "PIN_75", "pos":  [1010, 540] },
+        "R6": { "pin":  "PIN_76", "pos":  [ 970, 540] },
+        "R7": { "pin":  "PIN_79", "pos":  [1010, 505] },
+        "R8": { "pin":  "PIN_80", "pos":  [ 970, 505] },
+        "R9": { "pin":  "PIN_81", "pos":  [1010, 470] },
+        "R10": { "pin": "PIN_86", "pos":  [ 970, 470] },
+        "R11": { "pin": "PIN_87", "pos":  [1010, 435] },
+        "R12": { "pin": "PIN_88", "pos":  [ 970, 435] },
+        "R13": { "pin": "PIN_89", "pos":  [1010, 400] },
+        "R14": { "pin": "PIN_90", "pos":  [ 970, 400] },
+        "R15": { "pin": "PIN_91", "pos":  [1010, 365] },
+        "R16": { "pin": "PIN_92", "pos":  [ 970, 365] },
+        "R17": { "pin": "PIN_93", "pos":  [1010, 330] },
+        "R18": { "pin": "PIN_94", "pos":  [ 970, 330] },
+        "R19": { "pin": "PIN_96", "pos":  [1010, 295] },
+        "R20": { "pin": "PIN_97", "pos":  [ 970, 295] },
+        "R21": { "pin": "PIN_99", "pos":  [1010, 260] },
+        "R22": { "pin": "PIN_100", "pos": [ 970, 260] },
+        "R23": { "pin": "PIN_101", "pos": [1010, 225] },
+        "R24": { "pin": "PIN_103", "pos": [ 970, 225] },
+        "R25": { "pin": "PIN_104", "pos": [1010, 190] }
+      }
+    },
+    {
+      "name": "GPIO_TOP",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "T3": { "pin":  "PIN_112", "pos": [865, 40] },
+        "T4": { "pin":  "PIN_113", "pos": [865, 75] },
+        "T5": { "pin":  "PIN_114", "pos": [825, 40] },
+        "T6": { "pin":  "PIN_115", "pos": [825, 75] },
+        "T7": { "pin":  "PIN_118", "pos": [785, 40] },
+        "T8": { "pin":  "PIN_119", "pos": [785, 75] },
+        "T9": { "pin":  "PIN_120", "pos": [745, 40] },
+        "T10": { "pin": "PIN_121", "pos": [745, 75] },
+        "T11": { "pin": "PIN_122", "pos": [705, 40] },
+        "T12": { "pin": "PIN_125", "pos": [705, 75] },
+        "T13": { "pin": "PIN_126", "pos": [665, 40] },
+        "T14": { "pin": "PIN_129", "pos": [665, 75] },
+        "T15": { "pin": "PIN_132", "pos": [625, 40] },
+        "T16": { "pin": "PIN_133", "pos": [625, 75] },
+        "T17": { "pin": "PIN_134", "pos": [585, 40] },
+        "T18": { "pin": "PIN_135", "pos": [585, 75] },
+        "T19": { "pin": "PIN_136", "pos": [545, 40] },
+        "T20": { "pin": "PIN_137", "pos": [545, 75] },
+        "T21": { "pin": "PIN_139", "pos": [505, 40] },
+        "T22": { "pin": "PIN_141", "pos": [505, 75] },
+        "T23": { "pin": "PIN_142", "pos": [465, 40] },
+        "T24": { "pin": "PIN_143", "pos": [465, 75] },
+        "T25": { "pin": "PIN_144", "pos": [425, 40] }
+
+      }
+    }
+  ]
 }
