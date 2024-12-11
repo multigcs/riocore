@@ -130,7 +130,8 @@ def load_tree(parent, tree_lcnc):
         devices = []
         for device_path in glob.glob("/dev/input/event*"):
             name = device_get_name(device_path)
-            devices.append(name)
+            if name:
+                devices.append(name)
 
         dialog = QDialog()
         dialog.setWindowTitle("select device")

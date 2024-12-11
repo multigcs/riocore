@@ -555,6 +555,9 @@ class LinuxCNC:
                     "INTRO_GRAPHIC": "silver_dragon.png",
                     "INTRO_TIME": "2",
                 },
+                "PROBE": {
+                    "USE_PROBE": "NO",
+                },
             }
             for section, sdata in qtdragon_setup.items():
                 if section not in ini_setup:
@@ -799,7 +802,7 @@ class LinuxCNC:
         if gui == "axis":
             self.gui_gen = axis()
         # elif gui == "qtdragon":
-        #    self.gui_gen = qtvcp()
+        #     self.gui_gen = qtvcp()
         else:
             self.gui_gen = None
 
@@ -1325,6 +1328,10 @@ class LinuxCNC:
 
                         if hasattr(self.gui_gen, f"draw_{dtype}"):
                             (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+
+                            if gui == "qtdragon":
+                                gui_pinname = gui_pinname.replace("qtvcp.rio-gui.", "qtdragon.rio-gui.")
+
                             if section not in self.cfgxml_data:
                                 self.cfgxml_data[section] = []
 
@@ -1398,6 +1405,37 @@ class LinuxCNC:
 
             if gui == "qtdragon":
                 open(os.path.join(self.configuration_path, "rio-gui.ui"), "w").write("\n".join(cfgxml_adata))
+
+                handler_py = []
+                handler_py.append("")
+                handler_py.append("from qtvcp.core import Status, Action")
+                handler_py.append("from qtvcp import logger")
+                handler_py.append("")
+                handler_py.append("STATUS = Status()")
+                handler_py.append("ACTION = Action()")
+                handler_py.append("LOG = logger.getLogger(__name__)")
+                handler_py.append("")
+                handler_py.append("class HandlerClass:")
+                handler_py.append("")
+                handler_py.append("    def __init__(self, halcomp,widgets,paths):")
+                handler_py.append("        self.hal = halcomp")
+                handler_py.append("        self.w = widgets")
+                handler_py.append("        self.PATHS = paths")
+                handler_py.append("")
+                handler_py.append("    def initialized__(self):")
+                handler_py.append("        pass")
+                handler_py.append("")
+                handler_py.append("    def __getitem__(self, item):")
+                handler_py.append("        return getattr(self, item)")
+                handler_py.append("    def __setitem__(self, item, value):")
+                handler_py.append("        return setattr(self, item, value)")
+                handler_py.append("")
+                handler_py.append("def get_handlers(halcomp,widgets,paths):")
+                handler_py.append("     return [HandlerClass(halcomp,widgets,paths)]")
+                handler_py.append("")
+                open(os.path.join(self.configuration_path, "rio-gui_handler.py"), "w").write("\n".join(handler_py))
+
+
             else:
                 open(os.path.join(self.configuration_path, "rio-gui.xml"), "w").write("\n".join(cfgxml_adata))
 
@@ -1425,6 +1463,7 @@ class LinuxCNC:
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        gui = linuxcnc_config.get("gui", "axis")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
         toolchange = linuxcnc_config.get("toolchange", "manual")
@@ -1453,16 +1492,17 @@ class LinuxCNC:
         self.hal_net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
         self.hal_net_add("rio.sys-status", "&iocontrol.0.emc-enable-in")
 
-        if toolchange == "manual":
-            self.loadrts.append("loadusr -W hal_manualtoolchange")
-            self.loadrts.append("")
-            self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
-            self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
-            self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
-            self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-        else:
-            self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-            self.hal_net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
+        if gui != "qtdragon":
+            if toolchange == "manual":
+                self.loadrts.append("loadusr -W hal_manualtoolchange")
+                self.loadrts.append("")
+                self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+                self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+                self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+                self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+            else:
+                self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                self.hal_net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
         linuxcnc_setp = {}
 
@@ -2846,6 +2886,11 @@ class qtvcp:
    <header>qtvcp.widgets.screen_options</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
  </customwidgets>
  <resources/>
  <slots>
@@ -2922,6 +2967,8 @@ class qtvcp:
         return (f"qtvcp.rio-gui.{halpin}", [])
 
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
         title = setup.get("title", name)
         cfgxml_data = []
         cfgxml_data.append("  <item>")
@@ -2937,9 +2984,12 @@ class qtvcp:
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
         cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="QSlider" name="{halpin}">')
+        cfgxml_data.append(f'     <widget class="Slider" name="{halpin}">')
+        cfgxml_data.append('      <property name="minimum">')
+        cfgxml_data.append(f"       <number>{display_min}</number>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="maximum">')
-        cfgxml_data.append("       <number>100</number>")
+        cfgxml_data.append(f"       <number>{display_max}</number>")
         cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="orientation">')
         cfgxml_data.append("       <enum>Qt::Horizontal</enum>")
