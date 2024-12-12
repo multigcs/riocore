@@ -43,15 +43,6 @@
                         }
                     ]
                 }
-            },
-            "signals": {
-                "bit": {
-                    "display": {
-                        "title": "Test",
-                        "section": "Blaa",
-                        "type": "checkbutton"
-                    }
-                }
             }
         },
         {
@@ -318,8 +309,5 @@
                 }
             }
         }
-    ],
-    "linuxcnc": {
-        "pyvcp_mode": "NONE"
-    }
+    ]
 }
