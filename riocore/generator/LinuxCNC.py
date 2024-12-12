@@ -532,13 +532,15 @@ class LinuxCNC:
                         ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
 
         if gui == "axis":
-            pyvcp_pos = linuxcnc_config.get("pyvcp_pos", "RIGHT")
-            if pyvcp_pos == "TAB":
-                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
-                ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
-            else:
-                ini_setup["DISPLAY"]["PYVCP_POSITION"] = pyvcp_pos
-                ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+            pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
+            if pyvcp_mode != "NONE":
+                pyvcp_pos = linuxcnc_config.get("pyvcp_pos", "RIGHT")
+                if pyvcp_pos == "TAB":
+                    ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
+                    ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
+                else:
+                    ini_setup["DISPLAY"]["PYVCP_POSITION"] = pyvcp_pos
+                    ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
 
         elif gui == "qtdragon":
             qtdragon_setup = {
@@ -797,6 +799,7 @@ class LinuxCNC:
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
+        pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
         gui = linuxcnc_config.get("gui", "axis")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
         if gui == "axis":
@@ -806,7 +809,17 @@ class LinuxCNC:
         else:
             self.gui_gen = None
 
-        if self.gui_gen:
+        xml_filename = os.path.join(self.configuration_path, "rio-gui.xml")
+        ui_filename = os.path.join(self.configuration_path, "rio-gui.ui")
+        py_filename = os.path.join(self.configuration_path, "rio-gui_handler.py")
+        if os.path.isfile(xml_filename):
+            os.remove(xml_filename)
+        if os.path.isfile(ui_filename):
+            os.remove(ui_filename)
+        if os.path.isfile(py_filename):
+            os.remove(py_filename)
+
+        if self.gui_gen and pyvcp_mode != "NONE":
             custom = []
             self.cfgxml_data = {
                 "status": [],
@@ -1326,6 +1339,9 @@ class LinuxCNC:
                             else:
                                 dtype = displayconfig.get("type", "checkbutton")
 
+                        if pyvcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
+                            continue
+
                         if hasattr(self.gui_gen, f"draw_{dtype}"):
                             (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
 
@@ -1404,8 +1420,6 @@ class LinuxCNC:
             cfgxml_adata += self.gui_gen.draw_end()
 
             if gui == "qtdragon":
-                open(os.path.join(self.configuration_path, "rio-gui.ui"), "w").write("\n".join(cfgxml_adata))
-
                 handler_py = []
                 handler_py.append("")
                 handler_py.append("from qtvcp.core import Status, Action")
@@ -1433,11 +1447,10 @@ class LinuxCNC:
                 handler_py.append("def get_handlers(halcomp,widgets,paths):")
                 handler_py.append("     return [HandlerClass(halcomp,widgets,paths)]")
                 handler_py.append("")
-                open(os.path.join(self.configuration_path, "rio-gui_handler.py"), "w").write("\n".join(handler_py))
-
-
+                open(py_filename, "w").write("\n".join(handler_py))
+                open(ui_filename, "w").write("\n".join(cfgxml_adata))
             else:
-                open(os.path.join(self.configuration_path, "rio-gui.xml"), "w").write("\n".join(cfgxml_adata))
+                open(xml_filename, "w").write("\n".join(cfgxml_adata))
 
         self.postgui_call_list.append("custom_postgui.hal")
 
