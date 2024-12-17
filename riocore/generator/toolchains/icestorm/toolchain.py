@@ -197,7 +197,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append(f"	{cmd_cp} hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")
-            makefile_data.append("	{cmd_del} $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
+            makefile_data.append(f"	{cmd_del} $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log nextpnr.log")
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
@@ -210,7 +210,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append("")
             makefile_data.append(f"{bitfileName}: $(PROJECT).asc")
             makefile_data.append(f"	icepack $(PROJECT).asc {bitfileName}")
-            makefile_data.append("	{cmd_cp} hash_new.txt hash_compiled.txt")
+            makefile_data.append(f"	{cmd_cp} hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")
             makefile_data.append(f"	{cmd_del} {bitfileName} $(PROJECT).asc $(PROJECT).json yosys.log nextpnr.log")
