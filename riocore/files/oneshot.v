@@ -1,6 +1,6 @@
 
 module oneshot
-    #(parameter PULSE_LEN = 10, parameter RETRIGGER = 0, parameter HOLD = 1)
+    #(parameter PULSE_LEN = 10, parameter RETRIGGER = 0, parameter HOLD = 1, parameter EDGE = 0)
     (
         input clk,
         input din,
@@ -14,9 +14,13 @@ module oneshot
     end
 
     wire din_risingedge = (dinr[2:1]==2'b01);
+    wire din_falingedge = (dinr[2:1]==2'b10);
 
     always @(posedge clk) begin
-        if (din_risingedge && ((pulse_cnt == 0 && RETRIGGER == 0) || RETRIGGER == 1)) begin
+        if ((EDGE == 0 || EDGE == 2) && (din_risingedge && ((pulse_cnt == 0 && RETRIGGER == 0) || RETRIGGER == 1))) begin
+            dout <= 1;
+            pulse_cnt <= PULSE_LEN;
+        end else if ((EDGE == 1 || EDGE == 2) && (din_falingedge && ((pulse_cnt == 0 && RETRIGGER == 0) || RETRIGGER == 1))) begin
             dout <= 1;
             pulse_cnt <= PULSE_LEN;
         end else if (pulse_cnt > 0) begin

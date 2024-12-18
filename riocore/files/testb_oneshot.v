@@ -10,6 +10,7 @@ module testb_oneshot;
     wire dout2;
     wire dout3;
     wire dout4;
+    wire dout5;
 
     initial begin
         $dumpfile("testb_oneshot.vcd");
@@ -20,6 +21,7 @@ module testb_oneshot;
         $dumpvars(3, dout2);
         $dumpvars(4, dout3);
         $dumpvars(5, dout4);
+        $dumpvars(6, dout5);
 
         #3
         din = 1;
@@ -67,6 +69,12 @@ module testb_oneshot;
         .clk(clk),
         .din(din),
         .dout(dout4)
+    );
+
+    oneshot #(.PULSE_LEN(1), .RETRIGGER(0), .HOLD(0), .EDGE(2)) oneshot4 (
+        .clk(clk),
+        .din(din),
+        .dout(dout5)
     );
 
 

@@ -2925,6 +2925,8 @@ class WinForm(QWidget):
             dialog.layout.addWidget(self.edit_item(modifier_config, "retrigger", {"type": bool, "default": False, "help_text": "retrigger the time pulse"}, cb=None))
             dialog.layout.addWidget(QLabel("Hold:"))
             dialog.layout.addWidget(self.edit_item(modifier_config, "hold", {"type": bool, "default": False, "help_text": "hold the puls while input is set"}, cb=None))
+            dialog.layout.addWidget(QLabel("Edge:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "edge", {"type": "select", "options": ["RISING", "FALLING", "BOTH"], "default": "RISING", "help_text": "edge to trigger"}, cb=None))
 
         dialog.mlabel = QLabel("")
         dialog.layout.addWidget(dialog.mlabel)
