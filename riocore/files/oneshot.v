@@ -1,6 +1,6 @@
 
 module oneshot
-    #(parameter PULSE_LEN = 10, parameter RETRIGGER = 0)
+    #(parameter PULSE_LEN = 10, parameter RETRIGGER = 0, parameter HOLD = 1)
     (
         input clk,
         input din,
@@ -20,10 +20,11 @@ module oneshot
             dout <= 1;
             pulse_cnt <= PULSE_LEN;
         end else if (pulse_cnt > 0) begin
-            dout <= 1;
             pulse_cnt <= pulse_cnt - 1;
         end else begin
-            dout <= 0;
+            if (HOLD == 0 || dinr[0] == 0) begin
+                dout <= 0;
+            end
         end
     end
 endmodule

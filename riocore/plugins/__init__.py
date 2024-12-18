@@ -57,10 +57,11 @@ class Modifiers:
     def pin_modifier_oneshot(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         pulselen = modifier.get("pulselen", 1.0)
         retrigger = int(modifier.get("retrigger", False))
+        hold = int(modifier.get("hold", False))
         pulselen_divider = int(system_setup["speed"] * pulselen / 1000)
         instances[f"oneshot{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "oneshot",
-            "parameter": {"PULSE_LEN": pulselen_divider, "RETRIGGER": retrigger},
+            "parameter": {"PULSE_LEN": pulselen_divider, "RETRIGGER": retrigger, "HOLD": hold},
             "arguments": {
                 "clk": "sysclk",
                 "din": pin_varname,

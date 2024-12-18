@@ -2922,7 +2922,9 @@ class WinForm(QWidget):
             dialog.layout.addWidget(QLabel("PulseLen:"))
             dialog.layout.addWidget(self.edit_item(modifier_config, "pulselen", {"type": float, "default": 1.0, "help_text": "pulse len in ms"}, cb=None))
             dialog.layout.addWidget(QLabel("Retrigger:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "retrigger", {"type": bool, "default": False}, cb=None))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "retrigger", {"type": bool, "default": False, "help_text": "retrigger the time pulse"}, cb=None))
+            dialog.layout.addWidget(QLabel("Hold:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "hold", {"type": bool, "default": False, "help_text": "hold the puls while input is set"}, cb=None))
 
         dialog.mlabel = QLabel("")
         dialog.layout.addWidget(dialog.mlabel)
