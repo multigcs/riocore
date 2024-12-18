@@ -147,7 +147,7 @@ for name, data in Modifiers().info().items():
         output.append("### Options")
 
         output.append("| Name | Type | Default | Info |")
-        output.append("| --- | --- | --- |")
+        output.append("| --- | --- | --- | --- |")
         for key, option in options.items():
             title = option.get("title", key.title())
             default = option.get("default", "")
