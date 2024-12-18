@@ -2,6 +2,26 @@ import time
 
 
 class Modifiers:
+    def options(self):
+        return {
+            "onerror": {
+                "invert": {"title": "Invert", "type": bool, "default": False},
+            },
+            "debounce": {
+                "delay": {"title": "Delay", "type": int, "default": 16},
+            },
+            "pwm": {
+                "frequency": {"title": "Frequency", "type": int, "default": 16},
+                "dty": {"title": "DTY", "type": int, "default": 50},
+            },
+            "oneshot": {
+                "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms"},
+                "retrigger": {"title": "Retrigger", "type": bool, "default": False, "help_text": "retrigger the time pulse"},
+                "hold": {"title": "Hold", "type": bool, "default": False, "help_text": "hold the puls while input is set"},
+                "edge": {"title": "Edge", "type": "select", "options": ["RISING", "FALLING", "BOTH"], "default": "RISING", "help_text": "edge to trigger"},
+            },
+        }
+
     def pin_modifier_debounce(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         width = modifier.get("delay", 16)
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {

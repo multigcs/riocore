@@ -2907,26 +2907,12 @@ class WinForm(QWidget):
 
         dialog.layout.addWidget(QLabel(f"Type: {modifier_type}"))
 
-        if modifier_type == "onerror":
-            dialog.layout.addWidget(QLabel("Invert:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "invert", {"type": bool, "default": False}, cb=None))
-        elif modifier_type == "debounce":
-            dialog.layout.addWidget(QLabel("Delay:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "delay", {"type": int, "default": 16}, cb=None))
-        elif modifier_type == "pwm":
-            dialog.layout.addWidget(QLabel("Frequency:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "frequency", {"type": int, "default": 1}, cb=None))
-            dialog.layout.addWidget(QLabel("DTY:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "dty", {"type": int, "default": 50}, cb=None))
-        elif modifier_type == "oneshot":
-            dialog.layout.addWidget(QLabel("PulseLen:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "pulselen", {"type": float, "default": 1.0, "help_text": "pulse len in ms"}, cb=None))
-            dialog.layout.addWidget(QLabel("Retrigger:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "retrigger", {"type": bool, "default": False, "help_text": "retrigger the time pulse"}, cb=None))
-            dialog.layout.addWidget(QLabel("Hold:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "hold", {"type": bool, "default": False, "help_text": "hold the puls while input is set"}, cb=None))
-            dialog.layout.addWidget(QLabel("Edge:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "edge", {"type": "select", "options": ["RISING", "FALLING", "BOTH"], "default": "RISING", "help_text": "edge to trigger"}, cb=None))
+        moptions = Modifiers().options()
+        if modifier_type in moptions:
+            for key, option in moptions[modifier_type].items():
+                print(key, option)
+                dialog.layout.addWidget(QLabel(option.get("title", key.title())))
+                dialog.layout.addWidget(self.edit_item(modifier_config, key, option, cb=None))
 
         dialog.mlabel = QLabel("")
         dialog.layout.addWidget(dialog.mlabel)
