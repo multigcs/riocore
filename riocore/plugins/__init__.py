@@ -2,23 +2,41 @@ import time
 
 
 class Modifiers:
-    def options(self):
+    def info(self):
         return {
             "onerror": {
-                "invert": {"title": "Invert", "type": bool, "default": False},
+                "info": "holds the pin on error",
+                "options": {
+                    "invert": {"title": "Invert", "type": bool, "default": False},
+                },
             },
             "debounce": {
-                "delay": {"title": "Delay", "type": int, "default": 16},
+                "info": "debounce filter",
+                "options": {
+                    "delay": {"title": "Delay", "type": int, "default": 16},
+                },
             },
             "pwm": {
-                "frequency": {"title": "Frequency", "type": int, "default": 16},
-                "dty": {"title": "DTY", "type": int, "default": 50},
+                "info": "pwm generator",
+                "options": {
+                    "frequency": {"title": "Frequency", "type": int, "default": 16},
+                    "dty": {"title": "DTY", "type": int, "default": 50},
+                },
             },
             "oneshot": {
-                "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms"},
-                "retrigger": {"title": "Retrigger", "type": bool, "default": False, "help_text": "retrigger the time pulse"},
-                "hold": {"title": "Hold", "type": bool, "default": False, "help_text": "hold the puls while input is set"},
-                "edge": {"title": "Edge", "type": "select", "options": ["RISING", "FALLING", "BOTH"], "default": "RISING", "help_text": "edge to trigger"},
+                "info": "onshot filter",
+                "options": {
+                    "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms"},
+                    "retrigger": {"title": "Retrigger", "type": bool, "default": False, "help_text": "retrigger the time pulse"},
+                    "hold": {"title": "Hold", "type": bool, "default": False, "help_text": "hold the puls while input is set"},
+                    "edge": {"title": "Edge", "type": "select", "options": ["RISING", "FALLING", "BOTH"], "default": "RISING", "help_text": "edge to trigger"},
+                },
+            },
+            "toggle": {
+                "info": "toggle pin on rising edge",
+            },
+            "invert": {
+                "info": "inverting the pin",
             },
         }
 

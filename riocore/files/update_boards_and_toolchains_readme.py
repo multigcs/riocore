@@ -6,6 +6,8 @@ import glob
 import os
 import json
 import importlib
+import inspect
+from riocore.plugins import Modifiers
 
 
 print("# BOARDS")
@@ -126,3 +128,37 @@ output.append("")
 
 
 open("TOOLCHAINS.md", "w").write("\n".join(output))
+
+
+
+
+print("# MODIFIERS")
+output = []
+output.append("# MODIFIERS")
+
+for name, data in Modifiers().info().items():
+    print(name)
+    info = data.get("info", "")
+    output.append(f"## {name}")
+    output.append(info)
+    output.append("")
+    options = data.get("options")
+    if options:
+        output.append("### Options")
+
+        output.append("| Name | Type | Default | Info |")
+        output.append("| --- | --- | --- |")
+        for key, option in options.items():
+            title = option.get("title", key.title())
+            default = option.get("default", "")
+            otype = option.get("type", "")
+            oinfo = option.get("help_text", "")
+            if inspect.isclass(otype):
+                otype = otype.__name__
+            output.append(f"| {title} | {str(otype)} | {default} | {oinfo} |")
+        output.append("")
+
+output.append("")
+
+
+open("MODIFIERS.md", "w").write("\n".join(output))

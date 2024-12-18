@@ -2907,10 +2907,9 @@ class WinForm(QWidget):
 
         dialog.layout.addWidget(QLabel(f"Type: {modifier_type}"))
 
-        moptions = Modifiers().options()
+        moptions = Modifiers().info()
         if modifier_type in moptions:
-            for key, option in moptions[modifier_type].items():
-                print(key, option)
+            for key, option in moptions[modifier_type].get("options", {}).items():
                 dialog.layout.addWidget(QLabel(option.get("title", key.title())))
                 dialog.layout.addWidget(self.edit_item(modifier_config, key, option, cb=None))
 
