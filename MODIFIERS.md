@@ -1,4 +1,6 @@
 # MODIFIERS
+you can modify each input and output pin of the FPGA with an modifier pipeline
+
 ## onerror
 holds the pin on error
 

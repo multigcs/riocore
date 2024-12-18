@@ -135,6 +135,8 @@ open("TOOLCHAINS.md", "w").write("\n".join(output))
 print("# MODIFIERS")
 output = []
 output.append("# MODIFIERS")
+output.append("you can modify each input and output pin of the FPGA with an modifier pipeline")
+output.append("")
 
 for name, data in Modifiers().info().items():
     print(name)
