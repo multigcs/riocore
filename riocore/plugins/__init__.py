@@ -54,6 +54,22 @@ class Modifiers:
         pin_varname = f"{pin_varname}_ONERROR"
         return pin_varname
 
+    def pin_modifier_oneshot(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
+        pulselen = modifier.get("pulselen", 1.0)
+        retrigger = int(modifier.get("retrigger", False))
+        pulselen_divider = int(system_setup["speed"] * pulselen / 1000)
+        instances[f"oneshot{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "oneshot",
+            "parameter": {"PULSE_LEN": pulselen_divider, "RETRIGGER": retrigger},
+            "arguments": {
+                "clk": "sysclk",
+                "din": pin_varname,
+                "dout": f"{pin_varname}_ONESHOT",
+            },
+        }
+        pin_varname = f"{pin_varname}_ONESHOT"
+        return pin_varname
+
     def pin_modifier_pwm(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         frequency = modifier.get("frequency", 1)
         dty = modifier.get("dty", 50)

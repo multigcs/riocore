@@ -2918,6 +2918,11 @@ class WinForm(QWidget):
             dialog.layout.addWidget(self.edit_item(modifier_config, "frequency", {"type": int, "default": 1}, cb=None))
             dialog.layout.addWidget(QLabel("DTY:"))
             dialog.layout.addWidget(self.edit_item(modifier_config, "dty", {"type": int, "default": 50}, cb=None))
+        elif modifier_type == "oneshot":
+            dialog.layout.addWidget(QLabel("PulseLen:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "pulselen", {"type": float, "default": 1.0, "help_text": "pulse len in ms"}, cb=None))
+            dialog.layout.addWidget(QLabel("Retrigger:"))
+            dialog.layout.addWidget(self.edit_item(modifier_config, "retrigger", {"type": bool, "default": False}, cb=None))
 
         dialog.mlabel = QLabel("")
         dialog.layout.addWidget(dialog.mlabel)
