@@ -60,7 +60,7 @@ elif args.generate:
         text = plugins.info(plugin["name"])
         open(filename, "w").write(text)
 
-    filename = "PLUGINS.md"
+    filename = "riocore/plugins/README.md"
     print(filename)
     text = []
 

@@ -58,13 +58,13 @@ and do not, take any responsibility for such compliance
 * [cnc-aus-holz (de)](https://www.cnc-aus-holz.at/)
 
 ## Boards <a name = "boards"></a>
-here is a small overview of the boards: [BOARDS](BOARDS.md)
+list of all boards: [BOARDS](riocore/boards/README.md)
 
 ## Plugins/Drivers <a name = "plugins"></a>
-here is a small overview of the plugins: [PLUGINS](PLUGINS.md)
+list of all plugins: [PLUGINS](riocore/plugins/README.md)
 
 ## supported Toolchains <a name = "toolchains"></a>
-here is a small overview of the boards: [TOOLCHAINS](TOOLCHAINS.md)
+list of all  toolchains: [TOOLCHAINS](riocore/generator/toolchains/README.md)
 
 ## Getting Started <a name = "getting_started"></a>
 

@@ -79,7 +79,7 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
     open(f"{board}/README.md", "w").write("\n".join(readme))
 
 index.append("")
-open("BOARDS.md", "w").write("\n".join(index))
+open("riocore/boards/README.md", "w").write("\n".join(index))
 
 print("# TOOLCHAINS")
 output = []
@@ -127,7 +127,7 @@ for ppath in sorted(glob.glob(os.path.join("riocore", "generator", "toolchains",
 output.append("")
 
 
-open("TOOLCHAINS.md", "w").write("\n".join(output))
+open("riocore/generator/toolchains/README.md", "w").write("\n".join(output))
 
 
 print("# MODIFIERS")
