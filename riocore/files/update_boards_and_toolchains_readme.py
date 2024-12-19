@@ -148,12 +148,13 @@ output.append("")
 
 
 for name, data in Modifiers().info().items():
-    print(name)
+    print(name, data)
     info = data.get("info", "")
-    output.append(f"## {name}")
+    title = data.get("title", name.title())
+    options = data.get("options")
+    output.append(f"## {title}")
     output.append(info)
     output.append("")
-    options = data.get("options")
     if options:
         output.append("**Options:**")
 

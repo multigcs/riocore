@@ -9,7 +9,7 @@ graph LR;
     Modifier...-->Output-Signal;
 ```
 
-## onerror
+## OnError
 holds the pin on error
 
 **Options:**
@@ -17,7 +17,7 @@ holds the pin on error
 | --- | --- | --- | --- |
 | Invert | bool | False |  |
 
-## debounce
+## Debounce
 filter noisy signals
 
 **Options:**
@@ -25,7 +25,7 @@ filter noisy signals
 | --- | --- | --- | --- |
 | Delay | int | 16 |  |
 
-## pwm
+## PWM
 pwm generator
 
 **Options:**
@@ -34,7 +34,7 @@ pwm generator
 | Frequency | int | 16 |  |
 | DTY | int | 50 |  |
 
-## oneshot
+## Oneshot
 creates a variable-length output pulse when the input changes state
 
 **Options:**
@@ -45,9 +45,9 @@ creates a variable-length output pulse when the input changes state
 | Hold | bool | False | hold the puls while input is set |
 | Edge | select | RISING | edge to trigger |
 
-## toggle
+## Toggle
 toggle pin on rising edge
 
-## invert
+## Invert
 inverting the pin
 

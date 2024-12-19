@@ -5,18 +5,21 @@ class Modifiers:
     def info(self):
         return {
             "onerror": {
+                "title": "OnError",
                 "info": "holds the pin on error",
                 "options": {
                     "invert": {"title": "Invert", "type": bool, "default": False},
                 },
             },
             "debounce": {
+                "title": "Debounce",
                 "info": "filter noisy signals",
                 "options": {
                     "delay": {"title": "Delay", "type": int, "default": 16},
                 },
             },
             "pwm": {
+                "title": "PWM",
                 "info": "pwm generator",
                 "options": {
                     "frequency": {"title": "Frequency", "type": int, "default": 16},
@@ -24,6 +27,7 @@ class Modifiers:
                 },
             },
             "oneshot": {
+                "title": "Oneshot",
                 "info": "creates a variable-length output pulse when the input changes state",
                 "options": {
                     "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms"},
@@ -33,9 +37,11 @@ class Modifiers:
                 },
             },
             "toggle": {
+                "title": "Toggle",
                 "info": "toggle pin on rising edge",
             },
             "invert": {
+                "title": "Invert",
                 "info": "inverting the pin",
             },
         }
