@@ -72,7 +72,16 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
 
     fpga_type = data.get("type", "")
     fpga_family = data.get("family", "")
-    toolchains = data.get("toolchains", [data.get("toolchain", "")])
+
+
+    toolchains = []
+    if "toolchains" in data:
+        for toolchain in data['toolchains']:
+            toolchains.append(f"[{toolchain}]({toolchain}/README.md)")
+    else:
+        toolchain = data.get("toolchain", "")
+        toolchains.append(f"[{toolchain}]({toolchain}/README.md)")
+    
 
     if os.path.isfile(os.path.join(board, "board.png")):
         readme.append("![board.png](board.png)")
