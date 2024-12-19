@@ -7,7 +7,9 @@ module debouncer
         output reg dout = 0
     );
 
-    reg [31:0] din_cnt = 0;
+    localparam WIDTH_BITS = clog2(WIDTH + 1);
+
+    reg [WIDTH_BITS:0] din_cnt = 0;
 
     always @(posedge clk) begin
         if (din == 0) begin
