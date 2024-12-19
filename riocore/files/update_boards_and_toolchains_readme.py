@@ -130,8 +130,6 @@ output.append("")
 open("TOOLCHAINS.md", "w").write("\n".join(output))
 
 
-
-
 print("# MODIFIERS")
 output = []
 output.append("# MODIFIERS")

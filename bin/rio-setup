@@ -2924,26 +2924,51 @@ class WinForm(QWidget):
             modifier_list[dialog.modifier_id] = modifier_config
 
     def modifier_list_add(self, parent_layout, modifier_list):
+        modifiers = Modifiers()
         dialog = QDialog()
         dialog.setWindowTitle("add Modifier")
         dialog.setStyleSheet(STYLESHEET)
-
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
 
-        dialog.layout = QVBoxLayout()
-        label = QLabel("Modifier:")
-        dialog.layout.addWidget(label)
-        combo = QComboBox(self)
-        for modifier_name in Modifiers().pin_modifier_list():
-            combo.addItem(modifier_name)
-        dialog.layout.addWidget(combo)
+        def show_modifier_info(row):
+            modifier_type = modifier_table.item(row, 0).text()
+            info = modifiers.info().get(modifier_type)
+            infotext = info.get("info", "")
+            title = info.get("title", modifier_type.title())
+            dialog.label.setText(f"Modifier: {title}")
+            dialog.info.setText(f"\n{infotext}")
 
-        dialog.layout.addWidget(dialog_buttonBox)
+        dialog.layout = QHBoxLayout()
+        modifier_table = QTableWidget()
+        modifier_table.setColumnCount(1)
+        modifier_table.setHorizontalHeaderItem(0, QTableWidgetItem("Modifier"))
+        header = modifier_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        modifier_n = 0
+        for modifier_name in modifiers.pin_modifier_list():
+            modifier_table.setRowCount(modifier_n + 1)
+            pitem = QTableWidgetItem(modifier_name)
+            modifier_table.setItem(modifier_n, 0, pitem)
+            modifier_n += 1
+
+        modifier_table.currentCellChanged.connect(show_modifier_info)
+        modifier_table.setFixedWidth(300)
+        dialog.layout.addWidget(modifier_table, stretch=1)
+
+        dialog.vlayout = QVBoxLayout()
+        dialog.label = QLabel("Modifier-Info:")
+        dialog.vlayout.addWidget(dialog.label, stretch=0)
+        dialog.info = QLabel("...")
+        dialog.info.setAlignment(Qt.AlignTop)
+        dialog.vlayout.addWidget(dialog.info, stretch=1)
+        dialog.layout.addLayout(dialog.vlayout)
+        dialog.vlayout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
-            modifier_type = combo.currentText()
+            row = modifier_table.currentRow()
+            modifier_type = modifier_table.item(row, 0).text()
             modifier_list.append({"type": modifier_type})
             self.modifier_list_update(parent_layout, modifier_list)
             if modifier_type != "invert":
