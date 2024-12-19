@@ -9,8 +9,8 @@ class Plugin(PluginBase):
 
 ```mermaid
 graph LR;
-    Origin-->modifiers-->Original-Pin;
-    Origin-->modifiers-->BitCopy-Pin;
+    Origin-->Original Modifiers-Pipeline-->Original-Pin;
+    Origin-->BitCopy Modifiers-Pipeline-->BitCopy-Pin;
 ```
 
 
