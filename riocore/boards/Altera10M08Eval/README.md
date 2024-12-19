@@ -7,7 +7,7 @@
 * Type: 10M08SAE144C8G
 * Package: E144
 * Clock: 50.000Mhz (Pin:PIN_27)
- Example-Configs: [Altera10M08Eval](../../configs/Altera10M08Eval)
+* Example-Configs: [Altera10M08Eval](../../configs/Altera10M08Eval)
 
 ![board.png](board.png)
 

@@ -8,5 +8,5 @@
 * Package: tqg144
 * Flashcmd: openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit
 * Clock: 50.000Mhz (Pin:p55)
- Example-Configs: [Spartan6](../../configs/Spartan6)
+* Example-Configs: [Spartan6](../../configs/Spartan6)
 

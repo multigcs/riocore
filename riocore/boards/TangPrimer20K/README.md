@@ -7,7 +7,7 @@
 * Type: GW2A-LV18PG256C8/I7
 * Package: PG256
 * Clock: 27.000Mhz (Pin:H11)
- Example-Configs: [TangPrimer20K](../../configs/TangPrimer20K)
+* Example-Configs: [TangPrimer20K](../../configs/TangPrimer20K)
 
 ![board.png](board.png)
 
