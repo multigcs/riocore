@@ -9,14 +9,9 @@ class Plugin(PluginBase):
 
 ```mermaid
 graph LR;
-    Origin-->Original-Modifiers-Pipeline-->Original-Pin;
+    Origin-->Origin-Modifiers-Pipeline-->Origin-Pin;
     Origin-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
 ```
-
-
-Example:
-* you can create an inverted output pin for symetric signals
-* 
         """
         self.KEYWORDS = "pin bit copy"
         self.ORIGIN = ""
