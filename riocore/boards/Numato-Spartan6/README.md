@@ -2,7 +2,7 @@
 **Spartan6 - only for testing the toolchain**
 
 * URL: [https://numato.com/product/mimas-spartan-6-fpga-development-board/](https://numato.com/product/mimas-spartan-6-fpga-development-board/)
-* Toolchain: [ise](../generator/toolchains/ise/README.md)
+* Toolchain: [ise](../../generator/toolchains/ise/README.md)
 * Family: xc6
 * Type: xc6slx9-2tqg144
 * Package: tqg144

@@ -53,10 +53,10 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
                 if "toolchains" in data:
                     toolchains = []
                     for toolchain in data['toolchains']:
-                        toolchains.append(f"[{toolchain}](../generator/toolchains/{toolchain}/README.md)")
-                    readme.append(f"* {key.title()}: [{data[key]}](../generator/toolchains/{data[key]}/README.md) ({', '.join(toolchains)})")
+                        toolchains.append(f"[{toolchain}](../../generator/toolchains/{toolchain}/README.md)")
+                    readme.append(f"* {key.title()}: [{data[key]}](../../generator/toolchains/{data[key]}/README.md) ({', '.join(toolchains)})")
                 else:
-                    readme.append(f"* {key.title()}: [{data[key]}](../generator/toolchains/{data[key]}/README.md)")
+                    readme.append(f"* {key.title()}: [{data[key]}](../../generator/toolchains/{data[key]}/README.md)")
             else:
                 readme.append(f"* {key.title()}: {data[key]}")
 

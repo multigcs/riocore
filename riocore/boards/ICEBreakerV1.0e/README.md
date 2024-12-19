@@ -2,7 +2,7 @@
 **Small and low cost FPGA educational and development board**
 
 * URL: [https://github.com/icebreaker-fpga/icebreaker](https://github.com/icebreaker-fpga/icebreaker)
-* Toolchain: [icestorm](../generator/toolchains/icestorm/README.md)
+* Toolchain: [icestorm](../../generator/toolchains/icestorm/README.md)
 * Family: ice40
 * Type: up5k
 * Package: sg48

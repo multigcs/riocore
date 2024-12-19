@@ -2,7 +2,7 @@
 **EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1)**
 
 * URL: []()
-* Toolchain: [quartus](../generator/toolchains/quartus/README.md)
+* Toolchain: [quartus](../../generator/toolchains/quartus/README.md)
 * Family: Cyclone II
 * Type: EP2C5T144C8
 * Package: TQFP144
