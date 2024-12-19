@@ -12,7 +12,7 @@ graph LR;
 ## onerror
 holds the pin on error
 
-### Options
+**Options:**
 | Name | Type | Default | Info |
 | --- | --- | --- | --- |
 | Invert | bool | False |  |
@@ -20,7 +20,7 @@ holds the pin on error
 ## debounce
 filter noisy signals
 
-### Options
+**Options:**
 | Name | Type | Default | Info |
 | --- | --- | --- | --- |
 | Delay | int | 16 |  |
@@ -28,7 +28,7 @@ filter noisy signals
 ## pwm
 pwm generator
 
-### Options
+**Options:**
 | Name | Type | Default | Info |
 | --- | --- | --- | --- |
 | Frequency | int | 16 |  |
@@ -37,7 +37,7 @@ pwm generator
 ## oneshot
 creates a variable-length output pulse when the input changes state
 
-### Options
+**Options:**
 | Name | Type | Default | Info |
 | --- | --- | --- | --- |
 | PulseLen | float | 1.0 | pulse len in ms |
