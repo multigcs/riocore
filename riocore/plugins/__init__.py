@@ -8,22 +8,22 @@ class Modifiers:
                 "title": "OnError",
                 "info": "holds the pin on error",
                 "options": {
-                    "invert": {"title": "Invert", "type": bool, "default": False},
+                    "invert": {"title": "Invert", "type": bool, "default": False, "help_text": "Inverts the Logic"},
                 },
             },
             "debounce": {
                 "title": "Debounce",
                 "info": "filter noisy signals",
                 "options": {
-                    "delay": {"title": "Delay", "type": int, "default": 16},
+                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
                 },
             },
             "pwm": {
                 "title": "PWM",
                 "info": "pwm generator",
                 "options": {
-                    "frequency": {"title": "Frequency", "type": int, "default": 16},
-                    "dty": {"title": "DTY", "type": int, "default": 50},
+                    "frequency": {"title": "Frequency", "type": int, "default": 1, "help_text": "PWM Frequency"},
+                    "dty": {"title": "DTY", "type": int, "default": 50, "help_text": "PWM Duty Cycle"},
                 },
             },
             "oneshot": {
@@ -47,10 +47,11 @@ class Modifiers:
         }
 
     def pin_modifier_debounce(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
-        width = modifier.get("delay", 16)
+        delay = modifier.get("delay", 2.5)
+        delay_divider = int(system_setup["speed"] * delay / 1000)
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",
-            "parameter": {"WIDTH": width},
+            "parameter": {"WIDTH": delay_divider},
             "arguments": {
                 "clk": "sysclk",
                 "din": pin_varname,

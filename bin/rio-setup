@@ -2935,9 +2935,20 @@ class WinForm(QWidget):
             modifier_type = modifier_table.item(row, 0).text()
             info = modifiers.info().get(modifier_type)
             infotext = info.get("info", "")
+            options = info.get("options", "")
             title = info.get("title", modifier_type.title())
             dialog.label.setText(f"Modifier: {title}")
-            dialog.info.setText(f"\n{infotext}")
+            textlines = ["", infotext, ""]
+
+            if options:
+                textlines.append("Options:")
+                for key, option in options.items():
+                    title = option.get("title", key.title())
+                    default = option.get("default", "")
+                    oinfo = option.get("help_text", "")
+                    textlines.append(f" {title}: {oinfo} (default: {default})")
+
+            dialog.info.setText("\n".join(textlines))
 
         dialog.layout = QHBoxLayout()
         modifier_table = QTableWidget()
@@ -2953,13 +2964,15 @@ class WinForm(QWidget):
             modifier_n += 1
 
         modifier_table.currentCellChanged.connect(show_modifier_info)
-        modifier_table.setFixedWidth(300)
+        modifier_table.setFixedWidth(200)
         dialog.layout.addWidget(modifier_table, stretch=1)
 
         dialog.vlayout = QVBoxLayout()
         dialog.label = QLabel("Modifier-Info:")
         dialog.vlayout.addWidget(dialog.label, stretch=0)
         dialog.info = QLabel("...")
+        dialog.info.setWordWrap(True)
+        dialog.info.setFixedWidth(300)
         dialog.info.setAlignment(Qt.AlignTop)
         dialog.vlayout.addWidget(dialog.info, stretch=1)
         dialog.layout.addLayout(dialog.vlayout)

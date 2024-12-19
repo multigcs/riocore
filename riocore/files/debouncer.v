@@ -4,25 +4,24 @@ module debouncer
     (
         input clk,
         input din,
-        output wire dout
+        output reg dout = 0
     );
 
-    reg din_state_inv = 0;
-    assign dout = ~din_state_inv;
+    reg [31:0] din_cnt = 0;
 
-    reg din_sync_0;  always @(posedge clk) din_sync_0 <= ~din;
-    reg din_sync_1;  always @(posedge clk) din_sync_1 <= din_sync_0;
-    reg [WIDTH-1:0] din_cnt;
-    wire din_idle = (din_state_inv == din_sync_1);
-    wire din_cnt_max = &din_cnt;
-
-    always @(posedge clk)
-    if (din_idle) begin
-        din_cnt <= 0;
-    end else begin
-        din_cnt <= din_cnt + 1;
-        if (din_cnt_max) begin
-            din_state_inv <= ~din_state_inv;
+    always @(posedge clk) begin
+        if (din == 0) begin
+            if (din_cnt > 0) begin
+                din_cnt <= din_cnt - 1;
+            end else begin
+                dout <= 0;
+            end
+        end else begin
+            if (din_cnt > WIDTH) begin
+                dout <= 1;
+            end else begin
+                din_cnt <= din_cnt + 1;
+            end
         end
     end
 endmodule
