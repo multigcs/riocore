@@ -48,8 +48,15 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
 
     for key in ("toolchain", "family", "type", "package", "flashcmd"):
         if key in data:
-            if key == "toolchain" and "toolchains" in data:
-                readme.append(f"* {key.title()}: {data[key]} ({', '.join(data['toolchains'])})")
+            
+            if key == "toolchain":
+                if "toolchains" in data:
+                    toolchains = []
+                    for toolchain in data['toolchains']:
+                        toolchains.append(f"[{toolchain}]({toolchain}/README.md)")
+                    readme.append(f"* {key.title()}: [{data[key]}]({data[key]}/README.md) ({', '.join(toolchains)})")
+                else:
+                    readme.append(f"* {key.title()}: [{data[key]}]({data[key]}/README.md)")
             else:
                 readme.append(f"* {key.title()}: {data[key]}")
 

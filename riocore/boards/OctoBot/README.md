@@ -2,7 +2,7 @@
 **RIO-OctoBot board**
 
 * URL: [https://github.com/multigcs/rio-octobot](https://github.com/multigcs/rio-octobot)
-* Toolchain: icestorm
+* Toolchain: [icestorm](icestorm/README.md)
 * Family: ice40
 * Type: hx8k
 * Package: cb132

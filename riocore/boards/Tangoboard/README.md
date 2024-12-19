@@ -2,7 +2,7 @@
 **based on TangNano9k**
 
 * URL: [https://github.com/multigcs/LinuxCNC-RIO/tree/main/configs/Tangoboard](https://github.com/multigcs/LinuxCNC-RIO/tree/main/configs/Tangoboard)
-* Toolchain: gowin (gowin, icestorm)
+* Toolchain: [gowin](gowin/README.md) ([gowin](gowin/README.md), [icestorm](icestorm/README.md))
 * Family: GW1N-9C
 * Type: GW1NR-LV9QN88PC6/I5
 * Package: 

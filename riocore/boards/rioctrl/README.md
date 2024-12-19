@@ -2,7 +2,7 @@
 **rioctrl- a modular hardware for riocore**
 
 * URL: [https://github.com/festlv/rioctrl-hw](https://github.com/festlv/rioctrl-hw)
-* Toolchain: icestorm
+* Toolchain: [icestorm](icestorm/README.md)
 * Family: ecp5
 * Type: 25k
 * Package: CABGA256

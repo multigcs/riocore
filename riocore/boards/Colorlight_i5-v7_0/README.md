@@ -5,7 +5,7 @@
 > Networking Interfaces are not supported by RIO
 
 * URL: [https://github.com/wuxx/Colorlight-FPGA-Projects](https://github.com/wuxx/Colorlight-FPGA-Projects)
-* Toolchain: icestorm
+* Toolchain: [icestorm](icestorm/README.md)
 * Family: ecp5
 * Type: 25k
 * Package: CABGA381
