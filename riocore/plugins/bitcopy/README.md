@@ -5,8 +5,8 @@ outputs a copy of a bit/pin
 
 ```mermaid
 graph LR;
-    Origin-->Original Modifiers-Pipeline-->Original-Pin;
-    Origin-->BitCopy Modifiers-Pipeline-->BitCopy-Pin;
+    Origin-->Original-Modifiers-Pipeline-->Original-Pin;
+    Origin-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
 ```
 
 
