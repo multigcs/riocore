@@ -155,7 +155,7 @@ for name, data in Modifiers().info().items():
     output.append("")
     options = data.get("options")
     if options:
-        output.append("### Options")
+        output.append("**Options:**")
 
         output.append("| Name | Type | Default | Info |")
         output.append("| --- | --- | --- | --- |")
