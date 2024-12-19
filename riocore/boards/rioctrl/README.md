@@ -8,8 +8,8 @@
 * Package: CABGA256
 * Clock: 25.000Mhz -> PLL -> 100.000Mhz (Pin:A7)
 
-### Example-Configs:
-[rioctrl](../configs/rioctrl)
+**Example-Configs:**
+[rioctrl](../../configs/rioctrl)
 
 ![board.png](board.png)
 

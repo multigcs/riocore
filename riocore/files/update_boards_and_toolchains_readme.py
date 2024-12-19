@@ -87,10 +87,10 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
     for example in examples.get(name, []):
         example_name = example.split(os.sep)[-2]
         example_json = example.split(os.sep)[-1]
-        example_links.append(f"[{example_name}](../configs/{example_name})")
+        example_links.append(f"[{example_name}](../../configs/{example_name})")
     
     if example_links:
-        readme.append("### Example-Configs:")
+        readme.append("**Example-Configs:**")
         readme += example_links
         readme.append("")
 

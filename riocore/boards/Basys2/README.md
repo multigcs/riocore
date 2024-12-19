@@ -9,8 +9,8 @@
 * Flashcmd: djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit
 * Clock: 50.000Mhz (Pin:B8)
 
-### Example-Configs:
-[Basys2](../configs/Basys2)
+**Example-Configs:**
+[Basys2](../../configs/Basys2)
 
 ![board.png](board.png)
 

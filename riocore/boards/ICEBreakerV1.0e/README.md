@@ -9,8 +9,8 @@
 * Flashcmd: openFPGALoader -b ice40_generic rio.bin -f
 * Clock: 12.000Mhz -> PLL -> 30.000Mhz (Pin:35)
 
-### Example-Configs:
-[ICEBreakerV1.0e](../configs/ICEBreakerV1.0e)
+**Example-Configs:**
+[ICEBreakerV1.0e](../../configs/ICEBreakerV1.0e)
 
 ![board.png](board.png)
 

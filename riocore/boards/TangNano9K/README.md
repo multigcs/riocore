@@ -8,8 +8,8 @@
 * Package: 
 * Clock: 27.000Mhz (Pin:52)
 
-### Example-Configs:
-[TangNano9K](../configs/TangNano9K)
+**Example-Configs:**
+[TangNano9K](../../configs/TangNano9K)
 
 ![board.png](board.png)
 

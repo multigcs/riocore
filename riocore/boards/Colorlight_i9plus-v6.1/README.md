@@ -12,8 +12,8 @@
 * Package: fgg484
 * Clock: 25.000Mhz (Pin:K4)
 
-### Example-Configs:
-[Colorlight_i9plus-v6.1](../configs/Colorlight_i9plus-v6.1)
+**Example-Configs:**
+[Colorlight_i9plus-v6.1](../../configs/Colorlight_i9plus-v6.1)
 
 ![board.png](board.png)
 

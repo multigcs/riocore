@@ -8,8 +8,8 @@
 * Package: csg324
 * Clock: 100.000Mhz -> PLL -> 125.000Mhz (Pin:E3)
 
-### Example-Configs:
-[Arty-a7-35t](../configs/Arty-a7-35t)
+**Example-Configs:**
+[Arty-a7-35t](../../configs/Arty-a7-35t)
 
 ![board.png](board.png)
 
