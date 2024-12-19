@@ -53,6 +53,8 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
                 if "toolchains" in data:
                     toolchains = []
                     for toolchain in data['toolchains']:
+                        if toolchain == data[key]:
+                            continue
                         toolchains.append(f"[{toolchain}](../../generator/toolchains/{toolchain}/README.md)")
                     readme.append(f"* {key.title()}: [{data[key]}](../../generator/toolchains/{data[key]}/README.md) ({', '.join(toolchains)})")
                 else:
