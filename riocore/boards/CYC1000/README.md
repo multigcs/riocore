@@ -8,5 +8,8 @@
 * Package: BG256
 * Clock: 12.000Mhz -> PLL -> 48.000Mhz (Pin:PIN_M2)
 
+### Example-Configs:
+[CYC1000](../configs/CYC1000)
+
 ![board.png](board.png)
 

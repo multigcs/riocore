@@ -8,5 +8,8 @@
 * Package: PG256
 * Clock: 50.000Mhz (Pin:E2)
 
+### Example-Configs:
+[TangPrimer25K](../configs/TangPrimer25K)
+
 ![board.png](board.png)
 

@@ -8,5 +8,8 @@
 * Package: TQFP144
 * Clock: 50.000Mhz (Pin:PIN_17)
 
+### Example-Configs:
+[EP2C5T144](../configs/EP2C5T144)
+
 ![board.png](board.png)
 

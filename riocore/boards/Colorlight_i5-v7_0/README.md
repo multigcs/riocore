@@ -11,5 +11,8 @@
 * Package: CABGA381
 * Clock: 25.000Mhz (Pin:P3)
 
+### Example-Configs:
+[Colorlight_i5-v7_0](../configs/Colorlight_i5-v7_0)
+
 ![board.png](board.png)
 

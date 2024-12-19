@@ -8,5 +8,8 @@
 * Package: PG256
 * Clock: 27.000Mhz (Pin:H11)
 
+### Example-Configs:
+[TangPrimer20K](../configs/TangPrimer20K)
+
 ![board.png](board.png)
 

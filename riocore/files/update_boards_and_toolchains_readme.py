@@ -10,6 +10,16 @@ import inspect
 from riocore.plugins import Modifiers
 
 
+examples = {}
+for cpath in sorted(glob.glob(os.path.join("riocore", "configs", "*", "config.json"))):
+    cjdata = open(cpath, "r").read()
+    cdata = json.loads(cjdata)
+    boardcfg = cdata.get("boardcfg")
+    if boardcfg not in examples:
+        examples[boardcfg] = []
+    examples[boardcfg].append(cpath)
+
+
 print("# BOARDS")
 index = []
 
@@ -71,6 +81,19 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
             readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
 
     readme.append("")
+
+    # examples
+    example_links = []
+    for example in examples.get(name, []):
+        example_name = example.split(os.sep)[-2]
+        example_json = example.split(os.sep)[-1]
+        example_links.append(f"[{example_name}](../configs/{example_name})")
+    
+    if example_links:
+        readme.append("### Example-Configs:")
+        readme += example_links
+        readme.append("")
+
 
     fpga_type = data.get("type", "")
     fpga_family = data.get("family", "")

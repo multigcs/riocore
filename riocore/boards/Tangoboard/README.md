@@ -8,5 +8,8 @@
 * Package: 
 * Clock: 27.000Mhz (Pin:52)
 
+### Example-Configs:
+[Tangoboard](../configs/Tangoboard)
+
 ![board.png](board.png)
 

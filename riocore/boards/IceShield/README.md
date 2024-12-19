@@ -9,5 +9,8 @@
 * Flashcmd: ./spiflash.sh rio.bin
 * Clock: 18.000Mhz -> PLL -> 29.812Mhz (Pin:35)
 
+### Example-Configs:
+[IceShield](../configs/IceShield)
+
 ![board.png](board.png)
 
