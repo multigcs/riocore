@@ -70,9 +70,9 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
     if os.path.isfile(os.path.join(board, "board.png")):
         readme.append("![board.png](board.png)")
         readme.append("")
-        index.append(f'| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | {", ".join(toolchains)} | <img src="riocore/boards/{name}/board.png" height="48"> |')
+        index.append(f'| [{name}]({name}/README.md) | {description} | {fpga_family} / {fpga_type} | {", ".join(toolchains)} | <img src="{name}/board.png" height="48"> |')
     else:
-        index.append(f"| [{name}](riocore/boards/{name}/README.md) | {description} | {fpga_family} / {fpga_type} | {', '.join(toolchains)} | |")
+        index.append(f"| [{name}]({name}/README.md) | {description} | {fpga_family} / {fpga_type} | {', '.join(toolchains)} | |")
 
     readme.append("")
 
@@ -97,7 +97,7 @@ for ppath in sorted(glob.glob(os.path.join("riocore", "generator", "toolchains",
         infotext = info.get("info", "")
         description = info.get("description", "")
         install = info.get("install", "")
-        output.append(f"| [{toolchain_name}](riocore/generator/toolchains/{toolchain_name}/README.md) | {infotext} |")
+        output.append(f"| [{toolchain_name}]({toolchain_name}/README.md) | {infotext} |")
 
         toutput = []
         toutput.append(f"# {toolchain_name}")
