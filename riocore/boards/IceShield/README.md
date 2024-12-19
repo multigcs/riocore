@@ -2,7 +2,7 @@
 **RIO-IceShield board for Raspberry PI4**
 
 * URL: [https://github.com/multigcs/rio-iceshield](https://github.com/multigcs/rio-iceshield)
-* Toolchain: [icestorm](icestorm/README.md)
+* Toolchain: [icestorm](../generator/toolchains/icestorm/README.md)
 * Family: ice40
 * Type: up5k
 * Package: sg48

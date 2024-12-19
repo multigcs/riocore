@@ -6,7 +6,7 @@
 > UNTESTED
 
 * URL: [https://github.com/wuxx/Colorlight-FPGA-Projects/blob/master/colorlight_i9plus_v6.1.md](https://github.com/wuxx/Colorlight-FPGA-Projects/blob/master/colorlight_i9plus_v6.1.md)
-* Toolchain: [vivado](vivado/README.md)
+* Toolchain: [vivado](../generator/toolchains/vivado/README.md)
 * Family: xc7
 * Type: xc7a50tifgg484-1l
 * Package: fgg484

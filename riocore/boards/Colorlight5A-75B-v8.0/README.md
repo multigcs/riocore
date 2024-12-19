@@ -6,7 +6,7 @@
 > Pins can only be used as output without hardware modifications
 
 * URL: [https://github.com/q3k/chubby75/blob/master/5a-75b/hardware_V8.0.md](https://github.com/q3k/chubby75/blob/master/5a-75b/hardware_V8.0.md)
-* Toolchain: [icestorm](icestorm/README.md)
+* Toolchain: [icestorm](../generator/toolchains/icestorm/README.md)
 * Family: ecp5
 * Type: 25k
 * Package: CABGA256

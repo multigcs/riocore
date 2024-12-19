@@ -2,7 +2,7 @@
 **Spartan6 - only for testing the toolchain**
 
 * URL: [https://github.com/ozzyrob/Linuxcnc-FPGA/](https://github.com/ozzyrob/Linuxcnc-FPGA/)
-* Toolchain: [ise](ise/README.md)
+* Toolchain: [ise](../generator/toolchains/ise/README.md)
 * Family: xc6
 * Type: xc6slx9-2tqg144
 * Package: tqg144
