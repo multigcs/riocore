@@ -7,9 +7,7 @@
 * Type: GW1NR-LV9QN88PC6/I5
 * Package: 
 * Clock: 27.000Mhz (Pin:52)
-
-**Example-Configs:**
-[Tangbob](../../configs/Tangbob)
+ Example-Configs: [Tangbob](../../configs/Tangbob)
 
 ![board.png](board.png)
 

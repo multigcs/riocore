@@ -7,9 +7,7 @@
 * Type: GW2AR-LV18QN88C8/I7
 * Package: QN88
 * Clock: 27.000Mhz (Pin:4)
-
-**Example-Configs:**
-[TangNano20K](../../configs/TangNano20K)
+ Example-Configs: [TangNano20K](../../configs/TangNano20K)
 
 ![board.png](board.png)
 

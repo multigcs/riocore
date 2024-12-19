@@ -7,9 +7,7 @@
 * Type: GW5A-LV25MG121NC1/I0
 * Package: PG256
 * Clock: 50.000Mhz (Pin:E2)
-
-**Example-Configs:**
-[TangPrimer25K](../../configs/TangPrimer25K)
+ Example-Configs: [TangPrimer25K](../../configs/TangPrimer25K)
 
 ![board.png](board.png)
 

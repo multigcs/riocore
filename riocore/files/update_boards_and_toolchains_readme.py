@@ -80,9 +80,6 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
         else:
             readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
 
-    readme.append("")
-
-    # examples
     example_links = []
     for example in examples.get(name, []):
         example_name = example.split(os.sep)[-2]
@@ -90,9 +87,9 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
         example_links.append(f"[{example_name}](../../configs/{example_name})")
     
     if example_links:
-        readme.append("**Example-Configs:**")
-        readme += example_links
-        readme.append("")
+        readme.append(f" Example-Configs: {', '.join(example_links)}")
+
+    readme.append("")
 
 
     fpga_type = data.get("type", "")

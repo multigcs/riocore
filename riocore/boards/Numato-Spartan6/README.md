@@ -8,9 +8,7 @@
 * Package: tqg144
 * Flashcmd: openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit
 * Clock: 50.000Mhz (Pin:p126)
-
-**Example-Configs:**
-[Numato-Spartan6](../../configs/Numato-Spartan6)
+ Example-Configs: [Numato-Spartan6](../../configs/Numato-Spartan6)
 
 ![board.png](board.png)
 
