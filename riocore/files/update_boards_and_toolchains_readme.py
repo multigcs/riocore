@@ -137,6 +137,15 @@ output = []
 output.append("# MODIFIERS")
 output.append("you can modify each input and output pin of the FPGA with an modifier pipeline")
 output.append("")
+output.append("```mermaid")
+output.append("graph LR;")
+output.append("    Input-Signal-->Modifier1;")
+output.append("    Modifier1-->Modifier2;")
+output.append("    Modifier2-->Modifier...;")
+output.append("    Modifier...-->Output-Signal;")
+output.append("```")
+output.append("")
+
 
 for name, data in Modifiers().info().items():
     print(name)

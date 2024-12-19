@@ -1,6 +1,14 @@
 # MODIFIERS
 you can modify each input and output pin of the FPGA with an modifier pipeline
 
+```mermaid
+graph LR;
+    Input-Signal-->Modifier1;
+    Modifier1-->Modifier2;
+    Modifier2-->Modifier...;
+    Modifier...-->Output-Signal;
+```
+
 ## onerror
 holds the pin on error
 
