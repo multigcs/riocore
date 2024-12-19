@@ -85,9 +85,9 @@ elif args.generate:
                 plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
                 image_path = os.path.join(plugin_path, "image.png")
                 if os.path.isfile(image_path):
-                    image = f'<img src="riocore/plugins/{plugin_instance.NAME}/image.png" height="48">'
+                    image = f'<img src="{plugin_instance.NAME}/image.png" height="48">'
 
-                text.append(f"| {title} | [{plugin_instance.NAME}](riocore/plugins/{plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} |")
+                text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} |")
 
                 title = ""
 
