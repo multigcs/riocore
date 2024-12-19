@@ -10,7 +10,7 @@ holds the pin on error
 | Invert | bool | False |  |
 
 ## debounce
-debounce filter
+filter noisy signals
 
 ### Options
 | Name | Type | Default | Info |
@@ -27,7 +27,7 @@ pwm generator
 | DTY | int | 50 |  |
 
 ## oneshot
-onshot filter
+creates a variable-length output pulse when the input changes state
 
 ### Options
 | Name | Type | Default | Info |

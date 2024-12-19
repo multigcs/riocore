@@ -11,7 +11,7 @@ class Modifiers:
                 },
             },
             "debounce": {
-                "info": "debounce filter",
+                "info": "filter noisy signals",
                 "options": {
                     "delay": {"title": "Delay", "type": int, "default": 16},
                 },
@@ -24,7 +24,7 @@ class Modifiers:
                 },
             },
             "oneshot": {
-                "info": "onshot filter",
+                "info": "creates a variable-length output pulse when the input changes state",
                 "options": {
                     "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms"},
                     "retrigger": {"title": "Retrigger", "type": bool, "default": False, "help_text": "retrigger the time pulse"},
