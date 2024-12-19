@@ -9,7 +9,7 @@ graph LR;
     Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
 ```
 
-Examples:
+Usage-Examples:
 * you can create an inverted pin for symetric signals (modifier: invert)
 * or delayed signals for generating sequences (modifier: debounce with hight delay)
 * make short signals visible (modifier: oneshot -> LED)
