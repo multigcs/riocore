@@ -5,7 +5,19 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "bitcopy"
         self.INFO = "copy a bit/pin to an other output pin"
-        self.DESCRIPTION = "outputs a copy of a bit/pin"
+        self.DESCRIPTION = """outputs a copy of a bit/pin
+
+```mermaid
+graph LR;
+    Origin-->modifiers-->Original-Pin;
+    Origin-->modifiers-->BitCopy-Pin;
+```
+
+
+Example:
+* you can create an inverted output pin for symetric signals
+* 
+        """
         self.KEYWORDS = "pin bit copy"
         self.ORIGIN = ""
         self.PINDEFAULTS = {
