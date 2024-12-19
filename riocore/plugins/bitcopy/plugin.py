@@ -11,6 +11,12 @@ class Plugin(PluginBase):
 graph LR;
     Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
     Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
+
+Examples:
+* you can create an inverted pin for symetric signals (modifier: invert)
+* or delayed signals for generating sequences (modifier: debounce with hight delay)
+* make short signals visible (modifier: oneshot -> LED)
+
 ```
         """
         self.KEYWORDS = "pin bit copy"
