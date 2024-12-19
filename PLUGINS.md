@@ -13,6 +13,7 @@
 |  | [stepper](riocore/plugins/stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="riocore/plugins/stepper/image.png" height="48"> |
 | IO | [ads1115](riocore/plugins/ads1115/README.md) | 4-channel adc via I2C | <img src="riocore/plugins/ads1115/image.png" height="48"> |
 |  | [as5600](riocore/plugins/as5600/README.md) | magnetic absolute encoder | <img src="riocore/plugins/as5600/image.png" height="48"> |
+|  | [bitcopy](riocore/plugins/bitcopy/README.md) | copy a signal to an output pin |  |
 |  | [bitin](riocore/plugins/bitin/README.md) | single input pin | <img src="riocore/plugins/bitin/image.png" height="48"> |
 |  | [bitout](riocore/plugins/bitout/README.md) | singe bit output pin | <img src="riocore/plugins/bitout/image.png" height="48"> |
 |  | [blink](riocore/plugins/blink/README.md) | blinking output pin | <img src="riocore/plugins/blink/image.png" height="48"> |

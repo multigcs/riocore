@@ -15,7 +15,7 @@ holds the pin on error
 **Options:**
 | Name | Type | Default | Info |
 | --- | --- | --- | --- |
-| Invert | bool | False |  |
+| Invert | bool | False | Inverts the Logic |
 
 ## Debounce
 filter noisy signals
@@ -23,7 +23,7 @@ filter noisy signals
 **Options:**
 | Name | Type | Default | Info |
 | --- | --- | --- | --- |
-| Delay | int | 16 |  |
+| Delay | float | 2.5 | Delay in ms |
 
 ## PWM
 pwm generator
@@ -31,8 +31,8 @@ pwm generator
 **Options:**
 | Name | Type | Default | Info |
 | --- | --- | --- | --- |
-| Frequency | int | 16 |  |
-| DTY | int | 50 |  |
+| Frequency | int | 1 | PWM Frequency |
+| DTY | int | 50 | PWM Duty Cycle |
 
 ## Oneshot
 creates a variable-length output pulse when the input changes state

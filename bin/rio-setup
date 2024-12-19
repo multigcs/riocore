@@ -2398,6 +2398,20 @@ class WinForm(QWidget):
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
         elif var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "vpins":
+            default = var_setup.get("default")
+            options = ["sysclk", "ERROR", "ESTOP", "INTERFACE_SYNC"]
+            for plugin_instance in self.plugins.plugin_instances:
+                for pin, pin_data in plugin_instance.pins().items():
+                    direction = pin_data.get("direction")
+                    varname = pin_data.get("varname")
+                    if varname and direction in {"input", "output"}:
+                        options.append(varname)
+                        options.append(f"{varname}_RAW")
+            if default not in options:
+                options.append(default)
+            return edit_combobox(self, obj, key, options, cb=cb, help_text=help_text, default=default)
+
         return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
 
     def del_module(self, slot_name):

@@ -5,6 +5,7 @@
 | [Arty-a7-35t](riocore/boards/Arty-a7-35t/README.md) | Digilent - Arty a7-35t | xc7 / xc7a35ticsg324-1l | vivado | <img src="riocore/boards/Arty-a7-35t/board.png" height="48"> |
 | [Basys2](riocore/boards/Basys2/README.md) | Digilent - Basys2 | xc3 / xc3s100e-4-cp132 | ise | <img src="riocore/boards/Basys2/board.png" height="48"> |
 | [CYC1000](riocore/boards/CYC1000/README.md) | TEI0003 | Cyclone 10 LP / 10CL025YU256C8G | quartus | <img src="riocore/boards/CYC1000/board.png" height="48"> |
+| [Colorlight5A-75B-v8.0](riocore/boards/Colorlight5A-75B-v8.0/README.md) | Lattice ECP5 board | ecp5 / 25k | icestorm | <img src="riocore/boards/Colorlight5A-75B-v8.0/board.png" height="48"> |
 | [Colorlight5A-75E](riocore/boards/Colorlight5A-75E/README.md) | Lattice ECP5 board | ecp5 / 25k | icestorm | <img src="riocore/boards/Colorlight5A-75E/board.png" height="48"> |
 | [Colorlight_i5-v7_0](riocore/boards/Colorlight_i5-v7_0/README.md) | Lattice ECP5 on SODIMM-200P board | ecp5 / 25k | icestorm | <img src="riocore/boards/Colorlight_i5-v7_0/board.png" height="48"> |
 | [Colorlight_i9plus-v6.1](riocore/boards/Colorlight_i9plus-v6.1/README.md) | Artix7 on SODIMM-200P board | xc7 / xc7a50tifgg484-1l | vivado | <img src="riocore/boards/Colorlight_i9plus-v6.1/board.png" height="48"> |
