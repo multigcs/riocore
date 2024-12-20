@@ -6,14 +6,14 @@ class Modifiers:
         return {
             "onerror": {
                 "title": "OnError",
-                "info": "holds the pin on error",
+                "info": "holds the pin at 0 when an error has occurred",
                 "options": {
                     "invert": {"title": "Invert", "type": bool, "default": False, "help_text": "Inverts the Logic"},
                 },
             },
             "debounce": {
                 "title": "Debounce",
-                "info": "filter noisy signals",
+                "info": "to filter noisy signals",
                 "options": {
                     "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
                 },

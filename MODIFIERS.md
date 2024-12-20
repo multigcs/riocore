@@ -10,7 +10,7 @@ graph LR;
 ```
 
 ## OnError
-holds the pin on error
+holds the pin at 0 when an error has occurred
 
 **Options:**
 | Name | Type | Default | Info |
@@ -18,7 +18,7 @@ holds the pin on error
 | Invert | bool | False | Inverts the Logic |
 
 ## Debounce
-filter noisy signals
+to filter noisy signals
 
 **Options:**
 | Name | Type | Default | Info |
