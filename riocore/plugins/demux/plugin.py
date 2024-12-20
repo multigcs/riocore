@@ -55,7 +55,6 @@ class Plugin(PluginBase):
 
                 for bit in range(2**bits):
                     bitname = instance["arguments"][f"bit{bit}"]
-                    print(bit, bitname)
                     instance["predefines"] += [f"assign {bitname} = ({decname} == {bit});"]
 
         del instance["arguments"]

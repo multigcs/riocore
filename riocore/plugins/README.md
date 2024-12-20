@@ -24,6 +24,8 @@
 |  | [demux](demux/README.md) | binary demultiplexer | <img src="demux/image.png" height="48"> |
 |  | [dis7seg](dis7seg/README.md) | 7segment display with buttons | <img src="dis7seg/image.png" height="48"> |
 |  | [ds18b20](ds18b20/README.md) | 1Wire Temperature sensor | <img src="ds18b20/image.png" height="48"> |
+|  | [flipflop_in](flipflop_in/README.md) | flipflop input | <img src="flipflop_in/image.png" height="48"> |
+|  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |
