@@ -48,4 +48,3 @@ class Plugin(PluginBase):
         default = self.plugin_setup.get("default", self.OPTIONS["default"]["default"])
         instance_parameter["DEFAULT"] = default
         return instances
-

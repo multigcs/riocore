@@ -21,7 +21,7 @@ class Plugin(PluginBase):
         }
         self.OPTIONS = {
             "resolution": {
-                "default": 16,
+                "default": 8,
                 "type": int,
                 "min": 8,
                 "max": 32,
@@ -44,7 +44,7 @@ class Plugin(PluginBase):
             "value": {
                 "direction": "output",
                 "min": 0,
-                "max": 100,
+                "max": 255,
                 "unit": "%",
                 "absolute": False,
                 "setup": {

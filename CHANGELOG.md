@@ -15,6 +15,7 @@
 * new plugin: [binin](riocore/plugins/binin/README.md) (binary to decimal input)
 * new plugin: [flipflop_in](riocore/plugins/flipflop_in/README.md) (set and reset an input bit)
 * new plugin: [flipflop_out](riocore/plugins/flipflop_out/README.md) (set and reset an output pin)
+* new plugin: [sinepwm](riocore/plugins/sinepwm/README.md) (generates sine waves)
 * better [stepdir](riocore/plugins/stepdir/README.md) plugin (with pulse_len and dir_delay configuration)
 
 ### Pin-Modifier

@@ -1,9 +1,9 @@
-# pdmout
-**pdm output**
+# sinepwm
+**pwm output**
 
-to analog values via sigma-delta modulator
+generates sine waves
 
-Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
+Keywords: sine wave pwm
 
 
 ![image.png](image.png)
@@ -11,12 +11,12 @@ Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
 ## Basic-Example:
 ```
 {
-    "type": "pdmout",
+    "type": "sinepwm",
     "pins": {
-        "pdm": {
+        "en": {
             "pin": "0"
         },
-        "en": {
+        "out0": {
             "pin": "1"
         }
     }
@@ -25,26 +25,44 @@ Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
 
 ## Pins:
 *FPGA-pins*
-### pdm:
-
- * direction: output
-
 ### en:
 
  * direction: output
  * optional: True
 
+### out0:
+
+ * direction: output
+
 
 ## Options:
 *user-options*
-### resolution:
-PDM Resolution
+### pwmfreq:
+pwm frequency
 
  * type: int
- * min: 8
- * max: 32
- * default: 8
- * unit: bit
+ * min: 10
+ * max: 100000
+ * default: 25000
+ * unit: Hz
+
+### start:
+wace start point
+
+ * type: int
+ * min: 0
+ * max: 28
+ * default: 0
+ * unit: 
+
+### phases:
+number of output phases
+
+ * type: int
+ * min: 0
+ * max: 10
+ * default: 1
+ * unit: 
 
 ### name:
 name of this plugin instance
@@ -52,28 +70,16 @@ name of this plugin instance
  * type: str
  * default: 
 
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
-### is_joint:
-configure as joint
-
- * type: bool
- * default: False
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### value:
+### freq:
 
  * type: float
  * direction: output
- * min: 0
+ * min: -255
  * max: 255
- * unit: %
+ * unit: Hz
 
 ### enable:
 
@@ -83,9 +89,9 @@ configure as joint
 
 ## Interfaces:
 *transport layer*
-### value:
+### freq:
 
- * size: 8 bit
+ * size: 32 bit
  * direction: output
 
 ### enable:
@@ -97,13 +103,13 @@ configure as joint
 ## Full-Example:
 ```
 {
-    "type": "pdmout",
-    "resolution": 8,
+    "type": "sinepwm",
+    "pwmfreq": 25000,
+    "start": 0,
+    "phases": 1,
     "name": "",
-    "axis": "",
-    "is_joint": false,
     "pins": {
-        "pdm": {
+        "en": {
             "pin": "0",
             "modifiers": [
                 {
@@ -111,7 +117,7 @@ configure as joint
                 }
             ]
         },
-        "en": {
+        "out0": {
             "pin": "1",
             "modifiers": [
                 {
@@ -121,13 +127,13 @@ configure as joint
         }
     },
     "signals": {
-        "value": {
+        "freq": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "value",
+                "title": "freq",
                 "section": "outputs",
                 "type": "scale"
             }
@@ -146,4 +152,4 @@ configure as joint
 ```
 
 ## Verilogs:
- * [pdmout.v](pdmout.v)
+ * [sinepwm.v](sinepwm.v)

@@ -418,7 +418,7 @@ class WinForm(QWidget):
                 print("rx:", rxdata)
                 print((stop - start) * 1000)
 
-            if not args.debug:
+            if not args.debug or True:
                 if len(rxdata) != self.project.buffer_bytes:
                     print(f"ERROR: reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
                     # return

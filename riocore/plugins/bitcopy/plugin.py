@@ -41,5 +41,5 @@ Usage-Examples:
             if "arguments" in instance:
                 vname = instance["arguments"]["bit"]
                 del instance["arguments"]
-                instance["predefines"] = [f"assign {vname} = {origin};"]
+                instance["predefines"] = [f"wire {vname};", f"assign {vname} = {origin};"]
         return instances
