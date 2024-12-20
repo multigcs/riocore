@@ -5,17 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "demux"
         self.INFO = "binary demultiplexer"
-        self.DESCRIPTION = """decodes binary values
-```mermaid
-graph LR;
-    FPGA-Pin0-->Bin2Dec;
-    FPGA-Pin1-->Bin2Dec;
-    Bin2Dec-->Hal-Bit0;
-    Bin2Dec-->Hal-Bit1;
-    Bin2Dec-->Hal-Bit2;
-    Bin2Dec-->Hal-Bit3;
-```
-        """
+        self.DESCRIPTION = """decodes binary values"""
         self.KEYWORDS = "binary demultiplexer"
         self.ORIGIN = ""
         self.PINDEFAULTS = {}
@@ -35,7 +25,7 @@ graph LR;
 
         bits = self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"])
 
-        for bit in range(2 ** bits):
+        for bit in range(2**bits):
             self.INTERFACE[f"bit{bit}"] = {
                 "size": 1,
                 "direction": "input",
@@ -63,13 +53,10 @@ graph LR;
                     bitlist.append(pinname)
                 instance["predefines"] += [f"wire {decname};", f"assign {decname} = {{{', '.join(reversed(bitlist))}}};"]
 
-                for bit in range(2 ** bits):
+                for bit in range(2**bits):
                     bitname = instance["arguments"][f"bit{bit}"]
                     print(bit, bitname)
                     instance["predefines"] += [f"assign {bitname} = ({decname} == {bit});"]
 
         del instance["arguments"]
         return instances
-
-
-
