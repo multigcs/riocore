@@ -1,9 +1,9 @@
 # sinepwm
-**pwm output**
+**sine pwm output**
 
-generates sine waves
+generates sine waves (multi phase support)
 
-Keywords: sine wave pwm
+Keywords: sine wave pwm bldc stepper
 
 
 ![image.png](image.png)

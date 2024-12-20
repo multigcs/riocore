@@ -39,7 +39,7 @@
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |
-|  | [sinepwm](sinepwm/README.md) | pwm output | <img src="sinepwm/image.png" height="48"> |
+|  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |
 |  | [spipoti](spipoti/README.md) | spi digital poti | <img src="spipoti/image.png" height="48"> |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |

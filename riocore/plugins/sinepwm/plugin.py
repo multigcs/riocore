@@ -6,9 +6,9 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "sinepwm"
-        self.INFO = "pwm output"
-        self.DESCRIPTION = "generates sine waves"
-        self.KEYWORDS = "sine wave pwm"
+        self.INFO = "sine pwm output"
+        self.DESCRIPTION = "generates sine waves (multi phase support)"
+        self.KEYWORDS = "sine wave pwm bldc stepper"
         self.ORIGIN = ""
         self.VERILOGS = ["sinepwm.v"]
         self.OPTIONS = {
