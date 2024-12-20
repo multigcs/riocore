@@ -7,7 +7,7 @@
 * better extra gui preview
 * some little fixes and improvements
 
-### Modifier
+### Pin-Modifier
 * better debouncer (now, the delay is in milliseconds, which makes the whole thing easier to configure.)
 * new modifier: oneshot (creates a variable-length output pulse when the input changes state)
 * overwiew : [MODIFIERS.md](riocore/blob/dev/MODIFIERS.md)
