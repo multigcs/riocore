@@ -81,4 +81,3 @@ class Plugin(PluginBase):
         resolution = int(self.plugin_setup.get("resolution", self.OPTIONS["resolution"]["default"]))
         instance_parameter["RESOLUTION"] = resolution
         return instances
-

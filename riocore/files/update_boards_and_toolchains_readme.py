@@ -58,11 +58,10 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
 
     for key in ("toolchain", "family", "type", "package", "flashcmd"):
         if key in data:
-            
             if key == "toolchain":
                 if "toolchains" in data:
                     toolchains = []
-                    for toolchain in data['toolchains']:
+                    for toolchain in data["toolchains"]:
                         if toolchain == data[key]:
                             continue
                         toolchains.append(f"[{toolchain}](../../generator/toolchains/{toolchain}/README.md)")
@@ -85,25 +84,22 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
         example_name = example.split(os.sep)[-2]
         example_json = example.split(os.sep)[-1]
         example_links.append(f"[{example_name}](../../configs/{example_name})")
-    
+
     if example_links:
         readme.append(f"* Example-Configs: {', '.join(example_links)}")
 
     readme.append("")
 
-
     fpga_type = data.get("type", "")
     fpga_family = data.get("family", "")
 
-
     toolchains = []
     if "toolchains" in data:
-        for toolchain in data['toolchains']:
+        for toolchain in data["toolchains"]:
             toolchains.append(f"[{toolchain}](../generator/toolchains/{toolchain}/README.md)")
     else:
         toolchain = data.get("toolchain", "")
         toolchains.append(f"[{toolchain}](../generator/toolchains/{toolchain}/README.md)")
-    
 
     if os.path.isfile(os.path.join(board, "board.png")):
         readme.append("![board.png](board.png)")

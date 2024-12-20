@@ -14,6 +14,8 @@
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |
 | IO | [ads1115](ads1115/README.md) | 4-channel adc via I2C | <img src="ads1115/image.png" height="48"> |
 |  | [as5600](as5600/README.md) | magnetic absolute encoder | <img src="as5600/image.png" height="48"> |
+|  | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |
+|  | [binout](binout/README.md) | decimal to binary output | <img src="binout/image.png" height="48"> |
 |  | [bitcopy](bitcopy/README.md) | copy a bit/pin to an other output pin | <img src="bitcopy/image.png" height="48"> |
 |  | [bitin](bitin/README.md) | single input pin | <img src="bitin/image.png" height="48"> |
 |  | [bitout](bitout/README.md) | singe bit output pin | <img src="bitout/image.png" height="48"> |
