@@ -13,12 +13,12 @@
 * overwiew : [MODIFIERS.md](riocore/blob/dev/MODIFIERS.md)
 
 ### Plugins
-* new plugin: bitcopy (copy a bit/pin to an other output pin)
-* new plugin: pdmout (delta-sigma modulator / dac)
-* new plugin: binout (decimal to binary output)
-* new plugin: binin (binary to decimal input)
-* new plugin: demux (binary demultiplexer)
-* better stepdir plugin (with pulse_len and dir_delay configuration)
+* new plugin: [bitcopy](riocore/plugins/bitcopy/README.md) (copy a bit/pin to an other output pin)
+* new plugin: [pdmout](riocore/plugins/pdmout/README.md) (delta-sigma modulator / dac)
+* new plugin: [binout](riocore/plugins/binout/README.md) (decimal to binary output)
+* new plugin: [binin](riocore/plugins/binin/README.md) (binary to decimal input)
+* new plugin: [demux](riocore/plugins/demux/README.md) (binary demultiplexer)
+* better [stepdir](riocore/plugins/stepdir/README.md) plugin (with pulse_len and dir_delay configuration)
 
 ### Addons
 * adding Spacemouse support
