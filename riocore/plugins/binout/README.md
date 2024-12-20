@@ -2,6 +2,13 @@
 **decimal to binary output**
 
 outputs binary values
+```mermaid
+graph LR;
+    Hal-Value-->Dec2Bin;
+    Dec2Bin-->FPGA-Pin0;
+    Dec2Bin-->FPGA-Pin1;
+```
+        
 
 Keywords: binary
 
