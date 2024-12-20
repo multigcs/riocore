@@ -6,7 +6,7 @@ reads binary values
 graph LR;
     FPGA-Pin0-->Bin2Dec;
     FPGA-Pin1-->Bin2Dec;
-    Bin2Dec-->Value;
+    Bin2Dec-->Hal-Value;
 ```
         
 
