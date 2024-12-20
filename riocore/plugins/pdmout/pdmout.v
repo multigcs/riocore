@@ -19,8 +19,6 @@ module pdmout
             PWM_accumulator <= 0;
         end
     end
-
-
 endmodule
 
 
