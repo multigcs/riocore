@@ -5,7 +5,14 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "binin"
         self.INFO = "binary to decimal input"
-        self.DESCRIPTION = """reads binary values"""
+        self.DESCRIPTION = """reads binary values
+```mermaid
+graph LR;
+    FPGA-Pin0-->Bin2Dec;
+    FPGA-Pin1-->Bin2Dec;
+    Bin2Dec-->Value;
+```
+        """
         self.KEYWORDS = "binary"
         self.ORIGIN = ""
         self.PINDEFAULTS = {}

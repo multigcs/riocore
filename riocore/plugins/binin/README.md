@@ -2,6 +2,13 @@
 **binary to decimal input**
 
 reads binary values
+```mermaid
+graph LR;
+    FPGA-Pin0-->Bin2Dec;
+    FPGA-Pin1-->Bin2Dec;
+    Bin2Dec-->Value;
+```
+        
 
 Keywords: binary
 
