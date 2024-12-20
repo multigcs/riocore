@@ -6,10 +6,10 @@ decodes binary values
 graph LR;
     FPGA-Pin0-->Bin2Dec;
     FPGA-Pin1-->Bin2Dec;
-    Bin2Dec-->Dec==0-->Hal-Bit0;
-    Bin2Dec-->Dec==1-->Hal-Bit1;
-    Bin2Dec-->Dec==2-->Hal-Bit2;
-    Bin2Dec-->Dec==3-->Hal-Bit3;
+    Bin2Dec-->Hal-Bit0;
+    Bin2Dec-->Hal-Bit1;
+    Bin2Dec-->Hal-Bit2;
+    Bin2Dec-->Hal-Bit3;
 ```
         
 
