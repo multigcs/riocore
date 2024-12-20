@@ -15,6 +15,8 @@
 ### Plugins
 * new plugin: bitcopy (copy a bit/pin to an other output pin)
 * new plugin: pdmout (delta-sigma modulator / dac)
+* new plugin: binout (decimal to binary output)
+* new plugin: binin (binary to decimal input)
 * new plugin: demux (binary demultiplexer)
 * better stepdir plugin (with pulse_len and dir_delay configuration)
 
