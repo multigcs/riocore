@@ -13,7 +13,7 @@ graph LR;
     Dec2Bin-->FPGA-Pin1;
 ```
         """
-        self.KEYWORDS = "binary"
+        self.KEYWORDS = "binary dec2bin r2r-dac"
         self.ORIGIN = ""
         self.PINDEFAULTS = {}
 

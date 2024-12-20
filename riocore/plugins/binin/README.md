@@ -10,7 +10,7 @@ graph LR;
 ```
         
 
-Keywords: binary
+Keywords: binary bin2dec
 
 
 ![image.png](image.png)

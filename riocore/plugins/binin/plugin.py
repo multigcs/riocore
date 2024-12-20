@@ -13,7 +13,7 @@ graph LR;
     Bin2Dec-->Hal-Value;
 ```
         """
-        self.KEYWORDS = "binary"
+        self.KEYWORDS = "binary bin2dec"
         self.ORIGIN = ""
         self.PINDEFAULTS = {}
 
