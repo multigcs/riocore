@@ -36,7 +36,7 @@ class Plugin(PluginBase):
         }
 
         for bit in range(bits):
-            self.PINDEFAULTS[f"bit{bit}"] = {
+            self.PINDEFAULTS[f"bin{bit}"] = {
                 "direction": "input",
             }
 
@@ -49,7 +49,7 @@ class Plugin(PluginBase):
                 valuename = instance["arguments"]["value"]
                 bitlist = []
                 for bit in range(bits):
-                    vname = instance["arguments"][f"bit{bit}"]
+                    vname = instance["arguments"][f"bin{bit}"]
                     bitlist.append(vname)
 
                 instance["predefines"] = [f"assign {valuename} = {{{', '.join(reversed(bitlist))}}};"]

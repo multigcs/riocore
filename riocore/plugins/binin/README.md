@@ -13,16 +13,16 @@ Keywords: binary
 {
     "type": "binin",
     "pins": {
-        "bit0": {
+        "bin0": {
             "pin": "0"
         },
-        "bit1": {
+        "bin1": {
             "pin": "1"
         },
-        "bit2": {
+        "bin2": {
             "pin": "2"
         },
-        "bit3": {
+        "bin3": {
             "pin": "3"
         }
     }
@@ -31,19 +31,19 @@ Keywords: binary
 
 ## Pins:
 *FPGA-pins*
-### bit0:
+### bin0:
 
  * direction: input
 
-### bit1:
+### bin1:
 
  * direction: input
 
-### bit2:
+### bin2:
 
  * direction: input
 
-### bit3:
+### bin3:
 
  * direction: input
 
@@ -89,7 +89,7 @@ name of this plugin instance
     "bits": 4,
     "name": "",
     "pins": {
-        "bit0": {
+        "bin0": {
             "pin": "0",
             "modifiers": [
                 {
@@ -97,7 +97,7 @@ name of this plugin instance
                 }
             ]
         },
-        "bit1": {
+        "bin1": {
             "pin": "1",
             "modifiers": [
                 {
@@ -108,7 +108,7 @@ name of this plugin instance
                 }
             ]
         },
-        "bit2": {
+        "bin2": {
             "pin": "2",
             "modifiers": [
                 {
@@ -119,7 +119,7 @@ name of this plugin instance
                 }
             ]
         },
-        "bit3": {
+        "bin3": {
             "pin": "3",
             "modifiers": [
                 {

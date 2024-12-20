@@ -21,6 +21,7 @@
 |  | [bitout](bitout/README.md) | singe bit output pin | <img src="bitout/image.png" height="48"> |
 |  | [blink](blink/README.md) | blinking output pin | <img src="blink/image.png" height="48"> |
 |  | [counter](counter/README.md) | pulse counter input | <img src="counter/image.png" height="48"> |
+|  | [demux](demux/README.md) | binary demultiplexer | <img src="demux/image.png" height="48"> |
 |  | [dis7seg](dis7seg/README.md) | 7segment display with buttons | <img src="dis7seg/image.png" height="48"> |
 |  | [ds18b20](ds18b20/README.md) | 1Wire Temperature sensor | <img src="ds18b20/image.png" height="48"> |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |
