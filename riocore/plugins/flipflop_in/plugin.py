@@ -6,7 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "flipflop_in"
         self.INFO = "flipflop input"
         self.DESCRIPTION = "set and reset an input bit"
-        self.KEYWORDS = "flipflop"
+        self.KEYWORDS = "sr-flipflop"
         self.ORIGIN = ""
         self.VERILOGS = ["flipflop_in.v"]
         self.PINDEFAULTS = {

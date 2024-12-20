@@ -3,7 +3,7 @@
 
 set and reset an input bit
 
-Keywords: flipflop
+Keywords: sr-flipflop
 
 
 ![image.png](image.png)

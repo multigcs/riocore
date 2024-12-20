@@ -3,7 +3,7 @@
 
 set and reset an output pin
 
-Keywords: flipflop
+Keywords: sr-flipflop
 
 
 ![image.png](image.png)
