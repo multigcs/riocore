@@ -30,6 +30,8 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
 
 ```
 # win: https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_x64_win.zip
+# lin: https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_linux.tar.gz
+
 ```
 
 """,

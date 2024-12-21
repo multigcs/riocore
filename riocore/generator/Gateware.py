@@ -313,7 +313,7 @@ class Gateware:
             output.append("    wire ESTOP;")
             output.append(f"    assign ESTOP = {estop_pin};")
         else:
-            output.append("    reg ESTOP = 0;")
+            output.append("    parameter ESTOP = 0;")
         output.append("    wire ERROR;")
         output.append("    wire INTERFACE_SYNC;")
         output.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
@@ -349,13 +349,11 @@ class Gateware:
         output.append("")
 
         sysclk_speed = self.project.config["speed"]
-        output.append(f"    parameter TIMEOUT = 32'd{sysclk_speed // 10};")
-        output.append("")
-
         output.append("    reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};")
         output.append("    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);")
         output.append("")
 
+        output.append(f"    parameter TIMEOUT = {sysclk_speed // 10};")
         output.append("    localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);")
         output.append("    reg [TIMEOUT_BITS:0] timeout_counter = 0;")
         output.append("")
@@ -364,7 +362,7 @@ class Gateware:
         output.append("            timeout_counter <= 0;")
         output.append("        end else begin")
         output.append("            if (timeout_counter < TIMEOUT) begin")
-        output.append("                timeout_counter <= timeout_counter + 1;")
+        output.append("                timeout_counter <= timeout_counter + 1'd1;")
         output.append("                INTERFACE_TIMEOUT <= 0;")
         output.append("            end else begin")
         output.append("                INTERFACE_TIMEOUT <= 1;")

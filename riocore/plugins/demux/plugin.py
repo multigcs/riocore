@@ -32,6 +32,7 @@ class Plugin(PluginBase):
             }
             self.SIGNALS[f"bit{bit}"] = {
                 "direction": "input",
+                "bool": True,
             }
 
         for bit in range(bits):

@@ -446,23 +446,24 @@ class WinForm(QWidget):
                         txframe.append(str(int(p)))
                     frame_tx_id = int(txframe[0])
                     frame_tx_len = int(txframe[1])
+
                     plugin_instance.frame_tx_id_widget.setText(str(frame_tx_id))
                     plugin_instance.frame_tx_widget.setText(" ".join(txframe[2 : (frame_tx_len + 2)]))
 
                     if hasattr(plugin_instance, "testgui_frameio_update"):
                         plugin_instance.testgui_frameio_update(True, txframe)
-
                     rxframe_raw = plugin_instance.INTERFACE["rxdata"]["value"]
                     rxframe = []
-                    for p in rxframe_raw:
-                        rxframe.append(str(int(p)))
-                    frame_rx_id = int(rxframe[1])
-                    frame_rx_len = int(rxframe[2])
-                    plugin_instance.frame_rx_id_widget.setText(str(frame_rx_id))
-                    plugin_instance.frame_rx_widget.setText(" ".join(reversed(rxframe[3 : (frame_rx_len + 3)])))
+                    if rxframe_raw:
+                        for p in rxframe_raw:
+                            rxframe.append(str(int(p)))
+                        frame_rx_id = int(rxframe[1])
+                        frame_rx_len = int(rxframe[2])
+                        plugin_instance.frame_rx_id_widget.setText(str(frame_rx_id))
+                        plugin_instance.frame_rx_widget.setText(" ".join(reversed(rxframe[3 : (frame_rx_len + 3)])))
 
-                    if hasattr(plugin_instance, "testgui_frameio_update"):
-                        plugin_instance.testgui_frameio_update(False, rxframe)
+                        if hasattr(plugin_instance, "testgui_frameio_update"):
+                            plugin_instance.testgui_frameio_update(False, rxframe)
 
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
