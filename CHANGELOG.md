@@ -11,6 +11,7 @@
 * new plugin: [bitcopy](riocore/plugins/bitcopy/README.md) (copy a bit/pin to an other output pin)
 * new plugin: [pdmout](riocore/plugins/pdmout/README.md) (delta-sigma modulator / dac)
 * new plugin: [demux](riocore/plugins/demux/README.md) (binary demultiplexer)
+* new plugin: [mux](riocore/plugins/mux/README.md) (binary multiplexer)
 * new plugin: [binout](riocore/plugins/binout/README.md) (decimal to binary output)
 * new plugin: [binin](riocore/plugins/binin/README.md) (binary to decimal input)
 * new plugin: [flipflop_in](riocore/plugins/flipflop_in/README.md) (set and reset an input bit)
