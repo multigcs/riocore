@@ -1,9 +1,9 @@
-# demux
-**binary demultiplexer**
+# mux
+**binary multiplexer**
 
-decodes binary values
+encodes binary values
 
-Keywords: binary demultiplexer
+Keywords: binary multiplexer
 
 
 ![image.png](image.png)
@@ -11,13 +11,19 @@ Keywords: binary demultiplexer
 ## Basic-Example:
 ```
 {
-    "type": "demux",
+    "type": "mux",
     "pins": {
         "pin0": {
             "pin": "0"
         },
         "pin1": {
             "pin": "1"
+        },
+        "pin2": {
+            "pin": "2"
+        },
+        "pin3": {
+            "pin": "3"
         }
     }
 }
@@ -27,11 +33,19 @@ Keywords: binary demultiplexer
 *FPGA-pins*
 ### pin0:
 
- * direction: input
+ * direction: output
 
 ### pin1:
 
- * direction: input
+ * direction: output
+
+### pin2:
+
+ * direction: output
+
+### pin3:
+
+ * direction: output
 
 
 ## Options:
@@ -56,23 +70,13 @@ name of this plugin instance
 *signals/pins in LinuxCNC*
 ### bit0:
 
- * type: float
- * direction: input
+ * type: bit
+ * direction: output
 
 ### bit1:
 
- * type: float
- * direction: input
-
-### bit2:
-
- * type: float
- * direction: input
-
-### bit3:
-
- * type: float
- * direction: input
+ * type: bit
+ * direction: output
 
 
 ## Interfaces:
@@ -80,28 +84,18 @@ name of this plugin instance
 ### bit0:
 
  * size: 1 bit
- * direction: input
+ * direction: output
 
 ### bit1:
 
  * size: 1 bit
- * direction: input
-
-### bit2:
-
- * size: 1 bit
- * direction: input
-
-### bit3:
-
- * size: 1 bit
- * direction: input
+ * direction: output
 
 
 ## Full-Example:
 ```
 {
-    "type": "demux",
+    "type": "mux",
     "bits": 2,
     "name": "",
     "pins": {
@@ -109,7 +103,7 @@ name of this plugin instance
             "pin": "0",
             "modifiers": [
                 {
-                    "type": "debounce"
+                    "type": "invert"
                 }
             ]
         },
@@ -117,8 +111,21 @@ name of this plugin instance
             "pin": "1",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
+                    "type": "invert"
+                }
+            ]
+        },
+        "pin2": {
+            "pin": "2",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "pin3": {
+            "pin": "3",
+            "modifiers": [
                 {
                     "type": "invert"
                 }
@@ -129,45 +136,19 @@ name of this plugin instance
         "bit0": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
                 "title": "bit0",
-                "section": "inputs",
-                "type": "meter"
+                "section": "outputs",
+                "type": "checkbox"
             }
         },
         "bit1": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
                 "title": "bit1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "bit2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "bit2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "bit3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "bit3",
-                "section": "inputs",
-                "type": "meter"
+                "section": "outputs",
+                "type": "checkbox"
             }
         }
     }

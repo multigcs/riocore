@@ -56,22 +56,22 @@ name of this plugin instance
 *signals/pins in LinuxCNC*
 ### bit0:
 
- * type: float
+ * type: bit
  * direction: input
 
 ### bit1:
 
- * type: float
+ * type: bit
  * direction: input
 
 ### bit2:
 
- * type: float
+ * type: bit
  * direction: input
 
 ### bit3:
 
- * type: float
+ * type: bit
  * direction: input
 
 
@@ -129,45 +129,37 @@ name of this plugin instance
         "bit0": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
                 "title": "bit0",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
         "bit1": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
                 "title": "bit1",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
         "bit2": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
                 "title": "bit2",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
         "bit3": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
                 "title": "bit3",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         }
     }
