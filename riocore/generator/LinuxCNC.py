@@ -2119,7 +2119,6 @@ class LinuxCNC:
                         direction = signal_config.get("direction")
                         boolean = signal_config.get("bool")
                         hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
-
                         signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
                         if signal_setup:
                             for signal_filter in signal_setup.get("filters", []):
@@ -2153,7 +2152,7 @@ class LinuxCNC:
                             var_prefix = signal_config["var_prefix"]
                             varname = signal_config["varname"]
 
-                            if signal_name.upper() == variable_name.split("_")[-1].strip():
+                            if  variable_name.endswith(signal_name.upper()):
                                 source = variable_name.split()[-1].strip("*")
                                 if not boolean:
                                     output.append(f"    float value = data->{source};")

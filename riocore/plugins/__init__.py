@@ -153,6 +153,7 @@ class PluginBase:
         self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []
+        self.VERILOGS_DATA = {}
         self.NAME = ""
         self.TYPE = "io"
         self.INFO = ""
@@ -229,6 +230,9 @@ class PluginBase:
 
     def gateware_files(self):
         return self.VERILOGS
+
+    def gateware_virtual_files(self):
+        return self.VERILOGS_DATA
 
     def convert2interface(self):
         if self.TYPE == "frameio":

@@ -128,6 +128,13 @@ class Gateware:
                 target = os.path.join(self.gateware_path, verilog)
                 shutil.copy(ipv_path, target)
 
+            for verilog, data in plugin_instance.gateware_virtual_files().items():
+                if verilog in self.verilogs:
+                    continue
+                self.verilogs.append(verilog)
+                target = os.path.join(self.gateware_path, verilog)
+                open(target, "w").write(data)
+
         for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v", "oneshot.v"):
             self.verilogs.append(extrafile)
             source = os.path.join(riocore_path, "files", extrafile)
