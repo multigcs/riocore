@@ -1,7 +1,7 @@
 class i2c_device:
     def __init__(self, setup):
         self.name = setup["name"]
-        self.addr = setup["addr"]
+        self.addr = setup["address"]
         self.INTERFACE = {
             f"{self.name}_in": {
                 "size": 16,

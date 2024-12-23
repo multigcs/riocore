@@ -1,4 +1,5 @@
 import sys
+from copy import deepcopy
 import os
 import importlib
 
@@ -28,25 +29,15 @@ class Plugin(PluginBase):
             },
         }
 
-        self.devices = {
-            "ioexp0": {
-                "addr": 64,
-                "type": "pcf8574",
-                "expansion": True,
-                "default": 255,
-            },
-            "ioexp1": {
-                "addr": 66,
-                "type": "pcf8574",
-                "bitvar": True,
-            },
-            "lm75": {
-                "addr": "8'b10010000",
-                "type": "lm75",
-            },
-        }
+        self.config = self.plugin_setup.get("config", {})
+        self.devices = deepcopy(self.config.get("devices", {}))
+
+        self.PLUGIN_CONFIG = True
         self.INTERFACE = {}
         self.SIGNALS = {}
+
+        if not self.devices:
+            return
 
         for name, setup in self.devices.items():
             setup["name"] = name
@@ -247,8 +238,6 @@ class Plugin(PluginBase):
             for key, ifaces in i2c_dev.SIGNALS.items():
                 if not expansion:
                     self.SIGNALS[key] = ifaces
-
-        # TODO: name per instance
 
         self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
 

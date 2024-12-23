@@ -1,11 +1,10 @@
 class i2c_device:
     def __init__(self, setup):
         self.name = setup["name"]
-        self.addr = setup["addr"]
+        self.addr = setup["address"]
         bitvar = setup.get("bitvar", False)
         self.INTERFACE = {}
         self.SIGNALS = {}
-
         if bitvar:
             setup["data_out"] = []
             setup["data_in"] = []

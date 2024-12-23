@@ -2048,7 +2048,6 @@ class WinForm(QWidget):
             self.plugin_uids.append(f"{uid_prefix}{unum}")
             plugin_config["uid"] = f"{uid_prefix}{unum}"
 
-
             plugin_instance = self.plugins.load_plugin(plugin_id, plugin_config, self.config)
 
             if "pins" not in plugin_config:
@@ -2245,7 +2244,6 @@ class WinForm(QWidget):
             }
 
         # loading plugins
-        plugin_types = {}
         self.plugins = riocore.Plugins()
         for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
             uid = plugin_config.get("uid")
