@@ -2007,7 +2007,7 @@ class LinuxCNC:
 
                             # TODO: fixing for wled plugin
                             check = varname.split("_")[-1].strip()
-                            if plugin_instance.NAME == "wled":
+                            if plugin_instance.NAME in {"wled", "i2cbus"}:
                                 check = varname.split("_")[-2].strip() + "_" + varname.split("_")[-1].strip()
 
                             if data_name.upper() == check:
