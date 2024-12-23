@@ -28,8 +28,8 @@ module i2c_master (
     parameter STATE_DONE = 6;
 
 
-    reg [16:0] mystate = 0;
-    reg [16:0] send_cnt = 0;
+    reg [7:0] mystate = 0;
+    reg [7:0] send_cnt = 0;
 
     reg clk_400;
     reg [31:0]counter_400;
@@ -139,7 +139,7 @@ module i2c_master (
                     end
                     send_cnt <= 0;
                 end else begin
-                    send_cnt <= send_cnt + 1;
+                    send_cnt <= send_cnt + 8'd1;
                 end
             end
 

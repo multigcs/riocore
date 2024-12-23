@@ -26,7 +26,7 @@ module pwmout
             dir <= 0;
         end
         if (dtyAbs != 0) begin
-            counter <= counter + 1;
+            counter <= counter + 8'd1;
             if (counter == DIVIDER) begin
                 if (enable) begin
                     pulse <= 1;

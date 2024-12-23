@@ -28,7 +28,7 @@ module shiftreg
                     sclk <= 1;
                 end else if (sclk == 1) begin
                     sclk <= 0;
-                    data_pos <= data_pos + 1;
+                    data_pos <= data_pos + 8'd1;
                 end else if (data_pos < WIDTH) begin
                     data_in[data_pos] = in;
                     out = data_out[WIDTH - 1 - data_pos];

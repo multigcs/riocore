@@ -50,14 +50,14 @@ module modbus
             rxdata <= {rxbuffer[RX_BUFFERSIZE-25:0], rxlen, rx_frame_id, tx_frame_id_ack};
             rxbuffer <= 0;
 
-            rx_frame_id <= rx_frame_id + 1;
+            rx_frame_id <= rx_frame_id + 8'd1;
             rxlen <= 0;
 
         end else if (RxD_data_ready == 1) begin
             if (rxlen < (RX_BUFFERSIZE / 8) - 3) begin
                 rxbuffer <= {rxbuffer[RX_BUFFERSIZE-25-8:0], RxD_data};
                 //rxbuffer <= {RxD_data, rxbuffer[RX_BUFFERSIZE-17:8]};
-                rxlen <= rxlen + 1;
+                rxlen <= rxlen + 8'd1;
             end
         end
 
@@ -83,7 +83,7 @@ module modbus
 
         if (tx_frame_id != tx_frame_id_last) begin
             tx_frame_id_last <= tx_frame_id;
-            txlen <= tx_frame_len + 1;
+            txlen <= tx_frame_len + 8'd1;
             txbuffer <= txdata[TX_BUFFERSIZE-17:16];
             tx_state <= 1;
         end
@@ -92,11 +92,11 @@ module modbus
             if (TxD_busy == 0 && TxD_start == 0) begin
 
                 if (txlen > 1) begin
-                    tx_counter <= tx_counter + 1;
+                    tx_counter <= tx_counter + 8'd1;
                     TxD_data <= txbuffer[7:0];
                     
                     txbuffer <= {8'd0, txbuffer[TX_BUFFERSIZE-17:8]};
-                    txlen <= txlen - 1;
+                    txlen <= txlen - 8'd1;
 
 
                     TxD_start <= 1;
@@ -116,7 +116,7 @@ module modbus
             end else begin
                 //tx_state <= 1;
                 counter <= 0;
-                value_n <= value_n + 1;
+                value_n <= value_n + 8'd1;
                 
             end
         end
