@@ -27,7 +27,7 @@ from riocore import halpins
 from riocore import axisgraph
 from riocore import halgraph
 from riocore import vcp
-from riocore.plugins import Modifiers
+from riocore.modifiers import Modifiers
 from riocore.widgets import MyQSvgWidget, MyQLabel, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
 
 
@@ -725,7 +725,6 @@ class TabOverview:
                 label = f"{{ {{{' | '.join(mportsl)}}} | {slot_name} | {{{' | '.join(mportsr)}}} }}"
                 sports.append(label)
 
-
             expansion_cons = {}
             for plugin_instance in self.parent.plugins.plugin_instances:
                 name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
@@ -736,7 +735,6 @@ class TabOverview:
                     expansion_cons[pname] = title
                 for pname in plugin_instance.expansion_inputs():
                     expansion_cons[pname] = title
-
 
             joint_n = 0
             for plugin_instance in self.parent.plugins.plugin_instances:
@@ -759,7 +757,6 @@ class TabOverview:
 
                     con_dev = fpga_name
                     con_pin = pin
-
 
                     if pin and pin in expansion_cons:
                         if pin in expansion_cons:

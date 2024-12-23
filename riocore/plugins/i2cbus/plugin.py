@@ -229,7 +229,6 @@ class Plugin(PluginBase):
                 if not expansion:
                     self.SIGNALS[key] = ifaces
 
-
         self.VERILOGS_DATA = {"i2cbus.v": "\n".join(verilog_data)}
 
     def convert(self, signal_name, signal_setup, value):

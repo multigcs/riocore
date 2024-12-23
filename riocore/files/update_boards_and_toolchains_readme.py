@@ -7,7 +7,7 @@ import os
 import json
 import importlib
 import inspect
-from riocore.plugins import Modifiers
+from riocore.modifiers import Modifiers
 
 
 examples = {}
