@@ -1,27 +1,27 @@
 class i2c_device:
-    def __init__(self, name, addr):
-        self.name = name
-        self.addr = addr
+    def __init__(self, setup):
+        self.name = setup["name"]
+        self.addr = setup["addr"]
         self.INTERFACE = {
-            f"{name}_in": {
+            f"{self.name}_in": {
                 "size": 16,
                 "direction": "input",
             },
         }
         self.SIGNALS = {
-            f"{name}_in": {
+            f"{self.name}_in": {
                 "direction": "input",
             },
         }
         self.PARAMS = {
-            f"{name.upper()}_ADDR": addr,
+            f"{self.name.upper()}_ADDR": self.addr,
         }
 
         self.INITS = {}
 
         self.STEPS = {
             "read": {
-                "var": f"{name}_in",
+                "var": f"{self.name}_in",
                 "bytes": 2,
             },
         }

@@ -38,6 +38,7 @@ class Plugin(PluginBase):
             "ioexp1": {
                 "addr": 66,
                 "type": "PCF8574",
+                "bitvar": True,
             },
             "lm75": {
                 "addr": "8'b10010000",
@@ -48,12 +49,12 @@ class Plugin(PluginBase):
         self.SIGNALS = {}
 
         for name, setup in self.devices.items():
-            addr = setup["addr"]
+            setup["name"] = name
             dtype = setup["type"]
             if os.path.isfile(os.path.join(plugin_path, "devices", f"{dtype}.py")):
                 sys.path.insert(0, plugin_path)
                 devlib = importlib.import_module(f".{dtype}", ".devices")
-                setup["i2cdev"] = devlib.i2c_device(name, addr)
+                setup["i2cdev"] = devlib.i2c_device(setup)
             else:
                 print("ERROR: i2cdev: device '{dtype}' not found")
 
@@ -62,6 +63,7 @@ class Plugin(PluginBase):
         verilog_data.append("module i2cbus (")
         verilog_data.append("        input clk,")
         for name, setup in self.devices.items():
+            setup["name"] = name
             i2c_dev = setup["i2cdev"]
             for iname, iface in i2c_dev.INTERFACE.items():
                 direction = iface["direction"]
@@ -81,6 +83,13 @@ class Plugin(PluginBase):
         verilog_data.append("    );")
 
         for name, setup in self.devices.items():
+            extra = setup.get("extra")
+            if extra:
+                verilog_data += extra
+                verilog_data += [""]
+
+        for name, setup in self.devices.items():
+            setup["name"] = name
             i2c_dev = setup["i2cdev"]
             for key, value in i2c_dev.PARAMS.items():
                 verilog_data.append(f"    parameter {key} = {value};")
@@ -106,6 +115,7 @@ class Plugin(PluginBase):
 
         dev_n = 0
         for name, setup in self.devices.items():
+            setup["name"] = name
             i2c_dev = setup["i2cdev"]
 
             if dev_n == 0:
@@ -156,13 +166,18 @@ class Plugin(PluginBase):
             verilog_data.append("                    case (dev_step)")
             for stype, data in i2c_dev.STEPS.items():
                 size = data["bytes"] * 8
+                data_out = setup.get("data_out")
+                data_in = setup.get("data_in")
                 if stype == "write":
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= 0;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
-                    verilog_data.append(f"                            data_out <= {data['var']};")
+                    if data_out:
+                        verilog_data += data_out
+                    else:
+                        verilog_data.append(f"                            data_out <= {data['var']};")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
@@ -178,7 +193,10 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append("                            if (valid == 1) begin")
-                    verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
+                    if data_in:
+                        verilog_data += data_in
+                    else:
+                        verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
                     verilog_data.append("                            end")
                     verilog_data.append("                        end")
                     dev_step += 1
@@ -216,6 +234,7 @@ class Plugin(PluginBase):
         verilog_data.append("endmodule")
 
         for name, setup in self.devices.items():
+            setup["name"] = name
             i2c_dev = setup["i2cdev"]
             default = setup.get("default", 0)
             expansion = setup.get("expansion", False)
@@ -229,10 +248,12 @@ class Plugin(PluginBase):
                 if not expansion:
                     self.SIGNALS[key] = ifaces
 
+        # TODO: name per instance
         self.VERILOGS_DATA = {"i2cbus.v": "\n".join(verilog_data)}
 
     def convert(self, signal_name, signal_setup, value):
         for name, setup in self.devices.items():
+            setup["name"] = name
             if signal_name.startswith(name):
                 i2c_dev = setup["i2cdev"]
                 if hasattr(i2c_dev, "convert"):
@@ -241,6 +262,7 @@ class Plugin(PluginBase):
 
     def convert_c(self, signal_name, signal_setup):
         for name, setup in self.devices.items():
+            setup["name"] = name
             if signal_name.startswith(name):
                 i2c_dev = setup["i2cdev"]
                 if hasattr(i2c_dev, "convert_c"):
