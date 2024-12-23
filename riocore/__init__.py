@@ -647,6 +647,9 @@ class Project:
                 self.interface_sizes.add(data_config["size"])
                 variable_size = data_config["size"]
                 multiplexed = data_config.get("multiplexed", False)
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
                 if data_config["direction"] == "input":
                     if not data_config.get("expansion"):
                         if multiplexed:
@@ -780,6 +783,9 @@ class Project:
             mpx_value = 0
             mpxid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data():
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
@@ -808,6 +814,9 @@ class Project:
                 self.multiplexed_output_id = 0
 
         for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -866,10 +875,14 @@ class Project:
                     mpxid += 1
 
         for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
             variable_size = data_config["size"]
+
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
                 byte_start = self.buffer_bytes - 1 - byte_start
