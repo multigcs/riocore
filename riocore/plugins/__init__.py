@@ -29,6 +29,10 @@ class PluginBase:
         self.plugin_id = plugin_id
         self.plugin_setup = plugin_setup
 
+        if "uid" not in self.plugin_setup:
+            self.plugin_setup["uid"] = f"{self.NAME}{self.plugin_id}"
+        self.instances_name = self.plugin_setup["uid"]
+
         self.setup()
 
         if self.TYPE == "frameio":
@@ -64,10 +68,6 @@ class PluginBase:
                     "default": False,
                     "description": "configure as joint",
                 }
-
-        if "uid" not in self.plugin_setup:
-            self.plugin_setup["uid"] = f"{self.NAME}{self.plugin_id}"
-        self.instances_name = self.plugin_setup["uid"]
 
         self.update_title()
 

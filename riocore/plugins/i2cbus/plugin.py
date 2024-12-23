@@ -31,18 +31,18 @@ class Plugin(PluginBase):
         self.devices = {
             "ioexp0": {
                 "addr": 64,
-                "type": "PCF8574",
+                "type": "pcf8574",
                 "expansion": True,
                 "default": 255,
             },
             "ioexp1": {
                 "addr": 66,
-                "type": "PCF8574",
+                "type": "pcf8574",
                 "bitvar": True,
             },
             "lm75": {
                 "addr": "8'b10010000",
-                "type": "LM75",
+                "type": "lm75",
             },
         }
         self.INTERFACE = {}
@@ -249,7 +249,8 @@ class Plugin(PluginBase):
                     self.SIGNALS[key] = ifaces
 
         # TODO: name per instance
-        self.VERILOGS_DATA = {"i2cbus.v": "\n".join(verilog_data)}
+
+        self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
 
     def convert(self, signal_name, signal_setup, value):
         for name, setup in self.devices.items():
