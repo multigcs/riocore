@@ -648,21 +648,23 @@ class Project:
                 variable_size = data_config["size"]
                 multiplexed = data_config.get("multiplexed", False)
                 if data_config["direction"] == "input":
-                    if multiplexed:
-                        self.multiplexed_input += 1
-                        self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
-                        if self.multiplexed_input_size < 8:
-                            self.multiplexed_input_size = 8
-                    else:
-                        self.input_size += variable_size
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_input += 1
+                            self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
+                            if self.multiplexed_input_size < 8:
+                                self.multiplexed_input_size = 8
+                        else:
+                            self.input_size += variable_size
                 elif data_config["direction"] == "output":
-                    if multiplexed:
-                        self.multiplexed_output += 1
-                        self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
-                        if self.multiplexed_output_size < 8:
-                            self.multiplexed_output_size = 8
-                    else:
-                        self.output_size += variable_size
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_output += 1
+                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
+                            if self.multiplexed_output_size < 8:
+                                self.multiplexed_output_size = 8
+                        else:
+                            self.output_size += variable_size
 
         if self.multiplexed_input:
             self.input_size += self.multiplexed_input_size + 8
@@ -752,7 +754,7 @@ class Project:
                 direction = signal_config["direction"]
                 virtual = signal_config.get("virtual", False)
                 if virtual:
-                    # swap direction vor virt signals
+                    # swap direction for virt signals
                     if direction == "input":
                         direction = "output"
                     else:

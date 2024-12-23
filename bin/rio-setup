@@ -725,6 +725,19 @@ class TabOverview:
                 label = f"{{ {{{' | '.join(mportsl)}}} | {slot_name} | {{{' | '.join(mportsr)}}} }}"
                 sports.append(label)
 
+
+            expansion_cons = {}
+            for plugin_instance in self.parent.plugins.plugin_instances:
+                name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
+                title = plugin_instance.NAME
+                if name:
+                    title = f"{name} ({plugin_instance.NAME})"
+                for pname in plugin_instance.expansion_outputs():
+                    expansion_cons[pname] = title
+                for pname in plugin_instance.expansion_inputs():
+                    expansion_cons[pname] = title
+
+
             joint_n = 0
             for plugin_instance in self.parent.plugins.plugin_instances:
                 pports = []
@@ -732,9 +745,6 @@ class TabOverview:
                 title = plugin_instance.NAME
                 if name:
                     title = f"{name} ({plugin_instance.NAME})"
-
-                if plugin_instance.TYPE == "expansion":
-                    title = plugin_instance.expansion_prefix
 
                 for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                     pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
@@ -750,8 +760,10 @@ class TabOverview:
                     con_dev = fpga_name
                     con_pin = pin
 
-                    if pin and pin in self.parent.expansion_pins:
-                        con_dev = "_".join(pin.split("_")[0:-1])
+
+                    if pin and pin in expansion_cons:
+                        if pin in expansion_cons:
+                            con_dev = expansion_cons[pin]
                         con_pin = pin.replace("[", "").replace("]", "")
 
                     if ":" in con_pin:
@@ -822,13 +834,13 @@ class TabOverview:
                         gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
                         lcports.append(f"<{net}>{net}")
 
-                if plugin_instance.TYPE == "expansion":
-                    eports = []
-                    for pname in plugin_instance.expansion_outputs():
-                        eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
-                    for pname in plugin_instance.expansion_inputs():
-                        eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
-
+                # expansion posts
+                eports = []
+                for pname in plugin_instance.expansion_outputs():
+                    eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
+                for pname in plugin_instance.expansion_inputs():
+                    eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
+                if eports:
                     label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(eports)}}} }}"
 
                 elif signalports:
@@ -2227,15 +2239,14 @@ class WinForm(QWidget):
         self.pinmapping_rev = {}
         self.expansion_pins = []
         for plugin_instance in self.plugins.plugin_instances:
-            if plugin_instance.TYPE == "expansion":
-                for pin in plugin_instance.expansion_outputs():
-                    self.expansion_pins.append(pin)
-                    if pin not in self.pinlist:
-                        self.pinlist.append(pin)
-                for pin in plugin_instance.expansion_inputs():
-                    self.expansion_pins.append(pin)
-                    if pin not in self.pinlist:
-                        self.pinlist.append(pin)
+            for pin in plugin_instance.expansion_outputs():
+                self.expansion_pins.append(pin)
+                if pin not in self.pinlist:
+                    self.pinlist.append(pin)
+            for pin in plugin_instance.expansion_inputs():
+                self.expansion_pins.append(pin)
+                if pin not in self.pinlist:
+                    self.pinlist.append(pin)
 
             for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                 if "pins" not in plugin_instance.plugin_setup:

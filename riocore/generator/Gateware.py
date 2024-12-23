@@ -64,11 +64,11 @@ class Gateware:
         self.toolchain_generator = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{self.toolchain}").Toolchain(self.config)
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.TYPE == "expansion":
-                for pin in plugin_instance.expansion_outputs():
-                    self.expansion_pins.append(pin)
-                for pin in plugin_instance.expansion_inputs():
-                    self.expansion_pins.append(pin)
+            for pin in plugin_instance.expansion_outputs():
+                self.expansion_pins.append(pin)
+            for pin in plugin_instance.expansion_inputs():
+                self.expansion_pins.append(pin)
+
         self.verilogs = []
         self.globals()
         self.top()
@@ -242,25 +242,27 @@ class Gateware:
                 continue
             variable_name = data_config["variable"]
             if data_config["direction"] == "input":
-                pack_list = []
-                if size >= 8:
-                    for bit_num in range(0, size, 8):
-                        pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
-                else:
-                    pack_list.append(f"{variable_name}")
-                input_variables_list.append(f"{', '.join(pack_list)}")
-                self.iface_in.append([variable_name, size])
+                if not data_config.get("expansion"):
+                    pack_list = []
+                    if size >= 8:
+                        for bit_num in range(0, size, 8):
+                            pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
+                    else:
+                        pack_list.append(f"{variable_name}")
+                    input_variables_list.append(f"{', '.join(pack_list)}")
+                    self.iface_in.append([variable_name, size])
             elif data_config["direction"] == "output":
-                pack_list = []
-                if size >= 8:
-                    for bit_num in range(0, size, 8):
-                        pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
-                        output_pos -= 8
-                else:
-                    pack_list.append(f"rx_data[{output_pos-1}]")
-                    output_pos -= 1
-                output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-                self.iface_out.append([variable_name, size])
+                if not data_config.get("expansion"):
+                    pack_list = []
+                    if size >= 8:
+                        for bit_num in range(0, size, 8):
+                            pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+                            output_pos -= 8
+                    else:
+                        pack_list.append(f"rx_data[{output_pos-1}]")
+                        output_pos -= 1
+                    output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+                    self.iface_out.append([variable_name, size])
 
         if self.project.buffer_size > self.project.input_size:
             diff = self.project.buffer_size - self.project.input_size
@@ -400,20 +402,21 @@ class Gateware:
 
         for plugin_instance in self.project.plugin_instances:
             for data_name, data_config in plugin_instance.interface_data().items():
-                variable_name = data_config["variable"]
-                variable_size = data_config["size"]
-                direction = data_config["direction"]
-                multiplexed = data_config.get("multiplexed", False)
-                if variable_size > 1:
-                    if multiplexed and direction == "output":
-                        output.append(f"    reg [{variable_size-1}:0] {variable_name} = 0;")
+                if not data_config.get("expansion"):
+                    variable_name = data_config["variable"]
+                    variable_size = data_config["size"]
+                    direction = data_config["direction"]
+                    multiplexed = data_config.get("multiplexed", False)
+                    if variable_size > 1:
+                        if multiplexed and direction == "output":
+                            output.append(f"    reg [{variable_size-1}:0] {variable_name} = 0;")
+                        else:
+                            output.append(f"    wire [{variable_size-1}:0] {variable_name};")
                     else:
-                        output.append(f"    wire [{variable_size-1}:0] {variable_name};")
-                else:
-                    if multiplexed and direction == "output":
-                        output.append(f"    reg {variable_name};")
-                    else:
-                        output.append(f"    wire {variable_name};")
+                        if multiplexed and direction == "output":
+                            output.append(f"    reg {variable_name};")
+                        else:
+                            output.append(f"    wire {variable_name};")
         output.append("")
 
         output_variables_string = "\n    ".join(output_variables_list)
@@ -424,6 +427,7 @@ class Gateware:
         output.append(f"        {input_variables_string}")
         output.append("    };")
         output.append("")
+
         # gateware_defines
         for plugin_instance in self.project.plugin_instances:
             define_string = "\n    ".join(plugin_instance.gateware_defines())
@@ -438,11 +442,41 @@ class Gateware:
                 if "pin" in pin_config:
                     if pin_config["pin"] in self.expansion_pins:
                         output.append(f"    wire {pin_config['varname']};")
+
+        for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config:
+                    if pin_config["pin"] in self.expansion_pins:
                         if pin_config["direction"] == "input":
                             output.append(f"    assign {pin_config['varname']} = {pin_config['pin']};")
                         elif pin_config["direction"] == "output":
-                            output.append(f"    assign {pin_config['pin']} = {pin_config['varname']};")
                             used_expansion_outputs.append(pin_config["pin"])
+
+        output.append("    always @(posedge sysclk) begin")
+        # update expansion output pins
+        for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config:
+                    if pin_config["pin"] in self.expansion_pins:
+                        if pin_config["direction"] == "output":
+                            output.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
+        # set expansion output pins without driver
+        for plugin_instance in self.project.plugin_instances:
+            for data_name, data_config in plugin_instance.interface_data().items():
+                if data_config.get("expansion"):
+                    direction = data_config["direction"]
+                    variable = data_config["variable"]
+                    size = data_config["size"]
+                    if direction == "output":
+                        default = data_config.get("default", 0)
+                        for bit_num in range(0, size):
+                            bitvar = f"{variable}[{bit_num}]"
+                            if bitvar not in used_expansion_outputs:
+                                if default & (0b1 << bit_num):
+                                    output.append(f"        {bitvar} <= 1'd1;")
+                                else:
+                                    output.append(f"        {bitvar} <= 1'd0;")
+        output.append("    end")
 
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")

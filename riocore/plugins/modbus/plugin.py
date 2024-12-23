@@ -224,10 +224,10 @@ class Plugin(PluginBase):
         instance["predefines"].append("always @(posedge sysclk) begin")
         instance["predefines"].append("    if (ERROR) begin")
         instance["predefines"].append(f"        if ({self.instances_name}_cmd_counter < {self.system_setup['speed'] // 5}) begin")
-        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= {self.instances_name}_cmd_counter + 1;")
+        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= {self.instances_name}_cmd_counter + 32'd1;")
         instance["predefines"].append("        end else begin")
         instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= 0;")
-        instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 1;")
+        instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 8'd1;")
         instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
         for cn, cmd in enumerate(self.ON_ERROR_CMDS):
             frame = []

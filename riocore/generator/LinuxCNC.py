@@ -1794,6 +1794,9 @@ class LinuxCNC:
 
         output.append("    // raw variables")
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
             variable_bytesize = variable_size // 8
@@ -1817,6 +1820,9 @@ class LinuxCNC:
         output.append("    int retval = 0;")
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
             variable_bytesize = variable_size // 8
@@ -1905,6 +1911,9 @@ class LinuxCNC:
                 variable_name = data_config["variable"]
                 variable_size = data_config["size"]
                 variable_bytesize = variable_size // 8
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
                 if data_config["direction"] == "output":
                     convert_parameter = []
 
@@ -2101,6 +2110,9 @@ class LinuxCNC:
                     signal_source = signal_config.get("source")
                     signal_targets = signal_config.get("targets", {})
                     virtual = signal_config.get("virtual")
+                    expansion = data_config.get("expansion", False)
+                    if expansion:
+                        continue
                     if virtual:
                         continue
                     if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
@@ -2152,7 +2164,7 @@ class LinuxCNC:
                             var_prefix = signal_config["var_prefix"]
                             varname = signal_config["varname"]
 
-                            if  variable_name.endswith(signal_name.upper()):
+                            if variable_name.endswith(signal_name.upper()):
                                 source = variable_name.split()[-1].strip("*")
                                 if not boolean:
                                     output.append(f"    float value = data->{source};")
@@ -2226,6 +2238,9 @@ class LinuxCNC:
             else:
                 for data_name, data_config in plugin_instance.interface_data().items():
                     variable_name = data_config["variable"]
+                    expansion = data_config.get("expansion", False)
+                    if expansion:
+                        continue
                     if data_config["direction"] == "output":
                         output.append(f"    convert_{variable_name.lower()}(data);")
         output.append("}")
@@ -2306,7 +2321,8 @@ class LinuxCNC:
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
-            if multiplexed:
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
@@ -2339,7 +2355,8 @@ class LinuxCNC:
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
-            if multiplexed:
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]

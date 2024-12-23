@@ -383,6 +383,14 @@ class PluginBase:
             bits = self.plugin_setup.get("bits", 8)
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
+        else:
+            for data_name, data_config in self.interface_data().items():
+                direction = data_config["direction"]
+                if data_config.get("expansion") and direction == "output":
+                    variable = data_config["variable"]
+                    bits = self.plugin_setup.get("size", 8)
+                    for num in range(0, bits):
+                        expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
     def expansion_inputs(self):
@@ -391,14 +399,35 @@ class PluginBase:
             bits = self.plugin_setup.get("bits", 8)
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
+        else:
+            for data_name, data_config in self.interface_data().items():
+                direction = data_config["direction"]
+                if data_config.get("expansion") and direction == "input":
+                    variable = data_config["variable"]
+                    bits = self.plugin_setup.get("size", 8)
+                    for num in range(0, bits):
+                        expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
     def gateware_defines(self, direct=False):
         defines = []
         if self.TYPE == "expansion":
             bits = self.plugin_setup.get("bits", 8)
+            default = self.plugin_setup.get("default", 0)
             defines.append(f"wire [{bits-1}:0] {self.expansion_prefix}_INPUT;")
-            defines.append(f"wire [{bits-1}:0] {self.expansion_prefix}_OUTPUT;")
+            defines.append(f"reg [{bits-1}:0] {self.expansion_prefix}_OUTPUT = {default};")
+
+        for data_name, data_config in self.interface_data().items():
+            if data_config.get("expansion"):
+                direction = data_config["direction"]
+                variable = data_config["variable"]
+                size = data_config["size"]
+                if direction == "output":
+                    default = data_config.get("default", 0)
+                    defines.append(f"reg [{size-1}:0] {variable} = {default};")
+                else:
+                    defines.append(f"wire [{size-1}:0] {variable};")
+
         return defines
 
     def gateware_pin_modifiers(self, instances, instance, pin_name, pin_config, pin_varname):

@@ -29,15 +29,17 @@ class Plugin(PluginBase):
         }
 
         self.devices = {
-            "i2cbus_ioexp0": {
+            "ioexp0": {
                 "addr": 64,
                 "type": "PCF8574",
+                "expansion": True,
+                "default": 255,
             },
-            "i2cbus_ioexp1": {
+            "ioexp1": {
                 "addr": 66,
                 "type": "PCF8574",
             },
-            "i2cbus_lm75": {
+            "lm75": {
                 "addr": "8'b10010000",
                 "type": "LM75",
             },
@@ -115,9 +117,10 @@ class Plugin(PluginBase):
             dev_step = 0
             verilog_data.append("                    case (dev_step)")
             for stype, data in i2c_dev.INITS.items():
+                size = data["bytes"] * 8
                 if stype == "write":
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 1;")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= 0;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
@@ -127,7 +130,7 @@ class Plugin(PluginBase):
                     dev_step += 1
                 elif stype == "read":
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 1;")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= 1;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
@@ -135,15 +138,15 @@ class Plugin(PluginBase):
                     verilog_data.append("                        end")
                     dev_step += 1
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 1;")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append("                            if (valid == 1) begin")
-                    verilog_data.append(f"                                {data['var']} <= data_in;")
+                    verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
                     verilog_data.append("                            end")
                     verilog_data.append("                        end")
                     dev_step += 1
             verilog_data.append("                        default: begin")
             verilog_data.append("                            dev_step <= 0;")
-            verilog_data.append("                            devmode <= devmode + 1;")
+            verilog_data.append("                            devmode <= devmode + 7'd1;")
             verilog_data.append("                        end")
             verilog_data.append("                    endcase")
             verilog_data.append("")
@@ -152,9 +155,10 @@ class Plugin(PluginBase):
             dev_step = 0
             verilog_data.append("                    case (dev_step)")
             for stype, data in i2c_dev.STEPS.items():
+                size = data["bytes"] * 8
                 if stype == "write":
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 1;")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= 0;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
@@ -164,7 +168,7 @@ class Plugin(PluginBase):
                     dev_step += 1
                 elif stype == "read":
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 1;")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= 1;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
@@ -172,15 +176,15 @@ class Plugin(PluginBase):
                     verilog_data.append("                        end")
                     dev_step += 1
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 1;")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append("                            if (valid == 1) begin")
-                    verilog_data.append(f"                                {data['var']} <= data_in;")
+                    verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
                     verilog_data.append("                            end")
                     verilog_data.append("                        end")
                     dev_step += 1
             verilog_data.append("                        default: begin")
             verilog_data.append("                            dev_step <= 0;")
-            verilog_data.append("                            devmode <= devmode + 1;")
+            verilog_data.append("                            devmode <= devmode + 7'd1;")
             verilog_data.append("                        end")
             verilog_data.append("                    endcase")
             verilog_data.append("")
@@ -213,8 +217,18 @@ class Plugin(PluginBase):
 
         for name, setup in self.devices.items():
             i2c_dev = setup["i2cdev"]
-            self.INTERFACE.update(i2c_dev.INTERFACE)
-            self.SIGNALS.update(i2c_dev.SIGNALS)
+            default = setup.get("default", 0)
+            expansion = setup.get("expansion", False)
+            for key, ifaces in i2c_dev.INTERFACE.items():
+                direction = ifaces["direction"]
+                ifaces["expansion"] = expansion
+                ifaces["default"] = default
+                self.INTERFACE[key] = ifaces
+
+            for key, ifaces in i2c_dev.SIGNALS.items():
+                if not expansion:
+                    self.SIGNALS[key] = ifaces
+
 
         self.VERILOGS_DATA = {"i2cbus.v": "\n".join(verilog_data)}
 
@@ -226,7 +240,6 @@ class Plugin(PluginBase):
                     return i2c_dev.convert(signal_name, signal_setup, value)
         return value
 
-
     def convert_c(self, signal_name, signal_setup):
         for name, setup in self.devices.items():
             if signal_name.startswith(name):
@@ -234,5 +247,3 @@ class Plugin(PluginBase):
                 if hasattr(i2c_dev, "convert_c"):
                     return i2c_dev.convert_c(signal_name, signal_setup)
         return ""
-
-
