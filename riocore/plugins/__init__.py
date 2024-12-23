@@ -28,6 +28,7 @@ class PluginBase:
         self.system_setup = system_setup
         self.plugin_id = plugin_id
         self.plugin_setup = plugin_setup
+
         self.setup()
 
         if self.TYPE == "frameio":
@@ -64,6 +65,10 @@ class PluginBase:
                     "description": "configure as joint",
                 }
 
+        if "uid" not in self.plugin_setup:
+            self.plugin_setup["uid"] = f"{self.NAME}{self.plugin_id}"
+        self.instances_name = self.plugin_setup["uid"]
+
         self.update_title()
 
         if self.TYPE == "expansion":
@@ -73,7 +78,6 @@ class PluginBase:
             self.expansions.append(self.expansion_prefix)
 
     def update_title(self):
-        self.instances_name = f"{self.NAME}{self.plugin_id}"
         self.title = self.plugin_setup.get("name") or self.instances_name
 
     def firmware_defines(self):

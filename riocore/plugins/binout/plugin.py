@@ -56,8 +56,11 @@ graph LR;
                 valuename = instance["arguments"]["value"]
                 assignlist = []
                 for bit in range(bits):
-                    vname = instance["arguments"][f"bin{bit}"]
-                    assignlist.append(f"assign {vname} = {valuename}[{bit}];")
+                    if f"bin{bit}" in instance["arguments"]:
+                        vname = instance["arguments"][f"bin{bit}"]
+                        assignlist.append(f"assign {vname} = {valuename}[{bit}];")
+                    else:
+                        print(f"ERROR: binout: pin for bit {bit} not found")
 
                 instance["predefines"] = assignlist
                 del instance["arguments"]

@@ -2038,8 +2038,17 @@ class WinForm(QWidget):
                     "pins": {},
                 }
             )
-
             plugin_config = self.config["plugins"][plugin_id]
+
+            uid_prefix = plugin_config["type"]
+            unum = 0
+            print(self.plugin_uids)
+            while f"{uid_prefix}{unum}" in self.plugin_uids:
+                unum += 1
+            self.plugin_uids.append(f"{uid_prefix}{unum}")
+            plugin_config["uid"] = f"{uid_prefix}{unum}"
+
+
             plugin_instance = self.plugins.load_plugin(plugin_id, plugin_config, self.config)
 
             if "pins" not in plugin_config:
@@ -2181,6 +2190,7 @@ class WinForm(QWidget):
 
     def config_load(self):
         self.info_widget.setText(self.config_file)
+        self.plugin_uids = []
 
         slot_pinmapping = {}
         self.slots = self.board.get("slots", []) + self.config.get("slots", [])
@@ -2216,6 +2226,15 @@ class WinForm(QWidget):
                                 module_setup[plugin_name]["pins"][pin]["pin_mapped"] = pname
                                 del module_setup[plugin_name]["pins"][pin]["pin"]
 
+                uid = module_setup[plugin_name].get("uid")
+                if not uid:
+                    uid_prefix = module_setup[plugin_name]["type"]
+                    unum = 0
+                    while f"{uid_prefix}{unum}" in self.plugin_uids:
+                        unum += 1
+                    uid = f"{uid_prefix}{unum}"
+                    module_setup[plugin_name]["uid"] = uid
+                self.plugin_uids.append(uid)
                 mplugins.load_plugin(plugin_id, module_setup[plugin_name], self.config)
 
             self.modules[slot_name] = {
@@ -2226,8 +2245,19 @@ class WinForm(QWidget):
             }
 
         # loading plugins
+        plugin_types = {}
         self.plugins = riocore.Plugins()
         for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
+            uid = plugin_config.get("uid")
+            if not uid:
+                uid_prefix = plugin_config["type"]
+                unum = 0
+                while f"{uid_prefix}{unum}" in self.plugin_uids:
+                    unum += 1
+                uid = f"{uid_prefix}{unum}"
+                plugin_config["uid"] = uid
+            self.plugin_uids.append(uid)
+
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
 
         self.items = {}
