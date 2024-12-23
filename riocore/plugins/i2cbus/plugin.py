@@ -29,9 +29,19 @@ class Plugin(PluginBase):
             },
         }
 
+        self.OPTIONS = {
+            "speed": {
+                "default": 100000,
+                "type": int,
+                "min": 100,
+                "max": 50000000,
+                "unit": "Hz",
+                "description": "I2C-Clockspeed",
+            },
+        }
+
         self.config = self.plugin_setup.get("config", {})
         self.devices = deepcopy(self.config.get("devices", {}))
-
         self.PLUGIN_CONFIG = True
         self.INTERFACE = {}
         self.SIGNALS = {}
@@ -51,7 +61,9 @@ class Plugin(PluginBase):
 
         verilog_data = []
         verilog_data.append("")
-        verilog_data.append("module i2cbus (")
+        verilog_data.append(f"module i2cbus_{self.instances_name}")
+        verilog_data.append("    #(parameter DIVIDER = 42)")
+        verilog_data.append("    (")
         verilog_data.append("        input clk,")
         for name, setup in self.devices.items():
             setup["name"] = name
@@ -72,6 +84,7 @@ class Plugin(PluginBase):
         verilog_data.append("        inout sda,")
         verilog_data.append("        output scl")
         verilog_data.append("    );")
+
 
         for name, setup in self.devices.items():
             extra = setup.get("extra")
@@ -117,15 +130,20 @@ class Plugin(PluginBase):
             verilog_data.append("                if (do_init) begin")
             dev_step = 0
             verilog_data.append("                    case (dev_step)")
-            for stype, data in i2c_dev.INITS.items():
+            for data in i2c_dev.INITS:
+                stype = data["mode"]
                 size = data["bytes"] * 8
+                value = data["value"]
                 if stype == "write":
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= 0;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
-                    verilog_data.append(f"                            data_out <= {data['var']};")
+                    if value:
+                        verilog_data.append(f"                            data_out <= {value};")
+                    else:
+                        verilog_data.append(f"                            data_out <= {data['var']};")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
@@ -155,10 +173,14 @@ class Plugin(PluginBase):
             verilog_data.append("                end else begin")
             dev_step = 0
             verilog_data.append("                    case (dev_step)")
-            for stype, data in i2c_dev.STEPS.items():
+            for data in i2c_dev.STEPS:
+                stype = data["mode"]
                 size = data["bytes"] * 8
                 data_out = setup.get("data_out")
                 data_in = setup.get("data_in")
+                value = data.get("value")
+                var_set = data.get("var_set")
+                until = data.get("until")
                 if stype == "write":
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
@@ -167,6 +189,8 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
                     if data_out:
                         verilog_data += data_out
+                    elif value:
+                        verilog_data.append(f"                            data_out <= {value};")
                     else:
                         verilog_data.append(f"                            data_out <= {data['var']};")
                     verilog_data.append("                            start <= 1;")
@@ -182,10 +206,19 @@ class Plugin(PluginBase):
                     verilog_data.append("                        end")
                     dev_step += 1
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                    if not until:
+                        verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append("                            if (valid == 1) begin")
-                    if data_in:
+                    if until:
+                        verilog_data.append(f"                                if ({until}) begin")
+                        verilog_data.append("                                    dev_step <= dev_step + 7'd1;")
+                        verilog_data.append("                                end else begin")
+                        verilog_data.append("                                    dev_step <= dev_step - 7'd1;")
+                        verilog_data.append("                                end")
+                    elif data_in:
                         verilog_data += data_in
+                    elif var_set:
+                        verilog_data.append(f"                                {data['var']} <= {var_set};")
                     else:
                         verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
                     verilog_data.append("                            end")
@@ -209,7 +242,7 @@ class Plugin(PluginBase):
         verilog_data.append("        end")
         verilog_data.append("    end")
         verilog_data.append("")
-        verilog_data.append("    i2c_master i2cinst0 (")
+        verilog_data.append("    i2c_master #(.DIVIDER(DIVIDER)) i2cinst0 (")
         verilog_data.append("        .clk(clk),")
         verilog_data.append("        .sda(sda),")
         verilog_data.append("        .scl(scl),")
@@ -226,6 +259,9 @@ class Plugin(PluginBase):
 
         for name, setup in self.devices.items():
             setup["name"] = name
+            
+            setup["plugin_setup"] = self.plugin_setup
+            
             i2c_dev = setup["i2cdev"]
             default = setup.get("default", 0)
             expansion = setup.get("expansion", False)
@@ -240,6 +276,16 @@ class Plugin(PluginBase):
                     self.SIGNALS[key] = ifaces
 
         self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
+
+    def gateware_instances(self):
+        instances = self.gateware_instances_base()
+        instance = instances[self.instances_name]
+        instance["module"] = f"i2cbus_{self.instances_name}"
+        instance_parameter = instance["parameter"]
+        freq = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
+        divider = self.system_setup["speed"] // freq // 6
+        instance_parameter["DIVIDER"] = divider
+        return instances
 
     def convert(self, signal_name, signal_setup, value):
         for name, setup in self.devices.items():

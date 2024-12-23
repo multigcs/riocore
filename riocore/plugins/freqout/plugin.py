@@ -34,14 +34,9 @@ class Plugin(PluginBase):
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
-
         instance = instances[self.instances_name]
-        instance["predefines"]
-        instance["parameter"]
         instance_arguments = instance["arguments"]
-
         instance_arguments["disabled"] = "ERROR"
-
         return instances
 
     def convert(self, signal_name, signal_setup, value):

@@ -11,6 +11,7 @@ class i2c_device:
         self.SIGNALS = {
             f"{self.name}_in": {
                 "direction": "input",
+                "format": "0.1f",
             },
         }
         self.PARAMS = {
@@ -19,12 +20,13 @@ class i2c_device:
 
         self.INITS = {}
 
-        self.STEPS = {
-            "read": {
+        self.STEPS = [
+            {
+                "mode": "read",
                 "var": f"{self.name}_in",
                 "bytes": 2,
             },
-        }
+        ]
 
     def convert(self, signal_name, signal_setup, value):
         return value / 256.0

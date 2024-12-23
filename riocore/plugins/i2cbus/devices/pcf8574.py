@@ -59,15 +59,16 @@ class i2c_device:
             f"{self.name.upper()}_ADDR": self.addr,
         }
 
-        self.INITS = {}
-
-        self.STEPS = {
-            "write": {
+        self.INITS = []
+        self.STEPS = [
+            {
+                "mode": "write",
                 "var": f"{self.name}_out",
                 "bytes": 1,
             },
-            "read": {
+            {
+                "mode": "read",
                 "var": f"{self.name}_in",
                 "bytes": 1,
             },
-        }
+        ]

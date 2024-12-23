@@ -467,7 +467,7 @@ class WinForm(QWidget):
 
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
-                    value_format = signal.get("format", "d")
+                    value_format = signal.get("format", "0.2f")
                     value_unit = signal.get("unit", "")
                     userconfig = signal.get("userconfig", {})
                     value_unit = userconfig.get("display", {}).get("unit", value_unit)

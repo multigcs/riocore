@@ -1,6 +1,8 @@
 
 
-module i2c_master (
+module i2c_master 
+    #(parameter DIVIDER = 42)
+    (
         input clk,
         inout sda,
         output reg scl = 0,
@@ -14,11 +16,8 @@ module i2c_master (
         output reg valid = 0
     );
 
-    parameter DIVIDER = 27000000 / 400000 / 6;
-
     parameter MODE_ADDR = 0;
     parameter MODE_DATA = 1;
-
     parameter STATE_WAIT = 0;
     parameter STATE_INIT = 1;
     parameter STATE_START = 2;
@@ -30,6 +29,7 @@ module i2c_master (
 
     reg [7:0] mystate = 0;
     reg [7:0] send_cnt = 0;
+    reg [7:0] send_byte_n = 0;
 
     reg clk_400;
     reg [31:0]counter_400;
@@ -99,11 +99,12 @@ module i2c_master (
                 send_mode <= MODE_ADDR;
                 data_rtx <= {addr[7:1], rw};
                 send_cnt <= 0;
+                send_byte_n <= 0;
                 mystate <= STATE_RTX;
             end
 
         end else if (mystate == STATE_RTX) begin
-            // send bytes*8bit
+            // send 8bit
             if (step == 0) begin
                 step <= 1;
                 if (send_mode == MODE_ADDR) begin
@@ -111,7 +112,7 @@ module i2c_master (
                     sdaOut <= data_rtx[7 - send_cnt]; // set addr
                 end else if (rw == 0) begin
                     isSending <= 1;
-                    sdaOut <= data_rtx[(bytes*8-1) - send_cnt]; // set addr
+                    sdaOut <= data_rtx[7 - send_cnt]; // set addr
                 end else begin
                     isSending <= 0;
                 end
@@ -121,7 +122,7 @@ module i2c_master (
 
                 if (rw == 1 && send_mode == MODE_DATA) begin
                     // read
-                    data_rtx[(bytes*8-1) - send_cnt] = sdaIn;
+                    data_rtx[7 - send_cnt] = sdaIn;
                 end
 
             end else if (step == 2) begin
@@ -131,13 +132,15 @@ module i2c_master (
                     mystate <= STATE_ACK;
                     send_cnt <= 0;
 
-                end else if (send_mode == MODE_DATA && send_cnt == (bytes*8-1)) begin
+                end else if (send_mode == MODE_DATA && send_cnt == 7) begin
                     mystate <= STATE_ACK;
                     if (rw == 1) begin
-                        data_in <= data_rtx;
+                        data_in <= {data_in[23:0], data_rtx[7:0]};
                         valid <= 1;
                     end
                     send_cnt <= 0;
+
+
                 end else begin
                     send_cnt <= send_cnt + 8'd1;
                 end
@@ -156,21 +159,21 @@ module i2c_master (
                 scl <= 0;
                 sdaOut <= 0;
                 isSending <= 1;
-                if (sdaIn == 0) begin
-                    // ack
-                    if (send_mode == MODE_ADDR) begin
+                if (send_byte_n < bytes) begin
+                    if (send_mode == MODE_ADDR && sdaIn == 1) begin
+                        // nack
+                        mystate <= STATE_STOP;
+                    end else begin
                         send_mode <= MODE_DATA;
                         if (rw == 0) begin
-                            data_rtx <= data_out;
+                            data_rtx <= data_out[((bytes - send_byte_n)*8-1):((bytes - send_byte_n)*8-8)];
                         end else begin
                             data_rtx <= 0;
                         end
+                        send_byte_n <= send_byte_n + 1;
                         mystate <= STATE_RTX;
-                    end else begin
-                        mystate <= STATE_STOP;
                     end
                 end else begin
-                    // nack
                     mystate <= STATE_STOP;
                 end
             end
