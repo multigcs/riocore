@@ -5,7 +5,7 @@ module i2c_master
     (
         input clk,
         inout sda,
-        output reg scl = 0,
+        output reg scl = 1,
         input wire start,
         output reg busy = 0,
         input wire [6:0] set_addr,
@@ -64,6 +64,7 @@ module i2c_master
         if (mystate == STATE_WAIT) begin
             sdaOut <= 1;
             isSending <= 0;
+            busy <= 0;
 
             if (sdaIn == 0) begin
                 // wait for free bus / reset

@@ -136,6 +136,10 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append("load: impl/pnr/project.fs")
             makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs -f")
             makefile_data.append("	copy hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
+            makefile_data.append("sload: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs")
+            makefile_data.append("	copy hash_new.txt hash_flashed.txt")
         else:
             makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
             makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
@@ -169,6 +173,10 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append("")
             makefile_data.append("load: impl/pnr/project.fs")
             makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
+            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
+            makefile_data.append("sload: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
 
         makefile_data.append("")
