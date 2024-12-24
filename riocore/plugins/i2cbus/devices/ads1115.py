@@ -1,9 +1,10 @@
 class i2c_device:
+    options = {"addresses": ["0x48", "0x49", "0x4A", "0x4B"]}
+
     def __init__(self, setup):
         self.name = setup["name"]
         self.addr = setup["address"]
         self.setup = setup
-        self.addresses = ["8'10010000", "8'b10010010", "8'b10010100", "8'b10010110"]
         self.INTERFACE = {
             f"{self.name}_adc0": {
                 "size": 16,
@@ -40,9 +41,7 @@ class i2c_device:
                 "format": "0.3f",
             },
         }
-        self.PARAMS = {
-            f"{self.name.upper()}_ADDR": self.addr,
-        }
+        self.PARAMS = {}
 
         self.INITS = {}
         setupRegister = [

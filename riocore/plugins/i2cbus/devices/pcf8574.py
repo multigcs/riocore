@@ -1,4 +1,8 @@
 class i2c_device:
+    options = {
+        "addresses": ["0x20", "0x21", "0x22", "0x23", "0x24", "0x25", "0x26", "0x27"],
+    }
+
     def __init__(self, setup):
         self.name = setup["name"]
         self.addr = setup["address"]
@@ -55,9 +59,7 @@ class i2c_device:
                 "min": 0,
                 "max": 255,
             }
-        self.PARAMS = {
-            f"{self.name.upper()}_ADDR": self.addr,
-        }
+        self.PARAMS = {}
 
         self.INITS = []
         self.STEPS = [

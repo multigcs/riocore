@@ -1,11 +1,13 @@
 class i2c_device:
     MEASURMENT_REG = "8'hF4"
     TEMPERATURE_CTRL = "8'h2E"
+    options = {
+        "addresses": ["0x77"],
+    }
 
     def __init__(self, setup):
         self.name = setup["name"]
         self.addr = setup["address"]
-        self.addresses = ["8'b11101110"]
         self.INTERFACE = {
             f"{self.name}_temp": {
                 "size": 16,
@@ -18,9 +20,7 @@ class i2c_device:
                 "format": "0.1f",
             },
         }
-        self.PARAMS = {
-            f"{self.name.upper()}_ADDR": self.addr,
-        }
+        self.PARAMS = {}
 
         self.INITS = {}
 

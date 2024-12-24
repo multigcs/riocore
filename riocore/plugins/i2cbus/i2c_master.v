@@ -8,7 +8,7 @@ module i2c_master
         output reg scl = 0,
         input wire start,
         output reg busy = 0,
-        input wire [7:0] set_addr,
+        input wire [6:0] set_addr,
         input wire set_rw,
         input wire [4:0] set_bytes,
         input wire [31:0] set_data_out,
@@ -53,7 +53,7 @@ module i2c_master
     reg send_mode = 0;
     reg [31:0] data_rtx = 0;
 
-    reg [7:0] addr = 0;
+    reg [6:0] addr = 0;
     reg [31:0] data_out = 0;
     reg rw = 0;
     reg [4:0] bytes;
@@ -97,7 +97,7 @@ module i2c_master
                 scl <= 0;
                 step <= 0;
                 send_mode <= MODE_ADDR;
-                data_rtx <= {addr[7:1], rw};
+                data_rtx <= {addr, rw};
                 send_cnt <= 0;
                 send_byte_n <= 0;
                 mystate <= STATE_RTX;

@@ -49,11 +49,11 @@ class Plugin(PluginBase):
         if not self.devices:
             return
 
+        sys.path.insert(0, plugin_path)
         for name, setup in self.devices.items():
             setup["name"] = name
             dtype = setup["type"]
             if os.path.isfile(os.path.join(plugin_path, "devices", f"{dtype}.py")):
-                sys.path.insert(0, plugin_path)
                 devlib = importlib.import_module(f".{dtype}", ".devices")
                 setup["i2cdev"] = devlib.i2c_device(setup)
             else:
@@ -94,6 +94,8 @@ class Plugin(PluginBase):
         for name, setup in self.devices.items():
             setup["name"] = name
             i2c_dev = setup["i2cdev"]
+            vaddr = i2c_dev.addr.replace("0x", "7'h")
+            verilog_data.append(f"    parameter {name.upper()}_ADDR = {vaddr};")
             for key, value in i2c_dev.PARAMS.items():
                 verilog_data.append(f"    parameter {key} = {value};")
 
@@ -102,7 +104,7 @@ class Plugin(PluginBase):
         verilog_data.append("    reg do_init = 1;")
         verilog_data.append("    reg [7:0] devmode = 0;")
         verilog_data.append("    reg [7:0] last_devmode = 0;")
-        verilog_data.append("    reg [7:0] addr = 0;")
+        verilog_data.append("    reg [6:0] addr = 0;")
         verilog_data.append("    reg rw = 0;")
         verilog_data.append("    reg [4:0] bytes = 0;")
         verilog_data.append("    reg [31:0] data_out = 0;")

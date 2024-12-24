@@ -1,5 +1,7 @@
-import os
 import glob
+import importlib
+import os
+import sys
 from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
@@ -30,11 +32,13 @@ class config:
         self.config = self.instance.plugin_setup["config"]
         self.config_selected = None
 
-        self.device_types = []
+        sys.path.insert(0, plugin_path)
+        self.device_types = {}
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*.py"))):
             device_name = os.path.basename(device_path).replace(".py", "")
             if not device_name.startswith("_"):
-                self.device_types.append(device_name)
+                devlib = importlib.import_module(f".{device_name}", ".devices")
+                self.device_types[device_name] = devlib.i2c_device.options
 
         self.widgets = {
             "name": {
@@ -44,7 +48,8 @@ class config:
             },
             "address": {
                 "description": "Slave-Address",
-                "type": str,
+                "type": "combo",
+                "options": [],
                 "default": "",
             },
             "type": {
@@ -63,6 +68,9 @@ class config:
                 dnum += 1
             config_name = f"{prefix}{dnum}"
 
+        dtype = self.config["devices"].get(config_name, {}).get("type", "")
+
+
         dialog = QDialog()
         if self.styleSheet:
             dialog.setStyleSheet(self.styleSheet)
@@ -78,6 +86,30 @@ class config:
 
         message = QLabel("Device-Setup:")
         vlayout.addWidget(message, stretch=0)
+
+        def update_adresses(item):
+            dtype = self.widgets["type"]["widget"].currentText()
+
+            if dtype in self.device_types:
+                self.widgets["address"]["options"] = self.device_types[dtype]["addresses"]
+            else:
+                self.widgets["address"]["options"] = []
+
+            self.widgets["address"]["widget"].clear()
+            for option in self.widgets["address"]["options"]:
+                self.widgets["address"]["widget"].addItem(option)
+
+            value = self.config["devices"].get(config_name, {}).get("address", data["default"])
+            for n in range(0, self.widgets["address"]["widget"].count()):
+                if self.widgets["address"]["widget"].itemText(n) == value:
+                    self.widgets["address"]["widget"].setCurrentIndex(n)
+
+
+        if dtype in self.device_types:
+            self.widgets["address"]["options"] = self.device_types[dtype]["addresses"]
+        else:
+            self.widgets["address"]["options"] = []
+
 
         for name, data in self.widgets.items():
             if name == "name":
@@ -113,6 +145,9 @@ class config:
             hlayout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"))
             hlayout.addWidget(data["widget"])
             vlayout.addLayout(hlayout, stretch=0)
+
+        self.widgets["type"]["widget"].currentIndexChanged.connect(update_adresses)
+
 
         vlayout.addStretch()
         dialog.layout.addLayout(vlayout)
