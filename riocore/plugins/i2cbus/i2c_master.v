@@ -16,6 +16,8 @@ module i2c_master
         output reg valid = 0
     );
 
+    localparam RW_WRITE = 0;
+    localparam RW_READ = 1;
     localparam MODE_ADDR = 0;
     localparam MODE_DATA = 1;
     localparam STATE_WAIT = 0;
@@ -52,7 +54,7 @@ module i2c_master
     reg [31:0] data_rtx = 0;
     reg [6:0] addr = 0;
     reg [31:0] data_out = 0;
-    reg rw = 0;
+    reg rw = RW_WRITE;
     reg [4:0] bytes = 0;
 
     always @(posedge clk_400) begin
@@ -105,7 +107,7 @@ module i2c_master
                 if (send_mode == MODE_ADDR) begin
                     isSending <= 1;
                     sdaOut <= data_rtx[7 - send_cnt]; // set addr
-                end else if (rw == 0) begin
+                end else if (rw == RW_WRITE) begin
                     isSending <= 1;
                     sdaOut <= data_rtx[7 - send_cnt]; // set addr
                 end else begin
@@ -114,7 +116,7 @@ module i2c_master
             end else if (step == 1) begin
                 step <= 2;
                 scl <= 1;
-                if (rw == 1 && send_mode == MODE_DATA) begin
+                if (rw == RW_READ && send_mode == MODE_DATA) begin
                     // read
                     data_rtx[7 - send_cnt] = sdaIn;
                 end
@@ -128,7 +130,7 @@ module i2c_master
 
                 end else if (send_mode == MODE_DATA && send_cnt == 7) begin
                     mystate <= STATE_ACK;
-                    if (rw == 1) begin
+                    if (rw == RW_READ) begin
                         data_in <= {data_in[23:0], data_rtx[7:0]};
                         valid <= 1;
                     end
@@ -143,8 +145,15 @@ module i2c_master
         end else if (mystate == STATE_ACK) begin
             if (step == 0) begin
                 step <= 1;
-                sdaOut <= 1;
-                isSending <= 0;
+
+                if (send_mode == MODE_DATA && rw == RW_READ && send_byte_n < bytes) begin
+                    sdaOut <= 0;
+                    isSending <= 1;
+                end else begin
+                    sdaOut <= 1;
+                    isSending <= 0;
+                end
+
             end else if (step == 1) begin
                 step <= 2;
                 scl <= 1;
@@ -159,7 +168,7 @@ module i2c_master
                         mystate <= STATE_STOP;
                     end else begin
                         send_mode <= MODE_DATA;
-                        if (rw == 0) begin
+                        if (rw == RW_WRITE) begin
                             data_rtx <= data_out[((bytes - send_byte_n)*8-1):((bytes - send_byte_n)*8-8)];
                         end else begin
                             data_rtx <= 0;

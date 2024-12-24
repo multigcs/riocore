@@ -85,6 +85,9 @@ class Plugin(PluginBase):
         verilog_data.append("        output scl")
         verilog_data.append("    );")
 
+        verilog_data.append("    localparam RW_WRITE = 0;")
+        verilog_data.append("    localparam RW_READ = 1;")
+
         for name, setup in self.devices.items():
             extra = setup.get("extra")
             if extra:
@@ -105,7 +108,7 @@ class Plugin(PluginBase):
         verilog_data.append("    reg [7:0] devmode = 0;")
         verilog_data.append("    reg [7:0] last_devmode = 0;")
         verilog_data.append("    reg [6:0] addr = 0;")
-        verilog_data.append("    reg rw = 0;")
+        verilog_data.append("    reg rw = RW_WRITE;")
         verilog_data.append("    reg [4:0] bytes = 0;")
         verilog_data.append("    reg [31:0] data_out = 0;")
         verilog_data.append("    wire [31:0] data_in;")
@@ -134,14 +137,20 @@ class Plugin(PluginBase):
             for data in i2c_dev.INITS:
                 stype = data["mode"]
                 size = data["bytes"] * 8
-                value = data["value"]
+                data_out = setup.get("data_out")
+                data_in = setup.get("data_in")
+                value = data.get("value")
+                var_set = data.get("var_set")
+                until = data.get("until")
                 if stype == "write":
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
-                    verilog_data.append("                            rw <= 0;")
+                    verilog_data.append("                            rw <= RW_WRITE;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
-                    if value:
+                    if data_out:
+                        verilog_data += data_out
+                    elif value:
                         verilog_data.append(f"                            data_out <= {value};")
                     else:
                         verilog_data.append(f"                            data_out <= {data['var']};")
@@ -152,16 +161,35 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
-                    verilog_data.append("                            rw <= 1;")
+                    verilog_data.append("                            rw <= RW_READ;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                    if not until:
+                        verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append("                            if (valid == 1) begin")
-                    verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
-                    verilog_data.append("                            end")
+                    if until:
+                        verilog_data.append(f"                                if ({until}) begin")
+                        verilog_data.append("                                    dev_step <= dev_step + 7'd1;")
+                        verilog_data.append("                                end else begin")
+                        verilog_data.append("                                    dev_step <= dev_step - 7'd1;")
+                        verilog_data.append("                                end")
+                    elif data_in:
+                        verilog_data += data_in
+                    elif var_set:
+                        verilog_data.append(f"                                {data['var']} <= {var_set};")
+                    else:
+                        verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
+
+                    if until:
+                        verilog_data.append("                            end else begin")
+                        verilog_data.append("                                dev_step <= dev_step + 7'd1;")
+                        verilog_data.append("                            end")
+                    else:
+                        verilog_data.append("                            end")
+
                     verilog_data.append("                        end")
                     dev_step += 1
             verilog_data.append("                        default: begin")
@@ -186,7 +214,7 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
-                    verilog_data.append("                            rw <= 0;")
+                    verilog_data.append("                            rw <= RW_WRITE;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
                     if data_out:
                         verilog_data += data_out
@@ -201,7 +229,7 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
-                    verilog_data.append("                            rw <= 1;")
+                    verilog_data.append("                            rw <= RW_READ;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
