@@ -1,6 +1,19 @@
 # i2cbus
 **I2C-Bus**
 
+I2C-Bus - supports multiple busses with multiple devices per bus
+Devices:
+* ads1115
+* as5600
+* bmp180
+* lm75
+* mlx90614
+* pca9685
+* pcf8574
+
+
+Keywords: adc temperatur voltage current
+
 
 ![image.png](image.png)
 
