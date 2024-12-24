@@ -18,7 +18,7 @@ STYLESHEET = """
 """
 STYLESHEET_CHECKBOX = """
     QCheckBox::indicator::unchecked {
-        background-color: lightgray;
+        background-color: darkgray;
     }
 """
 STYLESHEET_BUTTON = """

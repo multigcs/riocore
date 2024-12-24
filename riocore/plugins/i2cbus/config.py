@@ -16,7 +16,10 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
+    QWidget,
 )
+
+from riocore.widgets import STYLESHEET_CHECKBOX
 
 plugin_path = os.path.dirname(__file__)
 
@@ -66,6 +69,11 @@ class config:
             value = data["widget"].currentText().split()[0]
             if value.isnumeric():
                 value = int(value)
+        elif data["type"] == "bits":
+            value = 0
+            for bit_n, widget in enumerate(data.get("bits", [])):
+                if widget.isChecked():
+                    value |= 1 << (7 - bit_n)
         elif data["type"] is bool:
             value = data["widget"].isChecked()
         elif data["type"] is int:
@@ -84,8 +92,28 @@ class config:
             for n in range(0, data["widget"].count()):
                 if data["widget"].itemText(n) == value:
                     data["widget"].setCurrentIndex(n)
+
+        elif data["type"] == "bits":
+            blayout = QHBoxLayout()
+            data["widget"] = QWidget()
+            data["widget"].setLayout(blayout)
+            data["bits"] = []
+            for bit in reversed(range(8)):
+                vlayout = QVBoxLayout()
+                vwidget = QWidget()
+                vwidget.setLayout(vlayout)
+                bcheck = QCheckBox()
+                bcheck.setStyleSheet(STYLESHEET_CHECKBOX)
+                bcheck.setChecked((value & (1 << bit)))
+                data["bits"].append(bcheck)
+                vlayout.addWidget(QLabel(f"{bit}"), stretch=0)
+                vlayout.addWidget(bcheck, stretch=0)
+                blayout.addWidget(vwidget, stretch=0)
+            blayout.addStretch()
+
         elif data["type"] is bool:
             data["widget"] = QCheckBox()
+            data["widget"].setStyleSheet(STYLESHEET_CHECKBOX)
             data["widget"].setChecked(value)
         elif data["type"] is int:
             data["widget"] = QSpinBox()
@@ -155,7 +183,9 @@ class config:
                 self.device_layout.addWidget(QLabel("Device-Options:"), stretch=0)
                 for name, cdata in self.device_types[dtype]["config"].items():
                     value = value = self.config["devices"].get(config_name, {}).get(name, cdata["default"])
-                    self.device_layout.addWidget(self.add_widget(cdata, value))
+                    self.device_layout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"))
+                    widget = self.add_widget(cdata, value)
+                    self.device_layout.addWidget(widget)
 
         if dtype in self.device_types:
             self.widgets["address"]["options"] = self.device_types[dtype]["addresses"]
@@ -197,7 +227,6 @@ class config:
             if dtype in self.device_types and "config" in self.device_types[dtype]:
                 for name, cdata in self.device_types[dtype]["config"].items():
                     value = self.read_widget(cdata)
-                    print(name, value)
                     new_config[name] = value
 
             if new_name != config_name and config_name in self.config["devices"]:

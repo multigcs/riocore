@@ -1,15 +1,34 @@
 class i2c_device:
     options = {
         "addresses": ["0x20", "0x21", "0x22", "0x23", "0x24", "0x25", "0x26", "0x27"],
+        "config": {
+            "bitvar": {
+                "type": bool,
+                "description": "use as single bits",
+                "default": True,
+            },
+            "expansion": {
+                "type": bool,
+                "description": "use as expansion io",
+                "default": False,
+            },
+            "default": {
+                "type": "bits",
+                "min": 0,
+                "max": 255,
+                "description": "set default value in expansion mode",
+                "default": 255,
+            },
+        },
     }
 
     def __init__(self, setup):
         self.name = setup["name"]
         self.addr = setup["address"]
-        bitvar = setup.get("bitvar", False)
+        self.bitvar = setup.get("bitvar", self.options["config"]["bitvar"]["default"])
         self.INTERFACE = {}
         self.SIGNALS = {}
-        if bitvar:
+        if self.bitvar:
             setup["data_out"] = []
             setup["data_in"] = []
 
@@ -59,8 +78,8 @@ class i2c_device:
                 "min": 0,
                 "max": 255,
             }
-        self.PARAMS = {}
 
+        self.PARAMS = {}
         self.INITS = []
         self.STEPS = [
             {

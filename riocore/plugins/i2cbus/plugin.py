@@ -267,9 +267,7 @@ class Plugin(PluginBase):
 
         for name, setup in self.devices.items():
             setup["name"] = name
-
             setup["plugin_setup"] = self.plugin_setup
-
             i2c_dev = setup["i2cdev"]
             default = setup.get("default", 0)
             expansion = setup.get("expansion", False)

@@ -85,6 +85,5 @@ class i2c_device:
             ]
 
     def convert(self, signal_name, signal_setup, value):
-        channel = signal_name[-1]
         value /= 1000.0
         return value
