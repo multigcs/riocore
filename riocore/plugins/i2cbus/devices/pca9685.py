@@ -9,11 +9,18 @@ class i2c_device:
                 "max": 2000,
                 "default": 100,
             },
+            "channels": {
+                "type": int,
+                "min": 1,
+                "max": 16,
+                "description": "number of channels",
+                "default": 16,
+            },
             "units": {
                 "type": "combo",
                 "options": ["ms", "%", "rc %", "rc arc"],
                 "description": "unit of the control unit",
-                "default": "rc arc",
+                "default": "%",
             },
         },
     }
@@ -44,13 +51,14 @@ class i2c_device:
         self.addr = setup["address"]
         self.frequency = setup.get("frequency", self.options["config"]["frequency"]["default"])
         self.units = setup.get("units", self.options["config"]["units"]["default"])
+        self.channels = setup.get("channels", self.options["config"]["channels"]["default"])
         self.INTERFACE = {}
         self.SIGNALS = {}
-        self.channels = 16
         for channel in range(self.channels):
             self.INTERFACE[f"{self.name}_ch{channel}"] = {
                 "size": 16,
                 "direction": "output",
+                "multiplexed": True,
             }
             if self.units == "ms":
                 self.SIGNALS[f"{self.name}_ch{channel}"] = {
