@@ -12,7 +12,7 @@ module i2c_master
         input wire set_rw,
         input wire stop,
         input wire [4:0] set_bytes,
-        input wire [31:0] set_data_out,
+        input wire [63:0] set_data_out,
         output reg [31:0] data_in,
         output reg valid = 0
     );
@@ -54,7 +54,7 @@ module i2c_master
     reg send_mode = 0;
     reg [31:0] data_rtx = 0;
     reg [6:0] addr = 0;
-    reg [31:0] data_out = 0;
+    reg [63:0] data_out = 0;
     reg rw = RW_WRITE;
     reg [4:0] bytes = 0;
 
