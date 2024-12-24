@@ -238,8 +238,17 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             else:
                 makefile_data.append(f"load: {bitfileName}")
                 makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
-
             makefile_data.append(f"	{cmd_cp} hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
+
+            if board and board.startswith("TangNano"):
+                makefile_data.append("sload: $(PROJECT).fs")
+                makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs")
+            elif board and board == "Tangoboard":
+                makefile_data.append("sload: $(PROJECT).fs")
+                makefile_data.append("	openFPGALoader -b tangnano9k $(PROJECT).fs")
+            makefile_data.append(f"	{cmd_cp} hash_new.txt hash_flashed.txt")
+
         makefile_data.append("")
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

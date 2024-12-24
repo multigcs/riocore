@@ -19,6 +19,7 @@ parser.add_argument("output", help="output directory", nargs="?", type=str, defa
 parser.add_argument("--preview", "-p", help="generate preview / no pll config", default=False, action="store_true")
 parser.add_argument("--build", "-b", help="build gateware", default=False, action="store_true")
 parser.add_argument("--flash", "-f", help="flash gateware", default=False, action="store_true")
+parser.add_argument("--ram", "-r", help="flash gateware to sram", default=False, action="store_true")
 if sys.platform == "linux":
     parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
 args = parser.parse_args()
@@ -54,6 +55,18 @@ if args.config:
                 sys.exit(1)
         if args.flash:
             cmd = f"(cd {gateware_path} && make load)"
+            print("")
+            print("running:")
+            print(f"  {cmd}")
+            if sys.platform.startswith("win"):
+                print(f"  cd {os.getcwd()}")
+            print("")
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
+        if args.ram:
+            cmd = f"(cd {gateware_path} && make sload)"
             print("")
             print("running:")
             print(f"  {cmd}")
