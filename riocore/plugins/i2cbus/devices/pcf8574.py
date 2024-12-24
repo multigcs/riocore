@@ -16,7 +16,7 @@ class i2c_device:
                 "type": "bits",
                 "min": 0,
                 "max": 255,
-                "description": "set default value in expansion mode",
+                "description": "set default output value",
                 "default": 255,
             },
         },
