@@ -1,9 +1,5 @@
-# lm75
-**I2C Temperature-Sensor**
-
-simple temperature sensor
-
-Keywords: analog adc temperature
+# i2cbus
+**I2C-Bus**
 
 
 ![image.png](image.png)
@@ -11,7 +7,7 @@ Keywords: analog adc temperature
 ## Basic-Example:
 ```
 {
-    "type": "lm75",
+    "type": "i2cbus",
     "pins": {
         "sda": {
             "pin": "0"
@@ -36,6 +32,15 @@ Keywords: analog adc temperature
 
 ## Options:
 *user-options*
+### speed:
+I2C-Clockspeed
+
+ * type: int
+ * min: 100
+ * max: 50000000
+ * default: 100000
+ * unit: Hz
+
 ### name:
 name of this plugin instance
 
@@ -45,25 +50,17 @@ name of this plugin instance
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### temperature:
-
- * type: float
- * direction: input
- * unit: °C
 
 
 ## Interfaces:
 *transport layer*
-### temperature:
-
- * size: 16 bit
- * direction: input
 
 
 ## Full-Example:
 ```
 {
-    "type": "lm75",
+    "type": "i2cbus",
+    "speed": 100000,
     "name": "",
     "pins": {
         "sda": {
@@ -83,21 +80,9 @@ name of this plugin instance
             ]
         }
     },
-    "signals": {
-        "temperature": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "temperature",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
+    "signals": {}
 }
 ```
 
 ## Verilogs:
- * [lm75.v](lm75.v)
+ * [i2c_master.v](i2c_master.v)

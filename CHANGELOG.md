@@ -8,6 +8,7 @@
 * some little fixes and improvements
 
 ### Plugins
+* new plugin: [i2cbus](riocore/plugins/i2cbus/README.md) (i2c bus support with some device drivers)
 * new plugin: [bitcopy](riocore/plugins/bitcopy/README.md) (copy a bit/pin to an other output pin)
 * new plugin: [pdmout](riocore/plugins/pdmout/README.md) (delta-sigma modulator / dac)
 * new plugin: [demux](riocore/plugins/demux/README.md) (binary demultiplexer)
@@ -18,6 +19,9 @@
 * new plugin: [flipflop_out](riocore/plugins/flipflop_out/README.md) (set and reset an output pin)
 * new plugin: [sinepwm](riocore/plugins/sinepwm/README.md) (generates sine waves)
 * better [stepdir](riocore/plugins/stepdir/README.md) plugin (with pulse_len and dir_delay configuration)
+* remove plugin: ads1115 (now supported by i2cbus)
+* remove plugin: as5600 (now supported by i2cbus)
+* remove plugin: lm75 (now supported by i2cbus)
 
 ### Pin-Modifier
 * better debouncer (now, the delay is in milliseconds, which makes the whole thing easier to configure.)

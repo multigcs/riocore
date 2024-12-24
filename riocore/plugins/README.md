@@ -29,6 +29,7 @@
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |
+|  | [i2cbus](i2cbus/README.md) | I2C-Bus | <img src="i2cbus/image.png" height="48"> |
 |  | [icewerxadc](icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="icewerxadc/image.png" height="48"> |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |
 |  | [lm75](lm75/README.md) | I2C Temperature-Sensor | <img src="lm75/image.png" height="48"> |
