@@ -2,6 +2,7 @@
 **I2C-Bus**
 
 I2C-Bus - supports multiple busses with multiple devices per bus
+
 Devices:
 * ads1115
 * as5600
