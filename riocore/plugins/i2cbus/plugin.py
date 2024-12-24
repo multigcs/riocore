@@ -271,11 +271,14 @@ class Plugin(PluginBase):
             i2c_dev = setup["i2cdev"]
             default = setup.get("default", 0)
             expansion = setup.get("expansion", False)
+            bit_n = {"input": 0, "output": 0}
             for key, ifaces in i2c_dev.INTERFACE.items():
                 direction = ifaces["direction"]
                 ifaces["expansion"] = expansion
                 ifaces["default"] = default
+                ifaces["bit"] = bit_n[direction]
                 self.INTERFACE[key] = ifaces
+                bit_n[direction] += 1
 
             for key, ifaces in i2c_dev.SIGNALS.items():
                 if not expansion:

@@ -286,9 +286,16 @@ class PluginBase:
                 direction = data_config["direction"]
                 variable = data_config["variable"]
                 size = data_config["size"]
+                bit_n = data_config["bit"]
                 if direction == "output":
                     default = data_config.get("default", 0)
-                    defines.append(f"reg [{size-1}:0] {variable} = {default};")
+                    if size == 1:
+                        if default & (1 << bit_n):
+                            defines.append(f"reg [{size-1}:0] {variable} = 1'd1;")
+                        else:
+                            defines.append(f"reg [{size-1}:0] {variable} = 1'd0;")
+                    else:
+                        defines.append(f"reg [{size-1}:0] {variable} = {size}'d{default};")
                 else:
                     defines.append(f"wire [{size-1}:0] {variable};")
 

@@ -467,12 +467,13 @@ class Gateware:
                     direction = data_config["direction"]
                     variable = data_config["variable"]
                     size = data_config["size"]
+                    bit_n = data_config["bit"]
                     if direction == "output":
                         default = data_config.get("default", 0)
                         for bit_num in range(0, size):
                             bitvar = f"{variable}[{bit_num}]"
                             if bitvar not in used_expansion_outputs:
-                                if default & (0b1 << bit_num):
+                                if default & (1 << bit_n):
                                     output.append(f"        {bitvar} <= 1'd1;")
                                 else:
                                     output.append(f"        {bitvar} <= 1'd0;")
