@@ -60,6 +60,49 @@ class config:
             },
         }
 
+    def read_widget(self, data):
+        value = ""
+        if data["type"] == "combo":
+            value = data["widget"].currentText().split()[0]
+            if value.isnumeric():
+                value = int(value)
+        elif data["type"] is bool:
+            value = data["widget"].isChecked()
+        elif data["type"] is int:
+            value = data["widget"].value()
+        elif data["type"] is float:
+            value = data["widget"].value()
+        else:
+            value = data["widget"].text()
+        return value
+
+    def add_widget(self, data, value):
+        if data["type"] == "combo":
+            data["widget"] = QComboBox()
+            for option in data["options"]:
+                data["widget"].addItem(option)
+            for n in range(0, data["widget"].count()):
+                if data["widget"].itemText(n) == value:
+                    data["widget"].setCurrentIndex(n)
+        elif data["type"] is bool:
+            data["widget"] = QCheckBox()
+            data["widget"].setChecked(value)
+        elif data["type"] is int:
+            data["widget"] = QSpinBox()
+            data["widget"].setMinimum(data["min"])
+            data["widget"].setMaximum(data["max"])
+            data["widget"].setValue(value)
+        elif data["type"] is float:
+            data["widget"] = QDoubleSpinBox()
+            data["widget"].setValue(data["default"])
+            data["widget"].setDecimals(data["decimals"])
+            data["widget"].setText(str(value))
+        else:
+            data["widget"] = QLineEdit(data["default"])
+            data["widget"].setText(str(value))
+        data["widget"].setToolTip(data["description"])
+        return data["widget"]
+
     def edit_item(self, config_name):
         if config_name not in self.config["devices"]:
             prefix = "device"
@@ -69,7 +112,6 @@ class config:
             config_name = f"{prefix}{dnum}"
 
         dtype = self.config["devices"].get(config_name, {}).get("type", "")
-
 
         dialog = QDialog()
         if self.styleSheet:
@@ -84,10 +126,9 @@ class config:
         dialog.layout = QVBoxLayout()
         vlayout = QVBoxLayout()
 
-        message = QLabel("Device-Setup:")
-        vlayout.addWidget(message, stretch=0)
+        vlayout.addWidget(QLabel("Device-Setup:"), stretch=0)
 
-        def update_adresses(item):
+        def update_mask(item):
             dtype = self.widgets["type"]["widget"].currentText()
 
             if dtype in self.device_types:
@@ -104,75 +145,59 @@ class config:
                 if self.widgets["address"]["widget"].itemText(n) == value:
                     self.widgets["address"]["widget"].setCurrentIndex(n)
 
+            # clean extra config widgets
+            for i in reversed(range(self.device_layout.count())):
+                widget = self.device_layout.itemAt(i).widget()
+                self.device_layout.removeWidget(widget)
+                widget.deleteLater()
+
+            if dtype in self.device_types and "config" in self.device_types[dtype]:
+                self.device_layout.addWidget(QLabel("Device-Options:"), stretch=0)
+                for name, cdata in self.device_types[dtype]["config"].items():
+                    value = value = self.config["devices"].get(config_name, {}).get(name, cdata["default"])
+                    self.device_layout.addWidget(self.add_widget(cdata, value))
 
         if dtype in self.device_types:
             self.widgets["address"]["options"] = self.device_types[dtype]["addresses"]
         else:
             self.widgets["address"]["options"] = []
 
-
         for name, data in self.widgets.items():
             if name == "name":
                 value = config_name
             else:
                 value = self.config["devices"].get(config_name, {}).get(name, data["default"])
-            if data["type"] == "combo":
-                data["widget"] = QComboBox()
-                for option in data["options"]:
-                    data["widget"].addItem(option)
-                for n in range(0, data["widget"].count()):
-                    if data["widget"].itemText(n) == value:
-                        data["widget"].setCurrentIndex(n)
-            elif data["type"] is bool:
-                data["widget"] = QCheckBox()
-                data["widget"].setChecked(value)
-            elif data["type"] is int:
-                data["widget"] = QSpinBox()
-                data["widget"].setMinimum(data["min"])
-                data["widget"].setMaximum(data["max"])
-                data["widget"].setValue(value)
-            elif data["type"] is float:
-                data["widget"] = QDoubleSpinBox()
-                data["widget"].setValue(data["default"])
-                data["widget"].setDecimals(data["decimals"])
-                data["widget"].setText(str(value))
-            else:
-                data["widget"] = QLineEdit(data["default"])
-                data["widget"].setText(str(value))
-            data["widget"].setToolTip(data["description"])
+            self.add_widget(data, value)
 
             hlayout = QHBoxLayout()
             hlayout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"))
             hlayout.addWidget(data["widget"])
             vlayout.addLayout(hlayout, stretch=0)
 
-        self.widgets["type"]["widget"].currentIndexChanged.connect(update_adresses)
+        self.widgets["type"]["widget"].currentIndexChanged.connect(update_mask)
 
-
-        vlayout.addStretch()
+        self.device_layout = QVBoxLayout()
         dialog.layout.addLayout(vlayout)
+        dialog.layout.addLayout(self.device_layout)
+        dialog.layout.addStretch()
         dialog.layout.addWidget(dialog.buttonBox, stretch=0)
         dialog.setLayout(dialog.layout)
+
+        update_mask(None)
 
         if dialog.exec():
             new_config = {}
             for name, data in self.widgets.items():
-                value = ""
-                if data["type"] == "combo":
-                    value = data["widget"].currentText().split()[0]
-                    if value.isnumeric():
-                        value = int(value)
-                elif data["type"] is bool:
-                    value = data["widget"].isChecked()
-                elif data["type"] is int:
-                    value = data["widget"].value()
-                elif data["type"] is float:
-                    value = data["widget"].value()
-                else:
-                    value = data["widget"].text()
+                value = self.read_widget(data)
                 if name == "name":
                     new_name = value
                 else:
+                    new_config[name] = value
+
+            if dtype in self.device_types and "config" in self.device_types[dtype]:
+                for name, cdata in self.device_types[dtype]["config"].items():
+                    value = self.read_widget(cdata)
+                    print(name, value)
                     new_config[name] = value
 
             if new_name != config_name and config_name in self.config["devices"]:

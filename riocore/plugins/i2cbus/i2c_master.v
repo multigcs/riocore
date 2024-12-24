@@ -16,16 +16,15 @@ module i2c_master
         output reg valid = 0
     );
 
-    parameter MODE_ADDR = 0;
-    parameter MODE_DATA = 1;
-    parameter STATE_WAIT = 0;
-    parameter STATE_INIT = 1;
-    parameter STATE_START = 2;
-    parameter STATE_RTX = 3;
-    parameter STATE_ACK = 4;
-    parameter STATE_STOP = 5;
-    parameter STATE_DONE = 6;
-
+    localparam MODE_ADDR = 0;
+    localparam MODE_DATA = 1;
+    localparam STATE_WAIT = 0;
+    localparam STATE_INIT = 1;
+    localparam STATE_START = 2;
+    localparam STATE_RTX = 3;
+    localparam STATE_ACK = 4;
+    localparam STATE_STOP = 5;
+    localparam STATE_DONE = 6;
 
     reg [7:0] mystate = 0;
     reg [7:0] send_cnt = 0;
@@ -42,7 +41,6 @@ module i2c_master
         end
     end
 
-
     wire sdaIn;
     reg sdaOut = 0;
     reg isSending = 0;
@@ -52,11 +50,10 @@ module i2c_master
     reg [7:0] step = 0;
     reg send_mode = 0;
     reg [31:0] data_rtx = 0;
-
     reg [6:0] addr = 0;
     reg [31:0] data_out = 0;
     reg rw = 0;
-    reg [4:0] bytes;
+    reg [4:0] bytes = 0;
 
     always @(posedge clk_400) begin
         step <= 0;
@@ -68,7 +65,6 @@ module i2c_master
             if (sdaIn == 0) begin
                 // wait for free bus / reset
                 scl <= ~scl;
-
             end else if (start) begin
                 scl <= 1;
                 valid <= 0;
@@ -79,7 +75,6 @@ module i2c_master
                 data_out <= set_data_out;
                 mystate <= STATE_START;
             end
-
 
         end else if (mystate == STATE_START) begin
             // start condition
@@ -119,7 +114,6 @@ module i2c_master
             end else if (step == 1) begin
                 step <= 2;
                 scl <= 1;
-
                 if (rw == 1 && send_mode == MODE_DATA) begin
                     // read
                     data_rtx[7 - send_cnt] = sdaIn;
@@ -193,10 +187,7 @@ module i2c_master
                 busy <= 0;
                 mystate <= STATE_WAIT;
             end
-
-
         end
-
     end
 
 endmodule

@@ -95,7 +95,7 @@ class Plugin(PluginBase):
             setup["name"] = name
             i2c_dev = setup["i2cdev"]
             vaddr = i2c_dev.addr.replace("0x", "7'h")
-            verilog_data.append(f"    parameter {name.upper()}_ADDR = {vaddr};")
+            verilog_data.append(f"    localparam {name.upper()}_ADDR = {vaddr};")
             for key, value in i2c_dev.PARAMS.items():
                 verilog_data.append(f"    parameter {key} = {value};")
 
