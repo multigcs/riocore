@@ -37,9 +37,9 @@ class i2c_device:
         ]
 
     def convert(self, signal_name, signal_setup, value):
-        return value / 256.0
+        return value * 360 / 4096
 
     def convert_c(self, signal_name, signal_setup):
         return """
-        value = value / 256.0;
+        value = value * 360 / 4096;
         """
