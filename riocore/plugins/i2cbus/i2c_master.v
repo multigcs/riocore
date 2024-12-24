@@ -10,6 +10,7 @@ module i2c_master
         output reg busy = 0,
         input wire [6:0] set_addr,
         input wire set_rw,
+        input wire stop,
         input wire [4:0] set_bytes,
         input wire [31:0] set_data_out,
         output reg [31:0] data_in,
@@ -177,7 +178,15 @@ module i2c_master
                         mystate <= STATE_RTX;
                     end
                 end else begin
-                    mystate <= STATE_STOP;
+                    if (stop == 0) begin
+                        //step <= 0;
+                        busy <= 0;
+                        isSending <= 0;
+                        mystate <= STATE_WAIT;
+                    end else begin
+                        mystate <= STATE_STOP;
+                    end
+
                 end
             end
 

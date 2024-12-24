@@ -105,6 +105,7 @@ class Plugin(PluginBase):
         verilog_data.append("")
         verilog_data.append("    reg [7:0] dev_step = 0;")
         verilog_data.append("    reg do_init = 1;")
+        verilog_data.append("    reg stop = 1;")
         verilog_data.append("    reg [7:0] devmode = 0;")
         verilog_data.append("    reg [7:0] last_devmode = 0;")
         verilog_data.append("    reg [6:0] addr = 0;")
@@ -140,6 +141,7 @@ class Plugin(PluginBase):
                 data_out = setup.get("data_out")
                 data_in = setup.get("data_in")
                 value = data.get("value")
+                stop = data.get("stop", True)
                 var_set = data.get("var_set")
                 until = data.get("until")
                 if stype == "write":
@@ -154,6 +156,10 @@ class Plugin(PluginBase):
                         verilog_data.append(f"                            data_out <= {value};")
                     else:
                         verilog_data.append(f"                            data_out <= {data['var']};")
+                    if stop:
+                        verilog_data.append(f"                            stop <= 1;")
+                    else:
+                        verilog_data.append(f"                            stop <= 0;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
@@ -163,6 +169,10 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= RW_READ;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
+                    if stop:
+                        verilog_data.append(f"                            stop <= 1;")
+                    else:
+                        verilog_data.append(f"                            stop <= 0;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
@@ -208,6 +218,7 @@ class Plugin(PluginBase):
                 data_out = setup.get("data_out")
                 data_in = setup.get("data_in")
                 value = data.get("value")
+                stop = data.get("stop", True)
                 var_set = data.get("var_set")
                 until = data.get("until")
                 if stype == "write":
@@ -222,6 +233,10 @@ class Plugin(PluginBase):
                         verilog_data.append(f"                            data_out <= {value};")
                     else:
                         verilog_data.append(f"                            data_out <= {data['var']};")
+                    if stop:
+                        verilog_data.append(f"                            stop <= 1;")
+                    else:
+                        verilog_data.append(f"                            stop <= 0;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
@@ -231,6 +246,10 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                     verilog_data.append("                            rw <= RW_READ;")
                     verilog_data.append(f"                            bytes <= {data['bytes']};")
+                    if stop:
+                        verilog_data.append(f"                            stop <= 1;")
+                    else:
+                        verilog_data.append(f"                            stop <= 0;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
@@ -287,6 +306,7 @@ class Plugin(PluginBase):
         verilog_data.append("        .valid(valid),")
         verilog_data.append("        .set_addr(addr),")
         verilog_data.append("        .set_rw(rw),")
+        verilog_data.append("        .stop(stop),")
         verilog_data.append("        .set_bytes(bytes),")
         verilog_data.append("        .set_data_out(data_out),")
         verilog_data.append("        .data_in(data_in)")
