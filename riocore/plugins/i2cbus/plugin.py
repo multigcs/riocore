@@ -51,7 +51,7 @@ class Plugin(PluginBase):
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*.py"))):
             device_name = os.path.basename(device_path).replace(".py", "")
             if not device_name.startswith("_"):
-                self.DESCRIPTION += f"* {device_name}\n"
+                self.DESCRIPTION += f"* ({device_name})[devices/{device_name}.py]\n"
 
         if not self.devices:
             return
