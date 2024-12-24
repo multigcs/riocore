@@ -56,10 +56,10 @@ class config:
         }
 
     def edit_item(self, config_name):
-        if config_name not in self.config:
+        if config_name not in self.config["devices"]:
             prefix = "device"
             dnum = 0
-            while f"{prefix}{dnum}" in self.config:
+            while f"{prefix}{dnum}" in self.config["devices"]:
                 dnum += 1
             config_name = f"{prefix}{dnum}"
 
@@ -83,7 +83,7 @@ class config:
             if name == "name":
                 value = config_name
             else:
-                value = self.config.get(config_name, {}).get(name, data["default"])
+                value = self.config["devices"].get(config_name, {}).get(name, data["default"])
             if data["type"] == "combo":
                 data["widget"] = QComboBox()
                 for option in data["options"]:
@@ -144,19 +144,19 @@ class config:
                 del self.config["devices"][config_name]
 
             self.config["devices"][new_name] = new_config
-            self.instance.plugin_setup["config"]["devices"] = self.config
+            self.instance.plugin_setup["config"]["devices"] = self.config["devices"]
             self.table_load()
 
     def del_item(self, item):
         config_name = self.config_selected
-        if config_name in self.config:
-            del self.config[config_name]
+        if config_name in self.config["devices"]:
+            del self.config["devices"][config_name]
         self.table_load()
 
     def table_load(self):
-        self.tableWidget.setRowCount(len(self.config))
+        self.tableWidget.setRowCount(len(self.config["devices"]))
         row_n = 0
-        for name, entry in self.config.items():
+        for name, entry in self.config["devices"].items():
             address = str(entry.get("address", ""))
             dtype = entry.get("type", "")
             self.tableWidget.setItem(row_n, 0, QTableWidgetItem(name))
@@ -208,5 +208,5 @@ class config:
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
-            self.instance.plugin_setup["config"]["devices"] = self.config
+            self.instance.plugin_setup["config"] = self.config
             return ""

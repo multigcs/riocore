@@ -1,7 +1,13 @@
+
+
 class i2c_device:
+    MEASURMENT_REG = "8'hF4"
+    TEMPERATURE_CTRL = "8'h2E"
+
     def __init__(self, setup):
         self.name = setup["name"]
         self.addr = setup["address"]
+        self.addresses = ["8'b11101110"]
         self.INTERFACE = {
             f"{self.name}_temp": {
                 "size": 16,
@@ -21,6 +27,16 @@ class i2c_device:
         self.INITS = {}
 
         self.STEPS = [
+            #{
+            #    "mode": "write",
+            #    "value": f"{{{self.MEASURMENT_REG}, {self.TEMPERATURE_CTRL}}}",
+            #    "bytes": 2,
+            #},
+            {
+                "mode": "write",
+                "value": self.TEMPERATURE_CTRL,
+                "bytes": 1,
+            },
             {
                 "mode": "read",
                 "var": f"{self.name}_temp",
@@ -28,10 +44,3 @@ class i2c_device:
             },
         ]
 
-    def convert(self, signal_name, signal_setup, value):
-        return value / 256.0
-
-    def convert_c(self, signal_name, signal_setup):
-        return """
-        value = value / 256.0;
-        """

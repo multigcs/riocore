@@ -221,7 +221,15 @@ class Plugin(PluginBase):
                         verilog_data.append(f"                                {data['var']} <= {var_set};")
                     else:
                         verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
-                    verilog_data.append("                            end")
+
+                    if until:
+                        verilog_data.append("                            end else begin")
+                        verilog_data.append("                                dev_step <= dev_step + 7'd1;")
+                        verilog_data.append("                            end")
+                    else:
+                        verilog_data.append("                            end")
+
+
                     verilog_data.append("                        end")
                     dev_step += 1
             verilog_data.append("                        default: begin")

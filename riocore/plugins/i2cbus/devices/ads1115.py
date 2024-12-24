@@ -3,7 +3,7 @@ class i2c_device:
         self.name = setup["name"]
         self.addr = setup["address"]
         self.setup = setup
-        self.addresses = ["8'10010000", "8'b10010010"]
+        self.addresses = ["8'10010000", "8'b10010010", "8'b10010100", "8'b10010110"]
         self.INTERFACE = {
             f"{self.name}_adc0": {
                 "size": 16,
