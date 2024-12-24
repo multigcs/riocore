@@ -46,17 +46,17 @@ class i2c_device:
 
         self.INITS = {}
         setupRegister = [
-            "1'b1",   # Start Conversion
-            "3'b100", # Channel 0 Single ended
-            "3'b001", # FSR +- 4.096v
-            "1'b1",   # Single shot mode
-            "3'b100", # 128 SPS
-            "1'b0",   # Traditional Comparator
-            "1'b0",   # Active low alert
-            "1'b0",   # Non latching
+            "1'b1",  # Start Conversion
+            "3'b100",  # Channel 0 Single ended
+            "3'b001",  # FSR +- 4.096v
+            "1'b1",  # Single shot mode
+            "3'b100",  # 128 SPS
+            "1'b0",  # Traditional Comparator
+            "1'b0",  # Active low alert
+            "1'b0",  # Non latching
             "2'b11",  # Disable comparator
         ]
-        
+
         registerAddr = ["8'd1"]
 
         self.INITS = []
@@ -95,7 +95,6 @@ class i2c_device:
                     "bytes": 2,
                 },
             ]
-
 
     def convert(self, signal_name, signal_setup, value):
         channel = signal_name[-1]

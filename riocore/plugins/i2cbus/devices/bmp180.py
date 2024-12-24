@@ -1,5 +1,3 @@
-
-
 class i2c_device:
     MEASURMENT_REG = "8'hF4"
     TEMPERATURE_CTRL = "8'h2E"
@@ -27,11 +25,11 @@ class i2c_device:
         self.INITS = {}
 
         self.STEPS = [
-            #{
+            # {
             #    "mode": "write",
             #    "value": f"{{{self.MEASURMENT_REG}, {self.TEMPERATURE_CTRL}}}",
             #    "bytes": 2,
-            #},
+            # },
             {
                 "mode": "write",
                 "value": self.TEMPERATURE_CTRL,
@@ -43,4 +41,3 @@ class i2c_device:
                 "bytes": 2,
             },
         ]
-

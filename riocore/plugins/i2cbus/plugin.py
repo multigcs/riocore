@@ -85,7 +85,6 @@ class Plugin(PluginBase):
         verilog_data.append("        output scl")
         verilog_data.append("    );")
 
-
         for name, setup in self.devices.items():
             extra = setup.get("extra")
             if extra:
@@ -229,7 +228,6 @@ class Plugin(PluginBase):
                     else:
                         verilog_data.append("                            end")
 
-
                     verilog_data.append("                        end")
                     dev_step += 1
             verilog_data.append("                        default: begin")
@@ -267,9 +265,9 @@ class Plugin(PluginBase):
 
         for name, setup in self.devices.items():
             setup["name"] = name
-            
+
             setup["plugin_setup"] = self.plugin_setup
-            
+
             i2c_dev = setup["i2cdev"]
             default = setup.get("default", 0)
             expansion = setup.get("expansion", False)
