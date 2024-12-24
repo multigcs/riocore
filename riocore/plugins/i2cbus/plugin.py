@@ -10,6 +10,7 @@ plugin_path = os.path.dirname(__file__)
 
 class Plugin(PluginBase):
     def add_steps(self, setup, steps):
+        self.MAX_BITS = 64
         verilog_data = []
         name = setup["name"]
         dev_step = 0
@@ -40,7 +41,11 @@ class Plugin(PluginBase):
                 if data_out:
                     verilog_data += data_out
                 elif value:
-                    verilog_data.append(f"                            data_out <= {value};")
+                    diff = self.MAX_BITS - size
+                    if diff:
+                        verilog_data.append(f"                            data_out <= {{{value}, {diff}'d0}};")
+                    else:
+                        verilog_data.append(f"                            data_out <= {{{value}}};")
                 else:
                     verilog_data.append(f"                            data_out <= {data['var']};")
                 if stop:
@@ -149,7 +154,7 @@ class Plugin(PluginBase):
         verilog_data = []
         verilog_data.append("")
         verilog_data.append(f"module i2cbus_{self.instances_name}")
-        verilog_data.append("    #(parameter DIVIDER = 42)")
+        verilog_data.append("    #(parameter DIVIDER = 42, parameter MAX_BITS = 64)")
         verilog_data.append("    (")
         verilog_data.append("        input clk,")
         for name, setup in self.devices.items():
@@ -198,7 +203,7 @@ class Plugin(PluginBase):
         verilog_data.append("    reg [6:0] addr = 0;")
         verilog_data.append("    reg rw = RW_WRITE;")
         verilog_data.append("    reg [4:0] bytes = 0;")
-        verilog_data.append("    reg [63:0] data_out = 0;")
+        verilog_data.append("    reg [MAX_BITS-1:0] data_out = 0;")
         verilog_data.append("    wire [31:0] data_in;")
         verilog_data.append("    reg [31:0] delay_cnt = 2700000;")
         verilog_data.append("    reg start = 0;")
@@ -237,7 +242,7 @@ class Plugin(PluginBase):
         verilog_data.append("        end")
         verilog_data.append("    end")
         verilog_data.append("")
-        verilog_data.append("    i2c_master #(.DIVIDER(DIVIDER)) i2cinst0 (")
+        verilog_data.append("    i2c_master #(.DIVIDER(DIVIDER), .MAX_BITS(MAX_BITS)) i2cinst0 (")
         verilog_data.append("        .clk(clk),")
         verilog_data.append("        .sda(sda),")
         verilog_data.append("        .scl(scl),")
@@ -282,6 +287,7 @@ class Plugin(PluginBase):
         freq = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
         divider = self.system_setup["speed"] // freq // 6
         instance_parameter["DIVIDER"] = divider
+        instance_parameter["MAX_BITS"] = self.MAX_BITS
         return instances
 
     def convert(self, signal_name, signal_setup, value):

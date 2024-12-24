@@ -512,9 +512,9 @@ class Gateware:
                 variable_name = data_config["variable"]
                 direction = data_config["direction"]
                 if direction == "output":
-                    output.append(f"        if (MULTIPLEXED_OUTPUT_ID == {mpid}) begin;")
+                    output.append(f"        if (MULTIPLEXED_OUTPUT_ID == {mpid}) begin")
                     output.append(f"            {variable_name} <= MULTIPLEXED_OUTPUT_VALUE[{size-1}:0];")
-                    output.append("        end;")
+                    output.append("        end")
                     mpid += 1
             output.append("    end")
 

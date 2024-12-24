@@ -26,8 +26,7 @@ class i2c_device:
         self.STEPS = [
             {
                 "mode": "write",
-                # "value": self.MLX90614_TOBJ1,
-                "value": 0x04,
+                "value": self.MLX90614_TOBJ1,
                 "bytes": 1,
                 "stop": False,
             },
