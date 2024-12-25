@@ -109,106 +109,47 @@ class i2c_device:
         self.PARAMS = {}
         self.INITS = [
             {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_POWER_CTL}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_POWER_CTL}, 8'd{16}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_POWER_CTL}, 8'd{16 | (1<<self.ADXL345_MEASURE)}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_DATA_FORMAT}, 8'd{(1<<self.ADXL345_FULL_RES)}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_INT_ENABLE}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_INT_MAP}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_TIME_INACT}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_THRESH_INACT}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_ACT_INACT_CTL}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_DUR}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_LATENT}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_THRESH_TAP}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_TAP_AXES}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_WINDOW}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_FIFO_CTL}, 8'd{0}}}",
-                "bytes": 2,
-            },
-            {
-                "mode": "write",
-                "value": f"{{8'd{self.ADXL345_FIFO_STATUS}, 8'd{0}}}",
-                "bytes": 2,
+                "mode": "writereg",
+                "values": [
+                    (self.ADXL345_POWER_CTL, 0),
+                    (self.ADXL345_POWER_CTL, 16),
+                    (self.ADXL345_POWER_CTL, 16 | (1 << self.ADXL345_MEASURE)),
+                    (self.ADXL345_DATA_FORMAT, (1 << self.ADXL345_FULL_RES)),
+                    (self.ADXL345_INT_ENABLE, 0),
+                    (self.ADXL345_INT_MAP, 0),
+                    (self.ADXL345_TIME_INACT, 0),
+                    (self.ADXL345_THRESH_INACT, 0),
+                    (self.ADXL345_ACT_INACT_CTL, 0),
+                    (self.ADXL345_DUR, 0),
+                    (self.ADXL345_LATENT, 0),
+                    (self.ADXL345_THRESH_TAP, 0),
+                    (self.ADXL345_TAP_AXES, 0),
+                    (self.ADXL345_WINDOW, 0),
+                    (self.ADXL345_FIFO_CTL, 0),
+                    (self.ADXL345_FIFO_STATUS, 0),
+                ],
             },
         ]
         self.STEPS = [
             {
                 "mode": "readreg",
-                "register": f"{self.ADXL345_DATAX0}",
+                "register": self.ADXL345_DATAX0,
                 "var": f"{self.name}_x",
-                "var_set": "{data_in[7:0], data_in[15:8]}",
+                "big_endian": True,
                 "bytes": 2,
             },
             {
                 "mode": "readreg",
-                "register": f"{self.ADXL345_DATAY0}",
+                "register": self.ADXL345_DATAY0,
                 "var": f"{self.name}_y",
-                "var_set": "{data_in[7:0], data_in[15:8]}",
+                "big_endian": True,
                 "bytes": 2,
             },
             {
                 "mode": "readreg",
-                "register": f"{self.ADXL345_DATAZ0}",
+                "register": self.ADXL345_DATAZ0,
                 "var": f"{self.name}_z",
-                "var_set": "{data_in[7:0], data_in[15:8]}",
+                "big_endian": True,
                 "bytes": 2,
             },
         ]

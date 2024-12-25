@@ -46,7 +46,9 @@ class Plugin(PluginBase):
         self.PLUGIN_CONFIG = True
         self.INTERFACE = {}
         self.SIGNALS = {}
+
         self.MAX_BITS = 64
+        self.MAX_BITS = 8
 
         self.DESCRIPTION += "\n\nDevices:\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*.py"))):
@@ -212,16 +214,20 @@ class Plugin(PluginBase):
         verilog_data.append("                    case (dev_step)")
         for data in steps:
             stype = data["mode"]
-            if "bytes" in data:
-                size = data["bytes"] * 8
+            nbytes = data.get("bytes", 1)
+            size = nbytes * 8
             data_out = setup.get("data_out")
             data_in = setup.get("data_in")
             value = data.get("value")
+            values = data.get("values")
             stop = data.get("stop", True)
             var_set = data.get("var_set")
+            big_endian = data.get("big_endian", False)
             register = data.get("register")
             until = data.get("until")
             ms = data.get("ms")
+            self.MAX_BITS = max(self.MAX_BITS, size)
+            verilog_data.append(f"                        // {stype}")
             if stype == "delay":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
@@ -235,23 +241,20 @@ class Plugin(PluginBase):
                 verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                 verilog_data.append("                            rw <= RW_WRITE;")
                 verilog_data.append(f"                            bytes <= {1};")
-                diff = self.MAX_BITS - 8
-                verilog_data.append(f"                            data_out <= {{{register}, {diff}'d0}};")
+                verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-8}] <= 8'h{register:X};")
                 verilog_data.append("                            stop <= 0;")
                 verilog_data.append("                            start <= 1;")
                 verilog_data.append("                        end")
                 dev_step += 1
-
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                 verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                 verilog_data.append("                            rw <= RW_READ;")
-                verilog_data.append(f"                            bytes <= {data['bytes']};")
+                verilog_data.append(f"                            bytes <= {nbytes};")
                 verilog_data.append("                            stop <= 1;")
                 verilog_data.append("                            start <= 1;")
                 verilog_data.append("                        end")
                 dev_step += 1
-
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                 verilog_data.append("                            if (valid == 1) begin")
@@ -260,28 +263,48 @@ class Plugin(PluginBase):
                 elif var_set:
                     verilog_data.append(f"                                {data['var']} <= {var_set};")
                 else:
-                    verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
-
+                    if big_endian:
+                        byte_list = []
+                        for byte_n in range(nbytes):
+                            byte_list.append(f"data_in[{byte_n*8+7}:{byte_n*8}]")
+                        verilog_data.append(f"                                {data['var']} <= {{{', '.join(byte_list)}}};")
+                    else:
+                        verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
                 verilog_data.append("                            end")
                 verilog_data.append("                        end")
                 dev_step += 1
+
+            elif stype == "writereg":
+                self.MAX_BITS = max(self.MAX_BITS, size + 8)
+                for entry in values:
+                    target, value = entry
+                    verilog_data.append(f"                        {dev_step}: begin")
+                    verilog_data.append(f"                            // 0x{value:X} -> 0x{target:X}")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                    verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                    verilog_data.append("                            rw <= RW_WRITE;")
+                    verilog_data.append(f"                            bytes <= {nbytes};")
+                    if big_endian:
+                        print("TODO")
+                    else:
+                        verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-size-8}] <= {{8'h{target:X}, {size}'h{value:X}}};")
+                    verilog_data.append("                            stop <= 1;")
+                    verilog_data.append("                            start <= 1;")
+                    verilog_data.append("                        end")
+                    dev_step += 1
 
             elif stype == "write":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                 verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                 verilog_data.append("                            rw <= RW_WRITE;")
-                verilog_data.append(f"                            bytes <= {data['bytes']};")
+                verilog_data.append(f"                            bytes <= {nbytes};")
                 if data_out:
                     verilog_data += data_out
                 elif value:
-                    diff = self.MAX_BITS - size
-                    if diff:
-                        verilog_data.append(f"                            data_out <= {{{value}, {diff}'d0}};")
-                    else:
-                        verilog_data.append(f"                            data_out <= {{{value}}};")
+                    verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-size}] <= {value};")
                 else:
-                    verilog_data.append(f"                            data_out <= {data['var']};")
+                    verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-size}] <= {data['var']};")
                 if stop:
                     verilog_data.append("                            stop <= 1;")
                 else:
@@ -294,7 +317,7 @@ class Plugin(PluginBase):
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                 verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
                 verilog_data.append("                            rw <= RW_READ;")
-                verilog_data.append(f"                            bytes <= {data['bytes']};")
+                verilog_data.append(f"                            bytes <= {nbytes};")
                 if stop:
                     verilog_data.append("                            stop <= 1;")
                 else:
@@ -328,6 +351,7 @@ class Plugin(PluginBase):
 
                 verilog_data.append("                        end")
                 dev_step += 1
+            verilog_data.append("")
         verilog_data.append("                        default: begin")
         verilog_data.append("                            dev_step <= 0;")
         verilog_data.append("                            devmode <= devmode + 7'd1;")
