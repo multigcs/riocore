@@ -5,6 +5,7 @@ I2C-Bus - supports multiple busses with multiple devices per bus
 
 Devices:
 * [ads1115](devices/ads1115.py)
+* [adxl345](devices/adxl345.py)
 * [as5600](devices/as5600.py)
 * [bmp180](devices/bmp180.py)
 * [lm75](devices/lm75.py)

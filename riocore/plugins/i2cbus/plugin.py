@@ -46,6 +46,7 @@ class Plugin(PluginBase):
         self.PLUGIN_CONFIG = True
         self.INTERFACE = {}
         self.SIGNALS = {}
+        self.MAX_BITS = 64
 
         self.DESCRIPTION += "\n\nDevices:\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*.py"))):
@@ -57,6 +58,7 @@ class Plugin(PluginBase):
             return
 
         sys.path.insert(0, plugin_path)
+        failed_devices = []
         for name, setup in self.devices.items():
             setup["name"] = name
             dtype = setup["type"]
@@ -64,7 +66,10 @@ class Plugin(PluginBase):
                 devlib = importlib.import_module(f".{dtype}", ".devices")
                 setup["i2cdev"] = devlib.i2c_device(setup)
             else:
-                print("ERROR: i2cdev: device '{dtype}' not found")
+                print(f"ERROR: i2cdev: device '{dtype}' not found")
+                failed_devices.append(name)
+        for dev in failed_devices:
+            del self.devices[dev]
 
         verilog_data = []
         verilog_data.append("")
@@ -195,7 +200,6 @@ class Plugin(PluginBase):
         self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
 
     def add_steps(self, setup, steps):
-        self.MAX_BITS = 64
         verilog_data = []
         name = setup["name"]
         dev_step = 0

@@ -224,6 +224,7 @@ class config:
                 else:
                     new_config[name] = value
 
+            dtype = new_config["type"]
             if dtype in self.device_types and "config" in self.device_types[dtype]:
                 for name, cdata in self.device_types[dtype]["config"].items():
                     value = self.read_widget(cdata)

@@ -35,6 +35,10 @@ class i2c_device:
                 "var": f"{self.name}_temp",
                 "bytes": 2,
             },
+            {
+                "mode": "delay",
+                "ms": 3,
+            },
         ]
 
     def convert(self, signal_name, signal_setup, value):
