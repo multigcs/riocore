@@ -1,6 +1,17 @@
+import math
+
+
 class i2c_device:
     options = {
         "addresses": ["0x53"],
+        "config": {
+            "units": {
+                "type": "combo",
+                "options": ["deg", "gforce", "raw"],
+                "description": "unit of the data",
+                "default": "gforce",
+            },
+        },
     }
 
     # registers
@@ -41,37 +52,60 @@ class i2c_device:
     ADXL345_LOW_POWER = 0x04
     ADXL345_MEASURE = 0x03
 
+    # Other
+    MILLI_G_PER_LSB = 3.9
+    UNITS_PER_G = 256.41
+
     def __init__(self, setup):
         self.name = setup["name"]
         self.addr = setup["address"]
+        self.units = setup.get("units", self.options["config"]["units"]["default"])
         self.INTERFACE = {
             f"{self.name}_x": {
                 "size": 16,
+                "signed": True,
                 "direction": "input",
             },
             f"{self.name}_y": {
                 "size": 16,
+                "signed": True,
                 "direction": "input",
             },
             f"{self.name}_z": {
                 "size": 16,
+                "signed": True,
                 "direction": "input",
             },
         }
         self.SIGNALS = {
             f"{self.name}_x": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.3f",
+                "offset": 0.043,
+                "units": self.units,
             },
             f"{self.name}_y": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.3f",
+                "offset": 0.045,
+                "units": self.units,
             },
             f"{self.name}_z": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.3f",
+                "offset": 0.155,
+                "units": self.units,
             },
         }
+        if self.units == "deg":
+            self.SIGNALS[f"{self.name}_x"]["unit"] = "°"
+            self.SIGNALS[f"{self.name}_y"]["unit"] = "°"
+            self.SIGNALS[f"{self.name}_z"]["unit"] = "g"
+        elif self.units == "gforce":
+            self.SIGNALS[f"{self.name}_x"]["unit"] = "g"
+            self.SIGNALS[f"{self.name}_y"]["unit"] = "g"
+            self.SIGNALS[f"{self.name}_z"]["unit"] = "g"
+
         self.PARAMS = {}
         self.INITS = [
             {
@@ -157,38 +191,45 @@ class i2c_device:
         ]
         self.STEPS = [
             {
-                "mode": "write",
-                "value": f"{self.ADXL345_DATAX0}",
-                "bytes": 1,
-            },
-            {
-                "mode": "read",
+                "mode": "readreg",
+                "register": f"{self.ADXL345_DATAX0}",
                 "var": f"{self.name}_x",
+                "var_set": "{data_in[7:0], data_in[15:8]}",
                 "bytes": 2,
             },
             {
-                "mode": "write",
-                "value": f"{self.ADXL345_DATAY0}",
-                "bytes": 1,
-            },
-            {
-                "mode": "read",
+                "mode": "readreg",
+                "register": f"{self.ADXL345_DATAY0}",
                 "var": f"{self.name}_y",
+                "var_set": "{data_in[7:0], data_in[15:8]}",
                 "bytes": 2,
             },
             {
-                "mode": "write",
-                "value": f"{self.ADXL345_DATAZ0}",
-                "bytes": 1,
-            },
-            {
-                "mode": "read",
+                "mode": "readreg",
+                "register": f"{self.ADXL345_DATAZ0}",
                 "var": f"{self.name}_z",
+                "var_set": "{data_in[7:0], data_in[15:8]}",
                 "bytes": 2,
             },
         ]
 
     def convert(self, signal_name, signal_setup, value):
+        units = signal_setup["units"]
+        # unsigned -> signed
+        if value > 32767:
+            value = value - 65535
+
+        if units != "raw":
+            value = value * self.MILLI_G_PER_LSB / 1000
+            value -= signal_setup.get("offset", 0.0)
+
+        if units == "deg" and not signal_name.endswith("_z"):
+            if value > 1:
+                value = 1
+            if value < -1:
+                value = -1
+            value = math.asin(value) * 57.296
+
         return value
 
     def convert_c(self, signal_name, signal_setup):

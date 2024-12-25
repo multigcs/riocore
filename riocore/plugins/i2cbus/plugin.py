@@ -82,17 +82,23 @@ class Plugin(PluginBase):
             i2c_dev = setup["i2cdev"]
             for iname, iface in i2c_dev.INTERFACE.items():
                 direction = iface["direction"]
+                signed = iface.get("signed", False)
                 size = iface["size"]
+
+                signed_str = ""
+                if signed:
+                    signed_str = " signed"
+
                 if direction == "input":
                     if size == 1:
-                        verilog_data.append(f"        output reg {iname} = 0,")
+                        verilog_data.append(f"        output reg{signed_str} {iname} = 0,")
                     else:
-                        verilog_data.append(f"        output reg [{size - 1}:0] {iname} = 0,")
+                        verilog_data.append(f"        output reg{signed_str} [{size - 1}:0] {iname} = 0,")
                 elif direction == "output":
                     if size == 1:
-                        verilog_data.append(f"        input wire {iname},")
+                        verilog_data.append(f"        input wire{signed_str} {iname},")
                     else:
-                        verilog_data.append(f"        input wire [{size - 1}:0] {iname},")
+                        verilog_data.append(f"        input wire{signed_str} [{size - 1}:0] {iname},")
         verilog_data.append("        inout sda,")
         verilog_data.append("        output scl")
         verilog_data.append("    );")
@@ -213,6 +219,7 @@ class Plugin(PluginBase):
             value = data.get("value")
             stop = data.get("stop", True)
             var_set = data.get("var_set")
+            register = data.get("register")
             until = data.get("until")
             ms = data.get("ms")
             if stype == "delay":
@@ -221,6 +228,44 @@ class Plugin(PluginBase):
                 verilog_data.append(f"                            delay_cnt <= {int(self.system_setup.get('speed', 50000000) / 1000 * ms)};")
                 verilog_data.append("                        end")
                 dev_step += 1
+
+            elif stype == "readreg":
+                verilog_data.append(f"                        {dev_step}: begin")
+                verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                verilog_data.append("                            rw <= RW_WRITE;")
+                verilog_data.append(f"                            bytes <= {1};")
+                diff = self.MAX_BITS - 8
+                verilog_data.append(f"                            data_out <= {{{register}, {diff}'d0}};")
+                verilog_data.append("                            stop <= 0;")
+                verilog_data.append("                            start <= 1;")
+                verilog_data.append("                        end")
+                dev_step += 1
+
+                verilog_data.append(f"                        {dev_step}: begin")
+                verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                verilog_data.append("                            rw <= RW_READ;")
+                verilog_data.append(f"                            bytes <= {data['bytes']};")
+                verilog_data.append("                            stop <= 1;")
+                verilog_data.append("                            start <= 1;")
+                verilog_data.append("                        end")
+                dev_step += 1
+
+                verilog_data.append(f"                        {dev_step}: begin")
+                verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                verilog_data.append("                            if (valid == 1) begin")
+                if data_in:
+                    verilog_data += data_in
+                elif var_set:
+                    verilog_data.append(f"                                {data['var']} <= {var_set};")
+                else:
+                    verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
+
+                verilog_data.append("                            end")
+                verilog_data.append("                        end")
+                dev_step += 1
+
             elif stype == "write":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
