@@ -11,6 +11,27 @@ class i2c_device:
                 "description": "unit of the data",
                 "default": "gforce",
             },
+            "offset_x": {
+                "type": float,
+                "min": -2.0,
+                "max": 2.0,
+                "description": "offset for the x axis (g-force)",
+                "default": 0,
+            },
+            "offset_y": {
+                "type": float,
+                "min": -2.0,
+                "max": 2.0,
+                "description": "offset for the x axis (g-force)",
+                "default": 0,
+            },
+            "offset_z": {
+                "type": float,
+                "min": -2.0,
+                "max": 2.0,
+                "description": "offset for the x axis (g-force)",
+                "default": 0,
+            },
         },
     }
 
@@ -60,6 +81,9 @@ class i2c_device:
         self.name = setup["name"]
         self.addr = setup["address"]
         self.units = setup.get("units", self.options["config"]["units"]["default"])
+        self.offset_x = setup.get("offset_x", self.options["config"]["offset_x"]["default"])
+        self.offset_y = setup.get("offset_y", self.options["config"]["offset_y"]["default"])
+        self.offset_z = setup.get("offset_z", self.options["config"]["offset_z"]["default"])
         self.INTERFACE = {
             f"{self.name}_x": {
                 "size": 16,
@@ -81,19 +105,19 @@ class i2c_device:
             f"{self.name}_x": {
                 "direction": "input",
                 "format": "0.3f",
-                "offset": 0.043,
+                "offset": self.offset_x,
                 "units": self.units,
             },
             f"{self.name}_y": {
                 "direction": "input",
                 "format": "0.3f",
-                "offset": 0.045,
+                "offset": self.offset_y,
                 "units": self.units,
             },
             f"{self.name}_z": {
                 "direction": "input",
                 "format": "0.3f",
-                "offset": 0.155,
+                "offset": self.offset_z,
                 "units": self.units,
             },
         }

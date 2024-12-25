@@ -117,14 +117,16 @@ class config:
             data["widget"].setChecked(value)
         elif data["type"] is int:
             data["widget"] = QSpinBox()
-            data["widget"].setMinimum(data["min"])
-            data["widget"].setMaximum(data["max"])
+            data["widget"].setMinimum(data.get("min", -9999999))
+            data["widget"].setMaximum(data.get("max", 9999999))
             data["widget"].setValue(value)
         elif data["type"] is float:
             data["widget"] = QDoubleSpinBox()
+            data["widget"].setMinimum(data.get("min", -9999999))
+            data["widget"].setMaximum(data.get("max", 9999999))
             data["widget"].setValue(data["default"])
-            data["widget"].setDecimals(data["decimals"])
-            data["widget"].setText(str(value))
+            data["widget"].setDecimals(data.get("decimals", 3))
+            data["widget"].setValue(value)
         else:
             data["widget"] = QLineEdit(data["default"])
             data["widget"].setText(str(value))
