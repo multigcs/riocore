@@ -8,18 +8,6 @@ simple ws2812b led driver / same as the wled plugin but integrated as an expansi
 
 Keywords: expansion led rgb status info
 
-## Basic-Example:
-```
-{
-    "type": "wled",
-    "pins": {
-        "data": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### data:
@@ -59,6 +47,18 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "wled",
+    "pins": {
+        "data": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

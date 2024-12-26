@@ -8,18 +8,6 @@ simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each 
 
 Keywords: led rgb status info
 
-## Basic-Example:
-```
-{
-    "type": "wled",
-    "pins": {
-        "data": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### data:
@@ -87,6 +75,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "wled",
+    "pins": {
+        "data": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

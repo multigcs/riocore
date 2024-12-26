@@ -8,21 +8,6 @@ to measure weight's
 
 Keywords: adc analog weight
 
-## Basic-Example:
-```
-{
-    "type": "hx711",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### miso:
@@ -88,6 +73,21 @@ name of this plugin instance
  * direction: input
  * multiplexed: True
 
+
+## Basic-Example:
+```
+{
+    "type": "hx711",
+    "pins": {
+        "miso": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

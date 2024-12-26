@@ -8,24 +8,6 @@ Analog-Outout via spi digital poti
 
 Keywords: analog poti dac
 
-## Basic-Example:
-```
-{
-    "type": "spipoti",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### mosi:
@@ -65,6 +47,24 @@ name of this plugin instance
  * size: 8 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "spipoti",
+    "pins": {
+        "mosi": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

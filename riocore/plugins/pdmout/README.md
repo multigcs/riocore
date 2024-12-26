@@ -8,21 +8,6 @@ to analog values via sigma-delta modulator
 
 Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
 
-## Basic-Example:
-```
-{
-    "type": "pdmout",
-    "pins": {
-        "pdm": {
-            "pin": "0"
-        },
-        "en": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### pdm:
@@ -93,6 +78,21 @@ configure as joint
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "pdmout",
+    "pins": {
+        "pdm": {
+            "pin": "0"
+        },
+        "en": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

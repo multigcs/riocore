@@ -8,18 +8,6 @@ to messurement digital frequencies
 
 Keywords: frequency
 
-## Basic-Example:
-```
-{
-    "type": "freqin",
-    "pins": {
-        "freq": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### freq:
@@ -71,6 +59,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "freqin",
+    "pins": {
+        "freq": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

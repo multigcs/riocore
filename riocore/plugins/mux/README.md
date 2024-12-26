@@ -8,27 +8,6 @@ encodes binary values
 
 Keywords: binary multiplexer
 
-## Basic-Example:
-```
-{
-    "type": "mux",
-    "pins": {
-        "pin0": {
-            "pin": "0"
-        },
-        "pin1": {
-            "pin": "1"
-        },
-        "pin2": {
-            "pin": "2"
-        },
-        "pin3": {
-            "pin": "3"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### pin0:
@@ -91,6 +70,27 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "mux",
+    "pins": {
+        "pin0": {
+            "pin": "0"
+        },
+        "pin1": {
+            "pin": "1"
+        },
+        "pin2": {
+            "pin": "2"
+        },
+        "pin3": {
+            "pin": "3"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

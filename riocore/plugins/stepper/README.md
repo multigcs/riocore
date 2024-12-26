@@ -8,27 +8,6 @@ direct stepper driver with 4pin's directly controlled by the FPGA
 
 Keywords: stepper joint hbridge
 
-## Basic-Example:
-```
-{
-    "type": "stepper",
-    "pins": {
-        "a1": {
-            "pin": "0"
-        },
-        "a2": {
-            "pin": "1"
-        },
-        "b1": {
-            "pin": "2"
-        },
-        "b2": {
-            "pin": "3"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### a1:
@@ -110,6 +89,27 @@ position feedback
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "stepper",
+    "pins": {
+        "a1": {
+            "pin": "0"
+        },
+        "a2": {
+            "pin": "1"
+        },
+        "b1": {
+            "pin": "2"
+        },
+        "b2": {
+            "pin": "3"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

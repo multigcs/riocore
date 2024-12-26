@@ -8,18 +8,6 @@ to output variable frequency signals
 
 Keywords: frequency
 
-## Basic-Example:
-```
-{
-    "type": "freqout",
-    "pins": {
-        "freq": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### freq:
@@ -55,6 +43,18 @@ output frequency
  * size: 32 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "freqout",
+    "pins": {
+        "freq": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

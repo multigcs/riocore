@@ -8,18 +8,6 @@ simple ws2812b driver with variable input to build led-bars
 
 Keywords: led rgb status info
 
-## Basic-Example:
-```
-{
-    "type": "wled_bar",
-    "pins": {
-        "data": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### data:
@@ -67,6 +55,18 @@ name of this plugin instance
  * size: 8 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "wled_bar",
+    "pins": {
+        "data": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -8,21 +8,6 @@ to messure distance via cheap ultra-sonic sensors (like filling level of bigger 
 
 Keywords: distance ultrasonic level oil water
 
-## Basic-Example:
-```
-{
-    "type": "sonar",
-    "pins": {
-        "trigger": {
-            "pin": "0"
-        },
-        "echo": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### trigger:
@@ -60,6 +45,21 @@ distance between sensor and object
  * size: 32 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "sonar",
+    "pins": {
+        "trigger": {
+            "pin": "0"
+        },
+        "echo": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

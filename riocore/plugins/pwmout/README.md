@@ -8,24 +8,6 @@ to control AC/DC-Motors or for analog outputs
 
 Keywords: joint dcservo acservo 10v 5v dac analog
 
-## Basic-Example:
-```
-{
-    "type": "pwmout",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        },
-        "dir": {
-            "pin": "1"
-        },
-        "en": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### pwm:
@@ -101,6 +83,24 @@ configure as joint
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "pwmout",
+    "pins": {
+        "pwm": {
+            "pin": "0"
+        },
+        "dir": {
+            "pin": "1"
+        },
+        "en": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -8,24 +8,6 @@ to display values from LinuxCNC on 7segment display's
 
 Keywords: info display
 
-## Basic-Example:
-```
-{
-    "type": "max7219",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### mosi:
@@ -83,6 +65,24 @@ name of this plugin instance
  * size: 24 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "max7219",
+    "pins": {
+        "mosi": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

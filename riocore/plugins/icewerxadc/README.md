@@ -17,21 +17,6 @@ Keywords: analog adc voltage ampere
 ## Limitations
 * boards: iceWerx-iCE40-HX8K, OctoBot
 
-## Basic-Example:
-```
-{
-    "type": "icewerxadc",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### tx:
@@ -109,6 +94,21 @@ name of this plugin instance
  * direction: input
  * multiplexed: True
 
+
+## Basic-Example:
+```
+{
+    "type": "icewerxadc",
+    "pins": {
+        "tx": {
+            "pin": "0"
+        },
+        "rx": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

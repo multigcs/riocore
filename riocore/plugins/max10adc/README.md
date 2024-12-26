@@ -12,14 +12,6 @@ Keywords: analog adc voltage ampere
 * family: MAX 10
 * toolchains: quartus
 
-## Basic-Example:
-```
-{
-    "type": "max10adc",
-    "pins": {}
-}
-```
-
 ## Pins:
 *FPGA-pins*
 
@@ -118,6 +110,14 @@ name of this plugin instance
  * size: 16 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "max10adc",
+    "pins": {}
+}
+```
 
 ## Full-Example:
 ```

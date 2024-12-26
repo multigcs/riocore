@@ -8,21 +8,6 @@ simple uart interface, not usable for realtime stuff in LinuxCNC / only for test
 
 Keywords: serial uart interface
 
-## Basic-Example:
-```
-{
-    "type": "uart",
-    "pins": {
-        "rx": {
-            "pin": "0"
-        },
-        "tx": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### rx:
@@ -59,6 +44,21 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "uart",
+    "pins": {
+        "rx": {
+            "pin": "0"
+        },
+        "tx": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

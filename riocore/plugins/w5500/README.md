@@ -8,33 +8,6 @@ w5500 driver for the interface communication over UDP
 
 Keywords: ethernet network udp interface
 
-## Basic-Example:
-```
-{
-    "type": "w5500",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "miso": {
-            "pin": "1"
-        },
-        "sclk": {
-            "pin": "2"
-        },
-        "sel": {
-            "pin": "3"
-        },
-        "rst": {
-            "pin": "4"
-        },
-        "intr": {
-            "pin": "5"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### mosi:
@@ -116,6 +89,33 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "w5500",
+    "pins": {
+        "mosi": {
+            "pin": "0"
+        },
+        "miso": {
+            "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "sel": {
+            "pin": "3"
+        },
+        "rst": {
+            "pin": "4"
+        },
+        "intr": {
+            "pin": "5"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

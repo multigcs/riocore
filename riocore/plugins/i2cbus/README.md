@@ -31,21 +31,6 @@ graph LR;
     Multiplexer0-->Device6-->Device7..;
 ```
 
-## Basic-Example:
-```
-{
-    "type": "i2cbus",
-    "pins": {
-        "sda": {
-            "pin": "0"
-        },
-        "scl": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### sda:
@@ -88,6 +73,21 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "i2cbus",
+    "pins": {
+        "sda": {
+            "pin": "0"
+        },
+        "scl": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

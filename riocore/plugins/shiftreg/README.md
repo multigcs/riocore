@@ -34,27 +34,6 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
 Keywords: expansion digital io
 
-## Basic-Example:
-```
-{
-    "type": "shiftreg",
-    "pins": {
-        "out": {
-            "pin": "0"
-        },
-        "in": {
-            "pin": "1"
-        },
-        "sclk": {
-            "pin": "2"
-        },
-        "load": {
-            "pin": "3"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### out:
@@ -110,6 +89,27 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "shiftreg",
+    "pins": {
+        "out": {
+            "pin": "0"
+        },
+        "in": {
+            "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "load": {
+            "pin": "3"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

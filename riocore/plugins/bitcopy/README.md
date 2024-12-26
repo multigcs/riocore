@@ -19,18 +19,6 @@ graph LR;
     Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
 ```
 
-## Basic-Example:
-```
-{
-    "type": "bitcopy",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### bit:
@@ -60,6 +48,18 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "bitcopy",
+    "pins": {
+        "bit": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -8,24 +8,6 @@ usable as spindle-encoder for rigid tapping and thread cutting
 
 Keywords: feedback encoder rotary linear glassscale  index
 
-## Basic-Example:
-```
-{
-    "type": "quadencoderz",
-    "pins": {
-        "a": {
-            "pin": "0"
-        },
-        "b": {
-            "pin": "1"
-        },
-        "z": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### a:
@@ -107,6 +89,24 @@ calculates revolutions per minute
  * size: 32 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "quadencoderz",
+    "pins": {
+        "a": {
+            "pin": "0"
+        },
+        "b": {
+            "pin": "1"
+        },
+        "z": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

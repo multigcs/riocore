@@ -8,18 +8,6 @@ outputs a fixed frequency / was used to indicate that the FPGA is runing / no co
 
 Keywords: led blinking
 
-## Basic-Example:
-```
-{
-    "type": "blink",
-    "pins": {
-        "led": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### led:
@@ -50,6 +38,18 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "blink",
+    "pins": {
+        "led": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -8,18 +8,6 @@ that was just a gimmick, not really useful
 
 Keywords: remote control keyboard
 
-## Basic-Example:
-```
-{
-    "type": "irin",
-    "pins": {
-        "ir": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### ir:
@@ -51,6 +39,18 @@ name of this plugin instance
  * size: 8 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "irin",
+    "pins": {
+        "ir": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

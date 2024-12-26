@@ -8,21 +8,6 @@ generates sine waves (multi phase support)
 
 Keywords: sine wave pwm bldc stepper
 
-## Basic-Example:
-```
-{
-    "type": "sinepwm",
-    "pins": {
-        "en": {
-            "pin": "0"
-        },
-        "out0": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### en:
@@ -99,6 +84,21 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "sinepwm",
+    "pins": {
+        "en": {
+            "pin": "0"
+        },
+        "out0": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

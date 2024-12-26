@@ -8,21 +8,6 @@ set and reset an input bit
 
 Keywords: sr-flipflop
 
-## Basic-Example:
-```
-{
-    "type": "flipflop_in",
-    "pins": {
-        "set": {
-            "pin": "0"
-        },
-        "reset": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### set:
@@ -65,6 +50,21 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "flipflop_in",
+    "pins": {
+        "set": {
+            "pin": "0"
+        },
+        "reset": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

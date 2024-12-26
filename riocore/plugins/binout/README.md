@@ -15,27 +15,6 @@ graph LR;
     Dec2Bin-->FPGA-Pin1;
 ```
 
-## Basic-Example:
-```
-{
-    "type": "binout",
-    "pins": {
-        "bin0": {
-            "pin": "0"
-        },
-        "bin1": {
-            "pin": "1"
-        },
-        "bin2": {
-            "pin": "2"
-        },
-        "bin3": {
-            "pin": "3"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### bin0:
@@ -88,6 +67,27 @@ name of this plugin instance
  * size: 8 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "binout",
+    "pins": {
+        "bin0": {
+            "pin": "0"
+        },
+        "bin1": {
+            "pin": "1"
+        },
+        "bin2": {
+            "pin": "2"
+        },
+        "bin3": {
+            "pin": "3"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

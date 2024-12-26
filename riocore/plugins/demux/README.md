@@ -8,21 +8,6 @@ decodes binary values
 
 Keywords: binary demultiplexer
 
-## Basic-Example:
-```
-{
-    "type": "demux",
-    "pins": {
-        "pin0": {
-            "pin": "0"
-        },
-        "pin1": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### pin0:
@@ -97,6 +82,21 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "demux",
+    "pins": {
+        "pin0": {
+            "pin": "0"
+        },
+        "pin1": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

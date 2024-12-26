@@ -8,18 +8,6 @@ to control relais, leds, valves, ....
 
 Keywords: led relais valve lamp motor magnet
 
-## Basic-Example:
-```
-{
-    "type": "bitout",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### bit:
@@ -51,6 +39,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "bitout",
+    "pins": {
+        "bit": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

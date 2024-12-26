@@ -8,24 +8,6 @@ uart bridge to send and receive custom frames via uart port
 
 Keywords: serial uart
 
-## Basic-Example:
-```
-{
-    "type": "uartbridge",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### tx:
@@ -107,6 +89,24 @@ the signals of this plugin are user configurable
  * size: 32 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "uartbridge",
+    "pins": {
+        "tx": {
+            "pin": "0"
+        },
+        "rx": {
+            "pin": "1"
+        },
+        "tx_enable": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

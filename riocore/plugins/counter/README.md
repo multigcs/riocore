@@ -8,24 +8,6 @@ to counting digital pulses, supporting up,down and reset signals
 
 Keywords: counter pulse
 
-## Basic-Example:
-```
-{
-    "type": "counter",
-    "pins": {
-        "up": {
-            "pin": "0"
-        },
-        "down": {
-            "pin": "1"
-        },
-        "reset": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### up:
@@ -71,6 +53,24 @@ name of this plugin instance
  * size: 32 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "counter",
+    "pins": {
+        "up": {
+            "pin": "0"
+        },
+        "down": {
+            "pin": "1"
+        },
+        "reset": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

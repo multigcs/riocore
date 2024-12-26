@@ -8,18 +8,6 @@ to read switches or other 1bit signals
 
 Keywords: switch limit estop keyboard
 
-## Basic-Example:
-```
-{
-    "type": "bitin",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### bit:
@@ -51,6 +39,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "bitin",
+    "pins": {
+        "bit": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -8,18 +8,6 @@ measuring pulse len
 
 Keywords: pulse digital
 
-## Basic-Example:
-```
-{
-    "type": "pwmin",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### pwm:
@@ -71,6 +59,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "pwmin",
+    "pins": {
+        "pwm": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

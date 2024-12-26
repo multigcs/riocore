@@ -8,21 +8,6 @@ usable as position feedback for closed-loop configuration or as variable input t
 
 Keywords: feedback encoder rotary linear glassscale
 
-## Basic-Example:
-```
-{
-    "type": "quadencoder",
-    "pins": {
-        "a": {
-            "pin": "0"
-        },
-        "b": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### a:
@@ -81,6 +66,21 @@ calculates revolutions per minute
  * size: 32 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "quadencoder",
+    "pins": {
+        "a": {
+            "pin": "0"
+        },
+        "b": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

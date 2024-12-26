@@ -8,21 +8,6 @@ controling digital poti for analog outputs
 
 Keywords: analog dac poti
 
-## Basic-Example:
-```
-{
-    "type": "udpoti",
-    "pins": {
-        "updown": {
-            "pin": "0"
-        },
-        "increment": {
-            "pin": "1"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### updown:
@@ -75,6 +60,21 @@ name of this plugin instance
  * size: 32 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "udpoti",
+    "pins": {
+        "updown": {
+            "pin": "0"
+        },
+        "increment": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -8,24 +8,6 @@ Analog input via tlc549 ADC
 
 Keywords: analog adc
 
-## Basic-Example:
-```
-{
-    "type": "tlc549c",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### miso:
@@ -67,6 +49,24 @@ measured voltage
  * size: 8 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "tlc549c",
+    "pins": {
+        "miso": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

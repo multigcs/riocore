@@ -8,24 +8,6 @@ to control motor drivers via step/dir pin's and an optional enable pin
 
 Keywords: stepper servo joint
 
-## Basic-Example:
-```
-{
-    "type": "stepdir",
-    "pins": {
-        "step": {
-            "pin": "0"
-        },
-        "dir": {
-            "pin": "1"
-        },
-        "en": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### step:
@@ -122,6 +104,24 @@ position feedback
  * size: 32 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "stepdir",
+    "pins": {
+        "step": {
+            "pin": "0"
+        },
+        "dir": {
+            "pin": "1"
+        },
+        "en": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

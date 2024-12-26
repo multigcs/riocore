@@ -8,14 +8,6 @@ virtual signal
 
 Keywords: virtual
 
-## Basic-Example:
-```
-{
-    "type": "signal",
-    "pins": {}
-}
-```
-
 ## Pins:
 *FPGA-pins*
 
@@ -52,6 +44,14 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "signal",
+    "pins": {}
+}
+```
 
 ## Full-Example:
 ```

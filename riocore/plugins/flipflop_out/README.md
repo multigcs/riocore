@@ -8,18 +8,6 @@ set and reset an output pin
 
 Keywords: sr-flipflop
 
-## Basic-Example:
-```
-{
-    "type": "flipflop_out",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### bit:
@@ -68,6 +56,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "flipflop_out",
+    "pins": {
+        "bit": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

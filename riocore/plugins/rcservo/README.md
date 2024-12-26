@@ -8,18 +8,6 @@ to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 
 Keywords: joint rcservo
 
-## Basic-Example:
-```
-{
-    "type": "rcservo",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### pwm:
@@ -84,6 +72,18 @@ absolute position (-100 = 1ms / 100 = 2ms)
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "rcservo",
+    "pins": {
+        "pwm": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

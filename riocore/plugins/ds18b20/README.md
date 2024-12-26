@@ -8,18 +8,6 @@ for cheap 1wire temperature sensor's, only one per pin is supported at the momen
 
 Keywords: adc analog temperature
 
-## Basic-Example:
-```
-{
-    "type": "ds18b20",
-    "pins": {
-        "one_wire": {
-            "pin": "0"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### one_wire:
@@ -52,6 +40,18 @@ name of this plugin instance
  * size: 16 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "ds18b20",
+    "pins": {
+        "one_wire": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -8,24 +8,6 @@ with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segme
 
 Keywords: display info status keyboard buttons
 
-## Basic-Example:
-```
-{
-    "type": "tm1638b8s7l8",
-    "pins": {
-        "sel": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "data": {
-            "pin": "2"
-        }
-    }
-}
-```
-
 ## Pins:
 *FPGA-pins*
 ### sel:
@@ -268,6 +250,24 @@ first 2 digits (0 -> 99)
  * direction: output
  * multiplexed: True
 
+
+## Basic-Example:
+```
+{
+    "type": "tm1638b8s7l8",
+    "pins": {
+        "sel": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "data": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```
