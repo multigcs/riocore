@@ -13,7 +13,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "i2cbus"
         self.INFO = "I2C-Bus"
-        self.DESCRIPTION = "I2C-Bus - supports multiple busses with multiple devices per bus\nsub-busses via multiplaxer (pca9548) also supported"
+        self.DESCRIPTION = "I2C-Bus - supports multiple busses with multiple devices per bus\n\nsub-busses via multiplexer (pca9548) are also supported"
         self.KEYWORDS = "adc temperatur voltage current"
         self.ORIGIN = ""
         self.VERILOGS = ["i2c_master.v"]

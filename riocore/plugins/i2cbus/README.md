@@ -2,7 +2,8 @@
 **I2C-Bus**
 
 I2C-Bus - supports multiple busses with multiple devices per bus
-sub-busses via multiplaxer (pca9548) also supported
+
+sub-busses via multiplexer (pca9548) are also supported
 
 Devices:
 * [ads1115](devices/ads1115.py)
