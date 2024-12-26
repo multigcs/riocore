@@ -21,7 +21,6 @@ sub-busses via multiplexer (pca9548) are also supported
         self.GRAPH = """
 graph LR;
     FPGA-->Bus0;
-    style FPGA font-size: 7px, margin-top: 1;
     Bus0-->Device0-->Device1..;
     FPGA-->Bus1..;
     Bus1..-->Device2-->Device3..;

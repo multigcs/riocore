@@ -24,7 +24,6 @@ Keywords: adc temperatur voltage current
 ```mermaid
 graph LR;
     FPGA-->Bus0;
-    style FPGA font-size: 7px, margin-top: 1;
     Bus0-->Device0-->Device1..;
     FPGA-->Bus1..;
     Bus1..-->Device2-->Device3..;
