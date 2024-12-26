@@ -253,9 +253,12 @@ class PluginBase:
                 direction = data_config["direction"]
                 if data_config.get("expansion") and direction == "output":
                     variable = data_config["variable"]
-                    bits = self.plugin_setup.get("size", 8)
-                    for num in range(0, bits):
-                        expansion_pins.append(f"{variable}[{num}]")
+                    bits = data_config.get("size", 8)
+                    if bits == 1:
+                        expansion_pins.append(f"{variable}")
+                    else:
+                        for num in range(0, bits):
+                            expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
     def expansion_inputs(self):
@@ -269,9 +272,12 @@ class PluginBase:
                 direction = data_config["direction"]
                 if data_config.get("expansion") and direction == "input":
                     variable = data_config["variable"]
-                    bits = self.plugin_setup.get("size", 8)
-                    for num in range(0, bits):
-                        expansion_pins.append(f"{variable}[{num}]")
+                    bits = data_config.get("size", 8)
+                    if bits == 1:
+                        expansion_pins.append(f"{variable}")
+                    else:
+                        for num in range(0, bits):
+                            expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
     def gateware_defines(self, direct=False):
