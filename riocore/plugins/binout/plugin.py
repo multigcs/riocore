@@ -5,13 +5,12 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "binout"
         self.INFO = "decimal to binary output"
-        self.DESCRIPTION = """outputs binary values
-```mermaid
+        self.DESCRIPTION = "outputs binary values"
+        self.GRAPH = """
 graph LR;
     Hal-Value-->Dec2Bin;
     Dec2Bin-->FPGA-Pin0;
     Dec2Bin-->FPGA-Pin1;
-```
         """
         self.KEYWORDS = "binary dec2bin r2r-dac"
         self.ORIGIN = ""

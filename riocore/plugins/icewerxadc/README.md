@@ -9,8 +9,6 @@ https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
 
 should work also with the iceFUN board
 
-        
-
 Keywords: analog adc voltage ampere
 
 

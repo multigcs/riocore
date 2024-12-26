@@ -4,6 +4,7 @@
 I2C-Bus - supports multiple busses with multiple devices per bus
 
 sub-busses via multiplexer (pca9548) are also supported
+        
 
 Devices:
 * [ads1115](devices/ads1115.py)
@@ -15,11 +16,21 @@ Devices:
 * [pca9685](devices/pca9685.py)
 * [pcf8574](devices/pcf8574.py)
 
-
 Keywords: adc temperatur voltage current
 
 
 ![image.png](image.png)
+
+```mermaid
+graph LR;
+    FPGA-->Bus0;
+    style FPGA font-size: 7px, margin-top: 1;
+    Bus0-->Device0-->Device1..;
+    FPGA-->Bus1..;
+    Bus1..-->Device2-->Device3..;
+    Bus1..-->Multiplexer0-->Device4-->Device5..;
+    Multiplexer0-->Device6-->Device7..;
+```
 
 ## Basic-Example:
 ```

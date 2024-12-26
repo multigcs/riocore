@@ -2,18 +2,18 @@
 **decimal to binary output**
 
 outputs binary values
+
+Keywords: binary dec2bin r2r-dac
+
+
+![image.png](image.png)
+
 ```mermaid
 graph LR;
     Hal-Value-->Dec2Bin;
     Dec2Bin-->FPGA-Pin0;
     Dec2Bin-->FPGA-Pin1;
 ```
-        
-
-Keywords: binary dec2bin r2r-dac
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

@@ -7,18 +7,18 @@ class Plugin(PluginBase):
         self.INFO = "copy a bit/pin to an other output pin"
         self.DESCRIPTION = """outputs a copy of a bit/pin
 
-```mermaid
-graph LR;
-    Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
-    Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
-```
-
 Usage-Examples:
 * you can create an inverted pin for symetric signals (modifier: invert)
 * or delayed signals for generating sequences (modifier: debounce with hight delay)
 * make short signals visible (modifier: oneshot -> LED)
-
         """
+
+        self.GRAPH = """
+graph LR;
+    Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
+    Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
+        """
+
         self.KEYWORDS = "pin bit copy"
         self.ORIGIN = ""
         self.PINDEFAULTS = {

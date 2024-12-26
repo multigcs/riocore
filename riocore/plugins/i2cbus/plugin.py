@@ -13,7 +13,21 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "i2cbus"
         self.INFO = "I2C-Bus"
-        self.DESCRIPTION = "I2C-Bus - supports multiple busses with multiple devices per bus\n\nsub-busses via multiplexer (pca9548) are also supported"
+        self.DESCRIPTION = """
+I2C-Bus - supports multiple busses with multiple devices per bus
+
+sub-busses via multiplexer (pca9548) are also supported
+        """
+        self.GRAPH = """
+graph LR;
+    FPGA-->Bus0;
+    style FPGA font-size: 7px, margin-top: 1;
+    Bus0-->Device0-->Device1..;
+    FPGA-->Bus1..;
+    Bus1..-->Device2-->Device3..;
+    Bus1..-->Multiplexer0-->Device4-->Device5..;
+    Multiplexer0-->Device6-->Device7..;
+        """
         self.KEYWORDS = "adc temperatur voltage current"
         self.ORIGIN = ""
         self.VERILOGS = ["i2c_master.v"]

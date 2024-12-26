@@ -1,7 +1,6 @@
 # shiftreg
 **Expansion to add I/O's via shiftregister's**
 
-
 do not use this for high frequency signals !!!
 
 jitter measured with a EPM240 as 40bit Shiftreg:
@@ -29,8 +28,6 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
 ### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
 [![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
-
-        
 
 Keywords: expansion digital io
 

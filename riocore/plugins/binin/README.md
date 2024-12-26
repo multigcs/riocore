@@ -2,18 +2,18 @@
 **binary to decimal input**
 
 reads binary values
+
+Keywords: binary bin2dec
+
+
+![image.png](image.png)
+
 ```mermaid
 graph LR;
     FPGA-Pin0-->Bin2Dec;
     FPGA-Pin1-->Bin2Dec;
     Bin2Dec-->Hal-Value;
 ```
-        
-
-Keywords: binary bin2dec
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

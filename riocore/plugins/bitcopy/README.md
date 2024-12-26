@@ -3,23 +3,21 @@
 
 outputs a copy of a bit/pin
 
-```mermaid
-graph LR;
-    Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
-    Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
-```
-
 Usage-Examples:
 * you can create an inverted pin for symetric signals (modifier: invert)
 * or delayed signals for generating sequences (modifier: debounce with hight delay)
 * make short signals visible (modifier: oneshot -> LED)
 
-        
-
 Keywords: pin bit copy
 
 
 ![image.png](image.png)
+
+```mermaid
+graph LR;
+    Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
+    Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
+```
 
 ## Basic-Example:
 ```

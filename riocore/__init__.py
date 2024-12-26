@@ -38,7 +38,7 @@ class Plugins:
             output.append(f"**{plugin.INFO}**")
             output.append("")
         if plugin.DESCRIPTION:
-            output.append(plugin.DESCRIPTION)
+            output.append(plugin.DESCRIPTION.strip())
             output.append("")
         if plugin.KEYWORDS:
             output.append(f"Keywords: {plugin.KEYWORDS}")
@@ -55,6 +55,12 @@ class Plugins:
             output.append("## Limitations")
             for key, values in plugin.LIMITATIONS.items():
                 output.append(f"* {key}: {', '.join(values)}")
+            output.append("")
+
+        if plugin.GRAPH:
+            output.append("```mermaid")
+            output.append(plugin.GRAPH.strip())
+            output.append("```")
             output.append("")
 
         output.append("## Basic-Example:")
