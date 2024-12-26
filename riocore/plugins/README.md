@@ -12,9 +12,7 @@
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |
-| IO | [ads1115](ads1115/README.md) | 4-channel adc via I2C | <img src="ads1115/image.png" height="48"> |
-|  | [as5600](as5600/README.md) | magnetic absolute encoder | <img src="as5600/image.png" height="48"> |
-|  | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |
+| IO | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |
 |  | [binout](binout/README.md) | decimal to binary output | <img src="binout/image.png" height="48"> |
 |  | [bitcopy](bitcopy/README.md) | copy a bit/pin to an other output pin | <img src="bitcopy/image.png" height="48"> |
 |  | [bitin](bitin/README.md) | single input pin | <img src="bitin/image.png" height="48"> |
@@ -32,7 +30,6 @@
 |  | [i2cbus](i2cbus/README.md) | I2C-Bus | <img src="i2cbus/image.png" height="48"> |
 |  | [icewerxadc](icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="icewerxadc/image.png" height="48"> |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |
-|  | [lm75](lm75/README.md) | I2C Temperature-Sensor | <img src="lm75/image.png" height="48"> |
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |
