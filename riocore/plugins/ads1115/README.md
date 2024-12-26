@@ -1,12 +1,12 @@
 # ads1115
+
+<img align="right" width="320" src="image.png">
+
 **4-channel adc via I2C**
 
 to read analog signals with cheap ads1115 chips
 
 Keywords: adc analog temperature ampere voltage
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

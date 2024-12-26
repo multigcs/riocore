@@ -1,12 +1,12 @@
 # quadencoderz
+
+<img align="right" width="320" src="image.png">
+
 **quadencoder with index pin**
 
 usable as spindle-encoder for rigid tapping and thread cutting
 
 Keywords: feedback encoder rotary linear glassscale  index
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

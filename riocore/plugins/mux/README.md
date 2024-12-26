@@ -1,12 +1,12 @@
 # mux
+
+<img align="right" width="320" src="image.png">
+
 **binary multiplexer**
 
 encodes binary values
 
 Keywords: binary multiplexer
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

@@ -1,12 +1,12 @@
 # tlc549c
+
+<img align="right" width="320" src="image.png">
+
 **spi adc input**
 
 Analog input via tlc549 ADC
 
 Keywords: analog adc
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

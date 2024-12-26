@@ -1,12 +1,12 @@
 # max10adc
+
+<img align="right" width="320" src="image.png">
+
 **MAX10 ADC inputs**
 
 only usable for the max10 fpga boards
 
 Keywords: analog adc voltage ampere
-
-
-![image.png](image.png)
 
 ## Limitations
 * family: MAX 10

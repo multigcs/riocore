@@ -1,12 +1,12 @@
 # sonar
+
+<img align="right" width="320" src="image.png">
+
 **sonar sensor for distance measurement**
 
 to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
 
 Keywords: distance ultrasonic level oil water
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

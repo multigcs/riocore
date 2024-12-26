@@ -1,4 +1,7 @@
 # bitcopy
+
+<img align="right" width="320" src="image.png">
+
 **copy a bit/pin to an other output pin**
 
 outputs a copy of a bit/pin
@@ -9,9 +12,6 @@ Usage-Examples:
 * make short signals visible (modifier: oneshot -> LED)
 
 Keywords: pin bit copy
-
-
-![image.png](image.png)
 
 ```mermaid
 graph LR;

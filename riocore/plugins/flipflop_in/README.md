@@ -1,12 +1,12 @@
 # flipflop_in
+
+<img align="right" width="320" src="image.png">
+
 **flipflop input**
 
 set and reset an input bit
 
 Keywords: sr-flipflop
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

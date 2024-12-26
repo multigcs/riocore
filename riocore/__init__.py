@@ -31,8 +31,15 @@ class Plugins:
         output = []
         self.load_plugins({"plugins": [{"type": plugin_name}]})
         plugin = self.plugin_instances[-1]
+        plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+        image_path = os.path.join(plugin_path, "image.png")
 
         output.append(f"# {plugin.NAME}")
+
+        if os.path.isfile(image_path):
+            output.append("")
+            output.append("<img align=\"right\" width=\"320\" src=\"image.png\">")
+            output.append("")
 
         if plugin.INFO:
             output.append(f"**{plugin.INFO}**")
@@ -42,13 +49,6 @@ class Plugins:
             output.append("")
         if plugin.KEYWORDS:
             output.append(f"Keywords: {plugin.KEYWORDS}")
-            output.append("")
-
-        plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
-        image_path = os.path.join(plugin_path, "image.png")
-        if os.path.isfile(image_path):
-            output.append("")
-            output.append("![image.png](image.png)")
             output.append("")
 
         if plugin.LIMITATIONS:

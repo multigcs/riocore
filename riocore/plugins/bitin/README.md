@@ -1,12 +1,12 @@
 # bitin
+
+<img align="right" width="320" src="image.png">
+
 **single input pin**
 
 to read switches or other 1bit signals
 
 Keywords: switch limit estop keyboard
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

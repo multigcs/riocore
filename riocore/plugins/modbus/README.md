@@ -1,12 +1,12 @@
 # modbus
+
+<img align="right" width="320" src="image.png">
+
 **generic modbus plugin**
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 
 Keywords: modbus vfd spindle expansion analog digital
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

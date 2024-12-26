@@ -1,12 +1,12 @@
 # uart
+
+<img align="right" width="320" src="image.png">
+
 **uart interface for host cominucation**
 
 simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
 
 Keywords: serial uart interface
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

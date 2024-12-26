@@ -1,12 +1,12 @@
 # bitout
+
+<img align="right" width="320" src="image.png">
+
 **singe bit output pin**
 
 to control relais, leds, valves, ....
 
 Keywords: led relais valve lamp motor magnet
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

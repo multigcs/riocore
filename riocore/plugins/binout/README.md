@@ -1,12 +1,12 @@
 # binout
+
+<img align="right" width="320" src="image.png">
+
 **decimal to binary output**
 
 outputs binary values
 
 Keywords: binary dec2bin r2r-dac
-
-
-![image.png](image.png)
 
 ```mermaid
 graph LR;

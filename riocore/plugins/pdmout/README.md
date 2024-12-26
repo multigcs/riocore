@@ -1,12 +1,12 @@
 # pdmout
+
+<img align="right" width="320" src="image.png">
+
 **pdm output**
 
 to analog values via sigma-delta modulator
 
 Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

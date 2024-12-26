@@ -1,12 +1,12 @@
 # rmii
+
+<img align="right" width="320" src="image.png">
+
 **rmii udp interface (experimental)**
 
 rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)
 
 Keywords: interface network ethernet udp
-
-
-![image.png](image.png)
 
 ## Limitations
 * boards: TangPrimer20K

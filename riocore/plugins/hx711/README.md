@@ -1,12 +1,12 @@
 # hx711
+
+<img align="right" width="320" src="image.png">
+
 **digital weight sensor**
 
 to measure weight's
 
 Keywords: adc analog weight
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

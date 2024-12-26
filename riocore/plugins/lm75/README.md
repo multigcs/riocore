@@ -1,12 +1,12 @@
 # lm75
+
+<img align="right" width="320" src="image.png">
+
 **I2C Temperature-Sensor**
 
 simple temperature sensor
 
 Keywords: analog adc temperature
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

@@ -1,12 +1,12 @@
 # binin
+
+<img align="right" width="320" src="image.png">
+
 **binary to decimal input**
 
 reads binary values
 
 Keywords: binary bin2dec
-
-
-![image.png](image.png)
 
 ```mermaid
 graph LR;

@@ -1,12 +1,12 @@
 # uartbridge
+
+<img align="right" width="320" src="image.png">
+
 **uart bridge - experimental - python only**
 
 uart bridge to send and receive custom frames via uart port
 
 Keywords: serial uart
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

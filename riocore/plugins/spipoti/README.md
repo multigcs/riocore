@@ -1,12 +1,12 @@
 # spipoti
+
+<img align="right" width="320" src="image.png">
+
 **spi digital poti**
 
 Analog-Outout via spi digital poti
 
 Keywords: analog poti dac
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

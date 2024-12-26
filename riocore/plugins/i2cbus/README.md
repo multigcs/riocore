@@ -1,4 +1,7 @@
 # i2cbus
+
+<img align="right" width="320" src="image.png">
+
 **I2C-Bus**
 
 I2C-Bus - supports multiple busses with multiple devices per bus
@@ -17,9 +20,6 @@ Devices:
 * [pcf8574](devices/pcf8574.py)
 
 Keywords: adc temperatur voltage current
-
-
-![image.png](image.png)
 
 ```mermaid
 graph LR;

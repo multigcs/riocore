@@ -1,12 +1,12 @@
 # blink
+
+<img align="right" width="320" src="image.png">
+
 **blinking output pin**
 
 outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals
 
 Keywords: led blinking
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

@@ -1,12 +1,12 @@
 # as5600
+
+<img align="right" width="320" src="image.png">
+
 **magnetic absolute encoder**
 
 for position feedbacks
 
 Keywords: encoder scale feedback absolute
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

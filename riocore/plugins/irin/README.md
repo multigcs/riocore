@@ -1,12 +1,12 @@
 # irin
+
+<img align="right" width="320" src="image.png">
+
 **IR-Remote input**
 
 that was just a gimmick, not really useful
 
 Keywords: remote control keyboard
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

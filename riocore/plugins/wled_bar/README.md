@@ -1,12 +1,12 @@
 # wled_bar
+
+<img align="right" width="320" src="image.png">
+
 **ws2812b interface for bar-displays**
 
 simple ws2812b driver with variable input to build led-bars
 
 Keywords: led rgb status info
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

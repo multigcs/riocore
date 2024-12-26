@@ -1,12 +1,12 @@
 # max7219
+
+<img align="right" width="320" src="image.png">
+
 **7segment display based on max7219**
 
 to display values from LinuxCNC on 7segment display's
 
 Keywords: info display
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

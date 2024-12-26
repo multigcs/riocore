@@ -1,12 +1,12 @@
 # quadencoder
+
+<img align="right" width="320" src="image.png">
+
 **quadencoder**
 
 usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
 
 Keywords: feedback encoder rotary linear glassscale
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

@@ -1,12 +1,12 @@
 # signal
+
+<img align="right" width="320" src="image.png">
+
 **virtual signal**
 
 virtual signal
 
 Keywords: virtual
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

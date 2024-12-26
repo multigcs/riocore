@@ -1,12 +1,12 @@
 # pwmin
+
+<img align="right" width="320" src="image.png">
+
 **pwm input**
 
 measuring pulse len
 
 Keywords: pulse digital
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

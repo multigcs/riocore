@@ -1,12 +1,12 @@
 # sinepwm
+
+<img align="right" width="320" src="image.png">
+
 **sine pwm output**
 
 generates sine waves (multi phase support)
 
 Keywords: sine wave pwm bldc stepper
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

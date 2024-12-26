@@ -1,12 +1,12 @@
 # freqout
+
+<img align="right" width="320" src="image.png">
+
 **frequency output**
 
 to output variable frequency signals
 
 Keywords: frequency
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

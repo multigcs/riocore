@@ -1,12 +1,12 @@
 # flipflop_out
+
+<img align="right" width="320" src="image.png">
+
 **flipflop output**
 
 set and reset an output pin
 
 Keywords: sr-flipflop
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

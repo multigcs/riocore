@@ -1,12 +1,12 @@
 # max6675
+
+<img align="right" width="320" src="image.png">
+
 **SPI temperature sensor**
 
 to messurement very high temperatures of up to 1250 degrees Celsius
 
 Keywords: analog adc
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

@@ -1,12 +1,12 @@
 # udpoti
+
+<img align="right" width="320" src="image.png">
+
 **digital-poti with up/down+dir interface**
 
 controling digital poti for analog outputs
 
 Keywords: analog dac poti
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

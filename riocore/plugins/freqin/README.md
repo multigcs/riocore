@@ -1,12 +1,12 @@
 # freqin
+
+<img align="right" width="320" src="image.png">
+
 **frequency input**
 
 to messurement digital frequencies
 
 Keywords: frequency
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

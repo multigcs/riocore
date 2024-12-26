@@ -1,12 +1,12 @@
 # stepdir
+
+<img align="right" width="320" src="image.png">
+
 **step/dir output for stepper drivers**
 
 to control motor drivers via step/dir pin's and an optional enable pin
 
 Keywords: stepper servo joint
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

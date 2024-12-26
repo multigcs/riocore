@@ -1,12 +1,12 @@
 # counter
+
+<img align="right" width="320" src="image.png">
+
 **pulse counter input**
 
 to counting digital pulses, supporting up,down and reset signals
 
 Keywords: counter pulse
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

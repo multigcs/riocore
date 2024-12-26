@@ -1,12 +1,12 @@
 # demux
+
+<img align="right" width="320" src="image.png">
+
 **binary demultiplexer**
 
 decodes binary values
 
 Keywords: binary demultiplexer
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```

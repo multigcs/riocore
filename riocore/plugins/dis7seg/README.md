@@ -1,12 +1,12 @@
 # dis7seg
+
+<img align="right" width="320" src="image.png">
+
 **7segment display with buttons**
 
 only usable for devboards with 7segment display / better using other 7seg plugins
 
 Keywords: info display
-
-
-![image.png](image.png)
 
 ## Basic-Example:
 ```
