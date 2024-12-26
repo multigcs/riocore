@@ -834,9 +834,15 @@ class TabOverview:
                 # expansion posts
                 eports = []
                 for pname in plugin_instance.expansion_outputs():
-                    eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
+                    cpname = pname.replace('[', '').replace(']', '')
+                    if pname.startswith("VARIN") or pname.startswith("VAROUT"):
+                        pname = pname.split("_", 2)[-1]
+                    eports.append(f"<{cpname}>{pname}")
                 for pname in plugin_instance.expansion_inputs():
-                    eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
+                    cpname = pname.replace('[', '').replace(']', '')
+                    if pname.startswith("VARIN") or pname.startswith("VAROUT"):
+                        pname = pname.split("_", 2)[-1]
+                    eports.append(f"<{cpname}>{pname}")
 
                 if eports:
                     label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(eports)}}} }}"
@@ -2017,8 +2023,7 @@ class WinForm(QWidget):
         plugin_search = QLineEdit("")
         plugin_search.textChanged.connect(search)
         left_layout.addWidget(plugin_search)
-        left_layout.addWidget(plugin_table)
-        left_layout.addStretch()
+        left_layout.addWidget(plugin_table, stretch=1)
 
         infos = QHBoxLayout()
         infos.addWidget(left_widget, stretch=1)

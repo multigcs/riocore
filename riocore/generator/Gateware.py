@@ -452,6 +452,7 @@ class Gateware:
                         elif pin_config["direction"] == "output":
                             used_expansion_outputs.append(pin_config["pin"])
 
+        output.append("    // update expansion output pins")
         output.append("    always @(posedge sysclk) begin")
         # update expansion output pins
         for plugin_instance in self.project.plugin_instances:
@@ -470,13 +471,17 @@ class Gateware:
                     bit_n = data_config["bit"]
                     if direction == "output":
                         default = data_config.get("default", 0)
-                        for bit_num in range(0, size):
-                            bitvar = f"{variable}[{bit_num}]"
-                            if bitvar not in used_expansion_outputs:
-                                if default & (1 << bit_n):
-                                    output.append(f"        {bitvar} <= 1'd1;")
-                                else:
-                                    output.append(f"        {bitvar} <= 1'd0;")
+                        if size == 1:
+                            if variable not in used_expansion_outputs:
+                                output.append(f"        {variable} <= {size}'d{default};")
+                        else:
+                            for bit_num in range(0, size):
+                                bitvar = f"{variable}[{bit_num}]"
+                                if bitvar not in used_expansion_outputs:
+                                    if default & (1 << bit_n):
+                                        output.append(f"        {bitvar} <= 1'd1;")
+                                    else:
+                                        output.append(f"        {bitvar} <= 1'd0;")
         output.append("    end")
 
         if self.project.multiplexed_input:
