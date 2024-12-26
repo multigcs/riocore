@@ -4,7 +4,7 @@
 
 **spi digital poti**
 
-Analog-Outout via spi digital poti
+Analog-Output via spi digital poti
 
 Keywords: analog poti dac
 
