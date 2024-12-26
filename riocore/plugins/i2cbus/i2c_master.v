@@ -11,6 +11,7 @@ module i2c_master
         input wire [6:0] set_addr,
         input wire set_rw,
         input wire stop,
+        input wire wakeup,
         input wire [4:0] set_bytes,
         input wire [MAX_BITS-1:0] set_data_out,
         output reg [31:0] data_in,
@@ -27,11 +28,12 @@ module i2c_master
     localparam STATE_RTX = 3;
     localparam STATE_ACK = 4;
     localparam STATE_STOP = 5;
-    localparam STATE_DONE = 6;
+    localparam STATE_WAKEUP = 6;
 
     reg [7:0] mystate = 0;
     reg [7:0] send_cnt = 0;
     reg [7:0] send_byte_n = 0;
+    reg [31:0] delay = 0;
 
     reg clk_400;
     reg [31:0]counter_400;
@@ -61,6 +63,7 @@ module i2c_master
     always @(posedge clk_400) begin
         step <= 0;
 
+
         if (mystate == STATE_WAIT) begin
             sdaOut <= 1;
             isSending <= 0;
@@ -69,6 +72,9 @@ module i2c_master
             if (sdaIn == 0) begin
                 // wait for free bus / reset
                 scl <= ~scl;
+            end else if (wakeup) begin
+                mystate <= STATE_WAKEUP;
+                busy <= 1;
             end else if (start) begin
                 scl <= 1;
                 valid <= 0;
@@ -79,6 +85,39 @@ module i2c_master
                 data_out <= set_data_out;
                 mystate <= STATE_START;
             end
+
+        end else if (mystate == STATE_WAKEUP) begin
+            // wakeup condition
+            if (step == 0) begin
+                step <= 1;
+                isSending <= 1;
+                sdaOut <= 1;
+                scl <= 0;
+                delay <= 5000;
+            end else if (step == 1) begin
+                if (delay == 0) begin
+                    step <= 2;
+                    delay <= 5000;
+                    isSending <= 1;
+                    sdaOut <= 0;
+                    scl <= 1;
+                end else begin
+                    delay <= delay - 1'd1;
+                    step <= 1;
+                end
+            end else if (step == 2) begin
+                if (delay == 0) begin
+                    step <= 0;
+                    isSending <= 1;
+                    sdaOut <= 1;
+                    scl <= 1;
+                    mystate <= STATE_STOP;
+                end else begin
+                    delay <= delay - 1'd1;
+                    step <= 2;
+                end
+            end
+
 
         end else if (mystate == STATE_START) begin
             // start condition

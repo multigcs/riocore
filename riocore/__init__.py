@@ -38,7 +38,7 @@ class Plugins:
 
         if os.path.isfile(image_path):
             output.append("")
-            output.append("<img align=\"right\" width=\"320\" src=\"image.png\">")
+            output.append('<img align="right" width="320" src="image.png">')
             output.append("")
 
         if plugin.INFO:

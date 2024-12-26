@@ -12,11 +12,18 @@ class i2c_device:
                 "description": "use as expansion io",
                 "default": False,
             },
-            "default": {
+            "inputs": {
                 "type": "bits",
                 "min": 0,
                 "max": 255,
-                "description": "set default output value",
+                "description": "use as input",
+                "default": 255,
+            },
+            "outputs": {
+                "type": "bits",
+                "min": 0,
+                "max": 255,
+                "description": "use as output",
                 "default": 255,
             },
         },
@@ -26,39 +33,48 @@ class i2c_device:
         self.name = setup["name"]
         self.addr = setup["address"]
         self.bitvar = setup.get("bitvar", self.options["config"]["bitvar"]["default"])
+        self.inputs = setup.get("inputs", self.options["config"]["inputs"]["default"])
+        self.outputs = setup.get("outputs", self.options["config"]["outputs"]["default"])
         self.INTERFACE = {}
         self.SIGNALS = {}
         if self.bitvar:
-            setup["data_out"] = []
             setup["data_in"] = []
 
-            # write single bots into data_out byte
+            # write single bits into data_out byte
             bitlist = []
             for bit in range(0, 8):
-                bitlist.append(f"{self.name}_out{bit}")
-            setup["data_out"].append(f"                            data_out <= {{{', '.join(reversed(bitlist))}}};")
+                if (1 << bit) & self.outputs:
+                    bitlist.append(f"{self.name}_out{bit}")
+                else:
+                    bitlist.append("1'd1")
+
+            setup["value"] = f"{{{', '.join(reversed(bitlist))}}}"
 
             # write data_in into single bits
             for bit in range(0, 8):
-                setup["data_in"].append(f"                                {self.name}_in{bit} <= data_in[{bit}];")
+                if (1 << bit) & self.inputs:
+                    setup["data_in"].append(f"                                {self.name}_in{bit} <= data_in[{bit}];")
 
             for bit in range(0, 8):
-                self.INTERFACE[f"{self.name}_in{bit}"] = {
-                    "size": 1,
-                    "direction": "input",
-                }
-                self.INTERFACE[f"{self.name}_out{bit}"] = {
-                    "size": 1,
-                    "direction": "output",
-                }
-                self.SIGNALS[f"{self.name}_in{bit}"] = {
-                    "direction": "input",
-                    "bool": True,
-                }
-                self.SIGNALS[f"{self.name}_out{bit}"] = {
-                    "direction": "output",
-                    "bool": True,
-                }
+                if (1 << bit) & self.inputs:
+                    self.INTERFACE[f"{self.name}_in{bit}"] = {
+                        "size": 1,
+                        "direction": "input",
+                    }
+                    self.SIGNALS[f"{self.name}_in{bit}"] = {
+                        "direction": "input",
+                        "bool": True,
+                    }
+
+                if (1 << bit) & self.outputs:
+                    self.INTERFACE[f"{self.name}_out{bit}"] = {
+                        "size": 1,
+                        "direction": "output",
+                    }
+                    self.SIGNALS[f"{self.name}_out{bit}"] = {
+                        "direction": "output",
+                        "bool": True,
+                    }
         else:
             self.INTERFACE[f"{self.name}_in"] = {
                 "size": 8,
@@ -87,9 +103,13 @@ class i2c_device:
                 "var": f"{self.name}_out",
                 "bytes": 1,
             },
-            {
-                "mode": "read",
-                "var": f"{self.name}_in",
-                "bytes": 1,
-            },
         ]
+
+        if self.inputs:
+            self.STEPS.append(
+                {
+                    "mode": "read",
+                    "var": f"{self.name}_in",
+                    "bytes": 1,
+                }
+            )

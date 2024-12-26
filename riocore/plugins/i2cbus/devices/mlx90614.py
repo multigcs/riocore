@@ -2,6 +2,9 @@ class i2c_device:
     MLX90614_TA = 0x06
     MLX90614_TOBJ1 = 0x07
     MLX90614_TOBJ2 = 0x08
+    MLX90614_SLEEP_MODE = 0xFF
+    MLX90614_SLEEP_MODE_PEC = 0xE8
+
     options = {
         "addresses": ["0x5A"],
     }
@@ -10,34 +13,51 @@ class i2c_device:
         self.name = setup["name"]
         self.addr = setup["address"]
         self.INTERFACE = {
-            f"{self.name}_temp": {
+            f"{self.name}_ambiente": {
+                "size": 16,
+                "direction": "input",
+            },
+            f"{self.name}_object": {
                 "size": 16,
                 "direction": "input",
             },
         }
         self.SIGNALS = {
-            f"{self.name}_temp": {
+            f"{self.name}_object": {
+                "direction": "input",
+                "format": "0.1f",
+            },
+            f"{self.name}_ambiente": {
                 "direction": "input",
                 "format": "0.1f",
             },
         }
         self.PARAMS = {}
-        self.INITS = {}
-        self.STEPS = [
+        self.INITS = [
             {
-                "mode": "write",
-                "value": self.MLX90614_TOBJ1,
-                "bytes": 1,
-                "stop": False,
+                "mode": "writereg",
+                "values": [
+                    (self.MLX90614_SLEEP_MODE, self.MLX90614_SLEEP_MODE_PEC),
+                ],
             },
             {
-                "mode": "read",
-                "var": f"{self.name}_temp",
+                "mode": "wakeup",
+            },
+        ]
+        self.STEPS = [
+            {
+                "mode": "readreg",
+                "register": self.MLX90614_TA,
+                "var": f"{self.name}_ambiente",
+                "big_endian": True,
                 "bytes": 2,
             },
             {
-                "mode": "delay",
-                "ms": 3,
+                "mode": "readreg",
+                "register": self.MLX90614_TOBJ1,
+                "var": f"{self.name}_object",
+                "big_endian": True,
+                "bytes": 2,
             },
         ]
 

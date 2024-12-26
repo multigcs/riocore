@@ -67,8 +67,7 @@ graph LR;
         self.INTERFACE = {}
         self.SIGNALS = {}
 
-        # self.MAX_BITS = 64
-        self.MAX_BITS = 8
+        self.MAX_BITS = 16
 
         self.DESCRIPTION += "\n\nDevices:\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*.py"))):
@@ -168,11 +167,14 @@ graph LR;
         verilog_data.append("    wire [31:0] data_in;")
         verilog_data.append("    reg [31:0] delay_cnt = 2700000;")
         verilog_data.append("    reg start = 0;")
+        verilog_data.append("    reg wakeup = 0;")
         verilog_data.append("    wire busy;")
         verilog_data.append("    wire valid;")
         verilog_data.append("    always @(posedge clk) begin")
         verilog_data.append("        if (delay_cnt > 0) begin")
         verilog_data.append("            delay_cnt <= delay_cnt - 1;")
+        verilog_data.append("        end else if (wakeup == 1 && busy == 1) begin")
+        verilog_data.append("            wakeup <= 0;")
         verilog_data.append("        end else if (start == 1 && busy == 1) begin")
         verilog_data.append("            start <= 0;")
         verilog_data.append("        end else if (start == 0 && busy == 0) begin")
@@ -220,7 +222,7 @@ graph LR;
                             "bytes": 1,
                         },
                     )
-            elif subbus != "":
+            elif subbus != "none":
                 print("ERROR: i2cbus: no multiplxer configured for subbus")
 
             verilog_data += self.add_steps(setup, i2c_dev.INITS)
@@ -243,6 +245,7 @@ graph LR;
         verilog_data.append("        .sda(sda),")
         verilog_data.append("        .scl(scl),")
         verilog_data.append("        .start(start),")
+        verilog_data.append("        .wakeup(wakeup),")
         verilog_data.append("        .busy(busy),")
         verilog_data.append("        .valid(valid),")
         verilog_data.append("        .set_addr(addr),")
@@ -287,7 +290,8 @@ graph LR;
             size = nbytes * 8
             data_out = setup.get("data_out")
             data_in = setup.get("data_in")
-            value = data.get("value")
+            value = setup.get("value")
+            value = data.get("value", value)
             values = data.get("values")
             stop = data.get("stop", True)
             var_set = data.get("var_set")
@@ -306,6 +310,13 @@ graph LR;
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                 verilog_data.append(f"                            delay_cnt <= {int(self.system_setup.get('speed', 50000000) / 1000 * ms)};")
+                verilog_data.append("                        end")
+                dev_step += 1
+
+            elif stype == "wakeup":
+                verilog_data.append(f"                        {dev_step}: begin")
+                verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                verilog_data.append("                            wakeup <= 1;")
                 verilog_data.append("                        end")
                 dev_step += 1
 
@@ -361,7 +372,7 @@ graph LR;
                     if big_endian:
                         print("TODO")
                     else:
-                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-size-8] <= {{8'h{target:X}, {size}'h{value:X}}};")
+                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {size}'h{value:X}}};")
                     verilog_data.append("                            stop <= 1;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
