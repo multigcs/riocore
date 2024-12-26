@@ -837,9 +837,9 @@ class TabOverview:
                     eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
                 for pname in plugin_instance.expansion_inputs():
                     eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
+
                 if eports:
                     label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(eports)}}} }}"
-
                 elif signalports:
                     label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(signalports)}}} }}"
                 else:
