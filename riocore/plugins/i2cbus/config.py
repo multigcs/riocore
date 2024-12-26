@@ -49,16 +49,22 @@ class config:
                 "description": "Value-Name",
                 "default": "",
             },
+            "type": {
+                "description": "Device-Type",
+                "type": "combo",
+                "options": self.device_types,
+                "default": "",
+            },
             "address": {
                 "description": "Slave-Address",
                 "type": "combo",
                 "options": [],
                 "default": "",
             },
-            "type": {
-                "description": "Device-Type",
+            "subbus": {
+                "description": "number of subbus",
                 "type": "combo",
-                "options": self.device_types,
+                "options": ["none", "0", "1", "2", "3", "4", "5", "6", "7"],
                 "default": "",
             },
         }
@@ -66,9 +72,7 @@ class config:
     def read_widget(self, data):
         value = ""
         if data["type"] == "combo":
-            value = data["widget"].currentText().split()[0]
-            if value.isnumeric():
-                value = int(value)
+            value = data["widget"].currentText()
         elif data["type"] == "bits":
             value = 0
             for bit_n, widget in enumerate(data.get("bits", [])):
@@ -251,9 +255,11 @@ class config:
         for name, entry in self.config["devices"].items():
             address = str(entry.get("address", ""))
             dtype = entry.get("type", "")
+            subbus = entry.get("subbus", "none")
             self.tableWidget.setItem(row_n, 0, QTableWidgetItem(name))
-            self.tableWidget.setItem(row_n, 1, QTableWidgetItem(address))
-            self.tableWidget.setItem(row_n, 2, QTableWidgetItem(dtype))
+            self.tableWidget.setItem(row_n, 1, QTableWidgetItem(dtype))
+            self.tableWidget.setItem(row_n, 2, QTableWidgetItem(address))
+            self.tableWidget.setItem(row_n, 3, QTableWidgetItem(subbus))
             row_n += 1
 
     def table_select(self, item):
@@ -279,8 +285,8 @@ class config:
         vlayout.addWidget(message, stretch=0)
 
         self.tableWidget = QTableWidget()
-        self.tableWidget.setColumnCount(3)
-        self.tableWidget.setHorizontalHeaderLabels(["Name", "Addr", "Type"])
+        self.tableWidget.setColumnCount(4)
+        self.tableWidget.setHorizontalHeaderLabels(["Name", "Type", "Addr", "Subbus"])
         self.tableWidget.cellClicked.connect(self.table_select)
         self.table_load()
 

@@ -2,6 +2,7 @@
 **I2C-Bus**
 
 I2C-Bus - supports multiple busses with multiple devices per bus
+sub-busses via multiplaxer (pca9548) also supported
 
 Devices:
 * [ads1115](devices/ads1115.py)
@@ -56,6 +57,12 @@ I2C-Clockspeed
  * default: 100000
  * unit: Hz
 
+### multiplexer:
+Sub-Bus multiplexer address (pca9548)
+
+ * type: select
+ * default: 
+
 ### name:
 name of this plugin instance
 
@@ -76,6 +83,7 @@ name of this plugin instance
 {
     "type": "i2cbus",
     "speed": 100000,
+    "multiplexer": "",
     "name": "",
     "pins": {
         "sda": {

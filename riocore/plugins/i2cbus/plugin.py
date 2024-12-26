@@ -13,7 +13,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "i2cbus"
         self.INFO = "I2C-Bus"
-        self.DESCRIPTION = "I2C-Bus - supports multiple busses with multiple devices per bus"
+        self.DESCRIPTION = "I2C-Bus - supports multiple busses with multiple devices per bus\nsub-busses via multiplaxer (pca9548) also supported"
         self.KEYWORDS = "adc temperatur voltage current"
         self.ORIGIN = ""
         self.VERILOGS = ["i2c_master.v"]
@@ -39,15 +39,22 @@ class Plugin(PluginBase):
                 "unit": "Hz",
                 "description": "I2C-Clockspeed",
             },
+            "multiplexer": {
+                "default": "",
+                "type": "select",
+                "options": ["", "0x70", "0x71", "0x72", "0x73", "0x74", "0x75", "0x76", "0x77"],
+                "description": "Sub-Bus multiplexer address (pca9548)",
+            },
         }
 
         self.config = self.plugin_setup.get("config", {})
         self.devices = deepcopy(self.config.get("devices", {}))
+        self.multiplexer = self.plugin_setup.get("multiplexer", self.OPTIONS["multiplexer"]["default"])
         self.PLUGIN_CONFIG = True
         self.INTERFACE = {}
         self.SIGNALS = {}
 
-        self.MAX_BITS = 64
+        # self.MAX_BITS = 64
         self.MAX_BITS = 8
 
         self.DESCRIPTION += "\n\nDevices:\n"
@@ -107,6 +114,12 @@ class Plugin(PluginBase):
 
         verilog_data.append("    localparam RW_WRITE = 0;")
         verilog_data.append("    localparam RW_READ = 1;")
+        verilog_data.append("")
+
+        if self.multiplexer:
+            maddr = self.multiplexer.replace("0x", "7'h")
+            verilog_data.append(f"    localparam MULTIPLEXER_ADDR = {maddr};")
+            verilog_data.append("")
 
         for name, setup in self.devices.items():
             extra = setup.get("extra")
@@ -114,20 +127,27 @@ class Plugin(PluginBase):
                 verilog_data += extra
                 verilog_data += [""]
 
-        for name, setup in self.devices.items():
+        for dev_n, name in enumerate(self.devices):
+            setup = self.devices[name]
             setup["name"] = name
             i2c_dev = setup["i2cdev"]
+            subbus = setup.get("subbus", "none")
             vaddr = i2c_dev.addr.replace("0x", "7'h")
-            verilog_data.append(f"    localparam {name.upper()}_ADDR = {vaddr};")
+            devname = f"DEVICE_{name.replace(' ', '').upper()}"
+            if subbus != "none":
+                verilog_data.append(f"    // device {name} on sub-bus: {subbus}")
+            else:
+                verilog_data.append(f"    // device {name}")
+            verilog_data.append(f"    localparam {devname} = {dev_n};")
+            verilog_data.append(f"    localparam {devname}_ADDR = {vaddr};")
             for key, value in i2c_dev.PARAMS.items():
                 verilog_data.append(f"    parameter {key} = {value};")
+            verilog_data.append("")
 
-        verilog_data.append("")
         verilog_data.append("    reg [7:0] dev_step = 0;")
         verilog_data.append("    reg do_init = 1;")
         verilog_data.append("    reg stop = 1;")
-        verilog_data.append("    reg [7:0] devmode = 0;")
-        verilog_data.append("    reg [7:0] last_devmode = 0;")
+        verilog_data.append("    reg [7:0] device_n = 0;")
         verilog_data.append("    reg [6:0] addr = 0;")
         verilog_data.append("    reg rw = RW_WRITE;")
         verilog_data.append("    reg [4:0] bytes = 0;")
@@ -147,14 +167,49 @@ class Plugin(PluginBase):
 
         dev_n = 0
         for name, setup in self.devices.items():
+            devname = f"DEVICE_{name.replace(' ', '').upper()}"
             setup["name"] = name
             i2c_dev = setup["i2cdev"]
+            subbus = setup.get("subbus", "none")
 
             if dev_n == 0:
-                verilog_data.append(f"            if (devmode == {dev_n}) begin")
+                verilog_data.append(f"            if (device_n == {devname}) begin")
             else:
-                verilog_data.append(f"            end else if (devmode == {dev_n}) begin")
+                verilog_data.append(f"            end else if (device_n == {devname}) begin")
             verilog_data.append("                if (do_init) begin")
+
+            if self.multiplexer:
+                if subbus != "none" and int(subbus) > 7:
+                    print(f"ERROR: i2cbus: subbus {subbus} not in range: 0-7")
+                if subbus == "none":
+                    subbus_bits = 0
+                else:
+                    subbus_bits = 1 << int(subbus)
+                if i2c_dev.INITS:
+                    i2c_dev.INITS.insert(
+                        0,
+                        {
+                            "comment": f"switch to sub-bus {subbus}",
+                            "mode": "write",
+                            "addr": "MULTIPLEXER_ADDR",
+                            "value": subbus_bits,
+                            "bytes": 1,
+                        },
+                    )
+                if i2c_dev.STEPS:
+                    i2c_dev.STEPS.insert(
+                        0,
+                        {
+                            "comment": f"switch to sub-bus {subbus}",
+                            "mode": "write",
+                            "addr": "MULTIPLEXER_ADDR",
+                            "value": subbus_bits,
+                            "bytes": 1,
+                        },
+                    )
+            elif subbus != "":
+                print("ERROR: i2cbus: no multiplxer configured for subbus")
+
             verilog_data += self.add_steps(setup, i2c_dev.INITS)
             verilog_data.append("                end else begin")
             verilog_data += self.add_steps(setup, i2c_dev.STEPS)
@@ -165,7 +220,7 @@ class Plugin(PluginBase):
 
         verilog_data.append("            end else begin")
         verilog_data.append("                do_init <= 0;")
-        verilog_data.append("                devmode <= 0;")
+        verilog_data.append("                device_n <= 0;")
         verilog_data.append("            end")
         verilog_data.append("        end")
         verilog_data.append("    end")
@@ -210,6 +265,7 @@ class Plugin(PluginBase):
     def add_steps(self, setup, steps):
         verilog_data = []
         name = setup["name"]
+        devname = f"DEVICE_{name.replace(' ', '').upper()}"
         dev_step = 0
         verilog_data.append("                    case (dev_step)")
         for data in steps:
@@ -224,10 +280,15 @@ class Plugin(PluginBase):
             var_set = data.get("var_set")
             big_endian = data.get("big_endian", False)
             register = data.get("register")
+            dev_addr = data.get("addr", f"{devname}_ADDR")
+            comment = data.get("comment")
             until = data.get("until")
             ms = data.get("ms")
             self.MAX_BITS = max(self.MAX_BITS, size)
-            verilog_data.append(f"                        // {stype}")
+            if comment:
+                verilog_data.append(f"                        // {comment}")
+            else:
+                verilog_data.append(f"                        // {stype}")
             if stype == "delay":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
@@ -238,17 +299,17 @@ class Plugin(PluginBase):
             elif stype == "readreg":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
-                verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                verilog_data.append(f"                            addr <= {dev_addr};")
                 verilog_data.append("                            rw <= RW_WRITE;")
                 verilog_data.append(f"                            bytes <= {1};")
-                verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-8}] <= 8'h{register:X};")
+                verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= 8'h{register:X};")
                 verilog_data.append("                            stop <= 0;")
                 verilog_data.append("                            start <= 1;")
                 verilog_data.append("                        end")
                 dev_step += 1
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
-                verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                verilog_data.append(f"                            addr <= {dev_addr};")
                 verilog_data.append("                            rw <= RW_READ;")
                 verilog_data.append(f"                            bytes <= {nbytes};")
                 verilog_data.append("                            stop <= 1;")
@@ -281,13 +342,13 @@ class Plugin(PluginBase):
                     verilog_data.append(f"                        {dev_step}: begin")
                     verilog_data.append(f"                            // 0x{value:X} -> 0x{target:X}")
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
-                    verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                    verilog_data.append(f"                            addr <= {dev_addr};")
                     verilog_data.append("                            rw <= RW_WRITE;")
                     verilog_data.append(f"                            bytes <= {nbytes};")
                     if big_endian:
                         print("TODO")
                     else:
-                        verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-size-8}] <= {{8'h{target:X}, {size}'h{value:X}}};")
+                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-size-8] <= {{8'h{target:X}, {size}'h{value:X}}};")
                     verilog_data.append("                            stop <= 1;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
@@ -296,15 +357,15 @@ class Plugin(PluginBase):
             elif stype == "write":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
-                verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                verilog_data.append(f"                            addr <= {dev_addr};")
                 verilog_data.append("                            rw <= RW_WRITE;")
                 verilog_data.append(f"                            bytes <= {nbytes};")
                 if data_out:
                     verilog_data += data_out
-                elif value:
-                    verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-size}] <= {value};")
+                elif value is not None:
+                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}] <= {value};")
                 else:
-                    verilog_data.append(f"                            data_out[{self.MAX_BITS-1}:{self.MAX_BITS-size}] <= {data['var']};")
+                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}] <= {data['var']};")
                 if stop:
                     verilog_data.append("                            stop <= 1;")
                 else:
@@ -315,7 +376,7 @@ class Plugin(PluginBase):
             elif stype == "read":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
-                verilog_data.append(f"                            addr <= {name.upper()}_ADDR;")
+                verilog_data.append(f"                            addr <= {dev_addr};")
                 verilog_data.append("                            rw <= RW_READ;")
                 verilog_data.append(f"                            bytes <= {nbytes};")
                 if stop:
@@ -354,7 +415,7 @@ class Plugin(PluginBase):
             verilog_data.append("")
         verilog_data.append("                        default: begin")
         verilog_data.append("                            dev_step <= 0;")
-        verilog_data.append("                            devmode <= devmode + 7'd1;")
+        verilog_data.append("                            device_n <= device_n + 7'd1;")
         verilog_data.append("                        end")
         verilog_data.append("                    endcase")
         return verilog_data

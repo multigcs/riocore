@@ -10,12 +10,14 @@ class i2c_device:
             f"{self.name}_temp": {
                 "size": 16,
                 "direction": "input",
+                "multiplexed": True,
             },
         }
         self.SIGNALS = {
             f"{self.name}_temp": {
                 "direction": "input",
                 "format": "0.1f",
+                "unit": "°C",
             },
         }
         self.PARAMS = {}
