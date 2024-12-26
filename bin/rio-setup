@@ -834,12 +834,12 @@ class TabOverview:
                 # expansion posts
                 eports = []
                 for pname in plugin_instance.expansion_outputs():
-                    cpname = pname.replace('[', '').replace(']', '')
+                    cpname = pname.replace("[", "").replace("]", "")
                     if pname.startswith("VARIN") or pname.startswith("VAROUT"):
                         pname = pname.split("_", 2)[-1]
                     eports.append(f"<{cpname}>{pname}")
                 for pname in plugin_instance.expansion_inputs():
-                    cpname = pname.replace('[', '').replace(']', '')
+                    cpname = pname.replace("[", "").replace("]", "")
                     if pname.startswith("VARIN") or pname.startswith("VAROUT"):
                         pname = pname.split("_", 2)[-1]
                     eports.append(f"<{cpname}>{pname}")

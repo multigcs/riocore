@@ -361,6 +361,7 @@ graph LR;
 
             elif stype == "writereg":
                 self.MAX_BITS = max(self.MAX_BITS, size + 8)
+                print(nbytes)
                 for entry in values:
                     target, value = entry
                     verilog_data.append(f"                        {dev_step}: begin")
@@ -368,7 +369,7 @@ graph LR;
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {dev_addr};")
                     verilog_data.append("                            rw <= RW_WRITE;")
-                    verilog_data.append(f"                            bytes <= {nbytes};")
+                    verilog_data.append(f"                            bytes <= {1 + nbytes};")
                     if big_endian:
                         print("TODO")
                     else:

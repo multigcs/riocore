@@ -21,7 +21,7 @@ class i2c_device:
             },
         }
         self.PARAMS = {}
-        self.INITS = {}
+        self.INITS = []
         self.STEPS = [
             {
                 "mode": "read",
