@@ -276,9 +276,8 @@ class WinForm(QWidget):
                         plugin_instance.testgui_frameio_init(tab_layout)
 
             tab_layout.addStretch()
-
             if args.tab and args.tab.lower() == plugin_type.lower():
-                self.tabwidget.setCurrentWidget(tab_widget)
+                self.tabwidget.setCurrentWidget(scroll_widget)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
