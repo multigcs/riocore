@@ -77,7 +77,8 @@ class i2c_device:
     MILLI_G_PER_LSB = 3.9
     UNITS_PER_G = 256.41
 
-    def __init__(self, setup):
+    def __init__(self, setup, system_setup={}):
+        self.system_setup = system_setup
         self.name = setup["name"]
         self.addr = setup["address"]
         self.units = setup.get("units", self.options["config"]["units"]["default"])

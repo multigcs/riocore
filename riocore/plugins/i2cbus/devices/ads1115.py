@@ -12,7 +12,8 @@ class i2c_device:
         },
     }
 
-    def __init__(self, setup):
+    def __init__(self, setup, system_setup={}):
+        self.system_setup = system_setup
         self.name = setup["name"]
         self.addr = setup["address"]
         self.setup = setup
@@ -53,10 +54,12 @@ class i2c_device:
             "2'b11",  # Disable comparator
         ]
 
-        registerAddr = ["8'd1"]
-
         self.INITS = []
         self.STEPS = []
+
+        timeout_ms = 130
+        timeout = int(self.system_setup.get("speed", 50000000) / 1000 * timeout_ms)
+
         for channel in range(self.channels):
             setupRegister[2] = f"3'd{4 + channel}"
             self.STEPS += [
@@ -76,7 +79,7 @@ class i2c_device:
                     # check status
                     "mode": "read",
                     "until": "data_in[7] == 1",
-                    "timeout": 700,
+                    "timeout": timeout,
                     "bytes": 1,
                 },
                 {
@@ -97,6 +100,6 @@ class i2c_device:
         if signal_name.endswith("_valid"):
             return value
         # 3.3V range
-        value = value>>3
+        value = value >> 3
         value /= 1000.0
         return value

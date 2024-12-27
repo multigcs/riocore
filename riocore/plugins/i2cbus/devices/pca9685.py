@@ -46,7 +46,8 @@ class i2c_device:
     PCA9685_PRE_SCALER = 0xFE
     PCA9685_CHANNEL_0 = 0x06
 
-    def __init__(self, setup):
+    def __init__(self, setup, system_setup={}):
+        self.system_setup = system_setup
         self.name = setup["name"]
         self.addr = setup["address"]
         self.frequency = setup.get("frequency", self.options["config"]["frequency"]["default"])
@@ -147,7 +148,18 @@ class i2c_device:
                 "bytes": 3,
             },
         ]
-        self.STEPS = []
+        self.STEPS = [
+            {
+                "mode": "write",
+                "value": f"{{8'd{self.PCA9685_MODE1}, 8'd{(0x01 | 0x80)}}}",  # mode1 (unsleep)
+                "bytes": 2,
+            },
+            {
+                "mode": "write",
+                "value": f"{{8'd{0xFA}, 16'd{0}}}",  # pulse len
+                "bytes": 3,
+            },
+        ]
         for channel in range(self.channels):
             self.STEPS.append(
                 {
