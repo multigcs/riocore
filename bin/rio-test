@@ -17,6 +17,7 @@ import riocore
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
+    QScrollArea,
     QLineEdit,
     QApplication,
     QCheckBox,
@@ -115,14 +116,21 @@ class WinForm(QWidget):
 
         for tab_num, plugin_type in enumerate(sorted(plugin_types)):
             tab_widget = QWidget()
-            self.tabwidget.addTab(tab_widget, plugin_type.title())
+            scroll_widget = QScrollArea()
+            scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            scroll_widget.setWidgetResizable(True)
+            scroll_widget.setWidget(tab_widget)
+            self.tabwidget.addTab(scroll_widget, plugin_type.title())
 
-            # tab_layout = QGridLayout()
             tab_layout1 = QHBoxLayout()
             tab_widget.setLayout(tab_layout1)
 
             tab_layout = QVBoxLayout()
             tab_layout1.addLayout(tab_layout, stretch=3)
+
+            tab_layout_r = QVBoxLayout()
+            tab_layout1.addLayout(tab_layout_r, stretch=0)
 
             plugin_path = os.path.join(riocore_path, "plugins", plugin_type)
             image_path = os.path.join(plugin_path, "image.png")
@@ -131,7 +139,9 @@ class WinForm(QWidget):
                 pixmap = QPixmap(image_path)
                 ilabel.setPixmap(pixmap)
                 self.resize(pixmap.width(), pixmap.height())
-                tab_layout1.addWidget(ilabel, stretch=1)
+
+                tab_layout_r.addWidget(ilabel, stretch=0)
+                tab_layout_r.addStretch()
 
             for plugin_instance, haldata in self.haldata.items():
                 if plugin_instance.NAME != plugin_type:
