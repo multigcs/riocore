@@ -22,6 +22,10 @@ class i2c_device:
                 "direction": "input",
                 "multiplexed": True,
             },
+            f"{self.name}_valid": {
+                "size": 1,
+                "direction": "input",
+            },
         }
         self.SIGNALS = {
             f"{self.name}_x": {
@@ -38,6 +42,10 @@ class i2c_device:
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
+            },
+            f"{self.name}_valid": {
+                "direction": "input",
+                "bool": True,
             },
         }
         self.PARAMS = {}
@@ -82,11 +90,15 @@ class i2c_device:
         ]
 
     def convert(self, signal_name, signal_setup, value):
+        if signal_name.endswith("_valid"):
+            return value
         if value > 2047:
             value = value - 4095
         return value
 
     def convert_c(self, signal_name, signal_setup):
+        if signal_name.endswith("_valid"):
+            return ""
         return """
         value = value;
         """

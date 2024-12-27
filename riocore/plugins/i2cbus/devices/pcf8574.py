@@ -94,6 +94,14 @@ class i2c_device:
                 "min": 0,
                 "max": 255,
             }
+        self.INTERFACE[f"{self.name}_valid"] = {
+            "size": 1,
+            "direction": "input",
+        }
+        self.SIGNALS[f"{self.name}_valid"] = {
+            "direction": "input",
+            "bool": True,
+        }
 
         self.PARAMS = {}
         self.INITS = []

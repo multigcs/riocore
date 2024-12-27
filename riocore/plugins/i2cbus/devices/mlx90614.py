@@ -21,6 +21,10 @@ class i2c_device:
                 "size": 16,
                 "direction": "input",
             },
+            f"{self.name}_valid": {
+                "size": 1,
+                "direction": "input",
+            },
         }
         self.SIGNALS = {
             f"{self.name}_object": {
@@ -30,6 +34,10 @@ class i2c_device:
             f"{self.name}_ambiente": {
                 "direction": "input",
                 "format": "0.1f",
+            },
+            f"{self.name}_valid": {
+                "direction": "input",
+                "bool": True,
             },
         }
         self.PARAMS = {}
@@ -62,9 +70,13 @@ class i2c_device:
         ]
 
     def convert(self, signal_name, signal_setup, value):
+        if signal_name.endswith("_valid"):
+            return value
         return value
 
     def convert_c(self, signal_name, signal_setup):
+        if signal_name.endswith("_valid"):
+            return ""
         return """
         value = value;
         """

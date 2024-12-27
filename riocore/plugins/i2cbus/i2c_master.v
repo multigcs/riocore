@@ -15,7 +15,7 @@ module i2c_master
         input wire [4:0] set_bytes,
         input wire [MAX_BITS-1:0] set_data_out,
         output reg [31:0] data_in,
-        output reg valid = 0
+        output reg error = 0
     );
 
     localparam RW_WRITE = 0;
@@ -77,7 +77,7 @@ module i2c_master
                 busy <= 1;
             end else if (start) begin
                 scl <= 1;
-                valid <= 0;
+                error <= 0;
                 busy <= 1;
                 addr <= set_addr;
                 rw <= set_rw;
@@ -173,10 +173,8 @@ module i2c_master
                     mystate <= STATE_ACK;
                     if (rw == RW_READ) begin
                         data_in <= {data_in[23:0], data_rtx[7:0]};
-                        valid <= 1;
                     end
                     send_cnt <= 0;
-
 
                 end else begin
                     send_cnt <= send_cnt + 8'd1;
@@ -207,6 +205,7 @@ module i2c_master
                     if (send_mode == MODE_ADDR && sdaIn == 1) begin
                         // nack
                         mystate <= STATE_STOP;
+                        error <= 1;
                     end else begin
                         send_mode <= MODE_DATA;
                         if (rw == RW_WRITE) begin
@@ -220,7 +219,6 @@ module i2c_master
                     end
                 end else begin
                     if (stop == 0) begin
-                        //step <= 0;
                         busy <= 0;
                         isSending <= 0;
                         mystate <= STATE_WAIT;

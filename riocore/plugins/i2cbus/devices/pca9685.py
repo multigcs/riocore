@@ -88,6 +88,14 @@ class i2c_device:
                     "max": 100,
                     "unit": "%",
                 }
+        self.INTERFACE[f"{self.name}_valid"] = {
+            "size": 1,
+            "direction": "input",
+        }
+        self.SIGNALS[f"{self.name}_valid"] = {
+            "direction": "input",
+            "bool": True,
+        }
         self.PARAMS = {}
         self.INITS = [
             {
@@ -157,6 +165,8 @@ class i2c_device:
             )
 
     def convert(self, signal_name, signal_setup, value):
+        if signal_name.endswith("_valid"):
+            return value
         if self.units == "ms":
             value = self.frequency * 4095 * value // 1000
         elif self.units == "rc %":
@@ -168,6 +178,8 @@ class i2c_device:
         return value
 
     def convert_c(self, signal_name, signal_setup):
+        if signal_name.endswith("_valid"):
+            return ""
         if self.units:
             return f"""
             value = {self.frequency} * 4095 * value / 1000;

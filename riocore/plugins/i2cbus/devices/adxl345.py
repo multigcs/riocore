@@ -100,6 +100,10 @@ class i2c_device:
                 "signed": True,
                 "direction": "input",
             },
+            f"{self.name}_valid": {
+                "size": 1,
+                "direction": "input",
+            },
         }
         self.SIGNALS = {
             f"{self.name}_x": {
@@ -119,6 +123,10 @@ class i2c_device:
                 "format": "0.3f",
                 "offset": self.offset_z,
                 "units": self.units,
+            },
+            f"{self.name}_valid": {
+                "direction": "input",
+                "bool": True,
             },
         }
         if self.units == "deg":
@@ -179,6 +187,8 @@ class i2c_device:
         ]
 
     def convert(self, signal_name, signal_setup, value):
+        if signal_name.endswith("_valid"):
+            return value
         units = signal_setup["units"]
         # unsigned -> signed
         if value > 32767:
@@ -198,6 +208,8 @@ class i2c_device:
         return value
 
     def convert_c(self, signal_name, signal_setup):
+        if signal_name.endswith("_valid"):
+            return ""
         return """
         value = value
         """

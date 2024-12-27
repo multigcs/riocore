@@ -169,7 +169,9 @@ graph LR;
         verilog_data.append("    reg start = 0;")
         verilog_data.append("    reg wakeup = 0;")
         verilog_data.append("    wire busy;")
-        verilog_data.append("    wire valid;")
+        verilog_data.append("    wire error;")
+        verilog_data.append("    reg timeout_error = 0;")
+        verilog_data.append("    reg [31:0] timeout = 0;")
         verilog_data.append("    always @(posedge clk) begin")
         verilog_data.append("        if (delay_cnt > 0) begin")
         verilog_data.append("            delay_cnt <= delay_cnt - 1;")
@@ -247,7 +249,7 @@ graph LR;
         verilog_data.append("        .start(start),")
         verilog_data.append("        .wakeup(wakeup),")
         verilog_data.append("        .busy(busy),")
-        verilog_data.append("        .valid(valid),")
+        verilog_data.append("        .error(error),")
         verilog_data.append("        .set_addr(addr),")
         verilog_data.append("        .set_rw(rw),")
         verilog_data.append("        .stop(stop),")
@@ -281,7 +283,17 @@ graph LR;
     def add_steps(self, setup, steps):
         verilog_data = []
         name = setup["name"]
+        i2c_dev = setup["i2cdev"]
+        dev_valid = None
+        for iname, iface in i2c_dev.INTERFACE.items():
+            direction = iface["direction"]
+            signed = iface.get("signed", False)
+            size = iface["size"]
+            if direction == "input" and iname.endswith("_valid"):
+                dev_valid = iname
+
         devname = f"DEVICE_{name.replace(' ', '').upper()}"
+        check_timeout = False
         dev_step = 0
         verilog_data.append("                    case (dev_step)")
         for data in steps:
@@ -299,6 +311,7 @@ graph LR;
             register = data.get("register")
             dev_addr = data.get("addr", f"{devname}_ADDR")
             comment = data.get("comment")
+            timeout = data.get("timeout", 100)
             until = data.get("until")
             ms = data.get("ms")
             self.MAX_BITS = max(self.MAX_BITS, size)
@@ -306,6 +319,7 @@ graph LR;
                 verilog_data.append(f"                        // {comment}")
             else:
                 verilog_data.append(f"                        // {stype}")
+
             if stype == "delay":
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
@@ -342,7 +356,8 @@ graph LR;
                 dev_step += 1
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
-                verilog_data.append("                            if (valid == 1) begin")
+                verilog_data.append("                            if (error == 0) begin")
+
                 if data_in:
                     verilog_data += data_in
                 elif var_set:
@@ -361,7 +376,6 @@ graph LR;
 
             elif stype == "writereg":
                 self.MAX_BITS = max(self.MAX_BITS, size + 8)
-                print(nbytes)
                 for entry in values:
                     target, value = entry
                     verilog_data.append(f"                        {dev_step}: begin")
@@ -399,6 +413,15 @@ graph LR;
                 verilog_data.append("                        end")
                 dev_step += 1
             elif stype == "read":
+                if until:
+                    check_timeout = True
+                    verilog_data.append(f"                        {dev_step}: begin")
+                    verilog_data.append("                            dev_step <= dev_step + 7'd1;")
+                    verilog_data.append(f"                            timeout <= 31'd{timeout};")
+                    verilog_data.append(f"                            timeout_error <= 1'd0;")
+                    verilog_data.append("                        end")
+                    dev_step += 1
+
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append("                            dev_step <= dev_step + 7'd1;")
                 verilog_data.append(f"                            addr <= {dev_addr};")
@@ -414,12 +437,20 @@ graph LR;
                 verilog_data.append(f"                        {dev_step}: begin")
                 if not until:
                     verilog_data.append("                            dev_step <= dev_step + 7'd1;")
-                verilog_data.append("                            if (valid == 1) begin")
+                    
+                verilog_data.append("                            if (error == 0) begin")
                 if until:
+                    verilog_data.append(f"                                // check state (until)")
                     verilog_data.append(f"                                if ({until}) begin")
                     verilog_data.append("                                    dev_step <= dev_step + 7'd1;")
                     verilog_data.append("                                end else begin")
-                    verilog_data.append("                                    dev_step <= dev_step - 7'd1;")
+                    verilog_data.append(f"                                    if (timeout == 0) begin")
+                    verilog_data.append("                                        timeout_error <= 1'd1;")
+                    verilog_data.append("                                        dev_step <= 255;")
+                    verilog_data.append("                                    end else begin")
+                    verilog_data.append("                                        timeout <= timeout - 1'd1;")
+                    verilog_data.append("                                        dev_step <= dev_step - 7'd1;")
+                    verilog_data.append("                                    end")
                     verilog_data.append("                                end")
                 elif data_in:
                     verilog_data += data_in
@@ -430,7 +461,7 @@ graph LR;
 
                 if until:
                     verilog_data.append("                            end else begin")
-                    verilog_data.append("                                dev_step <= dev_step + 7'd1;")
+                    verilog_data.append("                                dev_step <= 255;")
                     verilog_data.append("                            end")
                 else:
                     verilog_data.append("                            end")
@@ -441,6 +472,13 @@ graph LR;
         verilog_data.append("                        default: begin")
         verilog_data.append("                            dev_step <= 0;")
         verilog_data.append("                            device_n <= device_n + 7'd1;")
+        if dev_valid:
+            
+            if check_timeout:
+                verilog_data.append(f"                            {dev_valid} <= ~error && ~timeout_error;")
+            else:
+                verilog_data.append(f"                            {dev_valid} <= ~error;")
+
         verilog_data.append("                        end")
         verilog_data.append("                    endcase")
         return verilog_data
