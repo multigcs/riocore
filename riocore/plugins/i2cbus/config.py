@@ -37,8 +37,8 @@ class config:
 
         sys.path.insert(0, plugin_path)
         self.device_types = {}
-        for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*.py"))):
-            device_name = os.path.basename(device_path).replace(".py", "")
+        for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
+            device_name = os.path.basename(os.path.dirname(device_path))
             if not device_name.startswith("_"):
                 devlib = importlib.import_module(f".{device_name}", ".devices")
                 self.device_types[device_name] = devlib.i2c_device.options

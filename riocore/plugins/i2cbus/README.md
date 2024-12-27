@@ -18,6 +18,7 @@ Devices:
 * [mlx90614](devices/mlx90614.py)
 * [pca9685](devices/pca9685.py)
 * [pcf8574](devices/pcf8574.py)
+* [tlv493d](devices/tlv493d.py)
 
 Keywords: adc temperatur voltage current
 

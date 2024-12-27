@@ -70,10 +70,9 @@ graph LR;
         self.MAX_BITS = 16
 
         self.DESCRIPTION += "\n\nDevices:\n"
-        for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*.py"))):
-            device_name = os.path.basename(device_path).replace(".py", "")
-            if not device_name.startswith("_"):
-                self.DESCRIPTION += f"* [{device_name}](devices/{device_name}.py)\n"
+        for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
+            device_name = os.path.basename(os.path.dirname(device_path))
+            self.DESCRIPTION += f"* [{device_name}](devices/{device_name}.py)\n"
 
         if not self.devices:
             return
@@ -83,7 +82,7 @@ graph LR;
         for name, setup in self.devices.items():
             setup["name"] = name
             dtype = setup["type"]
-            if os.path.isfile(os.path.join(plugin_path, "devices", f"{dtype}.py")):
+            if os.path.isfile(os.path.join(plugin_path, "devices", dtype, "__init__.py")):
                 devlib = importlib.import_module(f".{dtype}", ".devices")
                 setup["i2cdev"] = devlib.i2c_device(setup, self.system_setup)
             else:
