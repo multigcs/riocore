@@ -3,6 +3,8 @@ import math
 
 class i2c_device:
     options = {
+        "info": "3 axis accelerometer",
+        "description": "",
         "addresses": ["0x53"],
         "config": {
             "units": {

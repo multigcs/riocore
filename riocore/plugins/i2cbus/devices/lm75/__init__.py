@@ -1,5 +1,7 @@
 class i2c_device:
     options = {
+        "info": "temperature sensor",
+        "description": "",
         "addresses": ["0x48", "0x49", "0x4A", "0x4B", "0x4C", "0x4D", "0x4E", "0x4F"],
     }
 

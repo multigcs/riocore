@@ -1,5 +1,7 @@
 class i2c_device:
     options = {
+        "info": "16 channel pwm output",
+        "description": "",
         "addresses": ["0x40"],
         "config": {
             "frequency": {

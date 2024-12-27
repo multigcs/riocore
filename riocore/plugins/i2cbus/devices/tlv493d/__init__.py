@@ -1,5 +1,7 @@
 class i2c_device:
     options = {
+        "info": "3axis magnetic sensor",
+        "description": "",
         "addresses": ["0x5E", "0x1F"],
     }
 

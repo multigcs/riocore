@@ -6,6 +6,8 @@ class i2c_device:
     MLX90614_SLEEP_MODE_PEC = 0xE8
 
     options = {
+        "info": "ir temperature sensor",
+        "description": "",
         "addresses": ["0x5A"],
     }
 

@@ -1,5 +1,7 @@
 class i2c_device:
     options = {
+        "info": "8bit io-expander",
+        "description": "",
         "addresses": ["0x20", "0x21", "0x22", "0x23", "0x24", "0x25", "0x26", "0x27"],
         "config": {
             "bitvar": {

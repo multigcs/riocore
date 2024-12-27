@@ -16,6 +16,8 @@ class i2c_device:
     BMP180_CAL_MD_REG = 0xBE  # md  temperature computation
 
     options = {
+        "info": "Barometric Pressure/Temperature/Altitude sensor",
+        "description": "",
         "addresses": ["0x77"],
     }
 

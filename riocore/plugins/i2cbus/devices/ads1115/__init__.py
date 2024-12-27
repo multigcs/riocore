@@ -1,5 +1,7 @@
 class i2c_device:
     options = {
+        "info": "16bit / 4channel adc",
+        "description": "",
         "addresses": ["0x48", "0x49"],
         "config": {
             "channels": {

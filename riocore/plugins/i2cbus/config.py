@@ -1,8 +1,12 @@
 import glob
+import graphviz
 import importlib
 import os
 import sys
+
 from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QAbstractScrollArea,
     QComboBox,
     QDialog,
     QCheckBox,
@@ -19,7 +23,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from riocore.widgets import STYLESHEET_CHECKBOX
+from riocore.widgets import MyQSvgWidget, STYLESHEET_CHECKBOX
 
 plugin_path = os.path.dirname(__file__)
 
@@ -137,7 +141,8 @@ class config:
         data["widget"].setToolTip(data["description"])
         return data["widget"]
 
-    def edit_item(self, config_name):
+    def edit_item(self, item):
+        config_name = self.config_selected
         if config_name not in self.config["devices"]:
             prefix = "device"
             dnum = 0
@@ -241,31 +246,140 @@ class config:
 
             self.config["devices"][new_name] = new_config
             self.instance.plugin_setup["config"]["devices"] = self.config["devices"]
-            self.table_load()
+            self.update_table()
+            self.update_graph()
 
     def del_item(self, item):
         config_name = self.config_selected
         if config_name in self.config["devices"]:
             del self.config["devices"][config_name]
-        self.table_load()
+        self.update_table()
+        self.update_graph()
 
-    def table_load(self):
+    def update_table(self):
         self.tableWidget.setRowCount(len(self.config["devices"]))
+        self.tableWidget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         row_n = 0
         for name, entry in self.config["devices"].items():
             address = str(entry.get("address", ""))
             dtype = entry.get("type", "")
             subbus = entry.get("subbus", "none")
+            if not self.config_selected:
+                self.config_selected = name
             self.tableWidget.setItem(row_n, 0, QTableWidgetItem(name))
             self.tableWidget.setItem(row_n, 1, QTableWidgetItem(dtype))
             self.tableWidget.setItem(row_n, 2, QTableWidgetItem(address))
             self.tableWidget.setItem(row_n, 3, QTableWidgetItem(subbus))
             row_n += 1
+        self.tableWidget.resizeColumnsToContents()
+        # self.tableWidget.horizontalHeader().setStretchLastSection(True)
 
     def table_select(self, item):
         config_name = self.tableWidget.item(item, 0).text()
         self.config_selected = config_name
-        self.edit_item(config_name)
+        self.update_graph()
+        self.update_info()
+
+    def update_info(self):
+        for name, entry in self.config["devices"].items():
+            if name == self.config_selected:
+                address = str(entry.get("address", ""))
+                dtype = entry.get("type", "")
+                subbus = entry.get("subbus", "none")
+                info = self.device_types[dtype].get("info", "---")
+                self.device_info.setText(f"type: {dtype}\naddr: {address}\nsubbus: {subbus}\n\n{info}\n")
+                break
+
+    def update_graph(self):
+        gAll = graphviz.Digraph("G", format="svg")
+        gAll.attr(rankdir="LR")
+        gAll.attr(bgcolor="black")
+
+        iname = self.instance.instances_name
+
+        speed = self.instance.plugin_setup.get("speed", self.instance.OPTIONS["speed"]["default"])
+        multiplexer = self.instance.plugin_setup.get("multiplexer", self.instance.OPTIONS["multiplexer"]["default"])
+        pin_sda = self.instance.plugin_setup["pins"]["sda"]["pin"]
+        pin_scl = self.instance.plugin_setup["pins"]["scl"]["pin"]
+
+        infos = [
+            f"{iname}",
+            f"sda: {pin_sda}",
+            f"scl: {pin_scl}",
+            f"speed: {speed/1000:0.1f}kHz",
+        ]
+
+        label = f"{{ {{{'|'.join(infos)}}} }}"
+        gAll.node(
+            f"{iname}",
+            shape="record",
+            label=label,
+            fontsize="11pt",
+            style="rounded, filled",
+            fillcolor="lightblue",
+        )
+
+        order = ["none"]
+        if multiplexer:
+            for num in range(8):
+                order.append(f"{num}")
+
+        mpx_pins = []
+        for key in order:
+            last = ""
+            for name, entry in self.config["devices"].items():
+                address = str(entry.get("address", ""))
+                dtype = entry.get("type", "")
+                subbus = entry.get("subbus", "none")
+                if subbus != key:
+                    continue
+
+                infos = [
+                    f"{dtype}",
+                ]
+
+                label = f"{{ {{ {name} ({address}) | {'|'.join(infos)} }} }}"
+
+                color = "lightblue"
+                if name == self.config_selected:
+                    color = "lightgreen"
+
+                gAll.node(
+                    name,
+                    shape="record",
+                    label=label,
+                    fontsize="11pt",
+                    style="rounded, filled",
+                    fillcolor=color,
+                )
+                if last:
+                    gAll.edge(f"{last}", name, color="white", fontcolor="white")
+                elif multiplexer and subbus != "none":
+                    gAll.edge(f"mpx:{subbus}", name, color="white", fontcolor="white")
+                    mpx_pins.append(subbus)
+                else:
+                    gAll.edge(f"{iname}", name, color="white", fontcolor="white")
+                last = f"{name}"
+
+        if multiplexer:
+            subbusses = []
+            for num in mpx_pins:
+                subbusses.append(f"<{num}>{num}")
+
+            label = f"{{ MPX({multiplexer}) | {{ {'|'.join(subbusses)} }} }}"
+            gAll.node(
+                "mpx",
+                shape="record",
+                label=label,
+                fontsize="11pt",
+                style="rounded, filled",
+                fillcolor="lightblue",
+            )
+            gAll.edge(f"{iname}", "mpx", color="white", fontcolor="white")
+
+        svg_data = gAll.pipe()
+        if svg_data:
+            self.busgraph.load(svg_data)
 
     def run(self):
         dialog = QDialog()
@@ -277,33 +391,55 @@ class config:
         dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
         dialog.buttonBox.rejected.connect(dialog.reject)
-
         dialog.layout = QVBoxLayout()
-        vlayout = QVBoxLayout()
 
+        hlayout = QHBoxLayout()
+        left_layout = QVBoxLayout()
+        hlayout.addLayout(left_layout, stretch=0)
+        right_layout = QVBoxLayout()
+        hlayout.addLayout(right_layout, stretch=1)
+        right_layout.addWidget(QLabel("Info:"), stretch=0)
+        self.device_info = QLabel("...\n...")
+        right_layout.addWidget(self.device_info, stretch=0)
+        self.busgraph = MyQSvgWidget()
+        right_layout.addWidget(self.busgraph, stretch=1)
         message = QLabel("I2C-Devices:")
-        vlayout.addWidget(message, stretch=0)
+        left_layout.addWidget(message, stretch=0)
 
         self.tableWidget = QTableWidget()
+        self.tableWidget.setMinimumWidth(400)
+        left_layout.addWidget(self.tableWidget, stretch=1)
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setHorizontalHeaderLabels(["Name", "Type", "Addr", "Subbus"])
+        self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget.cellClicked.connect(self.table_select)
-        self.table_load()
+        left_layout.addWidget(self.tableWidget, stretch=1)
 
-        vlayout.addWidget(self.tableWidget, stretch=1)
+        left_hlayout = QHBoxLayout()
+        left_layout.addLayout(left_hlayout)
+        right_hlayout = QHBoxLayout()
+        right_hlayout.addStretch()
+        right_layout.addLayout(right_hlayout)
+
+        button_edit = QPushButton("Edit")
+        button_edit.clicked.connect(self.edit_item)
+        left_hlayout.addWidget(button_edit, stretch=0)
 
         button_add = QPushButton("Add")
         button_add.clicked.connect(self.edit_item)
-        vlayout.addWidget(button_add, stretch=0)
+        left_hlayout.addWidget(button_add, stretch=0)
 
         button_del = QPushButton("Remove")
         button_del.clicked.connect(self.del_item)
-        vlayout.addWidget(button_del, stretch=0)
+        left_hlayout.addWidget(button_del, stretch=0)
 
-        dialog.layout.addLayout(vlayout)
-
+        dialog.layout.addLayout(hlayout)
         dialog.layout.addWidget(dialog.buttonBox)
         dialog.setLayout(dialog.layout)
+
+        self.update_table()
+        self.update_graph()
+        self.update_info()
 
         if dialog.exec():
             self.instance.plugin_setup["config"] = self.config

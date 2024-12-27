@@ -1,5 +1,7 @@
 class i2c_device:
     options = {
+        "info": "magnetic rotary position sensor",
+        "description": "",
         "addresses": ["0x36"],
     }
 
