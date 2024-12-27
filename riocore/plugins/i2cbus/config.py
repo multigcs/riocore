@@ -141,15 +141,19 @@ class config:
         data["widget"].setToolTip(data["description"])
         return data["widget"]
 
+    def add_item(self, item):
+        prefix = "device"
+        dnum = 0
+        while f"{prefix}{dnum}" in self.config["devices"]:
+            dnum += 1
+        config_name = f"{prefix}{dnum}"
+
+        self.config["devices"][config_name] = {}
+        self.config_selected = config_name
+        self.edit_item(None)
+
     def edit_item(self, item):
         config_name = self.config_selected
-        if config_name not in self.config["devices"]:
-            prefix = "device"
-            dnum = 0
-            while f"{prefix}{dnum}" in self.config["devices"]:
-                dnum += 1
-            config_name = f"{prefix}{dnum}"
-
         dtype = self.config["devices"].get(config_name, {}).get("type", "")
 
         dialog = QDialog()
@@ -426,7 +430,7 @@ class config:
         left_hlayout.addWidget(button_edit, stretch=0)
 
         button_add = QPushButton("Add")
-        button_add.clicked.connect(self.edit_item)
+        button_add.clicked.connect(self.add_item)
         left_hlayout.addWidget(button_add, stretch=0)
 
         button_del = QPushButton("Remove")
