@@ -202,17 +202,11 @@ class i2c_device:
         else:
             lcd_ctrl(LCD_FUNCTION_SET | LCD_4BIT_MODE | LCD_1_LINE | LCD_5x8DOTS | self.bl)  # 4bit
 
-        # lcd_ctrl(LCD_ENTRY_MODE_SET | LCD_ENTRY_LEFT | LCD_ENTRY_SHIFT_DECREMENT)
-        # lcd_ctrl(LCD_DISPLAY_CONTROL | LCD_DISPLAY_OFF | LCD_CURSOR_OFF | LCD_BLINK_OFF)
-        # lcd_ctrl(LCD_CLEAR_DISPLAY)
-        # lcd_ctrl(LCD_RETURN_HOME)
-        # lcd_ctrl(LCD_DISPLAY_CONTROL | LCD_DISPLAY_ON | LCD_CURSOR_OFF | LCD_BLINK_OFF)
-
-        # lcd_ctrl(0x08) # off
-        # lcd_ctrl(0x01) # clear
-        # lcd_ctrl(0x02) # home
-        # lcd_ctrl(0x06) # entry mode
-        # lcd_ctrl(0x08 | (1<<2)) # display on
+        lcd_ctrl(LCD_ENTRY_MODE_SET | LCD_ENTRY_LEFT | LCD_ENTRY_SHIFT_DECREMENT)
+        lcd_ctrl(LCD_DISPLAY_CONTROL | LCD_DISPLAY_OFF | LCD_CURSOR_OFF | LCD_BLINK_OFF)
+        lcd_ctrl(LCD_CLEAR_DISPLAY)
+        lcd_ctrl(LCD_RETURN_HOME)
+        lcd_ctrl(LCD_DISPLAY_CONTROL | LCD_DISPLAY_ON | LCD_CURSOR_OFF | LCD_BLINK_OFF)
 
         self.INITS.append(
             {
@@ -254,5 +248,4 @@ class i2c_device:
                 self.row += 1
             else:
                 self.row = 0
-
         return value
