@@ -488,7 +488,7 @@ class Gateware:
             output.append("    always @(posedge sysclk) begin")
             output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
             output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.project.multiplexed_input-1}) begin")
-            output.append("                MULTIPLEXED_INPUT_ID = MULTIPLEXED_INPUT_ID + 1;")
+            output.append("                MULTIPLEXED_INPUT_ID = MULTIPLEXED_INPUT_ID + 1'd1;")
             output.append("            end else begin")
             output.append("                MULTIPLEXED_INPUT_ID = 0;")
             output.append("            end")

@@ -59,39 +59,36 @@ class i2c_device:
         self.INITS = []
         self.STEPS = []
 
-        timeout_ms = 130
-        timeout = int(self.system_setup.get("speed", 50000000) / 1000 * timeout_ms)
-
         for channel in range(self.channels):
             setupRegister[2] = f"3'd{4 + channel}"
             self.STEPS += [
                 {
-                    # start conversion
+                    "comment": "start conversion",
                     "mode": "write",
                     "value": f"{{{', '.join(setupRegister)}}}",
                     "bytes": 3,
                 },
                 {
-                    # status register
+                    "comment": "set status register",
                     "mode": "write",
                     "value": "8'd1",
                     "bytes": 1,
                 },
                 {
-                    # check status
+                    "comment": "check status",
                     "mode": "read",
                     "until": "data_in[7] == 1",
-                    "timeout": timeout,
+                    "timeout": 130,
                     "bytes": 1,
                 },
                 {
-                    # adc register
+                    "comment": "set adc register",
                     "mode": "write",
                     "value": "8'd0",
                     "bytes": 1,
                 },
                 {
-                    # read 16bit
+                    "comment": "read 16bit adc value",
                     "mode": "read",
                     "var": f"{self.name}_adc{channel}",
                     "bytes": 2,

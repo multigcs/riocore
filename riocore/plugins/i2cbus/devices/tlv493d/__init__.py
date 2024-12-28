@@ -54,16 +54,23 @@ class i2c_device:
         self.PARAMS = {}
         self.INITS = []
         self.STEPS = [
+            #{
+            #    "mode": "writereg",
+            #    "values": [
+            #        (0x01, 0b0000_0001),  # LowPower
+            #        (0x03, 0b0000_0000),
+            #    ],
+            #},
+
             {
                 "mode": "writereg",
                 "values": [
-                    (0x01, 0b0000_0001),  # LowPower
-                    (0x03, 0b0000_0000),
+                    (0x11, 0x01), # start ???
                 ],
             },
             {
                 "mode": "delay",
-                "ms": 5,
+                "ms": 4,
             },
             {
                 "mode": "readreg",
@@ -74,14 +81,14 @@ class i2c_device:
             },
             {
                 "mode": "readreg",
-                "register": 0x01,
+                "register": 0x03,
                 "var": f"{self.name}_y",
                 "var_set": "{4'd0, data_in[7:0], data_in[11:8]}",
                 "bytes": 2,
             },
             {
                 "mode": "readreg",
-                "register": 0x02,
+                "register": 0x06,
                 "var": f"{self.name}_z",
                 "var_set": "{4'd0, data_in[7:0], data_in[11:8]}",
                 "bytes": 2,
@@ -92,7 +99,7 @@ class i2c_device:
         if signal_name.endswith("_valid"):
             return value
         if value > 2047:
-            value = value - 4095
+            value = value - 4096
         return value
 
     def convert_c(self, signal_name, signal_setup):
