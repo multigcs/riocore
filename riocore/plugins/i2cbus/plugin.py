@@ -167,6 +167,7 @@ graph LR;
                 verilog_data.append(f"    reg device_{lname}_timeout_error = 0;")
                 verilog_data.append(f"    reg [31:0] device_{lname}_timeout_cnt = 0;")
 
+        verilog_data.append("    reg [15:0] temp = 0;")
         verilog_data.append("    reg do_init = 1;")
         verilog_data.append("    reg stop = 1;")
         verilog_data.append("    reg [7:0] device_n = 0;")
@@ -443,6 +444,66 @@ graph LR;
                 verilog_data.append("                            start <= 1;")
                 verilog_data.append("                        end")
                 dev_step += 1
+
+            elif stype == "lcd":
+                verilog_data.append(f"                        {dev_step}: begin")
+                verilog_data.append("                            // set ")
+                verilog_data.append(f"                            temp <= {data['var']};")
+                verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
+                verilog_data.append("                        end")
+                dev_step += 1
+                for extra in [
+                    {"mode": "write", "value": "{4'h8 | temp[14:12], 4'd8}", "bytes": 1},
+                    {"mode": "write", "value": "{4'h8 | temp[14:12], 4'd12}", "bytes": 1},
+                    {"mode": "write", "value": "{4'h8 | temp[14:12], 4'd8}", "bytes": 1},
+                    {"mode": "write", "value": "{temp[11:8], 4'd8}", "bytes": 1},
+                    {"mode": "write", "value": "{temp[11:8], 4'd12}", "bytes": 1},
+                    {"mode": "write", "value": "{temp[11:8], 4'd8}", "bytes": 1},
+                ]:
+                    verilog_data.append(f"                        {dev_step}: begin")
+                    verilog_data.append("                            // pos ")
+                    verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
+                    verilog_data.append(f"                            addr <= {dev_addr};")
+                    verilog_data.append("                            rw <= RW_WRITE;")
+                    verilog_data.append("                            bytes <= 1;")
+                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= {extra['value']};")
+                    verilog_data.append("                            stop <= 1;")
+                    verilog_data.append("                            start <= 1;")
+                    verilog_data.append("                        end")
+                    dev_step += 1
+                verilog_data.append(f"                        {dev_step}: begin")
+                verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
+                verilog_data.append(f"                            delay_cnt <= {int(self.system_setup.get('speed', 50000000) / 1000 * 2)};")
+                verilog_data.append("                        end")
+                dev_step += 1
+
+                verilog_data.append("                                // char")
+                for extra in [
+                    {"mode": "write", "value": "{temp[7:4], 4'd9}", "bytes": 1},
+                    {"mode": "write", "value": "{temp[7:4], 4'd13}", "bytes": 1},
+                    {"mode": "write", "value": "{temp[7:4], 4'd9} ", "bytes": 1},
+                    {"mode": "write", "value": "{temp[3:0], 4'd9}", "bytes": 1},
+                    {"mode": "write", "value": "{temp[3:0], 4'd13}", "bytes": 1},
+                    {"mode": "write", "value": "{temp[3:0], 4'd9}", "bytes": 1},
+                ]:
+                    verilog_data.append(f"                        {dev_step}: begin")
+                    verilog_data.append("                            // char ")
+                    verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
+                    verilog_data.append(f"                            addr <= {dev_addr};")
+                    verilog_data.append("                            rw <= RW_WRITE;")
+                    verilog_data.append("                            bytes <= 1;")
+                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= {extra['value']};")
+                    verilog_data.append("                            stop <= 1;")
+                    verilog_data.append("                            start <= 1;")
+                    verilog_data.append("                        end")
+                    dev_step += 1
+
+                verilog_data.append(f"                        {dev_step}: begin")
+                verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
+                verilog_data.append(f"                            delay_cnt <= {int(self.system_setup.get('speed', 50000000) / 1000 * 2)};")
+                verilog_data.append("                        end")
+                dev_step += 1
+
             elif stype == "read":
                 if until:
                     check_timeout = True
