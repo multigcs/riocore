@@ -52,8 +52,7 @@ class i2c_device:
             },
         }
         self.PARAMS = {}
-        self.INITS = [
-        ]
+        self.INITS = []
         self.STEPS = [
             {
                 "mode": "writereg",
@@ -66,7 +65,6 @@ class i2c_device:
                 "mode": "delay",
                 "ms": 5,
             },
-
             {
                 "mode": "readreg",
                 "register": 0x00,

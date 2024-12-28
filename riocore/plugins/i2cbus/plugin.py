@@ -166,7 +166,9 @@ graph LR;
             if needs_timeout:
                 verilog_data.append(f"    reg device_{lname}_timeout_error = 0;")
                 verilog_data.append(f"    reg [31:0] device_{lname}_timeout_cnt = 0;")
+        verilog_data.append("")
 
+        verilog_data.append("    reg [7:0] mpx_last = 255;")
         verilog_data.append("    reg [15:0] temp = 0;")
         verilog_data.append("    reg do_init = 1;")
         verilog_data.append("    reg stop = 1;")
@@ -224,7 +226,8 @@ graph LR;
                 verilog_data.append(f"            if (device_n == {devname}) begin")
             else:
                 verilog_data.append(f"            end else if (device_n == {devname}) begin")
-            verilog_data.append("                if (do_init) begin")
+
+            verilog_data.append("")
 
             if self.multiplexer:
                 if subbus != "none" and int(subbus) > 7:
@@ -233,31 +236,21 @@ graph LR;
                     subbus_bits = 0
                 else:
                     subbus_bits = 1 << int(subbus)
-                if i2c_dev.INITS:
-                    i2c_dev.INITS.insert(
-                        0,
-                        {
-                            "comment": f"switch to sub-bus {subbus}",
-                            "mode": "write",
-                            "addr": "MULTIPLEXER_ADDR",
-                            "value": subbus_bits,
-                            "bytes": 1,
-                        },
-                    )
-                if i2c_dev.STEPS:
-                    i2c_dev.STEPS.insert(
-                        0,
-                        {
-                            "comment": f"switch to sub-bus {subbus}",
-                            "mode": "write",
-                            "addr": "MULTIPLEXER_ADDR",
-                            "value": subbus_bits,
-                            "bytes": 1,
-                        },
-                    )
             elif subbus != "none":
                 print("ERROR: i2cbus: no multiplxer configured for subbus")
 
+            verilog_data.append(f"                if (mpx_last != 8'd{subbus_bits}) begin")
+            verilog_data.append(f"                    mpx_last <= 8'd{subbus_bits};")
+            verilog_data.append("")
+            verilog_data.append("                    addr <= MULTIPLEXER_ADDR;")
+            verilog_data.append("                    rw <= RW_WRITE;")
+            verilog_data.append("                    bytes <= 1;")
+            verilog_data.append(f"                    data_out[MAX_BITS-1:MAX_BITS-8] <= {subbus_bits};")
+            verilog_data.append("                    stop <= 1;")
+            verilog_data.append("                    start <= 1;")
+            verilog_data.append("")
+
+            verilog_data.append("                end else if (do_init) begin")
             verilog_data += self.add_steps(setup, i2c_dev.INITS)
             verilog_data.append("                end else begin")
             verilog_data += self.add_steps(setup, i2c_dev.STEPS)
@@ -508,24 +501,11 @@ graph LR;
                 if until:
                     check_timeout = True
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd2;")
+                    verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
                     verilog_data.append(f"                            device_{lname}_timeout_cnt <= 31'd{timeout};")
                     verilog_data.append(f"                            device_{lname}_timeout_error <= 1'd0;")
                     verilog_data.append("                        end")
                     dev_step += 1
-
-                    if self.multiplexer and subbus != "none":
-                        subbus_bits = 1 << int(subbus)
-                        verilog_data.append(f"                        {dev_step}: begin")
-                        verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
-                        verilog_data.append("                            addr <= MULTIPLEXER_ADDR;")
-                        verilog_data.append("                            rw <= RW_WRITE;")
-                        verilog_data.append("                            bytes <= 1;")
-                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}] <= {subbus_bits};")
-                        verilog_data.append("                            stop <= 1;")
-                        verilog_data.append("                            start <= 1;")
-                        verilog_data.append("                        end")
-                        dev_step += 1
 
                 verilog_data.append(f"                        {dev_step}: begin")
                 verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
@@ -553,10 +533,7 @@ graph LR;
                     verilog_data.append(f"                                        device_{lname}_step <= 255;")
                     verilog_data.append("                                    end else begin")
                     verilog_data.append("                                        device_n <= device_n + 7'd1;")
-                    if self.multiplexer and subbus != "none":
-                        verilog_data.append(f"                                        device_{lname}_step <= device_{lname}_step - 7'd2;")
-                    else:
-                        verilog_data.append(f"                                        device_{lname}_step <= device_{lname}_step - 7'd1;")
+                    verilog_data.append(f"                                        device_{lname}_step <= device_{lname}_step - 7'd1;")
                     verilog_data.append("                                    end")
                     verilog_data.append("                                end")
                 elif data_in:
