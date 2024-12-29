@@ -14,8 +14,8 @@ class Plugin(PluginBase):
         """Ceiling of log2"""
         if x <= 0:
             raise ValueError("domain error")
-        return (x-1).bit_length()
-    
+        return (x - 1).bit_length()
+
     def setup(self):
         self.NAME = "i2cbus"
         self.INFO = "I2C-Bus"
@@ -74,6 +74,7 @@ graph LR;
         self.SIGNALS = {}
 
         self.MAX_BITS = 16
+        self.MAX_DIN = 48
 
         self.DESCRIPTION += "\n\nDevices:\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
@@ -100,7 +101,7 @@ graph LR;
         verilog_data = []
         verilog_data.append("")
         verilog_data.append(f"module i2cbus_{self.instances_name}")
-        verilog_data.append("    #(parameter DIVIDER = 42, parameter MAX_BITS = 64)")
+        verilog_data.append("    #(parameter DIVIDER = 42, parameter MAX_BITS = 64, parameter MAX_DIN = 64)")
         verilog_data.append("    (")
         verilog_data.append("        input clk,")
         for name, setup in self.devices.items():
@@ -166,10 +167,10 @@ graph LR;
             for data in i2c_dev.INITS + i2c_dev.STEPS:
                 if data["mode"] == "delay":
                     ms = data.get("ms")
-                    needs_delay = max(int(self.system_setup.get('speed', 50000000) / 1000 * ms), needs_delay)
+                    needs_delay = max(int(self.system_setup.get("speed", 50000000) / 1000 * ms), needs_delay)
                 if data.get("until"):
                     timeout = data.get("timeout")
-                    needs_timeout = max(int(self.system_setup.get('speed', 50000000) / 1000 * timeout), needs_timeout)
+                    needs_timeout = max(int(self.system_setup.get("speed", 50000000) / 1000 * timeout), needs_timeout)
             verilog_data.append(f"    reg [7:0] device_{lname}_step = 0;")
             if needs_timeout:
                 bits = self.clog2(needs_timeout + 1)
@@ -190,7 +191,7 @@ graph LR;
         verilog_data.append("    reg rw = RW_WRITE;")
         verilog_data.append("    reg [4:0] bytes = 0;")
         verilog_data.append("    reg [MAX_BITS-1:0] data_out = 0;")
-        verilog_data.append("    wire [31:0] data_in;")
+        verilog_data.append("    wire [MAX_DIN-1:0] data_in;")
         verilog_data.append("    reg start = 0;")
         verilog_data.append("    reg wakeup = 0;")
         verilog_data.append("    wire busy;")
@@ -301,7 +302,7 @@ graph LR;
         verilog_data.append("        end")
         verilog_data.append("    end")
         verilog_data.append("")
-        verilog_data.append("    i2c_master #(.DIVIDER(DIVIDER), .MAX_BITS(MAX_BITS)) i2cinst0 (")
+        verilog_data.append("    i2c_master #(.DIVIDER(DIVIDER), .MAX_BITS(MAX_BITS), .MAX_DIN(MAX_DIN)) i2cinst0 (")
         verilog_data.append("        .clk(clk),")
         verilog_data.append("        .sda(sda),")
         verilog_data.append("        .scl(scl),")
@@ -362,6 +363,7 @@ graph LR;
             size = nbytes * 8
             data_out = setup.get("data_out")
             data_in = setup.get("data_in")
+            data_in = data.get("data_in", data_in)
             value = setup.get("value")
             value = data.get("value", value)
             values = data.get("values")
@@ -400,7 +402,10 @@ graph LR;
                 verilog_data.append("                            rw <= RW_WRITE;")
                 verilog_data.append(f"                            bytes <= {1};")
                 verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= 8'h{register:X};")
-                verilog_data.append("                            stop <= 0;")
+                if stop:
+                    verilog_data.append("                            stop <= 1;")
+                else:
+                    verilog_data.append("                            stop <= 0;")
                 verilog_data.append("                            start <= 1;")
                 verilog_data.append("                        end")
                 dev_step += 1
@@ -417,7 +422,6 @@ graph LR;
                 verilog_data.append(f"                            // {name}: {stype}: check for error / return variable")
                 verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
                 verilog_data.append("                            if (error == 0) begin")
-
                 if data_in:
                     verilog_data += data_in
                 elif var_set:
@@ -520,7 +524,7 @@ graph LR;
                     verilog_data.append(f"                            addr <= {dev_addr};")
                     verilog_data.append("                            rw <= RW_WRITE;")
                     verilog_data.append("                            bytes <= 1;")
-                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= {extra['value']};")
+                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= 8'd{extra['value']};")
                     verilog_data.append("                            stop <= 1;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
@@ -562,6 +566,7 @@ graph LR;
                     verilog_data.append(f"                            // {name}: {stype}: check for error / return variable")
 
                 verilog_data.append("                            if (error == 0) begin")
+
                 if until:
                     verilog_data.append(f"                                // {name}: {stype}: check data and wait for match")
                     verilog_data.append(f"                                if ({until}) begin")
@@ -581,7 +586,13 @@ graph LR;
                 elif var_set:
                     verilog_data.append(f"                                {data['var']} <= {var_set};")
                 else:
-                    verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
+                    if big_endian:
+                        byte_list = []
+                        for byte_n in range(nbytes):
+                            byte_list.append(f"data_in[{byte_n*8+7}:{byte_n*8}]")
+                        verilog_data.append(f"                                {data['var']} <= {{{', '.join(byte_list)}}};")
+                    else:
+                        verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
 
                 if until:
                     verilog_data.append("                            end else begin")
@@ -617,6 +628,7 @@ graph LR;
         divider = self.system_setup["speed"] // freq // 6
         instance_parameter["DIVIDER"] = divider
         instance_parameter["MAX_BITS"] = self.MAX_BITS
+        instance_parameter["MAX_DIN"] = self.MAX_DIN
         return instances
 
     def convert(self, signal_name, signal_setup, value):

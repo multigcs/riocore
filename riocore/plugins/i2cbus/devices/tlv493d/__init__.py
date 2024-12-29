@@ -52,54 +52,49 @@ class i2c_device:
             },
         }
         self.PARAMS = {}
-        self.INITS = []
-        self.STEPS = [
-            #{
-            #    "mode": "writereg",
-            #    "values": [
-            #        (0x01, 0b0000_0001),  # LowPower
-            #        (0x03, 0b0000_0000),
-            #    ],
-            #},
-
+        self.INITS = [
             {
                 "mode": "writereg",
                 "values": [
-                    (0x11, 0x01), # start ???
+                    (0x11, 0x01),
                 ],
             },
+        ]
+        self.STEPS = [
             {
-                "mode": "delay",
-                "ms": 4,
+                "mode": "write",
+                "value": 0x00,
+                "bytes": 1,
             },
             {
-                "mode": "readreg",
-                "register": 0x00,
-                "var": f"{self.name}_x",
-                "var_set": "{4'd0, data_in[7:0], data_in[11:8]}",
-                "bytes": 2,
-            },
-            {
-                "mode": "readreg",
-                "register": 0x03,
-                "var": f"{self.name}_y",
-                "var_set": "{4'd0, data_in[7:0], data_in[11:8]}",
-                "bytes": 2,
-            },
-            {
-                "mode": "readreg",
-                "register": 0x06,
-                "var": f"{self.name}_z",
-                "var_set": "{4'd0, data_in[7:0], data_in[11:8]}",
-                "bytes": 2,
+                "mode": "read",
+                "data_in": [
+                    f"{self.name}_x <= {{ data_in[47:40] , data_in[23:16] }};\n" f"{self.name}_y <= {{ data_in[39:32] , data_in[15:8] }};\n" f"{self.name}_z <= {{ data_in[31:24] , data_in[7:0] }};\n"
+                ],
+                "bytes": 6,
             },
         ]
+
+        self.offsets_cnt = 10
+        self.offsets = {}
 
     def convert(self, signal_name, signal_setup, value):
         if signal_name.endswith("_valid"):
             return value
+
+        value = value >> 4
         if value > 2047:
             value = value - 4096
+
+        if self.offsets_cnt > 0:
+            self.offsets_cnt -= 1
+        else:
+            if signal_name not in self.offsets:
+                self.offsets[signal_name] = value
+                print("", signal_name, value)
+            else:
+                value -= self.offsets[signal_name]
+
         return value
 
     def convert_c(self, signal_name, signal_setup):

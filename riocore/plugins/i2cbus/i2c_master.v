@@ -1,7 +1,7 @@
 
 
 module i2c_master 
-    #(parameter DIVIDER = 42, parameter MAX_BITS = 64)
+    #(parameter DIVIDER = 42, parameter MAX_BITS = 64, parameter MAX_DIN = 64)
     (
         input clk,
         inout sda,
@@ -14,7 +14,7 @@ module i2c_master
         input wire wakeup,
         input wire [4:0] set_bytes,
         input wire [MAX_BITS-1:0] set_data_out,
-        output reg [31:0] data_in,
+        output reg [MAX_DIN-1:0] data_in,
         output reg error = 0
     );
 
@@ -172,7 +172,7 @@ module i2c_master
                 end else if (send_mode == MODE_DATA && send_cnt == 7) begin
                     mystate <= STATE_ACK;
                     if (rw == RW_READ) begin
-                        data_in <= {data_in[23:0], data_rtx[7:0]};
+                        data_in <= {data_in[MAX_DIN-1-8:0], data_rtx[7:0]};
                     end
                     send_cnt <= 0;
 

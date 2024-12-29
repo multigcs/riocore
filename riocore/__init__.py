@@ -126,11 +126,14 @@ class Plugins:
             print("##################################")
             traceback.print_exc(file=sys.stdout)
             print("##################################")
+            return False
+        return True
 
     def load_plugins(self, config, system_setup=None):
         if config["plugins"]:
             for plugin_id, plugin_config in enumerate(config["plugins"]):
-                self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)
+                if not self.load_plugin(plugin_id, plugin_config, system_setup=system_setup):
+                    exit(1)
             return self.plugin_instances
         return None
 
@@ -857,7 +860,11 @@ class Project:
             byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
             if len(byte_pack) < 4:
                 byte_pack += [0] * (4 - len(byte_pack))
-            self.multiplexed_input_value = unpack("<i", bytes(byte_pack))[0]
+            if byte_size == 8:
+                self.multiplexed_input_value = unpack("<d", bytes(byte_pack))[0]
+            else:
+                self.multiplexed_input_value = unpack("<i", bytes(byte_pack))[0]
+
             input_pos -= variable_size
             variable_size = 8
             byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
