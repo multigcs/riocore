@@ -31,6 +31,7 @@ class i2c_device:
             self.SIGNALS[f"{self.name}_adc{channel}"] = {
                 "direction": "input",
                 "format": "0.3f",
+                "unit": "V",
             }
         self.INTERFACE[f"{self.name}_valid"] = {
             "size": 1,
