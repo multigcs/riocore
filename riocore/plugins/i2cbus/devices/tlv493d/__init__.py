@@ -84,7 +84,6 @@ class i2c_device:
         if signal_name.endswith("_valid"):
             return value
 
-        #value = value >> 4
         if value > 2047:
             value = value - 4096
 
