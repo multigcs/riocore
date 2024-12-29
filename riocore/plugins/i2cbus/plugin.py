@@ -524,7 +524,7 @@ graph LR;
                     verilog_data.append(f"                            addr <= {dev_addr};")
                     verilog_data.append("                            rw <= RW_WRITE;")
                     verilog_data.append("                            bytes <= 1;")
-                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= 8'd{extra['value']};")
+                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= {extra['value']};")
                     verilog_data.append("                            stop <= 1;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
