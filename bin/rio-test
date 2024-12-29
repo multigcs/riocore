@@ -226,8 +226,8 @@ class WinForm(QWidget):
                                 row_layout.addWidget(plot_graph)
                             row_layout.addWidget(signal[wid], stretch=6)
                         else:
-                            vmin = signal.get("userconfig", {}).get("min", signal.get("min", 0))
-                            vmax = signal.get("userconfig", {}).get("max", signal.get("max", 100000))
+                            vmin = int(signal.get("userconfig", {}).get("min", signal.get("min", 0)))
+                            vmax = int(signal.get("userconfig", {}).get("max", signal.get("max", 100000)))
                             signal[wid] = QSlider(Qt.Horizontal)
                             signal[wid].setMinimum(int(vmin))
                             signal[wid].setMaximum(int(vmax))
