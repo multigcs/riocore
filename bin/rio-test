@@ -46,13 +46,14 @@ STYLESHEET_CHECKBOX = """
 """
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--debug", "-d", help="debug", default=False, action="store_true")
+parser.add_argument("--debug", "-d", help="debug output", default=False, action="store_true")
+parser.add_argument("--noimage", "-n", help="do not display image", default=False, action="store_true")
 parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
 parser.add_argument("--vertical", "-v", help="vertical tabs", default=False, action="store_true")
 parser.add_argument("--graphs", "-g", help="show graphs", default=False, action="store_true")
 parser.add_argument("--buffer", "-b", help="buffer size for graphs", type=int, default=100)
-parser.add_argument("config", help="config", nargs="?", type=str, default=None)
-parser.add_argument("target", help="target", nargs="?", type=str, default="")
+parser.add_argument("config", help="json configuration file", nargs="?", type=str, default=None)
+parser.add_argument("target", help="interface string", nargs="?", type=str, default="")
 parser.add_argument("tab", help="tab", nargs="?", type=str, default="")
 args = parser.parse_args()
 
@@ -133,15 +134,15 @@ class WinForm(QWidget):
             tab_layout1.addLayout(tab_layout_r, stretch=0)
 
             plugin_path = os.path.join(riocore_path, "plugins", plugin_type)
-            image_path = os.path.join(plugin_path, "image.png")
-            if os.path.isfile(image_path):
-                ilabel = QLabel(self)
-                pixmap = QPixmap(image_path)
-                ilabel.setPixmap(pixmap)
-                self.resize(pixmap.width(), pixmap.height())
-
-                tab_layout_r.addWidget(ilabel, stretch=0)
-                tab_layout_r.addStretch()
+            if not args.noimage:
+                image_path = os.path.join(plugin_path, "image.png")
+                if os.path.isfile(image_path):
+                    ilabel = QLabel(self)
+                    pixmap = QPixmap(image_path)
+                    ilabel.setPixmap(pixmap)
+                    self.resize(pixmap.width(), pixmap.height())
+                    tab_layout_r.addWidget(ilabel, stretch=0)
+                    tab_layout_r.addStretch()
 
             for plugin_instance, haldata in self.haldata.items():
                 if plugin_instance.NAME != plugin_type:
