@@ -69,9 +69,9 @@ class i2c_device:
             {
                 "mode": "read",
                 "data_in": [
-                    f"{self.name}_x <= {{ data_in[47:40] , data_in[23:16] }};\n",
-                    f"{self.name}_y <= {{ data_in[39:32] , data_in[15:8] }};\n",
-                    f"{self.name}_z <= {{ data_in[31:24] , data_in[7:0] }};\n",
+                    f"{self.name}_x <= {{ 4'd0, data_in[47:40], data_in[19:16] }};\n",
+                    f"{self.name}_y <= {{ 4'd0, data_in[39:32], data_in[11:8] }};\n",
+                    f"{self.name}_z <= {{ 4'd0, data_in[31:24], data_in[3:0] }};\n",
                 ],
                 "bytes": 6,
             },
@@ -84,7 +84,7 @@ class i2c_device:
         if signal_name.endswith("_valid"):
             return value
 
-        value = value >> 4
+        #value = value >> 4
         if value > 2047:
             value = value - 4096
 
