@@ -69,7 +69,9 @@ class i2c_device:
             {
                 "mode": "read",
                 "data_in": [
-                    f"{self.name}_x <= {{ data_in[47:40] , data_in[23:16] }};\n" f"{self.name}_y <= {{ data_in[39:32] , data_in[15:8] }};\n" f"{self.name}_z <= {{ data_in[31:24] , data_in[7:0] }};\n"
+                    f"{self.name}_x <= {{ data_in[47:40] , data_in[23:16] }};\n",
+                    f"{self.name}_y <= {{ data_in[39:32] , data_in[15:8] }};\n",
+                    f"{self.name}_z <= {{ data_in[31:24] , data_in[7:0] }};\n",
                 ],
                 "bytes": 6,
             },
