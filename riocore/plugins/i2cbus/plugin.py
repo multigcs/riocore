@@ -283,8 +283,9 @@ graph LR;
                 verilog_data.append("                    stop <= 1;")
                 verilog_data.append("                    start <= 1;")
                 verilog_data.append("")
-
-            verilog_data.append("                end else if (do_init) begin")
+                verilog_data.append("                end else if (do_init) begin")
+            else:
+                verilog_data.append("                if (do_init) begin")
             verilog_data.append(f"                    // init steps for {name}")
             verilog_data += self.add_steps(setup, i2c_dev.INITS)
             verilog_data.append("                end else begin")

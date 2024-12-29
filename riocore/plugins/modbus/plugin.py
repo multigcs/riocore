@@ -733,9 +733,10 @@ class Plugin(PluginBase):
             frame_rx_id = int(frame[1])
             frame_rx_len = int(frame[2])
             frame_data = list(reversed(frame[3 : (frame_rx_len + 3)]))[:-2]
-            device_addrs = frame_data[0]
-            if device_addrs not in self.addrs:
-                self.addrs.append(device_addrs)
+            if frame_data:
+                device_addrs = frame_data[0]
+                if device_addrs not in self.addrs:
+                    self.addrs.append(device_addrs)
             logline = f"< {frame_rx_id}: {' '.join(frame_data)}"
             logline = f"< {' '.join(frame_data)}"
 

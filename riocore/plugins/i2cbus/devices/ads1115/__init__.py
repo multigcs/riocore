@@ -11,6 +11,34 @@ class i2c_device:
                 "description": "number of channels",
                 "default": 4,
             },
+            "sensor0": {
+                "type": "combo",
+                "options": ["volt", "ntc"],
+                "max": 4,
+                "description": "sensor type on channel 1",
+                "default": "volt",
+            },
+            "sensor1": {
+                "type": "combo",
+                "options": ["volt", "ntc"],
+                "max": 4,
+                "description": "sensor type on channel 1",
+                "default": "volt",
+            },
+            "sensor2": {
+                "type": "combo",
+                "options": ["volt", "ntc"],
+                "max": 4,
+                "description": "sensor type on channel 1",
+                "default": "volt",
+            },
+            "sensor3": {
+                "type": "combo",
+                "options": ["volt", "ntc"],
+                "max": 4,
+                "description": "sensor type on channel 1",
+                "default": "volt",
+            },
         },
     }
 
@@ -99,7 +127,21 @@ class i2c_device:
     def convert(self, signal_name, signal_setup, value):
         if signal_name.endswith("_valid"):
             return value
+
+        channel = signal_name[-1]
+        stype = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
+
         # 3.3V range
         value = value >> 3
         value /= 1000.0
         return value
+
+    def convert_c(self, signal_name, signal_setup):
+        if signal_name.endswith("_valid"):
+            return ""
+        # 3.3V range
+        return """
+        value = (int16_t)value>>3;
+        value /= 1000.0;
+        """
+
