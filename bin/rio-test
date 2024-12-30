@@ -439,8 +439,9 @@ class WinForm(QWidget):
                     print(f"ERROR: reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
                     # return
 
-            if rxdata:
-                self.project.rxdata_set(rxdata)
+            self.project.rxdata_set(rxdata)
+            if args.debug:
+                print("TIMESTAMP", self.project.timestamp, self.project.duration)
 
             if args.graphs:
                 self.time = self.time[1:]

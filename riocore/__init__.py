@@ -469,6 +469,9 @@ class Plugins:
 class Project:
     def __init__(self, configuration, output_path=None):
         plugins = Plugins()
+        self.timestamp = 0
+        self.timestamp_last = 0
+        self.duration = 0
         self.load_config(configuration, output_path)
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
         self.calc_buffersize()
@@ -642,6 +645,7 @@ class Project:
                 self.setup_merge(setup[key], value)
 
     def calc_buffersize(self):
+        self.timestamp_size = 32
         self.header_size = 32
         self.input_size = 0
         self.output_size = 0
@@ -683,7 +687,7 @@ class Project:
         if self.multiplexed_output:
             self.output_size += self.multiplexed_output_size + 8
 
-        self.input_size = self.input_size + self.header_size
+        self.input_size = self.input_size + self.header_size + self.timestamp_size
         self.output_size = self.output_size + self.header_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
         self.buffer_bytes = self.buffer_size // 8
@@ -851,7 +855,19 @@ class Project:
         return txdata
 
     def rxdata_set(self, rxdata):
+        if not rxdata:
+            return
         input_pos = self.buffer_size - self.header_size
+
+        # get timestamp from FPGA
+        variable_size = self.timestamp_size
+        byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
+        byte_start = self.buffer_bytes - 1 - byte_start
+        byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+        self.timestamp_last = self.timestamp
+        self.timestamp = unpack("<I", bytes(byte_pack))[0] / self.config["speed"]
+        self.duration = self.timestamp - self.timestamp_last
+        input_pos -= variable_size
 
         if self.multiplexed_input:
             variable_size = self.multiplexed_input_size

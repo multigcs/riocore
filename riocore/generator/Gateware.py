@@ -187,6 +187,7 @@ class Gateware:
     def top(self):
         output = []
         input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
+        input_variables_list += ["timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]"]
         output_variables_list = []
         self.iface_in = []
         self.iface_out = []
@@ -383,8 +384,10 @@ class Gateware:
         output.append(f"    wire[{self.project.buffer_size-1}:0] rx_data;")
         output.append(f"    wire[{self.project.buffer_size-1}:0] tx_data;")
         output.append("")
-        output.append("    reg signed [31:0] header_tx;")
+        output.append("    reg [31:0] timestamp = 0;")
+        output.append("    reg signed [31:0] header_tx = 0;")
         output.append("    always @(posedge sysclk) begin")
+        output.append("        timestamp <= timestamp + 1'd1;")
         output.append("        if (ESTOP) begin")
         output.append("            header_tx <= 32'h65737470;")
         output.append("        end else begin")

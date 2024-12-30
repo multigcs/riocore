@@ -1746,6 +1746,7 @@ class LinuxCNC:
         output.append("    hal_bit_t   *sys_enable_request;")
         output.append("    hal_bit_t   *sys_status;")
         output.append("    hal_bit_t   *sys_simulation;")
+        output.append("    hal_u32_t   *fpga_timestamp;")
         output.append("    hal_float_t *duration;")
 
         if self.project.multiplexed_output:
@@ -2341,6 +2342,13 @@ class LinuxCNC:
         output.append("    // rxBuffer to raw vars")
         output.append("    // TODO: check rec size and header")
         input_pos = self.project.buffer_size - self.project.header_size
+
+        variable_size = 32
+        byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
+        byte_start = self.project.buffer_bytes - 1 - byte_start
+        output.append(f"    memcpy(&fpga_timestamp, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
+        input_pos -= variable_size
+
         if self.project.multiplexed_input:
             variable_size = self.project.multiplexed_input_size
             byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
@@ -2453,6 +2461,8 @@ class LinuxCNC:
         output.append("uint32_t err_counter = 0;")
         output.append("")
         output.append("long stamp_last = 0;")
+        output.append("float fpga_stamp_last = 0;")
+        output.append("uint32_t fpga_timestamp = 0;")
         output.append("")
         output.append("void rio_readwrite();")
         output.append("int error_handler(int retval);")
@@ -2540,8 +2550,14 @@ class LinuxCNC:
         output.append("        *data->sys_status = 1;")
         output.append("    }")
         output.append("    long stamp_new = rtapi_get_time();")
-        output.append("    *data->duration = (stamp_new - stamp_last) / 1000.0;")
+        output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
         output.append("    stamp_last = stamp_new;")
+
+        output.append("    float timestamp = (float)fpga_timestamp / (OSC_CLOCK / 1000) * 1000.0;")
+        output.append("    *data->duration = timestamp - fpga_stamp_last;")
+        output.append("    fpga_stamp_last = timestamp;")
+        # output.append("    printf(\" %f %f  \\n\", duration2, *data->duration);")
+
         output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
@@ -2564,7 +2580,7 @@ class LinuxCNC:
             output.append("            if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         output.append("                if (err_counter > 0) {")
         output.append("                    err_counter = 0;")
-        output.append('                rtapi_print("recovered..\\n");')
+        output.append('                    rtapi_print("recovered..\\n");')
         output.append("                }")
         output.append("                read_rxbuffer(rxBuffer);")
         output.append("                convert_inputs();")
@@ -2572,9 +2588,9 @@ class LinuxCNC:
         output.append("                err_counter += 1;")
         if protocol == "UDP":
             output.append("                if (ret != BUFFER_SIZE) {")
-            output.append('                rtapi_print("wrong data size (%i %i/3): ", ret, err_counter);')
+            output.append('                    rtapi_print("wrong data size (%i %i/3): ", ret, err_counter);')
             output.append("                } else {")
-            output.append('                rtapi_print("wrong header (%i/3): ", err_counter);')
+            output.append('                    rtapi_print("wrong header (%i/3): ", err_counter);')
             output.append("                }")
         else:
             output.append('            rtapi_print("wronng data (%i/3): ", err_counter);')
@@ -2582,11 +2598,11 @@ class LinuxCNC:
             output.append("                for (i = 0; i < ret; i++) {")
         else:
             output.append("                for (i = 0; i < BUFFER_SIZE; i++) {")
-        output.append('                rtapi_print("%d ",rxBuffer[i]);')
+        output.append('                    rtapi_print("%d ",rxBuffer[i]);')
         output.append("                }")
-        output.append('            rtapi_print("\\n");')
+        output.append('                rtapi_print("\\n");')
         output.append("                if (err_counter > 3) {")
-        output.append('                rtapi_print("too many errors..\\n");')
+        output.append('                    rtapi_print("too many errors..\\n");')
         output.append("                    *data->sys_status = 0;")
         output.append("                }")
         output.append("            }")

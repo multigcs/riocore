@@ -1,4 +1,8 @@
+import math
+
+
 class i2c_device:
+    sensor_options = ["volt", "ntc", "pressure"]
     options = {
         "info": "16bit / 4channel adc",
         "description": "",
@@ -13,31 +17,31 @@ class i2c_device:
             },
             "sensor0": {
                 "type": "combo",
-                "options": ["volt", "ntc"],
+                "options": sensor_options,
                 "max": 4,
                 "description": "sensor type on channel 1",
-                "default": "volt",
+                "default": sensor_options[0],
             },
             "sensor1": {
                 "type": "combo",
-                "options": ["volt", "ntc"],
+                "options": sensor_options,
                 "max": 4,
                 "description": "sensor type on channel 1",
-                "default": "volt",
+                "default": sensor_options[0],
             },
             "sensor2": {
                 "type": "combo",
-                "options": ["volt", "ntc"],
+                "options": sensor_options,
                 "max": 4,
                 "description": "sensor type on channel 1",
-                "default": "volt",
+                "default": sensor_options[0],
             },
             "sensor3": {
                 "type": "combo",
-                "options": ["volt", "ntc"],
+                "options": sensor_options,
                 "max": 4,
                 "description": "sensor type on channel 1",
-                "default": "volt",
+                "default": sensor_options[0],
             },
         },
     }
@@ -52,14 +56,20 @@ class i2c_device:
         self.INTERFACE = {}
         self.SIGNALS = {}
         for channel in range(self.channels):
+            sensor_setups = {
+                "volt": ("V", "0.3f"),
+                "ntc": ("°C", "0.1f"),
+                "pressure": ("bar", "0.1f"),
+            }
+            sensor = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
             self.INTERFACE[f"{self.name}_adc{channel}"] = {
                 "size": 16,
                 "direction": "input",
             }
             self.SIGNALS[f"{self.name}_adc{channel}"] = {
                 "direction": "input",
-                "format": "0.3f",
-                "unit": "V",
+                "format": sensor_setups.get(sensor, ["", "0.3f"])[1],
+                "unit": sensor_setups.get(sensor, ["", ""])[0],
             }
         self.INTERFACE[f"{self.name}_valid"] = {
             "size": 1,
@@ -129,19 +139,49 @@ class i2c_device:
             return value
 
         channel = signal_name[-1]
-        stype = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
-
-        # 3.3V range
+        sensor = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
         value = value >> 3
         value /= 1000.0
+
+        if sensor == "ntc":
+            Rt = 10.0 * value / (3.3 - value)
+            if Rt == 0.0:
+                value = -999.0
+            else:
+                tempK = 1.0 / (math.log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0))
+                tempC = tempK - 273.15
+                value = tempC
+        elif sensor == "pressure":
+            value *= 2.57
+            value -= 0.56
+
         return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name.endswith("_valid"):
             return ""
-        # 3.3V range
-        return """
-        value = (int16_t)value>>3;
-        value /= 1000.0;
-        """
 
+        channel = signal_name[-1]
+        sensor = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
+
+        if sensor == "ntc":
+            return """
+                value = (int16_t)value>>3;
+                value /= 1000.0;
+                float Rt = 10.0 * value / (3.3 - value);
+                float tempK = 1.0 / (log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0));
+                float tempC = tempK - 273.15;
+                value = tempC;
+            """
+        elif sensor == "pressure":
+            return """
+            value = (int16_t)value>>3;
+            value /= 1000.0;
+            value *= 2.57;
+            value -= 0.56;
+            """
+        else:
+            return """
+            value = (int16_t)value>>3;
+            value /= 1000.0;
+            """
