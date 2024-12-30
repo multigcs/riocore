@@ -929,6 +929,10 @@ class Project:
                 data_config["value"] = value
                 input_pos -= variable_size
 
+        for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            plugin_instance.timestamp = self.timestamp
+            plugin_instance.duration = self.duration
+
         # convert interface variables to signals
         for plugin_instance in self.plugin_instances:
             plugin_instance.convert2signals()

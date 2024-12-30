@@ -40,8 +40,8 @@ class Plugin(PluginBase):
             "position": {
                 "direction": "input",
                 "targets": {
-                    "rps": "value_rps = (raw_value - last_raw_value) * *data->duration / scale;",
-                    "rpm": "value_rpm = (raw_value - last_raw_value) * *data->duration * 60.0 / scale;",
+                    "rps": "value_rps = (raw_value - last_raw_value) / *data->duration / scale;",
+                    "rpm": "value_rpm = (raw_value - last_raw_value) / *data->duration * 60.0 / scale;",
                 },
                 "description": "position feedback in steps",
             },
@@ -57,6 +57,8 @@ class Plugin(PluginBase):
             },
         }
 
+        self.last_pos = 0
+
     def gateware_instances(self):
         instances = self.gateware_instances_base()
 
@@ -70,9 +72,18 @@ class Plugin(PluginBase):
 
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "position":
+            scale = self.plugin_setup.get("signals", {}).get(signal_name, {}).get("scale", 1.0)
+
+            # calc rps/rpm
+            if self.duration > 0:
+                diff = value - self.last_pos
+                rps = diff / self.duration / scale
+                self.SIGNALS["rps"]["value"] = rps
+                self.SIGNALS["rpm"]["value"] = rps * 60
+            self.last_pos = value
+
             vmin = self.plugin_setup.get("min")
             vmax = self.plugin_setup.get("max")
-            scale = self.plugin_setup.get("scale", 1.0)
             if vmin is not None and value < vmin:
                 value = vmin
             if vmax is not None and value > vmax:

@@ -91,3 +91,25 @@ class Plugin(PluginBase):
         quad_type = self.plugin_setup.get("quad_type", self.OPTIONS["quad_type"]["default"])
         instance_parameter["QUAD_TYPE"] = quad_type
         return instances
+
+    def convert(self, signal_name, signal_setup, value):
+        if signal_name == "position":
+            scale = self.plugin_setup.get("signals", {}).get(signal_name, {}).get("scale", 1.0)
+
+            # calc rps/rpm
+            if self.duration > 0:
+                diff = value - self.last_pos
+                rps = diff / self.duration / scale
+                self.SIGNALS["rps"]["value"] = rps
+                self.SIGNALS["rpm"]["value"] = rps * 60
+            self.last_pos = value
+
+            vmin = self.plugin_setup.get("min")
+            vmax = self.plugin_setup.get("max")
+            if vmin is not None and value < vmin:
+                value = vmin
+            if vmax is not None and value > vmax:
+                value = vmax
+            if scale is not None:
+                value *= scale
+        return value
