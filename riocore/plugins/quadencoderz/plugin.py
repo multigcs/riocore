@@ -82,6 +82,8 @@ class Plugin(PluginBase):
             },
         }
 
+        self.last_pos = 0
+
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
