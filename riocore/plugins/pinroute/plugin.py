@@ -34,7 +34,7 @@ class Plugin(PluginBase):
             "input": {
                 "direction": "output",
                 "min": 0,
-                "max": num_inputs,
+                "max": num_inputs - 1,
                 "description": "input selector",
             },
         }
@@ -55,11 +55,17 @@ class Plugin(PluginBase):
                 outarg = instance["arguments"]["out"]
                 verilog.append(f"reg {outarg} = 0;")
                 verilog.append("always @(posedge sysclk) begin")
+
+                verilog.append(f"    case ({inputvar})")
                 for input_n in range(num_inputs):
                     inarg = instance["arguments"][f"in{input_n}"]
-                    verilog.append(f"    if ({inputvar} == {input_n}) begin")
-                    verilog.append(f"        {outarg} <= {inarg};")
-                    verilog.append("    end")
+                    verilog.append(f"        {input_n}: begin")
+                    verilog.append(f"            {outarg} <= {inarg};")
+                    verilog.append("        end")
+                verilog.append(f"        default: begin")
+                verilog.append(f"            {outarg} <= 0;")
+                verilog.append("        end")
+                verilog.append("    endcase")
                 verilog.append("end")
                 verilog.append("")
                 instance["predefines"] = verilog
