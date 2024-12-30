@@ -2132,17 +2132,33 @@ class LinuxCNC:
                         direction = signal_config.get("direction")
                         boolean = signal_config.get("bool")
                         hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                        var_prefix = signal_config["var_prefix"]
+
+                        signal_setups = {}
                         signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
                         if signal_setup:
+                            signal_setups[varname] = signal_setup
+                        for target in signal_targets:
+                            signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(target)
+                            if signal_setup:
+                                signal_setups[f"{var_prefix}_{target.upper()}"] = signal_setup
+
+                        for vname, signal_setup in signal_setups.items():
                             for signal_filter in signal_setup.get("filters", []):
                                 if signal_filter.get("type") == "avg":
-                                    depth = signal_filter.get("depth", 16)
-                                    output.append(f"void filter_avg_{varname.lower()}(data_t *data) {{")
+                                    depth = signal_filter.get("depth", 8)
+                                    output.append(f"void filter_avg_{vname.lower()}(data_t *data) {{")
                                     output.append(f"    static float values[{depth}];")
                                     for parameter in convert_parameter:
                                         if signal_name.upper() == parameter.split("_")[-1].strip():
                                             source = parameter.split()[-1].strip("*")
-                                            output.append(f"    float value = data->{source};")
+                                            org_post = varname.split("_")[-1]
+                                            new_post = vname.split("_")[-1]
+                                            if org_post != new_post:
+                                                source = f"SIGIN_{vname}"
+                                                output.append(f"    float value = *data->{source};")
+                                            else:
+                                                output.append(f"    float value = data->{source};")
                                             output.append("    int n = 0;")
                                             output.append("    float avg_value = 0.0;")
                                             output.append(f"    for (n = 0; n < {depth} - 1; n++) {{")
@@ -2153,8 +2169,11 @@ class LinuxCNC:
                                             output.append(f"    avg_value += values[{depth-1}];")
                                             output.append(f"    avg_value /= {depth};")
                                             output.append("")
-                                            output.append(f"    data->{source} = avg_value;")
-
+                                            if org_post != new_post:
+                                                print("##")
+                                                output.append(f"    *data->{source} = avg_value;")
+                                            else:
+                                                output.append(f"    data->{source} = avg_value;")
                                     output.append("}")
                                     output.append("")
 
@@ -2255,16 +2274,26 @@ class LinuxCNC:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
+                    signal_targets = signal_config.get("targets", {})
                     virtual = signal_config.get("virtual")
+                    var_prefix = signal_config["var_prefix"]
                     if virtual:
                         continue
                     if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
                         output.append(f"    convert_{varname.lower()}(data);")
+                        signal_setups = {}
                         signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
                         if signal_setup:
+                            signal_setups[varname] = signal_setup
+                        for target in signal_targets:
+                            signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(target)
+                            if signal_setup:
+                                signal_setups[f"{var_prefix}_{target.upper()}"] = signal_setup
+
+                        for vname, signal_setup in signal_setups.items():
                             for signal_filter in signal_setup.get("filters", []):
                                 if signal_filter.get("type") == "avg":
-                                    output.append(f"    filter_avg_{varname.lower()}(data);")
+                                    output.append(f"    filter_avg_{vname.lower()}(data);")
 
         output.append("}")
         output.append("")
