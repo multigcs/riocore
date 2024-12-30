@@ -10,9 +10,9 @@ class Plugin(PluginBase):
         self.GRAPH = """
 graph LR;
     Select-->Routpng;
-    In0-->Routpng;
-    In1-->Routpng;
-    Routpng-->Out;
+    In0-->Routing;
+    In1-->Routing;
+    Routing-->Out;
         """
         self.ORIGIN = ""
         self.PINDEFAULTS = {
