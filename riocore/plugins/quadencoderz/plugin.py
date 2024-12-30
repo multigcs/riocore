@@ -65,8 +65,8 @@ class Plugin(PluginBase):
                 "is_index_position": True,
                 "direction": "input",
                 "targets": {
-                    "rps": "value_rps = (raw_value - last_raw_value) * *data->duration / scale;",
-                    "rpm": "value_rpm = (raw_value - last_raw_value) * *data->duration * 60.0 / scale;",
+                    "rps": "value_rps = (raw_value - last_raw_value) / *data->duration / scale;",
+                    "rpm": "value_rpm = (raw_value - last_raw_value) / *data->duration * 60.0 / scale;",
                 },
                 "description": "position feedback in steps",
             },

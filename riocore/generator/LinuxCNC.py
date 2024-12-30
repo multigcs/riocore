@@ -2553,7 +2553,7 @@ class LinuxCNC:
         output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
         output.append("    stamp_last = stamp_new;")
 
-        output.append("    float timestamp = (float)fpga_timestamp / (OSC_CLOCK / 1000) * 1000.0;")
+        output.append("    float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;")
         output.append("    *data->duration = timestamp - fpga_stamp_last;")
         output.append("    fpga_stamp_last = timestamp;")
         # output.append("    printf(\" %f %f  \\n\", duration2, *data->duration);")
