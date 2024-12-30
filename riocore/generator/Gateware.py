@@ -69,6 +69,14 @@ class Gateware:
             for pin in plugin_instance.expansion_inputs():
                 self.expansion_pins.append(pin)
 
+        self.virtual_pins = []
+        for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config and pin_config["pin"].startswith("VIRT:"):
+                    pinname = pin_config["pin"]
+                    if pinname not in self.virtual_pins:
+                        self.virtual_pins.append(pinname)
+
         self.verilogs = []
         self.globals()
         self.top()
@@ -174,7 +182,7 @@ class Gateware:
         for plugin_instance in self.project.plugin_instances:
             self.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
+                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins and pin_config["pin"] not in self.virtual_pins:
                     pin_config["pin"] = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
                     self.config["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
                     if pin_config["pin"] not in pinnames:
@@ -276,7 +284,7 @@ class Gateware:
         arguments_list = ["input sysclk_in"]
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
+                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins and pin_config["pin"] not in self.virtual_pins:
                     arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
 
         output.append("/*")
@@ -396,6 +404,23 @@ class Gateware:
         output.append("    end")
         output.append("")
 
+        # virtual pins
+        for pin in self.virtual_pins:
+            pinname = pin.replace(":", "_")
+            output.append(f"    wire {pinname};")
+
+        for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config and pin_config["pin"] in self.virtual_pins:
+                    pinname = pin_config["pin"].replace(":", "_")
+                    if pin_config["direction"] == "output":
+                        output.append(f"    wire {pin_config['varname']};")
+                        output.append(f"    assign {pinname} = {pin_config['varname']}; // {pin_config['direction']}")
+                    elif pin_config["direction"] == "input":
+                        output.append(f"    wire {pin_config['varname']};")
+                        output.append(f"    assign {pin_config['varname']} = {pinname}; // {pin_config['direction']}")
+
+        # multiplexing
         if self.project.multiplexed_input:
             output.append(f"    reg [{self.project.multiplexed_input_size-1}:0] MULTIPLEXED_INPUT_VALUE;")
             output.append("    reg [7:0] MULTIPLEXED_INPUT_ID;")
