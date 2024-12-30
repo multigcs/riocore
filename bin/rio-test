@@ -17,6 +17,8 @@ import riocore
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
+    QProxyStyle,
+    QStyle,
     QScrollArea,
     QLineEdit,
     QApplication,
@@ -46,8 +48,12 @@ STYLESHEET_CHECKBOX = """
 """
 
 parser = argparse.ArgumentParser()
+if sys.platform.startswith("win"):
+    parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=True, action="store_true")
+else:
+    parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
 parser.add_argument("--debug", "-d", help="debug output", default=False, action="store_true")
-parser.add_argument("--noimage", "-n", help="do not display image", default=False, action="store_true")
+parser.add_argument("--noimage", "-N", help="do not display image", default=False, action="store_true")
 parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
 parser.add_argument("--vertical", "-v", help="vertical tabs", default=False, action="store_true")
 parser.add_argument("--graphs", "-g", help="show graphs", default=False, action="store_true")
@@ -61,13 +67,23 @@ args = parser.parse_args()
 riocore_path = os.path.dirname(riocore.__file__)
 
 
+class SliderProxyStyle(QProxyStyle):
+    def pixelMetric(self, metric, option, widget):
+        if metric == QStyle.PM_SliderThickness:
+            return 40
+        elif metric == QStyle.PM_SliderLength:
+            return 40
+        return super().pixelMetric(metric, option, widget)
+
+
 class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("LinuxCNC-RIO - TestGui")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
-        self.setStyleSheet(STYLESHEET)
+        if not args.nostyle:
+            self.setStyleSheet(STYLESHEET)
 
         self.listFile = QListWidget()
         layout = QGridLayout()
@@ -133,6 +149,8 @@ class WinForm(QWidget):
             tab_layout_r = QVBoxLayout()
             tab_layout1.addLayout(tab_layout_r, stretch=0)
 
+
+
             plugin_path = os.path.join(riocore_path, "plugins", plugin_type)
             if not args.noimage:
                 image_path = os.path.join(plugin_path, "image.png")
@@ -187,7 +205,8 @@ class WinForm(QWidget):
                         if signal.get("bool"):
                             signal[wid] = QCheckBox()
                             signal[wid].setChecked(value)
-                            signal[wid].setStyleSheet(STYLESHEET_CHECKBOX)
+                            if not args.nostyle:
+                                signal[wid].setStyleSheet(STYLESHEET_CHECKBOX)
                             if args.graphs and direction == "input":
                                 signal[f"graph_tab_{plugin_instance.title}"] = tab_num
                                 signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
@@ -229,6 +248,8 @@ class WinForm(QWidget):
                             vmin = int(signal.get("userconfig", {}).get("min", signal.get("min", 0)))
                             vmax = int(signal.get("userconfig", {}).get("max", signal.get("max", 100000)))
                             signal[wid] = QSlider(Qt.Horizontal)
+                            style = SliderProxyStyle(signal[wid].style())
+                            signal[wid].setStyle(style)
                             signal[wid].setMinimum(int(vmin))
                             signal[wid].setMaximum(int(vmax))
                             signal[wid].setSingleStep(1)
@@ -304,7 +325,8 @@ class WinForm(QWidget):
         dialog.setWindowTitle("select target")
         dialog.setFixedWidth(500)
         dialog.setFixedHeight(400)
-        dialog.setStyleSheet(STYLESHEET)
+        if not args.nostyle:
+            dialog.setStyleSheet(STYLESHEET)
 
         dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
