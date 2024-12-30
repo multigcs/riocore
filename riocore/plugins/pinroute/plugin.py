@@ -9,7 +9,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = ""
         self.GRAPH = """
 graph LR;
-    Select-->Routpng;
     In0-->Routing;
     In1-->Routing;
     Routing-->Out;

@@ -6,7 +6,6 @@ routing output pin to multiple inputs
 
 ```mermaid
 graph LR;
-    Select-->Routpng;
     In0-->Routing;
     In1-->Routing;
     Routing-->Out;
