@@ -2,7 +2,7 @@
 
 <img align="right" width="320" src="image.png">
 
-routing output pin to multiple inputs
+**routing one output pin to multiple inputs**
 
 ```mermaid
 graph LR;

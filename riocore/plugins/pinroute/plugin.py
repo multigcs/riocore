@@ -4,8 +4,8 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "pinroute"
-        self.INFO = ""
-        self.DESCRIPTION = "routing output pin to multiple inputs"
+        self.INFO = "routing one output pin to multiple inputs"
+        self.DESCRIPTION = ""
         self.KEYWORDS = ""
         self.GRAPH = """
 graph LR;

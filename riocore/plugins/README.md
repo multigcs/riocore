@@ -35,7 +35,7 @@
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |
-|  | [pinroute](pinroute/README.md) |  | <img src="pinroute/image.png" height="48"> |
+|  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |
