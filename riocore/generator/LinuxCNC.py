@@ -2170,7 +2170,6 @@ class LinuxCNC:
                                             output.append(f"    avg_value /= {depth};")
                                             output.append("")
                                             if org_post != new_post:
-                                                print("##")
                                                 output.append(f"    *data->{source} = avg_value;")
                                             else:
                                                 output.append(f"    data->{source} = avg_value;")
