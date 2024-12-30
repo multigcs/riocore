@@ -59,12 +59,12 @@ class Plugin(PluginBase):
         }
         self.OPTIONS = {
             "pulse_len": {
-                "default": 0,
+                "default": 4.0,
                 "type": float,
                 "min": 0.0,
                 "max": 1000.0,
                 "unit": "us",
-                "description": "step pulse len (0 = 50% duty)",
+                "description": "step pulse len",
             },
             "dir_delay": {
                 "default": 0.7,

@@ -216,6 +216,7 @@ class hy_vfd:
             elif self.HYVFD_COMMAND == 1:
                 set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
                 freq_comp = 0
+                hz_per_rpm = 0
                 if self.HYVFD_DATA["rated_motor_rev"] > 0:
                     hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rated_motor_rev"]
                 value = abs((set_speed + freq_comp) * hz_per_rpm)

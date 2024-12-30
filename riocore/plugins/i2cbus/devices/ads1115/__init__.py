@@ -152,8 +152,8 @@ class i2c_device:
                 tempC = tempK - 273.15
                 value = tempC
         elif sensor == "pressure":
-            value *= 2.57
             value -= 0.56
+            value *= 2.57
 
         return value
 
@@ -177,8 +177,8 @@ class i2c_device:
             return """
             value = (int16_t)value>>3;
             value /= 1000.0;
-            value *= 2.57;
             value -= 0.56;
+            value *= 2.57;
             """
         else:
             return """
