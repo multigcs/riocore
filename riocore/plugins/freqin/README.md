@@ -26,6 +26,15 @@ minimum measured frequency (for faster updates)
  * default: 10
  * unit: Hz
 
+### freq_max:
+maximum measured frequency (for filtering)
+
+ * type: int
+ * min: 10
+ * max: 10000000
+ * default: 1000000
+ * unit: Hz
+
 ### name:
 name of this plugin instance
 
@@ -77,6 +86,7 @@ name of this plugin instance
 {
     "type": "freqin",
     "freq_min": 10,
+    "freq_max": 1000000,
     "name": "",
     "pins": {
         "freq": {

@@ -7,7 +7,8 @@
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |
 |  | [uart](uart/README.md) | uart interface for host cominucation | <img src="uart/image.png" height="48"> |
 |  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |
-| Joints | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |
+| Joints | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |
+|  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |
 |  | [pwmout](pwmout/README.md) | pwm output | <img src="pwmout/image.png" height="48"> |
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |
@@ -34,6 +35,7 @@
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |
+|  | [pinroute](pinroute/README.md) |  | <img src="pinroute/image.png" height="48"> |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |

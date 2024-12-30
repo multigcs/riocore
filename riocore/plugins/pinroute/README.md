@@ -1,38 +1,39 @@
-# bitcopy
+# pinroute
 
 <img align="right" width="320" src="image.png">
 
-**copy a bit/pin to an other output pin**
-
-outputs a copy of a bit/pin
-
-Usage-Examples:
-* you can create an inverted pin for symetric signals (modifier: invert)
-* or delayed signals for generating sequences (modifier: debounce with hight delay)
-* make short signals visible (modifier: oneshot -> LED)
-
-Keywords: pin bit copy
+routing output pin to multiple inputs
 
 ```mermaid
 graph LR;
-    Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
-    Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
+    Select-->Routpng;
+    In0-->Routpng;
+    In1-->Routpng;
+    Routpng-->Out;
 ```
 
 ## Pins:
 *FPGA-pins*
-### bit:
+### out:
 
  * direction: output
+
+### in0:
+
+ * direction: input
+
+### in1:
+
+ * direction: input
 
 
 ## Options:
 *user-options*
-### origin:
-Origin Bit/Pin
+### inputs:
+number of inputs
 
- * type: vpins
- * default: ERROR
+ * type: int
+ * default: 2
 
 ### name:
 name of this plugin instance
@@ -43,19 +44,37 @@ name of this plugin instance
 
 ## Signals:
 *signals/pins in LinuxCNC*
+### input:
+input selector
+
+ * type: float
+ * direction: output
+ * min: 0
+ * max: 1
 
 
 ## Interfaces:
 *transport layer*
+### input:
+
+ * size: 8 bit
+ * direction: output
+ * multiplexed: True
 
 
 ## Basic-Example:
 ```
 {
-    "type": "bitcopy",
+    "type": "pinroute",
     "pins": {
-        "bit": {
+        "out": {
             "pin": "0"
+        },
+        "in0": {
+            "pin": "1"
+        },
+        "in1": {
+            "pin": "2"
         }
     }
 }
@@ -64,19 +83,53 @@ name of this plugin instance
 ## Full-Example:
 ```
 {
-    "type": "bitcopy",
-    "origin": "ERROR",
+    "type": "pinroute",
+    "inputs": 2,
     "name": "",
     "pins": {
-        "bit": {
+        "out": {
             "pin": "0",
             "modifiers": [
                 {
                     "type": "invert"
                 }
             ]
+        },
+        "in0": {
+            "pin": "1",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "in1": {
+            "pin": "2",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
         }
     },
-    "signals": {}
+    "signals": {
+        "input": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "input",
+                "section": "outputs",
+                "type": "scale"
+            }
+        }
+    }
 }
 ```

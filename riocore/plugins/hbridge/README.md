@@ -1,23 +1,22 @@
-# pwmout
+# hbridge
 
 <img align="right" width="320" src="image.png">
 
-**pwm output**
+**hbridge output**
 
-to control AC/DC-Motors or for analog outputs
+to control DC-Motors
 
-Keywords: joint dcservo acservo 10v 5v dac analog
+Keywords: joint dcservo
 
 ## Pins:
 *FPGA-pins*
-### pwm:
+### out1:
 
  * direction: output
 
-### dir:
+### out2:
 
  * direction: output
- * optional: True
 
 ### en:
 
@@ -61,7 +60,7 @@ configure as joint
 
  * type: float
  * direction: output
- * min: 0
+ * min: -100
  * max: 100
  * unit: %
 
@@ -87,12 +86,12 @@ configure as joint
 ## Basic-Example:
 ```
 {
-    "type": "pwmout",
+    "type": "hbridge",
     "pins": {
-        "pwm": {
+        "out1": {
             "pin": "0"
         },
-        "dir": {
+        "out2": {
             "pin": "1"
         },
         "en": {
@@ -105,13 +104,13 @@ configure as joint
 ## Full-Example:
 ```
 {
-    "type": "pwmout",
+    "type": "hbridge",
     "frequency": 10000,
     "name": "",
     "axis": "",
     "is_joint": false,
     "pins": {
-        "pwm": {
+        "out1": {
             "pin": "0",
             "modifiers": [
                 {
@@ -119,7 +118,7 @@ configure as joint
                 }
             ]
         },
-        "dir": {
+        "out2": {
             "pin": "1",
             "modifiers": [
                 {
@@ -162,4 +161,4 @@ configure as joint
 ```
 
 ## Verilogs:
- * [pwmout.v](pwmout.v)
+ * [hbridge.v](hbridge.v)

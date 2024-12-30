@@ -5,8 +5,15 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "pinroute"
         self.INFO = ""
-        self.DESCRIPTION = ""
+        self.DESCRIPTION = "routing output pin to multiple inputs"
         self.KEYWORDS = ""
+        self.GRAPH = """
+graph LR;
+    Select-->Routpng;
+    In0-->Routpng;
+    In1-->Routpng;
+    Routpng-->Out;
+        """
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "out": {
