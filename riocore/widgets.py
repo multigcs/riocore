@@ -215,6 +215,48 @@ class edit_int(QSpinBox):
             self.win.display()
 
 
+class edit_avgfilter(QSpinBox):
+    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None):
+        super().__init__()
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.setValue(0)
+        if help_text:
+            self.setToolTip(help_text)
+        if vmin:
+            self.setMinimum(vmin)
+        else:
+            self.setMinimum(-99999999)
+        if vmax:
+            self.setMaximum(vmax)
+        else:
+            self.setMaximum(99999999)
+        if key in obj:
+            if obj[key]:
+                self.setValue(obj[key][0].get("depth", 0))
+
+        self.valueChanged.connect(self.change)
+        self.editingFinished.connect(self.change)
+        self.setFocusPolicy(Qt.StrongFocus)
+
+    def wheelEvent(self, *args, **kwargs):
+        if self.hasFocus():
+            return QSpinBox.wheelEvent(self, *args, **kwargs)
+
+    def change(self):
+        if self.value() != self.default:
+            self.obj[self.key] = [{"type": "avg", "depth": self.value()}]
+        elif self.key in self.obj:
+            del self.obj[self.key]
+        if self.cb:
+            self.cb(self.value())
+        else:
+            self.win.display()
+
+
 class edit_text(QLineEdit):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
         super().__init__()

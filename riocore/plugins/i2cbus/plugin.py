@@ -346,7 +346,6 @@ graph LR;
         name = setup["name"]
         lname = name.replace(" ", "").lower()
         i2c_dev = setup["i2cdev"]
-        subbus = setup.get("subbus", "none")
         dev_valid = None
         for iname, iface in i2c_dev.INTERFACE.items():
             direction = iface["direction"]

@@ -68,7 +68,7 @@ graph LR;
                     verilog.append(f"        {input_n}: begin")
                     verilog.append(f"            {outarg} <= {inarg};")
                     verilog.append("        end")
-                verilog.append(f"        default: begin")
+                verilog.append("        default: begin")
                 verilog.append(f"            {outarg} <= 0;")
                 verilog.append("        end")
                 verilog.append("    endcase")

@@ -87,7 +87,6 @@ class Plugin(PluginBase):
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-            vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
             vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
             value = int((value) * (self.system_setup["speed"] / freq) / (vmax))
         return value
@@ -95,7 +94,6 @@ class Plugin(PluginBase):
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-            vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
             vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
             return f"value = value * (OSC_CLOCK / {freq}) / ({vmax});"
         return ""

@@ -28,7 +28,20 @@ from riocore import axisgraph
 from riocore import halgraph
 from riocore import vcp
 from riocore.modifiers import Modifiers
-from riocore.widgets import MyQSvgWidget, MyQLabel, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
+from riocore.widgets import (
+    MyQSvgWidget,
+    MyQLabel,
+    MyStandardItem,
+    edit_float,
+    edit_int,
+    edit_text,
+    edit_bool,
+    edit_combobox,
+    edit_avgfilter,
+    STYLESHEET,
+    STYLESHEET_CHECKBOX_GREEN_RED,
+    STYLESHEET_BUTTON,
+)
 
 
 from PyQt5 import QtSvg
@@ -2439,6 +2452,8 @@ class WinForm(QWidget):
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
         elif var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "avgfilter":
+            return edit_avgfilter(self, obj, key, vmin=0, vmax=10000, cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] == "vpins":
             default = var_setup.get("default")
             options = ["sysclk", "ERROR", "ESTOP", "INTERFACE_SYNC"]
@@ -3466,6 +3481,13 @@ class WinForm(QWidget):
                 signal_cols.addWidget(QLabel("Offset"), stretch=1)
                 signal_setup["offset"] = {"type": float, "default": 0.0}
                 signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
+
+            if not signal_defaults.get("bool") and signal_direction == "input":
+                signal_cols = QHBoxLayout()
+                signal_rows.addLayout(signal_cols)
+                signal_cols.addWidget(QLabel("AVG-Filter"), stretch=1)
+                signal_setup["filters"] = {"type": "avgfilter"}
+                signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "filters", signal_setup["filters"], cb=update), stretch=5)
 
             display_frame = QGroupBox(self)
             display_frame.setTitle("Display")
