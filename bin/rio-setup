@@ -750,9 +750,6 @@ class TabOverview:
                 for pname in plugin_instance.expansion_inputs():
                     expansion_cons[pname] = title
 
-
-
-            
                 name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
                 title = plugin_instance.NAME
                 if name:
@@ -840,13 +837,13 @@ class TabOverview:
                             style="rounded, filled",
                             fillcolor="lightyellow",
                         )
-                    
+
                     if pin.startswith("VIRT:"):
                         color = "yellow"
                         gAll.edge(f"{con_dev}:{con_pin}", f"{title}:{pin_name}", dir=arrow_dir, color=color, label=pin.split(":")[-1], fontcolor="white", fontsize="11pt")
                     else:
                         gAll.edge(f"{con_dev}:{con_pin}", f"{title}:{pin_name}", dir=arrow_dir, color=color)
-                    
+
                     if ":" not in pin and pin not in self.parent.expansion_pins:
                         sports.append(f"<{pin}>{pin}")
 

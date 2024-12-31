@@ -5,7 +5,9 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "quadencoderz"
         self.INFO = "quadencoder with index pin"
-        self.DESCRIPTION = "usable as spindle-encoder for rigid tapping and thread cutting.  It is critical that your position-scale and QUAD_TYPE match, see the details in the description for QUAD_TYPE"
+        self.DESCRIPTION = (
+            "usable as spindle-encoder for rigid tapping and thread cutting.  It is critical that your position-scale and QUAD_TYPE match, see the details in the description for QUAD_TYPE"
+        )
         self.KEYWORDS = "feedback encoder rotary linear glassscale  index"
         self.ORIGIN = "https://www.fpga4fun.com/QuadratureDecoder.html"
         self.VERILOGS = ["quadencoderz.v"]
