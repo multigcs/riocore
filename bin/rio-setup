@@ -738,6 +738,7 @@ class TabOverview:
                 label = f"{{ {{{' | '.join(mportsl)}}} | {slot_name} | {{{' | '.join(mportsr)}}} }}"
                 sports.append(label)
 
+            virtual_cons = {}
             expansion_cons = {}
             for plugin_instance in self.parent.plugins.plugin_instances:
                 name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
@@ -749,6 +750,25 @@ class TabOverview:
                 for pname in plugin_instance.expansion_inputs():
                     expansion_cons[pname] = title
 
+
+
+            
+                name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
+                title = plugin_instance.NAME
+                if name:
+                    title = f"{name} ({plugin_instance.NAME})"
+
+                for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                    pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
+                    direction = pin_defaults["direction"]
+                    pin = pin_setup.get("pin")
+                    if not pin:
+                        continue
+
+                    if pin.startswith("VIRT:"):
+                        if direction == "input":
+                            virtual_cons[pin] = (title, pin_name)
+
             joint_n = 0
             for plugin_instance in self.parent.plugins.plugin_instances:
                 pports = []
@@ -757,27 +777,40 @@ class TabOverview:
                 if name:
                     title = f"{name} ({plugin_instance.NAME})"
 
+                signalports = []
                 for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                     pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
-                    pports.append(f"<{pin_name}>{pin_name}")
+                    pin = pin_setup.get("pin")
+
+                    if pin and pin.startswith("VIRT:") and pin_defaults["direction"] == "input":
+                        signalports.append(f"<{pin_name}>{pin_name}")
+                    else:
+                        pports.append(f"<{pin_name}>{pin_name}")
+
                     if not pin_setup and pin_defaults.get("optional") is True:
                         continue
-                    if "pin" not in pin_setup and pin_defaults.get("optional") is True:
+                    elif "pin" not in pin_setup and pin_defaults.get("optional") is True:
                         continue
-                    pin = pin_setup.get("pin")
-                    if not pin:
+                    elif not pin:
                         continue
 
                     con_dev = fpga_name
                     con_pin = pin
 
-                    if pin and pin in expansion_cons:
-                        if pin in expansion_cons:
-                            con_dev = expansion_cons[pin]
+                    if pin in expansion_cons:
+                        con_dev = expansion_cons[pin]
                         con_pin = pin.replace("[", "").replace("]", "")
 
                     if ":" in con_pin:
                         con_pin = con_pin.replace(":", "_")
+
+                    if pin.startswith("VIRT:"):
+                        if pin in virtual_cons:
+                            if pin_defaults["direction"] == "output":
+                                con_dev = virtual_cons[pin][0]
+                                con_pin = virtual_cons[pin][1]
+                            else:
+                                continue
 
                     if pin_defaults["direction"] == "input":
                         modifiers = pin_setup.get("modifier", [])
@@ -807,42 +840,47 @@ class TabOverview:
                             style="rounded, filled",
                             fillcolor="lightyellow",
                         )
-
-                    gAll.edge(f"{con_dev}:{con_pin}", f"{title}:{pin_name}", dir=arrow_dir, color=color)
-
-                    if pin and ":" not in pin and pin not in self.parent.expansion_pins:
+                    
+                    if pin.startswith("VIRT:"):
+                        color = "yellow"
+                        gAll.edge(f"{con_dev}:{con_pin}", f"{title}:{pin_name}", dir=arrow_dir, color=color, label=pin.split(":")[-1], fontcolor="white", fontsize="11pt")
+                    else:
+                        gAll.edge(f"{con_dev}:{con_pin}", f"{title}:{pin_name}", dir=arrow_dir, color=color)
+                    
+                    if ":" not in pin and pin not in self.parent.expansion_pins:
                         sports.append(f"<{pin}>{pin}")
 
                     num += 1
 
-                signalports = []
-                for signal_name, signal_config in plugin_instance.plugin_setup.get("signals", {}).items():
-                    net = signal_config.get("net")
-                    function = signal_config.get("function")
+                for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
                     signalports.append(f"<signal_{signal_name}>{signal_name}")
-                    signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
-                    direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
+                    signal_config = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
+                    if signal_config:
+                        net = signal_config.get("net")
+                        function = signal_config.get("function")
+                        signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
+                        direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
 
-                    if not net and not function and plugin_instance.plugin_setup.get("is_joint", False):
-                        if signal_name == "position" and signal_direction == "input":
-                            hal_pin = f"joint.{joint_n}.motor-pos-fb"
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
-                            lcports.append(f"<{hal_pin}>{hal_pin}")
-                        elif signal_name == "position" and signal_direction == "output":
-                            hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                            lcports.append(f"<{hal_pin}>{hal_pin}")
-                        elif signal_name == "velocity":
-                            hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                            lcports.append(f"<{hal_pin}>{hal_pin}")
+                        if not net and not function and plugin_instance.plugin_setup.get("is_joint", False):
+                            if signal_name == "position" and signal_direction == "input":
+                                hal_pin = f"joint.{joint_n}.motor-pos-fb"
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
+                                lcports.append(f"<{hal_pin}>{hal_pin}")
+                            elif signal_name == "position" and signal_direction == "output":
+                                hal_pin = f"joint.{joint_n}.motor-pos-cmd"
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
+                                lcports.append(f"<{hal_pin}>{hal_pin}")
+                            elif signal_name == "velocity":
+                                hal_pin = f"joint.{joint_n}.motor-pos-cmd"
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
+                                lcports.append(f"<{hal_pin}>{hal_pin}")
 
-                    if function:
-                        gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                        lcports.append(f"<{function}>{function}")
-                    if net:
-                        gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                        lcports.append(f"<{net}>{net}")
+                        if function:
+                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                            lcports.append(f"<{function}>{function}")
+                        if net:
+                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                            lcports.append(f"<{net}>{net}")
 
                 # expansion posts
                 eports = []
@@ -936,33 +974,35 @@ class TabOverview:
                         pports.append(f"<{pin_name}>{pin_name}")
 
                     signalports = []
-                    for signal_name, signal_config in plugin_instance.plugin_setup.get("signals", {}).items():
-                        net = signal_config.get("net")
-                        function = signal_config.get("function")
+                    for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
+                        signal_config = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
                         signalports.append(f"<signal_{signal_name}>{signal_name}")
-                        signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
-                        direction_mapping = {"input": "forward", "output": "back", "inout": "both"}
+                        if signal_config:
+                            net = signal_config.get("net")
+                            function = signal_config.get("function")
+                            signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
+                            direction_mapping = {"input": "forward", "output": "back", "inout": "both"}
 
-                        if not net and not function and plugin_instance.plugin_setup.get("is_joint", False):
-                            if signal_name == "position" and signal_direction == "input":
-                                hal_pin = f"joint.{joint_n}.motor-pos-fb"
-                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
-                                lcports.append(f"<{hal_pin}>{hal_pin}")
-                            elif signal_name == "position" and signal_direction == "output":
-                                hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                                lcports.append(f"<{hal_pin}>{hal_pin}")
-                            elif signal_name == "velocity":
-                                hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                                lcports.append(f"<{hal_pin}>{hal_pin}")
+                            if not net and not function and plugin_instance.plugin_setup.get("is_joint", False):
+                                if signal_name == "position" and signal_direction == "input":
+                                    hal_pin = f"joint.{joint_n}.motor-pos-fb"
+                                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
+                                    lcports.append(f"<{hal_pin}>{hal_pin}")
+                                elif signal_name == "position" and signal_direction == "output":
+                                    hal_pin = f"joint.{joint_n}.motor-pos-cmd"
+                                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
+                                    lcports.append(f"<{hal_pin}>{hal_pin}")
+                                elif signal_name == "velocity":
+                                    hal_pin = f"joint.{joint_n}.motor-pos-cmd"
+                                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
+                                    lcports.append(f"<{hal_pin}>{hal_pin}")
 
-                        if function:
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                            lcports.append(f"<{function}>{function}")
-                        if net:
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                            lcports.append(f"<{net}>{net}")
+                            if function:
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                                lcports.append(f"<{function}>{function}")
+                            if net:
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                                lcports.append(f"<{net}>{net}")
 
                     if signalports:
                         label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(signalports)}}} }}"
