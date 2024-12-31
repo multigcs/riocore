@@ -3,13 +3,19 @@ from riocore.plugins import PluginBase
 
 class Plugin(PluginBase):
     def setup(self):
+        # some plugin infos (used by make redmes and in the gui for the titles and tooltips)
         self.NAME = "pwmout"
         self.INFO = "pwm output"
         self.DESCRIPTION = "to control AC/DC-Motors or for analog outputs"
+        # search strings for the rio-setup gui, but it search also over name, info and description (add new plugin)
         self.KEYWORDS = "joint dcservo acservo 10v 5v dac analog"
+        # a link to the orign sources of the verilog code (empty for own code)
         self.ORIGIN = ""
+        # list of verilog files in the plugin folder to copy to the GATEWARE folder while generate the Output
         self.VERILOGS = ["pwmout.v"]
+        # the plugin type, there are io, joint and expansion
         self.TYPE = "joint"
+        # dictionary of all in/out pins for the plugin (optional pins are possible)
         self.PINDEFAULTS = {
             "pwm": {
                 "direction": "output",
@@ -23,6 +29,7 @@ class Plugin(PluginBase):
                 "optional": True,
             },
         }
+        # plugin options to setup some compile time values
         self.OPTIONS = {
             "frequency": {
                 "default": 10000,
@@ -33,6 +40,7 @@ class Plugin(PluginBase):
                 "description": "PWM frequency",
             },
         }
+        # all the values that needs to transfare betweed PC and FPGA
         self.INTERFACE = {
             "dty": {
                 "size": 32,
@@ -44,6 +52,7 @@ class Plugin(PluginBase):
                 "on_error": False,
             },
         }
+        # all the linuxcnc hal-pins/hal-signals (normaly the same as in self.INTERFACE)
         self.SIGNALS = {
             "dty": {
                 "direction": "output",
@@ -75,18 +84,24 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
+        # here is an example how to modify the above dictionarys depends on the configured options (self.OPTIONS)
         if "dir" in self.plugin_setup.get("pins", {}):
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
 
+    # optional function, only needed if you add parameter to the verilog functions
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
+        # this will read the frequency configuration
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
+        # and calc the clock cycles that is needed (using the fpga clock (speed))
         divider = self.system_setup["speed"] // freq
+        # this will set the parameter in verilog
         instance_parameter["DIVIDER"] = divider
         return instances
 
+    # optional calculation for the signals (self.SIGNALS) (the python part / for rio-test)
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
@@ -98,6 +113,7 @@ class Plugin(PluginBase):
                 value = int((value - vmin) * (self.system_setup["speed"] / freq) / (vmax - vmin))
         return value
 
+    # optional calculation for the signals (self.SIGNALS) (the c part / for riocomp.c)
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
