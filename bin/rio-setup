@@ -3486,7 +3486,7 @@ class WinForm(QWidget):
                 signal_cols = QHBoxLayout()
                 signal_rows.addLayout(signal_cols)
                 signal_cols.addWidget(QLabel("AVG-Filter"), stretch=1)
-                signal_setup["filters"] = {"type": "avgfilter"}
+                signal_setup["filters"] = {"type": "avgfilter", "default": 0}
                 signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "filters", signal_setup["filters"], cb=update), stretch=5)
 
             display_frame = QGroupBox(self)

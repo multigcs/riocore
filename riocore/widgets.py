@@ -248,9 +248,28 @@ class edit_avgfilter(QSpinBox):
 
     def change(self):
         if self.value() != self.default:
-            self.obj[self.key] = [{"type": "avg", "depth": self.value()}]
+            if self.key not in self.obj:
+                self.obj[self.key] = []
+            fpos = -1
+            for pn, part in enumerate(self.obj[self.key]):
+                if part.get("type") == "avg":
+                    fpos = pn
+                    break
+            if fpos != -1:
+                self.obj[self.key][fpos]["depth"] = self.value()
+            else:
+                self.obj[self.key].append({"type": "avg", "depth": self.value()})
+
         elif self.key in self.obj:
-            del self.obj[self.key]
+            if self.key not in self.obj:
+                self.obj[self.key] = []
+            fpos = -1
+            for pn, part in enumerate(self.obj[self.key]):
+                if part.get("type") == "avg":
+                    fpos = pn
+                    break
+            if fpos != -1:
+                self.obj[self.key].pop(fpos)
         if self.cb:
             self.cb(self.value())
         else:
