@@ -22,7 +22,6 @@ class PluginBase:
         self.KEYWORDS = ""
         self.ORIGIN = ""
         self.GATEWARE_SUPPORT = True
-        self.FIRMWARE_SUPPORT = False
         self.OPTIONS = {}
         self.PLUGIN_CONFIG = False
         self.LIMITATIONS = {}
@@ -82,15 +81,6 @@ class PluginBase:
 
     def update_title(self):
         self.title = self.plugin_setup.get("name") or self.instances_name
-
-    def firmware_defines(self):
-        return ""
-
-    def firmware_setup(self):
-        return ""
-
-    def firmware_loop(self):
-        return ""
 
     def setup(self):
         pass
