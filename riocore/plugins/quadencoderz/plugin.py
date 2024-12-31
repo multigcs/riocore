@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "quadencoderz"
         self.INFO = "quadencoder with index pin"
-        self.DESCRIPTION = "usable as spindle-encoder for rigid tapping and thread cutting"
+        self.DESCRIPTION = "usable as spindle-encoder for rigid tapping and thread cutting.  It is critical that your position-scale and QUAD_TYPE match, see the details in the description for QUAD_TYPE"
         self.KEYWORDS = "feedback encoder rotary linear glassscale  index"
         self.ORIGIN = "https://www.fpga4fun.com/QuadratureDecoder.html"
         self.VERILOGS = ["quadencoderz.v"]
@@ -33,7 +33,7 @@ class Plugin(PluginBase):
                 "type": int,
                 "min": 0,
                 "max": 4,
-                "description": "encoder type",
+                "description": "The count from the encoder will be bitshifted by the value of QUAD_TYPE.  Use 0 for 4x mode.  The position-scale should match.  For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.",
             },
         }
         self.INTERFACE = {
