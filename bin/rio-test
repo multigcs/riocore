@@ -244,7 +244,7 @@ class WinForm(QWidget):
                             row_layout.addWidget(signal[wid], stretch=6)
                         else:
                             vmin = int(signal.get("userconfig", {}).get("min", signal.get("min", 0)))
-                            vmax = int(signal.get("userconfig", {}).get("max", signal.get("max", 100000)))
+                            vmax = int(signal.get("userconfig", {}).get("max", signal.get("max", 1000)))
                             signal[wid] = QSlider(Qt.Horizontal)
                             style = SliderProxyStyle(signal[wid].style())
                             signal[wid].setStyle(style)

@@ -78,6 +78,7 @@ class Gateware:
                         self.virtual_pins.append(pinname)
 
         self.verilogs = []
+        self.linked_pins = []
         self.globals()
         self.top()
         self.makefile()
@@ -182,7 +183,7 @@ class Gateware:
         for plugin_instance in self.project.plugin_instances:
             self.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins and pin_config["pin"] not in self.virtual_pins:
+                if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins and pin_config["pin"] not in self.virtual_pins and pin_config["varname"] not in self.linked_pins:
                     pin_config["pin"] = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
                     self.config["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
                     if pin_config["pin"] not in pinnames:
@@ -282,10 +283,17 @@ class Gateware:
             output_variables_list.append(f"// assign FILL = rx_data[{diff-1}:0];")
 
         arguments_list = ["input sysclk_in"]
+        existing_pins = {}
+        double_pins = {}
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins and pin_config["pin"] not in self.virtual_pins:
-                    arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
+                    if pin_config["pin"] in existing_pins:
+                        double_pins[pin_config["pin"]] = pin_config["varname"]
+
+                    else:
+                        arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
+                        existing_pins[pin_config["pin"]] = pin_config["varname"]
 
         output.append("/*")
         output.append(f"    ######### {self.project.config['name']} #########")
@@ -403,6 +411,16 @@ class Gateware:
         output.append("        end")
         output.append("    end")
         output.append("")
+
+        if double_pins:
+            output.append("// linking double used input pins")
+            for pin, varname in double_pins.items():
+                if varname.startswith("PININ_"):
+                    output.append(f"    wire {varname};")
+                    output.append(f"    assign {varname} = {existing_pins[pin]};")
+                    self.linked_pins.append(varname)
+                else:
+                    print(f"ERROR: can not assign output pin to multiple plugins: {varname} / {existing_pins[pin]} -> {pin}")
 
         # virtual pins
         for pin in self.virtual_pins:
