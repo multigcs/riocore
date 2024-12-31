@@ -31,5 +31,5 @@ if you are done, run:
 ```
 make readmes
 ```
-to update the plugin lists and the README.md inside the plugin folder
+to update the plugin lists and the README.md inside the plugin folder for github
 
