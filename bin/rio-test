@@ -126,13 +126,7 @@ class WinForm(QWidget):
             sys.exit(0)
 
         self.project.connect(target)
-
         self.haldata = self.project.haldata()
-
-        plugin_types = set()
-        for plugin_instance, haldata in self.haldata.items():
-            if haldata.get("input") or haldata.get("output"):
-                plugin_types.add(plugin_instance.NAME)
 
         self.ucount = 0
         if args.graphs:
@@ -184,7 +178,16 @@ class WinForm(QWidget):
 
         else:
             # tabs by plugin type
+            plugin_types = set()
+            for plugin_instance, haldata in self.haldata.items():
+                if args.instance_name and plugin_instance.title != args.instance_name:
+                    continue
+                if haldata.get("input") or haldata.get("output"):
+                    plugin_types.add(plugin_instance.NAME)
             for tab_num, plugin_type in enumerate(sorted(plugin_types)):
+                if args.plugin_name and plugin_type != args.plugin_name:
+                    continue
+
                 tab_widget = QWidget()
                 scroll_widget = QScrollArea()
                 scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -211,6 +214,10 @@ class WinForm(QWidget):
                 for plugin_instance, haldata in self.haldata.items():
                     if plugin_instance.NAME != plugin_type:
                         continue
+
+                    if args.instance_name and plugin_instance.title != args.instance_name:
+                        continue
+
                     self.draw_instance(plugin_instance, haldata, tab_layout, pg, tab_num=tab_num)
                 tab_layout.addStretch()
                 if args.tab and args.tab.lower() == plugin_type.lower():
