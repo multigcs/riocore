@@ -46,12 +46,19 @@ STYLESHEET_CHECKBOX = """
         background-color: lightgray;
     }
 """
+STYLESHEET_CHECKBOX_BIG = """
+    QCheckBox::indicator {
+        width: 40px;
+        height: 40px;
+    }
+"""
 
 parser = argparse.ArgumentParser()
 if sys.platform.startswith("win"):
     parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=True, action="store_true")
 else:
     parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
+parser.add_argument("--touch", "-t", help="touchscreen optimization", default=False, action="store_true")
 parser.add_argument("--debug", "-d", help="debug output", default=False, action="store_true")
 parser.add_argument("--noimage", "-N", help="do not display image", default=False, action="store_true")
 parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
@@ -79,7 +86,7 @@ class SliderProxyStyle(QProxyStyle):
 class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
-        self.setWindowTitle("LinuxCNC-RIO - TestGui")
+        self.setWindowTitle("RIO - TestGui")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
         if not args.nostyle:
@@ -205,6 +212,10 @@ class WinForm(QWidget):
                             signal[wid].setChecked(value)
                             if not args.nostyle:
                                 signal[wid].setStyleSheet(STYLESHEET_CHECKBOX)
+
+                            if args.touch:
+                                signal[wid].setStyleSheet(STYLESHEET_CHECKBOX_BIG)
+
                             if args.graphs and direction == "input":
                                 signal[f"graph_tab_{plugin_instance.title}"] = tab_num
                                 signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
@@ -243,11 +254,12 @@ class WinForm(QWidget):
                                 row_layout.addWidget(plot_graph)
                             row_layout.addWidget(signal[wid], stretch=6)
                         else:
-                            vmin = int(signal.get("userconfig", {}).get("min", signal.get("min", 0)))
-                            vmax = int(signal.get("userconfig", {}).get("max", signal.get("max", 1000)))
+                            vmin = int(signal.get("userconfig", {}).get("display", {}).get("min", signal.get("min", 0)))
+                            vmax = int(signal.get("userconfig", {}).get("display", {}).get("max", signal.get("max", 1000)))
                             signal[wid] = QSlider(Qt.Horizontal)
-                            style = SliderProxyStyle(signal[wid].style())
-                            signal[wid].setStyle(style)
+                            if args.touch:
+                                style = SliderProxyStyle(signal[wid].style())
+                                signal[wid].setStyle(style)
                             signal[wid].setMinimum(int(vmin))
                             signal[wid].setMaximum(int(vmax))
                             signal[wid].setSingleStep(1)
