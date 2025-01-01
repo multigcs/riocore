@@ -687,7 +687,7 @@ class Project:
             self.output_size += self.multiplexed_output_size + 8
 
         self.input_size = self.input_size + self.header_size + self.timestamp_size
-        self.output_size = self.output_size + self.header_size
+        self.output_size = self.output_size + self.header_size + self.timestamp_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
         self.buffer_bytes = self.buffer_size // 8
         self.config["buffer_size"] = self.buffer_size
