@@ -256,14 +256,16 @@ class WinForm(QWidget):
                         else:
                             vmin = int(signal.get("userconfig", {}).get("display", {}).get("min", signal.get("min", 0)))
                             vmax = int(signal.get("userconfig", {}).get("display", {}).get("max", signal.get("max", 1000)))
+                            scale = signal.get("userconfig", {}).get("scale", 1.0)
+                            steps = int(vmax / 100)
                             signal[wid] = QSlider(Qt.Horizontal)
                             if args.touch:
                                 style = SliderProxyStyle(signal[wid].style())
                                 signal[wid].setStyle(style)
                             signal[wid].setMinimum(int(vmin))
                             signal[wid].setMaximum(int(vmax))
-                            signal[wid].setSingleStep(1)
-                            signal[wid].setPageStep(int((vmax - vmin) // 100))
+                            signal[wid].setSingleStep(steps)
+                            signal[wid].setPageStep(steps * 10)
                             # signal[wid].setTickPosition(QSlider.TicksBelow)
                             signal[wid].setMinimumWidth(200)
                             signal[wid].setValue(value)
@@ -424,7 +426,11 @@ class WinForm(QWidget):
                             self.project.signal_value_set(halname, 0)
                     else:
                         value = signal[f"widget_{plugin_instance.title}"].value()
-                        signal[f"widget_out_{plugin_instance.title}"].setText(f"{value:05d}")
+                        userconfig = signal.get("userconfig", {})
+                        value_unit = userconfig.get("display", {}).get("unit", signal.get("unit", ""))
+                        scale = signal.get("userconfig", {}).get("scale", 1.0)
+                        value_scaled = value / scale
+                        signal[f"widget_out_{plugin_instance.title}"].setText(f"{value_scaled:06.1f} {value_unit}")
                         self.project.signal_value_set(halname, value)
 
                 for halname, signal in haldata.get("inout", {}).items():
