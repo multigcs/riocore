@@ -65,6 +65,8 @@ parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
 parser.add_argument("--vertical", "-v", help="vertical tabs", default=False, action="store_true")
 parser.add_argument("--graphs", "-g", help="show graphs", default=False, action="store_true")
 parser.add_argument("--by-instance", "-I", help="tabs by plugin instance", default=False, action="store_true")
+parser.add_argument("--instance-name", "-s", help="show only one instance", type=str, default=None)
+parser.add_argument("--plugin-name", "-S", help="show only one plgin", type=str, default=None)
 parser.add_argument("--buffer", "-b", help="buffer size for graphs", type=int, default=100)
 parser.add_argument("config", help="json configuration file", nargs="?", type=str, default=None)
 parser.add_argument("target", help="interface string", nargs="?", type=str, default="")
@@ -145,6 +147,12 @@ class WinForm(QWidget):
             tab_num = 0
             for plugin_instance, haldata in self.haldata.items():
                 plugin_type = plugin_instance.NAME
+
+                if args.instance_name and plugin_instance.title != args.instance_name:
+                    continue
+                if args.plugin_name and plugin_type != args.plugin_name:
+                    continue
+
                 tab_widget = QWidget()
                 scroll_widget = QScrollArea()
                 scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -454,6 +462,9 @@ class WinForm(QWidget):
 
             for plugin_instance, haldata in self.haldata.items():
                 for halname, signal in haldata.get("output", {}).items():
+                    if f"widget_{plugin_instance.title}" not in signal:
+                        continue
+
                     if signal.get("bool"):
                         if signal[f"widget_{plugin_instance.title}"].isChecked():
                             self.project.signal_value_set(halname, 1)
@@ -521,6 +532,9 @@ class WinForm(QWidget):
                 self.time.append(self.time[-1] + 1)
 
             for plugin_instance, haldata in self.haldata.items():
+                if f"widget_{plugin_instance.title}" not in signal:
+                    continue
+
                 if args.debug and plugin_instance.TYPE == "frameio":
                     txframe_raw = plugin_instance.INTERFACE["txdata"]["value"]
                     txframe = []
