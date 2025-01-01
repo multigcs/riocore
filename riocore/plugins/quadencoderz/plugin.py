@@ -29,15 +29,6 @@ class Plugin(PluginBase):
                 "pull": None,
             },
         }
-        self.OPTIONS = {
-            "quad_type": {
-                "default": 2,
-                "type": int,
-                "min": 0,
-                "max": 4,
-                "description": "The count from the encoder will be bitshifted by the value of QUAD_TYPE.  Use 0 for 4x mode.  The position-scale should match.  For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.",
-            },
-        }
         self.INTERFACE = {
             "indexenable": {
                 "size": 1,
@@ -52,6 +43,39 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
+        self.OPTIONS = {
+            "quad_type": {
+                "default": 2,
+                "type": int,
+                "min": 0,
+                "max": 4,
+                "description": "The count from the encoder will be bitshifted by the value of QUAD_TYPE.  Use 0 for 4x mode.  The position-scale should match.  For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.",
+            },
+            "rps_sum": {
+                "default": 10,
+                "type": int,
+                "min": 0,
+                "max": 100,
+                "description": "number of collected values before calculate the rps value",
+            },
+        }
+        rps_sum = self.plugin_setup.get("rps_sum", self.OPTIONS["rps_sum"]["default"])
+        rps_calculation = f"""
+    static uint8_t pcnt = 0;
+    static float last_rpssum = 0;
+    static float diff_sum = 0;
+    static float duration_sum = 0.0;
+    diff_sum += (raw_value - last_raw_value);
+    duration_sum += *data->duration;
+    pcnt++;
+    if (pcnt == {rps_sum}) {{
+        last_rpssum = diff_sum / duration_sum / scale;
+        pcnt = 0;
+        duration_sum = 0;
+        diff_sum = 0;
+    }}
+    value_rps = last_rpssum;
+        """
         self.SIGNALS = {
             "indexenable": {
                 "is_index_enable": True,
@@ -67,8 +91,8 @@ class Plugin(PluginBase):
                 "is_index_position": True,
                 "direction": "input",
                 "targets": {
-                    "rps": "value_rps = (raw_value - last_raw_value) / *data->duration / scale;",
-                    "rpm": "value_rpm = (raw_value - last_raw_value) / *data->duration * 60.0 / scale;",
+                    "rps": rps_calculation,
+                    "rpm": "value_rpm = value_rps * 60.0;",
                 },
                 "description": "position feedback in steps",
             },
