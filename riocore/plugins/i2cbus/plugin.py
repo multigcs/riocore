@@ -443,7 +443,10 @@ graph LR;
                 for entry in values:
                     target, value = entry
                     verilog_data.append(f"                        {dev_step}: begin")
-                    verilog_data.append(f"                            // 0x{value:X} -> 0x{target:X}")
+                    if isinstance(value, str):
+                        verilog_data.append(f"                            // {value} -> 0x{target:X}")
+                    else:
+                        verilog_data.append(f"                            // 0x{value:X} -> 0x{target:X}")
                     verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
                     verilog_data.append(f"                            addr <= {dev_addr};")
                     verilog_data.append("                            rw <= RW_WRITE;")
@@ -451,7 +454,10 @@ graph LR;
                     if big_endian:
                         print("TODO")
                     else:
-                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {size}'h{value:X}}};")
+                        if isinstance(value, str):
+                            verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {value}}};")
+                        else:
+                            verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {size}'h{value:X}}};")
                     verilog_data.append("                            stop <= 1;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")

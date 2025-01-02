@@ -79,9 +79,10 @@ class config:
             value = data["widget"].currentText()
         elif data["type"] == "bits":
             value = 0
+            bitwidth = data.get("width", 8)
             for bit_n, widget in enumerate(data.get("bits", [])):
                 if widget.isChecked():
-                    value |= 1 << (7 - bit_n)
+                    value |= 1 << ((bitwidth - 1) - bit_n)
         elif data["type"] is bool:
             value = data["widget"].isChecked()
         elif data["type"] is int:
@@ -103,10 +104,11 @@ class config:
 
         elif data["type"] == "bits":
             blayout = QHBoxLayout()
+            bitwidth = data.get("width", 8)
             data["widget"] = QWidget()
             data["widget"].setLayout(blayout)
             data["bits"] = []
-            for bit in reversed(range(8)):
+            for bit in reversed(range(bitwidth)):
                 vlayout = QVBoxLayout()
                 vwidget = QWidget()
                 vwidget.setLayout(vlayout)
