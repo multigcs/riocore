@@ -469,12 +469,13 @@ graph LR;
                 verilog_data.append(f"                            addr <= {dev_addr};")
                 verilog_data.append("                            rw <= RW_WRITE;")
                 verilog_data.append(f"                            bytes <= {nbytes};")
-                if data_out:
-                    verilog_data += data_out
-                elif value is not None:
-                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}] <= {value};")
-                else:
-                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}] <= {data['var']};")
+                if nbytes > 0:
+                    if data_out:
+                        verilog_data += data_out
+                    elif value is not None:
+                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}] <= {value};")
+                    else:
+                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}] <= {data['var']};")
                 if stop:
                     verilog_data.append("                            stop <= 1;")
                 else:
