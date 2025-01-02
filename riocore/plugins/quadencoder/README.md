@@ -31,6 +31,14 @@ encoder type
  * max: 4
  * default: 2
 
+### rps_sum:
+number of collected values before calculate the rps value
+
+ * type: int
+ * min: 0
+ * max: 100
+ * default: 10
+
 ### name:
 name of this plugin instance
 
@@ -87,6 +95,7 @@ calculates revolutions per minute
 {
     "type": "quadencoder",
     "quad_type": 2,
+    "rps_sum": 10,
     "name": "",
     "pins": {
         "a": {

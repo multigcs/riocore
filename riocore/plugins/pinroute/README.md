@@ -13,15 +13,15 @@ graph LR;
 
 ## Pins:
 *FPGA-pins*
-### out:
+### outA:
 
  * direction: output
 
-### in0:
+### inA0:
 
  * direction: input
 
-### in1:
+### inA1:
 
  * direction: input
 
@@ -32,7 +32,17 @@ graph LR;
 number of inputs
 
  * type: int
+ * min: 2
+ * max: 100
  * default: 2
+
+### channels:
+number of channels
+
+ * type: int
+ * min: 1
+ * max: 16
+ * default: 1
 
 ### name:
 name of this plugin instance
@@ -66,13 +76,13 @@ input selector
 {
     "type": "pinroute",
     "pins": {
-        "out": {
+        "outA": {
             "pin": "0"
         },
-        "in0": {
+        "inA0": {
             "pin": "1"
         },
-        "in1": {
+        "inA1": {
             "pin": "2"
         }
     }
@@ -84,9 +94,10 @@ input selector
 {
     "type": "pinroute",
     "inputs": 2,
+    "channels": 1,
     "name": "",
     "pins": {
-        "out": {
+        "outA": {
             "pin": "0",
             "modifiers": [
                 {
@@ -94,7 +105,7 @@ input selector
                 }
             ]
         },
-        "in0": {
+        "inA0": {
             "pin": "1",
             "modifiers": [
                 {
@@ -105,7 +116,7 @@ input selector
                 }
             ]
         },
-        "in1": {
+        "inA1": {
             "pin": "2",
             "modifiers": [
                 {

@@ -14,6 +14,8 @@ Devices:
 * [adxl345](devices/adxl345.py)
 * [as5600](devices/as5600.py)
 * [lm75](devices/lm75.py)
+* [mcp23017](devices/mcp23017.py)
+* [mlx90614](devices/mlx90614.py)
 * [pca9685](devices/pca9685.py)
 * [pcf8574](devices/pcf8574.py)
 * [tlv493d](devices/tlv493d.py)
