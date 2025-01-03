@@ -162,7 +162,6 @@ class WinForm(QWidget):
                         if num_signals == 1:
                             row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"), stretch=2)
                         if helper:
-                            print(halname, helper)
                             row_layout.addWidget(QLabel(f"        {halname_np}"), stretch=2)
                         else:
                             row_layout.addWidget(QLabel(f"    {halname_np}"), stretch=2)

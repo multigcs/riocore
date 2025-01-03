@@ -161,8 +161,12 @@ graph LR;
             verilog_data.append(f"    localparam {devname} = {dev_n};")
             verilog_data.append(f"    localparam {devname}_ADDR = {vaddr};")
             verilog_data.append(f"    localparam {devname}_DIVIDER = {dev_divider};")
-            for key, value in i2c_dev.PARAMS.items():
-                verilog_data.append(f"    parameter {key} = {value};")
+            if hasattr(i2c_dev, "PARAMS"):
+                for key, value in i2c_dev.PARAMS.items():
+                    verilog_data.append(f"    parameter {key} = {value};")
+            if hasattr(i2c_dev, "DEFINES"):
+                for entry in i2c_dev.DEFINES:
+                    verilog_data.append(f"    {entry}")
             verilog_data.append("")
 
         for name, setup in self.devices.items():
