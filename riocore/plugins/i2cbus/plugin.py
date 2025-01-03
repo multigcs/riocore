@@ -87,6 +87,8 @@ graph LR;
         sys.path.insert(0, plugin_path)
         failed_devices = []
         for name, setup in self.devices.items():
+            if "type" not in setup:
+                continue
             setup["name"] = name
             dtype = setup["type"]
             if os.path.isfile(os.path.join(plugin_path, "devices", dtype, "__init__.py")):

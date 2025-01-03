@@ -140,7 +140,6 @@ class i2c_device:
             "bool": True,
         }
 
-
         self.PARAMS = {}
         self.INITS = [
             {
@@ -177,7 +176,6 @@ class i2c_device:
                 },
             ]
 
-
             if bitlist_in[bank]:
                 bitlist = []
                 for bit_n, var in enumerate(bitlist_in[bank]):
@@ -199,5 +197,3 @@ class i2c_device:
                             "bytes": 1,
                         }
                     )
-
-

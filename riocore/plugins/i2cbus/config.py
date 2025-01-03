@@ -4,6 +4,7 @@ import importlib
 import os
 import sys
 
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QAbstractScrollArea,
@@ -144,15 +145,97 @@ class config:
         return data["widget"]
 
     def add_item(self, item):
-        prefix = "device"
-        dnum = 0
-        while f"{prefix}{dnum}" in self.config["devices"]:
-            dnum += 1
-        config_name = f"{prefix}{dnum}"
+        dialog = QDialog()
+        dialog.setWindowTitle("select device")
+        if self.styleSheet:
+            dialog.setStyleSheet(self.styleSheet)
 
-        self.config["devices"][config_name] = {}
-        self.config_selected = config_name
-        self.edit_item(None)
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog.setLayout(dialog.layout)
+
+        dialog.device_infos = []
+
+        def show_device_info(idx):
+            device = dialog.device_infos[idx]
+            dialog.selected = device
+            description = device[1].options["info"]
+            description += "\n\n"
+            description += device[1].options["description"]
+            description_label.setText(description)
+
+        device_table = QTableWidget()
+        device_table.setColumnCount(1)
+        device_table.setHorizontalHeaderItem(0, QTableWidgetItem("devices"))
+
+        row_n = 0
+        for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
+            device_name = os.path.basename(os.path.dirname(device_path))
+            if not device_name.startswith("_"):
+                devlib = importlib.import_module(f".{device_name}", ".devices")
+                device_table.setRowCount(row_n + 1)
+                pitem = QTableWidgetItem(device_name)
+                device_table.setItem(row_n, 0, pitem)
+                dialog.device_infos.append((device_name, devlib.i2c_device))
+                row_n += 1
+
+        header = device_table.horizontalHeader()
+        header.setStretchLastSection(True)
+        # device_table.setFixedWidth(200)
+        device_table.cellClicked.connect(show_device_info)
+        device_table.currentCellChanged.connect(show_device_info)
+
+        left_layout = QVBoxLayout()
+        left_widget = QWidget()
+        left_widget.setLayout(left_layout)
+
+        left_layout.addWidget(device_table)
+
+        mid_layout = QVBoxLayout()
+        mid_widget = QWidget()
+        mid_widget.setFixedWidth(400)
+        mid_widget.setLayout(mid_layout)
+        name_label = QLabel("Name:")
+        name_label_font = QFont()
+        name_label_font.setBold(True)
+        name_label.setFont(name_label_font)
+
+        mid_layout.addWidget(name_label)
+        info_label = QLabel("info")
+        mid_layout.addWidget(info_label)
+        description_label = QLabel("description")
+        mid_layout.addWidget(description_label)
+        mid_layout.addStretch()
+
+        right_layout = QVBoxLayout()
+        right_widget = QWidget()
+        right_widget.setLayout(right_layout)
+        image_label = QLabel("---")
+        right_layout.addWidget(image_label)
+        right_layout.addStretch()
+
+        infos = QHBoxLayout()
+        infos.addWidget(left_widget, stretch=0)
+        infos.addWidget(mid_widget, stretch=3)
+        infos.addWidget(right_widget, stretch=1)
+
+        dialog.layout.addLayout(infos)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        if dialog.exec():
+            prefix = dialog.selected[0]
+            dnum = 0
+            while f"{prefix}_{dnum}" in self.config["devices"]:
+                dnum += 1
+            config_name = f"{prefix}_{dnum}"
+            self.config["devices"][config_name] = {
+                "type": dialog.selected[0],
+                "address": dialog.selected[1].options["addresses"][0],
+            }
+            self.config_selected = config_name
+            self.edit_item(None)
 
     def edit_item(self, item):
         config_name = self.config_selected
