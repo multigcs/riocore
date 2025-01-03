@@ -18,7 +18,7 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:LED0"
+                    "pin": "LED:D1"
                 }
             },
             "uid": "blink0"
@@ -27,7 +27,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SW:S0"
+                    "pin": "SW:S5"
                 }
             },
             "uid": "bitin1"
@@ -36,7 +36,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LED:LED1"
+                    "pin": "LED:D2"
                 }
             },
             "uid": "bitout0"
