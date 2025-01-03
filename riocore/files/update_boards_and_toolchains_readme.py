@@ -205,4 +205,4 @@ for name, data in Modifiers().info().items():
 output.append("")
 
 
-open("MODIFIERS.md", "w").write("\n".join(output))
+open("doc/MODIFIERS.md", "w").write("\n".join(output))
