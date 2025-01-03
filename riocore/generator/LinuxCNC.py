@@ -2111,9 +2111,6 @@ class LinuxCNC:
                     signal_source = signal_config.get("source")
                     signal_targets = signal_config.get("targets", {})
                     virtual = signal_config.get("virtual")
-                    expansion = data_config.get("expansion", False)
-                    if expansion:
-                        continue
                     if virtual:
                         continue
                     if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
