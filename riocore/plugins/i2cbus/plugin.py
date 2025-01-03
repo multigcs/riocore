@@ -20,9 +20,11 @@ class Plugin(PluginBase):
         self.NAME = "i2cbus"
         self.INFO = "I2C-Bus"
         self.DESCRIPTION = """
-I2C-Bus - supports multiple busses with multiple devices per bus
-
-sub-busses via multiplexer (pca9548) are also supported
+* multiple busses
+* multiple devices per bus
+* multiple clocks per bus (by device)
+* sub-busses via multiplexer (pca9548)
+* non-blocking delays for slow devices
         """
         self.GRAPH = """
 graph LR;

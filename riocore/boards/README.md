@@ -12,6 +12,8 @@
 | [EP2C5T144](EP2C5T144/README.md) | EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1) | Cyclone II / EP2C5T144C8 | [quartus](../generator/toolchains/quartus/README.md) | <img src="EP2C5T144/board.png" height="48"> |
 | [ICEBreakerV1.0e](ICEBreakerV1.0e/README.md) | Small and low cost FPGA educational and development board | ice40 / up5k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="ICEBreakerV1.0e/board.png" height="48"> |
 | [IceShield](IceShield/README.md) | RIO-IceShield board for Raspberry PI4 | ice40 / up5k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="IceShield/board.png" height="48"> |
+| [LX9MicroBoard](LX9MicroBoard/README.md) | LX9MicroBoard - Spartan6 devboard
+on my debian12, it works with openFPGAloader | xc6 / xc6slx9-csg324 | [ise](../generator/toolchains/ise/README.md) | |
 | [Numato-Spartan6](Numato-Spartan6/README.md) | Spartan6 - only for testing the toolchain | xc6 / xc6slx9-2tqg144 | [ise](../generator/toolchains/ise/README.md) | <img src="Numato-Spartan6/board.png" height="48"> |
 | [OctoBot](OctoBot/README.md) | RIO-OctoBot board | ice40 / hx8k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="OctoBot/board.png" height="48"> |
 | [Olimex-ICE40HX8K-EVB](Olimex-ICE40HX8K-EVB/README.md) | ICE40HX8K FPGA development board | ice40 / hx8k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="Olimex-ICE40HX8K-EVB/board.png" height="48"> |
