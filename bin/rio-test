@@ -64,6 +64,7 @@ parser.add_argument("--noimage", "-N", help="do not display image", default=Fals
 parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
 parser.add_argument("--vertical", "-v", help="vertical tabs", default=False, action="store_true")
 parser.add_argument("--graphs", "-g", help="show graphs", default=False, action="store_true")
+parser.add_argument("--helper", "-H", help="show helper values", default=False, action="store_true")
 parser.add_argument("--by-instance", "-I", help="tabs by plugin instance", default=False, action="store_true")
 parser.add_argument("--instance-name", "-s", help="show only one instance", type=str, default=None)
 parser.add_argument("--plugin-name", "-S", help="show only one plgin", type=str, default=None)
@@ -226,8 +227,10 @@ class WinForm(QWidget):
                 wid = f"widget_{plugin_instance.title}"
                 gid = f"graph_{plugin_instance.title}"
                 virtual = signal.get("virtual", False)
-                helper = signal.get("helper", False)
                 direction = signal.get("direction")
+                helper = signal.get("helper", False)
+                if helper and not args.helper:
+                    continue
 
                 row_layout = QHBoxLayout()
                 layout.addLayout(row_layout)
@@ -559,6 +562,10 @@ class WinForm(QWidget):
                     value_format = userconfig.get("display", {}).get("format", value_format)
                     value_offset = userconfig.get("offset", 0.0)
                     value_scale = userconfig.get("scale", 1.0)
+
+                    helper = signal.get("helper", False)
+                    if helper and not args.helper:
+                        continue
 
                     if value_scale != 1.0 or value_offset:
                         value = (value + value_offset) / value_scale
