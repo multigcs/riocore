@@ -1,0 +1,46 @@
+{
+    "name": "LX9MicroBoard",
+    "description": "LX9MicroBoard - Spartan6 devboard",
+    "url": "https://www.avnet.com/opasdata/d120001/medias/docus/178/PB-AES-S6MB-LX9-G-V1.pdf",
+    "toolchain": "ise",
+    "family": "xc6",
+    "type": "xc6slx9-csg324",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+    "package": "csg324",
+    "clock": {
+        "speed": "66000000",
+        "pin": "K15",
+        "_startup": "CClk",
+        "startup": "JTAGCLK"
+    },
+    "slots": [
+        {
+            "name": "UART",
+            "comment": "UART over USB",
+            "pins": {
+                "RX": "R7",
+                "TX": "T7"
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "LEDs",
+            "pins": {
+                "LED0": "P4",
+                "LED1": "L6",
+                "LED2": "F5",
+                "LED3": "C2"
+            }
+        },
+        {
+            "name": "SW",
+            "comment": "dip-switches",
+            "pins": {
+                "S0": "B3",
+                "S1": "A3",
+                "S2": "B4",
+                "S3": "A4"
+            }
+        }
+    ]
+}
