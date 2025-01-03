@@ -1,17 +1,27 @@
 {
     "name": "LX9MicroBoard",
-    "description": "LX9MicroBoard - Spartan6 devboard",
+    "description": "LX9MicroBoard - Spartan6 devboard\non my debian12, it works with openFPGAloader",
     "url": "https://www.avnet.com/opasdata/d120001/medias/docus/178/PB-AES-S6MB-LX9-G-V1.pdf",
     "toolchain": "ise",
     "family": "xc6",
     "type": "xc6slx9-csg324",
-    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 -f rio.bit",
+    "sflashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 rio.bit",
     "package": "csg324",
-    "clock": {
+    "clock_40": {
         "speed": "40000000",
         "pin": "V10",
-        "startup": "CClk",
-        "_startup": "JTAGCLK"
+        "startup": "CClk"
+    },
+    "clock_66": {
+        "speed": "66700000",
+        "pin": "K15",
+        "startup": "CClk"
+    },
+    "clock": {
+        "speed": "100000000",
+        "pin": "C10",
+        "startup": "CClk"
     },
     "slots": [
         {
