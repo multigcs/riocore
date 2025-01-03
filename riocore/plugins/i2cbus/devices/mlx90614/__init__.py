@@ -54,7 +54,6 @@ class i2c_device:
                 "value": "8'h24",
                 "bytes": 0,
             },
-
             {
                 "mode": "write",
                 "value": "8'h24",
@@ -68,16 +67,12 @@ class i2c_device:
                 "bytes": 2,
                 "stop": True,
             },
-
             {
                 "mode": "delay",
                 "ms": 1,
             },
-
-
         ]
         self.STEPS = [
-
             {
                 "mode": "write",
                 "value": "8'h06",
@@ -91,12 +86,10 @@ class i2c_device:
                 "bytes": 2,
                 "stop": True,
             },
-
             {
                 "mode": "delay",
                 "ms": 0.5,
             },
-
             {
                 "mode": "write",
                 "value": "8'h07",
@@ -110,12 +103,10 @@ class i2c_device:
                 "bytes": 2,
                 "stop": True,
             },
-
             {
                 "mode": "delay",
                 "ms": 0.5,
             },
-
         ]
 
     def convert(self, signal_name, signal_setup, value):
@@ -129,5 +120,3 @@ class i2c_device:
         return """
         value = value * 0.02 - 273.15;
         """
-
-

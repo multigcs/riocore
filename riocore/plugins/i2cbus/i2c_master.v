@@ -1,10 +1,11 @@
 
 
 module i2c_master 
-    #(parameter DIVIDER = 42, parameter MAX_BITS = 64, parameter MAX_DIN = 64)
+    #(parameter MAX_BITS = 64, parameter MAX_DIN = 64)
     (
         input clk,
         inout sda,
+        input wire [31:0] set_divider,
         output reg scl = 1,
         input wire start,
         output reg busy = 0,
@@ -34,15 +35,16 @@ module i2c_master
     reg [7:0] send_cnt = 0;
     reg [7:0] send_byte_n = 0;
     reg [31:0] delay = 0;
+    reg [31:0] divider = 0;
 
-    reg clk_400;
-    reg [31:0]counter_400;
+    reg clk_bus;
+    reg [31:0]counter_bus;
     always @(posedge clk) begin
-        if (counter_400 == 0) begin
-            counter_400 <= DIVIDER;
-            clk_400 <= ~clk_400;
+        if (counter_bus == 0) begin
+            counter_bus <= divider;
+            clk_bus <= ~clk_bus;
         end else begin
-            counter_400 <= counter_400 - 1;
+            counter_bus <= counter_bus - 1;
         end
     end
 
@@ -60,7 +62,7 @@ module i2c_master
     reg rw = RW_WRITE;
     reg [4:0] bytes = 0;
 
-    always @(posedge clk_400) begin
+    always @(posedge clk_bus) begin
         step <= 0;
 
 
@@ -81,6 +83,7 @@ module i2c_master
                 busy <= 1;
                 addr <= set_addr;
                 rw <= set_rw;
+                divider <= set_divider;
                 bytes <= set_bytes;
                 data_out <= set_data_out;
                 mystate <= STATE_START;

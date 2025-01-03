@@ -66,6 +66,7 @@ graph LR;
             },
         }
 
+        speed = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
         self.config = self.plugin_setup.get("config", {})
         self.devices = deepcopy(self.config.get("devices", {}))
         self.multiplexer = self.plugin_setup.get("multiplexer", self.OPTIONS["multiplexer"]["default"])
@@ -103,7 +104,7 @@ graph LR;
         verilog_data = []
         verilog_data.append("")
         verilog_data.append(f"module i2cbus_{self.instances_name}")
-        verilog_data.append("    #(parameter DIVIDER = 42, parameter MAX_BITS = 64, parameter MAX_DIN = 64)")
+        verilog_data.append("    #(parameter MAX_BITS = 64, parameter MAX_DIN = 64)")
         verilog_data.append("    (")
         verilog_data.append("        input clk,")
         for name, setup in self.devices.items():
@@ -146,15 +147,18 @@ graph LR;
             setup = self.devices[name]
             setup["name"] = name
             i2c_dev = setup["i2cdev"]
+            dev_speed = setup.get("speed", speed)
+            dev_divider = self.system_setup["speed"] // dev_speed // 6
             subbus = setup.get("subbus", "none")
             vaddr = i2c_dev.addr.replace("0x", "7'h")
             devname = f"DEVICE_{name.replace(' ', '').upper()}"
             if subbus != "none":
-                verilog_data.append(f"    // device {name} on sub-bus: {subbus}")
+                verilog_data.append(f"    // device {name} on sub-bus: {subbus} ({dev_speed}Hz)")
             else:
-                verilog_data.append(f"    // device {name}")
+                verilog_data.append(f"    // device {name} ({dev_speed}Hz)")
             verilog_data.append(f"    localparam {devname} = {dev_n};")
             verilog_data.append(f"    localparam {devname}_ADDR = {vaddr};")
+            verilog_data.append(f"    localparam {devname}_DIVIDER = {dev_divider};")
             for key, value in i2c_dev.PARAMS.items():
                 verilog_data.append(f"    parameter {key} = {value};")
             verilog_data.append("")
@@ -181,9 +185,9 @@ graph LR;
             if needs_delay:
                 bits = self.clog2(needs_delay + 1)
                 verilog_data.append(f"    reg [{bits}:0] device_{lname}_delay_cnt = 0;")
-
         verilog_data.append("")
 
+        verilog_data.append("    reg [31:0] divider = 100;")
         verilog_data.append("    reg [7:0] mpx_last = 255;")
         verilog_data.append("    reg [15:0] temp = 0;")
         verilog_data.append("    reg do_init = 1;")
@@ -252,6 +256,7 @@ graph LR;
                 verilog_data.append(f"            if (device_n == {devname}) begin")
             else:
                 verilog_data.append(f"            end else if (device_n == {devname}) begin")
+            verilog_data.append(f"                divider <= {devname}_DIVIDER;")
             verilog_data.append("")
 
             if needs_delay:
@@ -305,7 +310,7 @@ graph LR;
         verilog_data.append("        end")
         verilog_data.append("    end")
         verilog_data.append("")
-        verilog_data.append("    i2c_master #(.DIVIDER(DIVIDER), .MAX_BITS(MAX_BITS), .MAX_DIN(MAX_DIN)) i2cinst0 (")
+        verilog_data.append("    i2c_master #(.MAX_BITS(MAX_BITS), .MAX_DIN(MAX_DIN)) i2cinst0 (")
         verilog_data.append("        .clk(clk),")
         verilog_data.append("        .sda(sda),")
         verilog_data.append("        .scl(scl),")
@@ -313,6 +318,7 @@ graph LR;
         verilog_data.append("        .wakeup(wakeup),")
         verilog_data.append("        .busy(busy),")
         verilog_data.append("        .error(error),")
+        verilog_data.append("        .set_divider(divider),")
         verilog_data.append("        .set_addr(addr),")
         verilog_data.append("        .set_rw(rw),")
         verilog_data.append("        .stop(stop),")
@@ -633,9 +639,6 @@ graph LR;
         instance = instances[self.instances_name]
         instance["module"] = f"i2cbus_{self.instances_name}"
         instance_parameter = instance["parameter"]
-        freq = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
-        divider = self.system_setup["speed"] // freq // 6
-        instance_parameter["DIVIDER"] = divider
         instance_parameter["MAX_BITS"] = self.MAX_BITS
         instance_parameter["MAX_DIN"] = self.MAX_DIN
         return instances
