@@ -41,6 +41,7 @@ from riocore.widgets import (
     STYLESHEET,
     STYLESHEET_CHECKBOX_GREEN_RED,
     STYLESHEET_BUTTON,
+    STYLESHEET_TABBAR,
 )
 
 
@@ -1357,6 +1358,7 @@ class WinForm(QWidget):
             self.vcp = None
 
         self.tabwidget = QTabWidget()
+        self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         splitter.addWidget(self.tabwidget)
 
         self.gateware_hash = None
@@ -3331,6 +3333,7 @@ class WinForm(QWidget):
             joint_options[pkey]["default"] = value
 
         joint_tabs = QTabWidget()
+        joint_tabs.setStyleSheet(STYLESHEET_TABBAR)
 
         general_layout = QVBoxLayout()
         label = QLabel("Joint-Setup")
@@ -3667,6 +3670,7 @@ class WinForm(QWidget):
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
         tab_widget = QTabWidget()
+        tab_widget.setStyleSheet(STYLESHEET_TABBAR)
 
         if is_new and plugin_instance.TYPE == "joint":
             if "position" in plugin_instance.SIGNALS:
