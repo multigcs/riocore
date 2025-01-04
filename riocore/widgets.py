@@ -37,25 +37,27 @@ STYLESHEET_CHECKBOX_GREEN_RED = """
 
 # MacOS tabs default to white backgrounds, making them unreadable without more styling. 
 STYLESHEET_TABBAR = """
+    QTabWidget::tab-bar {
+        left: 0;
+    }
+
     QTabBar::tab {
         background-color: #333333;
-        border-style: solid;
-        border-color: #222222;
-        border-width: 2px 1px 0px;
+        border: 1px solid #222222;
         color: white;
         padding: 5px 10px;
-        margin: 5px 1px 0px;
     }
 
     QTabBar::tab:selected {
         background-color: #444444;
-        border-bottom-width: 0;
-        border-top-width: 1px;
+        border-bottom-color: #444444;
     }
 
     QTabWidget::pane {
-        padding: 0;
+        top: -1px;
         margin-top: 0;
+        padding: 10px;
+        border: 1px solid black;
     }
 """
 
