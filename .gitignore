@@ -169,3 +169,5 @@ cython_debug/
 riocore/toolchains.json
 *-test.json
 
+# Mac Nonsense
+.DS_Store
