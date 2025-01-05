@@ -4,7 +4,7 @@
 
 ## Tab-Order
 
-if you need to reorder the tab's, you cann add a list to your jcon config,
+if you need to reorder the tab's, you can add a list to your jcon config,
 
 all other tab's will be append at the end
 
