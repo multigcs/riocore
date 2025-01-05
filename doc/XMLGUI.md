@@ -30,8 +30,7 @@ Example:
                         "initval": "50"
                     }
                 }
-            },
-            "uid": "signal0"
+            }
         },
         {
             "type": "signal",
@@ -60,8 +59,7 @@ Example:
                         ]
                     }
                 }
-            },
-            "uid": "signal2"
+            }
         },
         {
             "type": "signal",
@@ -72,8 +70,7 @@ Example:
                 "value": {
                     "net": ""
                 }
-            },
-            "uid": "signal3"
+            }
         },
         {
             "type": "signal",
@@ -84,7 +81,6 @@ Example:
                 "value": {
                     "net": "riov.vbitin.value"
                 }
-            },
-            "uid": "signal4"
+            }
         },
 ```
