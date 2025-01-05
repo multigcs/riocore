@@ -14,7 +14,7 @@
 
 Example:
 
-![virt-signals](./images/virt-signals.png)
+<img align="right" width="320" src="./images/virt-signals.png">
 
 ```
         {
