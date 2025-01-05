@@ -521,7 +521,7 @@ class WinForm(QWidget):
                 self.time.append(self.time[-1] + 1)
 
             for plugin_instance, haldata in self.haldata.items():
-                #if f"widget_{plugin_instance.title}" not in signal:
+                # if f"widget_{plugin_instance.title}" not in signal:
                 #    continue
 
                 if args.debug and plugin_instance.TYPE == "frameio":

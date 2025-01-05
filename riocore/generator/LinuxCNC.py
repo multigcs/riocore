@@ -799,6 +799,7 @@ class LinuxCNC:
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
+        pyvcp_sections = linuxcnc_config.get("pyvcp_sections", [])
         pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
         gui = linuxcnc_config.get("gui", "axis")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
@@ -821,9 +822,13 @@ class LinuxCNC:
 
         if self.gui_gen and pyvcp_mode != "NONE":
             custom = []
-            self.cfgxml_data = {
-                "status": [],
-            }
+
+            self.cfgxml_data = {}
+            for section in pyvcp_sections:
+                self.cfgxml_data[section] = []
+            if "status" not in self.cfgxml_data:
+                self.cfgxml_data["status"] = []
+
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
                     for signal_name, signal_config in plugin_instance.signals().items():

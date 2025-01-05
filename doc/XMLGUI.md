@@ -2,6 +2,19 @@
 
 !!! only for axis at the moment !!!
 
+## Tab-Order
+
+if you need to reorder the tab's, you cann add a list to your jcon config,
+
+all other tab's will be append at the end
+
+```
+    "linuxcnc": {
+        "machinetype": "mill",
+        "pyvcp_sections": ["virtual", "status"],
+...
+```
+
 
 ## Virtual-Signals
 
