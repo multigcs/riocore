@@ -208,6 +208,7 @@ class Gateware:
         for bit_num in range(0, size, 8):
             pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
             output_pos -= 8
+        output_variables_list.append(f"// PC -> FPGA ({self.project.output_size} + FILL)")
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
         self.iface_out.append(["RX_HEADER", size])
         self.iface_in.append(["TX_HEADER", size])
@@ -278,9 +279,13 @@ class Gateware:
             diff = self.project.buffer_size - self.project.input_size
             input_variables_list.append(f"{diff}'d0")
 
+        diff = self.project.buffer_size - self.project.output_size
         if self.project.buffer_size > self.project.output_size:
-            diff = self.project.buffer_size - self.project.output_size
             output_variables_list.append(f"// assign FILL = rx_data[{diff-1}:0];")
+
+        if output_pos != diff:
+            print("ERROR: wrong buffer sizes")
+            exit(1)
 
         arguments_list = ["input sysclk_in"]
         existing_pins = {}
@@ -468,6 +473,7 @@ class Gateware:
         output_variables_string = "\n    ".join(output_variables_list)
         output.append(f"    {output_variables_string}")
         output.append("")
+        output.append(f"    // FPGA -> PC ({self.project.input_size} + FILL)")
         output.append("    assign tx_data = {")
         input_variables_string = ",\n        ".join(input_variables_list)
         output.append(f"        {input_variables_string}")

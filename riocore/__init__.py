@@ -687,10 +687,14 @@ class Project:
             self.output_size += self.multiplexed_output_size + 8
 
         self.input_size = self.input_size + self.header_size + self.timestamp_size
-        self.output_size = self.output_size + self.header_size + self.timestamp_size
+        self.output_size = self.output_size + self.header_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
         self.buffer_bytes = self.buffer_size // 8
         self.config["buffer_size"] = self.buffer_size
+
+        #print("# PC->FPGA", self.output_size)
+        #print("# FPGA->PC", self.input_size)
+        #print("# MAX", self.buffer_size)
 
     def get_bype_pos(self, bitpos, variable_size):
         byte_pos = (bitpos + 7) // 8
@@ -780,6 +784,7 @@ class Project:
         return haldata
 
     def txdata_get(self):
+        # send from pc to fpga
         txdata = [0] * self.buffer_bytes
         txdata[0] = 0x74
         txdata[1] = 0x69
@@ -789,7 +794,6 @@ class Project:
         # convert signals to interface variables
         for plugin_instance in self.plugin_instances:
             plugin_instance.convert2interface()
-        # set buffer
 
         if self.multiplexed_output:
             mpx_value = 0
@@ -840,10 +844,6 @@ class Project:
                 if plugin_instance.TYPE == "frameio":
                     if not value:
                         value = [0] * byte_size
-
-                    # for pv in value:
-                    #    print(pv)
-
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
                 elif variable_size > 1:
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
