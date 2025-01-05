@@ -2836,7 +2836,7 @@ class LinuxCNC:
                 # joint_setup["HOME_FINAL_VEL"] *= -1.0
                 # joint_setup["HOME_OFFSET"] *= -1.0
 
-                if machinetype not in {"scara", "melfa", "puma"}:
+                if machinetype not in {"scara", "melfa", "puma", "lathe"}:
                     if axis_name in {"Z"}:
                         joint_setup["HOME_SEARCH_VEL"] *= -1.0
                         joint_setup["HOME_LATCH_VEL"] *= -1.0

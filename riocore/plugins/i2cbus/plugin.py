@@ -150,7 +150,7 @@ graph LR;
             setup["name"] = name
             i2c_dev = setup["i2cdev"]
             dev_speed = setup.get("speed", speed)
-            dev_divider = self.system_setup["speed"] // dev_speed // 6
+            dev_divider = self.system_setup.get("speed", 27000000) // dev_speed // 6
             subbus = setup.get("subbus", "none")
             vaddr = i2c_dev.addr.replace("0x", "7'h")
             devname = f"DEVICE_{name.replace(' ', '').upper()}"

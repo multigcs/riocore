@@ -19,7 +19,8 @@
                 "sel": {
                     "pin": "SPI:SEL"
                 }
-            }
+            },
+            "uid": "w55000"
         },
         {
             "type": "wled",
@@ -38,7 +39,8 @@
                 "0_blue": {
                     "net": "halui.mode.is-auto"
                 }
-            }
+            },
+            "uid": "wled0"
         },
         {
             "type": "modbus",
@@ -138,13 +140,36 @@
                     "delay": 60,
                     "direction": "input"
                 }
-            }
+            },
+            "uid": "modbus0"
         },
         {
             "type": "blink",
             "pins": {
                 "led": {
                     "pin": "10"
+                }
+            },
+            "uid": "blink0"
+        },
+        {
+            "type": "i2cbus",
+            "pins": {
+                "sda": {
+                    "pin": "I2C:sda"
+                },
+                "scl": {
+                    "pin": "I2C:scl"
+                }
+            },
+            "uid": "i2cbus0",
+            "config": {
+                "devices": {
+                    "lm75_0": {
+                        "type": "lm75",
+                        "address": "0x48",
+                        "subbus": "none"
+                    }
                 }
             }
         }
@@ -178,7 +203,8 @@
                             "function": "",
                             "setp": ""
                         }
-                    }
+                    },
+                    "uid": "bitout0"
                 },
                 "home-x": {
                     "type": "bitin",
@@ -194,7 +220,8 @@
                             "function": "",
                             "setp": ""
                         }
-                    }
+                    },
+                    "uid": "bitin0"
                 },
                 "home-y": {
                     "type": "bitin",
@@ -210,7 +237,8 @@
                             "function": "",
                             "setp": ""
                         }
-                    }
+                    },
+                    "uid": "bitin1"
                 },
                 "home-z": {
                     "type": "bitin",
@@ -226,7 +254,8 @@
                             "function": "",
                             "setp": ""
                         }
-                    }
+                    },
+                    "uid": "bitin2"
                 },
                 "spindle-enable": {
                     "type": "bitout",
@@ -246,7 +275,8 @@
                             "function": "",
                             "setp": ""
                         }
-                    }
+                    },
+                    "uid": "bitout1"
                 },
                 "pwm": {
                     "type": "pwmout",
@@ -259,7 +289,8 @@
                                 }
                             ]
                         }
-                    }
+                    },
+                    "uid": "pwmout0"
                 },
                 "e-stop": {
                     "type": "bitin",
@@ -268,7 +299,8 @@
                         "bit": {
                             "pull": "up"
                         }
-                    }
+                    },
+                    "uid": "bitin3"
                 },
                 "probe": {
                     "type": "bitin",
@@ -277,27 +309,32 @@
                         "bit": {
                             "pull": "up"
                         }
-                    }
+                    },
+                    "uid": "bitin4"
                 },
                 "joint-0": {
                     "name": "joint-0",
                     "type": "stepdir",
-                    "is_joint": true
+                    "is_joint": true,
+                    "uid": "stepdir0"
                 },
                 "joint-1": {
                     "name": "joint-1",
                     "type": "stepdir",
-                    "is_joint": true
+                    "is_joint": true,
+                    "uid": "stepdir1"
                 },
                 "joint-2": {
                     "name": "joint-2",
                     "type": "stepdir",
-                    "is_joint": true
+                    "is_joint": true,
+                    "uid": "stepdir2"
                 },
                 "joint-3": {
                     "name": "joint-3",
                     "type": "stepdir",
-                    "is_joint": true
+                    "is_joint": true,
+                    "uid": "stepdir3"
                 }
             }
         }
