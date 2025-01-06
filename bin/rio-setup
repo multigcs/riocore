@@ -707,7 +707,7 @@ class TabOverview:
         self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_widget.setWidgetResizable(True)
         self.scroll_widget.setWidget(self.overview_img)
-        self.graph = configgraph.ConfigGraph(parent)
+        self.graph = cfggraph.ConfigGraph(parent)
 
     def widget(self):
         return self.scroll_widget
