@@ -81,7 +81,7 @@ class i2c_device:
         }
 
         self.PARAMS = {}
-        self.INITS = {}
+        self.INITS = []
         setupRegister = [
             "8'd1",  # Register-Address
             "1'b1",  # Start Conversion
