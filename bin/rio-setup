@@ -23,7 +23,7 @@ import riocore
 from riocore import VERSION
 from riocore import halpins
 
-from riocore import configgraph
+from riocore import cfggraph
 from riocore import axisgraph
 from riocore import halgraph
 from riocore import vcp
