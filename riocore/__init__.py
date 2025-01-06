@@ -692,9 +692,9 @@ class Project:
         self.buffer_bytes = self.buffer_size // 8
         self.config["buffer_size"] = self.buffer_size
 
-        #print("# PC->FPGA", self.output_size)
-        #print("# FPGA->PC", self.input_size)
-        #print("# MAX", self.buffer_size)
+        # print("# PC->FPGA", self.output_size)
+        # print("# FPGA->PC", self.input_size)
+        # print("# MAX", self.buffer_size)
 
     def get_bype_pos(self, bitpos, variable_size):
         byte_pos = (bitpos + 7) // 8

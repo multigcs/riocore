@@ -21,6 +21,12 @@ STYLESHEET_CHECKBOX = """
         background-color: darkgray;
     }
 """
+STYLESHEET_CHECKBOX_BIG = """
+    QCheckBox::indicator {
+        width: 40px;
+        height: 40px;
+    }
+"""
 STYLESHEET_BUTTON = """
     QPushButton::disabled {
         background-color: black;
@@ -35,7 +41,7 @@ STYLESHEET_CHECKBOX_GREEN_RED = """
     }
 """
 
-# MacOS tabs default to white backgrounds, making them unreadable without more styling. 
+# MacOS tabs default to white backgrounds, making them unreadable without more styling.
 STYLESHEET_TABBAR = """
     QTabWidget::tab-bar {
         left: 0;

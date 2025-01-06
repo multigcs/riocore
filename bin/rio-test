@@ -37,21 +37,7 @@ from PyQt5.QtWidgets import (
     QTabWidget,
 )
 
-STYLESHEET = """
-    background-color: #444444;
-    color: white;
-"""
-STYLESHEET_CHECKBOX = """
-    QCheckBox::indicator::unchecked {
-        background-color: lightgray;
-    }
-"""
-STYLESHEET_CHECKBOX_BIG = """
-    QCheckBox::indicator {
-        width: 40px;
-        height: 40px;
-    }
-"""
+from riocore.widgets import STYLESHEET, STYLESHEET_CHECKBOX, STYLESHEET_TABBAR, STYLESHEET_CHECKBOX_BIG
 
 parser = argparse.ArgumentParser()
 if sys.platform.startswith("win"):
@@ -101,6 +87,8 @@ class WinForm(QWidget):
         self.setLayout(layout)
 
         self.tabwidget = QTabWidget()
+        if not args.nostyle:
+            self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         self.tabwidget.setMovable(True)
         if args.vertical:
             self.tabwidget.setTabPosition(QTabWidget.West)

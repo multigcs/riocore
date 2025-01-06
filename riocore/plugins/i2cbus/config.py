@@ -4,7 +4,7 @@ import importlib
 import os
 import sys
 
-from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QAbstractScrollArea,

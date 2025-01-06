@@ -266,6 +266,7 @@ class TabLinuxCNC:
             "riocomp.c": QPlainTextEdit(),
         }
         self.linuxcnc_tabwidget = QTabWidget()
+        self.linuxcnc_tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         for filename, widget in self.linuxcnc.items():
             widget.clear()
             widget.insertPlainText("")
@@ -303,6 +304,7 @@ class TabGateware:
             "Flash-Output": QPlainTextEdit(),
         }
         self.gateware_tabwidget = QTabWidget()
+        self.gateware_tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         for filename, widget in self.gateware.items():
             widget.clear()
             widget.insertPlainText("")
@@ -4054,6 +4056,9 @@ if __name__ == "__main__":
 
     if args.nostyle:
         STYLESHEET = ""
+        STYLESHEET_CHECKBOX_GREEN_RED = ""
+        STYLESHEET_BUTTON = ""
+        STYLESHEET_TABBAR = ""
 
     form = WinForm(args)
     sys.exit(app.exec_())
