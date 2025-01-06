@@ -92,6 +92,9 @@ class ConfigGraph:
                     elif not pin:
                         continue
 
+                    if pin in self.parent.pinmapping_rev:
+                        pin = self.parent.pinmapping_rev[pin]
+
                     con_dev = fpga_name
                     con_pin = pin
 
