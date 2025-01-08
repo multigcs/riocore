@@ -147,7 +147,7 @@ class LinuxCNC:
         },
     }
 
-    POSTGUI_COMPONENTS = ("pyvcp", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f")
+    POSTGUI_COMPONENTS = ("pyvcp", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
 
     def __init__(self, project):
         self.postgui_call_list = []
@@ -542,6 +542,14 @@ class LinuxCNC:
                     ini_setup["DISPLAY"]["PYVCP_POSITION"] = pyvcp_pos
                     ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
 
+        elif gui == "_gmoccapy":
+            ini_setup["DISPLAY"]["DISPLAY"] = gui
+            pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
+            if pyvcp_mode != "NONE":
+                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
+                ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "ntb_user_tabs"
+                ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
+
         elif gui == "qtdragon":
             qtdragon_setup = {
                 "DISPLAY": {
@@ -805,6 +813,9 @@ class LinuxCNC:
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
         if gui == "axis":
             self.gui_gen = axis()
+        elif gui == "_gmoccapy":
+            self.gui_gen = axis()
+
         # elif gui == "qtdragon":
         #     self.gui_gen = qtvcp()
         else:
@@ -1512,12 +1523,18 @@ class LinuxCNC:
 
         if gui != "qtdragon":
             if toolchange == "manual":
-                self.loadrts.append("loadusr -W hal_manualtoolchange")
-                self.loadrts.append("")
-                self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
-                self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
-                self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
-                self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                if gui == "gmoccapy":
+                    self.hal_net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
+                    self.hal_net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
+                    self.hal_net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
+                    self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                else:
+                    self.loadrts.append("loadusr -W hal_manualtoolchange")
+                    self.loadrts.append("")
+                    self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+                    self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+                    self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+                    self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
             else:
                 self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 self.hal_net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
