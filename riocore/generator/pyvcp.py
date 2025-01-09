@@ -1,5 +1,10 @@
+import os
+
+
 class pyvcp:
-    def draw_begin(self):
+    def draw_begin(self, configuration_path, prefix="pyvcp"):
+        self.configuration_path = configuration_path
+        self.prefix = prefix
         cfgxml_data = []
         cfgxml_data.append("<pyvcp>")
         return cfgxml_data
@@ -9,6 +14,10 @@ class pyvcp:
         cfgxml_data.append('<label><text>""</text><width>30</width></label>')
         cfgxml_data.append("</pyvcp>")
         return cfgxml_data
+
+    def save(self, cfgxml_data):
+        xml_filename = os.path.join(self.configuration_path, "rio-gui.xml")
+        open(xml_filename, "w").write("\n".join(cfgxml_data))
 
     def draw_tabs_begin(self, names):
         cfgxml_data = []
@@ -29,6 +38,42 @@ class pyvcp:
     def draw_tab_end(self):
         cfgxml_data = []
         cfgxml_data.append("    </vbox>")
+        return cfgxml_data
+
+    def draw_vbox_begin(self):
+        cfgxml_data = []
+        cfgxml_data.append("    <vbox>")
+        cfgxml_data.append("      <relief>RIDGE</relief>")
+        cfgxml_data.append("      <bd>2</bd>")
+        return cfgxml_data
+
+    def draw_vbox_end(self):
+        cfgxml_data = []
+        cfgxml_data.append("    </vbox>")
+        return cfgxml_data
+
+    def draw_hbox_begin(self):
+        cfgxml_data = []
+        cfgxml_data.append("    <hbox>")
+        cfgxml_data.append("      <relief>RIDGE</relief>")
+        cfgxml_data.append("      <bd>2</bd>")
+        return cfgxml_data
+
+    def draw_hbox_end(self):
+        cfgxml_data = []
+        cfgxml_data.append("    </hbox>")
+        return cfgxml_data
+
+    def draw_frame_begin(self, name=None):
+        cfgxml_data = []
+        cfgxml_data.append('  <labelframe text="MDI-Commands">')
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append('    <font>("Helvetica", 10)</font>')
+        return cfgxml_data
+
+    def draw_frame_end(self):
+        cfgxml_data = []
+        cfgxml_data.append("  </labelframe>")
         return cfgxml_data
 
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
@@ -54,7 +99,7 @@ class pyvcp:
         cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}-f", cfgxml_data)
+        return (f"{self.prefix}.{halpin}-f", cfgxml_data)
 
     def draw_fselect(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -87,7 +132,7 @@ class pyvcp:
         cfgxml_data.append("    </scale>")
         cfgxml_data.append("   </vbox>")
         cfgxml_data.append("  </labelframe>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -111,7 +156,7 @@ class pyvcp:
         cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_jogwheel(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -132,7 +177,7 @@ class pyvcp:
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </jogwheel>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_dial(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -159,7 +204,7 @@ class pyvcp:
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </dial>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -183,7 +228,7 @@ class pyvcp:
             cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
         cfgxml_data.append("    </meter>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -211,7 +256,7 @@ class pyvcp:
             cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
         cfgxml_data.append("    </bar>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_number_u32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="u32", setup=setup)
@@ -221,15 +266,13 @@ class pyvcp:
 
     def draw_number(self, name, halpin, hal_type="float", setup={}):
         title = setup.get("title", name)
-        display_format = setup.get("format")
+        if hal_type == "float":
+            display_format = setup.get("format", "07.2f")
+            element = "number"
+        else:
+            display_format = setup.get("format", "d")
+            element = hal_type
         unit = setup.get("unit")
-        element = "number"
-        if not display_format:
-            if hal_type != "float":
-                display_format = "d"
-                element = hal_type
-            else:
-                display_format = "07.2f"
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
         cfgxml_data.append("    <relief>RAISED</relief>")
@@ -252,7 +295,7 @@ class pyvcp:
             cfgxml_data.append(f'      <text>"{unit}"</text>')
             cfgxml_data.append("    </label>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -270,7 +313,7 @@ class pyvcp:
         # cfgxml_data.append(f'      <text>"{title}"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup={}):
         title = setup.get("title", name)
@@ -294,7 +337,7 @@ class pyvcp:
         cfgxml_data.append('      <text>"R"</text>')
         cfgxml_data.append("    </checkbutton>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin_g}", cfgxml_data)
+        return (f"{self.prefix}.{halpin_g}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -323,7 +366,7 @@ class pyvcp:
         cfgxml_data.append('      <off_color>"red"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_rectled(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -354,7 +397,7 @@ class pyvcp:
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_button(self, name, halpin, setup={}):
         title = setup.get("title", name)
@@ -366,7 +409,7 @@ class pyvcp:
         cfgxml_data.append(f'    <text>"{title}"</text>')
         cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("  </button>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_multilabel(self, name, halpin, setup={}):
         legends = setup.get("legends", ["LABEL1", "LABEL2", "LABEL3", "LABEL4"])
@@ -378,4 +421,4 @@ class pyvcp:
         cfgxml_data.append('    <bg>"black"</bg>')
         cfgxml_data.append('    <fg>"yellow"</fg>')
         cfgxml_data.append("  </multilabel>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)

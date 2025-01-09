@@ -1,9 +1,14 @@
+import os
+
+
 class qtvcp:
     #
     # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
     #
 
-    def draw_begin(self):
+    def draw_begin(self, configuration_path, prefix="qtvcp.rio-gui"):
+        self.configuration_path = configuration_path
+        self.prefix = prefix
         cfgxml_data = []
         cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
@@ -85,6 +90,11 @@ class qtvcp:
  </widget>
  <customwidgets>
   <customwidget>
+   <class>Gauge</class>
+   <extends>QWidget</extends>
+   <header>qtvcp.widgets.round_gauge</header>
+  </customwidget>
+  <customwidget>
    <class>CheckBox</class>
    <extends>QCheckBox</extends>
    <header>qtvcp.widgets.simple_widgets</header>
@@ -128,6 +138,40 @@ class qtvcp:
  </slots>
 </ui>""")
         return cfgxml_data
+
+    def save(self, cfgxml_data):
+        ui_filename = os.path.join(self.configuration_path, "rio-gui.ui")
+        py_filename = os.path.join(self.configuration_path, "rio-gui_handler.py")
+
+        handler_py = []
+        handler_py.append("")
+        handler_py.append("from qtvcp.core import Status, Action")
+        handler_py.append("from qtvcp import logger")
+        handler_py.append("")
+        handler_py.append("STATUS = Status()")
+        handler_py.append("ACTION = Action()")
+        handler_py.append("LOG = logger.getLogger(__name__)")
+        handler_py.append("")
+        handler_py.append("class HandlerClass:")
+        handler_py.append("")
+        handler_py.append("    def __init__(self, halcomp,widgets,paths):")
+        handler_py.append("        self.hal = halcomp")
+        handler_py.append("        self.w = widgets")
+        handler_py.append("        self.PATHS = paths")
+        handler_py.append("")
+        handler_py.append("    def initialized__(self):")
+        handler_py.append("        pass")
+        handler_py.append("")
+        handler_py.append("    def __getitem__(self, item):")
+        handler_py.append("        return getattr(self, item)")
+        handler_py.append("    def __setitem__(self, item, value):")
+        handler_py.append("        return setattr(self, item, value)")
+        handler_py.append("")
+        handler_py.append("def get_handlers(halcomp,widgets,paths):")
+        handler_py.append("     return [HandlerClass(halcomp,widgets,paths)]")
+        handler_py.append("")
+        open(py_filename, "w").write("\n".join(handler_py))
+        open(ui_filename, "w").write("\n".join(cfgxml_data))
 
     def draw_tabs_begin(self, names):
         cfgxml_data = []
@@ -192,8 +236,52 @@ class qtvcp:
         cfgxml_data.append("                      </widget>")
         return cfgxml_data
 
+    def draw_frame_begin(self, name=None):
+        if not name:
+            name = "frame"
+        cfgxml_data = []
+        return cfgxml_data
+
+    def draw_frame_end(self):
+        cfgxml_data = []
+        return cfgxml_data
+
+    def draw_vbox_begin(self):
+        cfgxml_data = []
+        cfgxml_data.append("                         <item>")
+        cfgxml_data.append('                          <layout class="QVBoxLayout" name="verticalLayout_5">')
+        return cfgxml_data
+
+    def draw_vbox_end(self):
+        cfgxml_data = []
+        cfgxml_data.append("                          </layout>")
+        cfgxml_data.append("                         </item>")
+        return cfgxml_data
+
+    def draw_hbox_begin(self):
+        cfgxml_data = []
+        cfgxml_data.append("                         <item>")
+        cfgxml_data.append('                          <layout class="QHBoxLayout" name="hosizontalLayout_3">')
+        return cfgxml_data
+
+    def draw_hbox_end(self):
+        cfgxml_data = []
+        cfgxml_data.append("                          </layout>")
+        cfgxml_data.append("                         </item>")
+        return cfgxml_data
+
     def draw_button(self, name, halpin, setup={}):
-        return (f"qtvcp.rio-gui.{halpin}", [])
+        cfgxml_data = []
+        cfgxml_data.append(f"""
+              <item>
+               <widget class="PushButton" name="{halpin}">
+                <property name="text">
+                 <string>{name}</string>
+                </property>
+               </widget>
+              </item>
+        """)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
@@ -227,7 +315,7 @@ class qtvcp:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}-f", cfgxml_data)
+        return (f"{self.prefix}.{halpin}-f", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_max = setup.get("max", vmax)
@@ -281,13 +369,23 @@ class qtvcp:
         cfgxml_data.append("      </property>")
         cfgxml_data.append("       </widget>")
         cfgxml_data.append("   </item>")
-        return (f"qtvcp.rio-gui.{halpin}_value", cfgxml_data)
+        return (f"{self.prefix}.{halpin}_value", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
 
+    def draw_number_u32(self, name, halpin, setup={}):
+        return self.draw_number(name, halpin, hal_type="u32", setup=setup)
+
+    def draw_number_s32(self, name, halpin, setup={}):
+        return self.draw_number(name, halpin, hal_type="s32", setup=setup)
+
     def draw_number(self, name, halpin, hal_type="float", setup={}):
-        display_format = setup.get("format", "%0.2f")
+        if hal_type == "float":
+            display_format = setup.get("format", "0.2f")
+        else:
+            display_format = setup.get("format", "d")
+
         cfgxml_data = []
         cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
@@ -319,17 +417,20 @@ class qtvcp:
         cfgxml_data.append('      <property name="styleSheet">')
         cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
         cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="bit_pin_type" stdset="0">')
-        cfgxml_data.append("       <bool>false</bool>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="float_pin_type" stdset="0">')
-        cfgxml_data.append("       <bool>true</bool>")
-        cfgxml_data.append("      </property>")
+
+        for ptype in ("s32", "u32", "float", "bin"):
+            cfgxml_data.append(f'      <property name="{ptype}_pin_type" stdset="0">')
+            if ptype == hal_type:
+                cfgxml_data.append("       <bool>true</bool>")
+            else:
+                cfgxml_data.append("       <bool>false</bool>")
+            cfgxml_data.append("      </property>")
+
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -366,7 +467,7 @@ class qtvcp:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         cfgxml_data = []
@@ -423,4 +524,4 @@ class qtvcp:
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
         cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
+        return (f"{self.prefix}.{halpin}", cfgxml_data)

@@ -11,3 +11,5 @@ on my debian12, it works with openFPGAloader**
 * Clock: 100.000Mhz (Pin:C10)
 * Example-Configs: [LX9MicroBoard](../../configs/LX9MicroBoard)
 
+![board.png](board.png)
+

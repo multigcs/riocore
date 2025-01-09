@@ -150,7 +150,7 @@ class LinuxCNC:
         },
     }
 
-    POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
+    POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
 
     def __init__(self, project):
         self.postgui_call_list = []
@@ -363,7 +363,7 @@ class LinuxCNC:
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
 
-        if gui in {"qtdragon", "qtdragon_hd"}:
+        if self.gui_type == "qtvcp":
             output.append("sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/")
             output.append("sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/")
             output.append('sudo cp -a "$DIRNAME/rio-gui_handler.py" /usr/share/qtvcp/panels/rio-gui/')
@@ -382,8 +382,38 @@ class LinuxCNC:
     def generator(self):
         jdata = self.project.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
+        gui = linuxcnc_config.get("gui", "axis")
+        vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
+        vcp_type = linuxcnc_config.get("vcp_type", "auto")
         for network, net in linuxcnc_config.get("halsignals", {}).items():
             self.networks[network] = net
+
+        self.gui_gen = None
+        self.gui_type = ""
+        self.gui_prefix = ""
+        if vcp_mode != "NONE":
+            if gui == "axis":
+                if vcp_type == "gladevcp":
+                    self.gui_gen = gladevcp()
+                    self.gui_type = "gladevcp"
+                    self.gui_prefix = "gladevcp"
+                else:
+                    self.gui_gen = pyvcp()
+                    self.gui_type = "pyvcp"
+                    self.gui_prefix = "pyvcp"
+            elif gui == "gmoccapy":
+                if vcp_type == "pyvcp":
+                    self.gui_gen = pyvcp()
+                    self.gui_type = "pyvcp"
+                    self.gui_prefix = "pyvcp"
+                else:
+                    self.gui_gen = gladevcp()
+                    self.gui_type = "gladevcp"
+                    self.gui_prefix = "rio-gui"
+            elif gui in {"qtdragon", "qtdragon_hd"}:
+                self.gui_gen = qtvcp()
+                self.gui_type = "qtvcp"
+                self.gui_prefix = "qtdragon.rio-gui"
 
         self.startscript()
         self.component()
@@ -450,7 +480,7 @@ class LinuxCNC:
 
     def ini_mdi_command(self, command, title=None):
         jdata = self.project.config["jdata"]
-        ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.axis_dict)
+        ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.axis_dict, gui_type=self.gui_type)
         mdi_index = None
         mdi_n = 0
         for key, value in ini["HALUI"].items():
@@ -468,7 +498,7 @@ class LinuxCNC:
         return f"halui.mdi-command-{mdi_index:02d}"
 
     @classmethod
-    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}, dios=16, aios=16):
+    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}, dios=16, aios=16, gui_type="pyvcp"):
         linuxcnc_config = jdata.get("linuxcnc", {})
         ini_setup = cls.INI_DEFAULTS.copy()
         gui = linuxcnc_config.get("gui", "axis")
@@ -545,25 +575,27 @@ class LinuxCNC:
                         ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
 
         if gui == "axis":
-            pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
-            if pyvcp_mode != "NONE":
-                pyvcp_pos = linuxcnc_config.get("pyvcp_pos", "RIGHT")
-                if pyvcp_pos == "TAB":
+            if gui_type == "pyvcp":
+                vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
+                if vcp_pos == "TAB":
                     ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
                     ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
                 else:
-                    ini_setup["DISPLAY"]["PYVCP_POSITION"] = pyvcp_pos
+                    ini_setup["DISPLAY"]["PYVCP_POSITION"] = vcp_pos
                     ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+            elif gui_type == "gladevcp":
+                ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
 
-            # ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
-
-        elif gui == "_gmoccapy":
+        elif gui == "gmoccapy":
             ini_setup["DISPLAY"]["DISPLAY"] = gui
-            pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
-            if pyvcp_mode != "NONE":
-                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
+            if gui_type == "pyvcp":
+                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
                 ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "ntb_user_tabs"
                 ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
+            elif gui_type == "gladevcp":
+                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
+                ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "box_right"
+                ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "gladevcp -x {XID} -H custom_postgui.hal rio-gui.ui"
 
         elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
@@ -576,9 +608,6 @@ class LinuxCNC:
                     "ICON": "silver_dragon.png",
                     "INTRO_GRAPHIC": "silver_dragon.png",
                     "INTRO_TIME": "1",
-                    "EMBED_TAB_NAME|RIO": "RIO",
-                    "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
-                    "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
                     "CYCLE_TIME": "100",
                     "GRAPHICS_CYCLE_TIME": "100",
                     "HALPIN_CYCLE": "100",
@@ -587,6 +616,11 @@ class LinuxCNC:
                     "USE_PROBE": "NO",
                 },
             }
+            if gui_type == "qtvcp":
+                qtdragon_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
+                qtdragon_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "qtvcp rio-gui"
+                qtdragon_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "tabWidget_utilities"
+
             for section, sdata in qtdragon_setup.items():
                 if section not in ini_setup:
                     ini_setup[section] = {}
@@ -623,7 +657,7 @@ class LinuxCNC:
         if aios > 64:
             print("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
 
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, dios=dios, aios=aios)
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type)
 
         for section, section_options in linuxcnc_config.get("ini", {}).items():
             if section not in ini_setup:
@@ -1158,43 +1192,18 @@ class LinuxCNC:
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
-        pyvcp_sections = linuxcnc_config.get("pyvcp_sections", [])
-        pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
+        vcp_sections = linuxcnc_config.get("vcp_sections", [])
+        vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
         gui = linuxcnc_config.get("gui", "axis")
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
-        if gui == "axis":
-            self.gui_gen = pyvcp()
-            gui_type = "pyvcp"
-            # self.gui_gen = gladevcp()
-            # gui_type = "gladevcp"
-        elif gui == "_gmoccapy":
-            self.gui_gen = pyvcp()
-            gui_type = "pyvcp"
-        elif gui in {"qtdragon", "qtdragon_hd"}:
-            self.gui_gen = qtvcp()
-            gui_type = "qtvcp"
-        else:
-            self.gui_gen = None
-            gui_type = ""
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, gui_type=self.gui_type)
 
-        xml_filename = os.path.join(self.configuration_path, "rio-gui.xml")
-        ui_filename = os.path.join(self.configuration_path, "rio-gui.ui")
-        py_filename = os.path.join(self.configuration_path, "rio-gui_handler.py")
-        gvcp_filename = os.path.join(self.configuration_path, "rio-gui.py")
-        if os.path.isfile(xml_filename):
-            os.remove(xml_filename)
-        if os.path.isfile(ui_filename):
-            os.remove(ui_filename)
-        if os.path.isfile(py_filename):
-            os.remove(py_filename)
-        if os.path.isfile(gvcp_filename):
-            os.remove(gvcp_filename)
-
-        if self.gui_gen and pyvcp_mode != "NONE":
+        if self.gui_gen:
             custom = []
+            cfgxml_adata = []
+            cfgxml_adata += self.gui_gen.draw_begin(self.configuration_path, self.gui_prefix)
 
             self.cfgxml_data = {}
-            for section in pyvcp_sections:
+            for section in vcp_sections:
                 self.cfgxml_data[section] = []
             if "status" not in self.cfgxml_data:
                 self.cfgxml_data["status"] = []
@@ -1220,6 +1229,7 @@ class LinuxCNC:
                 ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
                 ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
                 (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
+
                 self.cfgxml_data["status"] += gout
                 if embed_vismach:
                     self.hal_net_add(pname, f"{embed_vismach}.plotclear")
@@ -1241,68 +1251,61 @@ class LinuxCNC:
                 self.cfgxml_data["status"].append("</hbox>")
 
             # buttons
-            if gui_type == "pyvcp":
-                mdi_xml = []
-                mdi_xml.append('  <labelframe text="MDI-Commands">')
-                mdi_xml.append("    <relief>RAISED</relief>")
-                mdi_xml.append('    <font>("Helvetica", 10)</font>')
-                mdi_xml.append("    <vbox>")
-                mdi_xml.append("      <relief>RIDGE</relief>")
-                mdi_xml.append("      <bd>2</bd>")
-                mdi_num = 0
-                mdi_groups = {}
-                for mdi_num, command in enumerate(ini_setup["HALUI"]):
-                    if command.startswith("MDI_COMMAND|"):
-                        """config Example
+            mdi_xml = []
+            mdi_xml += self.gui_gen.draw_frame_begin("MDI-Commands")
+            mdi_xml += self.gui_gen.draw_vbox_begin()
+            mdi_num = 0
+            mdi_groups = {}
+            for mdi_num, command in enumerate(ini_setup["HALUI"]):
+                if command.startswith("MDI_COMMAND|"):
+                    """config Example
+                    "linuxcnc": {
+                        "ini": {
+                            "HALUI": {
+                                "MDI_COMMAND|Go to Zero": "G0 X0 Y0",
+                            }
+                        },
+                    },
+                    """
+                    mdi_title = command.split("|")[-1]
+                    halpin = f"halui.mdi-command-{mdi_num:02d}"
+                    (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
+                    if command.startswith("MDI_COMMAND||"):
+                        """config Example (Horizontal grouping)
                         "linuxcnc": {
                             "ini": {
                                 "HALUI": {
-                                    "MDI_COMMAND|Go to Zero": "G0 X0 Y0",
+                                    "MDI_COMMAND||Gripper|0%": "M68 E0 Q-100",
+                                    "MDI_COMMAND||Gripper|50%": "M68 E0 Q0",
+                                    "MDI_COMMAND||Gripper|100%": "M68 E0 Q100"
                                 }
                             },
                         },
                         """
-                        mdi_title = command.split("|")[-1]
-                        halpin = f"halui.mdi-command-{mdi_num:02d}"
-                        (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
-                        if command.startswith("MDI_COMMAND||"):
-                            """config Example (Horizontal grouping)
-                            "linuxcnc": {
-                                "ini": {
-                                    "HALUI": {
-                                        "MDI_COMMAND||Gripper|0%": "M68 E0 Q-100",
-                                        "MDI_COMMAND||Gripper|50%": "M68 E0 Q0",
-                                        "MDI_COMMAND||Gripper|100%": "M68 E0 Q100"
-                                    }
-                                },
-                            },
-                            """
-                            mdi_group = command.split("|")[-2]
-                            if mdi_group not in mdi_groups:
-                                mdi_groups[mdi_group] = []
-                            mdi_groups[mdi_group].append(gout)
-                        else:
-                            mdi_xml += gout
-                        self.hal_net_add(pname, halpin)
+                        mdi_group = command.split("|")[-2]
+                        if mdi_group not in mdi_groups:
+                            mdi_groups[mdi_group] = []
+                        mdi_groups[mdi_group].append(gout)
+                    else:
+                        mdi_xml += gout
+                    self.hal_net_add(pname, halpin)
 
-                for group_name, mdi_commands in mdi_groups.items():
-                    self.cfgxml_data["status"].append(f'  <labelframe text="{group_name}">')
-                    self.cfgxml_data["status"].append("    <relief>RAISED</relief>")
-                    self.cfgxml_data["status"].append('    <font>("Helvetica", 10)</font>')
-                    self.cfgxml_data["status"].append("    <hbox>")
-                    self.cfgxml_data["status"].append("      <bd>2</bd>")
-                    for bn, mdi_command in enumerate(mdi_commands, 1):
-                        if bn % 6 == 0:
-                            self.cfgxml_data["status"].append("    </hbox>")
-                            self.cfgxml_data["status"].append("    <hbox>")
-                            self.cfgxml_data["status"].append("      <bd>2</bd>")
-                        self.cfgxml_data["status"] += mdi_command
-                    self.cfgxml_data["status"].append("    </hbox>")
-                    self.cfgxml_data["status"].append("  </labelframe>")
+            for group_name, mdi_commands in mdi_groups.items():
+                self.cfgxml_data["status"] += self.gui_gen.draw_frame_begin(group_name)
+                self.cfgxml_data["status"] += self.gui_gen.draw_hbox_begin()
 
-                mdi_xml.append("    </vbox>")
-                mdi_xml.append("  </labelframe>")
-                self.cfgxml_data["status"] += mdi_xml
+                for bn, mdi_command in enumerate(mdi_commands, 1):
+                    if bn % 6 == 0:
+                        self.cfgxml_data["status"] += self.gui_gen.draw_hbox_end()
+                        self.cfgxml_data["status"] += self.gui_gen.draw_hbox_begin()
+                    self.cfgxml_data["status"] += mdi_command
+
+                self.cfgxml_data["status"] += self.gui_gen.draw_hbox_end()
+                self.cfgxml_data["status"] += self.gui_gen.draw_frame_end()
+
+            mdi_xml += self.gui_gen.draw_vbox_end()
+            mdi_xml += self.gui_gen.draw_frame_end()
+            self.cfgxml_data["status"] += mdi_xml
 
             for addon_name, addon in self.addons.items():
                 if hasattr(addon, "gui"):
@@ -1384,14 +1387,11 @@ class LinuxCNC:
                             else:
                                 dtype = displayconfig.get("type", "checkbutton")
 
-                        if pyvcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
+                        if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
                             continue
 
                         if hasattr(self.gui_gen, f"draw_{dtype}"):
                             (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
-
-                            if gui in {"qtdragon", "qtdragon_hd"}:
-                                gui_pinname = gui_pinname.replace("qtvcp.rio-gui.", "qtdragon.rio-gui.")
 
                             if section not in self.cfgxml_data:
                                 self.cfgxml_data[section] = []
@@ -1453,8 +1453,6 @@ class LinuxCNC:
             for section in self.cfgxml_data:
                 if self.cfgxml_data[section]:
                     titles.append(section.title())
-            cfgxml_adata = []
-            cfgxml_adata += self.gui_gen.draw_begin()
             cfgxml_adata += self.gui_gen.draw_tabs_begin(titles)
             for section in self.cfgxml_data:
                 if self.cfgxml_data[section]:
@@ -1464,98 +1462,12 @@ class LinuxCNC:
             cfgxml_adata += self.gui_gen.draw_tabs_end()
             cfgxml_adata += self.gui_gen.draw_end()
 
-            if gui_type == "qtvcp":
-                handler_py = []
-                handler_py.append("")
-                handler_py.append("from qtvcp.core import Status, Action")
-                handler_py.append("from qtvcp import logger")
-                handler_py.append("")
-                handler_py.append("STATUS = Status()")
-                handler_py.append("ACTION = Action()")
-                handler_py.append("LOG = logger.getLogger(__name__)")
-                handler_py.append("")
-                handler_py.append("class HandlerClass:")
-                handler_py.append("")
-                handler_py.append("    def __init__(self, halcomp,widgets,paths):")
-                handler_py.append("        self.hal = halcomp")
-                handler_py.append("        self.w = widgets")
-                handler_py.append("        self.PATHS = paths")
-                handler_py.append("")
-                handler_py.append("    def initialized__(self):")
-                handler_py.append("        pass")
-                handler_py.append("")
-                handler_py.append("    def __getitem__(self, item):")
-                handler_py.append("        return getattr(self, item)")
-                handler_py.append("    def __setitem__(self, item, value):")
-                handler_py.append("        return setattr(self, item, value)")
-                handler_py.append("")
-                handler_py.append("def get_handlers(halcomp,widgets,paths):")
-                handler_py.append("     return [HandlerClass(halcomp,widgets,paths)]")
-                handler_py.append("")
-                open(py_filename, "w").write("\n".join(handler_py))
-                open(ui_filename, "w").write("\n".join(cfgxml_adata))
-            elif gui_type == "gladevcp":
-                handler_py = []
-                handler_py.append("""
-import hal
-import glib
-import time
+            self.gui_gen.save(cfgxml_adata)
 
-class HandlerClass:
-    '''
-    class with gladevcp callback handlers
-    '''
-
-    def on_button_press(self,widget,data=None):
-        '''
-        a callback method
-        parameters are:
-            the generating object instance, likte a GtkButton instance
-            user data passed if any - this is currently unused but
-            the convention should be retained just in case
-        '''
-        print ("on_button_press called")
-        self.nhits += 1
-        self.builder.get_object('hits').set_label("Hits: %d" % (self.nhits))
-
-    def __init__(self, halcomp,builder,useropts):
-        '''
-        Handler classes are instantiated in the following state:
-        - the widget tree is created, but not yet realized (no toplevel window.show() executed yet)
-        - the halcomp HAL component is set up and the widhget tree's HAL pins have already been added to it
-        - it is safe to add more hal pins because halcomp.ready() has not yet been called at this point.
-
-        after all handlers are instantiated in command line and get_handlers() order, callbacks will be
-        connected with connect_signals()/signal_autoconnect()
-
-        The builder may be either of libglade or GtkBuilder type depending on the glade file format.
-        '''
-
-        self.halcomp = halcomp
-        self.builder = builder
-        self.nhits = 0
-
-
-
-
-def get_handlers(halcomp,builder,useropts):
-    '''
-    this function is called by gladevcp at import time (when this module is passed with '-u <modname>.py')
-
-    return a list of object instances whose methods should be connected as callback handlers
-    any method whose name does not begin with an underscore ('_') is a  callback candidate
-
-    the 'get_handlers' name is reserved - gladevcp expects it, so do not change
-    '''
-    return [HandlerClass(halcomp,builder,useropts)]
-
-""")
-                open(gvcp_filename, "w").write("\n".join(handler_py))
-                open(ui_filename, "w").write("\n".join(cfgxml_adata))
-            else:
-                open(xml_filename, "w").write("\n".join(cfgxml_adata))
-
-        self.postgui_call_list.append("custom_postgui.hal")
+        if gui == "gmoccapy" and self.gui_type == "gladevcp":
+            print("## INFO: custom_postgui.hal will be load by gladevcp")
+        else:
+            self.postgui_call_list.append("custom_postgui.hal")
 
     def resolv_logic(self, logic_name, bracket):
         # self.hal_net_add("halui.machine.is-on", "&riovs.myand1", "myand1")
