@@ -7,6 +7,9 @@ import sys
 import stat
 
 from riocore import halpins
+from riocore.generator.pyvcp import pyvcp
+from riocore.generator.qtvcp import qtvcp
+from riocore.generator.gladevcp import gladevcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -147,7 +150,7 @@ class LinuxCNC:
         },
     }
 
-    POSTGUI_COMPONENTS = ("pyvcp", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
+    POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
 
     def __init__(self, project):
         self.postgui_call_list = []
@@ -545,12 +548,16 @@ class LinuxCNC:
             pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
             if pyvcp_mode != "NONE":
                 pyvcp_pos = linuxcnc_config.get("pyvcp_pos", "RIGHT")
+                """
                 if pyvcp_pos == "TAB":
                     ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
                     ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
                 else:
                     ini_setup["DISPLAY"]["PYVCP_POSITION"] = pyvcp_pos
                     ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+                """
+
+            ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
 
         elif gui == "_gmoccapy":
             ini_setup["DISPLAY"]["DISPLAY"] = gui
@@ -1158,23 +1165,32 @@ class LinuxCNC:
         gui = linuxcnc_config.get("gui", "axis")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict)
         if gui == "axis":
-            self.gui_gen = axis()
+            self.gui_gen = pyvcp()
+            gui_type = "pyvcp"
+            # self.gui_gen = gladevcp()
+            # gui_type = "gladevcp"
         elif gui == "_gmoccapy":
-            self.gui_gen = axis()
+            self.gui_gen = pyvcp()
+            gui_type = "pyvcp"
         elif gui in {"qtdragon", "qtdragon_hd"}:
             self.gui_gen = qtvcp()
+            gui_type = "qtvcp"
         else:
             self.gui_gen = None
+            gui_type = ""
 
         xml_filename = os.path.join(self.configuration_path, "rio-gui.xml")
         ui_filename = os.path.join(self.configuration_path, "rio-gui.ui")
         py_filename = os.path.join(self.configuration_path, "rio-gui_handler.py")
+        gvcp_filename = os.path.join(self.configuration_path, "rio-gui.py")
         if os.path.isfile(xml_filename):
             os.remove(xml_filename)
         if os.path.isfile(ui_filename):
             os.remove(ui_filename)
         if os.path.isfile(py_filename):
             os.remove(py_filename)
+        if os.path.isfile(gvcp_filename):
+            os.remove(gvcp_filename)
 
         if self.gui_gen and pyvcp_mode != "NONE":
             custom = []
@@ -1227,7 +1243,7 @@ class LinuxCNC:
                 self.cfgxml_data["status"].append("</hbox>")
 
             # buttons
-            if gui not in {"qtdragon", "qtdragon_hd"}:
+            if gui_type == "pyvcp":
                 mdi_xml = []
                 mdi_xml.append('  <labelframe text="MDI-Commands">')
                 mdi_xml.append("    <relief>RAISED</relief>")
@@ -1450,7 +1466,7 @@ class LinuxCNC:
             cfgxml_adata += self.gui_gen.draw_tabs_end()
             cfgxml_adata += self.gui_gen.draw_end()
 
-            if gui in {"qtdragon", "qtdragon_hd"}:
+            if gui_type == "qtvcp":
                 handler_py = []
                 handler_py.append("")
                 handler_py.append("from qtvcp.core import Status, Action")
@@ -1479,6 +1495,64 @@ class LinuxCNC:
                 handler_py.append("     return [HandlerClass(halcomp,widgets,paths)]")
                 handler_py.append("")
                 open(py_filename, "w").write("\n".join(handler_py))
+                open(ui_filename, "w").write("\n".join(cfgxml_adata))
+            elif gui_type == "gladevcp":
+                handler_py = []
+                handler_py.append("""
+import hal
+import glib
+import time
+
+class HandlerClass:
+    '''
+    class with gladevcp callback handlers
+    '''
+
+    def on_button_press(self,widget,data=None):
+        '''
+        a callback method
+        parameters are:
+            the generating object instance, likte a GtkButton instance
+            user data passed if any - this is currently unused but
+            the convention should be retained just in case
+        '''
+        print ("on_button_press called")
+        self.nhits += 1
+        self.builder.get_object('hits').set_label("Hits: %d" % (self.nhits))
+
+    def __init__(self, halcomp,builder,useropts):
+        '''
+        Handler classes are instantiated in the following state:
+        - the widget tree is created, but not yet realized (no toplevel window.show() executed yet)
+        - the halcomp HAL component is set up and the widhget tree's HAL pins have already been added to it
+        - it is safe to add more hal pins because halcomp.ready() has not yet been called at this point.
+
+        after all handlers are instantiated in command line and get_handlers() order, callbacks will be
+        connected with connect_signals()/signal_autoconnect()
+
+        The builder may be either of libglade or GtkBuilder type depending on the glade file format.
+        '''
+
+        self.halcomp = halcomp
+        self.builder = builder
+        self.nhits = 0
+
+
+
+
+def get_handlers(halcomp,builder,useropts):
+    '''
+    this function is called by gladevcp at import time (when this module is passed with '-u <modname>.py')
+
+    return a list of object instances whose methods should be connected as callback handlers
+    any method whose name does not begin with an underscore ('_') is a  callback candidate
+
+    the 'get_handlers' name is reserved - gladevcp expects it, so do not change
+    '''
+    return [HandlerClass(halcomp,builder,useropts)]
+
+""")
+                open(gvcp_filename, "w").write("\n".join(handler_py))
                 open(ui_filename, "w").write("\n".join(cfgxml_adata))
             else:
                 open(xml_filename, "w").write("\n".join(cfgxml_adata))
@@ -2909,814 +2983,3 @@ class LinuxCNC:
             for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
                 key = key.upper()
                 axis_config[key] = value
-
-
-class qtvcp:
-    #
-    # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
-    #
-
-    def draw_begin(self):
-        cfgxml_data = []
-        cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>350</width>
-    <height>412</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>MainWindow</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-""")
-        cfgxml_data.append("")
-        cfgxml_data.append("           <item>")
-        cfgxml_data.append('            <widget class="QGroupBox" name="groupBox_rio">')
-        cfgxml_data.append('             <property name="title">')
-        cfgxml_data.append("              <string>RIO</string>")
-        cfgxml_data.append("             </property>")
-        cfgxml_data.append('           <property name="sizePolicy">')
-        cfgxml_data.append('            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">')
-        cfgxml_data.append("             <horstretch>0</horstretch>")
-        cfgxml_data.append("             <verstretch>0</verstretch>")
-        cfgxml_data.append("            </sizepolicy>")
-        cfgxml_data.append("           </property>")
-        cfgxml_data.append('           <property name="minimumSize">')
-        cfgxml_data.append("            <size>")
-        cfgxml_data.append("             <width>200</width>")
-        cfgxml_data.append("             <height>0</height>")
-        cfgxml_data.append("            </size>")
-        cfgxml_data.append("           </property>")
-        cfgxml_data.append('             <property name="alignment">')
-        cfgxml_data.append("              <set>Qt::AlignCenter</set>")
-        cfgxml_data.append("             </property>")
-        cfgxml_data.append('             <layout class="QVBoxLayout" name="verticalLayout_30">')
-        cfgxml_data.append('              <property name="spacing">')
-        cfgxml_data.append("               <number>6</number>")
-        cfgxml_data.append("              </property>")
-        cfgxml_data.append('              <property name="leftMargin">')
-        cfgxml_data.append("               <number>2</number>")
-        cfgxml_data.append("              </property>")
-        cfgxml_data.append('              <property name="topMargin">')
-        cfgxml_data.append("               <number>2</number>")
-        cfgxml_data.append("              </property>")
-        cfgxml_data.append('              <property name="rightMargin">')
-        cfgxml_data.append("               <number>2</number>")
-        cfgxml_data.append("              </property>")
-        cfgxml_data.append('              <property name="bottomMargin">')
-        cfgxml_data.append("               <number>2</number>")
-        cfgxml_data.append("              </property>")
-        return cfgxml_data
-
-    def draw_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("             </layout>")
-        cfgxml_data.append("            </widget>")
-        cfgxml_data.append("           </item>")
-        cfgxml_data.append("")
-        cfgxml_data.append("""
-   </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>350</width>
-     <height>24</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
- </widget>
- <customwidgets>
-  <customwidget>
-   <class>CheckBox</class>
-   <extends>QCheckBox</extends>
-   <header>qtvcp.widgets.simple_widgets</header>
-  </customwidget>
-  <customwidget>
-   <class>IndicatedPushButton</class>
-   <extends>QPushButton</extends>
-   <header>qtvcp.widgets.simple_widgets</header>
-  </customwidget>
-  <customwidget>
-   <class>PushButton</class>
-   <extends>IndicatedPushButton</extends>
-   <header>qtvcp.widgets.simple_widgets</header>
-  </customwidget>
-  <customwidget>
-   <class>LED</class>
-   <extends>QWidget</extends>
-   <header>qtvcp.widgets.led_widget</header>
-  </customwidget>
-  <customwidget>
-   <class>HALLabel</class>
-   <extends>QLabel</extends>
-   <header>qtvcp.widgets.hal_label</header>
-  </customwidget>
-  <customwidget>
-   <class>ScreenOptions</class>
-   <extends>QWidget</extends>
-   <header>qtvcp.widgets.screen_options</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Slider</class>
-   <extends>QSlider</extends>
-   <header>qtvcp.widgets.simple_widgets</header>
-  </customwidget>
- </customwidgets>
- <resources/>
- <slots>
-  <slot>applyClicked()</slot>
-  <slot>updateCombo()</slot>
- </slots>
-</ui>""")
-        return cfgxml_data
-
-    def draw_tabs_begin(self, names):
-        cfgxml_data = []
-        cfgxml_data.append("                    <item>")
-        cfgxml_data.append('                     <widget class="QTabWidget" name="tabWidget_setup">')
-        cfgxml_data.append('                      <property name="geometry">')
-        cfgxml_data.append("                       <rect>")
-        cfgxml_data.append("                        <x>0</x>")
-        cfgxml_data.append("                        <y>0</y>")
-        cfgxml_data.append("                        <width>400</width>")
-        cfgxml_data.append("                        <height>300</height>")
-        cfgxml_data.append("                       </rect>")
-        cfgxml_data.append("                      </property>")
-        cfgxml_data.append('                      <property name="sizePolicy">')
-        cfgxml_data.append('                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">')
-        cfgxml_data.append("                        <horstretch>1</horstretch>")
-        cfgxml_data.append("                        <verstretch>0</verstretch>")
-        cfgxml_data.append("                       </sizepolicy>")
-        cfgxml_data.append("                      </property>")
-        cfgxml_data.append('                      <property name="currentIndex">')
-        cfgxml_data.append("                       <number>0</number>")
-        cfgxml_data.append("                      </property>")
-        return cfgxml_data
-
-    def draw_tabs_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("                     </widget>")
-        cfgxml_data.append("                    </item>")
-        return cfgxml_data
-
-    def draw_tab_begin(self, name):
-        cfgxml_data = []
-        cfgxml_data.append(f'                      <widget class="QWidget" name="tab_{name}">')
-        cfgxml_data.append('                       <attribute name="title">')
-        cfgxml_data.append(f"                        <string>{name}</string>")
-        cfgxml_data.append("                       </attribute>")
-        cfgxml_data.append('                       <layout class="QVBoxLayout" name="layout_stat">')
-        cfgxml_data.append('                        <property name="spacing">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="leftMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="topMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="rightMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="bottomMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append("                         <item>")
-        cfgxml_data.append('                          <layout class="QVBoxLayout" name="verticalLayout_58">')
-        return cfgxml_data
-
-    def draw_tab_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("                          </layout>")
-        cfgxml_data.append("                         </item>")
-        cfgxml_data.append("                        </layout>")
-        cfgxml_data.append("                      </widget>")
-        return cfgxml_data
-
-    def draw_button(self, name, halpin, setup={}):
-        return (f"qtvcp.rio-gui.{halpin}", [])
-
-    def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        title = setup.get("title", name)
-        cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{title}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="Slider" name="{halpin}">')
-        cfgxml_data.append('      <property name="minimum">')
-        cfgxml_data.append(f"       <number>{display_min}</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="maximum">')
-        cfgxml_data.append(f"       <number>{display_max}</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="orientation">')
-        cfgxml_data.append("       <enum>Qt::Horizontal</enum>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}-f", cfgxml_data)
-
-    def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
-        display_max = setup.get("max", vmax)
-        display_text = setup.get("text", name)
-        display_threshold = setup.get("threshold")
-        display_size = setup.get("size", "150")
-        cfgxml_data = []
-        cfgxml_data.append("   <item>")
-        cfgxml_data.append(f'       <widget class="Gauge" name="{halpin}">')
-        cfgxml_data.append('        <property name="minimumSize">')
-        cfgxml_data.append("         <size>")
-        cfgxml_data.append(f"          <width>{display_size}</width>")
-        cfgxml_data.append(f"          <height>{display_size}</height>")
-        cfgxml_data.append("         </size>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="max_value" stdset="0">')
-        cfgxml_data.append(f"         <number>{int(display_max)}</number>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="max_reading" stdset="0">')
-        cfgxml_data.append(f"         <number>{int(display_max)}</number>")
-        cfgxml_data.append("        </property>")
-        if display_threshold:
-            cfgxml_data.append('        <property name="threshold" stdset="0">')
-            cfgxml_data.append(f"         <number>{display_threshold}</number>")
-            cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="num_ticks" stdset="0">')
-        cfgxml_data.append("         <number>9</number>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="gauge_label" stdset="0">')
-        cfgxml_data.append(f"         <string>{display_text}</string>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="zone1_color" stdset="0">')
-        cfgxml_data.append("         <color>")
-        cfgxml_data.append("          <red>0</red>")
-        cfgxml_data.append("          <green>100</green>")
-        cfgxml_data.append("          <blue>0</blue>")
-        cfgxml_data.append("         </color>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="zone2_color" stdset="0">')
-        cfgxml_data.append("         <color>")
-        cfgxml_data.append("          <red>200</red>")
-        cfgxml_data.append("          <green>0</green>")
-        cfgxml_data.append("          <blue>0</blue>")
-        cfgxml_data.append("         </color>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('      <property name="halpin_name" stdset="0">')
-        cfgxml_data.append(f"       <string>{halpin}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="halpin_option" stdset="0">')
-        cfgxml_data.append("       <bool>true</bool>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("       </widget>")
-        cfgxml_data.append("   </item>")
-        return (f"qtvcp.rio-gui.{halpin}_value", cfgxml_data)
-
-    def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
-        return self.draw_number(name, halpin, setup)
-
-    def draw_number(self, name, halpin, hal_type="float", setup={}):
-        display_format = setup.get("format", "%0.2f")
-        cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{name}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="HALLabel" name="{halpin}">')
-        cfgxml_data.append('      <property name="sizePolicy">')
-        cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
-        cfgxml_data.append("        <horstretch>0</horstretch>")
-        cfgxml_data.append("        <verstretch>0</verstretch>")
-        cfgxml_data.append("       </sizepolicy>")
-        cfgxml_data.append("      </property>")
-        if display_format:
-            cfgxml_data.append('      <property name="textTemplate" stdset="0">')
-            cfgxml_data.append(f"       <string>%{display_format}</string>")
-            cfgxml_data.append("      </property>")
-        cfgxml_data.append('                 <property name="alignment">')
-        cfgxml_data.append("                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>")
-        cfgxml_data.append("                 </property>")
-        cfgxml_data.append('      <property name="styleSheet">')
-        cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="bit_pin_type" stdset="0">')
-        cfgxml_data.append("       <bool>false</bool>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="float_pin_type" stdset="0">')
-        cfgxml_data.append("       <bool>true</bool>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
-
-    def draw_checkbutton(self, name, halpin, setup={}):
-        cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{name}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="CheckBox" name="{halpin}">')
-        cfgxml_data.append('                 <property name="sizePolicy">')
-        cfgxml_data.append('                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
-        cfgxml_data.append("                   <horstretch>0</horstretch>")
-        cfgxml_data.append("                   <verstretch>0</verstretch>")
-        cfgxml_data.append("                  </sizepolicy>")
-        cfgxml_data.append("                 </property>")
-        cfgxml_data.append('                 <property name="minimumSize">')
-        cfgxml_data.append("                  <size>")
-        cfgxml_data.append("                   <width>32</width>")
-        cfgxml_data.append("                   <height>32</height>")
-        cfgxml_data.append("                  </size>")
-        cfgxml_data.append("                 </property>")
-        cfgxml_data.append('                 <property name="text">')
-        cfgxml_data.append("                  <string/>")
-        cfgxml_data.append("                 </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
-
-    def draw_led(self, name, halpin, setup={}):
-        cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{name}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="LED" name="{halpin}">')
-        cfgxml_data.append('        <property name="sizePolicy">')
-        cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
-        cfgxml_data.append("          <horstretch>0</horstretch>")
-        cfgxml_data.append("          <verstretch>0</verstretch>")
-        cfgxml_data.append("         </sizepolicy>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="minimumSize">')
-        cfgxml_data.append("         <size>")
-        cfgxml_data.append("          <width>32</width>")
-        cfgxml_data.append("          <height>32</height>")
-        cfgxml_data.append("         </size>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="color">')
-        cfgxml_data.append("          <color>")
-        if halpin.endswith(".B"):
-            cfgxml_data.append("           <red>85</red>")
-            cfgxml_data.append("           <green>0</green>")
-            cfgxml_data.append("           <blue>255</blue>")
-        elif halpin.endswith(".R"):
-            cfgxml_data.append("           <red>255</red>")
-            cfgxml_data.append("           <green>85</green>")
-            cfgxml_data.append("           <blue>0</blue>")
-        else:
-            cfgxml_data.append("           <red>85</red>")
-            cfgxml_data.append("           <green>255</green>")
-            cfgxml_data.append("           <blue>0</blue>")
-
-        cfgxml_data.append("          </color>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="maximumSize">')
-        cfgxml_data.append("         <size>")
-        cfgxml_data.append("          <width>32</width>")
-        cfgxml_data.append("          <height>32</height>")
-        cfgxml_data.append("         </size>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
-        return (f"qtvcp.rio-gui.{halpin}", cfgxml_data)
-
-
-class axis:
-    def draw_begin(self):
-        cfgxml_data = []
-        cfgxml_data.append("<pyvcp>")
-        return cfgxml_data
-
-    def draw_end(self):
-        cfgxml_data = []
-        cfgxml_data.append('<label><text>""</text><width>30</width></label>')
-        cfgxml_data.append("</pyvcp>")
-        return cfgxml_data
-
-    def draw_tabs_begin(self, names):
-        cfgxml_data = []
-        cfgxml_data.append("<tabs>")
-        cfgxml_data.append(f"    <names>{names}</names>")
-        return cfgxml_data
-
-    def draw_tabs_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("</tabs>")
-        return cfgxml_data
-
-    def draw_tab_begin(self, name):
-        cfgxml_data = []
-        cfgxml_data.append("    <vbox>")
-        return cfgxml_data
-
-    def draw_tab_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("    </vbox>")
-        return cfgxml_data
-
-    def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
-        title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        display_initval = setup.get("initval", 0)
-        resolution = setup.get("resolution", 0.1)
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <scale>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
-        cfgxml_data.append("      <orient>HORIZONTAL</orient>")
-        cfgxml_data.append(f"      <initval>{display_initval}</initval>")
-        cfgxml_data.append(f"      <min_>{display_min}</min_>")
-        cfgxml_data.append(f"      <max_>{display_max}</max_>")
-        cfgxml_data.append("      <param_pin>1</param_pin>")
-        cfgxml_data.append("    </scale>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}-f", cfgxml_data)
-
-    def draw_fselect(self, name, halpin, setup={}):
-        title = setup.get("title", name)
-        values = setup.get("values", {"v0": 0, "v1": 1})
-        display_min = 0
-        display_max = len(values) - 1
-        display_initval = setup.get("initval", 0)
-        resolution = 1
-        legends = list(values.keys())
-        cfgxml_data = []
-        cfgxml_data.append(f'  <labelframe text="{title}">')
-        cfgxml_data.append("   <vbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <multilabel>")
-        cfgxml_data.append(f"     <legends>{legends}</legends>")
-        cfgxml_data.append(f'     <halpin>"{halpin}-label"</halpin>')
-        cfgxml_data.append('     <font>("Helvetica", 12)</font>')
-        cfgxml_data.append('     <bg>"black"</bg>')
-        cfgxml_data.append('     <fg>"yellow"</fg>')
-        cfgxml_data.append("    </multilabel>")
-        cfgxml_data.append("    <scale>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
-        cfgxml_data.append("      <orient>HORIZONTAL</orient>")
-        cfgxml_data.append(f"      <initval>{display_initval}</initval>")
-        cfgxml_data.append(f"      <min_>{display_min}</min_>")
-        cfgxml_data.append(f"      <max_>{display_max}</max_>")
-        cfgxml_data.append("      <param_pin>1</param_pin>")
-        cfgxml_data.append("    </scale>")
-        cfgxml_data.append("   </vbox>")
-        cfgxml_data.append("  </labelframe>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
-        title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        display_initval = setup.get("initval", 0.0)
-        resolution = setup.get("resolution", 0.1)
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <spinbox>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
-        cfgxml_data.append(f"      <initval>{display_initval}</initval>")
-        cfgxml_data.append(f"      <min_>{display_min}</min_>")
-        cfgxml_data.append(f"      <max_>{display_max}</max_>")
-        cfgxml_data.append("      <param_pin>1</param_pin>")
-        cfgxml_data.append("    </spinbox>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_jogwheel(self, name, halpin, setup={}, vmin=0, vmax=100):
-        title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        resolution = setup.get("resolution", 0.1)
-        size = setup.get("size", 200)
-        cpr = setup.get("cpr", 50)
-        cfgxml_data = []
-        cfgxml_data.append("    <jogwheel>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append(f"      <size>{size}</size>")
-        cfgxml_data.append(f"      <cpr>{cpr}</cpr>")
-        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
-        cfgxml_data.append("      <initval>0</initval>")
-        cfgxml_data.append(f"      <min_>{display_min}</min_>")
-        cfgxml_data.append(f"      <max_>{display_max}</max_>")
-        cfgxml_data.append("      <param_pin>1</param_pin>")
-        cfgxml_data.append("    </jogwheel>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_dial(self, name, halpin, setup={}, vmin=0, vmax=100):
-        title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        resolution = setup.get("resolution", 0.1)
-        dialcolor = setup.get("dialcolor", "yellow")
-        edgecolor = setup.get("edgecolor", "green")
-        dotcolor = setup.get("dotcolor", "black")
-        size = setup.get("size", 200)
-        cpr = setup.get("cpr", 50)
-        cfgxml_data = []
-        cfgxml_data.append("    <dial>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append(f"      <size>{size}</size>")
-        cfgxml_data.append(f"      <cpr>{cpr}</cpr>")
-        cfgxml_data.append(f"      <resolution>{resolution}</resolution>")
-        cfgxml_data.append(f'      <dialcolor>"{dialcolor}"</dialcolor>')
-        cfgxml_data.append(f'      <edgecolor>"{edgecolor}"</edgecolor>')
-        cfgxml_data.append(f'      <dotcolor>"{dotcolor}"</dotcolor>')
-        cfgxml_data.append("      <initval>0</initval>")
-        cfgxml_data.append(f"      <min_>{display_min}</min_>")
-        cfgxml_data.append(f"      <max_>{display_max}</max_>")
-        cfgxml_data.append("      <param_pin>1</param_pin>")
-        cfgxml_data.append("    </dial>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
-        title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        display_subtext = setup.get("subtext", setup.get("unit", ""))
-        display_region = setup.get("region", [])
-        display_size = setup.get("size", 150)
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("  <meter>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append(f'      <subtext>"{display_subtext}"</subtext>')
-        cfgxml_data.append(f"      <size>{display_size}</size>")
-        cfgxml_data.append(f"      <min_>{display_min}</min_>")
-        cfgxml_data.append(f"      <max_>{display_max}</max_>")
-        for rnum, region in enumerate(display_region):
-            cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
-        cfgxml_data.append("    </meter>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
-        title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        display_range = setup.get("range", [])
-        display_format = setup.get("format", "05d")
-        display_fillcolor = setup.get("fillcolor", "red")
-        display_bgcolor = setup.get("fillcolor", "grey")
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append("    <bar>")
-        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f"    <min_>{display_min}</min_>")
-        cfgxml_data.append(f"    <max_>{display_max}</max_>")
-        cfgxml_data.append(f'    <format>"{display_format}"</format>')
-        cfgxml_data.append(f'    <bgcolor>"{display_bgcolor}"</bgcolor>')
-        cfgxml_data.append(f'    <fillcolor>"{display_fillcolor}"</fillcolor>')
-        for rnum, brange in enumerate(display_range):
-            cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
-        cfgxml_data.append("    </bar>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_number_u32(self, name, halpin, setup={}):
-        return self.draw_number(name, halpin, hal_type="u32", setup=setup)
-
-    def draw_number_s32(self, name, halpin, setup={}):
-        return self.draw_number(name, halpin, hal_type="s32", setup=setup)
-
-    def draw_number(self, name, halpin, hal_type="float", setup={}):
-        title = setup.get("title", name)
-        display_format = setup.get("format")
-        unit = setup.get("unit")
-        element = "number"
-        if not display_format:
-            if hal_type != "float":
-                display_format = "d"
-                element = hal_type
-            else:
-                display_format = "07.2f"
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
-        cfgxml_data.append('      <font>("Helvetica",9)</font>')
-        cfgxml_data.append("      <width>13</width>")
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append(f"    <{element}>")
-        cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append('        <font>("Helvetica",14)</font>')
-        cfgxml_data.append(f'        <format>"{display_format}"</format>')
-        # cfgxml_data.append(f'        <width>13</width>')
-        cfgxml_data.append("      <justify>LEFT</justify>")
-        cfgxml_data.append(f"    </{element}>")
-        if unit:
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append('        <font>("Helvetica",14)</font>')
-            cfgxml_data.append(f'      <text>"{unit}"</text>')
-            cfgxml_data.append("    </label>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_checkbutton(self, name, halpin, setup={}):
-        title = setup.get("title", name)
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
-        cfgxml_data.append('      <font>("Helvetica",9)</font>')
-        cfgxml_data.append("      <width>13</width>")
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append("    <checkbutton>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        # cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </checkbutton>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup={}):
-        title = setup.get("title", name)
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title}"</text>')
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append("    <checkbutton>")
-        cfgxml_data.append(f'      <halpin>"{halpin_g}"</halpin>')
-        cfgxml_data.append('      <text>"G"</text>')
-        cfgxml_data.append("    </checkbutton>")
-        cfgxml_data.append("    <checkbutton>")
-        cfgxml_data.append(f'      <halpin>"{halpin_b}"</halpin>')
-        cfgxml_data.append('      <text>"B"</text>')
-        cfgxml_data.append("    </checkbutton>")
-        cfgxml_data.append("    <checkbutton>")
-        cfgxml_data.append(f'      <halpin>"{halpin_r}"</halpin>')
-        cfgxml_data.append('      <text>"R"</text>')
-        cfgxml_data.append("    </checkbutton>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin_g}", cfgxml_data)
-
-    def draw_led(self, name, halpin, setup={}):
-        title = setup.get("title", name)
-        size = setup.get("size", 16)
-        color = setup.get("color")
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
-        cfgxml_data.append('      <font>("Helvetica",9)</font>')
-        cfgxml_data.append("      <width>13</width>")
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append("    <led>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f"      <size>{size}</size>")
-        if color:
-            cfgxml_data.append(f'      <on_color>"{color}"</on_color>')
-        elif halpin.endswith(".R"):
-            cfgxml_data.append('      <on_color>"red"</on_color>')
-        elif halpin.endswith(".B"):
-            cfgxml_data.append('      <on_color>"blue"</on_color>')
-        else:
-            cfgxml_data.append('      <on_color>"yellow"</on_color>')
-        cfgxml_data.append('      <off_color>"red"</off_color>')
-        cfgxml_data.append("    </led>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_rectled(self, name, halpin, setup={}):
-        title = setup.get("title", name)
-        width = setup.get("width", 16)
-        height = setup.get("height", 16)
-        color = setup.get("color")
-        cfgxml_data = []
-        cfgxml_data.append("  <hbox>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>2</bd>")
-        cfgxml_data.append("    <label>")
-        cfgxml_data.append(f'      <text>"{title:10s}"</text>')
-        cfgxml_data.append('      <font>("Helvetica",9)</font>')
-        cfgxml_data.append("      <width>13</width>")
-        cfgxml_data.append("    </label>")
-        cfgxml_data.append("    <led>")
-        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f"      <width>{width}</width>")
-        cfgxml_data.append(f"      <height>{height}</height>")
-        if color:
-            cfgxml_data.append(f'      <on_color>"{color}"</on_color>')
-        elif halpin.endswith(".R"):
-            cfgxml_data.append('      <on_color>"red"</on_color>')
-        elif halpin.endswith(".B"):
-            cfgxml_data.append('      <on_color>"blue"</on_color>')
-        else:
-            cfgxml_data.append('      <on_color>"green"</on_color>')
-        cfgxml_data.append('      <off_color>"black"</off_color>')
-        cfgxml_data.append("    </led>")
-        cfgxml_data.append("  </hbox>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_button(self, name, halpin, setup={}):
-        title = setup.get("title", name)
-        cfgxml_data = []
-        cfgxml_data.append("  <button>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>3</bd>")
-        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append(f'    <text>"{title}"</text>')
-        cfgxml_data.append('    <font>("Helvetica", 12)</font>')
-        cfgxml_data.append("  </button>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
-
-    def draw_multilabel(self, name, halpin, setup={}):
-        legends = setup.get("legends", ["LABEL1", "LABEL2", "LABEL3", "LABEL4"])
-        cfgxml_data = []
-        cfgxml_data.append("  <multilabel>")
-        cfgxml_data.append(f"    <legends>{legends}</legends>")
-        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append('    <font>("Helvetica", 12)</font>')
-        cfgxml_data.append('    <bg>"black"</bg>')
-        cfgxml_data.append('    <fg>"yellow"</fg>')
-        cfgxml_data.append("  </multilabel>")
-        return (f"pyvcp.{halpin}", cfgxml_data)
