@@ -548,16 +548,14 @@ class LinuxCNC:
             pyvcp_mode = linuxcnc_config.get("pyvcp_mode", "ALL")
             if pyvcp_mode != "NONE":
                 pyvcp_pos = linuxcnc_config.get("pyvcp_pos", "RIGHT")
-                """
                 if pyvcp_pos == "TAB":
                     ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "pyvcp"
                     ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
                 else:
                     ini_setup["DISPLAY"]["PYVCP_POSITION"] = pyvcp_pos
                     ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
-                """
 
-            ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
+            # ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
 
         elif gui == "_gmoccapy":
             ini_setup["DISPLAY"]["DISPLAY"] = gui
