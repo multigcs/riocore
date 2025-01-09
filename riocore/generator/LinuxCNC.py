@@ -361,8 +361,8 @@ class LinuxCNC:
         output.append("")
 
         if gui in {"qtdragon", "qtdragon_hd"}:
-            output.append('sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/')
-            output.append('sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/')
+            output.append("sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/")
+            output.append("sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/")
             output.append('sudo cp -a "$DIRNAME/rio-gui_handler.py" /usr/share/qtvcp/panels/rio-gui/')
             output.append('sudo cp -a "$DIRNAME/rio-gui.ui" /usr/share/qtvcp/panels/rio-gui/')
 
@@ -570,10 +570,13 @@ class LinuxCNC:
                     "LOG_FILE": "qtdragon.log",
                     "ICON": "silver_dragon.png",
                     "INTRO_GRAPHIC": "silver_dragon.png",
-                    "INTRO_TIME": "2",
+                    "INTRO_TIME": "1",
                     "EMBED_TAB_NAME|RIO": "RIO",
                     "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
                     "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
+                    "CYCLE_TIME": "100",
+                    "GRAPHICS_CYCLE_TIME": "100",
+                    "HALPIN_CYCLE": "100",
                 },
                 "PROBE": {
                     "USE_PROBE": "NO",
@@ -2995,6 +2998,11 @@ class qtvcp:
  </widget>
  <customwidgets>
   <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
    <class>IndicatedPushButton</class>
    <extends>QPushButton</extends>
    <header>qtvcp.widgets.simple_widgets</header>
@@ -3214,9 +3222,13 @@ class qtvcp:
         cfgxml_data.append("        <verstretch>0</verstretch>")
         cfgxml_data.append("       </sizepolicy>")
         cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="textTemplate" stdset="0">')
-        cfgxml_data.append(f"       <string>{display_format}</string>")
-        cfgxml_data.append("      </property>")
+        if display_format:
+            cfgxml_data.append('      <property name="textTemplate" stdset="0">')
+            cfgxml_data.append(f"       <string>%{display_format}</string>")
+            cfgxml_data.append("      </property>")
+        cfgxml_data.append('                 <property name="alignment">')
+        cfgxml_data.append("                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>")
+        cfgxml_data.append("                 </property>")
         cfgxml_data.append('      <property name="styleSheet">')
         cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
         cfgxml_data.append("      </property>")
@@ -3237,22 +3249,32 @@ class qtvcp:
         cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
         cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="PushButton" name="{halpin}">')
+        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
         cfgxml_data.append('      <property name="text">')
         cfgxml_data.append(f"       <string>{name}</string>")
         cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="checkable">')
-        cfgxml_data.append("        <bool>true</bool>")
+        cfgxml_data.append('      <property name="indent">')
+        cfgxml_data.append("       <number>4</number>")
         cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="styleSheet">')
-        cfgxml_data.append('        <string notr="true">font: 18pt &quot;Lato Heavy&quot;;</string>')
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="minimumSize">')
-        cfgxml_data.append("        <size>")
-        cfgxml_data.append("         <width>32</width>")
-        cfgxml_data.append("         <height>32</height>")
-        cfgxml_data.append("        </size>")
-        cfgxml_data.append("      </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("    <item>")
+        cfgxml_data.append(f'     <widget class="CheckBox" name="{halpin}">')
+        cfgxml_data.append('                 <property name="sizePolicy">')
+        cfgxml_data.append('                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
+        cfgxml_data.append("                   <horstretch>0</horstretch>")
+        cfgxml_data.append("                   <verstretch>0</verstretch>")
+        cfgxml_data.append("                  </sizepolicy>")
+        cfgxml_data.append("                 </property>")
+        cfgxml_data.append('                 <property name="minimumSize">')
+        cfgxml_data.append("                  <size>")
+        cfgxml_data.append("                   <width>32</width>")
+        cfgxml_data.append("                   <height>32</height>")
+        cfgxml_data.append("                  </size>")
+        cfgxml_data.append("                 </property>")
+        cfgxml_data.append('                 <property name="text">')
+        cfgxml_data.append("                  <string/>")
+        cfgxml_data.append("                 </property>")
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
         cfgxml_data.append("   </layout>")
