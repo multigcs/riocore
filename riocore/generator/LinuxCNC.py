@@ -376,6 +376,7 @@ class LinuxCNC:
         self.startscript()
         self.component()
         self.hal()
+        self.riof()
         self.gui()
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "generator"):
@@ -550,20 +551,20 @@ class LinuxCNC:
                 ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "ntb_user_tabs"
                 ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
 
-        elif gui == "qtdragon":
+        elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
                 "DISPLAY": {
-                    "DISPLAY": "qtvcp qtdragon",
+                    "DISPLAY": f"qtvcp {gui}",
                     "PREFERENCE_FILE_PATH": "WORKINGFOLDER/qtdragon.pref",
                     "MDI_HISTORY_FILE": "mdi_history.dat",
                     "MACHINE_LOG_PATH": "machine_log.dat",
                     "LOG_FILE": "qtdragon.log",
-                    # "EMBED_TAB_NAME|RIO": "RIO",
-                    # "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
-                    # "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
                     "ICON": "silver_dragon.png",
                     "INTRO_GRAPHIC": "silver_dragon.png",
                     "INTRO_TIME": "2",
+                    # "EMBED_TAB_NAME|RIO": "RIO",
+                    # "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
+                    # "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
                 },
                 "PROBE": {
                     "USE_PROBE": "NO",
@@ -802,6 +803,339 @@ class LinuxCNC:
         elif input_name not in self.networks[network]["in"]:
             self.networks[network]["in"].append(input_name)
 
+    def riof(self):
+        linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        gui = linuxcnc_config.get("gui", "axis")
+
+        # scale and offset
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    halname = signal_config["halname"]
+                    netname = signal_config["netname"]
+                    userconfig = signal_config.get("userconfig")
+                    scale = userconfig.get("scale")
+                    offset = userconfig.get("offset")
+                    setp = userconfig.get("setp")
+                    if not netname and setp is not None:
+                        if scale:
+                            self.hal_setp_add(f"rio.{halname}-scale", scale)
+                        if offset:
+                            self.hal_setp_add(f"rio.{halname}-offset", offset)
+
+        # rio-functions
+        self.rio_functions = {}
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    halname = signal_config["halname"]
+                    netname = signal_config["netname"]
+                    virtual = signal_config.get("virtual")
+                    userconfig = signal_config.get("userconfig")
+                    function = userconfig.get("function", "")
+                    rio_function = function.split(".", 1)
+                    if function and rio_function[0] in {"jog"}:
+                        if rio_function[0] not in self.rio_functions:
+                            self.rio_functions[rio_function[0]] = {}
+                        self.rio_functions[rio_function[0]][rio_function[1]] = halname
+                    elif function and rio_function[0] in {"wcomp"}:
+                        if rio_function[0] not in self.rio_functions:
+                            self.rio_functions[rio_function[0]] = {}
+                        values = rio_function[1].split(".")
+                        vmin = values[0]
+                        vmax = values[-1]
+                        self.rio_functions[rio_function[0]][halname] = {
+                            "source": halname,
+                            "vmin": vmin,
+                            "vmax": vmax,
+                            "virtual": virtual,
+                        }
+
+        if "wcomp" in self.rio_functions:
+            self.loadrts.append("")
+            self.loadrts.append("# wcomp")
+            for function, halname in self.rio_functions["wcomp"].items():
+                source = halname["source"]
+                vmin = halname["vmin"]
+                vmax = halname["vmax"]
+                virtual = halname["virtual"]
+                self.loadrts.append(f"loadrt wcomp names=riof.{source}")
+                self.loadrts.append(f"addf riof.{source} servo-thread")
+                self.hal_setp_add(f"riof.{source}.min", vmin)
+                self.hal_setp_add(f"riof.{source}.max", vmax)
+                if virtual:
+                    self.hal_net_add(f"riov.{source}", f"riof.{source}.in")
+                else:
+                    self.hal_net_add(f"rio.{source}", f"riof.{source}.in")
+
+        if "jog" in self.rio_functions:
+            self.loadrts.append("")
+            self.loadrts.append("# Jogging")
+            speed_selector = False
+            axis_selector = False
+            axis_leds = False
+            axis_move = False
+            wheel = False
+            position_display = False
+            for function, halname in self.rio_functions["jog"].items():
+                if function.startswith("select-"):
+                    axis_selector = True
+                elif function.startswith("selected-"):
+                    axis_leds = True
+                elif function in {"plus", "minus"}:
+                    axis_move = True
+                elif function in {"fast"}:
+                    speed_selector = True
+                elif function in {"speed0"}:
+                    speed_selector = True
+                elif function in {"speed1"}:
+                    speed_selector = True
+                elif function in {"position"}:
+                    position_display = True
+                elif function in {"wheel"}:
+                    wheel = True
+
+            riof_jog_default = self.project.config["jdata"].get("linuxcnc", {}).get("rio_functions", {}).get("jog", {})
+
+            def riof_jog_setup(section, key):
+                return riof_jog_default.get(section, {}).get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][section][key]["default"])
+
+            wheel_scale = riof_jog_setup("wheel", "scale")
+
+            if speed_selector:
+                wheel_scale = None
+
+                speed_selector_mux = 1
+                for function, halname in self.rio_functions["jog"].items():
+                    if function == "speed0":
+                        speed_selector_mux *= 2
+                    elif function == "speed1":
+                        speed_selector_mux *= 2
+                    elif function == "fast":
+                        speed_selector_mux *= 2
+
+                # TODO: using mux-gen ?
+                if speed_selector_mux > 4:
+                    print("ERROR: only two speed selectors are supported")
+                    speed_selector_mux = 4
+                elif speed_selector_mux == 1:
+                    print("ERROR: no speed selectors found")
+
+                if speed_selector_mux in {2, 4}:
+                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
+                    self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
+
+                    self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
+                    self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
+                    if speed_selector_mux == 4:
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_2"))
+                        self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheel", "scale_3"))
+
+                    in_n = 0
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function in {"fast", "speed0", "speed1"}:
+                            if speed_selector_mux == 2:
+                                self.hal_net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
+                            else:
+                                self.hal_net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
+                                in_n += 1
+
+                    (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
+                    self.cfgxml_data["status"] += gout
+                    self.hal_net_add("riof.jog.wheelscale_mux.out", pname)
+
+            if wheel:
+                halname_wheel = ""
+                for function, halname in self.rio_functions["jog"].items():
+                    if function == "wheel":
+                        halname_wheel = f"rio.{halname}-s32"
+                        break
+
+                wheelfilter = riof_jog_setup("wheel", "filter")
+                if halname_wheel and wheelfilter:
+                    wf_gain = riof_jog_setup("wheel", "filter_gain")
+                    wf_scale = riof_jog_setup("wheel", "filter_scale")
+                    self.loadrts.append("loadrt ilowpass names=riof.jog.wheelilowpass")
+                    self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
+                    self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
+                    self.hal_setp_add("riof.jog.wheelilowpass.scale", wf_scale)
+                    self.hal_net_add(halname_wheel, "riof.jog.wheelilowpass.in")
+                    halname_wheel = "riof.jog.wheelilowpass.out"
+
+                if halname_wheel:
+                    for axis_name, axis_config in self.axis_dict.items():
+                        joints = axis_config["joints"]
+                        laxis = axis_name.lower()
+                        self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
+
+                        if wheel_scale is not None:
+                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                        else:
+                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+
+                        if gui == "axis":
+                            self.hal_net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
+                            self.hal_net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+                            for joint, joint_setup in joints.items():
+                                self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
+
+                                if wheel_scale is not None:
+                                    self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                else:
+                                    self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+
+                                self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
+                                self.hal_net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+
+            else:
+                for axis_name, axis_config in self.axis_dict.items():
+                    joints = axis_config["joints"]
+                    laxis = axis_name.lower()
+                    fname = f"wheel_{laxis}"
+                    if fname in self.rio_functions["jog"]:
+                        self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
+
+                        if wheel_scale is not None:
+                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                        else:
+                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+
+                        self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
+                        for function, halname in self.rio_functions["jog"].items():
+                            if function == fname:
+                                self.hal_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+
+                        for joint, joint_setup in joints.items():
+                            self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
+
+                            if wheel_scale is not None:
+                                self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                            else:
+                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+
+                            self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
+                            for function, halname in self.rio_functions["jog"].items():
+                                if function == fname:
+                                    self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+
+            if speed_selector:
+                speed_selector_mux = 1
+                for function, halname in self.rio_functions["jog"].items():
+                    if function == "speed0":
+                        speed_selector_mux *= 2
+                    elif function == "speed1":
+                        speed_selector_mux *= 2
+                    elif function == "fast":
+                        speed_selector_mux *= 2
+
+                if speed_selector_mux > 4:
+                    print("ERROR: only two speed selectors are supported")
+                    speed_selector_mux = 4
+                elif speed_selector_mux == 1:
+                    print("ERROR: no speed selectors found")
+
+                if speed_selector_mux in {2, 4}:
+                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
+                    self.loadrts.append("addf riof.jog.speed_mux servo-thread")
+
+                    if speed_selector_mux == 2:
+                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
+                    else:
+                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
+                        self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("keys", "speed_2"))
+                        self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("keys", "speed_3"))
+
+                    in_n = 0
+                    for function, halname in self.rio_functions["jog"].items():
+                        if function in {"fast", "speed0", "speed1"}:
+                            if speed_selector_mux == 2:
+                                self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
+                            else:
+                                self.hal_net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
+                                in_n += 1
+
+                    (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
+                    self.cfgxml_data["status"] += gout
+                    self.hal_net_add("riof.jog.speed_mux.out", pname)
+                    self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
+                    self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
+            else:
+                self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("keys", "speed"))
+                self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("keys", "speed"))
+
+            if axis_move:
+                for function, halname in self.rio_functions["jog"].items():
+                    if function in {"plus", "minus"}:
+                        self.hal_net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
+                        self.hal_net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
+
+            if axis_selector:
+                joint_n = 0
+                for function, halname in self.rio_functions["jog"].items():
+                    if function.startswith("select-"):
+                        axis_name = function.split("-")[-1]
+                        self.hal_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
+                        self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
+                        (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
+                        self.cfgxml_data["status"] += gout
+                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", pname)
+                        for axis_id, axis_config in self.axis_dict.items():
+                            joints = axis_config["joints"]
+                            laxis = axis_id.lower()
+                            if axis_name == laxis:
+                                self.loadrts.append("")
+                                self.loadrts.append(f"# axis {laxis} selection")
+                                self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                                self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
+                                if gui == "axis":
+                                    self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
+                                    for joint, joint_setup in joints.items():
+                                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
+                        joint_n += 1
+            else:
+                for axis_id, axis_config in self.axis_dict.items():
+                    joints = axis_config["joints"]
+                    laxis = axis_id.lower()
+                    self.loadrts.append("")
+                    self.loadrts.append(f"# axis {laxis} selection")
+                    self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                    self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
+                    if gui == "axis":
+                        self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
+                        for joint, joint_setup in joints.items():
+                            self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
+
+            if axis_selector and position_display:
+                self.loadrts.append("")
+                self.loadrts.append("# display position")
+                self.loadrts.append("loadrt mux16 names=riof.jog.position_mux")
+                self.loadrts.append("addf riof.jog.position_mux servo-thread")
+                mux_select = 0
+                mux_input = 1
+                for function, halname in self.rio_functions["jog"].items():
+                    if function.startswith("select-"):
+                        axis_name = function.split("-")[-1]
+                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
+                        self.hal_net_add(f"halui.axis.{axis_name}.pos-relative", f"riof.jog.position_mux.in{mux_input:02d}")
+                        mux_select += 1
+                        mux_input = mux_input * 2
+                    elif function == "position":
+                        self.hal_net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
+
+            if axis_leds:
+                for function, halname in self.rio_functions["jog"].items():
+                    if function.startswith("selected-"):
+                        axis_name = function.split("-")[-1]
+                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
+
     def gui(self):
         os.makedirs(self.configuration_path, exist_ok=True)
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
@@ -815,9 +1149,8 @@ class LinuxCNC:
             self.gui_gen = axis()
         elif gui == "_gmoccapy":
             self.gui_gen = axis()
-
-        # elif gui == "qtdragon":
-        #     self.gui_gen = qtvcp()
+        # elif gui in {"qtdragon", "qtdragon_hd"}:
+        #    self.gui_gen = qtvcp()
         else:
             self.gui_gen = None
 
@@ -852,7 +1185,7 @@ class LinuxCNC:
             self.cfgxml_data["outputs"] = []
 
             if machinetype == "melfa":
-                if gui != "qtdragon":
+                if gui not in {"qtdragon", "qtdragon_hd"}:
                     (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
                     self.cfgxml_data["status"] += gout
                     self.hal_net_add("kinstype.is-0", f"{pname}.legend0")
@@ -882,7 +1215,7 @@ class LinuxCNC:
                 self.cfgxml_data["status"].append("</hbox>")
 
             # buttons
-            if gui != "qtdragon":
+            if gui not in {"qtdragon", "qtdragon_hd"}:
                 mdi_xml = []
                 mdi_xml.append('  <labelframe text="MDI-Commands">')
                 mdi_xml.append("    <relief>RAISED</relief>")
@@ -952,336 +1285,6 @@ class LinuxCNC:
             for plugin_instance in self.project.plugin_instances:
                 if hasattr(plugin_instance, "linuxcnc_gui"):
                     plugin_instance.linuxcnc_gui(self)
-
-            # scale and offset
-            for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                    for signal_name, signal_config in plugin_instance.signals().items():
-                        halname = signal_config["halname"]
-                        netname = signal_config["netname"]
-                        direction = signal_config["direction"]
-                        boolean = signal_config.get("bool")
-                        userconfig = signal_config.get("userconfig")
-                        scale = userconfig.get("scale")
-                        offset = userconfig.get("offset")
-                        setp = userconfig.get("setp")
-                        if not netname and setp is not None:
-                            if scale:
-                                self.hal_setp_add(f"rio.{halname}-scale", scale)
-                            if offset:
-                                self.hal_setp_add(f"rio.{halname}-offset", offset)
-
-            # rio-functions
-            self.rio_functions = {}
-            for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                    for signal_name, signal_config in plugin_instance.signals().items():
-                        halname = signal_config["halname"]
-                        netname = signal_config["netname"]
-                        direction = signal_config["direction"]
-                        boolean = signal_config.get("bool")
-                        virtual = signal_config.get("virtual")
-                        userconfig = signal_config.get("userconfig")
-                        function = userconfig.get("function", "")
-                        rio_function = function.split(".", 1)
-                        if function and rio_function[0] in {"jog"}:
-                            if rio_function[0] not in self.rio_functions:
-                                self.rio_functions[rio_function[0]] = {}
-                            self.rio_functions[rio_function[0]][rio_function[1]] = halname
-                        elif function and rio_function[0] in {"wcomp"}:
-                            if rio_function[0] not in self.rio_functions:
-                                self.rio_functions[rio_function[0]] = {}
-                            values = rio_function[1].split(".")
-                            vmin = values[0]
-                            vmax = values[-1]
-                            self.rio_functions[rio_function[0]][halname] = {
-                                "source": halname,
-                                "vmin": vmin,
-                                "vmax": vmax,
-                                "virtual": virtual,
-                            }
-
-            if "wcomp" in self.rio_functions:
-                self.loadrts.append("")
-                self.loadrts.append("# wcomp")
-                for function, halname in self.rio_functions["wcomp"].items():
-                    source = halname["source"]
-                    vmin = halname["vmin"]
-                    vmax = halname["vmax"]
-                    virtual = halname["virtual"]
-                    self.loadrts.append(f"loadrt wcomp names=riof.{source}")
-                    self.loadrts.append(f"addf riof.{source} servo-thread")
-                    self.hal_setp_add(f"riof.{source}.min", vmin)
-                    self.hal_setp_add(f"riof.{source}.max", vmax)
-                    if virtual:
-                        self.hal_net_add(f"riov.{source}", f"riof.{source}.in")
-                    else:
-                        self.hal_net_add(f"rio.{source}", f"riof.{source}.in")
-
-            if "jog" in self.rio_functions:
-                self.loadrts.append("")
-                self.loadrts.append("# Jogging")
-                speed_selector = False
-                axis_selector = False
-                axis_leds = False
-                axis_move = False
-                wheel = False
-                position_display = False
-                for function, halname in self.rio_functions["jog"].items():
-                    if function.startswith("select-"):
-                        axis_selector = True
-                    elif function.startswith("selected-"):
-                        axis_leds = True
-                    elif function in {"plus", "minus"}:
-                        axis_move = True
-                    elif function in {"fast"}:
-                        speed_selector = True
-                    elif function in {"speed0"}:
-                        speed_selector = True
-                    elif function in {"speed1"}:
-                        speed_selector = True
-                    elif function in {"position"}:
-                        position_display = True
-                    elif function in {"wheel"}:
-                        wheel = True
-
-                riof_jog_default = self.project.config["jdata"].get("linuxcnc", {}).get("rio_functions", {}).get("jog", {})
-
-                def riof_jog_setup(section, key):
-                    return riof_jog_default.get(section, {}).get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][section][key]["default"])
-
-                wheel_scale = riof_jog_setup("wheel", "scale")
-
-                if speed_selector:
-                    wheel_scale = None
-
-                    speed_selector_mux = 1
-                    for function, halname in self.rio_functions["jog"].items():
-                        if function == "speed0":
-                            speed_selector_mux *= 2
-                        elif function == "speed1":
-                            speed_selector_mux *= 2
-                        elif function == "fast":
-                            speed_selector_mux *= 2
-
-                    # TODO: using mux-gen ?
-                    if speed_selector_mux > 4:
-                        print("ERROR: only two speed selectors are supported")
-                        speed_selector_mux = 4
-                    elif speed_selector_mux == 1:
-                        print("ERROR: no speed selectors found")
-
-                    if speed_selector_mux in {2, 4}:
-                        self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
-                        self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
-
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
-                        if speed_selector_mux == 4:
-                            self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_2"))
-                            self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheel", "scale_3"))
-
-                        in_n = 0
-                        for function, halname in self.rio_functions["jog"].items():
-                            if function in {"fast", "speed0", "speed1"}:
-                                if speed_selector_mux == 2:
-                                    self.hal_net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
-                                else:
-                                    self.hal_net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
-                                    in_n += 1
-
-                        (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
-                        self.cfgxml_data["status"] += gout
-                        self.hal_net_add("riof.jog.wheelscale_mux.out", pname)
-
-                if wheel:
-                    halname_wheel = ""
-                    for function, halname in self.rio_functions["jog"].items():
-                        if function == "wheel":
-                            halname_wheel = f"rio.{halname}-s32"
-                            break
-
-                    wheelfilter = riof_jog_setup("wheel", "filter")
-                    if halname_wheel and wheelfilter:
-                        wf_gain = riof_jog_setup("wheel", "filter_gain")
-                        wf_scale = riof_jog_setup("wheel", "filter_scale")
-                        self.loadrts.append("loadrt ilowpass names=riof.jog.wheelilowpass")
-                        self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
-                        self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
-                        self.hal_setp_add("riof.jog.wheelilowpass.scale", wf_scale)
-                        self.hal_net_add(halname_wheel, "riof.jog.wheelilowpass.in")
-                        halname_wheel = "riof.jog.wheelilowpass.out"
-
-                    if halname_wheel:
-                        for axis_name, axis_config in self.axis_dict.items():
-                            joints = axis_config["joints"]
-                            laxis = axis_name.lower()
-                            self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-
-                            if wheel_scale is not None:
-                                self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
-                            else:
-                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
-
-                            self.hal_net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
-                            self.hal_net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
-                            for joint, joint_setup in joints.items():
-                                self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
-
-                                if wheel_scale is not None:
-                                    self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
-                                else:
-                                    self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
-
-                                self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
-                                self.hal_net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
-
-                else:
-                    for axis_name, axis_config in self.axis_dict.items():
-                        joints = axis_config["joints"]
-                        laxis = axis_name.lower()
-                        fname = f"wheel_{laxis}"
-                        if fname in self.rio_functions["jog"]:
-                            self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-
-                            if wheel_scale is not None:
-                                self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
-                            else:
-                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
-
-                            self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
-                            for function, halname in self.rio_functions["jog"].items():
-                                if function == fname:
-                                    self.hal_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
-
-                            for joint, joint_setup in joints.items():
-                                self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
-
-                                if wheel_scale is not None:
-                                    self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
-                                else:
-                                    self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
-
-                                self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
-                                for function, halname in self.rio_functions["jog"].items():
-                                    if function == fname:
-                                        self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
-
-                if speed_selector:
-                    speed_selector_mux = 1
-                    for function, halname in self.rio_functions["jog"].items():
-                        if function == "speed0":
-                            speed_selector_mux *= 2
-                        elif function == "speed1":
-                            speed_selector_mux *= 2
-                        elif function == "fast":
-                            speed_selector_mux *= 2
-
-                    if speed_selector_mux > 4:
-                        print("ERROR: only two speed selectors are supported")
-                        speed_selector_mux = 4
-                    elif speed_selector_mux == 1:
-                        print("ERROR: no speed selectors found")
-
-                    if speed_selector_mux in {2, 4}:
-                        self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
-                        self.loadrts.append("addf riof.jog.speed_mux servo-thread")
-
-                        if speed_selector_mux == 2:
-                            self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
-                            self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
-                        else:
-                            self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
-                            self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
-                            self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("keys", "speed_2"))
-                            self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("keys", "speed_3"))
-
-                        in_n = 0
-                        for function, halname in self.rio_functions["jog"].items():
-                            if function in {"fast", "speed0", "speed1"}:
-                                if speed_selector_mux == 2:
-                                    self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
-                                else:
-                                    self.hal_net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
-                                    in_n += 1
-
-                        (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
-                        self.cfgxml_data["status"] += gout
-                        self.hal_net_add("riof.jog.speed_mux.out", pname)
-                        self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
-                        self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
-                else:
-                    self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("keys", "speed"))
-                    self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("keys", "speed"))
-
-                if axis_move:
-                    for function, halname in self.rio_functions["jog"].items():
-                        if function in {"plus", "minus"}:
-                            self.hal_net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
-                            self.hal_net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
-
-                if axis_selector:
-                    joint_n = 0
-                    for function, halname in self.rio_functions["jog"].items():
-                        if function.startswith("select-"):
-                            axis_name = function.split("-")[-1]
-                            self.hal_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
-                            self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
-                            (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
-                            self.cfgxml_data["status"] += gout
-                            self.hal_net_add(f"halui.axis.{axis_name}.is-selected", pname)
-                            for axis_id, axis_config in self.axis_dict.items():
-                                joints = axis_config["joints"]
-                                laxis = axis_id.lower()
-                                if axis_name == laxis:
-                                    self.loadrts.append("")
-                                    self.loadrts.append(f"# axis {laxis} selection")
-                                    self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                                    self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
-                                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
-                                    self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
-                                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
-                                    for joint, joint_setup in joints.items():
-                                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
-                            joint_n += 1
-                else:
-                    for axis_id, axis_config in self.axis_dict.items():
-                        joints = axis_config["joints"]
-                        laxis = axis_id.lower()
-                        self.loadrts.append("")
-                        self.loadrts.append(f"# axis {laxis} selection")
-                        self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                        self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                        self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
-                        self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
-                        self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
-                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
-                        for joint, joint_setup in joints.items():
-                            self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
-
-                if axis_selector and position_display:
-                    self.loadrts.append("")
-                    self.loadrts.append("# display position")
-                    self.loadrts.append("loadrt mux16 names=riof.jog.position_mux")
-                    self.loadrts.append("addf riof.jog.position_mux servo-thread")
-                    mux_select = 0
-                    mux_input = 1
-                    for function, halname in self.rio_functions["jog"].items():
-                        if function.startswith("select-"):
-                            axis_name = function.split("-")[-1]
-                            self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
-                            self.hal_net_add(f"halui.axis.{axis_name}.pos-relative", f"riof.jog.position_mux.in{mux_input:02d}")
-                            mux_select += 1
-                            mux_input = mux_input * 2
-                        elif function == "position":
-                            self.hal_net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
-
-                if axis_leds:
-                    for function, halname in self.rio_functions["jog"].items():
-                        if function.startswith("selected-"):
-                            axis_name = function.split("-")[-1]
-                            self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
 
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
@@ -1361,7 +1364,7 @@ class LinuxCNC:
                         if hasattr(self.gui_gen, f"draw_{dtype}"):
                             (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
 
-                            if gui == "qtdragon":
+                            if gui in {"qtdragon", "qtdragon_hd"}:
                                 gui_pinname = gui_pinname.replace("qtvcp.rio-gui.", "qtdragon.rio-gui.")
 
                             if section not in self.cfgxml_data:
@@ -1435,7 +1438,7 @@ class LinuxCNC:
             cfgxml_adata += self.gui_gen.draw_tabs_end()
             cfgxml_adata += self.gui_gen.draw_end()
 
-            if gui == "qtdragon":
+            if gui in {"qtdragon", "qtdragon_hd"}:
                 handler_py = []
                 handler_py.append("")
                 handler_py.append("from qtvcp.core import Status, Action")
@@ -1521,7 +1524,7 @@ class LinuxCNC:
         self.hal_net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
         self.hal_net_add("rio.sys-status", "&iocontrol.0.emc-enable-in")
 
-        if gui != "qtdragon":
+        if gui not in {"qtdragon", "qtdragon_hd"}:
             if toolchange == "manual":
                 if gui == "gmoccapy":
                     self.hal_net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
