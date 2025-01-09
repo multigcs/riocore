@@ -350,6 +350,8 @@ class LinuxCNC:
     def startscript(self):
         jdata = self.project.config["jdata"]
         startup = jdata.get("startup")
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        gui = linuxcnc_config.get("gui", "axis")
         output = ["#!/bin/sh"]
         output.append("")
         output.append("set -e")
@@ -357,6 +359,13 @@ class LinuxCNC:
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
+
+        if gui in {"qtdragon", "qtdragon_hd"}:
+            output.append('sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/')
+            output.append('sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/')
+            output.append('sudo cp -a "$DIRNAME/rio-gui_handler.py" /usr/share/qtvcp/panels/rio-gui/')
+            output.append('sudo cp -a "$DIRNAME/rio-gui.ui" /usr/share/qtvcp/panels/rio-gui/')
+
         if startup:
             output.append(startup)
             output.append("")
@@ -562,9 +571,9 @@ class LinuxCNC:
                     "ICON": "silver_dragon.png",
                     "INTRO_GRAPHIC": "silver_dragon.png",
                     "INTRO_TIME": "2",
-                    # "EMBED_TAB_NAME|RIO": "RIO",
-                    # "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
-                    # "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
+                    "EMBED_TAB_NAME|RIO": "RIO",
+                    "EMBED_TAB_COMMAND|RIO": "qtvcp rio-gui",
+                    "EMBED_TAB_LOCATION|RIO": "tabWidget_utilities",
                 },
                 "PROBE": {
                     "USE_PROBE": "NO",
@@ -1149,8 +1158,8 @@ class LinuxCNC:
             self.gui_gen = axis()
         elif gui == "_gmoccapy":
             self.gui_gen = axis()
-        # elif gui in {"qtdragon", "qtdragon_hd"}:
-        #    self.gui_gen = qtvcp()
+        elif gui in {"qtdragon", "qtdragon_hd"}:
+            self.gui_gen = qtvcp()
         else:
             self.gui_gen = None
 
