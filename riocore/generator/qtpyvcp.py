@@ -106,12 +106,9 @@ from qtpyvcp.plugins import getPlugin
 from qtpyvcp.utilities import logger
 
 LOG = logger.getLogger(__name__)
-
 STATUS = getPlugin('status')
 TOOL_TABLE = getPlugin('tooltable')
-
 INI_FILE = linuxcnc.ini(os.getenv('INI_FILE_NAME'))
-
 
 class UserTab(QWidget):
     def __init__(self, parent=None):
@@ -162,6 +159,9 @@ class UserTab(QWidget):
 
     def draw_tab_end(self):
         cfgxml_data = []
+        cfgxml_data.append("                           <item>")
+        cfgxml_data.append('                            <widget class="QWidget" name="widget" native="true"/>')
+        cfgxml_data.append("                           </item>")
         cfgxml_data.append("                          </layout>")
         cfgxml_data.append("                         </item>")
         cfgxml_data.append("                        </layout>")
@@ -237,15 +237,18 @@ class UserTab(QWidget):
 
         cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="HalSlider" name="rio.{halpin}">')
-        #cfgxml_data.append('      <property name="minimum">')
-        #cfgxml_data.append(f"       <number>{display_min}</number>")
-        #cfgxml_data.append("      </property>")
-        #cfgxml_data.append('      <property name="maximum">')
-        #cfgxml_data.append(f"       <number>{display_max}</number>")
-        #cfgxml_data.append("      </property>")
-        #cfgxml_data.append('      <property name="halpin_name" stdset="0">')
-        #cfgxml_data.append(f"       <string>{halpin}</string>")
-        #cfgxml_data.append("      </property>")
+        cfgxml_data.append('         <property name="sizePolicy">')
+        cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">')
+        cfgxml_data.append("           <horstretch>0</horstretch>")
+        cfgxml_data.append("           <verstretch>0</verstretch>")
+        cfgxml_data.append("          </sizepolicy>")
+        cfgxml_data.append("         </property>")
+        cfgxml_data.append('      <property name="minimum">')
+        cfgxml_data.append(f"       <number>{int(int(display_min) * 100.0)}</number>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append('      <property name="maximum">')
+        cfgxml_data.append(f"       <number>{int(int(display_max) * 100.0)}</number>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="orientation">')
         cfgxml_data.append("       <enum>Qt::Horizontal</enum>")
         cfgxml_data.append("      </property>")
@@ -349,8 +352,8 @@ class UserTab(QWidget):
         cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="HalLabel" name="rio.{halpin}">')
         cfgxml_data.append('                 <property name="pinType" stdset="0">')
-        cfgxml_data.append('                  <enum>HalLabel::float</enum>')
-        cfgxml_data.append('                 </property>')
+        cfgxml_data.append("                  <enum>HalLabel::float</enum>")
+        cfgxml_data.append("                 </property>")
         cfgxml_data.append('      <property name="sizePolicy">')
         cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
         cfgxml_data.append("        <horstretch>0</horstretch>")

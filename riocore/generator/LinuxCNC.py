@@ -432,7 +432,6 @@ class LinuxCNC:
                 os.makedirs(os.path.join(self.configuration_path, "user_buttons"), exist_ok=True)
                 open(os.path.join(self.configuration_path, "custom_config.yml"), "w").write("\n".join(custom_config))
 
-
         self.startscript()
         self.component()
         self.hal()
