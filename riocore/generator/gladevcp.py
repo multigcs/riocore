@@ -2,7 +2,7 @@ import os
 
 
 class gladevcp:
-    def draw_begin(self, configuration_path, prefix="gladevcp"):
+    def draw_begin(self, configuration_path, prefix="gladevcp", vcp_pos=None):
         self.configuration_path = configuration_path
         self.prefix = prefix
         self.adjustment = []

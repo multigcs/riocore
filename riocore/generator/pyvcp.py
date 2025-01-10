@@ -2,7 +2,7 @@ import os
 
 
 class pyvcp:
-    def draw_begin(self, configuration_path, prefix="pyvcp"):
+    def draw_begin(self, configuration_path, prefix="pyvcp", vcp_pos=None):
         self.configuration_path = configuration_path
         self.prefix = prefix
         cfgxml_data = []

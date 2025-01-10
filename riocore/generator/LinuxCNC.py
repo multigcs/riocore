@@ -1231,13 +1231,14 @@ class LinuxCNC:
         embed_vismach = linuxcnc_config.get("embed_vismach")
         vcp_sections = linuxcnc_config.get("vcp_sections", [])
         vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
+        vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         gui = linuxcnc_config.get("gui", "axis")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, gui_type=self.gui_type)
 
         if self.gui_gen:
             custom = []
             cfgxml_adata = []
-            cfgxml_adata += self.gui_gen.draw_begin(self.configuration_path, self.gui_prefix)
+            cfgxml_adata += self.gui_gen.draw_begin(self.configuration_path, self.gui_prefix, vcp_pos=vcp_pos)
 
             self.cfgxml_data = {}
             for section in vcp_sections:

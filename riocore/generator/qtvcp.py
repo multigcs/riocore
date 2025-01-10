@@ -6,7 +6,7 @@ class qtvcp:
     # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
     #
 
-    def draw_begin(self, configuration_path, prefix="qtvcp.rio-gui"):
+    def draw_begin(self, configuration_path, prefix="qtvcp.rio-gui", vcp_pos=None):
         self.configuration_path = configuration_path
         self.prefix = prefix
         cfgxml_data = []
@@ -318,6 +318,7 @@ class qtvcp:
         return (f"{self.prefix}.{halpin}-f", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_text = setup.get("text", name)
         display_threshold = setup.get("threshold")
@@ -330,6 +331,9 @@ class qtvcp:
         cfgxml_data.append(f"          <width>{display_size}</width>")
         cfgxml_data.append(f"          <height>{display_size}</height>")
         cfgxml_data.append("         </size>")
+        cfgxml_data.append("        </property>")
+        cfgxml_data.append('        <property name="min_value" stdset="0">')
+        cfgxml_data.append(f"         <number>{int(display_min)}</number>")
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_value" stdset="0">')
         cfgxml_data.append(f"         <number>{int(display_max)}</number>")

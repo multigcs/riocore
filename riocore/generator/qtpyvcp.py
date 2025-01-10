@@ -2,14 +2,42 @@ import os
 
 
 class qtpyvcp:
-    def draw_begin(self, configuration_path, prefix="qtpyvcp.rio-gui"):
+    def draw_begin(self, configuration_path, prefix="qtpyvcp.rio-gui", vcp_pos=None):
         self.configuration_path = configuration_path
         self.prefix = prefix
         cfgxml_data = []
-        cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
+        if vcp_pos == "RIGHT":
+            cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>USER</class>
- <widget class="QWidget" name="USER">
+ <widget class="QWidget" name="RIO">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>179</width>
+    <height>511</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1645</width>
+    <height>619</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>USER MAIN</string>
+  </property>
+  <property name="sidebar" stdset="0">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+""")
+        else:
+            cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>USER</class>
+ <widget class="QWidget" name="RIO">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -31,8 +59,8 @@ class qtpyvcp:
    <bool>false</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-
 """)
+
         return cfgxml_data
 
     def draw_end(self):
@@ -261,60 +289,24 @@ class UserTab(QWidget):
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         halpin = halpin.replace("_", "-")
+        display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_text = setup.get("text", name)
         display_threshold = setup.get("threshold")
         display_size = setup.get("size", "150")
         cfgxml_data = []
-        """
         cfgxml_data.append("   <item>")
-        cfgxml_data.append(f'       <widget class="Gauge" name="rio.{halpin}">')
-        cfgxml_data.append('        <property name="minimumSize">')
-        cfgxml_data.append("         <size>")
-        cfgxml_data.append(f"          <width>{display_size}</width>")
-        cfgxml_data.append(f"          <height>{display_size}</height>")
-        cfgxml_data.append("         </size>")
+        cfgxml_data.append(f'       <widget class="HalBarIndicator" name="rio.{halpin}">')
+        cfgxml_data.append('        <property name="minimum" stdset="0">')
+        cfgxml_data.append(f"         <number>{int(display_min)}</number>")
         cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="max_value" stdset="0">')
+        cfgxml_data.append('        <property name="maximum" stdset="0">')
         cfgxml_data.append(f"         <number>{int(display_max)}</number>")
         cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="max_reading" stdset="0">')
-        cfgxml_data.append(f"         <number>{int(display_max)}</number>")
-        cfgxml_data.append("        </property>")
-        if display_threshold:
-            cfgxml_data.append('        <property name="threshold" stdset="0">')
-            cfgxml_data.append(f"         <number>{display_threshold}</number>")
-            cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="num_ticks" stdset="0">')
-        cfgxml_data.append("         <number>9</number>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="gauge_label" stdset="0">')
-        cfgxml_data.append(f"         <string>{display_text}</string>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="zone1_color" stdset="0">')
-        cfgxml_data.append("         <color>")
-        cfgxml_data.append("          <red>0</red>")
-        cfgxml_data.append("          <green>100</green>")
-        cfgxml_data.append("          <blue>0</blue>")
-        cfgxml_data.append("         </color>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('        <property name="zone2_color" stdset="0">')
-        cfgxml_data.append("         <color>")
-        cfgxml_data.append("          <red>200</red>")
-        cfgxml_data.append("          <green>0</green>")
-        cfgxml_data.append("          <blue>0</blue>")
-        cfgxml_data.append("         </color>")
-        cfgxml_data.append("        </property>")
-        cfgxml_data.append('      <property name="halpin_name" stdset="0">')
-        cfgxml_data.append(f"       <string>{halpin}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="halpin_option" stdset="0">')
-        cfgxml_data.append("       <bool>true</bool>")
-        cfgxml_data.append("      </property>")
         cfgxml_data.append("       </widget>")
         cfgxml_data.append("   </item>")
-        """
-        return (f"{self.prefix}.{halpin}_value", cfgxml_data)
+
+        return (f"{self.prefix}.{halpin}.in-f", cfgxml_data)
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         halpin = halpin.replace("_", "-")
