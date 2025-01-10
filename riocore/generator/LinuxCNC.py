@@ -9,6 +9,7 @@ import stat
 from riocore import halpins
 from riocore.generator.pyvcp import pyvcp
 from riocore.generator.qtvcp import qtvcp
+from riocore.generator.qtpyvcp import qtpyvcp
 from riocore.generator.gladevcp import gladevcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -150,7 +151,7 @@ class LinuxCNC:
         },
     }
 
-    POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
+    POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
 
     def __init__(self, project):
         self.postgui_call_list = []
@@ -414,6 +415,23 @@ class LinuxCNC:
                 self.gui_gen = qtvcp()
                 self.gui_type = "qtvcp"
                 self.gui_prefix = "qtdragon.rio-gui"
+            elif gui in {"probe_basic", "probe_basic_lathe"}:
+                self.gui_gen = qtpyvcp()
+                self.gui_type = "qtpyvcp"
+                self.gui_prefix = "qtpyvcp.rio"
+                custom_config = []
+                custom_config.append("")
+                custom_config.append("# example of a machine specific settings")
+                custom_config.append("windows:")
+                custom_config.append("  mainwindow:")
+                custom_config.append("    kwargs:")
+                custom_config.append("      confirm_exit: false")
+                custom_config.append("")
+
+                os.makedirs(os.path.join(self.configuration_path, "user_tabs", "rio"), exist_ok=True)
+                os.makedirs(os.path.join(self.configuration_path, "user_buttons"), exist_ok=True)
+                open(os.path.join(self.configuration_path, "custom_config.yml"), "w").write("\n".join(custom_config))
+
 
         self.startscript()
         self.component()
@@ -596,6 +614,26 @@ class LinuxCNC:
                 ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
                 ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "box_right"
                 ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "gladevcp -x {XID} -H custom_postgui.hal rio-gui.ui"
+
+        elif gui in {"probe_basic", "probe_basic_lathe"}:
+            ini_setup["DISPLAY"]["DISPLAY"] = gui
+
+            pb_setup = {
+                "DISPLAY": {
+                    "DISPLAY": gui,
+                    "CONFIG_FILE": "custom_config.yml",
+                    "INTRO_GRAPHIC": "pbsplash.png",
+                    "INTRO_TIME": "2",
+                    "USER_TABS_PATH": "user_tabs/",
+                    "USER_BUTTONS_PATH": "user_buttons/",
+                },
+            }
+
+            for section, sdata in pb_setup.items():
+                if section not in ini_setup:
+                    ini_setup[section] = {}
+                for key, value in sdata.items():
+                    ini_setup[section][key] = value
 
         elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
