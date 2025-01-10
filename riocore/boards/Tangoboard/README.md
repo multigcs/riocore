@@ -7,7 +7,7 @@
 * Type: GW1NR-LV9QN88PC6/I5
 * Package: 
 * Clock: 27.000Mhz (Pin:52)
-* Example-Configs: [Mikcro5X](../../configs/Mikcro5X), [Tangoboard](../../configs/Tangoboard)
+* Example-Configs: [Tangoboard](../../configs/Tangoboard)
 
 ![board.png](board.png)
 
