@@ -380,7 +380,7 @@ class UserTab(QWidget):
         cfgxml_data += self.draw_title(name)
         cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="HalLabel" name="rio.{halpin}">')
-        cfgxml_data += self.add_property("pinType", "HalLabel::float", ptype="enum")
+        #cfgxml_data += self.add_property("pinType", "HalLabel::float", ptype="enum")
         cfgxml_data.append('      <property name="sizePolicy">')
         cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
         cfgxml_data.append("        <horstretch>0</horstretch>")
@@ -394,7 +394,7 @@ class UserTab(QWidget):
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
         cfgxml_data += self.draw_hbox_end()
-        return (f"{self.prefix}.{halpin}-in", cfgxml_data)
+        return (f"{self.prefix}.{halpin}.in", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         halpin = halpin.replace("_", "-")
