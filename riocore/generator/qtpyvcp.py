@@ -181,11 +181,9 @@ class qtpyvcp:
         handler_py.append("""
 import os
 import linuxcnc
-
 from qtpy import uic
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QWidget
-
 from qtpyvcp.plugins import getPlugin
 from qtpyvcp.utilities import logger
 
