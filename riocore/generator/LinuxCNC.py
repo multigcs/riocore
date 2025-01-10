@@ -593,6 +593,7 @@ class LinuxCNC:
 
         elif gui == "gmoccapy":
             ini_setup["DISPLAY"]["DISPLAY"] = gui
+            ini_setup["DISPLAY"]["CYCLE_TIME"] = "150"
             if gui_type == "pyvcp":
                 ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
                 ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "ntb_user_tabs"
