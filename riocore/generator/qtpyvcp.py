@@ -201,6 +201,13 @@ class UserTab(QWidget):
         open(py_filename, "w").write("\n".join(handler_py))
         open(ui_filename, "w").write("\n".join(cfgxml_data))
 
+    def add_property(self, name, value, ptype="number"):
+        cfgxml_data = []
+        cfgxml_data.append(f'      <property name="{name}">')
+        cfgxml_data.append(f"       <{ptype}>{value}</{ptype}>")
+        cfgxml_data.append("      </property>")
+        return cfgxml_data
+
     def draw_tabs_begin(self, names):
         cfgxml_data = []
         cfgxml_data.append('    <item row="0" column="0">')
@@ -293,13 +300,6 @@ class UserTab(QWidget):
               </item>
         """)
         return (f"{self.prefix}.{halpin}.out", cfgxml_data)
-
-    def add_property(self, name, value, ptype="number"):
-        cfgxml_data = []
-        cfgxml_data.append(f'      <property name="{name}">')
-        cfgxml_data.append(f"       <{ptype}>{value}</{ptype}>")
-        cfgxml_data.append("      </property>")
-        return cfgxml_data
 
     def draw_title(self, title):
         cfgxml_data = []

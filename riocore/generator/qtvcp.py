@@ -173,67 +173,48 @@ class qtvcp:
         open(py_filename, "w").write("\n".join(handler_py))
         open(ui_filename, "w").write("\n".join(cfgxml_data))
 
+    def add_property(self, name, value, ptype="number"):
+        cfgxml_data = []
+        cfgxml_data.append(f'      <property name="{name}">')
+        cfgxml_data.append(f"       <{ptype}>{value}</{ptype}>")
+        cfgxml_data.append("      </property>")
+        return cfgxml_data
+
     def draw_tabs_begin(self, names):
         cfgxml_data = []
-        cfgxml_data.append("                    <item>")
-        cfgxml_data.append('                     <widget class="QTabWidget" name="tabWidget_setup">')
-        cfgxml_data.append('                      <property name="geometry">')
-        cfgxml_data.append("                       <rect>")
-        cfgxml_data.append("                        <x>0</x>")
-        cfgxml_data.append("                        <y>0</y>")
-        cfgxml_data.append("                        <width>400</width>")
-        cfgxml_data.append("                        <height>300</height>")
-        cfgxml_data.append("                       </rect>")
-        cfgxml_data.append("                      </property>")
-        cfgxml_data.append('                      <property name="sizePolicy">')
-        cfgxml_data.append('                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">')
-        cfgxml_data.append("                        <horstretch>1</horstretch>")
-        cfgxml_data.append("                        <verstretch>0</verstretch>")
-        cfgxml_data.append("                       </sizepolicy>")
-        cfgxml_data.append("                      </property>")
-        cfgxml_data.append('                      <property name="currentIndex">')
-        cfgxml_data.append("                       <number>0</number>")
-        cfgxml_data.append("                      </property>")
+        cfgxml_data.append("    <item>")
+        cfgxml_data.append('     <widget class="QTabWidget" name="tabWidget_setup">')
         return cfgxml_data
 
     def draw_tabs_end(self):
         cfgxml_data = []
-        cfgxml_data.append("                     </widget>")
-        cfgxml_data.append("                    </item>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
         return cfgxml_data
 
     def draw_tab_begin(self, name):
         cfgxml_data = []
-        cfgxml_data.append(f'                      <widget class="QWidget" name="tab_{name}">')
-        cfgxml_data.append('                       <attribute name="title">')
-        cfgxml_data.append(f"                        <string>{name}</string>")
-        cfgxml_data.append("                       </attribute>")
-        cfgxml_data.append('                       <layout class="QVBoxLayout" name="layout_stat">')
-        cfgxml_data.append('                        <property name="spacing">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="leftMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="topMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="rightMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append('                        <property name="bottomMargin">')
-        cfgxml_data.append("                         <number>0</number>")
-        cfgxml_data.append("                        </property>")
-        cfgxml_data.append("                         <item>")
-        cfgxml_data.append('                          <layout class="QVBoxLayout" name="verticalLayout_58">')
+        cfgxml_data.append(f'      <widget class="QWidget" name="tab_{name}">')
+        cfgxml_data.append('       <attribute name="title">')
+        cfgxml_data.append(f"        <string>{name}</string>")
+        cfgxml_data.append("       </attribute>")
+        cfgxml_data.append('       <layout class="QVBoxLayout" name="layout_stat">')
+        cfgxml_data += self.add_property("spacing", "0")
+        cfgxml_data += self.add_property("leftMargin", "0")
+        cfgxml_data += self.add_property("topMargin", "0")
+        cfgxml_data += self.add_property("rightMargin", "0")
+        cfgxml_data += self.add_property("bottomMargin", "0")
+        cfgxml_data += self.draw_vbox_begin()
         return cfgxml_data
 
     def draw_tab_end(self):
         cfgxml_data = []
-        cfgxml_data.append("                          </layout>")
-        cfgxml_data.append("                         </item>")
-        cfgxml_data.append("                        </layout>")
-        cfgxml_data.append("                      </widget>")
+        cfgxml_data.append("           <item>")
+        cfgxml_data.append('            <widget class="QWidget" name="widget" native="true"/>')
+        cfgxml_data.append("           </item>")
+        cfgxml_data += self.draw_vbox_end()
+        cfgxml_data.append("        </layout>")
+        cfgxml_data.append("      </widget>")
         return cfgxml_data
 
     def draw_frame_begin(self, name=None):
@@ -248,26 +229,44 @@ class qtvcp:
 
     def draw_vbox_begin(self):
         cfgxml_data = []
-        cfgxml_data.append("                         <item>")
-        cfgxml_data.append('                          <layout class="QVBoxLayout" name="verticalLayout_5">')
+        cfgxml_data.append("     <item>")
+        cfgxml_data.append('      <layout class="QVBoxLayout" name="verticalLayout_5">')
+        cfgxml_data += self.add_property("leftMargin", "5")
+        cfgxml_data += self.add_property("topMargin", "5")
+        cfgxml_data += self.add_property("rightMargin", "5")
+        cfgxml_data += self.add_property("bottomMargin", "5")
         return cfgxml_data
 
     def draw_vbox_end(self):
         cfgxml_data = []
-        cfgxml_data.append("                          </layout>")
-        cfgxml_data.append("                         </item>")
+        cfgxml_data.append("      </layout>")
+        cfgxml_data.append("     </item>")
         return cfgxml_data
 
     def draw_hbox_begin(self):
         cfgxml_data = []
-        cfgxml_data.append("                         <item>")
-        cfgxml_data.append('                          <layout class="QHBoxLayout" name="hosizontalLayout_3">')
+        cfgxml_data.append("     <item>")
+        cfgxml_data.append('      <layout class="QHBoxLayout" name="hosizontalLayout_3">')
+        cfgxml_data += self.add_property("leftMargin", "5")
+        cfgxml_data += self.add_property("topMargin", "5")
+        cfgxml_data += self.add_property("rightMargin", "5")
+        cfgxml_data += self.add_property("bottomMargin", "5")
         return cfgxml_data
 
     def draw_hbox_end(self):
         cfgxml_data = []
-        cfgxml_data.append("                          </layout>")
-        cfgxml_data.append("                         </item>")
+        cfgxml_data.append("      </layout>")
+        cfgxml_data.append("     </item>")
+        return cfgxml_data
+
+    def draw_title(self, title):
+        cfgxml_data = []
+        cfgxml_data.append("    <item>")
+        cfgxml_data.append('     <widget class="QLabel">')
+        cfgxml_data += self.add_property("text", title, ptype="string")
+        cfgxml_data += self.add_property("indent", "4")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
         return cfgxml_data
 
     def draw_button(self, name, halpin, setup={}):
@@ -288,33 +287,16 @@ class qtvcp:
         display_max = setup.get("max", vmax)
         title = setup.get("title", name)
         cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{title}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
+        cfgxml_data += self.draw_hbox_begin()
+        cfgxml_data += self.draw_title(title)
         cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="Slider" name="{halpin}">')
-        cfgxml_data.append('      <property name="minimum">')
-        cfgxml_data.append(f"       <number>{display_min}</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="maximum">')
-        cfgxml_data.append(f"       <number>{display_max}</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="orientation">')
-        cfgxml_data.append("       <enum>Qt::Horizontal</enum>")
-        cfgxml_data.append("      </property>")
+        cfgxml_data += self.add_property("minimum", int(display_min))
+        cfgxml_data += self.add_property("maximum", int(display_max))
+        cfgxml_data += self.add_property("orientation", "Qt::Horizontal", ptype="enum")
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
+        cfgxml_data += self.draw_hbox_end()
         return (f"{self.prefix}.{halpin}-f", cfgxml_data)
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
@@ -391,18 +373,8 @@ class qtvcp:
             display_format = setup.get("format", "d")
 
         cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{name}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
+        cfgxml_data += self.draw_hbox_begin()
+        cfgxml_data += self.draw_title(name)
         cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="HALLabel" name="{halpin}">')
         cfgxml_data.append('      <property name="sizePolicy">')
@@ -421,7 +393,6 @@ class qtvcp:
         cfgxml_data.append('      <property name="styleSheet">')
         cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
         cfgxml_data.append("      </property>")
-
         for ptype in ("s32", "u32", "float", "bin"):
             cfgxml_data.append(f'      <property name="{ptype}_pin_type" stdset="0">')
             if ptype == hal_type:
@@ -429,27 +400,15 @@ class qtvcp:
             else:
                 cfgxml_data.append("       <bool>false</bool>")
             cfgxml_data.append("      </property>")
-
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
+        cfgxml_data += self.draw_hbox_end()
         return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_checkbutton(self, name, halpin, setup={}):
         cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{name}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
+        cfgxml_data += self.draw_hbox_begin()
+        cfgxml_data += self.draw_title(name)
         cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="CheckBox" name="{halpin}">')
         cfgxml_data.append('                 <property name="sizePolicy">')
@@ -469,24 +428,13 @@ class qtvcp:
         cfgxml_data.append("                 </property>")
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
+        cfgxml_data += self.draw_hbox_end()
         return (f"{self.prefix}.{halpin}", cfgxml_data)
 
     def draw_led(self, name, halpin, setup={}):
         cfgxml_data = []
-        cfgxml_data.append("  <item>")
-        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f"       <string>{name}</string>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append("       <number>4</number>")
-        cfgxml_data.append("      </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
+        cfgxml_data += self.draw_hbox_begin()
+        cfgxml_data += self.draw_title(name)
         cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="LED" name="{halpin}">')
         cfgxml_data.append('        <property name="sizePolicy">')
@@ -515,7 +463,6 @@ class qtvcp:
             cfgxml_data.append("           <red>85</red>")
             cfgxml_data.append("           <green>255</green>")
             cfgxml_data.append("           <blue>0</blue>")
-
         cfgxml_data.append("          </color>")
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="maximumSize">')
@@ -526,6 +473,5 @@ class qtvcp:
         cfgxml_data.append("        </property>")
         cfgxml_data.append("     </widget>")
         cfgxml_data.append("    </item>")
-        cfgxml_data.append("   </layout>")
-        cfgxml_data.append("  </item>")
+        cfgxml_data += self.draw_hbox_end()
         return (f"{self.prefix}.{halpin}", cfgxml_data)
