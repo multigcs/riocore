@@ -154,6 +154,7 @@ class LinuxCNC:
     POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
 
     def __init__(self, project):
+        self.postgui_call_rm = []
         self.postgui_call_list = []
         self.pregui_call_list = []
         self.loadrts = []
@@ -447,22 +448,28 @@ class LinuxCNC:
         open(os.path.join(self.configuration_path, "rio.hal"), "w").write("\n".join(output_hal))
         open(os.path.join(self.configuration_path, "custom_postgui.hal"), "w").write("\n".join(output_postgui))
 
-        extra_data = []
+        if gui == "gmoccapy" and self.gui_type == "gladevcp":
+            print("## INFO: custom_postgui.hal will be load by gladevcp")
+            self.postgui_call_rm.append("custom_postgui.hal")
+        else:
+            self.postgui_call_list.append("custom_postgui.hal")
+
+        list_data = []
         if os.path.isfile(os.path.join(self.configuration_path, "postgui_call_list.hal")):
             # read existing file to keep custom entry's
             cl_data = open(os.path.join(self.configuration_path, "postgui_call_list.hal"), "r").read()
             for line in cl_data.split("\n"):
                 if line.startswith("source "):
-                    source = " ".join(line.split()[1:])
-                    if source in self.postgui_call_list:
+                    source = line.split()[1]
+                    if source in self.postgui_call_rm:
                         continue
-                extra_data.append(line.strip())
-        cl_output = []
+                    elif source in self.postgui_call_list:
+                        self.postgui_call_list.remove(source)
+                list_data.append(line.strip())
+
         for halfile in self.postgui_call_list:
-            cl_output.append(f"source {halfile}")
-        for line in extra_data:
-            cl_output.append(line)
-        open(os.path.join(self.configuration_path, "postgui_call_list.hal"), "w").write("\n".join(cl_output))
+            list_data.append(f"source {halfile}")
+        open(os.path.join(self.configuration_path, "postgui_call_list.hal"), "w").write("\n".join(list_data))
 
         extra_data = []
         if os.path.isfile(os.path.join(self.configuration_path, "pregui_call_list.hal")):
@@ -1490,11 +1497,6 @@ class LinuxCNC:
             cfgxml_adata += self.gui_gen.draw_end()
 
             self.gui_gen.save(cfgxml_adata)
-
-        if gui == "gmoccapy" and self.gui_type == "gladevcp":
-            print("## INFO: custom_postgui.hal will be load by gladevcp")
-        else:
-            self.postgui_call_list.append("custom_postgui.hal")
 
     def resolv_logic(self, logic_name, bracket):
         # self.hal_net_add("halui.machine.is-on", "&riovs.myand1", "myand1")
