@@ -210,7 +210,7 @@ class qtvcp:
     def draw_tab_end(self):
         cfgxml_data = []
         cfgxml_data.append("           <item>")
-        cfgxml_data.append('            <widget class="QWidget" name="widget" native="true"/>')
+        cfgxml_data.append('            <widget class="QWidget" native="true"/>')
         cfgxml_data.append("           </item>")
         cfgxml_data += self.draw_vbox_end()
         cfgxml_data.append("        </layout>")
@@ -221,16 +221,35 @@ class qtvcp:
         if not name:
             name = "frame"
         cfgxml_data = []
+        cfgxml_data.append("""
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout">
+        """)
+
         return cfgxml_data
 
     def draw_frame_end(self):
         cfgxml_data = []
+
+        cfgxml_data.append("""
+      </layout>
+     </widget>
+    </item>
+        """)
+
         return cfgxml_data
 
     def draw_vbox_begin(self):
         cfgxml_data = []
         cfgxml_data.append("     <item>")
-        cfgxml_data.append('      <layout class="QVBoxLayout" name="verticalLayout_5">')
+        cfgxml_data.append('      <layout class="QVBoxLayout">')
         cfgxml_data += self.add_property("leftMargin", "5")
         cfgxml_data += self.add_property("topMargin", "5")
         cfgxml_data += self.add_property("rightMargin", "5")
@@ -246,7 +265,7 @@ class qtvcp:
     def draw_hbox_begin(self):
         cfgxml_data = []
         cfgxml_data.append("     <item>")
-        cfgxml_data.append('      <layout class="QHBoxLayout" name="hosizontalLayout_3">')
+        cfgxml_data.append('      <layout class="QHBoxLayout">')
         cfgxml_data += self.add_property("leftMargin", "5")
         cfgxml_data += self.add_property("topMargin", "5")
         cfgxml_data += self.add_property("rightMargin", "5")
@@ -275,7 +294,26 @@ class qtvcp:
               <item>
                <widget class="PushButton" name="{halpin}">
                 <property name="text">
-                 <string>{name}</string>
+                 <string>{name.upper()}</string>
+                </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>54</height>
+                  </size>
+                 </property>
+                <property name="styleSheet">
+                 <string notr="true">
+QLabel {{
+    color: rgb(235, 235, 235);
+}}
+                 </string>
                 </property>
                </widget>
               </item>
@@ -319,6 +357,9 @@ class qtvcp:
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_value" stdset="0">')
         cfgxml_data.append(f"         <number>{int(display_max)}</number>")
+        cfgxml_data.append("        </property>")
+        cfgxml_data.append('        <property name="min_reading" stdset="0">')
+        cfgxml_data.append(f"         <number>{int(display_min)}</number>")
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_reading" stdset="0">')
         cfgxml_data.append(f"         <number>{int(display_max)}</number>")
@@ -409,25 +450,40 @@ class qtvcp:
         cfgxml_data = []
         cfgxml_data += self.draw_hbox_begin()
         cfgxml_data += self.draw_title(name)
-        cfgxml_data.append("    <item>")
-        cfgxml_data.append(f'     <widget class="CheckBox" name="{halpin}">')
-        cfgxml_data.append('                 <property name="sizePolicy">')
-        cfgxml_data.append('                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
-        cfgxml_data.append("                   <horstretch>0</horstretch>")
-        cfgxml_data.append("                   <verstretch>0</verstretch>")
-        cfgxml_data.append("                  </sizepolicy>")
-        cfgxml_data.append("                 </property>")
-        cfgxml_data.append('                 <property name="minimumSize">')
-        cfgxml_data.append("                  <size>")
-        cfgxml_data.append("                   <width>32</width>")
-        cfgxml_data.append("                   <height>32</height>")
-        cfgxml_data.append("                  </size>")
-        cfgxml_data.append("                 </property>")
-        cfgxml_data.append('                 <property name="text">')
-        cfgxml_data.append("                  <string/>")
-        cfgxml_data.append("                 </property>")
-        cfgxml_data.append("     </widget>")
-        cfgxml_data.append("    </item>")
+        cfgxml_data.append(f"""
+          <item>
+           <widget class="PushButton" name="{halpin}">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+                QLabel {{
+                    color: rgb(235, 235, 235);
+                }}
+             </string>
+            </property>
+            <property name="text">
+             <string>x</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+        """)
         cfgxml_data += self.draw_hbox_end()
         return (f"{self.prefix}.{halpin}", cfgxml_data)
 
@@ -443,6 +499,7 @@ class qtvcp:
         cfgxml_data.append("          <verstretch>0</verstretch>")
         cfgxml_data.append("         </sizepolicy>")
         cfgxml_data.append("        </property>")
+        cfgxml_data += self.add_property("diameter", "24")
         cfgxml_data.append('        <property name="minimumSize">')
         cfgxml_data.append("         <size>")
         cfgxml_data.append("          <width>32</width>")
