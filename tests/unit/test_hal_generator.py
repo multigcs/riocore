@@ -6,8 +6,8 @@ import pytest
 
 from riocore.generator.hal import hal_generator
 
-def test_generator():
 
+def test_generator():
     expected_hal = """
 #################################################################################
 # logic and calc components
@@ -232,4 +232,3 @@ setp pyvcp.outval                     123
 
     assert expected_hal.strip() == "\n".join(hal_data).strip()
     assert expected_postgui.strip() == "\n".join(postgui_data).strip()
-    

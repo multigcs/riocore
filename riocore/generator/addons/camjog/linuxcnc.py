@@ -78,20 +78,20 @@ def hal(parent):
                 cal = camjog.get(f"{axis_name.lower()}_cal", 0.1)
                 # joints = axis_config["joints"]
                 axis_low = axis_name.lower()
-                parent.hal_setp_add(f"camjog.axis.{axis_low}.cal", cal)
-                parent.hal_net_add(f"axis.{axis_low}.jog-scale", f"camjog.axis.{axis_low}.jog-scale")
-                parent.hal_net_add(f"camjog.axis.{axis_low}.jog-counts", f"axis.{axis_low}.jog-counts")
+                parent.halg.setp_add(f"camjog.axis.{axis_low}.cal", cal)
+                parent.halg.net_add(f"axis.{axis_low}.jog-scale", f"camjog.axis.{axis_low}.jog-scale")
+                parent.halg.net_add(f"camjog.axis.{axis_low}.jog-counts", f"axis.{axis_low}.jog-counts")
 
-                parent.hal_setp_add(f"axis.{axis_low}.jog-scale", 0.01)
-                parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
-                parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
+                parent.halg.setp_add(f"axis.{axis_low}.jog-scale", 0.01)
+                parent.halg.setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
+                parent.halg.setp_add(f"axis.{axis_low}.jog-enable", 1)
 
                 """
                 for joint, joint_setup in joints.items():
-                    parent.hal_setp_add(f"joint.{joint}.jog-vel-mode", 0)
-                    parent.hal_setp_add(f"joint.{joint}.jog-enable", 1)
-                    #parent.hal_setp_add(f"joint.{joint}.jog-scale", jscale)
-                    parent.hal_net_add(f"camjog.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
+                    parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 0)
+                    parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
+                    #parent.halg.setp_add(f"joint.{joint}.jog-scale", jscale)
+                    parent.halg.net_add(f"camjog.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
                 """
 
             output.append("")

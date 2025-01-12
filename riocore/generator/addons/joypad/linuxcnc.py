@@ -33,17 +33,17 @@ def hal(parent):
     output.append("setp joy_mux4.in3 2000.0 # Max jog speed when third speed select button is pressed.")
     output.append("")
     if joypad_btn_slow:
-        parent.hal_net_add(f"input.0.{joypad_btn_slow}", "joy_or2_sel0.in0")
+        parent.halg.net_add(f"input.0.{joypad_btn_slow}", "joy_or2_sel0.in0")
     if joypad_btn_medium:
-        parent.hal_net_add(f"input.0.{joypad_btn_medium}", "joy_or2_sel1.in0")
+        parent.halg.net_add(f"input.0.{joypad_btn_medium}", "joy_or2_sel1.in0")
     if joypad_btn_fast:
-        parent.hal_net_add(f"input.0.{joypad_btn_fast}", "joy_or2_sel0.in1")
-        parent.hal_net_add(f"input.0.{joypad_btn_fast}", "joy_or2_sel1.in1")
+        parent.halg.net_add(f"input.0.{joypad_btn_fast}", "joy_or2_sel0.in1")
+        parent.halg.net_add(f"input.0.{joypad_btn_fast}", "joy_or2_sel1.in1")
 
-    parent.hal_net_add("joy_or2_sel0.out", "joy_mux4.sel0")
-    parent.hal_net_add("joy_or2_sel1.out", "joy_mux4.sel1")
-    parent.hal_net_add("joy_mux4.out", "halui.axis.jog-speed")
-    parent.hal_net_add("joy_mux4.out", "halui.joint.jog-speed")
+    parent.halg.net_add("joy_or2_sel0.out", "joy_mux4.sel0")
+    parent.halg.net_add("joy_or2_sel1.out", "joy_mux4.sel1")
+    parent.halg.net_add("joy_mux4.out", "halui.axis.jog-speed")
+    parent.halg.net_add("joy_mux4.out", "halui.joint.jog-speed")
 
     for axis_name, axis_config in parent.axis_dict.items():
         joints = axis_config["joints"]
@@ -55,9 +55,9 @@ def hal(parent):
             if reverse:
                 output.append(f"setp input.0.{jaxis}-scale -127.5")
             output.append(f"addf mux2_{axis_lower} servo-thread")
-            parent.hal_net_add("halui.machine.is-on", f"mux2_{axis_lower}.sel")
-            parent.hal_net_add(f"input.0.{jaxis}-position", f"mux2_{axis_lower}.in1")
-            parent.hal_net_add(f"mux2_{axis_lower}.out", f"halui.axis.{axis_lower}.analog")
+            parent.halg.net_add("halui.machine.is-on", f"mux2_{axis_lower}.sel")
+            parent.halg.net_add(f"input.0.{jaxis}-position", f"mux2_{axis_lower}.in1")
+            parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.axis.{axis_lower}.analog")
             for joint, joint_setup in joints.items():
-                parent.hal_net_add(f"mux2_{axis_lower}.out", f"halui.joint.{joint}.analog")
+                parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.joint.{joint}.analog")
     return output

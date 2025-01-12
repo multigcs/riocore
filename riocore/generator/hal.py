@@ -3,6 +3,7 @@
 # hal generator: can resolve logic operation, multiple assignments and invert pins
 #
 
+
 class hal_generator:
     logic_ids = {}
     signals_out = {}

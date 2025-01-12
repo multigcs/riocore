@@ -43,10 +43,10 @@ def hal(parent):
         for axis_name, axis_config in parent.axis_dict.items():
             joints = axis_config["joints"]
             # axis_low = axis_name.lower()
-            # parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
-            # parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
-            # parent.hal_setp_add(f"axis.{axis_low}.jog-scale", 0.01)
-            # parent.hal_net_add(f"robojog.joint.{joint}.jog-counts", f"axis.{axis_low}.jog-counts")
+            # parent.halg.setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
+            # parent.halg.setp_add(f"axis.{axis_low}.jog-enable", 1)
+            # parent.halg.setp_add(f"axis.{axis_low}.jog-scale", 0.01)
+            # parent.halg.net_add(f"robojog.joint.{joint}.jog-counts", f"axis.{axis_low}.jog-counts")
             for joint, joint_setup in joints.items():
                 min_limit = joint_setup.get("MIN_LIMIT", -180)
                 max_limit = joint_setup.get("MAX_LIMIT", 180)
@@ -54,14 +54,14 @@ def hal(parent):
                     min_limit = max(joint_setup.get("MIN_LIMIT", -180), -180)
                     max_limit = min(joint_setup.get("MAX_LIMIT", 180), 180)
 
-                parent.hal_setp_add(f"robojog.joint.{joint}.scale", 100.0)
-                parent.hal_setp_add(f"robojog.joint.{joint}.min_limit", min_limit)
-                parent.hal_setp_add(f"robojog.joint.{joint}.max_limit", max_limit)
-                parent.hal_setp_add(f"joint.{joint}.jog-vel-mode", 0)
-                parent.hal_setp_add(f"joint.{joint}.jog-enable", 1)
-                parent.hal_setp_add(f"joint.{joint}.jog-scale", 0.01)
-                parent.hal_net_add(f"robojog.joint.{joint}.jog-counts", f"joint.{joint}.jog-counts")
-                parent.hal_net_add(f"j{joint}pos-fb", f"robojog.joint.{joint}.position")
+                parent.halg.setp_add(f"robojog.joint.{joint}.scale", 100.0)
+                parent.halg.setp_add(f"robojog.joint.{joint}.min_limit", min_limit)
+                parent.halg.setp_add(f"robojog.joint.{joint}.max_limit", max_limit)
+                parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 0)
+                parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
+                parent.halg.setp_add(f"joint.{joint}.jog-scale", 0.01)
+                parent.halg.net_add(f"robojog.joint.{joint}.jog-counts", f"joint.{joint}.jog-counts")
+                parent.halg.net_add(f"j{joint}pos-fb", f"robojog.joint.{joint}.position")
 
         output.append("")
 

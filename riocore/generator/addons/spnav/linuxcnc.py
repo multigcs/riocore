@@ -32,11 +32,11 @@ def hal(parent):
 
         for axis in "xyzabc":
             if axis.upper() in parent.axis_dict and spnav_scale[axis] != 0.0:
-                parent.hal_setp_add(f"spnav.axis.{axis}.scale", spnav_scale[axis])
-                parent.hal_net_add(f"spnav.axis.{axis}.jog-counts", f"axis.{axis}.jog-counts")
-                parent.hal_setp_add(f"axis.{axis}.jog-vel-mode", 1)
-                parent.hal_setp_add(f"axis.{axis}.jog-enable", 1)
-                parent.hal_setp_add(f"axis.{axis}.jog-scale", 0.01)
+                parent.halg.setp_add(f"spnav.axis.{axis}.scale", spnav_scale[axis])
+                parent.halg.net_add(f"spnav.axis.{axis}.jog-counts", f"axis.{axis}.jog-counts")
+                parent.halg.setp_add(f"axis.{axis}.jog-vel-mode", 1)
+                parent.halg.setp_add(f"axis.{axis}.jog-enable", 1)
+                parent.halg.setp_add(f"axis.{axis}.jog-scale", 0.01)
 
         if spnav_button0:
             if spnav_button0.startswith("MDI|"):
@@ -44,18 +44,18 @@ def hal(parent):
                 button_title = parts[1]
                 mdi_command = parts[2]
                 halpin = parent.ini_mdi_command(mdi_command, title=button_title)
-                parent.hal_net_add("spnav.button.0", halpin)
+                parent.halg.net_add("spnav.button.0", halpin)
             else:
-                parent.hal_net_add("spnav.button.0", spnav_button0)
+                parent.halg.net_add("spnav.button.0", spnav_button0)
         if spnav_button1:
             if spnav_button1.startswith("MDI|"):
                 parts = spnav_button1.split("|")
                 button_title = parts[1]
                 mdi_command = parts[2]
                 halpin = parent.ini_mdi_command(mdi_command, title=button_title)
-                parent.hal_net_add("spnav.button.1", halpin)
+                parent.halg.net_add("spnav.button.1", halpin)
             else:
-                parent.hal_net_add("spnav.button.1", spnav_button1)
+                parent.halg.net_add("spnav.button.1", spnav_button1)
 
         output.append("")
 
