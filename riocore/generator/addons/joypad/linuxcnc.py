@@ -19,12 +19,9 @@ def hal(parent):
 
     output = []
     output.append(f"loadusr -W hal_input -KRAL {joypad_type}")
-    output.append("loadrt or2 names=joy_or2_sel0,joy_or2_sel1")
     output.append("loadrt mux4 names=joy_mux4")
     output.append(f"loadrt mux2 names={','.join(muxes)}")
     output.append("")
-    output.append("addf joy_or2_sel0 servo-thread")
-    output.append("addf joy_or2_sel1 servo-thread")
     output.append("addf joy_mux4 servo-thread")
     output.append("")
     output.append("setp joy_mux4.in0 0.0    # Setting this input to 0 prevents motion unless one of the other buttons is pressed.")
@@ -35,7 +32,7 @@ def hal(parent):
 
     joy_mux4_sel0 = []
     joy_mux4_sel1 = []
-    joypad_btn_fast = ""
+
     if joypad_btn_slow:
         joy_mux4_sel0.append(f"input.0.{joypad_btn_slow}")
     else:

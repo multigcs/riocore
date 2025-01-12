@@ -856,6 +856,7 @@ class LinuxCNC:
 
             if speed_selector:
                 speed_selector_mux = 1
+
                 for function, halname in self.rio_functions["jog"].items():
                     if function == "speed0":
                         speed_selector_mux *= 2
