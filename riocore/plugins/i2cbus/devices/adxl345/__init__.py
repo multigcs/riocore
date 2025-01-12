@@ -214,5 +214,5 @@ class i2c_device:
         if signal_name.endswith("_valid"):
             return ""
         return """
-        value = value
+        value = value;
         """

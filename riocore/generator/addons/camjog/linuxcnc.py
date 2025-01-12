@@ -67,9 +67,9 @@ def gui(parent):
 def hal(parent):
     output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    parent.postgui_components_add("camjog")
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
+            parent.postgui_components_add("camjog")
             # jog axis
             for axis_name, axis_config in parent.axis_dict.items():
                 if axis_name not in {"X", "Y"}:

@@ -7,6 +7,7 @@ import sys
 import stat
 
 from riocore import halpins
+from riocore.generator.hal import hal_generator
 from riocore.generator.pyvcp import pyvcp
 from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
@@ -151,13 +152,10 @@ class LinuxCNC:
         },
     }
 
-    POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
-
     def __init__(self, project):
         self.postgui_call_rm = []
         self.postgui_call_list = []
         self.pregui_call_list = []
-        self.loadrts = []
         self.feedbacks = []
         self.axisout = []
         self.networks = {}
@@ -172,185 +170,6 @@ class LinuxCNC:
         for addon_path in glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "linuxcnc.py")):
             addon_name = addon_path.split(os.sep)[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
-
-    def postgui_components_add(self, component):
-        if component not in self.POSTGUI_COMPONENTS:
-            self.POSTGUI_COMPONENTS = tuple(list(self.POSTGUI_COMPONENTS) + [component])
-
-    def generate_networks(self, networks, setps):
-        output_hal = []
-        output_postgui = []
-        ctypes = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
-        pin2sig_map = {}
-
-        def pin2sig(hal, pin, signal):
-            if pin not in pin2sig_map:
-                pin2sig_map[pin] = signal
-                if pin != signal:
-                    hal.append(f"net {signal} <= {pin}")
-                return signal
-            else:
-                return pin2sig_map[pin]
-
-        # hal
-        # signal_prefix = "rios."
-        signal_prefix = ""
-        for network, net in networks.items():
-            if net["in"] and net["out"]:
-                output_hal_tmp = []
-                output_postgui_tmp = []
-                in_first = ""
-                in_len = 0
-                for in_n, net_in in enumerate(net["in"]):
-                    if not net_in.startswith("riov."):
-                        if net_in[0] == "!":
-                            net_in = net_in[1:]
-                            fname = net_in.replace(".", "-")
-                            output_hal_tmp.append("")
-                            output_hal_tmp.append(f"# not {net_in}")
-                            output_hal_tmp.append(f"loadrt not names={fname}-not")
-                            output_hal_tmp.append(f"addf {fname}-not servo-thread")
-                            if not net_in.startswith(self.POSTGUI_COMPONENTS):
-                                signal = pin2sig(output_hal_tmp, net_in, f"{fname}-not_in")
-                                output_hal_tmp.append(f"net {signal} => {fname}-not.in")
-                            else:
-                                # output_postgui_tmp.append(f"net {fname}-not_in <= {net_in}")
-                                # output_postgui_tmp.append(f"net {fname}-not_in => {fname}-not.in")
-                                signal = pin2sig(output_postgui_tmp, net_in, f"{fname}-not_in")
-                                output_hal_tmp.append(f"net {signal} => {fname}-not.in")
-                            net["in"][in_n] = f"{fname}-not.out"
-                        if not in_first:
-                            in_first = net_in
-                        in_len += 1
-                if in_len == 0:
-                    pass
-                elif in_len == 1:
-                    signal = f"{signal_prefix}{network}"
-                    if in_first.startswith("riov."):
-                        pass
-                    elif not in_first.startswith(self.POSTGUI_COMPONENTS):
-                        # output_hal_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
-                        signal = pin2sig(output_hal_tmp, in_first, signal)
-                    else:
-                        # output_postgui_tmp.append(f"net {signal_prefix}{network} <= {in_first}")
-                        signal = pin2sig(output_postgui_tmp, in_first, signal)
-                    for out in net["out"]:
-                        if out.startswith("riov."):
-                            continue
-                        if not out.startswith(self.POSTGUI_COMPONENTS):
-                            output_hal_tmp.append(f"net {signal} => {out}")
-                        else:
-                            output_postgui_tmp.append(f"net {signal} => {out}")
-                else:
-                    uniq_types = set()
-                    if in_first.endswith("counts") or in_first.endswith("position-s32"):
-                        if in_len > 4:
-                            print(f"ERROR: can only sum 4 integer values: {net}")
-
-                        output_hal_tmp.append(f"loadrt scaled_s32_sums names=isum.{network}")
-                        output_hal_tmp.append(f"addf isum.{network} servo-thread")
-                        for in_n, pin_in in enumerate(net["in"]):
-                            if pin_in.startswith("riov."):
-                                pass
-                            elif not pin_in.startswith(self.POSTGUI_COMPONENTS):
-                                # output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
-                                signal = pin2sig(output_hal_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n}")
-                                output_hal_tmp.append(f"net {signal} => isum.{network}.in{in_n}")
-                            else:
-                                # output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n} <= {pin_in}")
-                                signal = pin2sig(output_postgui_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n}")
-                                output_postgui_tmp.append(f"net {signal} => isum.{network}.in{in_n}")
-
-                        # output_hal_tmp.append(f"net {signal_prefix}{network}_out-s <= isum.{network}.out-s")
-                        signal = pin2sig(output_hal_tmp, f"isum.{network}.out-s", f"{signal_prefix}{network}_out-s")
-                        for out in net["out"]:
-                            if out.startswith("riov."):
-                                continue
-                            ctype = net["options"].get(out, {}).get("type", "OR")
-                            if not out.startswith(self.POSTGUI_COMPONENTS):
-                                output_hal_tmp.append(f"net {signal} => {out}")
-                            else:
-                                output_postgui_tmp.append(f"net {signal} => {out}")
-                    else:
-                        for option in net["options"].values():
-                            uniq_types.add(option["type"])
-
-                        personality = 0x0
-                        for ctype in uniq_types:
-                            personality |= ctypes[ctype]
-
-                        n_inputs = in_len
-                        output_hal_tmp.append(f"loadrt logic names=logic.{network} personality=0x{personality+n_inputs:x}")
-                        output_hal_tmp.append(f"addf logic.{network} servo-thread")
-                        for in_n, pin_in in enumerate(net["in"]):
-                            if pin_in.startswith("riov."):
-                                pass
-                            elif not pin_in.startswith(self.POSTGUI_COMPONENTS):
-                                if pin_in.startswith("riovs."):
-                                    output_hal_tmp.append(f"net {pin_in} => logic.{network}.in-{in_n:02d}")
-                                else:
-                                    # output_hal_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
-                                    signal = pin2sig(output_hal_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n:02d}")
-                                    output_hal_tmp.append(f"net {signal} => logic.{network}.in-{in_n:02d}")
-
-                            else:
-                                # output_postgui_tmp.append(f"net {signal_prefix}{network}-in-{in_n:02d} <= {pin_in}")
-                                signal = pin2sig(output_postgui_tmp, pin_in, f"{signal_prefix}{network}-in-{in_n:02d}")
-                                output_postgui_tmp.append(f"net {signal} => logic.{network}.in-{in_n:02d}")
-
-                        vs_flag = False
-                        for out in net["out"]:
-                            if out.startswith("riovs."):
-                                vs_flag = True
-
-                        for ctype in uniq_types:
-                            if vs_flag:
-                                output_hal_tmp.append(f"net {out} <= logic.{network}.{ctype.lower()}")
-                            else:
-                                output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} <= logic.{network}.{ctype.lower()}")
-                        for out in net["out"]:
-                            if out.startswith("riov."):
-                                continue
-                            ctype = net["options"].get(out, {}).get("type", "OR")
-
-                            if not out.startswith("riovs."):
-                                if not out.startswith(self.POSTGUI_COMPONENTS):
-                                    output_hal_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
-                                else:
-                                    output_postgui_tmp.append(f"net {signal_prefix}{network}_{ctype.lower()} => {out}")
-
-                if output_hal_tmp:
-                    output_hal.append("")
-                    output_hal.append(f"# {network}")
-                    output_hal += output_hal_tmp
-                if output_postgui_tmp:
-                    output_postgui.append("")
-                    output_postgui.append(f"# {network}")
-                    output_postgui += output_postgui_tmp
-
-        output_hal.append("")
-        output_hal.append("# setp")
-        for name, value in setps.items():
-            # check if pin is connected to other pin
-            hasSignal = None
-            isFree = True
-            for network, net in networks.items():
-                if net["in"] and net["out"]:
-                    if name in net["out"]:
-                        isFree = False
-                        break
-                    elif name in net["in"]:
-                        hasSignal = network
-                        break
-            if hasSignal:
-                output_hal.append(f"sets {hasSignal} {value}")
-            elif isFree:
-                if not name.startswith(self.POSTGUI_COMPONENTS):
-                    output_hal.append(f"setp {name} {value}")
-                else:
-                    output_postgui.append(f"setp {name} {value}")
-
-        return (output_hal, output_postgui)
 
     def startscript(self):
         jdata = self.project.config["jdata"]
@@ -435,9 +254,8 @@ class LinuxCNC:
 
         output_hal = []
         output_postgui = []
-        output_hal += self.loadrts
 
-        (network_hal, network_postgui) = self.generate_networks(self.networks, self.setps)
+        (network_hal, network_postgui) = self.halg.net_write()
         output_hal += network_hal
         output_postgui += network_postgui
         output_postgui += [""]
@@ -822,71 +640,6 @@ class LinuxCNC:
             os.makedirs(self.configuration_path, exist_ok=True)
             open(os.path.join(self.configuration_path, "tool.tbl"), "w").write("\n".join(tooltbl))
 
-    def hal_setp_add(self, output_name, value):
-        if output_name not in self.setps:
-            self.setps[output_name] = value
-        # else:
-        #     print(f"WARNING: {output_name} allready set to {self.setps[output_name]}")
-
-    def hal_net_add(self, input_name, output_name, signal_name=None):
-        ctype = "OR"
-        if output_name[0] == "&":
-            ctype = "AND"
-            output_name = output_name[1:]
-        elif output_name[0] == "|":
-            ctype = "OR"
-            output_name = output_name[1:]
-        elif output_name[0] == "^":
-            ctype = "XOR"
-            output_name = output_name[1:]
-        network = None
-
-        if signal_name and (input_name.startswith("riovs.") or output_name.startswith("riovs.")):
-            if signal_name in self.networks:
-                network = signal_name
-        else:
-            for net_name, net_nodes in self.networks.items():
-                if input_name in net_nodes["in"]:
-                    network = net_name
-                elif input_name in net_nodes["out"]:
-                    network = net_name
-                elif output_name in net_nodes["out"]:
-                    network = net_name
-                    break
-                elif output_name == net_nodes["in"][0]:
-                    network = net_name
-                    self.networks[network]["in"] = [input_name]
-                elif output_name == net_nodes["in"]:
-                    print(f"ERROR: can not handle this constellation {input_name} -> {output_name}: output is allready in a multi input signal")
-
-        if not network:
-            if signal_name in self.networks:
-                print(f"ERROR: signal name '{signal_name}' already exist")
-                signal_name = None
-
-            if signal_name:
-                # using user defined signal name
-                network = signal_name
-            else:
-                if not input_name.startswith("rio."):
-                    network = input_name.replace(".", "-")
-                else:
-                    network = output_name.replace(".", "-")
-            if network not in self.networks:
-                self.networks[network] = {
-                    "in": [input_name],
-                    "out": [],
-                    "type": ctype,
-                    "options": {},
-                }
-
-        if output_name not in self.networks[network]["out"]:
-            self.networks[network]["out"].append(output_name)
-            self.networks[network]["options"][output_name] = {"type": ctype}
-
-        elif input_name not in self.networks[network]["in"]:
-            self.networks[network]["in"].append(input_name)
-
     def riof(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         gui = linuxcnc_config.get("gui", "axis")
@@ -903,9 +656,9 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     if not netname and setp is not None:
                         if scale:
-                            self.hal_setp_add(f"rio.{halname}-scale", scale)
+                            self.halg.setp_add(f"rio.{halname}-scale", scale)
                         if offset:
-                            self.hal_setp_add(f"rio.{halname}-offset", offset)
+                            self.halg.setp_add(f"rio.{halname}-offset", offset)
 
         # rio-functions
         self.rio_functions = {}
@@ -936,25 +689,25 @@ class LinuxCNC:
                         }
 
         if "wcomp" in self.rio_functions:
-            self.loadrts.append("")
-            self.loadrts.append("# wcomp")
+            self.halg.fmt_add("")
+            self.halg.fmt_add("# wcomp")
             for function, halname in self.rio_functions["wcomp"].items():
                 source = halname["source"]
                 vmin = halname["vmin"]
                 vmax = halname["vmax"]
                 virtual = halname["virtual"]
-                self.loadrts.append(f"loadrt wcomp names=riof.{source}")
-                self.loadrts.append(f"addf riof.{source} servo-thread")
-                self.hal_setp_add(f"riof.{source}.min", vmin)
-                self.hal_setp_add(f"riof.{source}.max", vmax)
+                self.halg.fmt_add(f"loadrt wcomp names=riof.{source}")
+                self.halg.fmt_add(f"addf riof.{source} servo-thread")
+                self.halg.setp_add(f"riof.{source}.min", vmin)
+                self.halg.setp_add(f"riof.{source}.max", vmax)
                 if virtual:
-                    self.hal_net_add(f"riov.{source}", f"riof.{source}.in")
+                    self.halg.net_add(f"riov.{source}", f"riof.{source}.in")
                 else:
-                    self.hal_net_add(f"rio.{source}", f"riof.{source}.in")
+                    self.halg.net_add(f"rio.{source}", f"riof.{source}.in")
 
         if "jog" in self.rio_functions:
-            self.loadrts.append("")
-            self.loadrts.append("# Jogging")
+            self.halg.fmt_add("")
+            self.halg.fmt_add("# Jogging")
             speed_selector = False
             axis_selector = False
             axis_leds = False
@@ -1006,27 +759,27 @@ class LinuxCNC:
                     print("ERROR: no speed selectors found")
 
                 if speed_selector_mux in {2, 4}:
-                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
-                    self.loadrts.append("addf riof.jog.wheelscale_mux servo-thread")
+                    self.halg.fmt_add(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
+                    self.halg.fmt_add("addf riof.jog.wheelscale_mux servo-thread")
 
-                    self.hal_setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
-                    self.hal_setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
+                    self.halg.setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
+                    self.halg.setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
                     if speed_selector_mux == 4:
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_2"))
-                        self.hal_setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheel", "scale_3"))
+                        self.halg.setp_add("riof.jog.wheelscale_mux.in2", riof_jog_setup("wheel", "scale_2"))
+                        self.halg.setp_add("riof.jog.wheelscale_mux.in3", riof_jog_setup("wheel", "scale_3"))
 
                     in_n = 0
                     for function, halname in self.rio_functions["jog"].items():
                         if function in {"fast", "speed0", "speed1"}:
                             if speed_selector_mux == 2:
-                                self.hal_net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
+                                self.halg.net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
                             else:
-                                self.hal_net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
+                                self.halg.net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
                                 in_n += 1
 
                     (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
                     self.cfgxml_data["status"] += gout
-                    self.hal_net_add("riof.jog.wheelscale_mux.out", pname)
+                    self.halg.net_add("riof.jog.wheelscale_mux.out", pname)
 
             if wheel:
                 halname_wheel = ""
@@ -1039,37 +792,37 @@ class LinuxCNC:
                 if halname_wheel and wheelfilter:
                     wf_gain = riof_jog_setup("wheel", "filter_gain")
                     wf_scale = riof_jog_setup("wheel", "filter_scale")
-                    self.loadrts.append("loadrt ilowpass names=riof.jog.wheelilowpass")
-                    self.loadrts.append("addf riof.jog.wheelilowpass servo-thread")
-                    self.hal_setp_add("riof.jog.wheelilowpass.gain", wf_gain)
-                    self.hal_setp_add("riof.jog.wheelilowpass.scale", wf_scale)
-                    self.hal_net_add(halname_wheel, "riof.jog.wheelilowpass.in")
+                    self.halg.fmt_add("loadrt ilowpass names=riof.jog.wheelilowpass")
+                    self.halg.fmt_add("addf riof.jog.wheelilowpass servo-thread")
+                    self.halg.setp_add("riof.jog.wheelilowpass.gain", wf_gain)
+                    self.halg.setp_add("riof.jog.wheelilowpass.scale", wf_scale)
+                    self.halg.net_add(halname_wheel, "riof.jog.wheelilowpass.in")
                     halname_wheel = "riof.jog.wheelilowpass.out"
 
                 if halname_wheel:
                     for axis_name, axis_config in self.axis_dict.items():
                         joints = axis_config["joints"]
                         laxis = axis_name.lower()
-                        self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
+                        self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
 
                         if wheel_scale is not None:
-                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                            self.halg.setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
                         else:
-                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+                            self.halg.net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
 
                         if gui == "axis":
-                            self.hal_net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
-                            self.hal_net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+                            self.halg.net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
+                            self.halg.net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
                             for joint, joint_setup in joints.items():
-                                self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
+                                self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
 
                                 if wheel_scale is not None:
-                                    self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                    self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
                                 else:
-                                    self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+                                    self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
 
-                                self.hal_net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
-                                self.hal_net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                                self.halg.net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
+                                self.halg.net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
             else:
                 for axis_name, axis_config in self.axis_dict.items():
@@ -1077,30 +830,30 @@ class LinuxCNC:
                     laxis = axis_name.lower()
                     fname = f"wheel_{laxis}"
                     if fname in self.rio_functions["jog"]:
-                        self.hal_setp_add(f"axis.{laxis}.jog-vel-mode", 1)
+                        self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
 
                         if wheel_scale is not None:
-                            self.hal_setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                            self.halg.setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
                         else:
-                            self.hal_net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+                            self.halg.net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
 
-                        self.hal_setp_add(f"axis.{laxis}.jog-enable", 1)
+                        self.halg.setp_add(f"axis.{laxis}.jog-enable", 1)
                         for function, halname in self.rio_functions["jog"].items():
                             if function == fname:
-                                self.hal_net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+                                self.halg.net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
 
                         for joint, joint_setup in joints.items():
-                            self.hal_setp_add(f"joint.{joint}.jog-vel-mode", 1)
+                            self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
 
                             if wheel_scale is not None:
-                                self.hal_setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
                             else:
-                                self.hal_net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+                                self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
 
-                            self.hal_setp_add(f"joint.{joint}.jog-enable", 1)
+                            self.halg.setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
-                                    self.hal_net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                                    self.halg.net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
             if speed_selector:
                 speed_selector_mux = 1
@@ -1119,106 +872,106 @@ class LinuxCNC:
                     print("ERROR: no speed selectors found")
 
                 if speed_selector_mux in {2, 4}:
-                    self.loadrts.append(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
-                    self.loadrts.append("addf riof.jog.speed_mux servo-thread")
+                    self.halg.fmt_add(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
+                    self.halg.fmt_add("addf riof.jog.speed_mux servo-thread")
 
                     if speed_selector_mux == 2:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
-                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
+                        self.halg.setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                        self.halg.setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
                     else:
-                        self.hal_setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
-                        self.hal_setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
-                        self.hal_setp_add("riof.jog.speed_mux.in2", riof_jog_setup("keys", "speed_2"))
-                        self.hal_setp_add("riof.jog.speed_mux.in3", riof_jog_setup("keys", "speed_3"))
+                        self.halg.setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
+                        self.halg.setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
+                        self.halg.setp_add("riof.jog.speed_mux.in2", riof_jog_setup("keys", "speed_2"))
+                        self.halg.setp_add("riof.jog.speed_mux.in3", riof_jog_setup("keys", "speed_3"))
 
                     in_n = 0
                     for function, halname in self.rio_functions["jog"].items():
                         if function in {"fast", "speed0", "speed1"}:
                             if speed_selector_mux == 2:
-                                self.hal_net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
+                                self.halg.net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
                             else:
-                                self.hal_net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
+                                self.halg.net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
                                 in_n += 1
 
                     (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
                     self.cfgxml_data["status"] += gout
-                    self.hal_net_add("riof.jog.speed_mux.out", pname)
-                    self.hal_net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
-                    self.hal_net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
+                    self.halg.net_add("riof.jog.speed_mux.out", pname)
+                    self.halg.net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
+                    self.halg.net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
             else:
-                self.hal_setp_add("halui.axis.jog-speed", riof_jog_setup("keys", "speed"))
-                self.hal_setp_add("halui.joint.jog-speed", riof_jog_setup("keys", "speed"))
+                self.halg.setp_add("halui.axis.jog-speed", riof_jog_setup("keys", "speed"))
+                self.halg.setp_add("halui.joint.jog-speed", riof_jog_setup("keys", "speed"))
 
             if axis_move:
                 for function, halname in self.rio_functions["jog"].items():
                     if function in {"plus", "minus"}:
-                        self.hal_net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
-                        self.hal_net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
+                        self.halg.net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
+                        self.halg.net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
 
             if axis_selector:
                 joint_n = 0
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        self.hal_net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
-                        self.hal_net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
+                        self.halg.net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
+                        self.halg.net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
                         (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         self.cfgxml_data["status"] += gout
-                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", pname)
+                        self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
                         for axis_id, axis_config in self.axis_dict.items():
                             joints = axis_config["joints"]
                             laxis = axis_id.lower()
                             if axis_name == laxis:
-                                self.loadrts.append("")
-                                self.loadrts.append(f"# axis {laxis} selection")
-                                self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                                self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
-                                self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
+                                self.halg.fmt_add("")
+                                self.halg.fmt_add(f"# axis {laxis} selection")
+                                self.halg.fmt_add(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                                self.halg.fmt_add(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                                self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                                self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
                                 if gui == "axis":
-                                    self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
-                                    self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
+                                    self.halg.net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                                    self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
                                     for joint, joint_setup in joints.items():
-                                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
+                                        self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
                         joint_n += 1
             else:
                 for axis_id, axis_config in self.axis_dict.items():
                     joints = axis_config["joints"]
                     laxis = axis_id.lower()
-                    self.loadrts.append("")
-                    self.loadrts.append(f"# axis {laxis} selection")
-                    self.loadrts.append(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                    self.loadrts.append(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
-                    self.hal_setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
+                    self.halg.fmt_add("")
+                    self.halg.fmt_add(f"# axis {laxis} selection")
+                    self.halg.fmt_add(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                    self.halg.fmt_add(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                    self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                    self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
                     if gui == "axis":
-                        self.hal_net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
-                        self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
+                        self.halg.net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                        self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
                         for joint, joint_setup in joints.items():
-                            self.hal_net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
+                            self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
 
             if axis_selector and position_display:
-                self.loadrts.append("")
-                self.loadrts.append("# display position")
-                self.loadrts.append("loadrt mux16 names=riof.jog.position_mux")
-                self.loadrts.append("addf riof.jog.position_mux servo-thread")
+                self.halg.fmt_add("")
+                self.halg.fmt_add("# display position")
+                self.halg.fmt_add("loadrt mux16 names=riof.jog.position_mux")
+                self.halg.fmt_add("addf riof.jog.position_mux servo-thread")
                 mux_select = 0
                 mux_input = 1
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
-                        self.hal_net_add(f"halui.axis.{axis_name}.pos-relative", f"riof.jog.position_mux.in{mux_input:02d}")
+                        self.halg.net_add(f"halui.axis.{axis_name}.is-selected", f"riof.jog.position_mux.sel{mux_select}")
+                        self.halg.net_add(f"halui.axis.{axis_name}.pos-relative", f"riof.jog.position_mux.in{mux_input:02d}")
                         mux_select += 1
                         mux_input = mux_input * 2
                     elif function == "position":
-                        self.hal_net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
+                        self.halg.net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
 
             if axis_leds:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("selected-"):
                         axis_name = function.split("-")[-1]
-                        self.hal_net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
+                        self.halg.net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
 
     def gui(self):
         os.makedirs(self.configuration_path, exist_ok=True)
@@ -1257,8 +1010,8 @@ class LinuxCNC:
                 if gui not in {"qtdragon", "qtdragon_hd"}:
                     (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
                     self.cfgxml_data["status"] += gout
-                    self.hal_net_add("kinstype.is-0", f"{pname}.legend0")
-                    self.hal_net_add("kinstype.is-1", f"{pname}.legend1")
+                    self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
+                    self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
                 ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
                 ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
                 ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
@@ -1266,9 +1019,9 @@ class LinuxCNC:
 
                 self.cfgxml_data["status"] += gout
                 if embed_vismach:
-                    self.hal_net_add(pname, f"{embed_vismach}.plotclear")
+                    self.halg.net_add(pname, f"{embed_vismach}.plotclear")
                 else:
-                    self.hal_net_add(pname, "vismach.plotclear")
+                    self.halg.net_add(pname, "vismach.plotclear")
 
                 self.cfgxml_data["status"].append("<hbox>")
                 self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
@@ -1276,7 +1029,7 @@ class LinuxCNC:
                 for joint in range(6):
                     (pname, gout) = self.gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
                     self.cfgxml_data["status"] += gout
-                    self.hal_net_add(f"joint.{joint}.pos-fb", pname)
+                    self.halg.net_add(f"joint.{joint}.pos-fb", pname)
                     if joint == 2:
                         self.cfgxml_data["status"].append("</hbox>")
                         self.cfgxml_data["status"].append("<hbox>")
@@ -1322,7 +1075,7 @@ class LinuxCNC:
                         mdi_groups[mdi_group].append(gout)
                     else:
                         mdi_xml += gout
-                    self.hal_net_add(pname, halpin)
+                    self.halg.net_add(pname, halpin)
 
             for group_name, mdi_commands in mdi_groups.items():
                 self.cfgxml_data["status"] += self.gui_gen.draw_frame_begin(group_name)
@@ -1436,25 +1189,25 @@ class LinuxCNC:
                                 n_values = len(values)
                                 self.halextras.append(f"loadrt conv_s32_u32 names=conv_s32_u32_{halname}")
                                 self.halextras.append(f"addf conv_s32_u32_{halname} servo-thread")
-                                self.hal_net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
+                                self.halg.net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
                                 self.halextras.append("")
                                 self.halextras.append(f"loadrt demux names=demux_{halname} personality={n_values}")
                                 self.halextras.append(f"addf demux_{halname} servo-thread")
-                                self.hal_net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
+                                self.halg.net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
                                 for nv in range(n_values):
-                                    self.hal_net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
+                                    self.halg.net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
                                 self.halextras.append("")
                                 self.halextras.append(f"loadrt bitslice names=bitslice_{halname} personality=3")
                                 self.halextras.append(f"addf bitslice_{halname} servo-thread")
-                                self.hal_net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
+                                self.halg.net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
                                 self.halextras.append("")
                                 self.halextras.append(f"loadrt mux8 names=mux8_{halname}")
                                 self.halextras.append(f"addf mux8_{halname} servo-thread")
-                                self.hal_net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
-                                self.hal_net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
-                                self.hal_net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
+                                self.halg.net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
+                                self.halg.net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
+                                self.halg.net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
                                 for vn, name in enumerate(values):
-                                    self.hal_setp_add(f"mux8_{halname}.in{vn}", values[name])
+                                    self.halg.setp_add(f"mux8_{halname}.in{vn}", values[name])
                                 self.halextras.append("")
                                 gui_pinname = f"mux8_{halname}.out"
 
@@ -1465,20 +1218,20 @@ class LinuxCNC:
                                     dfilter_gain = dfilter.get("gain", "0.001")
                                     self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
                                     self.halextras.append(f"addf lowpass_{halname} servo-thread")
-                                    self.hal_setp_add(f"lowpass_{halname}.load", 0)
-                                    self.hal_setp_add(f"lowpass_{halname}.gain", dfilter_gain)
-                                    self.hal_net_add(gui_pinname, f"lowpass_{halname}.in")
+                                    self.halg.setp_add(f"lowpass_{halname}.load", 0)
+                                    self.halg.setp_add(f"lowpass_{halname}.gain", dfilter_gain)
+                                    self.halg.net_add(gui_pinname, f"lowpass_{halname}.in")
                                     gui_pinname = f"lowpass_{halname}.out"
 
                             self.cfgxml_data[section] += gout
                             if virtual and direction == "input":
-                                self.hal_net_add(gui_pinname, f"riov.{halname}")
+                                self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
                             elif virtual and direction == "output":
-                                self.hal_net_add(f"riov.{halname}", gui_pinname)
+                                self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
                             elif netname or setp or direction == "input":
-                                self.hal_net_add(f"rio.{halname}", gui_pinname)
+                                self.halg.net_add(f"rio.{halname}", gui_pinname)
                             elif direction == "output":
-                                self.hal_net_add(gui_pinname, f"rio.{halname}")
+                                self.halg.net_add(gui_pinname, f"rio.{halname}")
 
                         elif dtype != "none":
                             print(f"WARNING: 'draw_{dtype}' not found")
@@ -1498,26 +1251,6 @@ class LinuxCNC:
 
             self.gui_gen.save(cfgxml_adata)
 
-    def resolv_logic(self, logic_name, bracket):
-        # self.hal_net_add("halui.machine.is-on", "&riovs.myand1", "myand1")
-        # self.hal_net_add("!halui.mode.is-auto", "&riovs.myand1", "myand1")
-        # self.hal_net_add(f"riovs.myand1", "|rio.wled4.0_green", "myor1")
-        # self.hal_net_add(f"halui.program.is-paused", "|rio.wled4.0_green", "myor1")
-        logic = None
-        inputs = []
-        bracket_striped = bracket.replace("(", "").replace(")", "")
-        for part in bracket_striped.split():
-            if part == "or":
-                logic = part
-            elif part == "and":
-                logic = part
-            else:
-                inputs.append(part)
-        logic_map = {"and": "&", "or": "|"}
-        for input_p in inputs:
-            self.hal_net_add(input_p, f"{logic_map[logic]}{logic_name}", logic_name.replace("riovs.", ""))
-        return logic_name
-
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         gui = linuxcnc_config.get("gui", "axis")
@@ -1525,70 +1258,72 @@ class LinuxCNC:
         embed_vismach = linuxcnc_config.get("embed_vismach")
         toolchange = linuxcnc_config.get("toolchange", "manual")
 
-        self.loadrts.append("# load the realtime components")
-        self.loadrts.append("loadrt [KINS]KINEMATICS")
-        self.loadrts.append("loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO")
-        self.loadrts.append("loadrt rio")
-        self.loadrts.append("")
-        self.loadrts.append("# if you need to test rio without hardware, set it to 1")
-        self.loadrts.append("setp rio.sys-simulation 0")
-        self.loadrts.append("")
+        self.halg = hal_generator()
+
+        self.halg.fmt_add("# load the realtime components")
+        self.halg.fmt_add("loadrt [KINS]KINEMATICS")
+        self.halg.fmt_add("loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO")
+        self.halg.fmt_add("loadrt rio")
+        self.halg.fmt_add("")
+        self.halg.fmt_add("# if you need to test rio without hardware, set it to 1")
+        self.halg.fmt_add("setp rio.sys-simulation 0")
+        self.halg.fmt_add("")
 
         num_pids = self.num_joints
-        self.loadrts.append(f"loadrt pid num_chan={num_pids}")
+        self.halg.fmt_add(f"loadrt pid num_chan={num_pids}")
         for pidn in range(num_pids):
-            self.loadrts.append(f"addf pid.{pidn}.do-pid-calcs servo-thread")
-        self.loadrts.append("")
+            self.halg.fmt_add(f"addf pid.{pidn}.do-pid-calcs servo-thread")
+        self.halg.fmt_add("")
 
-        self.loadrts.append("# add the rio and motion functions to threads")
-        self.loadrts.append("addf motion-command-handler servo-thread")
-        self.loadrts.append("addf motion-controller servo-thread")
-        self.loadrts.append("addf rio.readwrite servo-thread")
-        self.loadrts.append("")
-        self.hal_net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
-        self.hal_net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
-        self.hal_net_add("rio.sys-status", "&iocontrol.0.emc-enable-in")
+        self.halg.fmt_add("# add the rio and motion functions to threads")
+        self.halg.fmt_add("addf motion-command-handler servo-thread")
+        self.halg.fmt_add("addf motion-controller servo-thread")
+        self.halg.fmt_add("addf rio.readwrite servo-thread")
+        self.halg.fmt_add("")
+        self.halg.net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
+        self.halg.net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
+        self.halg.net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
 
         if gui not in {"qtdragon", "qtdragon_hd"}:
             if toolchange == "manual":
                 if gui == "gmoccapy":
-                    self.hal_net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
-                    self.hal_net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
-                    self.hal_net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                    self.halg.net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
+                    self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
+                    self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
+                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 else:
-                    self.loadrts.append("loadusr -W hal_manualtoolchange")
-                    self.loadrts.append("")
-                    self.hal_net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
-                    self.hal_net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
-                    self.hal_net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                    self.halg.fmt_add("loadusr -W hal_manualtoolchange")
+                    self.halg.fmt_add("")
+                    self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+                    self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+                    self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
             else:
-                self.hal_net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                self.hal_net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
+                self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
         linuxcnc_setp = {}
 
         if machinetype == "corexy":
-            self.loadrts.append("# machinetype is corexy")
-            self.loadrts.append("loadrt corexy_by_hal names=corexy")
-            self.loadrts.append("addf corexy servo-thread")
-            self.loadrts.append("")
+            self.halg.fmt_add("# machinetype is corexy")
+            self.halg.fmt_add("loadrt corexy_by_hal names=corexy")
+            self.halg.fmt_add("addf corexy servo-thread")
+            self.halg.fmt_add("")
         elif machinetype == "ldelta":
-            self.loadrts.append("# loading lineardelta gl-view")
-            self.loadrts.append("loadusr -W lineardelta MIN_JOINT=-420")
-            self.loadrts.append("")
+            self.halg.fmt_add("# loading lineardelta gl-view")
+            self.halg.fmt_add("loadusr -W lineardelta MIN_JOINT=-420")
+            self.halg.fmt_add("")
         elif machinetype == "rdelta":
-            self.loadrts.append("# loading rotarydelta gl-view")
-            self.loadrts.append("loadusr -W rotarydelta MIN_JOINT=-420")
-            self.loadrts.append("")
+            self.halg.fmt_add("# loading rotarydelta gl-view")
+            self.halg.fmt_add("loadusr -W rotarydelta MIN_JOINT=-420")
+            self.halg.fmt_add("")
         elif machinetype == "melfa":
             if not embed_vismach:
-                self.loadrts.append("# loading melfa gui")
-                self.loadrts.append("loadusr -W melfagui")
-                self.loadrts.append("")
-            self.loadrts.append("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
-            self.loadrts.append("")
+                self.halg.fmt_add("# loading melfa gui")
+                self.halg.fmt_add("loadusr -W melfagui")
+                self.halg.fmt_add("")
+            self.halg.fmt_add("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
+            self.halg.fmt_add("")
             os.makedirs(self.configuration_path, exist_ok=True)
 
             for source in glob.glob(os.path.join(riocore_path, "files", "melfa", "*")):
@@ -1601,7 +1336,7 @@ class LinuxCNC:
 
             if not embed_vismach:
                 for joint in range(6):
-                    self.hal_net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
 
             linuxcnc_setp = {
                 "genserkins.A-0": 0,
@@ -1627,38 +1362,15 @@ class LinuxCNC:
         if embed_vismach:
             if embed_vismach in {"fanuc_200f"}:
                 for joint in range(len(self.axis_dict)):
-                    self.hal_net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}")
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}")
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
-            self.hal_setp_add(f"{key}", value)
+            self.halg.setp_add(f"{key}", value)
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
-                self.loadrts += addon.hal(self)
-
-        def text_in_braces(text, right):
-            chars = []
-            for c in reversed(text[:right]):
-                if c != "(":
-                    chars.append(c)
-                else:
-                    chars.append(c)
-                    break
-            return "".join(reversed(chars))
-
-        def bracket_parser(target, text):
-            ret = "#"
-            while ret:
-                ret = ""
-                for n, c in enumerate(text):
-                    if c == ")":
-                        ret = text_in_braces(text, n + 1)
-                        rid = ret.lstrip("(").rstrip(")").replace(" ", "")
-                        rid = self.resolv_logic(target, ret)
-                        text = text.replace(ret, rid)
-                        break
-            return text
+                self.halg.fmt_add(addon.hal(self))
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
@@ -1677,37 +1389,31 @@ class LinuxCNC:
                         rprefix = "riov"
 
                     if scale and not virtual:
-                        self.hal_setp_add(f"{rprefix}.{halname}-scale", scale)
+                        self.halg.setp_add(f"{rprefix}.{halname}-scale", scale)
                     if offset and not virtual:
-                        self.hal_setp_add(f"{rprefix}.{halname}-offset", offset)
+                        self.halg.setp_add(f"{rprefix}.{halname}-offset", offset)
 
                     if netname:
                         if direction == "inout":
-                            self.loadrts.append(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
+                            self.halg.fmt_add(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
                         elif direction == "input":
                             for net in netname.split(","):
                                 net = net.strip()
                                 net_type = halpins.LINUXCNC_SIGNALS[direction].get(net, {}).get("type", float)
                                 if net_type is int:
-                                    self.hal_net_add(f"{rprefix}.{halname}-s32", net)
+                                    self.halg.net_add(f"{rprefix}.{halname}-s32", net)
                                 else:
-                                    self.hal_net_add(f"{rprefix}.{halname}", net)
+                                    self.halg.net_add(f"{rprefix}.{halname}", net)
                         elif direction == "output":
                             target = f"{rprefix}.{halname}"
-                            if " and " in netname or " or " in netname:
-                                target_name = f"l_{target.replace('.', '-')}"
-                                lnum = 0
-                                netname = bracket_parser(f"riovs.{target_name}{lnum}", netname)
-                                netname = self.resolv_logic(target, netname)
-                            else:
-                                self.hal_net_add(netname, f"{rprefix}.{halname}")
+                            self.halg.net_add(netname, f"{rprefix}.{halname}")
                     elif setp:
-                        self.hal_setp_add(f"{rprefix}.{halname}", setp)
+                        self.halg.setp_add(f"{rprefix}.{halname}", setp)
                     elif virtual and component:
                         if direction == "input":
-                            self.hal_net_add(f"{rprefix}.{halname}", f"rio.{halname}")
+                            self.halg.net_add(f"{rprefix}.{halname}", f"rio.{halname}")
                         else:
-                            self.hal_net_add(f"rio.{halname}", f"{rprefix}.{halname}")
+                            self.halg.net_add(f"rio.{halname}", f"{rprefix}.{halname}")
 
         for axis_name, axis_config in self.axis_dict.items():
             joints = axis_config["joints"]
