@@ -12,7 +12,7 @@ def test_generator():
 #################################################################################
 # logic and calc components
 #################################################################################
-loadrt logic names=func.and_0.1,func.and_2.1,func.or_3.1,func.and_6.1,func.or_7.1,func.and_7.2,func.or_8.1 personality=0x102,0x102,0x204,0x102,0x203,0x103,0x202
+loadrt logic names=func.and_0.1,func.and_2.1,func.or_3.1,func.and_6.1,func.or_7.1,func.and_7.2,func.or_8.1,func.or_10.1 personality=0x102,0x102,0x204,0x102,0x203,0x103,0x202,0x202
 addf func.and_0.1 servo-thread
 addf func.and_2.1 servo-thread
 addf func.or_3.1 servo-thread
@@ -20,13 +20,15 @@ addf func.and_6.1 servo-thread
 addf func.or_7.1 servo-thread
 addf func.and_7.2 servo-thread
 addf func.or_8.1 servo-thread
+addf func.or_10.1 servo-thread
 
 loadrt not names=func.not_pio_input1,func.not_pio_input2
 addf func.not_pio_input1 servo-thread
 addf func.not_pio_input2 servo-thread
 
-loadrt sum2 names=func.sum2_4.1
+loadrt sum2 names=func.sum2_4.1,func.sum2_9.1
 addf func.sum2_4.1 servo-thread
+addf func.sum2_9.1 servo-thread
 
 loadrt mult2 names=func.mult2_5.1,func.mult2_5.2
 addf func.mult2_5.1 servo-thread
@@ -165,12 +167,30 @@ net func_or_8_1_or                 => rio.orout1
 net func_or_8_1_or                 => rio.orout2
 
 #################################################################################
+# rio.float + 10 --> rio.fout
+#################################################################################
+net sig_rio_float                  <= rio.float
+net sig_rio_float                  => func.sum2_9.1.in0
+net func_sum2_9_1_out              <= func.sum2_9.1.out
+net func_sum2_9_1_out              => rio.fout
+
+#################################################################################
+# rio.bit or 0 --> rio.bitor0
+#################################################################################
+net sig_rio_bit                    <= rio.bit
+net sig_rio_bit                    => func.or_10.1.in-00
+net func_or_10_1_or                <= func.or_10.1.or
+net func_or_10_1_or                => rio.bitor0
+
+#################################################################################
 # setp
 #################################################################################
 # setp pyvcp.outval                     123    (in postgui)
 setp rio.outval                       123
 # setp rio.orout1                       0      (allready linked to func_or_8_1_or)
 # setp rio.s32_1                        100    (allready linked to sig_rio_s32_1)
+setp func.sum2_9.1.in1                10
+setp func.or_10.1.in-01               0
 
 #################################################################################
 # preformated
@@ -223,12 +243,15 @@ setp pyvcp.outval                     123
     halg.setp_add("rio.orout1", "0")
     halg.setp_add("rio.s32_1", "100")
 
+    halg.net_add("rio.float + 10", "rio.fout")
+    halg.net_add("rio.bit or 0", "rio.bitor0")
+
     (hal_data, postgui_data) = halg.net_write()
-    print("---------------------------------")
-    print("\n".join(hal_data))
-    print("---------------------------------")
-    print("\n".join(postgui_data))
-    print("---------------------------------")
+    # print("---------------------------------")
+    # print("\n".join(hal_data))
+    # print("---------------------------------")
+    # print("\n".join(postgui_data))
+    # print("---------------------------------")
 
     assert expected_hal.strip() == "\n".join(hal_data).strip()
     assert expected_postgui.strip() == "\n".join(postgui_data).strip()

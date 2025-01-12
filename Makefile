@@ -11,6 +11,9 @@ format:
 check:
 	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check
 
+check_fix:
+	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check --fix
+
 unittests:
 	python3 -m pytest -vv -v tests/unit/
 

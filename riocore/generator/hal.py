@@ -5,19 +5,21 @@
 
 
 class hal_generator:
-    logic_ids = {}
-    signals_out = {}
-    inputs2signals = {}
-    outputs2signals = {}
-    expression_cache = {}
-    hal_logics = {}
-    hal_calcs = {}
-    setps = {}
-    preformated = []
-
     POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
     VIRTUAL_COMPONENTS = ("riov",)
     HAS_INVERTS = {"rio": "-not"}
+
+    def __init__(self):
+        self.logic_ids = {}
+        self.signals_out = {}
+        self.inputs2signals = {}
+        self.outputs2signals = {}
+        self.expression_cache = {}
+        self.hal_logics = {}
+        self.hal_calcs = {}
+        self.setps = {}
+        self.preformated = []
+        self.preformated_top = []
 
     def pin2signal(self, pin, target, signal_name=None):
         if pin.startswith("sig:"):
@@ -69,6 +71,9 @@ class hal_generator:
             self.hal_logics[fname] = f"0x{personality:x}"
             for in_n in range(n_inputs):
                 input_pin = parts[in_n * 2]
+                if input_pin.replace(".", "").lstrip("-").isnumeric():
+                    self.setp_add(f"{fname}.in-{in_n:02d}", input_pin)
+                    continue
                 if input_pin[0] == "!":
                     input_pin = self.pin_not(input_pin[1:], target)
                 input_signal = self.pin2signal(input_pin, target)
@@ -88,6 +93,9 @@ class hal_generator:
             self.hal_calcs[personality].append(fname)
             for in_n in range(n_inputs):
                 input_pin = parts[in_n * 2]
+                if input_pin.replace(".", "").lstrip("-").isnumeric():
+                    self.setp_add(f"{fname}.in{in_n}", input_pin)
+                    continue
                 input_signal = self.pin2signal(input_pin, target)
                 if f"{fname}.in{in_n}" not in self.outputs2signals:
                     self.outputs2signals[f"{fname}.in{in_n}"] = {"signals": [input_signal], "target": target}
@@ -126,9 +134,7 @@ class hal_generator:
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
-        logic_num = list(self.logic_ids).index(target)
-        new_signal = f"{logic_num}.{self.logic_ids[target]}"
-        fname = signal = f"func.not_{input_pin.replace('.', '_')}"
+        fname = f"func.not_{input_pin.replace('.', '_')}"
         if "not" not in self.hal_calcs:
             self.hal_calcs["not"] = []
         self.hal_calcs["not"].append(fname)
@@ -166,6 +172,12 @@ class hal_generator:
         else:
             self.preformated.append(line)
 
+    def fmt_add_top(self, line):
+        if isinstance(line, list):
+            self.preformated_top += line
+        else:
+            self.preformated_top.append(line)
+
     def net_add(self, input_pin, output_pin, signal_name=None):
         logic = "OR"
         if input_pin[0] == "|":
@@ -193,6 +205,10 @@ class hal_generator:
         hal_data = []
         postgui_data = []
 
+        hal_data.append("")
+        for line in self.preformated_top:
+            hal_data.append(line)
+
         for output, data in self.signals_out.items():
             cleaned_expression = data["expression"].replace("|", "").replace("&", "")
             input_pin = self.brackets_parser(f"({cleaned_expression})", output)
@@ -205,7 +221,7 @@ class hal_generator:
                 self.outputs2signals[output] = {"signals": [input_signal], "target": output}
 
         hal_data.append("#################################################################################")
-        hal_data.append(f"# logic and calc components")
+        hal_data.append("# logic and calc components")
         hal_data.append("#################################################################################")
 
         # combine and add logic functions
@@ -229,7 +245,7 @@ class hal_generator:
             hal_data.append("")
 
         postgui_data.append("#################################################################################")
-        postgui_data.append(f"# networks")
+        postgui_data.append("# networks")
         postgui_data.append("#################################################################################")
 
         # add networks
@@ -285,11 +301,11 @@ class hal_generator:
 
         if self.setps:
             hal_data.append("#################################################################################")
-            hal_data.append(f"# setp")
+            hal_data.append("# setp")
             hal_data.append("#################################################################################")
 
             postgui_data.append("#################################################################################")
-            postgui_data.append(f"# setp")
+            postgui_data.append("# setp")
             postgui_data.append("#################################################################################")
 
             for pin, value in self.setps.items():
@@ -308,7 +324,7 @@ class hal_generator:
             postgui_data.append("")
 
         hal_data.append("#################################################################################")
-        hal_data.append(f"# preformated")
+        hal_data.append("# preformated")
         hal_data.append("#################################################################################")
         for line in self.preformated:
             hal_data.append(line)

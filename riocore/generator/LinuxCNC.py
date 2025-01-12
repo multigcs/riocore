@@ -175,7 +175,6 @@ class LinuxCNC:
         jdata = self.project.config["jdata"]
         startup = jdata.get("startup")
         linuxcnc_config = jdata.get("linuxcnc", {})
-        gui = linuxcnc_config.get("gui", "axis")
         output = ["#!/bin/sh"]
         output.append("")
         output.append("set -e")
@@ -1260,26 +1259,28 @@ class LinuxCNC:
 
         self.halg = hal_generator()
 
-        self.halg.fmt_add("# load the realtime components")
-        self.halg.fmt_add("loadrt [KINS]KINEMATICS")
-        self.halg.fmt_add("loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO")
-        self.halg.fmt_add("loadrt rio")
-        self.halg.fmt_add("")
-        self.halg.fmt_add("# if you need to test rio without hardware, set it to 1")
-        self.halg.fmt_add("setp rio.sys-simulation 0")
-        self.halg.fmt_add("")
+        self.halg.fmt_add_top("# load the realtime components")
+        self.halg.fmt_add_top("loadrt [KINS]KINEMATICS")
+        self.halg.fmt_add_top(
+            "loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO"
+        )
+        self.halg.fmt_add_top("loadrt rio")
+        self.halg.fmt_add_top("")
+        self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
+        self.halg.fmt_add_top("setp rio.sys-simulation 0")
+        self.halg.fmt_add_top("")
 
         num_pids = self.num_joints
-        self.halg.fmt_add(f"loadrt pid num_chan={num_pids}")
+        self.halg.fmt_add_top(f"loadrt pid num_chan={num_pids}")
         for pidn in range(num_pids):
-            self.halg.fmt_add(f"addf pid.{pidn}.do-pid-calcs servo-thread")
-        self.halg.fmt_add("")
+            self.halg.fmt_add_top(f"addf pid.{pidn}.do-pid-calcs servo-thread")
+        self.halg.fmt_add_top("")
 
-        self.halg.fmt_add("# add the rio and motion functions to threads")
-        self.halg.fmt_add("addf motion-command-handler servo-thread")
-        self.halg.fmt_add("addf motion-controller servo-thread")
-        self.halg.fmt_add("addf rio.readwrite servo-thread")
-        self.halg.fmt_add("")
+        self.halg.fmt_add_top("# add the rio and motion functions to threads")
+        self.halg.fmt_add_top("addf motion-command-handler servo-thread")
+        self.halg.fmt_add_top("addf motion-controller servo-thread")
+        self.halg.fmt_add_top("addf rio.readwrite servo-thread")
+        self.halg.fmt_add_top("")
         self.halg.net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
         self.halg.net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
         self.halg.net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
@@ -1292,8 +1293,8 @@ class LinuxCNC:
                     self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
                     self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 else:
-                    self.halg.fmt_add("loadusr -W hal_manualtoolchange")
-                    self.halg.fmt_add("")
+                    self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
+                    self.halg.fmt_add_top("")
                     self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
                     self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
                     self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
@@ -1305,25 +1306,25 @@ class LinuxCNC:
         linuxcnc_setp = {}
 
         if machinetype == "corexy":
-            self.halg.fmt_add("# machinetype is corexy")
-            self.halg.fmt_add("loadrt corexy_by_hal names=corexy")
-            self.halg.fmt_add("addf corexy servo-thread")
-            self.halg.fmt_add("")
+            self.halg.fmt_add_top("# machinetype is corexy")
+            self.halg.fmt_add_top("loadrt corexy_by_hal names=corexy")
+            self.halg.fmt_add_top("addf corexy servo-thread")
+            self.halg.fmt_add_top("")
         elif machinetype == "ldelta":
-            self.halg.fmt_add("# loading lineardelta gl-view")
-            self.halg.fmt_add("loadusr -W lineardelta MIN_JOINT=-420")
-            self.halg.fmt_add("")
+            self.halg.fmt_add_top("# loading lineardelta gl-view")
+            self.halg.fmt_add_top("loadusr -W lineardelta MIN_JOINT=-420")
+            self.halg.fmt_add_top("")
         elif machinetype == "rdelta":
-            self.halg.fmt_add("# loading rotarydelta gl-view")
-            self.halg.fmt_add("loadusr -W rotarydelta MIN_JOINT=-420")
-            self.halg.fmt_add("")
+            self.halg.fmt_add_top("# loading rotarydelta gl-view")
+            self.halg.fmt_add_top("loadusr -W rotarydelta MIN_JOINT=-420")
+            self.halg.fmt_add_top("")
         elif machinetype == "melfa":
             if not embed_vismach:
-                self.halg.fmt_add("# loading melfa gui")
-                self.halg.fmt_add("loadusr -W melfagui")
-                self.halg.fmt_add("")
-            self.halg.fmt_add("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
-            self.halg.fmt_add("")
+                self.halg.fmt_add_top("# loading melfa gui")
+                self.halg.fmt_add_top("loadusr -W melfagui")
+                self.halg.fmt_add_top("")
+            self.halg.fmt_add_top("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
+            self.halg.fmt_add_top("")
             os.makedirs(self.configuration_path, exist_ok=True)
 
             for source in glob.glob(os.path.join(riocore_path, "files", "melfa", "*")):

@@ -157,7 +157,7 @@ def get_handlers(halcomp,builder,useropts):
 
         cfgxml_data += self.draw_vbox_end()
 
-        cfgxml_data.append(f"""
+        cfgxml_data.append("""
             </object>
            </child>
         """)
@@ -166,7 +166,7 @@ def get_handlers(halcomp,builder,useropts):
     def draw_vbox_begin(self):
         cfgxml_data = []
 
-        cfgxml_data.append(f"""
+        cfgxml_data.append("""
 
     <child>
       <object class="GtkBox">
@@ -187,7 +187,7 @@ def get_handlers(halcomp,builder,useropts):
 
     def draw_hbox_begin(self):
         cfgxml_data = []
-        cfgxml_data.append(f"""
+        cfgxml_data.append("""
 
     <child>
       <object class="GtkBox">
@@ -361,7 +361,7 @@ def get_handlers(halcomp,builder,useropts):
                     else:
                         cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
                 if len(display_region) < 3:
-                    cfgxml_data.append(f'                        <property name="z2_color">green</property>')
+                    cfgxml_data.append('                        <property name="z2_color">green</property>')
             else:
                 last_color = "green"
                 for reg_n, region in enumerate(display_region[:3]):
@@ -409,7 +409,7 @@ def get_handlers(halcomp,builder,useropts):
         cfgxml_data.append('                        <property name="can_focus">True</property>')
         cfgxml_data.append(f'                        <property name="min">{display_min}</property>')
         cfgxml_data.append(f'                        <property name="max">{display_max}</property>')
-        cfgxml_data.append(f'                        <property name="force_height">27</property>')
+        cfgxml_data.append('                        <property name="force_height">27</property>')
 
         if display_zone:
             for reg_n, zone in enumerate(display_zone[:3]):
@@ -430,7 +430,7 @@ def get_handlers(halcomp,builder,useropts):
                     else:
                         cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
                 if len(display_region) < 3:
-                    cfgxml_data.append(f'                        <property name="z2_color">green</property>')
+                    cfgxml_data.append('                        <property name="z2_color">green</property>')
             else:
                 last_color = "green"
                 for reg_n, region in enumerate(display_region[:2]):
