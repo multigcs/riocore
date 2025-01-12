@@ -3,6 +3,8 @@
 # hal generator: can resolve logic operation, multiple assignments and invert pins
 #
 
+from riocore import halpins
+
 
 class hal_generator:
     POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
@@ -51,7 +53,7 @@ class hal_generator:
 
     def logic2signal(self, expression, target):
         logic_types = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
-        int_types = {"s+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
+        int_types = {"S+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
 
         if expression in self.function_cache:
             return self.function_cache[expression]
@@ -105,7 +107,7 @@ class hal_generator:
                 if etype == "-" and in_n == 1:
                     self.outputs2signals[f"{fname}.gain{in_n}"] = {"signals": -1, "target": target}
 
-            if etype == "s+":
+            if etype.upper() == "S+":
                 output_pin = f"{fname}.out-s"
             else:
                 output_pin = f"{fname}.out"
@@ -184,6 +186,37 @@ class hal_generator:
         else:
             self.preformated_top.append(line)
 
+    def get_type(self, parts):
+        haltype = None
+        type_map = {
+            "start": {
+                ("analog-out-", "analog-in-", "tooloffset"): float,
+            },
+            "end": {
+                ("counts", "increment", "number"): int,
+                ("scale", "analog", "commanded", "-cmd", "feedback", "relative", "value", "-vel", "velocity", "position"): float,
+            },
+        }
+        for part in parts:
+            for mode in ("output", "input"):
+                if haltype is None:
+                    halpin_info = halpins.LINUXCNC_SIGNALS[mode].get(part, {}).get("type")
+                    if halpin_info:
+                        haltype = halpin_info
+                        break
+            for mode in ("end", "start"):
+                if haltype is None:
+                    for check, htype in type_map[mode].items():
+                        if mode == "end":
+                            if part.endswith(check):
+                                haltype = htype
+                                break
+                        else:
+                            if part.startswith(check):
+                                haltype = htype
+                                break
+        return haltype or bool
+
     def net_add(self, input_pin, output_pin, signal_name=None):
         # handle multiple outputs (A,B)
         if "," in output_pin:
@@ -191,7 +224,6 @@ class hal_generator:
                 inpin = input_pin
                 outpin = pin.strip()
                 signame = signal_name
-
                 if outpin[0] == "!":
                     outpin = outpin[1:]
                     inpin = f"!{inpin}"
@@ -201,23 +233,32 @@ class hal_generator:
                 self.net_add(inpin, outpin, signal_name=signame)
             return
 
-        logic = "OR"
-        if input_pin[0] == "|":
+        # set default operation by type
+        haltype = self.get_type([output_pin] + input_pin.split())
+        if haltype is bool:
             logic = "OR"
-        elif input_pin[0] == "&":
-            logic = "AND"
-        elif output_pin in self.signals_out:
-            if self.signals_out[output_pin]["expression"][0] == "|":
+            if input_pin[0] == "|":
                 logic = "OR"
-            elif self.signals_out[output_pin]["expression"][0] == "&":
+            elif input_pin[0] == "&":
                 logic = "AND"
+            elif output_pin in self.signals_out:
+                if self.signals_out[output_pin]["expression"][0] == "|":
+                    logic = "OR"
+                elif self.signals_out[output_pin]["expression"][0] == "&":
+                    logic = "AND"
+        elif haltype is int:
+            logic = "S+"
+        else:
+            logic = "+"
 
         if output_pin in self.signals_out:
+            # append input(s) to existing expression
             self.signals_out[output_pin]["expression"] = f"{self.signals_out[output_pin]['expression']} {logic} {input_pin}"
         else:
             self.signals_out[output_pin] = {"expression": input_pin}
 
         if signal_name:
+            # set a predefined signal name
             if "name" not in self.signals_out[output_pin]:
                 self.signals_out[output_pin]["name"] = signal_name
             elif self.signals_out[output_pin]["name"] != signal_name:
@@ -231,24 +272,22 @@ class hal_generator:
         for line in self.preformated_top:
             hal_data.append(line)
 
+        # resolv all expressions
         for output, data in self.signals_out.items():
             cleaned_expression = data["expression"].replace("|", "").replace("&", "")
             input_pin = self.brackets_parser(f"({cleaned_expression})", output)
-
             input_signal = self.pin2signal(input_pin, output, data.get("name"))
-
             if output in self.outputs2signals:
                 self.outputs2signals[output]["signals"].append(input_signal)
             else:
                 self.outputs2signals[output] = {"signals": [input_signal], "target": output}
 
-        # combine and add logic functions
+        # combine and add functions
         func_names = []
         func_personalities = []
         for func, personality in self.hal_logics.items():
             func_names.append(func)
             func_personalities.append(personality)
-
         if func_names:
             hal_data.append("#################################################################################")
             hal_data.append("# logic and calc components")
@@ -257,8 +296,6 @@ class hal_generator:
             for fname in func_names:
                 hal_data.append(f"addf {fname} servo-thread")
             hal_data.append("")
-
-        # combine and add other functions
         func_names = []
         func_personalities = []
         for calc, names in self.hal_calcs.items():
@@ -267,16 +304,15 @@ class hal_generator:
                 hal_data.append(f"addf {name} servo-thread")
             hal_data.append("")
 
+        # add networks (sorting/grouping)
         postgui_data.append("#################################################################################")
         postgui_data.append("# networks")
         postgui_data.append("#################################################################################")
-
-        # add networks
         for target in self.signals_out:
             hal_data.append("#################################################################################")
             hal_data.append(f"# {self.signals_out[target]['expression']} --> {target}")
             hal_data.append("#################################################################################")
-
+            # non function input
             for pin, data in self.inputs2signals.items():
                 if data["target"] == target and not pin.startswith("func."):
                     component = pin.split(".", 1)[0]
@@ -288,6 +324,7 @@ class hal_generator:
                     else:
                         hal_data.append(f"net {data['signal']:30s} <= {pin}")
 
+            # group by function prefix
             prefixes = []
             for pin, data in self.outputs2signals.items():
                 if data["target"] == target and pin.startswith("func."):
@@ -295,7 +332,7 @@ class hal_generator:
                     if prefix not in prefixes:
                         prefixes.append(prefix)
             for prefix in prefixes:
-                # logic inputs
+                # function inputs
                 for pin, data in self.outputs2signals.items():
                     if data["target"] == target and pin.startswith(prefix):
                         if isinstance(data["signals"], int):
@@ -303,11 +340,12 @@ class hal_generator:
                             continue
                         for signal in data["signals"]:
                             hal_data.append(f"net {signal:30s} => {pin}")
-                # logic outputs
+                # function outputs
                 for pin, data in self.inputs2signals.items():
                     if data["target"] == target and pin.startswith(prefix):
                         hal_data.append(f"net {data['signal']:30s} <= {pin}")
 
+            # non function output
             for pin, data in self.outputs2signals.items():
                 component = pin.split(".", 1)[0]
                 if data["target"] == target and not pin.startswith("func."):

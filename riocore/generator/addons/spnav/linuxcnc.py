@@ -11,6 +11,7 @@ def hal(parent):
 
     spnav_config = linuxcnc_config.get("spnav", {})
     spnav_enable = spnav_config.get("enable", False)
+    spnav_jointjog = spnav_config.get("jointjog", False)
     spnav_scale = {}
     spnav_scale["x"] = spnav_config.get("x-scale", -0.2)
     spnav_scale["y"] = spnav_config.get("y-scale", -0.2)
@@ -37,6 +38,17 @@ def hal(parent):
                 parent.halg.setp_add(f"axis.{axis}.jog-vel-mode", 1)
                 parent.halg.setp_add(f"axis.{axis}.jog-enable", 1)
                 parent.halg.setp_add(f"axis.{axis}.jog-scale", 0.01)
+                if not spnav_jointjog:
+                    continue
+                axis_config = parent.axis_dict.get(axis.upper())
+                axis_low = axis.lower()
+                joints = axis_config["joints"]
+                for joint, joint_setup in joints.items():
+                    parent.halg.setp_add(f"spnav.axis.{axis}.scale", spnav_scale[axis])
+                    parent.halg.net_add(f"spnav.axis.{axis}.jog-counts", f"joint.{joint}.jog-counts")
+                    parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
+                    parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
+                    parent.halg.setp_add(f"joint.{joint}.jog-scale", 0.01)
 
         if spnav_button0:
             if spnav_button0.startswith("MDI|"):

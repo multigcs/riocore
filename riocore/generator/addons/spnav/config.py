@@ -42,6 +42,7 @@ def load_tree(parent, tree_lcnc):
     if spnav_config:
         for key, var_setup in {
             "enable": {"type": bool, "default": True},
+            "jointjog": {"type": bool, "default": False},
             "x-scale": {"type": float, "default": -0.2},
             "y-scale": {"type": float, "default": -0.2},
             "z-scale": {"type": float, "default": 0.2},
