@@ -14,7 +14,7 @@ class hal_generator:
         self.signals_out = {}
         self.inputs2signals = {}
         self.outputs2signals = {}
-        self.expression_cache = {}
+        self.function_cache = {}
         self.hal_logics = {}
         self.hal_calcs = {}
         self.setps = {}
@@ -27,7 +27,7 @@ class hal_generator:
         elif signal_name:
             if pin in self.inputs2signals:
                 if self.inputs2signals[pin]["signal"] != signal_name:
-                    print(f"ERROR: pin allready exist as signal: {self.inputs2signals[pin]['signal']} (!= {signal_name})")
+                    print(f"ERROR: pin ({pin}) already exist as signal: {self.inputs2signals[pin]['signal']} (!= {signal_name})")
                     signal = self.inputs2signals[pin]["signal"]
                 else:
                     signal = signal_name
@@ -53,8 +53,8 @@ class hal_generator:
         logic_types = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
         int_types = {"s+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
 
-        if expression in self.expression_cache:
-            return self.expression_cache[expression]
+        if expression in self.function_cache:
+            return self.function_cache[expression]
 
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
@@ -110,7 +110,7 @@ class hal_generator:
             else:
                 output_pin = f"{fname}.out"
 
-        self.expression_cache[expression] = output_pin
+        self.function_cache[expression] = output_pin
         return output_pin
 
     def text_in_bracket(self, text, right):
@@ -135,12 +135,18 @@ class hal_generator:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
         fname = f"func.not_{input_pin.replace('.', '_')}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+
         if "not" not in self.hal_calcs:
             self.hal_calcs["not"] = []
         self.hal_calcs["not"].append(fname)
 
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+
+        self.function_cache[fname] = f"{fname}.out"
+
         return f"{fname}.out"
 
     def brackets_parser(self, input_pin, output_pin):
@@ -179,6 +185,22 @@ class hal_generator:
             self.preformated_top.append(line)
 
     def net_add(self, input_pin, output_pin, signal_name=None):
+        # handle multiple outputs (A,B)
+        if "," in output_pin:
+            for pin in output_pin.split(","):
+                inpin = input_pin
+                outpin = pin.strip()
+                signame = signal_name
+
+                if outpin[0] == "!":
+                    outpin = outpin[1:]
+                    inpin = f"!{inpin}"
+                    if signame:
+                        signame = f"{signame}_not"
+
+                self.net_add(inpin, outpin, signal_name=signame)
+            return
+
         logic = "OR"
         if input_pin[0] == "|":
             logic = "OR"
@@ -199,7 +221,7 @@ class hal_generator:
             if "name" not in self.signals_out[output_pin]:
                 self.signals_out[output_pin]["name"] = signal_name
             elif self.signals_out[output_pin]["name"] != signal_name:
-                print(f"ERROR: signalname ({signal_name}) allready set for this input: {self.signals_out['expression']}")
+                print(f"ERROR: signalname ({signal_name}) already set for this input", output_pin)
 
     def net_write(self):
         hal_data = []
@@ -220,20 +242,21 @@ class hal_generator:
             else:
                 self.outputs2signals[output] = {"signals": [input_signal], "target": output}
 
-        hal_data.append("#################################################################################")
-        hal_data.append("# logic and calc components")
-        hal_data.append("#################################################################################")
-
         # combine and add logic functions
         func_names = []
         func_personalities = []
         for func, personality in self.hal_logics.items():
             func_names.append(func)
             func_personalities.append(personality)
-        hal_data.append(f"loadrt logic names={','.join(func_names)} personality={','.join(func_personalities)}")
-        for fname in func_names:
-            hal_data.append(f"addf {fname} servo-thread")
-        hal_data.append("")
+
+        if func_names:
+            hal_data.append("#################################################################################")
+            hal_data.append("# logic and calc components")
+            hal_data.append("#################################################################################")
+            hal_data.append(f"loadrt logic names={','.join(func_names)} personality={','.join(func_personalities)}")
+            for fname in func_names:
+                hal_data.append(f"addf {fname} servo-thread")
+            hal_data.append("")
 
         # combine and add other functions
         func_names = []
@@ -318,7 +341,7 @@ class hal_generator:
                     else:
                         hal_data.append(f"setp {pin:30s}   {value}")
                 else:
-                    hal_data.append(f"# setp {pin:30s}   {value:6} (allready linked to {', '.join(signal.get('signals', [signal.get('signal', '?')]))})")
+                    hal_data.append(f"# setp {pin:30s}   {value:6} (already linked to {', '.join(signal.get('signals', [signal.get('signal', '?')]))})")
 
             hal_data.append("")
             postgui_data.append("")
@@ -364,6 +387,8 @@ if __name__ == "__main__":
     halg.setp_add("rio.outval", "123")
     halg.setp_add("rio.orout1", "0")
     halg.setp_add("rio.s32_1", "100")
+
+    halg.net_add("pio.input4", "cp.and_out, !cp.and_out2, !cp.and_out3", "multiout")
 
     (hal_data, postgui_data) = halg.net_write()
     print("\n".join(hal_data))

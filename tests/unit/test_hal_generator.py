@@ -22,9 +22,10 @@ addf func.and_7.2 servo-thread
 addf func.or_8.1 servo-thread
 addf func.or_10.1 servo-thread
 
-loadrt not names=func.not_pio_input1,func.not_pio_input2
+loadrt not names=func.not_pio_input1,func.not_pio_input2,func.not_oio_bit9
 addf func.not_pio_input1 servo-thread
 addf func.not_pio_input2 servo-thread
+addf func.not_oio_bit9 servo-thread
 
 loadrt sum2 names=func.sum2_4.1,func.sum2_9.1
 addf func.sum2_4.1 servo-thread
@@ -183,12 +184,25 @@ net func_or_10_1_or                <= func.or_10.1.or
 net func_or_10_1_or                => rio.bitor0
 
 #################################################################################
+# oio.bit9 --> pio.multi1
+#################################################################################
+net multitarget                    <= oio.bit9
+net multitarget                    => pio.multi1
+
+#################################################################################
+# !oio.bit9 --> pio.multi2
+#################################################################################
+net multitarget                    => func.not_oio_bit9.in
+net multitarget_not                <= func.not_oio_bit9.out
+net multitarget_not                => pio.multi2
+
+#################################################################################
 # setp
 #################################################################################
 # setp pyvcp.outval                     123    (in postgui)
 setp rio.outval                       123
-# setp rio.orout1                       0      (allready linked to func_or_8_1_or)
-# setp rio.s32_1                        100    (allready linked to sig_rio_s32_1)
+# setp rio.orout1                       0      (already linked to func_or_8_1_or)
+# setp rio.s32_1                        100    (already linked to sig_rio_s32_1)
 setp func.sum2_9.1.in1                10
 setp func.or_10.1.in-01               0
 
@@ -246,6 +260,8 @@ setp pyvcp.outval                     123
     halg.net_add("rio.float + 10", "rio.fout")
     halg.net_add("rio.bit or 0", "rio.bitor0")
 
+    halg.net_add("oio.bit9", "pio.multi1, !pio.multi2", "multitarget")
+
     (hal_data, postgui_data) = halg.net_write()
     # print("---------------------------------")
     # print("\n".join(hal_data))
@@ -253,5 +269,5 @@ setp pyvcp.outval                     123
     # print("\n".join(postgui_data))
     # print("---------------------------------")
 
-    assert expected_hal.strip() == "\n".join(hal_data).strip()
-    assert expected_postgui.strip() == "\n".join(postgui_data).strip()
+    assert "\n".join(hal_data).strip() == expected_hal.strip()
+    assert "\n".join(postgui_data).strip() == expected_postgui.strip()
