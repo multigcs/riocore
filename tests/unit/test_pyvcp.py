@@ -58,6 +58,8 @@ def test_pyvcp():
           </label>
           <scale>
             <halpin>"halpin1"</halpin>
+            <min_>0</min_>
+            <max_>100</max_>
             <resolution>0.1</resolution>
             <orient>HORIZONTAL</orient>
             <initval>0</initval>
@@ -77,6 +79,8 @@ def test_pyvcp():
             </multilabel>
             <scale>
               <halpin>"halpin2"</halpin>
+              <min_>0</min_>
+              <max_>1</max_>
               <resolution>1</resolution>
               <orient>HORIZONTAL</orient>
               <initval>0</initval>
@@ -108,6 +112,8 @@ def test_pyvcp():
           <text>"name"</text>
           <size>200</size>
           <cpr>50</cpr>
+          <min_>0</min_>
+          <max_>100</max_>
           <resolution>0.1</resolution>
           <initval>0</initval>
           <param_pin>1</param_pin>
@@ -147,6 +153,8 @@ def test_pyvcp():
           <text>"name"</text>
           <size>200</size>
           <cpr>50</cpr>
+          <min_>0</min_>
+          <max_>100</max_>
           <resolution>0.1</resolution>
           <dialcolor>"yellow"</dialcolor>
           <edgecolor>"green"</edgecolor>
@@ -162,6 +170,8 @@ def test_pyvcp():
             <text>"name"</text>
             <subtext>""</subtext>
             <size>150</size>
+            <min_>0</min_>
+            <max_>100</max_>
             <initval>0</initval>
             <size>150</size>
             <param_pin>1</param_pin>
@@ -177,6 +187,8 @@ def test_pyvcp():
           </label>
           <bar>
             <halpin>"halpin7"</halpin>
+            <min_>0</min_>
+            <max_>100</max_>
             <initval>0</initval>
             <format>"05d"</format>
             <bgcolor>"grey"</bgcolor>
