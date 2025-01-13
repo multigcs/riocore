@@ -776,9 +776,9 @@ class LinuxCNC:
                                 self.halg.net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
                                 in_n += 1
 
-                    (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
-                    self.cfgxml_data["status"] += gout
-                    self.halg.net_add("riof.jog.wheelscale_mux.out", pname)
+                    # (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
+                    # self.cfgxml_data["status"] += gout
+                    # self.halg.net_add("riof.jog.wheelscale_mux.out", pname)
 
             if wheel:
                 halname_wheel = ""
@@ -893,9 +893,9 @@ class LinuxCNC:
                                 self.halg.net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
                                 in_n += 1
 
-                    (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
-                    self.cfgxml_data["status"] += gout
-                    self.halg.net_add("riof.jog.speed_mux.out", pname)
+                    # (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
+                    # self.cfgxml_data["status"] += gout
+                    # self.halg.net_add("riof.jog.speed_mux.out", pname)
                     self.halg.net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
                     self.halg.net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
             else:
@@ -915,8 +915,8 @@ class LinuxCNC:
                         axis_name = function.split("-")[-1]
                         self.halg.net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
                         self.halg.net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
-                        (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
-                        self.cfgxml_data["status"] += gout
+                        # (pname, gout) = self.gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
+                        # self.cfgxml_data["status"] += gout
                         self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
                         for axis_id, axis_config in self.axis_dict.items():
                             joints = axis_config["joints"]
@@ -984,27 +984,37 @@ class LinuxCNC:
         gui = linuxcnc_config.get("gui", "axis")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, gui_type=self.gui_type)
 
-        if self.gui_gen:
-            custom = []
-            cfgxml_adata = []
-            cfgxml_adata += self.gui_gen.draw_begin(self.configuration_path, self.gui_prefix, vcp_pos=vcp_pos)
+        if not self.gui_gen:
+            return
 
-            self.cfgxml_data = {}
-            for section in vcp_sections:
-                self.cfgxml_data[section] = []
-            if "status" not in self.cfgxml_data:
-                self.cfgxml_data["status"] = []
+        custom = []
+        self.gui_gen.draw_begin(self.gui_prefix, vcp_pos=vcp_pos)
 
-            for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                    for signal_name, signal_config in plugin_instance.signals().items():
-                        userconfig = signal_config.get("userconfig", {})
-                        displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                        section = displayconfig.get("section", "").lower()
-                        if section and section not in self.cfgxml_data:
-                            self.cfgxml_data[section] = []
-            self.cfgxml_data["inputs"] = []
-            self.cfgxml_data["outputs"] = []
+        self.cfgxml_data = {}
+        for section in vcp_sections:
+            self.cfgxml_data[section] = []
+
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    userconfig = signal_config.get("userconfig", {})
+                    displayconfig = userconfig.get("display", signal_config.get("display", {}))
+                    section = displayconfig.get("section", "").lower()
+                    if section and section not in self.cfgxml_data:
+                        self.cfgxml_data[section] = []
+
+        self.cfgxml_data["status"] = []
+        self.cfgxml_data["inputs"] = []
+        self.cfgxml_data["outputs"] = []
+        self.cfgxml_data["virtual"] = []
+
+        titles = []
+        for section in self.cfgxml_data:
+            titles.append(section.title())
+        self.gui_gen.draw_tabs_begin(titles)
+
+        for tab in self.cfgxml_data:
+            self.gui_gen.draw_tab_begin(tab.title())
 
             if machinetype == "melfa":
                 if gui not in {"qtdragon", "qtdragon_hd"}:
@@ -1015,9 +1025,8 @@ class LinuxCNC:
                 ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
                 ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
                 ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
-                (pname, gout) = self.gui_gen.draw_button("Clear Path", "vismach-clear")
+                pname = self.gui_gen.draw_button("Clear Path", "vismach-clear")
 
-                self.cfgxml_data["status"] += gout
                 if embed_vismach:
                     self.halg.net_add(pname, f"{embed_vismach}.plotclear")
                 else:
@@ -1037,70 +1046,20 @@ class LinuxCNC:
                         self.cfgxml_data["status"].append("  <bd>2</bd>")
                 self.cfgxml_data["status"].append("</hbox>")
 
-            # buttons
-            mdi_xml = []
-            mdi_xml += self.gui_gen.draw_frame_begin("MDI-Commands")
-            mdi_xml += self.gui_gen.draw_vbox_begin()
-            mdi_num = 0
-            mdi_groups = {}
-            for mdi_num, command in enumerate(ini_setup["HALUI"]):
-                if command.startswith("MDI_COMMAND|"):
-                    """config Example
-                    "linuxcnc": {
-                        "ini": {
-                            "HALUI": {
-                                "MDI_COMMAND|Go to Zero": "G0 X0 Y0",
-                            }
-                        },
-                    },
-                    """
-                    mdi_title = command.split("|")[-1]
-                    halpin = f"halui.mdi-command-{mdi_num:02d}"
-                    (pname, gout) = self.gui_gen.draw_button(mdi_title, halpin)
-                    if command.startswith("MDI_COMMAND||"):
-                        """config Example (Horizontal grouping)
-                        "linuxcnc": {
-                            "ini": {
-                                "HALUI": {
-                                    "MDI_COMMAND||Gripper|0%": "M68 E0 Q-100",
-                                    "MDI_COMMAND||Gripper|50%": "M68 E0 Q0",
-                                    "MDI_COMMAND||Gripper|100%": "M68 E0 Q100"
-                                }
-                            },
-                        },
-                        """
-                        mdi_group = command.split("|")[-2]
-                        if mdi_group not in mdi_groups:
-                            mdi_groups[mdi_group] = []
-                        mdi_groups[mdi_group].append(gout)
-                    else:
-                        mdi_xml += gout
-                    self.halg.net_add(pname, halpin)
+            if tab == "status":
+                # buttons
+                self.gui_gen.draw_frame_begin("MDI-Commands")
+                self.gui_gen.draw_vbox_begin()
+                mdi_num = 0
+                for mdi_num, command in enumerate(ini_setup["HALUI"]):
+                    if command.startswith("MDI_COMMAND|"):
+                        mdi_title = command.split("|")[-1]
+                        halpin = f"halui.mdi-command-{mdi_num:02d}"
+                        pname = self.gui_gen.draw_button(mdi_title, halpin)
+                        self.halg.net_add(pname, halpin)
 
-            for group_name, mdi_commands in mdi_groups.items():
-                self.cfgxml_data["status"] += self.gui_gen.draw_frame_begin(group_name)
-                self.cfgxml_data["status"] += self.gui_gen.draw_hbox_begin()
-
-                for bn, mdi_command in enumerate(mdi_commands, 1):
-                    if bn % 6 == 0:
-                        self.cfgxml_data["status"] += self.gui_gen.draw_hbox_end()
-                        self.cfgxml_data["status"] += self.gui_gen.draw_hbox_begin()
-                    self.cfgxml_data["status"] += mdi_command
-
-                self.cfgxml_data["status"] += self.gui_gen.draw_hbox_end()
-                self.cfgxml_data["status"] += self.gui_gen.draw_frame_end()
-
-            mdi_xml += self.gui_gen.draw_vbox_end()
-            mdi_xml += self.gui_gen.draw_frame_end()
-            self.cfgxml_data["status"] += mdi_xml
-
-            for addon_name, addon in self.addons.items():
-                if hasattr(addon, "gui"):
-                    custom += addon.gui(self)
-
-            for plugin_instance in self.project.plugin_instances:
-                if hasattr(plugin_instance, "linuxcnc_gui"):
-                    plugin_instance.linuxcnc_gui(self)
+                self.gui_gen.draw_vbox_end()
+                self.gui_gen.draw_frame_end()
 
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
@@ -1177,11 +1136,11 @@ class LinuxCNC:
                         if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
                             continue
 
-                        if hasattr(self.gui_gen, f"draw_{dtype}"):
-                            (gui_pinname, gout) = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                        if section != tab:
+                            continue
 
-                            if section not in self.cfgxml_data:
-                                self.cfgxml_data[section] = []
+                        if hasattr(self.gui_gen, f"draw_{dtype}"):
+                            gui_pinname = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
 
                             # fselect handling
                             if dtype == "fselect":
@@ -1223,7 +1182,6 @@ class LinuxCNC:
                                     self.halg.net_add(gui_pinname, f"lowpass_{halname}.in")
                                     gui_pinname = f"lowpass_{halname}.out"
 
-                            self.cfgxml_data[section] += gout
                             if virtual and direction == "input":
                                 self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
                             elif virtual and direction == "output":
@@ -1236,20 +1194,11 @@ class LinuxCNC:
                         elif dtype != "none":
                             print(f"WARNING: 'draw_{dtype}' not found")
 
-            titles = []
-            for section in self.cfgxml_data:
-                if self.cfgxml_data[section]:
-                    titles.append(section.title())
-            cfgxml_adata += self.gui_gen.draw_tabs_begin(titles)
-            for section in self.cfgxml_data:
-                if self.cfgxml_data[section]:
-                    cfgxml_adata += self.gui_gen.draw_tab_begin(section.title())
-                    cfgxml_adata += self.cfgxml_data[section]
-                    cfgxml_adata += self.gui_gen.draw_tab_end()
-            cfgxml_adata += self.gui_gen.draw_tabs_end()
-            cfgxml_adata += self.gui_gen.draw_end()
+            self.gui_gen.draw_tab_end()
 
-            self.gui_gen.save(cfgxml_adata)
+        self.gui_gen.draw_tabs_end()
+        self.gui_gen.draw_end()
+        self.gui_gen.save(self.configuration_path)
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})

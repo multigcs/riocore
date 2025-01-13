@@ -2,12 +2,14 @@ import os
 
 
 class gladevcp:
-    def draw_begin(self, configuration_path, prefix="gladevcp", vcp_pos=None):
-        self.configuration_path = configuration_path
+    def __init__(self):
+        pass
+
+    def draw_begin(self, prefix="gladevcp", vcp_pos=None):
+        self.cfgxml_data = []
         self.prefix = prefix
         self.adjustment = []
-        cfgxml_data = []
-        cfgxml_data.append("""<?xml version="1.0"?>
+        self.cfgxml_data.append("""<?xml version="1.0"?>
 <interface>
   <!-- interface-requires gladevcp 0.0 -->
   <requires lib="gtk+" version="2.16"/>
@@ -23,11 +25,9 @@ class gladevcp:
         <property name="orientation">vertical</property>
 
 """)
-        return cfgxml_data
 
     def draw_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("""
+        self.cfgxml_data.append("""
 
       </object>
     </child>
@@ -44,13 +44,15 @@ class gladevcp:
   </object>
         """)
 
-        cfgxml_data += self.adjustment
-        cfgxml_data.append("</interface>")
-        return cfgxml_data
+        self.cfgxml_data += self.adjustment
+        self.cfgxml_data.append("</interface>")
 
-    def save(self, cfgxml_data):
-        ui_filename = os.path.join(self.configuration_path, "rio-gui.ui")
-        gvcp_filename = os.path.join(self.configuration_path, "rio-gui.py")
+    def xml(self):
+        return "\n".join(self.cfgxml_data)
+
+    def save(self, configuration_path):
+        ui_filename = os.path.join(configuration_path, "rio-gui.ui")
+        gvcp_filename = os.path.join(configuration_path, "rio-gui.py")
 
         handler_py = []
         handler_py.append("""
@@ -69,11 +71,10 @@ def get_handlers(halcomp,builder,useropts):
 
 """)
         open(gvcp_filename, "w").write("\n".join(handler_py))
-        open(ui_filename, "w").write("\n".join(cfgxml_data))
+        open(ui_filename, "w").write("\n".join(self.cfgxml_data))
 
     def draw_tabs_begin(self, names):
-        cfgxml_data = []
-        cfgxml_data.append("""
+        self.cfgxml_data.append("""
             <child>
               <object class="GtkNotebook">
                 <property name="visible">True</property>
@@ -81,22 +82,15 @@ def get_handlers(halcomp,builder,useropts):
 
         """)
 
-        return cfgxml_data
-
     def draw_tabs_end(self):
-        cfgxml_data = []
-
-        cfgxml_data.append("""
+        self.cfgxml_data.append("""
               </object>
             </child>
         """)
 
-        return cfgxml_data
-
     def draw_tab_begin(self, name):
         self.tabname = name
-        cfgxml_data = []
-        cfgxml_data.append(f"""
+        self.cfgxml_data.append(f"""
 
     <child>
       <object class="GtkBox" id="vbox_tab_{name}">
@@ -108,12 +102,9 @@ def get_handlers(halcomp,builder,useropts):
 
 
         """)
-        return cfgxml_data
 
     def draw_tab_end(self):
-        cfgxml_data = []
-
-        cfgxml_data.append(f"""
+        self.cfgxml_data.append(f"""
               </object>
             </child>
                 <child type="tab">
@@ -127,12 +118,9 @@ def get_handlers(halcomp,builder,useropts):
                   </packing>
                 </child>
         """)
-        return cfgxml_data
 
     def draw_frame_begin(self, name=None):
-        cfgxml_data = []
-
-        cfgxml_data.append(f"""
+        self.cfgxml_data.append(f"""
            <child>
 
             <object class="GtkFrame">
@@ -149,24 +137,18 @@ def get_handlers(halcomp,builder,useropts):
 
         """)
 
-        cfgxml_data += self.draw_vbox_begin()
-        return cfgxml_data
+        self.draw_vbox_begin()
 
     def draw_frame_end(self):
-        cfgxml_data = []
+        self.draw_vbox_end()
 
-        cfgxml_data += self.draw_vbox_end()
-
-        cfgxml_data.append("""
+        self.cfgxml_data.append("""
             </object>
            </child>
         """)
-        return cfgxml_data
 
     def draw_vbox_begin(self):
-        cfgxml_data = []
-
-        cfgxml_data.append("""
+        self.cfgxml_data.append("""
 
     <child>
       <object class="GtkBox">
@@ -177,17 +159,13 @@ def get_handlers(halcomp,builder,useropts):
         <property name="orientation">vertical</property>
 
         """)
-        return cfgxml_data
 
     def draw_vbox_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("              </object>")
-        cfgxml_data.append("            </child>")
-        return cfgxml_data
+        self.cfgxml_data.append("              </object>")
+        self.cfgxml_data.append("            </child>")
 
     def draw_hbox_begin(self):
-        cfgxml_data = []
-        cfgxml_data.append("""
+        self.cfgxml_data.append("""
 
     <child>
       <object class="GtkBox">
@@ -198,27 +176,22 @@ def get_handlers(halcomp,builder,useropts):
         <property name="orientation">horizontal</property>
 
         """)
-        return cfgxml_data
 
     def draw_hbox_end(self):
-        cfgxml_data = []
-        cfgxml_data.append("              </object>")
-        cfgxml_data.append("            </child>")
-        return cfgxml_data
+        self.cfgxml_data.append("              </object>")
+        self.cfgxml_data.append("            </child>")
 
     def draw_button(self, name, halpin, setup={}):
-        cfgxml_data = []
+        self.cfgxml_data.append("            <child>")
+        self.cfgxml_data.append(f'              <object class="HAL_Button" id="{halpin}">')
+        self.cfgxml_data.append(f'                <property name="label" translatable="yes">{name}</property>')
+        self.cfgxml_data.append('                <property name="visible">True</property>')
+        self.cfgxml_data.append('                <property name="can-focus">True</property>')
+        self.cfgxml_data.append('                <property name="receives-default">True</property>')
+        self.cfgxml_data.append("              </object>")
+        self.cfgxml_data.append("            </child>")
 
-        cfgxml_data.append("            <child>")
-        cfgxml_data.append(f'              <object class="HAL_Button" id="{halpin}">')
-        cfgxml_data.append(f'                <property name="label" translatable="yes">{name}</property>')
-        cfgxml_data.append('                <property name="visible">True</property>')
-        cfgxml_data.append('                <property name="can-focus">True</property>')
-        cfgxml_data.append('                <property name="receives-default">True</property>')
-        cfgxml_data.append("              </object>")
-        cfgxml_data.append("            </child>")
-
-        return (f"{self.prefix}.{halpin}", cfgxml_data)
+        return f"{self.prefix}.{halpin}"
 
     def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -226,43 +199,42 @@ def get_handlers(halcomp,builder,useropts):
         display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0.0)
         resolution = setup.get("resolution", 0.1)
-        cfgxml_data = []
 
-        cfgxml_data.append("    <child>")
-        cfgxml_data.append('      <object class="GtkHBox">')
-        cfgxml_data.append('        <property name="visible">True</property>')
-        cfgxml_data.append('        <property name="spacing">2</property>')
+        self.cfgxml_data.append("    <child>")
+        self.cfgxml_data.append('      <object class="GtkHBox">')
+        self.cfgxml_data.append('        <property name="visible">True</property>')
+        self.cfgxml_data.append('        <property name="spacing">2</property>')
 
-        cfgxml_data.append("                <child>")
-        cfgxml_data.append('                  <object class="GtkLabel">')
-        cfgxml_data.append('                    <property name="visible">True</property>')
-        cfgxml_data.append('                    <property name="can-focus">False</property>')
-        cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
-        cfgxml_data.append('                     <property name="xpad">6</property>')
-        cfgxml_data.append('                     <property name="xalign">0</property>')
-        cfgxml_data.append("                  </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                </child>")
+        self.cfgxml_data.append("                <child>")
+        self.cfgxml_data.append('                  <object class="GtkLabel">')
+        self.cfgxml_data.append('                    <property name="visible">True</property>')
+        self.cfgxml_data.append('                    <property name="can-focus">False</property>')
+        self.cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
+        self.cfgxml_data.append('                     <property name="xpad">6</property>')
+        self.cfgxml_data.append('                     <property name="xalign">0</property>')
+        self.cfgxml_data.append("                  </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                </child>")
 
-        cfgxml_data.append("                    <child>")
-        cfgxml_data.append(f'                      <object class="HAL_SpinButton" id="{halpin}">')
-        cfgxml_data.append('                        <property name="visible">True</property>')
-        cfgxml_data.append('                        <property name="can_focus">True</property>')
-        cfgxml_data.append('                        <property name="digits">2</property>')
-        cfgxml_data.append(f'                        <property name="adjustment">adj_{halpin}</property>')
-        cfgxml_data.append("                      </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                    </child>")
-        cfgxml_data.append("      </object>")
-        cfgxml_data.append("    </child>")
+        self.cfgxml_data.append("                    <child>")
+        self.cfgxml_data.append(f'                      <object class="HAL_SpinButton" id="{halpin}">')
+        self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="can_focus">True</property>')
+        self.cfgxml_data.append('                        <property name="digits">2</property>')
+        self.cfgxml_data.append(f'                        <property name="adjustment">adj_{halpin}</property>')
+        self.cfgxml_data.append("                      </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                    </child>")
+        self.cfgxml_data.append("      </object>")
+        self.cfgxml_data.append("    </child>")
 
         self.adjustment.append(f'  <object class="GtkAdjustment" id="adj_{halpin}">')
         self.adjustment.append(f'    <property name="lower">{display_min}</property>')
@@ -270,48 +242,47 @@ def get_handlers(halcomp,builder,useropts):
         self.adjustment.append(f'    <property name="step_increment">{resolution}</property>')
         self.adjustment.append("  </object>")
 
-        return (f"{self.prefix}.{halpin}-f", cfgxml_data)
+        return f"{self.prefix}.{halpin}-f"
 
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         title = setup.get("title", name)
-        cfgxml_data = []
 
-        cfgxml_data.append("    <child>")
-        cfgxml_data.append('      <object class="GtkHBox">')
-        cfgxml_data.append('        <property name="visible">True</property>')
-        cfgxml_data.append('        <property name="spacing">2</property>')
+        self.cfgxml_data.append("    <child>")
+        self.cfgxml_data.append('      <object class="GtkHBox">')
+        self.cfgxml_data.append('        <property name="visible">True</property>')
+        self.cfgxml_data.append('        <property name="spacing">2</property>')
 
-        cfgxml_data.append("                <child>")
-        cfgxml_data.append('                  <object class="GtkLabel">')
-        cfgxml_data.append('                    <property name="visible">True</property>')
-        cfgxml_data.append('                    <property name="can-focus">False</property>')
-        cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
-        cfgxml_data.append('                     <property name="xpad">6</property>')
-        cfgxml_data.append('                     <property name="xalign">0</property>')
-        cfgxml_data.append("                  </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                </child>")
+        self.cfgxml_data.append("                <child>")
+        self.cfgxml_data.append('                  <object class="GtkLabel">')
+        self.cfgxml_data.append('                    <property name="visible">True</property>')
+        self.cfgxml_data.append('                    <property name="can-focus">False</property>')
+        self.cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
+        self.cfgxml_data.append('                     <property name="xpad">6</property>')
+        self.cfgxml_data.append('                     <property name="xalign">0</property>')
+        self.cfgxml_data.append("                  </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                </child>")
 
-        cfgxml_data.append("                    <child>")
-        cfgxml_data.append(f'                      <object class="HAL_HScale" id="{halpin}">')
-        cfgxml_data.append('                        <property name="visible">True</property>')
-        cfgxml_data.append('                        <property name="can_focus">True</property>')
-        cfgxml_data.append(f'                        <property name="adjustment">adj_{halpin}</property>')
-        cfgxml_data.append("                      </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                    </child>")
-        cfgxml_data.append("      </object>")
-        cfgxml_data.append("    </child>")
+        self.cfgxml_data.append("                    <child>")
+        self.cfgxml_data.append(f'                      <object class="HAL_HScale" id="{halpin}">')
+        self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="can_focus">True</property>')
+        self.cfgxml_data.append(f'                        <property name="adjustment">adj_{halpin}</property>')
+        self.cfgxml_data.append("                      </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                    </child>")
+        self.cfgxml_data.append("      </object>")
+        self.cfgxml_data.append("    </child>")
 
         self.adjustment.append(f'  <object class="GtkAdjustment" id="adj_{halpin}">')
         self.adjustment.append(f'    <property name="lower">{display_min}</property>')
@@ -319,7 +290,7 @@ def get_handlers(halcomp,builder,useropts):
         self.adjustment.append("  </object>")
 
         # -s for s32
-        return (f"{self.prefix}.{halpin}", cfgxml_data)
+        return f"{self.prefix}.{halpin}"
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
@@ -328,19 +299,18 @@ def get_handlers(halcomp,builder,useropts):
         display_region = setup.get("region", [])
         display_zone = setup.get("zone")
         display_size = setup.get("size", "150")
-        cfgxml_data = []
 
-        cfgxml_data.append("                    <child>")
-        cfgxml_data.append(f'                      <object class="HAL_Meter" id="{halpin}">')
-        cfgxml_data.append('                        <property name="visible">True</property>')
-        cfgxml_data.append('                        <property name="can_focus">True</property>')
-        cfgxml_data.append(f'                        <property name="label">{display_text}</property>')
+        self.cfgxml_data.append("                    <child>")
+        self.cfgxml_data.append(f'                      <object class="HAL_Meter" id="{halpin}">')
+        self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="can_focus">True</property>')
+        self.cfgxml_data.append(f'                        <property name="label">{display_text}</property>')
         if name != display_text:
-            cfgxml_data.append(f'                        <property name="sublabel">{name}</property>')
-        cfgxml_data.append(f'                        <property name="min">{display_min}</property>')
-        cfgxml_data.append(f'                        <property name="max">{display_max}</property>')
+            self.cfgxml_data.append(f'                        <property name="sublabel">{name}</property>')
+        self.cfgxml_data.append(f'                        <property name="min">{display_min}</property>')
+        self.cfgxml_data.append(f'                        <property name="max">{display_max}</property>')
         if display_size:
-            cfgxml_data.append(f'                        <property name="force_size">{display_size}</property>')
+            self.cfgxml_data.append(f'                        <property name="force_size">{display_size}</property>')
 
         if display_zone:
             for reg_n, zone in enumerate(display_zone[:3]):
@@ -348,32 +318,32 @@ def get_handlers(halcomp,builder,useropts):
                     color = zone[0]
                 else:
                     color = zone[1]
-                cfgxml_data.append(f'                        <property name="z{reg_n}_color">{color}</property>')
+                self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{color}</property>')
                 if reg_n < 2:
-                    cfgxml_data.append(f'                        <property name="z{reg_n}_border">{zone[0]}</property>')
+                    self.cfgxml_data.append(f'                        <property name="z{reg_n}_border">{zone[0]}</property>')
 
         elif display_region:
             if float(display_region[0][0]) == float(display_min):
                 for reg_n, region in enumerate(display_region[:3]):
                     if reg_n < 2:
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[1]}</property>')
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[1]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
                     else:
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
                 if len(display_region) < 3:
-                    cfgxml_data.append('                        <property name="z2_color">green</property>')
+                    self.cfgxml_data.append('                        <property name="z2_color">green</property>')
             else:
                 last_color = "green"
                 for reg_n, region in enumerate(display_region[:3]):
                     if reg_n < 2:
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[0]}</property>')
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_color">{last_color}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[0]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{last_color}</property>')
                     last_color = region[2]
-                cfgxml_data.append(f'                        <property name="z2_color">{last_color}</property>')
+                self.cfgxml_data.append(f'                        <property name="z2_color">{last_color}</property>')
 
-        cfgxml_data.append("                      </object>")
-        cfgxml_data.append("                    </child>")
-        return (f"{self.prefix}.{halpin}", cfgxml_data)
+        self.cfgxml_data.append("                      </object>")
+        self.cfgxml_data.append("                    </child>")
+        return f"{self.prefix}.{halpin}"
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
@@ -381,35 +351,34 @@ def get_handlers(halcomp,builder,useropts):
         display_text = setup.get("text", name)
         display_region = setup.get("region", [])
         display_zone = setup.get("zone")
-        cfgxml_data = []
 
-        cfgxml_data.append("    <child>")
-        cfgxml_data.append('      <object class="GtkHBox">')
-        cfgxml_data.append('        <property name="visible">True</property>')
-        cfgxml_data.append('        <property name="spacing">2</property>')
+        self.cfgxml_data.append("    <child>")
+        self.cfgxml_data.append('      <object class="GtkHBox">')
+        self.cfgxml_data.append('        <property name="visible">True</property>')
+        self.cfgxml_data.append('        <property name="spacing">2</property>')
 
-        cfgxml_data.append("                <child>")
-        cfgxml_data.append('                  <object class="GtkLabel">')
-        cfgxml_data.append('                    <property name="visible">True</property>')
-        cfgxml_data.append('                    <property name="can-focus">False</property>')
-        cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
-        cfgxml_data.append('                     <property name="xpad">6</property>')
-        cfgxml_data.append('                     <property name="xalign">0</property>')
-        cfgxml_data.append("                  </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                </child>")
+        self.cfgxml_data.append("                <child>")
+        self.cfgxml_data.append('                  <object class="GtkLabel">')
+        self.cfgxml_data.append('                    <property name="visible">True</property>')
+        self.cfgxml_data.append('                    <property name="can-focus">False</property>')
+        self.cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
+        self.cfgxml_data.append('                     <property name="xpad">6</property>')
+        self.cfgxml_data.append('                     <property name="xalign">0</property>')
+        self.cfgxml_data.append("                  </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                </child>")
 
-        cfgxml_data.append("                    <child>")
-        cfgxml_data.append(f'                      <object class="HAL_HBar" id="{halpin}">')
-        cfgxml_data.append('                        <property name="visible">True</property>')
-        cfgxml_data.append('                        <property name="can_focus">True</property>')
-        cfgxml_data.append(f'                        <property name="min">{display_min}</property>')
-        cfgxml_data.append(f'                        <property name="max">{display_max}</property>')
-        cfgxml_data.append('                        <property name="force_height">27</property>')
+        self.cfgxml_data.append("                    <child>")
+        self.cfgxml_data.append(f'                      <object class="HAL_HBar" id="{halpin}">')
+        self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="can_focus">True</property>')
+        self.cfgxml_data.append(f'                        <property name="min">{display_min}</property>')
+        self.cfgxml_data.append(f'                        <property name="max">{display_max}</property>')
+        self.cfgxml_data.append('                        <property name="force_height">27</property>')
 
         if display_zone:
             for reg_n, zone in enumerate(display_zone[:3]):
@@ -417,41 +386,41 @@ def get_handlers(halcomp,builder,useropts):
                     color = zone[0]
                 else:
                     color = zone[1]
-                cfgxml_data.append(f'                        <property name="z{reg_n}_color">{color}</property>')
+                self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{color}</property>')
                 if reg_n < 2:
-                    cfgxml_data.append(f'                        <property name="z{reg_n}_border">{zone[0]}</property>')
+                    self.cfgxml_data.append(f'                        <property name="z{reg_n}_border">{zone[0]}</property>')
 
         elif display_region:
             if float(display_region[0][0]) == float(display_min):
                 for reg_n, region in enumerate(display_region[:2]):
                     if reg_n < 1:
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[1]}</property>')
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[1]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
                     else:
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{region[2]}</property>')
                 if len(display_region) < 3:
-                    cfgxml_data.append('                        <property name="z2_color">green</property>')
+                    self.cfgxml_data.append('                        <property name="z2_color">green</property>')
             else:
                 last_color = "green"
                 for reg_n, region in enumerate(display_region[:2]):
                     if reg_n < 1:
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[0]}</property>')
-                        cfgxml_data.append(f'                        <property name="z{reg_n}_color">{last_color}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_border">{region[0]}</property>')
+                        self.cfgxml_data.append(f'                        <property name="z{reg_n}_color">{last_color}</property>')
                     last_color = region[2]
-                cfgxml_data.append(f'                        <property name="z2_color">{last_color}</property>')
+                self.cfgxml_data.append(f'                        <property name="z2_color">{last_color}</property>')
 
-        cfgxml_data.append("                      </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                    </child>")
+        self.cfgxml_data.append("                      </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                    </child>")
 
-        cfgxml_data.append("      </object>")
-        cfgxml_data.append("    </child>")
+        self.cfgxml_data.append("      </object>")
+        self.cfgxml_data.append("    </child>")
 
-        return (f"{self.prefix}.{halpin}", cfgxml_data)
+        return f"{self.prefix}.{halpin}"
 
     def draw_number_u32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="u32", setup=setup)
@@ -467,127 +436,124 @@ def get_handlers(halcomp,builder,useropts):
             display_format = setup.get("format", "d")
             label_pin_type = 0
 
-        cfgxml_data = []
-        cfgxml_data.append("    <child>")
-        cfgxml_data.append('      <object class="GtkHBox">')
-        cfgxml_data.append('        <property name="visible">True</property>')
-        cfgxml_data.append('        <property name="spacing">2</property>')
+        self.cfgxml_data.append("    <child>")
+        self.cfgxml_data.append('      <object class="GtkHBox">')
+        self.cfgxml_data.append('        <property name="visible">True</property>')
+        self.cfgxml_data.append('        <property name="spacing">2</property>')
 
-        cfgxml_data.append("                <child>")
-        cfgxml_data.append('                  <object class="GtkLabel">')
-        cfgxml_data.append('                    <property name="visible">True</property>')
-        cfgxml_data.append('                    <property name="can-focus">False</property>')
-        cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
-        cfgxml_data.append('                     <property name="xpad">6</property>')
-        cfgxml_data.append('                     <property name="xalign">0</property>')
-        cfgxml_data.append("                  </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                </child>")
+        self.cfgxml_data.append("                <child>")
+        self.cfgxml_data.append('                  <object class="GtkLabel">')
+        self.cfgxml_data.append('                    <property name="visible">True</property>')
+        self.cfgxml_data.append('                    <property name="can-focus">False</property>')
+        self.cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
+        self.cfgxml_data.append('                     <property name="xpad">6</property>')
+        self.cfgxml_data.append('                     <property name="xalign">0</property>')
+        self.cfgxml_data.append("                  </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                </child>")
 
-        cfgxml_data.append("                    <child>")
-        cfgxml_data.append(f'                      <object class="HAL_Label" id="{halpin}">')
-        cfgxml_data.append('                        <property name="visible">True</property>')
-        cfgxml_data.append('                        <property name="label" translatable="yes">label</property>')
-        cfgxml_data.append(f'                        <property name="text_template">%{display_format}</property>')
-        cfgxml_data.append("                        <attributes>")
-        cfgxml_data.append('                          <attribute name="style" value="normal"/>')
-        cfgxml_data.append('                          <attribute name="weight" value="bold"/>')
-        cfgxml_data.append("                        </attributes>")
-        cfgxml_data.append(f'                        <property name="label_pin_type">{label_pin_type}</property>')
-        cfgxml_data.append("                      </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">False</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                    </child>")
-        cfgxml_data.append("      </object>")
-        cfgxml_data.append("    </child>")
+        self.cfgxml_data.append("                    <child>")
+        self.cfgxml_data.append(f'                      <object class="HAL_Label" id="{halpin}">')
+        self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="label" translatable="yes">label</property>')
+        self.cfgxml_data.append(f'                        <property name="text_template">%{display_format}</property>')
+        self.cfgxml_data.append("                        <attributes>")
+        self.cfgxml_data.append('                          <attribute name="style" value="normal"/>')
+        self.cfgxml_data.append('                          <attribute name="weight" value="bold"/>')
+        self.cfgxml_data.append("                        </attributes>")
+        self.cfgxml_data.append(f'                        <property name="label_pin_type">{label_pin_type}</property>')
+        self.cfgxml_data.append("                      </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">False</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                    </child>")
+        self.cfgxml_data.append("      </object>")
+        self.cfgxml_data.append("    </child>")
 
-        return (f"{self.prefix}.{halpin}", cfgxml_data)
+        return f"{self.prefix}.{halpin}"
 
     def draw_checkbutton(self, name, halpin, setup={}):
-        cfgxml_data = []
-        cfgxml_data.append("    <child>")
-        cfgxml_data.append('      <object class="GtkHBox">')
-        cfgxml_data.append('        <property name="visible">True</property>')
-        cfgxml_data.append('        <property name="spacing">2</property>')
+        self.cfgxml_data.append("    <child>")
+        self.cfgxml_data.append('      <object class="GtkHBox">')
+        self.cfgxml_data.append('        <property name="visible">True</property>')
+        self.cfgxml_data.append('        <property name="spacing">2</property>')
 
-        cfgxml_data.append("                <child>")
-        cfgxml_data.append('                  <object class="GtkLabel">')
-        cfgxml_data.append('                    <property name="visible">True</property>')
-        cfgxml_data.append('                    <property name="can-focus">False</property>')
-        cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
-        cfgxml_data.append('                     <property name="xpad">6</property>')
-        cfgxml_data.append('                     <property name="xalign">0</property>')
-        cfgxml_data.append("                  </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                <child>")
+        self.cfgxml_data.append('                  <object class="GtkLabel">')
+        self.cfgxml_data.append('                    <property name="visible">True</property>')
+        self.cfgxml_data.append('                    <property name="can-focus">False</property>')
+        self.cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
+        self.cfgxml_data.append('                     <property name="xpad">6</property>')
+        self.cfgxml_data.append('                     <property name="xalign">0</property>')
+        self.cfgxml_data.append("                  </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
 
-        cfgxml_data.append("                </child>")
+        self.cfgxml_data.append("                </child>")
 
-        cfgxml_data.append("                    <child>")
-        # cfgxml_data.append(f'                      <object class="HAL_CheckButton" id="{halpin}">')
-        cfgxml_data.append(f'                      <object class="HAL_ToggleButton" id="{halpin}">')
-        cfgxml_data.append('                        <property name="label" translatable="yes"></property>')
-        cfgxml_data.append('                        <property name="visible">True</property>')
-        cfgxml_data.append('                        <property name="can_focus">True</property>')
-        cfgxml_data.append('                        <property name="receives_default">False</property>')
-        cfgxml_data.append('                        <property name="draw_indicator">True</property>')
-        cfgxml_data.append("                      </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">False</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                    </child>")
+        self.cfgxml_data.append("                    <child>")
+        # self.cfgxml_data.append(f'                      <object class="HAL_CheckButton" id="{halpin}">')
+        self.cfgxml_data.append(f'                      <object class="HAL_ToggleButton" id="{halpin}">')
+        self.cfgxml_data.append('                        <property name="label" translatable="yes"></property>')
+        self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="can_focus">True</property>')
+        self.cfgxml_data.append('                        <property name="receives_default">False</property>')
+        self.cfgxml_data.append('                        <property name="draw_indicator">True</property>')
+        self.cfgxml_data.append("                      </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">False</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                    </child>")
 
-        cfgxml_data.append("      </object>")
-        cfgxml_data.append("    </child>")
-        return (f"{self.prefix}.{halpin}", cfgxml_data)
+        self.cfgxml_data.append("      </object>")
+        self.cfgxml_data.append("    </child>")
+        return f"{self.prefix}.{halpin}"
 
     def draw_led(self, name, halpin, setup={}):
-        cfgxml_data = []
-        cfgxml_data.append("    <child>")
-        cfgxml_data.append('      <object class="GtkHBox">')
-        cfgxml_data.append('        <property name="visible">True</property>')
-        cfgxml_data.append('        <property name="spacing">2</property>')
+        self.cfgxml_data.append("    <child>")
+        self.cfgxml_data.append('      <object class="GtkHBox">')
+        self.cfgxml_data.append('        <property name="visible">True</property>')
+        self.cfgxml_data.append('        <property name="spacing">2</property>')
 
-        cfgxml_data.append("                <child>")
-        cfgxml_data.append('                  <object class="GtkLabel">')
-        cfgxml_data.append('                    <property name="visible">True</property>')
-        cfgxml_data.append('                    <property name="can-focus">False</property>')
-        cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
-        cfgxml_data.append('                     <property name="xpad">6</property>')
-        cfgxml_data.append('                     <property name="xalign">0</property>')
-        cfgxml_data.append("                  </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">True</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                </child>")
+        self.cfgxml_data.append("                <child>")
+        self.cfgxml_data.append('                  <object class="GtkLabel">')
+        self.cfgxml_data.append('                    <property name="visible">True</property>')
+        self.cfgxml_data.append('                    <property name="can-focus">False</property>')
+        self.cfgxml_data.append(f'                    <property name="label" translatable="yes">{name}</property>')
+        self.cfgxml_data.append('                     <property name="xpad">6</property>')
+        self.cfgxml_data.append('                     <property name="xalign">0</property>')
+        self.cfgxml_data.append("                  </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">True</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                </child>")
 
-        cfgxml_data.append("                    <child>")
-        cfgxml_data.append(f'                      <object class="HAL_LED" id="{halpin}">')
-        cfgxml_data.append('                        <property name="visible">True</property>')
-        cfgxml_data.append('                        <property name="pick_color_on">#ffffb7b90b5c</property>')
-        cfgxml_data.append('                        <property name="pick_color_off">#000000000000</property>')
-        cfgxml_data.append("                      </object>")
-        cfgxml_data.append("                  <packing>")
-        cfgxml_data.append('                    <property name="expand">False</property>')
-        cfgxml_data.append('                    <property name="fill">True</property>')
-        cfgxml_data.append('                    <property name="position">1</property>')
-        cfgxml_data.append("                  </packing>")
-        cfgxml_data.append("                    </child>")
+        self.cfgxml_data.append("                    <child>")
+        self.cfgxml_data.append(f'                      <object class="HAL_LED" id="{halpin}">')
+        self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="pick_color_on">#ffffb7b90b5c</property>')
+        self.cfgxml_data.append('                        <property name="pick_color_off">#000000000000</property>')
+        self.cfgxml_data.append("                      </object>")
+        self.cfgxml_data.append("                  <packing>")
+        self.cfgxml_data.append('                    <property name="expand">False</property>')
+        self.cfgxml_data.append('                    <property name="fill">True</property>')
+        self.cfgxml_data.append('                    <property name="position">1</property>')
+        self.cfgxml_data.append("                  </packing>")
+        self.cfgxml_data.append("                    </child>")
 
-        cfgxml_data.append("      </object>")
-        cfgxml_data.append("    </child>")
-        return (f"{self.prefix}.{halpin}", cfgxml_data)
+        self.cfgxml_data.append("      </object>")
+        self.cfgxml_data.append("    </child>")
+        return f"{self.prefix}.{halpin}"
