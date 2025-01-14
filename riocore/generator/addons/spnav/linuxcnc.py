@@ -41,7 +41,6 @@ def hal(parent):
                 if not spnav_jointjog:
                     continue
                 axis_config = parent.axis_dict.get(axis.upper())
-                axis_low = axis.lower()
                 joints = axis_config["joints"]
                 for joint, joint_setup in joints.items():
                     parent.halg.setp_add(f"spnav.axis.{axis}.scale", spnav_scale[axis])
