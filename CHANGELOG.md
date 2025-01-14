@@ -4,7 +4,7 @@
 
 ### Gui and Generator
 * better Windows support
-* better extra gui preview
+* support for gladevcp, pyvcp, qtpyvcp, qtvcp
 * some little fixes and improvements
 * adding support for virtual pins
 * now you can use the same input pin in multiple plugins
