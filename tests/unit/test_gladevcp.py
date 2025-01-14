@@ -145,6 +145,11 @@ def test_gladevcp():
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                   </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
               </object>
             </child>

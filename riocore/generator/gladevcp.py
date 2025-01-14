@@ -122,19 +122,16 @@ def get_handlers(halcomp,builder,useropts):
     def draw_frame_begin(self, name=None):
         self.cfgxml_data.append(f"""
            <child>
-
             <object class="GtkFrame">
             <property name="visible">True</property>
             <property name="label_xalign">0.5</property>
-
             <child type="label">
-              <object class="GtkLabel" id="label1text">
+              <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">{name}</property>
                 <property name="use_markup">True</property>
               </object>
             </child>
-
         """)
 
         self.draw_vbox_begin()
@@ -152,8 +149,8 @@ def get_handlers(halcomp,builder,useropts):
 
     <child>
       <object class="GtkBox">
-        <property name="margin">10</property>
-        <property name="spacing">10</property>
+        <property name="margin">5</property>
+        <property name="spacing">0</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
@@ -169,8 +166,8 @@ def get_handlers(halcomp,builder,useropts):
 
     <child>
       <object class="GtkBox">
-        <property name="margin">10</property>
-        <property name="spacing">10</property>
+        <property name="margin">0</property>
+        <property name="spacing">0</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">horizontal</property>
@@ -205,6 +202,11 @@ def get_handlers(halcomp,builder,useropts):
         self.cfgxml_data.append('                <property name="can-focus">True</property>')
         self.cfgxml_data.append('                <property name="receives-default">True</property>')
         self.cfgxml_data.append("              </object>")
+        self.cfgxml_data.append("              <packing>")
+        self.cfgxml_data.append('                <property name="expand">True</property>')
+        self.cfgxml_data.append('                <property name="fill">True</property>')
+        self.cfgxml_data.append('                <property name="position">1</property>')
+        self.cfgxml_data.append("              </packing>")
         self.cfgxml_data.append("            </child>")
         return f"{self.prefix}.{halpin}"
 
@@ -285,11 +287,15 @@ def get_handlers(halcomp,builder,useropts):
         display_zone = setup.get("zone")
         display_size = setup.get("size", "150")
 
-        self.cfgxml_data.append("                    <child>")
+        self.cfgxml_data.append("            <child>")
         self.cfgxml_data.append(f'                      <object class="HAL_Meter" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
         self.cfgxml_data.append('                        <property name="can_focus">True</property>')
         self.cfgxml_data.append(f'                        <property name="label">{display_text}</property>')
+        majorscale = (display_max - display_min) / 10
+        self.cfgxml_data.append(f'                        <property name="majorscale">{majorscale}</property>')
+        minorscale = (display_max - display_min) / 100
+        self.cfgxml_data.append(f'                        <property name="minorscale">{minorscale}</property>')
         if name != display_text:
             self.cfgxml_data.append(f'                        <property name="sublabel">{name}</property>')
         self.cfgxml_data.append(f'                        <property name="min">{display_min}</property>')
@@ -327,7 +333,12 @@ def get_handlers(halcomp,builder,useropts):
                 self.cfgxml_data.append(f'                        <property name="z2_color">{last_color}</property>')
 
         self.cfgxml_data.append("                      </object>")
-        self.cfgxml_data.append("                    </child>")
+        self.cfgxml_data.append("              <packing>")
+        self.cfgxml_data.append('                <property name="expand">True</property>')
+        self.cfgxml_data.append('                <property name="fill">True</property>')
+        self.cfgxml_data.append('                <property name="position">1</property>')
+        self.cfgxml_data.append("              </packing>")
+        self.cfgxml_data.append("            </child>")
         return f"{self.prefix}.{halpin}"
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):

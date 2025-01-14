@@ -1008,7 +1008,7 @@ class LinuxCNC:
 
             if tab == "status":
                 if machinetype == "melfa":
-                    if gui not in {"qtdragon", "qtdragon_hd"}:
+                    if hasattr(self.gui_gen, "draw_multilabel"):
                         pname = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
                         self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
                         self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
