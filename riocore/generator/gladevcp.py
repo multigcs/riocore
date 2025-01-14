@@ -23,8 +23,7 @@ class gladevcp:
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
-
-""")
+        """)
 
     def draw_end(self):
         self.cfgxml_data.append("""
@@ -79,7 +78,6 @@ def get_handlers(halcomp,builder,useropts):
               <object class="GtkNotebook">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-
         """)
 
     def draw_tabs_end(self):
@@ -91,7 +89,6 @@ def get_handlers(halcomp,builder,useropts):
     def draw_tab_begin(self, name):
         self.tabname = name
         self.cfgxml_data.append(f"""
-
     <child>
       <object class="GtkBox" id="vbox_tab_{name}">
         <property name="margin">10</property>
@@ -99,12 +96,14 @@ def get_handlers(halcomp,builder,useropts):
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
-
-
         """)
 
     def draw_tab_end(self):
-        self.cfgxml_data.append(f"""
+        # remove emty tabs
+        if "vbox_tab_" in self.cfgxml_data[-1]:
+            self.cfgxml_data = self.cfgxml_data[:-1]
+        else:
+            self.cfgxml_data.append(f"""
               </object>
             </child>
                 <child type="tab">
@@ -117,7 +116,7 @@ def get_handlers(halcomp,builder,useropts):
                     <property name="tab-fill">False</property>
                   </packing>
                 </child>
-        """)
+            """)
 
     def draw_frame_begin(self, name=None):
         self.cfgxml_data.append(f"""
@@ -146,7 +145,6 @@ def get_handlers(halcomp,builder,useropts):
 
     def draw_vbox_begin(self):
         self.cfgxml_data.append("""
-
     <child>
       <object class="GtkBox">
         <property name="margin">5</property>
@@ -154,7 +152,6 @@ def get_handlers(halcomp,builder,useropts):
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
-
         """)
 
     def draw_vbox_end(self):
@@ -163,7 +160,6 @@ def get_handlers(halcomp,builder,useropts):
 
     def draw_hbox_begin(self):
         self.cfgxml_data.append("""
-
     <child>
       <object class="GtkBox">
         <property name="margin">0</property>
@@ -171,7 +167,6 @@ def get_handlers(halcomp,builder,useropts):
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">horizontal</property>
-
         """)
 
     def draw_hbox_end(self):
