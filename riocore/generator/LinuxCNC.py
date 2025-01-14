@@ -1002,6 +1002,22 @@ class LinuxCNC:
                 vcp_sections.append(section)
         self.gui_gen.draw_tabs_begin([tab.title() for tab in vcp_sections])
 
+        # analyse halnames to generate titles
+        prefixes = {}
+        haltitles = {}
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    halname = signal_config["halname"]
+                    prefix = ".".join(halname.split(".")[:-1])
+                    if prefix not in prefixes:
+                        prefixes[prefix] = []
+                    prefixes[prefix].append(halname)
+        for prefix, halnames in prefixes.items():
+            if len(halnames) == 1:
+                for halname in halnames:
+                    haltitles[halname] = prefix.title()
+
         # generate tab (vcp) for each section
         for tab in vcp_sections:
             self.gui_gen.draw_tab_begin(tab.title())
@@ -1144,9 +1160,7 @@ class LinuxCNC:
                             continue
 
                         if hasattr(self.gui_gen, f"draw_{dtype}"):
-                            title = halname
-                            if title.endswith(".bit"):
-                                title = ".".join(title.split(".")[:-1])
+                            title = haltitles.get(halname, halname)
                             gui_pinname = getattr(self.gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
 
                             # fselect handling
