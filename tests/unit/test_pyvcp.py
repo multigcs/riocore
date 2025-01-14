@@ -16,11 +16,7 @@ def test_pyvcp():
     <names>['tab1', 'tab2', 'tab3']</names>
     <vbox>
       <vbox>
-        <relief>RIDGE</relief>
-        <bd>2</bd>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"led1      "</text>
             <font>("Helvetica",9)</font>
@@ -34,8 +30,6 @@ def test_pyvcp():
           </led>
         </hbox>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"led2      "</text>
             <font>("Helvetica",9)</font>
@@ -49,8 +43,6 @@ def test_pyvcp():
           </led>
         </hbox>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"name      "</text>
             <font>("Helvetica",9)</font>
@@ -67,8 +59,6 @@ def test_pyvcp():
           </scale>
         </hbox>
         <vbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <labelframe text="name">
             <multilabel>
               <legends>['v0', 'v1']</legends>
@@ -93,8 +83,6 @@ def test_pyvcp():
         <relief>RIDGE</relief>
         <font>("Helvetica", 10)</font>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"name      "</text>
             <font>("Helvetica",9)</font>
@@ -122,11 +110,7 @@ def test_pyvcp():
     </vbox>
     <vbox>
       <hbox>
-        <relief>RIDGE</relief>
-        <bd>2</bd>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"check1    "</text>
             <font>("Helvetica",9)</font>
@@ -137,8 +121,6 @@ def test_pyvcp():
           </checkbutton>
         </hbox>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"check2    "</text>
             <font>("Helvetica",9)</font>
@@ -163,8 +145,6 @@ def test_pyvcp():
           <param_pin>1</param_pin>
         </dial>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <meter>
             <halpin>"halpin6"</halpin>
             <text>"name"</text>
@@ -178,8 +158,6 @@ def test_pyvcp():
           </meter>
         </hbox>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"name      "</text>
             <font>("Helvetica",9)</font>
@@ -197,8 +175,6 @@ def test_pyvcp():
           </bar>
         </hbox>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"name      "</text>
             <font>("Helvetica",9)</font>
@@ -212,8 +188,6 @@ def test_pyvcp():
           </u32>
         </hbox>
         <hbox>
-          <relief>RAISED</relief>
-          <bd>2</bd>
           <label>
             <text>"name      "</text>
             <font>("Helvetica",9)</font>
@@ -230,8 +204,6 @@ def test_pyvcp():
     </vbox>
     <vbox>
       <hbox>
-        <relief>RAISED</relief>
-        <bd>2</bd>
         <label>
           <text>"name      "</text>
           <font>("Helvetica",9)</font>
@@ -245,8 +217,6 @@ def test_pyvcp():
         </number>
       </hbox>
       <hbox>
-        <relief>RAISED</relief>
-        <bd>2</bd>
         <label>
           <text>"name      "</text>
           <font>("Helvetica",9)</font>
@@ -257,8 +227,6 @@ def test_pyvcp():
         </checkbutton>
       </hbox>
       <hbox>
-        <relief>RAISED</relief>
-        <bd>2</bd>
         <label>
           <text>"name      "</text>
           <font>("Helvetica",9)</font>
@@ -278,8 +246,6 @@ def test_pyvcp():
         </checkbutton>
       </hbox>
       <hbox>
-        <relief>RAISED</relief>
-        <bd>2</bd>
         <label>
           <text>"name      "</text>
           <font>("Helvetica",9)</font>
@@ -293,8 +259,6 @@ def test_pyvcp():
         </led>
       </hbox>
       <hbox>
-        <relief>RAISED</relief>
-        <bd>2</bd>
         <label>
           <text>"name      "</text>
           <font>("Helvetica",9)</font>

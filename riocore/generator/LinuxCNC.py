@@ -379,6 +379,9 @@ class LinuxCNC:
             ini_setup["RS274NGC"]["REMAP|M428"] = "M428 modalgroup=10 ngc=428remap"
             ini_setup["RS274NGC"]["REMAP|M429"] = "M429 modalgroup=10 ngc=429remap"
             ini_setup["RS274NGC"]["REMAP|M430"] = "M430 modalgroup=10 ngc=430remap"
+            ini_setup["HALUI"]["MDI_COMMAND||Coord|World"] = "M428"
+            ini_setup["HALUI"]["MDI_COMMAND||Coord|Joint"] = "M429"
+            ini_setup["HALUI"]["MDI_COMMAND||Coord|Gensertool"] = "M430"
 
         if embed_vismach:
             ini_setup["DISPLAY"]["EMBED_TAB_NAME|VISMACH"] = "Vismach"
@@ -1009,9 +1012,6 @@ class LinuxCNC:
                         pname = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
                         self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
                         self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
-                    ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
-                    ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
-                    ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
                     pname = self.gui_gen.draw_button("Clear Path", "vismach-clear")
 
                     self.gui_gen.draw_hbox_begin()
@@ -1033,13 +1033,34 @@ class LinuxCNC:
                 # buttons
                 self.gui_gen.draw_frame_begin("MDI-Commands")
                 self.gui_gen.draw_vbox_begin()
+
                 mdi_num = 0
+                mdi_group_last = None
                 for mdi_num, command in enumerate(ini_setup["HALUI"]):
                     if command.startswith("MDI_COMMAND|"):
+                        # grouping mdi's in hbox
+                        mdi_group = None
+                        if len(command.split("|")) == 4:
+                            mdi_group = command.split("|")[2]
+                        if mdi_group != mdi_group_last:
+                            if mdi_group is not None:
+                                if mdi_group_last is not None:
+                                    self.gui_gen.draw_hbox_end()
+                                    self.gui_gen.draw_frame_end()
+                                self.gui_gen.draw_frame_begin(mdi_group)
+                                self.gui_gen.draw_hbox_begin()
+                            else:
+                                self.gui_gen.draw_hbox_end()
+                                self.gui_gen.draw_frame_end()
                         mdi_title = command.split("|")[-1]
                         halpin = f"halui.mdi-command-{mdi_num:02d}"
                         pname = self.gui_gen.draw_button(mdi_title, halpin)
                         self.halg.net_add(pname, halpin)
+                        mdi_group_last = mdi_group
+
+                if mdi_group_last is not None:
+                    self.gui_gen.draw_hbox_end()
+                    self.gui_gen.draw_frame_end()
 
                 self.gui_gen.draw_vbox_end()
                 self.gui_gen.draw_frame_end()

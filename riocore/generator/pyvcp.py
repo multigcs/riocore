@@ -53,28 +53,16 @@ class pyvcp:
     def draw_tab_end(self):
         self.parent = self.parent.getparent()
 
-    def draw_vbox_begin(self, relief="RIDGE"):
-        e_relief = etree.Element("relief")
-        e_relief.text = relief
-        e_bd = etree.Element("bd")
-        e_bd.text = "2"
+    def draw_vbox_begin(self):
         e_vbox = etree.Element("vbox")
-        e_vbox.append(e_relief)
-        e_vbox.append(e_bd)
         self.parent.append(e_vbox)
         self.parent = e_vbox
 
     def draw_vbox_end(self):
         self.parent = self.parent.getparent()
 
-    def draw_hbox_begin(self, relief="RIDGE"):
-        e_relief = etree.Element("relief")
-        e_relief.text = relief
-        e_bd = etree.Element("bd")
-        e_bd.text = "2"
+    def draw_hbox_begin(self):
         e_hbox = etree.Element("hbox")
-        e_hbox.append(e_relief)
-        e_hbox.append(e_bd)
         self.parent.append(e_hbox)
         self.parent = e_hbox
 
@@ -116,7 +104,7 @@ class pyvcp:
         display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0)
         resolution = setup.get("resolution", 0.1)
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         e_scale = etree.Element("scale")
         self.parent.append(e_scale)
@@ -154,7 +142,7 @@ class pyvcp:
         resolution = 1
         legends = list(values.keys())
         e_labelframe = etree.Element("labelframe", text=title)
-        self.draw_vbox_begin("RAISED")
+        self.draw_vbox_begin()
         e_multilabel = etree.Element("multilabel")
         self.parent.append(e_multilabel)
         e_legends = etree.Element("legends")
@@ -207,7 +195,7 @@ class pyvcp:
         display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0.0)
         resolution = setup.get("resolution", 0.1)
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         e_spinbox = etree.Element("spinbox")
         self.parent.append(e_spinbox)
@@ -327,7 +315,7 @@ class pyvcp:
         display_subtext = setup.get("subtext", setup.get("unit", ""))
         display_region = setup.get("region", [])
         display_size = setup.get("size", 150)
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         e_meter = etree.Element("meter")
         self.parent.append(e_meter)
         e_halpin = etree.Element("halpin")
@@ -374,7 +362,7 @@ class pyvcp:
         display_format = setup.get("format", "05d")
         display_fillcolor = setup.get("fillcolor", "red")
         display_bgcolor = setup.get("fillcolor", "grey")
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         e_bar = etree.Element("bar")
         self.parent.append(e_bar)
@@ -425,7 +413,7 @@ class pyvcp:
             display_format = setup.get("format", "d")
             element = hal_type
         unit = setup.get("unit")
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         element = etree.Element(element)
         self.parent.append(element)
@@ -449,7 +437,7 @@ class pyvcp:
 
     def draw_checkbutton(self, name, halpin, setup={}):
         title = setup.get("title", name)
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         e_checkbutton = etree.Element("checkbutton")
         self.parent.append(e_checkbutton)
@@ -462,7 +450,7 @@ class pyvcp:
 
     def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup={}):
         title = setup.get("title", name)
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         e_checkbutton = etree.Element("checkbutton")
         self.parent.append(e_checkbutton)
@@ -498,7 +486,7 @@ class pyvcp:
         title = setup.get("title", name)
         size = setup.get("size", 16)
         color = setup.get("color")
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         on_color = "yellow"
         off_color = "red"
@@ -537,7 +525,7 @@ class pyvcp:
         width = setup.get("width", 16)
         height = setup.get("height", 16)
         color = setup.get("color")
-        self.draw_hbox_begin("RAISED")
+        self.draw_hbox_begin()
         self.draw_title(title)
         on_color = "red"
         off_color = "yellow"
