@@ -13,14 +13,6 @@ class pyvcp:
         self.parent = self.root
 
     def draw_end(self):
-        e_label = etree.Element("label")
-        e_text = etree.Element("text")
-        e_text.text = '""'
-        e_width = etree.Element("width")
-        e_width.text = "30"
-        e_label.append(e_text)
-        e_label.append(e_width)
-        self.parent.append(e_label)
         self.parent = self.parent.getparent()
 
     def xml(self):
@@ -67,6 +59,12 @@ class pyvcp:
 
     def draw_hbox_begin(self):
         e_hbox = etree.Element("hbox")
+        e_boxexpand = etree.Element("boxexpand", expand="yes")
+        e_hbox.append(e_boxexpand)
+        e_boxfill = etree.Element("boxfill", fill="both")
+        e_hbox.append(e_boxfill)
+        e_boxanchor = etree.Element("boxanchor", anchor="e")
+        e_hbox.append(e_boxanchor)
         self.parent.append(e_hbox)
         self.parent = e_hbox
 
@@ -75,12 +73,12 @@ class pyvcp:
 
     def draw_frame_begin(self, name=None):
         name = name or ""
+        e_labelframe = etree.Element("labelframe", text=name)
         e_relief = etree.Element("relief")
         e_relief.text = "RIDGE"
+        e_labelframe.append(e_relief)
         e_font = etree.Element("font")
         e_font.text = '("Helvetica", 10)'
-        e_labelframe = etree.Element("labelframe", text=name)
-        e_labelframe.append(e_relief)
         e_labelframe.append(e_font)
         self.parent.append(e_labelframe)
         self.parent = e_labelframe
@@ -88,13 +86,16 @@ class pyvcp:
     def draw_frame_end(self):
         self.parent = self.parent.getparent()
 
-    def draw_title(self, title, size=13):
+    def draw_title(self, title, size=15):
+        e_label = etree.Element("label")
         e_text = etree.Element("text")
         e_text.text = f'"{title:10s}"'
+        e_label.append(e_text)
+        e_anchor = etree.Element("anchor")
+        e_anchor.text = '"w"'
+        e_label.append(e_anchor)
         e_font = etree.Element("font")
         e_font.text = '("Helvetica",9)'
-        e_label = etree.Element("label")
-        e_label.append(e_text)
         e_label.append(e_font)
         if size >= 0:
             e_width = etree.Element("width")
@@ -430,12 +431,16 @@ class pyvcp:
         e_format = etree.Element("format")
         e_format.text = f'"{display_format}"'
         element.append(e_format)
-        e_justify = etree.Element("justify")
-        e_justify.text = "LEFT"
-        element.append(e_justify)
+        e_anchor = etree.Element("anchor")
+        e_anchor.text = '"e"'
+        element.append(e_anchor)
+        e_width = etree.Element("width")
+        e_width.text = "13"
+        element.append(e_width)
+        self.parent.append(element)
         if unit:
             self.draw_title(unit, size=-1)
-        self.parent.append(element)
+
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
@@ -448,6 +453,12 @@ class pyvcp:
         e_halpin = etree.Element("halpin")
         e_halpin.text = f'"{halpin}"'
         e_checkbutton.append(e_halpin)
+        e_anchor = etree.Element("anchor")
+        e_anchor.text = '"e"'
+        e_checkbutton.append(e_anchor)
+        e_width = etree.Element("width")
+        e_width.text = "13"
+        e_checkbutton.append(e_width)
         self.parent.append(e_checkbutton)
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
@@ -491,7 +502,7 @@ class pyvcp:
         size = setup.get("size", 16)
         color = setup.get("color")
         self.draw_hbox_begin()
-        self.draw_title(title)
+        self.draw_title(title, size=30)
         on_color = "yellow"
         off_color = "red"
         if color:
@@ -520,6 +531,12 @@ class pyvcp:
         e_off_color = etree.Element("off_color")
         e_off_color.text = f'"{off_color}"'
         e_led.append(e_off_color)
+        e_anchor = etree.Element("anchor")
+        e_anchor.text = '"e"'
+        e_led.append(e_anchor)
+        e_width = etree.Element("width")
+        e_width.text = "16"
+        e_led.append(e_width)
         self.parent.append(e_led)
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
@@ -530,7 +547,7 @@ class pyvcp:
         height = setup.get("height", 16)
         color = setup.get("color")
         self.draw_hbox_begin()
-        self.draw_title(title)
+        self.draw_title(title, size=30)
         on_color = "red"
         off_color = "yellow"
         if color:
@@ -559,6 +576,12 @@ class pyvcp:
         e_off_color = etree.Element("off_color")
         e_off_color.text = f'"{off_color}"'
         e_led.append(e_off_color)
+        e_anchor = etree.Element("anchor")
+        e_anchor.text = '"e"'
+        e_led.append(e_anchor)
+        e_width = etree.Element("width")
+        e_width.text = "16"
+        e_led.append(e_width)
         self.parent.append(e_led)
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"

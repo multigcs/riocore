@@ -17,36 +17,52 @@ def test_pyvcp():
     <vbox>
       <vbox>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"led1      "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>30</width>
           </label>
           <led>
             <halpin>"hal_led1"</halpin>
             <size>16</size>
             <on_color>"yellow"</on_color>
             <off_color>"red"</off_color>
+            <anchor>"e"</anchor>
+            <width>16</width>
           </led>
         </hbox>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"led2      "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>30</width>
           </label>
           <led>
             <halpin>"hal_led2"</halpin>
             <size>16</size>
             <on_color>"yellow"</on_color>
             <off_color>"red"</off_color>
+            <anchor>"e"</anchor>
+            <width>16</width>
           </led>
         </hbox>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"name      "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>15</width>
           </label>
           <scale>
             <halpin>"halpin1"</halpin>
@@ -83,10 +99,14 @@ def test_pyvcp():
         <relief>RIDGE</relief>
         <font>("Helvetica", 10)</font>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"name      "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>15</width>
           </label>
           <spinbox>
             <halpin>"halpin3"</halpin>
@@ -110,24 +130,39 @@ def test_pyvcp():
     </vbox>
     <vbox>
       <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"check1    "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>15</width>
           </label>
           <checkbutton>
             <halpin>"hal_check1"</halpin>
+            <anchor>"e"</anchor>
+            <width>13</width>
           </checkbutton>
         </hbox>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"check2    "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>15</width>
           </label>
           <checkbutton>
             <halpin>"hal_check2"</halpin>
+            <anchor>"e"</anchor>
+            <width>13</width>
           </checkbutton>
         </hbox>
         <dial>
@@ -145,6 +180,9 @@ def test_pyvcp():
           <param_pin>1</param_pin>
         </dial>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <meter>
             <halpin>"halpin6"</halpin>
             <text>"name"</text>
@@ -158,10 +196,14 @@ def test_pyvcp():
           </meter>
         </hbox>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"name      "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>15</width>
           </label>
           <bar>
             <halpin>"halpin7"</halpin>
@@ -175,62 +217,87 @@ def test_pyvcp():
           </bar>
         </hbox>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"name      "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>15</width>
           </label>
           <u32>
             <halpin>"halpin8"</halpin>
             <font>("Helvetica",14)</font>
             <format>"d"</format>
-            <justify>LEFT</justify>
+            <anchor>"e"</anchor>
+            <width>13</width>
           </u32>
         </hbox>
         <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
           <label>
             <text>"name      "</text>
+            <anchor>"w"</anchor>
             <font>("Helvetica",9)</font>
-            <width>13</width>
+            <width>15</width>
           </label>
           <s32>
             <halpin>"halpin9"</halpin>
             <font>("Helvetica",14)</font>
             <format>"d"</format>
-            <justify>LEFT</justify>
+            <anchor>"e"</anchor>
+            <width>13</width>
           </s32>
         </hbox>
       </hbox>
     </vbox>
     <vbox>
       <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
         <label>
           <text>"name      "</text>
+          <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>13</width>
+          <width>15</width>
         </label>
         <number>
           <halpin>"halpin10"</halpin>
           <font>("Helvetica",14)</font>
           <format>"07.2f"</format>
-          <justify>LEFT</justify>
+          <anchor>"e"</anchor>
+          <width>13</width>
         </number>
       </hbox>
       <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
         <label>
           <text>"name      "</text>
+          <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>13</width>
+          <width>15</width>
         </label>
         <checkbutton>
           <halpin>"halpin11"</halpin>
+          <anchor>"e"</anchor>
+          <width>13</width>
         </checkbutton>
       </hbox>
       <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
         <label>
           <text>"name      "</text>
+          <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>13</width>
+          <width>15</width>
         </label>
         <checkbutton>
           <halpin>"halpin_g"</halpin>
@@ -246,23 +313,33 @@ def test_pyvcp():
         </checkbutton>
       </hbox>
       <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
         <label>
           <text>"name      "</text>
+          <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>13</width>
+          <width>30</width>
         </label>
         <led>
           <halpin>"halpin12"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
         </led>
       </hbox>
       <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
         <label>
           <text>"name      "</text>
+          <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>13</width>
+          <width>30</width>
         </label>
         <led>
           <halpin>"halpin13"</halpin>
@@ -270,6 +347,8 @@ def test_pyvcp():
           <height>16</height>
           <on_color>"red"</on_color>
           <off_color>"yellow"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
         </led>
       </hbox>
       <button>
@@ -288,10 +367,6 @@ def test_pyvcp():
       </multilabel>
     </vbox>
   </tabs>
-  <label>
-    <text>""</text>
-    <width>30</width>
-  </label>
 </pyvcp>
 """
 
@@ -339,5 +414,6 @@ def test_pyvcp():
     gui.draw_end()
 
     xml_string = gui.xml()
+    print(xml_string)
 
     assert xml_string.strip() == expected.strip()
