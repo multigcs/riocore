@@ -1144,7 +1144,10 @@ class LinuxCNC:
                             continue
 
                         if hasattr(self.gui_gen, f"draw_{dtype}"):
-                            gui_pinname = getattr(self.gui_gen, f"draw_{dtype}")(halname, halname, setup=displayconfig)
+                            title = halname
+                            if title.endswith(".bit"):
+                                title = ".".join(title.split(".")[:-1])
+                            gui_pinname = getattr(self.gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
 
                             # fselect handling
                             if dtype == "fselect":

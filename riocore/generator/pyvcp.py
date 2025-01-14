@@ -75,7 +75,7 @@ class pyvcp:
         name = name or ""
         e_labelframe = etree.Element("labelframe", text=name)
         e_relief = etree.Element("relief")
-        e_relief.text = "RIDGE"
+        e_relief.text = "GROOVE"
         e_labelframe.append(e_relief)
         e_font = etree.Element("font")
         e_font.text = '("Helvetica", 10)'
@@ -591,7 +591,7 @@ class pyvcp:
         e_button = etree.Element("button")
         self.parent.append(e_button)
         e_relief = etree.Element("relief")
-        e_relief.text = "RAISED"
+        e_relief.text = "GROOVE"
         e_button.append(e_relief)
         e_bd = etree.Element("bd")
         e_bd.text = "3"
