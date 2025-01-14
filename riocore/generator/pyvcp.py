@@ -313,11 +313,15 @@ class pyvcp:
         return f"{self.prefix}.{halpin}"
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_unit = setup.get("unit", "")
+        if not display_unit and "." in name:
+            display_unit = name.split(".")[-1]
+            name = ".".join(name.split(".")[:-1])
         title = setup.get("title", name)
         display_initval = setup.get("initval", 0)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
-        display_subtext = setup.get("subtext", setup.get("unit", ""))
+        display_subtext = setup.get("subtext", display_unit)
         display_region = setup.get("region", [])
         display_size = setup.get("size", 150)
         self.draw_hbox_begin()
