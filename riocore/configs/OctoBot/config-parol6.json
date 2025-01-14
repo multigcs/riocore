@@ -778,6 +778,6 @@
             }
         },
         "pyvcp_pos": "RIGHT",
-        "vcp_type": "gladevcp"
+        "_vcp_type": "gladevcp"
     }
 }

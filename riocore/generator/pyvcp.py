@@ -51,7 +51,11 @@ class pyvcp:
         self.parent = e_vbox
 
     def draw_tab_end(self):
-        self.parent = self.parent.getparent()
+        if len(self.parent) == 0:
+            self.parent = self.parent.getparent()
+            self.parent.remove(self.parent[-1])
+        else:
+            self.parent = self.parent.getparent()
 
     def draw_vbox_begin(self):
         e_vbox = etree.Element("vbox")
