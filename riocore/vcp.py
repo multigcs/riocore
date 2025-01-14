@@ -217,6 +217,15 @@ class MyVCP:
             print(f"missing type: {element.tag}")
             layout.addWidget(QLabel(f"## {element.tag} ##"))
 
+    def show_boxanchor(self, element, layout):
+        pass
+
+    def show_boxexpand(self, element, layout):
+        pass
+
+    def show_boxfill(self, element, layout):
+        pass
+
     def show_radiobutton(self, element, layout):
         choices = []
         for child in element.iterchildren():
