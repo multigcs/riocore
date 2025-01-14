@@ -2,12 +2,12 @@ import os
 
 
 class gladevcp:
-    def __init__(self):
-        pass
-
-    def draw_begin(self, prefix="gladevcp", vcp_pos=None):
-        self.cfgxml_data = []
+    def __init__(self, prefix="gladevcp", vcp_pos=None):
         self.prefix = prefix
+        self.vcp_pos = vcp_pos
+
+    def draw_begin(self):
+        self.cfgxml_data = []
         self.adjustment = []
         self.cfgxml_data.append("""<?xml version="1.0"?>
 <interface>

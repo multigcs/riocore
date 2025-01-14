@@ -4,11 +4,11 @@ from lxml import etree
 
 
 class pyvcp:
-    def __init__(self):
-        pass
-
-    def draw_begin(self, prefix="pyvcp", vcp_pos=None):
+    def __init__(self, prefix="pyvcp", vcp_pos=None):
         self.prefix = prefix
+        self.vcp_pos = vcp_pos
+
+    def draw_begin(self):
         self.root = results = etree.Element("pyvcp")
         self.parent = self.root
 
@@ -477,7 +477,7 @@ class pyvcp:
         e_halpin.text = f'"{halpin_g}"'
         e_checkbutton.append(e_halpin)
         e_text = etree.Element("text")
-        e_text.text = f'"G"'
+        e_text.text = '"G"'
         e_checkbutton.append(e_text)
         self.parent.append(e_checkbutton)
         e_checkbutton = etree.Element("checkbutton")
@@ -486,7 +486,7 @@ class pyvcp:
         e_halpin.text = f'"{halpin_b}"'
         e_checkbutton.append(e_halpin)
         e_text = etree.Element("text")
-        e_text.text = f'"B"'
+        e_text.text = '"B"'
         e_checkbutton.append(e_text)
         self.parent.append(e_checkbutton)
         e_checkbutton = etree.Element("checkbutton")
@@ -495,7 +495,7 @@ class pyvcp:
         e_halpin.text = f'"{halpin_r}"'
         e_checkbutton.append(e_halpin)
         e_text = etree.Element("text")
-        e_text.text = f'"R"'
+        e_text.text = '"R"'
         e_checkbutton.append(e_text)
         self.parent.append(e_checkbutton)
         self.draw_hbox_end()

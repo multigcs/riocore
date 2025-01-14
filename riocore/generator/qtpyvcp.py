@@ -2,14 +2,13 @@ import os
 
 
 class qtpyvcp:
-    def __init__(self):
-        pass
-
-    def draw_begin(self, prefix="qtpyvcp.rio-gui", vcp_pos=None):
-        self.cfgxml_data = []
-        self.vcp_pos = vcp_pos
+    def __init__(self, prefix="qtpyvcp.rio-gui", vcp_pos=None):
         self.prefix = prefix
-        if vcp_pos == "RIGHT":
+        self.vcp_pos = vcp_pos
+
+    def draw_begin(self):
+        self.cfgxml_data = []
+        if self.vcp_pos == "RIGHT":
             self.cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>USER</class>

@@ -6,12 +6,12 @@ class qtvcp:
     # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
     #
 
-    def __init__(self):
-        pass
-
-    def draw_begin(self, prefix="qtvcp.rio-gui", vcp_pos=None):
-        self.cfgxml_data = []
+    def __init__(self, prefix="qtvcp.rio-gui", vcp_pos=None):
         self.prefix = prefix
+        self.vcp_pos = vcp_pos
+
+    def draw_begin(self):
+        self.cfgxml_data = []
 
         self.cfgxml_data.append("""<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">

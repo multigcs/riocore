@@ -96,7 +96,7 @@ def test_pyvcp():
         </vbox>
       </vbox>
       <labelframe text="myframe">
-        <relief>RIDGE</relief>
+        <relief>GROOVE</relief>
         <font>("Helvetica", 10)</font>
         <hbox>
           <boxexpand expand="yes"/>
@@ -352,7 +352,7 @@ def test_pyvcp():
         </led>
       </hbox>
       <button>
-        <relief>RAISED</relief>
+        <relief>GROOVE</relief>
         <bd>3</bd>
         <halpin>"halpin14"</halpin>
         <text>"name"</text>
