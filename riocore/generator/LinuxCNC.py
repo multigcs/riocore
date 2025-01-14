@@ -776,8 +776,7 @@ class LinuxCNC:
                                 self.halg.net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
                                 in_n += 1
 
-                    # (pname, gout) = self.gui_gen.draw_number("Jogscale", "jogscale")
-                    # self.cfgxml_data["status"] += gout
+                    # pname = self.gui_gen.draw_number("Jogscale", "jogscale")
                     # self.halg.net_add("riof.jog.wheelscale_mux.out", pname)
 
             if wheel:
@@ -1016,35 +1015,32 @@ class LinuxCNC:
         for tab in self.cfgxml_data:
             self.gui_gen.draw_tab_begin(tab.title())
 
-            if machinetype == "melfa":
-                if gui not in {"qtdragon", "qtdragon_hd"}:
-                    (pname, gout) = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
-                    self.cfgxml_data["status"] += gout
-                    self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
-                    self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
-                ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
-                ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
-                ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
-                pname = self.gui_gen.draw_button("Clear Path", "vismach-clear")
+            if tab == "status":
+                if machinetype == "melfa":
+                    if gui not in {"qtdragon", "qtdragon_hd"}:
+                        pname = self.gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
+                        self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
+                        self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
+                    ini_setup["HALUI"]["MDI_COMMAND|World Coord"] = "M428"
+                    ini_setup["HALUI"]["MDI_COMMAND|Joint Coord"] = "M429"
+                    ini_setup["HALUI"]["MDI_COMMAND|Gensertool"] = "M430"
+                    pname = self.gui_gen.draw_button("Clear Path", "vismach-clear")
 
-                if embed_vismach:
-                    self.halg.net_add(pname, f"{embed_vismach}.plotclear")
-                else:
-                    self.halg.net_add(pname, "vismach.plotclear")
+                    self.gui_gen.draw_hbox_begin()
 
-                self.cfgxml_data["status"].append("<hbox>")
-                self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
-                self.cfgxml_data["status"].append("  <bd>2</bd>")
-                for joint in range(6):
-                    (pname, gout) = self.gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
-                    self.cfgxml_data["status"] += gout
-                    self.halg.net_add(f"joint.{joint}.pos-fb", pname)
-                    if joint == 2:
-                        self.cfgxml_data["status"].append("</hbox>")
-                        self.cfgxml_data["status"].append("<hbox>")
-                        self.cfgxml_data["status"].append("  <relief>RAISED</relief>")
-                        self.cfgxml_data["status"].append("  <bd>2</bd>")
-                self.cfgxml_data["status"].append("</hbox>")
+                    if embed_vismach:
+                        self.halg.net_add(pname, f"{embed_vismach}.plotclear")
+                    else:
+                        self.halg.net_add(pname, "vismach.plotclear")
+
+                    for joint in range(6):
+                        pname = self.gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
+                        self.halg.net_add(f"joint.{joint}.pos-fb", pname)
+                        if joint == 2:
+                            self.gui_gen.draw_hbox_end()
+                            self.gui_gen.draw_hbox_begin()
+
+                    self.gui_gen.draw_hbox_end()
 
             if tab == "status":
                 # buttons
