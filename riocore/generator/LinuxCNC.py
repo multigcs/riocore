@@ -891,8 +891,7 @@ class LinuxCNC:
                                 self.halg.net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
                                 in_n += 1
 
-                    # (pname, gout) = self.gui_gen.draw_number("Jogspeed", "jogspeed")
-                    # self.cfgxml_data["status"] += gout
+                    # pname = self.gui_gen.draw_number("Jogspeed", "jogspeed")
                     # self.halg.net_add("riof.jog.speed_mux.out", pname)
                     self.halg.net_add("riof.jog.speed_mux.out", "halui.axis.jog-speed")
                     self.halg.net_add("riof.jog.speed_mux.out", "halui.joint.jog-speed")
@@ -986,30 +985,22 @@ class LinuxCNC:
 
         self.gui_gen.draw_begin(self.gui_prefix, vcp_pos=vcp_pos)
 
-        self.cfgxml_data = {}
-        for section in vcp_sections:
-            self.cfgxml_data[section] = []
-
+        # build complete list of sections (in right order)
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     userconfig = signal_config.get("userconfig", {})
                     displayconfig = userconfig.get("display", signal_config.get("display", {}))
                     section = displayconfig.get("section", "").lower()
-                    if section and section not in self.cfgxml_data:
-                        self.cfgxml_data[section] = []
+                    if section and section not in vcp_sections:
+                        vcp_sections.append(section)
+        for section in ("status", "inputs", "outputs", "virtual"):
+            if section not in vcp_sections:
+                vcp_sections.append(section)
+        self.gui_gen.draw_tabs_begin([tab.title() for tab in vcp_sections])
 
-        self.cfgxml_data["status"] = []
-        self.cfgxml_data["inputs"] = []
-        self.cfgxml_data["outputs"] = []
-        self.cfgxml_data["virtual"] = []
-
-        titles = []
-        for section in self.cfgxml_data:
-            titles.append(section.title())
-        self.gui_gen.draw_tabs_begin(titles)
-
-        for tab in self.cfgxml_data:
+        # generate tab (vcp) for each section
+        for tab in vcp_sections:
             self.gui_gen.draw_tab_begin(tab.title())
 
             if tab == "status":
@@ -1039,7 +1030,6 @@ class LinuxCNC:
 
                     self.gui_gen.draw_hbox_end()
 
-            if tab == "status":
                 # buttons
                 self.gui_gen.draw_frame_begin("MDI-Commands")
                 self.gui_gen.draw_vbox_begin()
