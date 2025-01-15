@@ -157,8 +157,6 @@ class LinuxCNC:
         self.postgui_call_list = []
         self.pregui_call_list = []
         self.feedbacks = []
-        self.networks = {}
-        self.setps = {}
         self.halextras = []
         self.project = project
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
@@ -204,8 +202,6 @@ class LinuxCNC:
         gui = linuxcnc_config.get("gui", "axis")
         vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
         vcp_type = linuxcnc_config.get("vcp_type", "auto")
-        for network, net in linuxcnc_config.get("halsignals", {}).items():
-            self.networks[network] = net
 
         self.gui_type = ""
         self.gui_prefix = ""
