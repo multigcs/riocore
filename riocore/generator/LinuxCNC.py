@@ -157,7 +157,6 @@ class LinuxCNC:
         self.postgui_call_list = []
         self.pregui_call_list = []
         self.feedbacks = []
-        self.axisout = []
         self.networks = {}
         self.setps = {}
         self.halextras = []
@@ -254,7 +253,6 @@ class LinuxCNC:
         output_hal += self.halextras
 
         output_hal.append("")
-        output_hal += self.axisout
         open(os.path.join(self.configuration_path, "rio.hal"), "w").write("\n".join(output_hal))
         open(os.path.join(self.configuration_path, "custom_postgui.hal"), "w").write("\n".join(output_postgui))
 
@@ -1405,19 +1403,15 @@ class LinuxCNC:
                 enable_halname = joint_setup["enable_halname"]
                 pin_num = joint_setup["pin_num"]
                 if position_mode == "absolute":
-                    self.axisout.append(f"# joint.{joint}: absolut positioning")
-                    self.axisout.append(f"setp {position_halname}-scale [JOINT_{joint}]SCALE_OUT")
+                    self.halg.setp_add(f"{position_halname}-scale", f"[JOINT_{joint}]SCALE_OUT")
                     if machinetype == "corexy" and axis_name in {"X", "Y"}:
                         corexy_axis = "beta"
                         if axis_name == "X":
                             corexy_axis = "alpha"
-                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd => corexy.j{joint}-motor-pos-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} <= corexy.{corexy_axis}-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} => {position_halname}")
-                        self.axisout.append(f"net j{joint}pos-cmd => corexy.{corexy_axis}-fb")
-                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  => corexy.j{joint}-motor-pos-fb")
-                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis} => joint.{joint}.motor-pos-fb")
+                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"corexy.j{joint}-motor-pos-cmd", f"j{joint}pos-cmd")
+                        self.halg.net_add(f"corexy.{corexy_axis}-cmd", f"{position_halname}", f"j{joint}pos-cmd-{corexy_axis}")
+                        self.halg.net_add(f"corexy.{corexy_axis}-cmd", f"corexy.{corexy_axis}-fb", f"j{joint}pos-cmd-{corexy_axis}")
+                        self.halg.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb-{corexy_axis}")
                     else:
                         self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
                         self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
@@ -1462,8 +1456,6 @@ class LinuxCNC:
                         self.halg.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pin_num}.enable", f"j{joint}enable")
                     else:
                         self.halg.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pin_num}.enable", f"j{joint}enable")
-
-                self.axisout.append("")
 
     def create_axis_config(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
