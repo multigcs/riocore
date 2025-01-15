@@ -312,9 +312,10 @@ QLabel {{
         return f"{self.prefix}.{halpin}-f"
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
-        display_text = setup.get("text", name)
+        display_text = setup.get("text", title)
         display_threshold = setup.get("threshold")
         display_size = setup.get("size", "150")
         self.cfgxml_data.append("   <item>")
@@ -345,7 +346,7 @@ QLabel {{
         self.cfgxml_data.append("         <number>9</number>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="gauge_label" stdset="0">')
-        self.cfgxml_data.append(f"         <string>{display_text}</string>")
+        self.cfgxml_data.append(f"         <string>{title}</string>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="zone1_color" stdset="0">')
         self.cfgxml_data.append("         <color>")
@@ -385,9 +386,9 @@ QLabel {{
             display_format = setup.get("format", "0.2f")
         else:
             display_format = setup.get("format", "d")
-        print(hal_type)
+        title = setup.get("title", name)
         self.draw_hbox_begin()
-        self.draw_title(name)
+        self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append(f'     <widget class="HALLabel" name="{halpin}">')
         self.cfgxml_data.append('      <property name="sizePolicy">')
@@ -419,8 +420,9 @@ QLabel {{
         return f"{self.prefix}.{halpin}"
 
     def draw_checkbutton(self, name, halpin, setup={}):
+        title = setup.get("title", name)
         self.draw_hbox_begin()
-        self.draw_title(name)
+        self.draw_title(title)
         self.cfgxml_data.append(f"""
           <item>
            <widget class="PushButton" name="{halpin}">
@@ -459,8 +461,10 @@ QLabel {{
         return f"{self.prefix}.{halpin}"
 
     def draw_led(self, name, halpin, setup={}):
+        title = setup.get("title", name)
+        size = setup.get("size", 16)
         self.draw_hbox_begin()
-        self.draw_title(name)
+        self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append(f'     <widget class="LED" name="{halpin}">')
         self.cfgxml_data.append('        <property name="sizePolicy">')
@@ -469,7 +473,7 @@ QLabel {{
         self.cfgxml_data.append("          <verstretch>0</verstretch>")
         self.cfgxml_data.append("         </sizepolicy>")
         self.cfgxml_data.append("        </property>")
-        self.add_property("diameter", "24")
+        self.add_property("diameter", str(size))
         self.cfgxml_data.append('        <property name="minimumSize">')
         self.cfgxml_data.append("         <size>")
         self.cfgxml_data.append("          <width>32</width>")
