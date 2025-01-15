@@ -314,6 +314,8 @@ class hal_generator:
             hal_data.append("#################################################################################")
             # non function input
             for pin, data in self.inputs2signals.items():
+                if data["signal"].startswith("j"):
+                    continue
                 if data["target"] == target and not pin.startswith("func."):
                     component = pin.split(".", 1)[0]
                     if component in self.POSTGUI_COMPONENTS:
@@ -339,6 +341,9 @@ class hal_generator:
                             hal_data.append(f"setp {pin:32s} {data['signals']}")
                             continue
                         for signal in data["signals"]:
+                            if signal.startswith("j"):
+                                continue
+
                             hal_data.append(f"net {signal:30s} => {pin}")
                 # function outputs
                 for pin, data in self.inputs2signals.items():
@@ -350,6 +355,8 @@ class hal_generator:
                 component = pin.split(".", 1)[0]
                 if data["target"] == target and not pin.startswith("func."):
                     for signal in data["signals"]:
+                        if signal.startswith("j"):
+                            continue
                         if component in self.POSTGUI_COMPONENTS:
                             hal_data.append(f"# net {signal:30s} => {pin} (in postgui)")
                             postgui_data.append(f"net {signal:30s} => {pin}")
@@ -359,6 +366,68 @@ class hal_generator:
                             hal_data.append(f"net {signal:30s} => {pin}")
             hal_data.append("")
         postgui_data.append("")
+
+        # joints only
+        for joint in range(0, 12):
+            found = False
+            for pin, value in self.setps.items():
+                if f"[JOINT_{joint}]" in str(value):
+                    found = True
+
+            for pin, data in self.inputs2signals.items():
+                if data["signal"].startswith(f"j{joint}"):
+                    found = True
+
+            for pin, data in self.outputs2signals.items():
+                for signal in data["signals"]:
+                    if signal.startswith(f"j{joint}"):
+                        found = True
+
+            if not found:
+                continue
+
+            hal_data.append("#################################################################################")
+            hal_data.append(f"# joint-{joint}")
+            hal_data.append("#################################################################################")
+
+            for pin, value in self.setps.items():
+                if f"[JOINT_{joint}]" in str(value):
+                    signal = self.outputs2signals.get(pin) or self.inputs2signals.get(pin)
+                    if not signal:
+                        component = pin.split(".", 1)[0]
+                        if component in self.POSTGUI_COMPONENTS:
+                            hal_data.append(f"# setp {pin:29s} {value:6} (in postgui)")
+                            postgui_data.append(f"setp {pin:29s} {value}")
+                        else:
+                            hal_data.append(f"setp {pin:29s} {value}")
+                    else:
+                        hal_data.append(f"# setp {pin:29s} {value:6} (already linked to {', '.join(signal.get('signals', [signal.get('signal', '?')]))})")
+
+            for pin, data in self.inputs2signals.items():
+                component = pin.split(".", 1)[0]
+                if data["signal"].startswith(f"j{joint}"):
+                    component = pin.split(".", 1)[0]
+                    if component in self.POSTGUI_COMPONENTS:
+                        hal_data.append(f"# net {data['signal']:30s} <= {pin} (in postgui)")
+                        postgui_data.append(f"net {data['signal']:30s} <= {pin}")
+                    elif component in self.VIRTUAL_COMPONENTS:
+                        hal_data.append(f"# net {data['signal']:30s} <= {pin} (virtual pin)")
+                    else:
+                        hal_data.append(f"net {data['signal']:30s} <= {pin}")
+
+            for pin, data in self.outputs2signals.items():
+                component = pin.split(".", 1)[0]
+                for signal in data["signals"]:
+                    if signal.startswith(f"j{joint}"):
+                        if component in self.POSTGUI_COMPONENTS:
+                            hal_data.append(f"# net {signal:30s} => {pin} (in postgui)")
+                            postgui_data.append(f"net {signal:30s} => {pin}")
+                        elif component in self.VIRTUAL_COMPONENTS:
+                            hal_data.append(f"# net {signal:30s} => {pin} (virtual pin)")
+                        else:
+                            hal_data.append(f"net {signal:30s} => {pin}")
+
+            hal_data.append("")
 
         if self.setps:
             hal_data.append("#################################################################################")
@@ -370,6 +439,9 @@ class hal_generator:
             postgui_data.append("#################################################################################")
 
             for pin, value in self.setps.items():
+                if "[JOINT_" in str(value):
+                    continue
+
                 signal = self.outputs2signals.get(pin) or self.inputs2signals.get(pin)
                 if not signal:
                     component = pin.split(".", 1)[0]

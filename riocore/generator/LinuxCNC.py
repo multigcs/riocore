@@ -1046,7 +1046,7 @@ class LinuxCNC:
 
                     for joint in range(6):
                         pname = gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
-                        self.halg.net_add(f"joint.{joint}.pos-fb", pname)
+                        self.halg.net_add(f"joint.{joint}.pos-fb", pname, f"j{joint}pos-fb")
                         if joint == 2:
                             gui_gen.draw_hbox_end()
                             gui_gen.draw_hbox_begin()
@@ -1227,6 +1227,7 @@ class LinuxCNC:
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        simulation = linuxcnc_config.get("simulation", False)
         gui = linuxcnc_config.get("gui", "axis")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
@@ -1242,7 +1243,11 @@ class LinuxCNC:
         self.halg.fmt_add_top("loadrt rio")
         self.halg.fmt_add_top("")
         self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
-        self.halg.fmt_add_top("setp rio.sys-simulation 0")
+
+        if simulation:
+            self.halg.fmt_add_top("setp rio.sys-simulation 1")
+        else:
+            self.halg.fmt_add_top("setp rio.sys-simulation 0")
         self.halg.fmt_add_top("")
 
         num_pids = self.num_joints
@@ -1312,7 +1317,7 @@ class LinuxCNC:
 
             if not embed_vismach:
                 for joint in range(6):
-                    self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}")
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
 
             linuxcnc_setp = {
                 "genserkins.A-0": 0,
@@ -1338,7 +1343,7 @@ class LinuxCNC:
         if embed_vismach:
             if embed_vismach in {"fanuc_200f"}:
                 for joint in range(len(self.axis_dict)):
-                    self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}")
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
@@ -1393,8 +1398,6 @@ class LinuxCNC:
 
         for axis_name, axis_config in self.axis_dict.items():
             joints = axis_config["joints"]
-            self.axisout.append(f"# Axis: {axis_name}")
-            self.axisout.append("")
             for joint, joint_setup in joints.items():
                 position_mode = joint_setup["position_mode"]
                 position_halname = joint_setup["position_halname"]
@@ -1422,18 +1425,18 @@ class LinuxCNC:
                     if enable_halname:
                         self.axisout.append(f"net j{joint}enable         <= joint.{joint}.amp-enable-out => {enable_halname}")
                 elif position_halname and feedback_halname:
-                    self.axisout.append(f"# joint.{joint}: relative positioning using pid.{pin_num}")
-                    self.axisout.append(f"setp pid.{pin_num}.Pgain     [JOINT_{joint}]P")
-                    self.axisout.append(f"setp pid.{pin_num}.Igain     [JOINT_{joint}]I")
-                    self.axisout.append(f"setp pid.{pin_num}.Dgain     [JOINT_{joint}]D")
-                    self.axisout.append(f"setp pid.{pin_num}.bias      [JOINT_{joint}]BIAS")
-                    self.axisout.append(f"setp pid.{pin_num}.FF0       [JOINT_{joint}]FF0")
-                    self.axisout.append(f"setp pid.{pin_num}.FF1       [JOINT_{joint}]FF1")
-                    self.axisout.append(f"setp pid.{pin_num}.FF2       [JOINT_{joint}]FF2")
-                    self.axisout.append(f"setp pid.{pin_num}.deadband  [JOINT_{joint}]DEADBAND")
-                    self.axisout.append(f"setp pid.{pin_num}.maxoutput [JOINT_{joint}]MAXOUTPUT")
-                    self.axisout.append(f"setp {position_halname}-scale [JOINT_{joint}]SCALE_OUT")
-                    self.axisout.append(f"setp {feedback_halname}-scale [JOINT_{joint}]SCALE_IN")
+                    self.halg.setp_add(f"pid.{pin_num}.Pgain", f"[JOINT_{joint}]P")
+                    self.halg.setp_add(f"pid.{pin_num}.Igain", f"[JOINT_{joint}]I")
+                    self.halg.setp_add(f"pid.{pin_num}.Dgain", f"[JOINT_{joint}]D")
+                    self.halg.setp_add(f"pid.{pin_num}.bias", f"[JOINT_{joint}]BIAS")
+                    self.halg.setp_add(f"pid.{pin_num}.FF0", f"[JOINT_{joint}]FF0")
+                    self.halg.setp_add(f"pid.{pin_num}.FF1", f"[JOINT_{joint}]FF1")
+                    self.halg.setp_add(f"pid.{pin_num}.FF2", f"[JOINT_{joint}]FF2")
+                    self.halg.setp_add(f"pid.{pin_num}.deadband", f"[JOINT_{joint}]DEADBAND")
+                    self.halg.setp_add(f"pid.{pin_num}.maxoutput", f"[JOINT_{joint}]MAXOUTPUT")
+                    self.halg.setp_add(f"{position_halname}-scale", f"[JOINT_{joint}]SCALE_OUT")
+                    self.halg.setp_add(f"{feedback_halname}-scale", f"[JOINT_{joint}]SCALE_IN")
+
                     if machinetype == "corexy" and axis_name in {"X", "Y"}:
                         corexy_axis = "beta"
                         if axis_name == "X":
@@ -1450,23 +1453,20 @@ class LinuxCNC:
                         self.axisout.append(f"net j{joint}pos-fb  <= corexy.j{joint}-motor-pos-fb")
                         self.axisout.append(f"net j{joint}pos-fb  => joint.{joint}.motor-pos-fb")
                     else:
-                        self.axisout.append(f"net j{joint}vel-cmd <= pid.{pin_num}.output")
-                        self.axisout.append(f"net j{joint}vel-cmd => {position_halname}")
-                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd => pid.{pin_num}.command")
-                        self.axisout.append(f"net j{joint}pos-fb  <= {feedback_halname}")
-                        self.axisout.append(f"net j{joint}pos-fb  => joint.{joint}.motor-pos-fb")
-                        self.axisout.append(f"net j{joint}pos-fb  => pid.{joint}.feedback")
+                        self.halg.net_add(f"pid.{pin_num}.output", f"{position_halname}", f"j{joint}vel-cmd")
+                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"pid.{pin_num}.command", f"j{joint}pos-cmd")
+                        self.halg.net_add(f"{feedback_halname}", f"joint.{joint}.motor-pos-fb", f"j{joint}motor-pos-fb")
+                        self.halg.net_add(f"{feedback_halname}", f"pid.{joint}.feedback", f"j{joint}motor-pos-fb")
 
                     if machinetype in {"ldelta", "rdelta"} and axis_name in {"X", "Y", "Z", "XYZ"}:
-                        self.axisout.append(f"net j{joint}pos-fb  => lineardelta.joint{joint}")
+                        self.halg.net_add(f"{feedback_halname}", f"lineardelta.joint{joint}", f"j{joint}motor-pos-fb")
 
                     if enable_halname:
-                        self.axisout.append(f"net j{joint}enable  <= joint.{joint}.amp-enable-out")
-                        self.axisout.append(f"net j{joint}enable  => {enable_halname}")
+                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{enable_halname}", f"j{joint}enable")
+                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pin_num}.enable", f"j{joint}enable")
                     else:
-                        self.axisout.append(f"net j{joint}enable  <= joint.{joint}.amp-enable-out")
-                    self.axisout.append(f"net j{joint}enable  => pid.{pin_num}.enable")
+                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pin_num}.enable", f"j{joint}enable")
+
                 self.axisout.append("")
 
     def create_axis_config(self):
