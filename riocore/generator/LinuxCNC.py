@@ -484,19 +484,9 @@ class LinuxCNC:
         json_path = self.project.config["json_path"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         gui = linuxcnc_config.get("gui", "axis")
-        dios = 16
-        aios = 16
-        for net_name, net_nodes in self.networks.items():
-            for net in net_nodes.get("in", []):
-                if net.startswith("motion.digital-out-"):
-                    dios = max(dios, int(net.split("-")[-1]) + 1)
-                if net.startswith("motion.analog-out-"):
-                    aios = max(dios, int(net.split("-")[-1]) + 1)
-            for net in net_nodes.get("out", []):
-                if net.startswith("motion.digital-in-"):
-                    dios = max(dios, int(net.split("-")[-1]) + 1)
-                if net.startswith("motion.analog-in-"):
-                    aios = max(dios, int(net.split("-")[-1]) + 1)
+        dios = self.halg.get_dios()
+        aios = self.halg.get_aios()
+
         if dios > 64:
             print("ERROR: you can only configure up to 64 motion.digital-in-NN/motion.digital-out-NN")
         if aios > 64:

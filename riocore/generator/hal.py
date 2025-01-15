@@ -264,6 +264,24 @@ class hal_generator:
             elif self.signals_out[output_pin]["name"] != signal_name:
                 print(f"ERROR: signalname ({signal_name}) already set for this input", output_pin)
 
+    def get_dios(self):
+        dios = 16
+        for output, data in self.signals_out.items():
+            if data["expression"].startswith("motion.digital-out-"):
+                dios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
+            elif data["expression"].startswith("motion.digital-in-"):
+                dios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
+        return dios
+
+    def get_aios(self):
+        aios = 16
+        for output, data in self.signals_out.items():
+            if data["expression"].startswith("motion.analog-out-"):
+                aios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
+            elif data["expression"].startswith("motion.analog-in-"):
+                dios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
+        return aios
+
     def net_write(self):
         hal_data = []
         postgui_data = []
