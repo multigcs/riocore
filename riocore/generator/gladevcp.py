@@ -416,12 +416,13 @@ def get_handlers(halcomp,builder,useropts):
         else:
             display_format = setup.get("format", "d")
             label_pin_type = 0
+        title = setup.get("title", name)
 
         self.cfgxml_data.append("    <child>")
         self.cfgxml_data.append('      <object class="GtkHBox">')
         self.cfgxml_data.append('        <property name="visible">True</property>')
         self.cfgxml_data.append('        <property name="spacing">2</property>')
-        self.draw_title(name)
+        self.draw_title(title)
         self.cfgxml_data.append("                    <child>")
         self.cfgxml_data.append(f'                      <object class="HAL_Label" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
@@ -472,11 +473,12 @@ def get_handlers(halcomp,builder,useropts):
         return f"{self.prefix}.{halpin}"
 
     def draw_led(self, name, halpin, setup={}):
+        title = setup.get("title", name)
         self.cfgxml_data.append("    <child>")
         self.cfgxml_data.append('      <object class="GtkHBox">')
         self.cfgxml_data.append('        <property name="visible">True</property>')
         self.cfgxml_data.append('        <property name="spacing">2</property>')
-        self.draw_title(name)
+        self.draw_title(title)
         self.cfgxml_data.append("                    <child>")
         self.cfgxml_data.append(f'                      <object class="HAL_LED" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
