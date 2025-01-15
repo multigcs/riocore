@@ -268,9 +268,9 @@ class hal_generator:
         dios = 16
         for output, data in self.signals_out.items():
             if data["expression"].startswith("motion.digital-out-"):
-                dios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
+                dios = max(dios, int(data["expression"].split("-", 2)[-1]) + 1)
             elif data["expression"].startswith("motion.digital-in-"):
-                dios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
+                dios = max(dios, int(data["expression"].split("-", 2)[-1]) + 1)
         return dios
 
     def get_aios(self):
