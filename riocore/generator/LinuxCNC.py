@@ -239,9 +239,12 @@ class LinuxCNC:
         self.ini()
         os.makedirs(self.configuration_path, exist_ok=True)
 
+        # add user defined networks
+        for pin_from, pin_to in linuxcnc_config.get("halsignals", {}).items():
+            self.halg.net_add(pin_from, pin_to)
+
         output_hal = []
         output_postgui = []
-
         (network_hal, network_postgui) = self.halg.net_write()
         output_hal += network_hal
         output_postgui += network_postgui
