@@ -1419,11 +1419,12 @@ class LinuxCNC:
                         self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  => corexy.j{joint}-motor-pos-fb")
                         self.axisout.append(f"net j{joint}pos-fb-{corexy_axis} => joint.{joint}.motor-pos-fb")
                     else:
-                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd => {position_halname}")
-                        self.axisout.append(f"net j{joint}pos-cmd => joint.{joint}.motor-pos-fb")
+                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
+                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
+
                     if enable_halname:
-                        self.axisout.append(f"net j{joint}enable         <= joint.{joint}.amp-enable-out => {enable_halname}")
+                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{enable_halname}", f"j{joint}enable")
+
                 elif position_halname and feedback_halname:
                     self.halg.setp_add(f"pid.{pin_num}.Pgain", f"[JOINT_{joint}]P")
                     self.halg.setp_add(f"pid.{pin_num}.Igain", f"[JOINT_{joint}]I")
@@ -1441,17 +1442,12 @@ class LinuxCNC:
                         corexy_axis = "beta"
                         if axis_name == "X":
                             corexy_axis = "alpha"
-                        self.axisout.append(f"net j{joint}vel-cmd <= pid.{pin_num}.output")
-                        self.axisout.append(f"net j{joint}vel-cmd => {position_halname}")
-                        self.axisout.append(f"net j{joint}pos-cmd <= joint.{joint}.motor-pos-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd => corexy.j{joint}-motor-pos-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} <= corexy.{corexy_axis}-cmd")
-                        self.axisout.append(f"net j{joint}pos-cmd-{corexy_axis} => pid.{pin_num}.command")
-                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  <= {feedback_halname}")
-                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  => corexy.{corexy_axis}-fb")
-                        self.axisout.append(f"net j{joint}pos-fb-{corexy_axis}  => pid.{joint}.feedback")
-                        self.axisout.append(f"net j{joint}pos-fb  <= corexy.j{joint}-motor-pos-fb")
-                        self.axisout.append(f"net j{joint}pos-fb  => joint.{joint}.motor-pos-fb")
+                        self.halg.net_add(f"pid.{pin_num}.output", f"{position_halname}", f"j{joint}vel-cmd")
+                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"corexy.j{joint}-motor-pos-cmd", f"j{joint}pos-cmd")
+                        self.halg.net_add(f"corexy.{corexy_axis}-cmd", f"pid.{pin_num}.command", f"j{joint}pos-cmd-{corexy_axis}")
+                        self.halg.net_add(f"{feedback_halname}", f"corexy.{corexy_axis}-fb", f"j{joint}pos-fb-{corexy_axis}")
+                        self.halg.net_add(f"{feedback_halname}", f"pid.{joint}.feedback", f"j{joint}pos-fb-{corexy_axis}")
+                        self.halg.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
                     else:
                         self.halg.net_add(f"pid.{pin_num}.output", f"{position_halname}", f"j{joint}vel-cmd")
                         self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"pid.{pin_num}.command", f"j{joint}pos-cmd")
