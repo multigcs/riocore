@@ -983,6 +983,9 @@ class LinuxCNC:
         gui_gen.draw_begin()
 
         # build complete list of sections (in right order)
+        for section in ("status", "inputs", "outputs", "virtual"):
+            if section not in vcp_sections:
+                vcp_sections.append(section)
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
@@ -991,9 +994,7 @@ class LinuxCNC:
                     section = displayconfig.get("section", "").lower()
                     if section and section not in vcp_sections:
                         vcp_sections.append(section)
-        for section in ("status", "inputs", "outputs", "virtual"):
-            if section not in vcp_sections:
-                vcp_sections.append(section)
+
         gui_gen.draw_tabs_begin([tab.title() for tab in vcp_sections])
 
         # analyse halnames to generate titles
