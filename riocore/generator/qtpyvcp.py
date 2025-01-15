@@ -344,7 +344,7 @@ class UserTab(QWidget):
         halpin = halpin.replace("_", "-")
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
-    def draw_number(self, name, halpin, hal_type="float", setup={}):
+    def draw_number(self, name, halpin, setup={}, hal_type="float"):
         halpin = halpin.replace("_", "-")
         if hal_type == "float":
             display_format = setup.get("format", "0.2f")
@@ -365,6 +365,12 @@ class UserTab(QWidget):
         self.cfgxml_data.append('      <property name="styleSheet">')
         self.cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
         self.cfgxml_data.append("      </property>")
+        if self.vcp_pos == "RIGHT":
+            self.cfgxml_data.append('             <property name="styleSheet">')
+            self.cfgxml_data.append('              <string notr="true">QLabel {')
+            self.cfgxml_data.append("    color: rgb(235, 235, 235);")
+            self.cfgxml_data.append("}</string>")
+            self.cfgxml_data.append("             </property>")
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
         self.draw_hbox_end()

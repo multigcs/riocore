@@ -275,6 +275,11 @@ def get_handlers(halcomp,builder,useropts):
         return f"{self.prefix}.{halpin}"
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_unit = setup.get("unit", "")
+        if not display_unit and "." in name:
+            display_unit = name.split(".")[-1]
+            name = ".".join(name.split(".")[:-1])
+        title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_text = setup.get("text", name)
@@ -286,13 +291,13 @@ def get_handlers(halcomp,builder,useropts):
         self.cfgxml_data.append(f'                      <object class="HAL_Meter" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
         self.cfgxml_data.append('                        <property name="can_focus">True</property>')
-        self.cfgxml_data.append(f'                        <property name="label">{display_text}</property>')
+        self.cfgxml_data.append(f'                        <property name="label">{title}</property>')
         majorscale = (display_max - display_min) / 10
         self.cfgxml_data.append(f'                        <property name="majorscale">{majorscale}</property>')
         minorscale = (display_max - display_min) / 100
         self.cfgxml_data.append(f'                        <property name="minorscale">{minorscale}</property>')
-        if name != display_text:
-            self.cfgxml_data.append(f'                        <property name="sublabel">{name}</property>')
+        if display_unit:
+            self.cfgxml_data.append(f'                        <property name="sublabel">{display_unit}</property>')
         self.cfgxml_data.append(f'                        <property name="min">{display_min}</property>')
         self.cfgxml_data.append(f'                        <property name="max">{display_max}</property>')
         if display_size:
@@ -404,7 +409,7 @@ def get_handlers(halcomp,builder,useropts):
     def draw_number_s32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
-    def draw_number(self, name, halpin, hal_type="float", setup={}):
+    def draw_number(self, name, halpin, setup={}, hal_type="float"):
         if hal_type == "float":
             display_format = setup.get("format", "0.2f")
             label_pin_type = 1

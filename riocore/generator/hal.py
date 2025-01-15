@@ -194,7 +194,7 @@ class hal_generator:
             },
             "end": {
                 ("counts", "increment", "number"): int,
-                ("scale", "analog", "commanded", "-cmd", "feedback", "relative", "value", "-vel", "velocity", "position"): float,
+                ("scale", "analog", "commanded", "-cmd", "feedback", "relative", "-vel", "velocity", "position"): float,
             },
         }
         for part in parts:
