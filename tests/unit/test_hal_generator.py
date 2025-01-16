@@ -271,3 +271,125 @@ setp pyvcp.outval                     123
 
     assert "\n".join(hal_data).strip() == expected_hal.strip()
     assert "\n".join(postgui_data).strip() == expected_postgui.strip()
+
+
+def test_generator_not():
+    expected_hal = """
+#################################################################################
+# logic and calc components
+#################################################################################
+loadrt logic names=func.and_0.1 personality=0x102
+addf func.and_0.1 servo-thread
+
+loadrt not names=func.not_func_and_0_1_and,func.not_mot_input1
+addf func.not_func_and_0_1_and servo-thread
+addf func.not_mot_input1 servo-thread
+
+#################################################################################
+# !(rio.input1 AND rio.input2) --> hal.output1
+#################################################################################
+net sig_rio_input1                 <= rio.input1
+net sig_rio_input2                 <= rio.input2
+net sig_rio_input1                 => func.and_0.1.in-00
+net sig_rio_input2                 => func.and_0.1.in-01
+net func_and_0_1_and               <= func.and_0.1.and
+net func_and_0_1_and               => func.not_func_and_0_1_and.in
+net func_not_func_and_0_1_and_out  <= func.not_func_and_0_1_and.out
+net func_not_func_and_0_1_and_out  => hal.output1
+
+#################################################################################
+# !(mot.input1) --> hal.output2
+#################################################################################
+net sig_mot_input1                 <= mot.input1
+net sig_mot_input1                 => func.not_mot_input1.in
+net func_not_mot_input1_out        <= func.not_mot_input1.out
+net func_not_mot_input1_out        => hal.output2
+
+#################################################################################
+# !(mot.input1) --> hal.output3
+#################################################################################
+net func_not_mot_input1_out        => hal.output3
+
+#################################################################################
+# preformated
+#################################################################################
+"""
+    expected_postgui = """
+#################################################################################
+# networks
+#################################################################################
+"""
+
+    halg = hal_generator()
+
+    halg.net_add("!(rio.input1 AND rio.input2)", "hal.output1")
+    halg.net_add("not(mot.input1)", "hal.output2")
+    halg.net_add("!(mot.input1)", "hal.output3")
+
+    (hal_data, postgui_data) = halg.net_write()
+    print("---------------------------------")
+    print("\n".join(hal_data))
+    print("---------------------------------")
+    print("\n".join(postgui_data))
+    print("---------------------------------")
+
+    assert "\n".join(hal_data).strip() == expected_hal.strip()
+    assert "\n".join(postgui_data).strip() == expected_postgui.strip()
+
+
+def test_generator_abs():
+    expected_hal = """
+#################################################################################
+# logic and calc components
+#################################################################################
+loadrt logic names=func.and_0.1 personality=0x102
+addf func.and_0.1 servo-thread
+
+loadrt abs names=func.abs_func_and_0_1_and,func.abs_rio_input1
+addf func.abs_func_and_0_1_and servo-thread
+addf func.abs_rio_input1 servo-thread
+
+#################################################################################
+# abs'(rio.input1 AND rio.input2) --> hal.output1
+#################################################################################
+net sig_rio_input1                 <= rio.input1
+net sig_rio_input2                 <= rio.input2
+net sig_rio_input1                 => func.and_0.1.in-00
+net sig_rio_input2                 => func.and_0.1.in-01
+net func_and_0_1_and               <= func.and_0.1.and
+net func_and_0_1_and               => func.abs_func_and_0_1_and.in
+net func_abs_func_and_0_1_and_out  <= func.abs_func_and_0_1_and.out
+net func_abs_func_and_0_1_and_out  => hal.output1
+
+#################################################################################
+# abs'(rio.input1) --> hal.output2
+#################################################################################
+net sig_rio_input1                 => func.abs_rio_input1.in
+net func_abs_rio_input1_out        <= func.abs_rio_input1.out
+net func_abs_rio_input1_out        => hal.output2
+
+#################################################################################
+# preformated
+#################################################################################
+"""
+    expected_postgui = """
+#################################################################################
+# networks
+#################################################################################
+
+"""
+
+    halg = hal_generator()
+
+    halg.net_add("abs(rio.input1 AND rio.input2)", "hal.output1")
+    halg.net_add("abs(rio.input1)", "hal.output2")
+
+    (hal_data, postgui_data) = halg.net_write()
+    print("---------------------------------")
+    print("\n".join(hal_data))
+    print("---------------------------------")
+    print("\n".join(postgui_data))
+    print("---------------------------------")
+
+    assert "\n".join(hal_data).strip() == expected_hal.strip()
+    assert "\n".join(postgui_data).strip() == expected_postgui.strip()

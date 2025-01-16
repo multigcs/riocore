@@ -152,6 +152,25 @@ class hal_generator:
 
         return f"{fname}.out"
 
+    def pin_abs(self, input_pin, target):
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        fname = f"func.abs_{input_pin.replace('.', '_')}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+
+        if "abs" not in self.hal_calcs:
+            self.hal_calcs["abs"] = []
+        self.hal_calcs["abs"].append(fname)
+
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+
+        self.function_cache[fname] = f"{fname}.out"
+
+        return f"{fname}.out"
+
     def brackets_parser(self, input_pin, output_pin):
         expression = "#"
         while expression:
@@ -167,6 +186,9 @@ class hal_generator:
                         if inside[0] == "!":
                             target = output_pin
                             inside = self.pin_not(inside[1:], target)
+                        elif inside.startswith("abs'"):
+                            target = output_pin
+                            inside = self.pin_abs(inside[4:], target)
                         input_pin = input_pin.replace(expression, inside)
                     break
         return input_pin
@@ -224,6 +246,9 @@ class hal_generator:
         return bool
 
     def net_add(self, input_pin, output_pin, signal_name=None):
+        # replace some command/operation words
+        input_pin = input_pin.replace("abs(", "abs'(").replace("not(", "!(")
+
         # handle multiple outputs (A,B)
         if "," in output_pin:
             for pin in output_pin.split(","):
