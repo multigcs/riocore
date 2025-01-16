@@ -1,8 +1,15 @@
+#!/usr/bin/env python3
+#
+#
+
+import sys
 import os.path
 import graphviz
 
-from riocore import halpins
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
 
+from riocore import halpins
 
 clusters = {
     "MPG": ["mpg"],
@@ -269,3 +276,11 @@ class HalGraph:
                                 self.signals[signalname]["source"] = part
                             else:
                                 print("ERROR: double input", signalname, part, self.signals[signalname]["source"])
+
+
+if __name__ == "__main__":
+    ini_path = sys.argv[1]
+    graph = HalGraph()
+    svg_data = graph.svg(ini_path)
+    if svg_data:
+        print(svg_data)

@@ -9,20 +9,18 @@ class pyvcp:
         self.vcp_pos = vcp_pos
 
     def draw_begin(self):
-        self.root = results = etree.Element("pyvcp")
+        self.root = etree.Element("pyvcp")
         self.parent = self.root
 
     def draw_end(self):
         self.parent = self.parent.getparent()
 
     def xml(self):
-        parser = etree.XMLParser(ns_clean=True, remove_blank_text=True)
         formated = etree.tostring(self.root, pretty_print=True).decode()
         return formated
 
     def save(self, configuration_path):
         xml_filename = os.path.join(configuration_path, "rio-gui.xml")
-        parser = etree.XMLParser(ns_clean=True, remove_blank_text=True)
         formated = etree.tostring(self.root, pretty_print=True).decode()
         open(xml_filename, "w").write(formated)
 
@@ -196,8 +194,8 @@ class pyvcp:
 
     def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
+        # display_min = setup.get("min", vmin)
+        # display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0.0)
         resolution = setup.get("resolution", 0.1)
         self.draw_hbox_begin()

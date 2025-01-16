@@ -285,7 +285,7 @@ class hal_generator:
             if data["expression"].startswith("motion.analog-out-"):
                 aios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
             elif data["expression"].startswith("motion.analog-in-"):
-                dios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
+                aios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
         return aios
 
     def net_write(self):

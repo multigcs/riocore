@@ -321,9 +321,9 @@ class UserTab(QWidget):
         halpin = halpin.replace("_", "-")
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
-        display_text = setup.get("text", name)
-        display_threshold = setup.get("threshold")
-        display_size = setup.get("size", "150")
+        # display_text = setup.get("text", name)
+        # display_threshold = setup.get("threshold")
+        # display_size = setup.get("size", "150")
         self.cfgxml_data.append("   <item>")
         self.cfgxml_data.append(f'       <widget class="HalBarIndicator" name="rio.{halpin}">')
         self.add_property("minimum", int(display_min))
@@ -346,10 +346,6 @@ class UserTab(QWidget):
 
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         halpin = halpin.replace("_", "-")
-        if hal_type == "float":
-            display_format = setup.get("format", "0.2f")
-        else:
-            display_format = setup.get("format", "d")
         self.draw_hbox_begin()
         self.draw_title(name)
         self.cfgxml_data.append("    <item>")

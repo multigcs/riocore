@@ -346,7 +346,7 @@ QLabel {{
         self.cfgxml_data.append("         <number>9</number>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="gauge_label" stdset="0">')
-        self.cfgxml_data.append(f"         <string>{title}</string>")
+        self.cfgxml_data.append(f"         <string>{display_text}</string>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="zone1_color" stdset="0">')
         self.cfgxml_data.append("         <color>")

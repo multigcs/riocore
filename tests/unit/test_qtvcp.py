@@ -132,7 +132,7 @@ def test_qtvcp():
                                     </sizepolicy>
                                   </property>
                                   <property name="diameter">
-                                    <number>24</number>
+                                    <number>16</number>
                                   </property>
                                   <property name="minimumSize">
                                     <size>

@@ -282,7 +282,7 @@ def get_handlers(halcomp,builder,useropts):
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
-        display_text = setup.get("text", name)
+        display_text = setup.get("text", title)
         display_region = setup.get("region", [])
         display_zone = setup.get("zone")
         display_size = setup.get("size", "150")
@@ -291,7 +291,7 @@ def get_handlers(halcomp,builder,useropts):
         self.cfgxml_data.append(f'                      <object class="HAL_Meter" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
         self.cfgxml_data.append('                        <property name="can_focus">True</property>')
-        self.cfgxml_data.append(f'                        <property name="label">{title}</property>')
+        self.cfgxml_data.append(f'                        <property name="label">{display_text}</property>')
         majorscale = (display_max - display_min) / 10
         self.cfgxml_data.append(f'                        <property name="majorscale">{majorscale}</property>')
         minorscale = (display_max - display_min) / 100

@@ -10,6 +10,7 @@ if os.path.isfile(os.path.join("riocore", "__init__.py")):
     sys.path.insert(0, os.getcwd())
 
 import riocore
+from riocore import halgraph
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -40,6 +41,16 @@ if args.config:
         config_name = project.config.get("name")
         gateware_path = os.path.join("Output", config_name, "Gateware")
         startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
+
+        try:
+            ini_path = os.path.join("Output", config_name, "LinuxCNC", "rio.ini")
+            svg_path = os.path.join("Output", config_name, "LinuxCNC", "halgraph.svg")
+            graph = halgraph.HalGraph()
+            svg_data = graph.svg(ini_path)
+            if svg_data:
+                open(svg_path, "wb").write(svg_data)
+        except Exception as error:
+            print(f"WARING: failed to write halgraph.svg: {error}")
 
         if args.build:
             cmd = f"(cd {gateware_path} && make clean all)"
