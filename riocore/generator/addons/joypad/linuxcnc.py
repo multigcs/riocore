@@ -62,6 +62,9 @@ def hal(parent):
         jaxis = joypad.get(axis_lower)
         reverse = False
         if jaxis:
+            if jaxis[0] == "-":
+                jaxis = jaxis[1:]
+                reverse = True
             output.append(f"# {axis_name}-Axis")
             if reverse:
                 output.append(f"setp input.0.{jaxis}-scale -127.5")
