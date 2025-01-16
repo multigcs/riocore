@@ -87,32 +87,28 @@ class Gateware:
     def interface_html(self):
         output = []
         output.append("<h1>Interface</h1>")
-
+        output.append("<table width='100%'>")
+        output.append("<tr><td valign='top'>")
         output.append("<h3>FPGA to Host</h3>")
-        output.append("<table width='100%' style=\"font-size:12px; border-collapse: collapse;\">")
-        output.append('    <tr style="font-size:12px;">')
+        output.append("<table width='100%'>")
         for data in self.iface_in:
-            output.append(f"<td>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td>")
-        output.append("    </tr>")
-        output.append('    <tr style="font-size:16px;">')
-        for data in self.iface_in:
-            name = "_".join(data[0].split("_")[1:])
-            output.append(f"<td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td>")
-        output.append("    </tr>")
+            name = data[0]
+            output.append(
+                f"<tr><td style='padding: 3px; border: 1px solid black;'>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td><td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
+            )
+        output.append("</table>")
+        output.append("</td><td valign='top'>")
+        output.append("<h3>Host to FPGA</h3>")
+        output.append("<table width='100%'>")
+        for data in self.iface_out:
+            name = data[0]
+            output.append(
+                f"<tr><td style='padding: 3px; border: 1px solid black;'>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td><td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
+            )
+        output.append("</table>")
+        output.append("</td></tr>")
         output.append("</table>")
 
-        output.append("<h3>Host to FPGA</h3>")
-        output.append("<table width='100%' style=\"font-size:12px; border-collapse: collapse;\">")
-        output.append('    <tr style="font-size:12px">')
-        for data in self.iface_out:
-            output.append(f"<td>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td>")
-        output.append("    </tr>")
-        output.append('    <tr style="font-size:16px;">')
-        for data in self.iface_out:
-            name = "_".join(data[0].split("_")[1:])
-            output.append(f"<td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td>")
-        output.append("    </tr>")
-        output.append("</table>")
         open(os.path.join(self.gateware_path, "interface.html"), "w").write("\n".join(output))
 
     def makefile(self):
@@ -212,6 +208,7 @@ class Gateware:
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
         self.iface_out.append(["RX_HEADER", size])
         self.iface_in.append(["TX_HEADER", size])
+        self.iface_in.append(["TITMESTAMP", size])
 
         if self.project.multiplexed_input:
             variable_name = "MULTIPLEXED_INPUT_VALUE"
