@@ -11,7 +11,8 @@ class hal_generator:
     VIRTUAL_COMPONENTS = ("riov",)
     HAS_INVERTS = {"rio": "-not"}
 
-    def __init__(self):
+    def __init__(self, halpin_info=None):
+        self.halpin_info = halpin_info or {}
         self.logic_ids = {}
         self.signals_out = {}
         self.inputs2signals = {}
@@ -187,7 +188,6 @@ class hal_generator:
             self.preformated_top.append(line)
 
     def get_type(self, parts):
-        haltype = None
         type_map = {
             "start": {
                 ("analog-out-", "analog-in-", "tooloffset"): float,
@@ -199,23 +199,29 @@ class hal_generator:
         }
         for part in parts:
             for mode in ("output", "input"):
-                if haltype is None:
-                    halpin_info = halpins.LINUXCNC_SIGNALS[mode].get(part, {}).get("type")
-                    if halpin_info:
-                        haltype = halpin_info
-                        break
+                haltype = halpins.LINUXCNC_SIGNALS[mode].get(part, {}).get("type")
+                if haltype:
+                    return haltype
+
+            if part in self.halpin_info:
+                pin_info = self.halpin_info.get(part, {})
+                if pin_info:
+                    if pin_info["boolean"]:
+                        return bool
+                    elif part.endswith("32"):
+                        return int
+                    else:
+                        return float
+
             for mode in ("end", "start"):
-                if haltype is None:
-                    for check, htype in type_map[mode].items():
-                        if mode == "end":
-                            if part.endswith(check):
-                                haltype = htype
-                                break
-                        else:
-                            if part.startswith(check):
-                                haltype = htype
-                                break
-        return haltype or bool
+                for check, htype in type_map[mode].items():
+                    if mode == "end":
+                        if part.endswith(check):
+                            return htype
+                    else:
+                        if part.startswith(check):
+                            return htype
+        return bool
 
     def net_add(self, input_pin, output_pin, signal_name=None):
         # handle multiple outputs (A,B)

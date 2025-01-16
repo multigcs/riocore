@@ -1221,7 +1221,22 @@ class LinuxCNC:
         embed_vismach = linuxcnc_config.get("embed_vismach")
         toolchange = linuxcnc_config.get("toolchange", "manual")
 
-        self.halg = hal_generator()
+        # collect some hal-pin infos
+        halpin_info = {}
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    halname = signal_config["halname"]
+                    netname = signal_config["netname"]
+                    direction = signal_config["direction"]
+                    userconfig = signal_config.get("userconfig", {})
+                    boolean = signal_config.get("bool")
+                    halpin_info[f"rio.{halname}"] = {
+                        "direction": direction,
+                        "boolean": boolean,
+                    }
+
+        self.halg = hal_generator(halpin_info)
 
         self.halg.fmt_add_top("# load the realtime components")
         self.halg.fmt_add_top("loadrt [KINS]KINEMATICS")
