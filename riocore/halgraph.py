@@ -283,4 +283,4 @@ if __name__ == "__main__":
     graph = HalGraph()
     svg_data = graph.svg(ini_path)
     if svg_data:
-        print(svg_data)
+        print(svg_data.decode())
