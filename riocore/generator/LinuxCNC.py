@@ -1029,8 +1029,8 @@ class LinuxCNC:
 
                     if embed_vismach:
                         self.halg.net_add(pname, f"{embed_vismach}.plotclear")
-                    else:
-                        self.halg.net_add(pname, "vismach.plotclear")
+
+                    self.halg.net_add(pname, "vismach.plotclear")
 
                     for joint in range(6):
                         pname = gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
@@ -1302,10 +1302,10 @@ class LinuxCNC:
             self.halg.fmt_add_top("loadusr -W rotarydelta MIN_JOINT=-420")
             self.halg.fmt_add_top("")
         elif machinetype == "melfa":
-            if not embed_vismach:
-                self.halg.fmt_add_top("# loading melfa gui")
-                self.halg.fmt_add_top("loadusr -W melfagui")
-                self.halg.fmt_add_top("")
+            self.halg.fmt_add_top("# loading melfa gui")
+            self.halg.fmt_add_top("loadusr -W melfagui")
+            self.halg.fmt_add_top("")
+
             self.halg.fmt_add_top("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
             self.halg.fmt_add_top("")
             os.makedirs(self.configuration_path, exist_ok=True)
@@ -1318,9 +1318,8 @@ class LinuxCNC:
                 elif not os.path.isdir(target):
                     shutil.copytree(source, target)
 
-            if not embed_vismach:
-                for joint in range(6):
-                    self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
+            for joint in range(6):
+                self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
 
             linuxcnc_setp = {
                 "genserkins.A-0": 0,
@@ -1346,7 +1345,14 @@ class LinuxCNC:
         if embed_vismach:
             if embed_vismach in {"fanuc_200f"}:
                 for joint in range(len(self.axis_dict)):
-                    self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
+                    if machinetype == "melfa":
+                        # melfa has some inverted joints
+                        if joint in {1, 2, 3}:
+                            self.halg.net_add(f"(joint.{joint}.pos-fb * -1)", f"{embed_vismach}.joint{joint + 1}")
+                        else:
+                            self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
+                    else:
+                        self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
