@@ -7,8 +7,10 @@ from riocore import halpins
 
 
 class hal_generator:
-    POSTGUI_COMPONENTS = ("pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy")
-    VIRTUAL_COMPONENTS = ("riov",)
+    POSTGUI_COMPONENTS = ["pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy"]
+    VIRTUAL_COMPONENTS = [
+        "riov",
+    ]
     HAS_INVERTS = {"rio": "-not"}
 
     def __init__(self, halpin_info=None):
@@ -23,6 +25,12 @@ class hal_generator:
         self.setps = {}
         self.preformated = []
         self.preformated_top = []
+
+    def postgui_components_add(self, component):
+        self.POSTGUI_COMPONENTS.append(component)
+
+    def virtual_components_add(self, component):
+        self.POSTGUI_COMPONENTS.append(component)
 
     def pin2signal(self, pin, target, signal_name=None):
         if pin.startswith("sig:"):

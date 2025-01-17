@@ -29,15 +29,12 @@ def ini(parent, ini_setup):
 
 
 def hal(parent):
-    output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
 
     robojog_config = linuxcnc_config.get("robojog", {})
     robojog_enable = robojog_config.get("enable", False)
     if robojog_enable:
-        parent.postgui_components_add("robojog")
-
-        output.append("")
+        parent.halg.postgui_components_add("robojog")
 
         # jog axis
         for axis_name, axis_config in parent.axis_dict.items():
@@ -61,8 +58,4 @@ def hal(parent):
                 parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
                 parent.halg.setp_add(f"joint.{joint}.jog-scale", 0.01)
                 parent.halg.net_add(f"robojog.joint.{joint}.jog-counts", f"joint.{joint}.jog-counts")
-                parent.halg.net_add(f"j{joint}pos-fb", f"robojog.joint.{joint}.position")
-
-        output.append("")
-
-    return output
+                parent.halg.net_add(f"joint.{joint}.pos-fb", f"robojog.joint.{joint}.position")

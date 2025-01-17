@@ -1360,7 +1360,7 @@ class LinuxCNC:
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
-                self.halg.fmt_add(addon.hal(self))
+                addon.hal(self)
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
