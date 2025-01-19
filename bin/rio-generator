@@ -23,6 +23,7 @@ parser.add_argument("--flash", "-f", help="flash gateware", default=False, actio
 parser.add_argument("--ram", "-r", help="flash gateware to sram", default=False, action="store_true")
 if sys.platform == "linux":
     parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
+    parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
 args = parser.parse_args()
 
 if args.config:
@@ -89,7 +90,11 @@ if args.config:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
         if sys.platform == "linux" and args.start:
-            cmd = f"sh {startsh_path}"
+            if args.ngc:
+                ngc_realpath = os.path.realpath(args.ngc)
+                cmd = f"sh {startsh_path} {ngc_realpath}"
+            else:
+                cmd = f"sh {startsh_path}"
             print("")
             print("running:")
             print(f"  {cmd}")
