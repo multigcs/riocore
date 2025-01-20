@@ -2,7 +2,7 @@ def hal(parent):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
     joypad = linuxcnc_config.get("joypad", {})
     if not joypad or not joypad.get("enable"):
-        return []
+        return
 
     joypad_type = joypad.get("name")
     joypad_btn_slow = joypad.get("slow")
@@ -71,4 +71,3 @@ def hal(parent):
             parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.axis.{axis_lower}.analog")
             for joint, joint_setup in joints.items():
                 parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.joint.{joint}.analog")
-    return []

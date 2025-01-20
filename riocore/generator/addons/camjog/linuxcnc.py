@@ -65,7 +65,6 @@ def gui(parent):
 
 
 def hal(parent):
-    output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
@@ -93,8 +92,4 @@ def hal(parent):
                     #parent.halg.setp_add(f"joint.{joint}.jog-scale", jscale)
                     parent.halg.net_add(f"camjog.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
                 """
-
-            output.append("")
             break
-
-    return output

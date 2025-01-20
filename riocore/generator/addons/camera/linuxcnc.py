@@ -32,4 +32,3 @@ def gui(parent):
                     offset_num += 1
                 elif offsets:
                     print("WARNING: offset works only on one camera")
-    return []

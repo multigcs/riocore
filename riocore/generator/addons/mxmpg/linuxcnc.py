@@ -2,16 +2,14 @@ from .config import BUTTON_NAMES, BUTTON_FUNCS, DEFAULTS
 
 
 def hal(parent):
-    output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-
     mxmpg_config = linuxcnc_config.get("mxmpg", {})
     mxmpg_enable = mxmpg_config.get("enable", False)
     mxmpg_device = mxmpg_config.get("device", "/dev/ttyACM0")
     mxmpg_buttons = mxmpg_config.get("buttons", {})
     if mxmpg_enable:
-        output.append(f"loadusr -W mpg -d {mxmpg_device} -s")
-        output.append("")
+        parent.halg.fmt_add(f"loadusr -W mpg -d {mxmpg_device} -s")
+        parent.halg.fmt_add("")
 
         # display status
         parent.halg.net_add("halui.machine.is-on", "mpg.machine.is-on")
@@ -86,7 +84,3 @@ def hal(parent):
         parent.halg.setp_add("halui.spindle.0.override.scale", 0.01)
         parent.halg.net_add("mpg.override.spindle.counts", "halui.spindle.0.override.counts")
         parent.halg.net_add("halui.spindle.0.override.value", "mpg.override.spindle.value")
-
-        output.append("")
-
-    return output

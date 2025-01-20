@@ -6,7 +6,6 @@ addon_path = os.path.dirname(__file__)
 
 
 def hal(parent):
-    output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
 
     spnav_config = linuxcnc_config.get("spnav", {})
@@ -23,8 +22,8 @@ def hal(parent):
     spnav_button1 = spnav_config.get("botton-1", "")
 
     if spnav_enable:
-        output.append("loadusr -Wn spnav ./spnav.py")
-        output.append("")
+        parent.halg.fmt_add("loadusr -Wn spnav ./spnav.py")
+        parent.halg.fmt_add("")
 
         source = f"{addon_path}/spnav.py"
         target = f"{parent.component_path}/spnav.py"
@@ -67,7 +66,3 @@ def hal(parent):
                 parent.halg.net_add("spnav.button.1", halpin)
             else:
                 parent.halg.net_add("spnav.button.1", spnav_button1)
-
-        output.append("")
-
-    return output
