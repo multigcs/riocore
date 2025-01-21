@@ -33,9 +33,8 @@ graph LR;
     FPGA-->Bus0;
     Bus0-->Device0-->Device1..;
     FPGA-->Bus1..;
-    Bus1..-->Device2-->Device3..;
-    Bus1..-->Multiplexer0-->Device4-->Device5..;
-    Multiplexer0-->Device6-->Device7..;
+    Bus1..-->Device2-->Multiplexer0-->Device3-->Device4..;
+    Multiplexer0-->Device5-->Device6..;
 ```
 
 ## Pins:
