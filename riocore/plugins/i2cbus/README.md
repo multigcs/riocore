@@ -12,18 +12,18 @@
         
 
 Devices:
-| Image | Name |
-| --- | --- |
-| <img src="devices/ads1115/image.png" height="24"> | [ads1115](devices/ads1115/) |
-| <img src="devices/adxl345/image.png" height="24"> | [adxl345](devices/adxl345/) |
-| <img src="devices/as5600/image.png" height="24"> | [as5600](devices/as5600/) |
-| <img src="devices/bmp280/image.png" height="24"> | [bmp280](devices/bmp280/) |
-| <img src="devices/lm75/image.png" height="24"> | [lm75](devices/lm75/) |
-| <img src="devices/mcp23017/image.png" height="24"> | [mcp23017](devices/mcp23017/) |
-| <img src="devices/mlx90614/image.png" height="24"> | [mlx90614](devices/mlx90614/) |
-| <img src="devices/pca9685/image.png" height="24"> | [pca9685](devices/pca9685/) |
-| <img src="devices/pcf8574/image.png" height="24"> | [pcf8574](devices/pcf8574/) |
-| <img src="devices/tlv493d/image.png" height="24"> | [tlv493d](devices/tlv493d/) |
+| Name | Image |
+| --- | :---: |
+| [ads1115](devices/ads1115/) | <img src="devices/ads1115/image.png" height="24"> |
+| [adxl345](devices/adxl345/) | <img src="devices/adxl345/image.png" height="24"> |
+| [as5600](devices/as5600/) | <img src="devices/as5600/image.png" height="24"> |
+| [bmp280](devices/bmp280/) | <img src="devices/bmp280/image.png" height="24"> |
+| [lm75](devices/lm75/) | <img src="devices/lm75/image.png" height="24"> |
+| [mcp23017](devices/mcp23017/) | <img src="devices/mcp23017/image.png" height="24"> |
+| [mlx90614](devices/mlx90614/) | <img src="devices/mlx90614/image.png" height="24"> |
+| [pca9685](devices/pca9685/) | <img src="devices/pca9685/image.png" height="24"> |
+| [pcf8574](devices/pcf8574/) | <img src="devices/pcf8574/image.png" height="24"> |
+| [tlv493d](devices/tlv493d/) | <img src="devices/tlv493d/image.png" height="24"> |
 
 Keywords: adc temperatur voltage current
 
