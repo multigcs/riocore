@@ -4,7 +4,7 @@ import importlib
 import os
 import sys
 
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QAbstractScrollArea,
@@ -165,6 +165,11 @@ class config:
             description += "\n\n"
             description += device[1].options["description"]
             description_label.setText(description)
+            device_path = os.path.join(plugin_path, "devices", device[0])
+            image_path = os.path.join(device_path, "image.png")
+            if os.path.isfile(image_path):
+                pixmap = QPixmap(image_path)
+                image_label.setPixmap(pixmap)
 
         device_table = QTableWidget()
         device_table.setColumnCount(1)
@@ -189,6 +194,7 @@ class config:
 
         left_layout = QVBoxLayout()
         left_widget = QWidget()
+        left_widget.setFixedWidth(300)
         left_widget.setLayout(left_layout)
 
         left_layout.addWidget(device_table)
@@ -213,11 +219,13 @@ class config:
         right_widget = QWidget()
         right_widget.setLayout(right_layout)
         image_label = QLabel("---")
+        image_label.setMinimumWidth(320)
+        image_label.setMinimumHeight(320)
         right_layout.addWidget(image_label)
         right_layout.addStretch()
 
         infos = QHBoxLayout()
-        infos.addWidget(left_widget, stretch=0)
+        infos.addWidget(left_widget, stretch=1)
         infos.addWidget(mid_widget, stretch=3)
         infos.addWidget(right_widget, stretch=1)
 
@@ -388,8 +396,8 @@ class config:
 
         speed = self.instance.plugin_setup.get("speed", self.instance.OPTIONS["speed"]["default"])
         multiplexer = self.instance.plugin_setup.get("multiplexer", self.instance.OPTIONS["multiplexer"]["default"])
-        pin_sda = self.instance.plugin_setup["pins"]["sda"]["pin"]
-        pin_scl = self.instance.plugin_setup["pins"]["scl"]["pin"]
+        pin_sda = self.instance.plugin_setup["pins"]["sda"].get("pin") or "sda"
+        pin_scl = self.instance.plugin_setup["pins"]["scl"].get("pin") or "scl"
 
         infos = [
             f"{iname}",
