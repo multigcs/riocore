@@ -19,6 +19,7 @@ Devices:
 | [as5600](devices/as5600/) | <img src="devices/as5600/image.png" height="24"> |
 | [bmp280](devices/bmp280/) | <img src="devices/bmp280/image.png" height="24"> |
 | [ina219](devices/ina219/) | <img src="devices/ina219/image.png" height="24"> |
+| [ina3221](devices/ina3221/) | <img src="devices/ina3221/image.png" height="24"> |
 | [lm75](devices/lm75/) | <img src="devices/lm75/image.png" height="24"> |
 | [mcp23017](devices/mcp23017/) | <img src="devices/mcp23017/image.png" height="24"> |
 | [mlx90614](devices/mlx90614/) | <img src="devices/mlx90614/image.png" height="24"> |
