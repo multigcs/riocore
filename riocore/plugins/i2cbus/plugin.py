@@ -84,7 +84,7 @@ graph LR;
         self.DESCRIPTION += "| --- | :---: |\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
             device_name = os.path.basename(os.path.dirname(device_path))
-            self.DESCRIPTION += f"| [{device_name}](devices/{device_name}/) | <img src=\"devices/{device_name}/image.png\" height=\"24\"> |\n"
+            self.DESCRIPTION += f'| [{device_name}](devices/{device_name}/) | <img src="devices/{device_name}/image.png" height="24"> |\n'
 
         if not self.devices:
             return
