@@ -43,6 +43,7 @@ class i2c_device:
             f"{self.name}_valid": {
                 "size": 1,
                 "direction": "input",
+                "multiplexed": True,
             },
         }
         self.SIGNALS = {

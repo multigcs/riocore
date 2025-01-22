@@ -26,6 +26,7 @@ Devices:
 | [pca9685](devices/pca9685/) | <img src="devices/pca9685/image.png" height="24"> |
 | [pcf8574](devices/pcf8574/) | <img src="devices/pcf8574/image.png" height="24"> |
 | [tlv493d](devices/tlv493d/) | <img src="devices/tlv493d/image.png" height="24"> |
+| [vl53l0x](devices/vl53l0x/) | <img src="devices/vl53l0x/image.png" height="24"> |
 
 Keywords: adc temperatur voltage current
 
