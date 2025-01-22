@@ -36,6 +36,8 @@ pypi: clean dist
 exifclean:
 	exiftool -all= riocore/boards/*/*.png
 	rm -rf riocore/boards/*/*.png_original
+	exiftool -all= riocore/configs/*/*.png
+	rm -rf riocore/configs/*/*.png_original
 	exiftool -all= riocore/plugins/*/*.png
 	rm -rf riocore/plugins/*/*.png_original
 	exiftool -all= riocore/modules/*/*.png
