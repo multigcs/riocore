@@ -777,7 +777,7 @@
                 "max_limit": 170
             }
         },
-        "vcp_type": "gladevcp",
+        "vcp_type": "qtvcp",
         "simulation": true,
         "embed_vismach": "fanuc_200f",
         "robojog": {
