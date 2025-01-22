@@ -13,7 +13,7 @@
 
 Devices:
 | Name | Info | Image |
-| --- |  --- | :---: |
+| :---: |  --- | :---: |
 | [ads1115](devices/ads1115/) | 16bit / 4channel adc | <img src="devices/ads1115/image.png" height="24"> |
 | [adxl345](devices/adxl345/) | 3 axis accelerometer | <img src="devices/adxl345/image.png" height="24"> |
 | [as5600](devices/as5600/) | magnetic rotary position sensor | <img src="devices/as5600/image.png" height="24"> |
