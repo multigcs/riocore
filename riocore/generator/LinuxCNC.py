@@ -389,7 +389,7 @@ class LinuxCNC:
         ini_setup["EMCMOT"]["NUM_AIO"] = aios
 
         for axis_name, axis_config in axis_dict.items():
-            ini_setup["HALUI"][f"MDI_COMMAND|Zero-{axis_name}"] = f"G92 {axis_name}0"
+            ini_setup["HALUI"][f"MDI_COMMAND||Zero|{axis_name}"] = f"G92 {axis_name}0"
             if "motion.probe-input" in netlist:
                 if machinetype == "lathe":
                     if axis_name == "X":
