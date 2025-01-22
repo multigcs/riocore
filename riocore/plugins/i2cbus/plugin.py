@@ -17,6 +17,7 @@ class Plugin(PluginBase):
         return (x - 1).bit_length()
 
     def setup(self):
+        sys.path.insert(0, plugin_path)
         self.NAME = "i2cbus"
         self.INFO = "I2C-Bus"
         self.DESCRIPTION = """
@@ -78,26 +79,29 @@ graph LR;
         self.MAX_BITS = 16
         self.MAX_DIN = 48
 
+        self.device_libs = {}
+
         self.DESCRIPTION += "\n\nDevices:\n"
-        self.DESCRIPTION += "| Name | Image |\n"
-        self.DESCRIPTION += "| --- | :---: |\n"
+        self.DESCRIPTION += "| Name | Info | Image |\n"
+        self.DESCRIPTION += "| --- |  --- | :---: |\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
             device_name = os.path.basename(os.path.dirname(device_path))
-            self.DESCRIPTION += f'| [{device_name}](devices/{device_name}/) | <img src="devices/{device_name}/image.png" height="24"> |\n'
+            if os.path.isfile(os.path.join(plugin_path, "devices", device_name, "__init__.py")):
+                self.device_libs[device_name] = importlib.import_module(f".{device_name}", ".devices")
+                device_info = self.device_libs[device_name].i2c_device.options.get("info")
+                self.DESCRIPTION += f'| [{device_name}](devices/{device_name}/) | {device_info or "---"} | <img src="devices/{device_name}/image.png" height="24"> |\n'
 
         if not self.devices:
             return
 
-        sys.path.insert(0, plugin_path)
         failed_devices = []
         for name, setup in self.devices.items():
             if "type" not in setup:
                 continue
             setup["name"] = name
             dtype = setup["type"]
-            if os.path.isfile(os.path.join(plugin_path, "devices", dtype, "__init__.py")):
-                devlib = importlib.import_module(f".{dtype}", ".devices")
-                setup["i2cdev"] = devlib.i2c_device(setup, self.system_setup)
+            if dtype in self.device_libs:
+                setup["i2cdev"] = self.device_libs[dtype].i2c_device(setup, self.system_setup)
             else:
                 print(f"ERROR: i2cdev: device '{dtype}' not found")
                 failed_devices.append(name)
