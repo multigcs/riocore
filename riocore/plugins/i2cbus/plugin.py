@@ -83,7 +83,7 @@ graph LR;
 
         self.DESCRIPTION += "\n\nDevices:\n"
         self.DESCRIPTION += "| Name | Info | Image |\n"
-        self.DESCRIPTION += "| --- |  --- | :---: |\n"
+        self.DESCRIPTION += "| :---: |  --- | :---: |\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
             device_name = os.path.basename(os.path.dirname(device_path))
             if os.path.isfile(os.path.join(plugin_path, "devices", device_name, "__init__.py")):
