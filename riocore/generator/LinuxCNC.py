@@ -205,6 +205,7 @@ class LinuxCNC:
 
         self.gui_type = ""
         self.gui_prefix = ""
+        self.gui_tablocation = ""
         if vcp_mode != "NONE":
             if gui == "axis":
                 if vcp_type == "gladevcp":
@@ -214,18 +215,19 @@ class LinuxCNC:
                     self.gui_type = "pyvcp"
                     self.gui_prefix = "pyvcp"
             elif gui == "gmoccapy":
-                if vcp_type == "pyvcp":
-                    self.gui_type = "pyvcp"
-                    self.gui_prefix = "pyvcp"
-                else:
-                    self.gui_type = "gladevcp"
-                    self.gui_prefix = "rio-gui"
+                self.gui_type = "gladevcp"
+                self.gui_prefix = "rio-gui"
+                self.gui_tablocation = "ntb_user_tabs"
             elif gui in {"qtdragon", "qtdragon_hd"}:
                 self.gui_type = "qtvcp"
                 self.gui_prefix = "qtdragon.rio-gui"
             elif gui in {"probe_basic", "probe_basic_lathe"}:
                 self.gui_type = "qtpyvcp"
                 self.gui_prefix = "qtpyvcp.rio"
+            elif gui in {"gscreen"}:
+                self.gui_type = "gladevcp"
+                self.gui_prefix = "rio-gui"
+                self.gui_tablocation = "notebook_main"
 
         self.startscript()
         component(self.project)
@@ -255,7 +257,7 @@ class LinuxCNC:
         open(os.path.join(self.configuration_path, "rio.hal"), "w").write("\n".join(output_hal))
         open(os.path.join(self.configuration_path, "custom_postgui.hal"), "w").write("\n".join(output_postgui))
 
-        if gui == "gmoccapy" and self.gui_type == "gladevcp":
+        if (gui == "gmoccapy" or gui == "gscreen") and self.gui_type == "gladevcp":
             print("## INFO: custom_postgui.hal will be load by gladevcp")
             self.postgui_call_rm.append("custom_postgui.hal")
         else:
@@ -322,6 +324,7 @@ class LinuxCNC:
         linuxcnc_config = jdata.get("linuxcnc", {})
         ini_setup = cls.INI_DEFAULTS.copy()
         gui = linuxcnc_config.get("gui", "axis")
+        vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
 
@@ -412,14 +415,20 @@ class LinuxCNC:
         elif gui == "gmoccapy":
             ini_setup["DISPLAY"]["DISPLAY"] = gui
             ini_setup["DISPLAY"]["CYCLE_TIME"] = "150"
-            if gui_type == "pyvcp":
+            if gui_type == "gladevcp":
+                if vcp_pos == "TAB":
+                    ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "ntb_user_tabs"
+                else:
+                    ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "box_right"
                 ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
-                ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "ntb_user_tabs"
-                ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "pyvcp rio-gui.xml"
-            elif gui_type == "gladevcp":
-                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
-                ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "box_right"
                 ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "gladevcp -x {XID} -H custom_postgui.hal rio-gui.ui"
+
+        elif gui == "gscreen":
+            ini_setup["DISPLAY"]["DISPLAY"] = gui
+            ini_setup["DISPLAY"]["CYCLE_TIME"] = "150"
+            ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
+            ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "notebook_main"
+            ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "gladevcp -x {XID} -H custom_postgui.hal rio-gui.ui"
 
         elif gui in {"probe_basic", "probe_basic_lathe"}:
             ini_setup["DISPLAY"]["DISPLAY"] = gui

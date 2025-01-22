@@ -7,7 +7,7 @@ addon_path = os.path.dirname(__file__)
 
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = parent.project.config["jdata"].get("gui", "axis")
+    gui = linuxcnc_config.get("gui", "axis")
     robojog_config = linuxcnc_config.get("robojog", {})
     robojog_enable = robojog_config.get("enable", False)
     if robojog_enable:
@@ -15,12 +15,10 @@ def ini(parent, ini_setup):
         target = f"{parent.component_path}/robojog.py"
         shutil.copy(source, target)
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
-
         tabname = robojog_config.get("tabname", "robojog")
-        tablocation = robojog_config.get("tablocation", "Pyngcgui")
         ini_setup["DISPLAY"]["EMBED_TAB_NAME|robojog"] = tabname
-        if gui != "axis":
-            ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|robojog"] = tablocation
+        if parent.gui_tablocation:
+            ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|robojog"] = parent.gui_tablocation
 
         cmd_args = ["halcmd loadusr -Wn robojog ./robojog.py"]
         cmd_args.append("--xid {XID}")

@@ -7,7 +7,7 @@ addon_path = os.path.dirname(__file__)
 
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = parent.project.config["jdata"].get("gui", "axis")
+    gui = linuxcnc_config.get("gui", "axis")
 
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
@@ -24,10 +24,9 @@ def ini(parent, ini_setup):
             height = camjog.get("height", 480)
             scale = camjog.get("scale", 1.0)
             tabname = camjog.get("tabname", f"camjog-{camjog_num}")
-            tablocation = camjog.get("tablocation", "Pyngcgui")
             ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAMJOG{camjog_num}"] = tabname
-            if gui != "axis":
-                ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAMJOG{camjog_num}"] = tablocation
+            if parent.gui_tablocation:
+                ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAMJOG{camjog_num}"] = parent.gui_tablocation
 
             cmd_args = ["halcmd loadusr -Wn camjog ./camjog.py"]
             cmd_args.append("--xid {XID}")
@@ -45,7 +44,7 @@ def ini(parent, ini_setup):
 
 def gui(parent):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = parent.project.config["jdata"].get("gui", "axis")
+    gui = linuxcnc_config.get("gui", "axis")
     if gui != "qtdragon":
         offset_num = 0
         for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
