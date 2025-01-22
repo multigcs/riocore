@@ -450,6 +450,10 @@ class LinuxCNC:
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
 
+        elif gui in {"flexgui"}:
+            ini_setup["DISPLAY"]["DISPLAY"] = "flexgui"
+            ini_setup["DISPLAY"]["TOOL_EDITOR"] = "tooledit"
+
         elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
                 "DISPLAY": {
@@ -511,6 +515,24 @@ class LinuxCNC:
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "ini"):
                 addon.ini(self, ini_setup)
+
+        if gui in {"flexgui"}:
+            os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+            for uifile in glob.glob(os.path.join(json_path, "flexgui.ui")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(uifile))
+                ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
+                if not os.path.isfile(target_path):
+                    shutil.copy(uifile, target_path)
+            for qssfile in glob.glob(os.path.join(json_path, "flexgui.qss")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(qssfile))
+                ini_setup["DISPLAY"]["QSS"] = "flexgui.qss"
+                if not os.path.isfile(target_path):
+                    shutil.copy(qssfile, target_path)
+            for pyfile in glob.glob(os.path.join(json_path, "flexgui.py")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
+                ini_setup["DISPLAY"]["RESOURCES"] = "flexgui.py"
+                if not os.path.isfile(target_path):
+                    shutil.copy(pyfile, target_path)
 
         output = []
         for section, setup in ini_setup.items():
