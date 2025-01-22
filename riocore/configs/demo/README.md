@@ -1,20 +1,27 @@
-# some demo config
+# some demo configs
 
-to show the different vcp gui's
+to show the different generated vcp gui's
 
 ## axis-gladevcp-robot
-![axis-gladevcp-robot](./robot-melfa.png)
+<img src="robot-melfa.png" width="50%">
+
 ## axis-gladevcp
-![axis-gladevcp](./virtual-signals-axis-gladevcp.png)
+<img src="virtual-signals-axis-gladevcp.png" width="50%">
+
 ## axis-pyvcp
-![axis-pyvcp](./virtual-signals-axis-pyvcp.png)
+<img src="virtual-signals-axis-pyvcp.png" width="50%">
+
 ## gmoccapy-gladevcp
-![gmoccapy-gladevcp](./virtual-signals-gmoccapy-gladevcp.png)
+<img src="virtual-signals-gmoccapy-gladevcp.png" width="50%">
+
 ## gscreen-gladevcp
-![gscreen-gladevcp](./virtual-signals-gscreen-gladevcp.png)
+<img src="virtual-signals-gscreen-gladevcp.png" width="50%">
+
 ## probebasic-qtpyvcp 
-![probebasic-qtpyvcp](./virtual-signals-probebasic-qtpyvcp.png)
+<img src="virtual-signals-probebasic-qtpyvcp.png" width="50%">
+
 ## probebasic-qtpyvcp-right 
-![probebasic-qtpyvcp-right](./virtual-signals-probebasic-qtpyvcp-right.png)
+<img src="virtual-signals-probebasic-qtpyvcp-right.png" width="50%">
+
 ## qtdragon-qtvcp
-![qtdragon-qtvcp](./virtual-signals-qtdragon-qtvcp.png)
+<img src="virtual-signals-qtdragon-qtvcp.png" width="50%">
