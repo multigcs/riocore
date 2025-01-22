@@ -2252,7 +2252,7 @@ class WinForm(QWidget):
             "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
             "gui": {
                 "type": "select",
-                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy"],
+                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy", "gscreen"],
                 "default": "axis",
                 "help_text": "linuxcnc gui to use",
             },
