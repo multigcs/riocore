@@ -10,7 +10,6 @@
 * sub-busses via multiplexer (pca9548)
 * non-blocking delays for slow devices
         
-
 Devices:
 | Name | Info | Image |
 | :---: |  --- | :---: |
@@ -27,8 +26,6 @@ Devices:
 | [pcf8574](devices/pcf8574/) | 8bit io-expander | <img src="devices/pcf8574/image.png" height="24"> |
 | [tlv493d](devices/tlv493d/) | 3axis magnetic sensor | <img src="devices/tlv493d/image.png" height="24"> |
 | [vl53l0x](devices/vl53l0x/) | ToF Distance Sensor | <img src="devices/vl53l0x/image.png" height="24"> |
-
-Keywords: adc temperatur voltage current
 
 ```mermaid
 graph LR;

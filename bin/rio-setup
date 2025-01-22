@@ -77,6 +77,68 @@ from PyQt5.QtWidgets import (
 riocore_path = os.path.dirname(riocore.__file__)
 
 
+def md2label(text):
+    hlist = False
+    table = False
+    formated = []
+    table_format = []
+    for line in text.split("\n"):
+        if not formated and not line.strip():
+            continue
+        elif not formated:
+            formated.append("<html>\n")
+
+        if line.startswith("#"):
+            formated.append(f"<h3>{line.strip('#')}<h3><br/>\n")
+        elif line.startswith("* "):
+            if not hlist:
+                formated.append("<ul>\n")
+            formated.append(f"<li>{line[2:]}</li>\n")
+            hlist = True
+        elif line.startswith("|"):
+            cols = line.split("|")[1:-1]
+            if not table:
+                table_format = []
+                formated.append("<table border='1'>\n")
+            elif not table_format:
+                table_format = cols
+                continue
+            formated.append(" <tr>")
+            for col_n, col in enumerate(cols):
+                if not table:
+                    formated.append(f"<th>{col.strip()}</th>")
+                else:
+                    col = col.strip()
+                    if col and col[0] == "[" and col[-1] == ")" and "](" in col:
+                        col = col.split("]")[0][1:]
+                    if table_format[col_n].strip() == ":---:":
+                        formated.append(f"<td align='center'>{col.strip()}</td>")
+                    elif table_format[col_n].strip() == "---:":
+                        formated.append(f"<td align='right'>{col.strip()}</td>")
+                    else:
+                        formated.append(f"<td>{col.strip()}</td>")
+            formated.append("</tr>\n")
+            table = True
+        else:
+            if hlist:
+                hlist = False
+                formated.append("</ul>\n")
+            elif table:
+                table = False
+                formated.append("</table>\n")
+            if not line.strip():
+                formated.append(f"<br/>\n")
+            else:
+                for ch in line:
+                    if ch == " ":
+                        formated.append("&nbsp;")
+                    else:
+                        break
+                formated.append(f"{line}<br/>\n")
+    formated.append("\n</html>\n")
+    return "".join(formated)
+
+
 class PinButton(QPushButton):
     def __init__(self, widget, parent=None, pkey=None, bgcolor=None, pin=None):
         super(QPushButton, self).__init__(widget)
@@ -1679,6 +1741,12 @@ class WinForm(QWidget):
             for signal_name, signal_info in plugin_infos[plugin_name]["signals"].items():
                 description += f"  {signal_name}: {signal_info['direction']}\n"
 
+            try:
+                description = md2label(description)
+            except Exception as error:
+                print(f"ERROR: formating description: {error}")
+                print(description)
+
             description_label.setText(description)
             dialog.selected = plugin_name
 
@@ -1693,6 +1761,8 @@ class WinForm(QWidget):
                 plugin_table.setRowCount(row + 1)
                 plugin_table.setItem(row, 0, pitem)
                 row += 1
+            if row > 0:
+                show_plugin_info(0)
 
         plugin_table = QTableWidget()
         plugin_table.setColumnCount(1)
@@ -1709,7 +1779,7 @@ class WinForm(QWidget):
 
         mid_layout = QVBoxLayout()
         mid_widget = QWidget()
-        mid_widget.setFixedWidth(400)
+        mid_widget.setMinimumWidth(400)
         mid_widget.setLayout(mid_layout)
         name_label = QLabel("name")
         name_label_font = QFont()
@@ -1720,8 +1790,13 @@ class WinForm(QWidget):
         info_label = QLabel("info")
         mid_layout.addWidget(info_label)
         description_label = QLabel("description")
-        mid_layout.addWidget(description_label)
-        mid_layout.addStretch()
+        description_label.setAlignment(Qt.AlignTop)
+        description_scroll = QScrollArea()
+        description_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        description_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        description_scroll.setWidgetResizable(True)
+        description_scroll.setWidget(description_label)
+        mid_layout.addWidget(description_scroll, stretch=1)
 
         right_layout = QVBoxLayout()
         right_widget = QWidget()
@@ -1739,9 +1814,9 @@ class WinForm(QWidget):
         left_layout.addWidget(plugin_table, stretch=1)
 
         infos = QHBoxLayout()
-        infos.addWidget(left_widget, stretch=1)
+        infos.addWidget(left_widget, stretch=0)
         infos.addWidget(mid_widget, stretch=3)
-        infos.addWidget(right_widget, stretch=1)
+        infos.addWidget(right_widget, stretch=0)
 
         dialog.layout.addLayout(infos)
         dialog.layout.addWidget(dialog_buttonBox)

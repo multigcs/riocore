@@ -35,7 +35,7 @@ graph LR;
     Bus1..-->Device2-->Multiplexer0-->Device3-->Device4..;
     Multiplexer0-->Device5-->Device6..;
         """
-        self.KEYWORDS = "adc temperatur voltage current"
+        self.KEYWORDS = ""
         self.ORIGIN = ""
         self.VERILOGS = ["i2c_master.v"]
         self.PINDEFAULTS = {
@@ -81,7 +81,7 @@ graph LR;
 
         self.device_libs = {}
 
-        self.DESCRIPTION += "\n\nDevices:\n"
+        self.DESCRIPTION += "\nDevices:\n"
         self.DESCRIPTION += "| Name | Info | Image |\n"
         self.DESCRIPTION += "| :---: |  --- | :---: |\n"
         for device_path in sorted(glob.glob(os.path.join(plugin_path, "devices", "*", "__init__.py"))):
