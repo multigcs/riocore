@@ -410,49 +410,6 @@ graph LR;
                 verilog_data.append("                        end")
                 dev_step += 1
 
-            elif stype == "readreg":
-                verilog_data.append(f"                        {dev_step}: begin")
-                verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
-                verilog_data.append(f"                            addr <= {dev_addr};")
-                verilog_data.append("                            rw <= RW_WRITE;")
-                verilog_data.append(f"                            bytes <= {1};")
-                verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= 8'h{register:X};")
-                if stop:
-                    verilog_data.append("                            stop <= 1;")
-                else:
-                    verilog_data.append("                            stop <= 0;")
-                verilog_data.append("                            start <= 1;")
-                verilog_data.append("                        end")
-                dev_step += 1
-                verilog_data.append(f"                        {dev_step}: begin")
-                verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
-                verilog_data.append(f"                            addr <= {dev_addr};")
-                verilog_data.append("                            rw <= RW_READ;")
-                verilog_data.append(f"                            bytes <= {nbytes};")
-                verilog_data.append("                            stop <= 1;")
-                verilog_data.append("                            start <= 1;")
-                verilog_data.append("                        end")
-                dev_step += 1
-                verilog_data.append(f"                        {dev_step}: begin")
-                verilog_data.append(f"                            // {name}: {stype}: check for error / return variable")
-                verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
-                verilog_data.append("                            if (error == 0) begin")
-                if data_in:
-                    verilog_data += data_in
-                elif var_set:
-                    verilog_data.append(f"                                {data['var']} <= {var_set};")
-                else:
-                    if big_endian:
-                        byte_list = []
-                        for byte_n in range(nbytes):
-                            byte_list.append(f"data_in[{byte_n*8+7}:{byte_n*8}]")
-                        verilog_data.append(f"                                {data['var']} <= {{{', '.join(byte_list)}}};")
-                    else:
-                        verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
-                verilog_data.append("                            end")
-                verilog_data.append("                        end")
-                dev_step += 1
-
             elif stype == "writereg":
                 self.MAX_BITS = max(self.MAX_BITS, size + 8)
                 for entry in values:
@@ -558,7 +515,7 @@ graph LR;
                 verilog_data.append("                        end")
                 dev_step += 1
 
-            elif stype == "read":
+            elif stype in {"read", "readreg"}:
                 if until:
                     check_timeout = True
                     verilog_data.append(f"                        {dev_step}: begin")
@@ -566,6 +523,22 @@ graph LR;
                     verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
                     verilog_data.append(f"                            device_{lname}_timeout_cnt <= 31'd{int(self.system_setup.get('speed', 50000000) / 1000 * timeout)};")
                     verilog_data.append(f"                            device_{lname}_timeout_error <= 1'd0;")
+                    verilog_data.append("                        end")
+                    dev_step += 1
+
+                if stype == "readreg":
+                    verilog_data.append(f"                        {dev_step}: begin")
+                    verilog_data.append(f"                            // {name}: {stype}: set register")
+                    verilog_data.append(f"                            device_{lname}_step <= device_{lname}_step + 7'd1;")
+                    verilog_data.append(f"                            addr <= {dev_addr};")
+                    verilog_data.append("                            rw <= RW_WRITE;")
+                    verilog_data.append(f"                            bytes <= {1};")
+                    verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-8] <= 8'h{register:X};")
+                    if stop:
+                        verilog_data.append("                            stop <= 1;")
+                    else:
+                        verilog_data.append("                            stop <= 0;")
+                    verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
                     dev_step += 1
 
@@ -600,7 +573,10 @@ graph LR;
                     verilog_data.append("                                    end else begin")
                     verilog_data.append(f"                                        // {name}: {stype}: repeat last read")
                     verilog_data.append("                                        device_n <= device_n + 7'd1;")
-                    verilog_data.append(f"                                        device_{lname}_step <= device_{lname}_step - 7'd1;")
+                    if stype == "readreg":
+                        verilog_data.append(f"                                        device_{lname}_step <= device_{lname}_step - 7'd2;")
+                    else:
+                        verilog_data.append(f"                                        device_{lname}_step <= device_{lname}_step - 7'd1;")
                     verilog_data.append("                                    end")
                     verilog_data.append("                                end")
                 elif data_in:

@@ -15,11 +15,6 @@ class i2c_device:
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_error": {
-                "size": 1,
-                "direction": "input",
-                "multiplexed": True,
-            },
             f"{self.name}_valid": {
                 "size": 1,
                 "direction": "input",
@@ -31,11 +26,6 @@ class i2c_device:
                 "direction": "input",
                 "format": "d",
                 "unit": "mm",
-            },
-            f"{self.name}_error": {
-                "direction": "input",
-                "bool": True,
-                "unit": "",
             },
             f"{self.name}_valid": {
                 "direction": "input",
@@ -65,6 +55,14 @@ class i2c_device:
         ]
         self.STEPS = [
             {
+                "comment": "check status",
+                "mode": "readreg",
+                "register": VL53L0X_REG_RESULT_RANGE_STATUS,
+                "until": "data_in[4] == 1",
+                "timeout": 100,
+                "bytes": 1,
+            },
+            {
                 "mode": "write",
                 "value": f"{VL53L0X_REG_RESULT_RANGE_STATUS + 10}",
                 "bytes": 1,
@@ -74,24 +72,12 @@ class i2c_device:
                 "var": f"{self.name}_distance",
                 "bytes": 2,
             },
-            {
-                "mode": "write",
-                "value": f"{VL53L0X_REG_RESULT_RANGE_STATUS}",
-                "bytes": 1,
-            },
-            {
-                "mode": "read",
-                "data_in": [f"                                {self.name}_error <= ~data_in[4];"],
-                "bytes": 1,
-            },
         ]
         self.last_valid = 0
         self.last_value = 0
 
     def convert(self, signal_name, signal_setup, value):
         if signal_name.endswith("_valid"):
-            return value
-        elif signal_name.endswith("_error"):
             return value
         self.last_value = value
         if value > 20:
@@ -102,8 +88,6 @@ class i2c_device:
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name.endswith("_valid"):
-            return ""
-        elif signal_name.endswith("_error"):
             return ""
         return """
         value = value;
