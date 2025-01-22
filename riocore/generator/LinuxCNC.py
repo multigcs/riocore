@@ -77,7 +77,7 @@ class LinuxCNC:
             "INTRO_TIME": 2,
             "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
             "ANGULAR_INCREMENTS": "1, 5, 10, 30, 45, 90, 180, 360",
-            "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
+            "INCREMENTS": "50mm, 10mm, 5mm, 1mm, .5mm, .1mm, .05mm, .01mm",
             "SPINDLES": 1,
             "MAX_FEED_OVERRIDE": 5.0,
             "MIN_SPINDLE_OVERRIDE": 0.5,
