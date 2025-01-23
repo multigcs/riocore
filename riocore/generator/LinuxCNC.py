@@ -12,6 +12,7 @@ from riocore.generator.pyvcp import pyvcp
 from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
 from riocore.generator.gladevcp import gladevcp
+from riocore.generator.flexvcp import flexvcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -228,6 +229,9 @@ class LinuxCNC:
                 self.gui_type = "gladevcp"
                 self.gui_prefix = "rio-gui"
                 self.gui_tablocation = "notebook_main"
+            elif gui in {"flexgui"}:
+                self.gui_type = "flexvcp"
+                self.gui_prefix = "flexhal.rio"
 
         self.startscript()
         component(self.project)
@@ -515,24 +519,6 @@ class LinuxCNC:
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "ini"):
                 addon.ini(self, ini_setup)
-
-        if gui in {"flexgui"}:
-            os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
-            for uifile in glob.glob(os.path.join(json_path, "flexgui.ui")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(uifile))
-                ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
-                if not os.path.isfile(target_path):
-                    shutil.copy(uifile, target_path)
-            for qssfile in glob.glob(os.path.join(json_path, "flexgui.qss")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(qssfile))
-                ini_setup["DISPLAY"]["QSS"] = "flexgui.qss"
-                if not os.path.isfile(target_path):
-                    shutil.copy(qssfile, target_path)
-            for pyfile in glob.glob(os.path.join(json_path, "flexgui.py")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                ini_setup["DISPLAY"]["RESOURCES"] = "flexgui.py"
-                if not os.path.isfile(target_path):
-                    shutil.copy(pyfile, target_path)
 
         output = []
         for section, setup in ini_setup.items():
@@ -988,12 +974,32 @@ class LinuxCNC:
     def vcp_gui(self):
         os.makedirs(self.configuration_path, exist_ok=True)
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        json_path = self.project.config["json_path"]
+        gui = linuxcnc_config.get("gui", "axis")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
         vcp_sections = linuxcnc_config.get("vcp_sections", [])
         vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, gui_type=self.gui_type)
+
+        if gui in {"flexgui"}:
+            os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+            for uifile in glob.glob(os.path.join(json_path, "flexgui.ui")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(uifile))
+                ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
+                if not os.path.isfile(target_path):
+                    shutil.copy(uifile, target_path)
+            for qssfile in glob.glob(os.path.join(json_path, "flexgui.qss")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(qssfile))
+                ini_setup["DISPLAY"]["QSS"] = "flexgui.qss"
+                if not os.path.isfile(target_path):
+                    shutil.copy(qssfile, target_path)
+            for pyfile in glob.glob(os.path.join(json_path, "flexgui.py")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
+                ini_setup["DISPLAY"]["RESOURCES"] = "flexgui.py"
+                if not os.path.isfile(target_path):
+                    shutil.copy(pyfile, target_path)
 
         gui_gen = None
         if vcp_mode != "NONE":
@@ -1007,6 +1013,8 @@ class LinuxCNC:
                 gui_gen = qtvcp(self.gui_prefix, vcp_pos=vcp_pos)
             elif self.gui_type == "qtpyvcp":
                 gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos)
+            elif self.gui_type == "flexvcp":
+                gui_gen = flexvcp(self.gui_prefix, vcp_pos=vcp_pos)
 
         if not gui_gen:
             return
