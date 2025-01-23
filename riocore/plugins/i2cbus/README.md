@@ -21,6 +21,7 @@ Devices:
 | [ina3221](devices/ina3221/) | 3channel current and voltage monitor | <img src="devices/ina3221/image.png" height="24"> |
 | [lm75](devices/lm75/) | temperature sensor | <img src="devices/lm75/image.png" height="24"> |
 | [mcp23017](devices/mcp23017/) | 16bit io-expander | <img src="devices/mcp23017/image.png" height="24"> |
+| [mcp4725](devices/mcp4725/) | 12-bit DAC | <img src="devices/mcp4725/image.png" height="24"> |
 | [mlx90614](devices/mlx90614/) | ir temperature sensor | <img src="devices/mlx90614/image.png" height="24"> |
 | [pca9685](devices/pca9685/) | 16 channel pwm output | <img src="devices/pca9685/image.png" height="24"> |
 | [pcf8574](devices/pcf8574/) | 8bit io-expander | <img src="devices/pcf8574/image.png" height="24"> |
