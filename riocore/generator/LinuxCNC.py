@@ -228,6 +228,9 @@ class LinuxCNC:
                 self.gui_type = "gladevcp"
                 self.gui_prefix = "rio-gui"
                 self.gui_tablocation = "notebook_main"
+            elif gui in {"flexgui"}:
+                self.gui_type = "qtvcp"
+                self.gui_prefix = "qtvcp"
 
         self.startscript()
         component(self.project)
@@ -453,6 +456,8 @@ class LinuxCNC:
         elif gui in {"flexgui"}:
             ini_setup["DISPLAY"]["DISPLAY"] = "flexgui"
             ini_setup["DISPLAY"]["TOOL_EDITOR"] = "tooledit"
+            ini_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
+            ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "halcmd loadusr -Wn qtvcp qtvcp -d -c qtvcp -x {XID} rio-gui"
 
         elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
