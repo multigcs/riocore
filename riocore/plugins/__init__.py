@@ -79,6 +79,9 @@ class PluginBase:
             self.expansion_prefix = ename.upper()
             self.expansions.append(self.expansion_prefix)
 
+    def signed(self, n, byte_count):
+        return int.from_bytes(n.to_bytes(byte_count, "little", signed=False), "little", signed=True)
+
     def update_title(self):
         self.title = self.plugin_setup.get("name") or self.instances_name
 
