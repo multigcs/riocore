@@ -84,7 +84,7 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
         speed = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
         bits = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))
-        divider = self.system_setup["speed"] // speed
+        divider = int(self.system_setup["speed"] / speed / 3.3)
         instance_parameter["DIVIDER"] = divider
         instance_parameter["WIDTH"] = bits
 
