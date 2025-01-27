@@ -25,6 +25,7 @@ Devices:
 | [mlx90614](devices/mlx90614/) | ir temperature sensor | <img src="devices/mlx90614/image.png" height="24"> |
 | [pca9685](devices/pca9685/) | 16 channel pwm output | <img src="devices/pca9685/image.png" height="24"> |
 | [pcf8574](devices/pcf8574/) | 8bit io-expander | <img src="devices/pcf8574/image.png" height="24"> |
+| [pcf8591](devices/pcf8591/) | AD/DA converter | <img src="devices/pcf8591/image.png" height="24"> |
 | [tlv493d](devices/tlv493d/) | 3axis magnetic sensor | <img src="devices/tlv493d/image.png" height="24"> |
 | [vl53l0x](devices/vl53l0x/) | ToF Distance Sensor | <img src="devices/vl53l0x/image.png" height="24"> |
 
