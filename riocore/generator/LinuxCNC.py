@@ -232,6 +232,9 @@ class LinuxCNC:
             elif gui in {"flexgui"}:
                 self.gui_type = "qtvcp"
                 self.gui_prefix = "qtvcp"
+            # elif gui in {"woodpecker"}:
+            #    self.gui_type = "qtvcp"
+            #    self.gui_prefix = "qtvcp"
 
         self.startscript()
         component(self.project)
@@ -465,6 +468,12 @@ class LinuxCNC:
                     ini_setup[section] = {}
                 for key, value in sdata.items():
                     ini_setup[section][key] = value
+
+        elif gui in {"woodpecker"}:
+            ini_setup["DISPLAY"]["DISPLAY"] = "qtvcp woodpecker"
+            # ini_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
+            # ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "main_tab_widget"
+            # ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "qtvcp rio-gui"
 
         elif gui in {"flexgui"}:
             ini_setup["DISPLAY"]["DISPLAY"] = "flexgui"
@@ -1024,6 +1033,8 @@ class LinuxCNC:
             elif self.gui_type == "gladevcp":
                 gui_gen = gladevcp(self.gui_prefix, vcp_pos=vcp_pos)
             elif self.gui_type == "qtvcp":
+                if gui in {"woodpecker"}:
+                    vcp_pos = "TAB"
                 gui_gen = qtvcp(self.gui_prefix, vcp_pos=vcp_pos)
             elif self.gui_type == "qtpyvcp":
                 gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos)
@@ -1328,7 +1339,7 @@ class LinuxCNC:
                     self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
                     self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
                     self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                else:
+                elif gui != "woodpecker":
                     self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
                     self.halg.fmt_add_top("")
                     self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
