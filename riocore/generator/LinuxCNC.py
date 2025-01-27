@@ -433,6 +433,18 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
             ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "notebook_main"
             ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "gladevcp -x {XID} -H custom_postgui.hal rio-gui.ui"
+            ini_setup["TOOLSENSOR"] = {
+                "MAXPROBE": "-10",
+                "SENSOR_HEIGHT": "25.0",
+                "SEARCH_VEL": "60",
+                "PROBE_VEL": "30",
+                "X": "10.0",
+                "Y": "10.0",
+                "Z": "-80.0",
+            }
+            for axis_name, axis_config in axis_dict.items():
+                if axis_name not in {"X", "Y", "Z"}:
+                    ini_setup["TOOLSENSOR"][axis_name] = "0.0"
 
         elif gui in {"probe_basic", "probe_basic_lathe"}:
             ini_setup["DISPLAY"]["DISPLAY"] = gui

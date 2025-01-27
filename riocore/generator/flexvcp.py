@@ -138,7 +138,7 @@ class flexvcp:
         self.draw_hbox_begin()
         self.draw_title(title)
         self.cfgxml_data.append("    <item>")
-        #self.cfgxml_data.append(f'     <widget class="QDoubleSpinBox">')
+        # self.cfgxml_data.append(f'     <widget class="QDoubleSpinBox">')
         self.cfgxml_data.append(f'     <widget class="QSlider">')
         self.set_halpin(halpin, "HAL_FLOAT", "HAL_OUT")
         self.cfgxml_data.append('         <property name="sizePolicy">')
