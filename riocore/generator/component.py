@@ -35,6 +35,8 @@ class component:
 
         ip = self.project.config["jdata"].get("ip", ip)
         port = self.project.config["jdata"].get("port", port)
+        src_port = self.project.config["jdata"].get("src_port", port)
+        dst_port = self.project.config["jdata"].get("dst_port", port)
 
         defines = {
             "MODNAME": '"rio"',
@@ -46,7 +48,8 @@ class component:
 
         if port and ip:
             defines["UDP_IP"] = f'"{ip}"'
-            defines["UDP_PORT"] = port
+            defines["SRC_PORT"] = src_port
+            defines["DST_PORT"] = dst_port
         defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
         defines["SERIAL_BAUD"] = "B1000000"
 

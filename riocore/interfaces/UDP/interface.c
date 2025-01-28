@@ -3,8 +3,6 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#define DST_PORT 2390
-#define SRC_PORT 2390
 #define SEND_TIMEOUT_US 10
 #define RECV_TIMEOUT_US 10
 #define READ_PCK_DELAY_NS 1000
@@ -28,12 +26,12 @@ int udp_init(void) {
     bzero((char*) &dstAddr, sizeof(dstAddr));
     dstAddr.sin_family = AF_INET;
     dstAddr.sin_addr.s_addr = inet_addr(dstAddress);
-    dstAddr.sin_port = htons(UDP_PORT);
+    dstAddr.sin_port = htons(DST_PORT);
 
     bzero((char*) &srcAddr, sizeof(srcAddr));
     srcAddr.sin_family = AF_INET;
     srcAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    srcAddr.sin_port = htons(UDP_PORT);
+    srcAddr.sin_port = htons(SRC_PORT);
 
     // bind the local socket to SCR_PORT
     ret = bind(udpSocket, (struct sockaddr *) &srcAddr, sizeof(srcAddr));
