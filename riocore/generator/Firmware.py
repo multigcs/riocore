@@ -313,6 +313,13 @@ int udp_tx(uint8_t *txBuffer, uint16_t size) {
         output.append("void write_txbuffer(uint8_t *txBuffer) {")
         output_pos = self.project.buffer_size
         # header
+
+
+        output.append("    txBuffer[0] = 97;")
+        output.append("    txBuffer[1] = 116;")
+        output.append("    txBuffer[2] = 97;")
+        output.append("    txBuffer[3] = 100;")
+
         output_pos -= 32
         # timestamp
         output_pos -= 32
