@@ -104,9 +104,20 @@ class Plugin(PluginBase):
         return ""
 
     def simulate(self, duration, signal_name):
-        if signal_name == "velocity":
+        if signal_name == "position":
             interface_data = self.interface_data()
             velocity = interface_data["velocity"]["value"]
             if velocity != 0:
                 velocity = self.system_setup["speed"] / velocity / 2
                 interface_data["position"]["value"] += int(velocity / duration)
+
+    def simulate_c(self, duration, signal_name):
+        ret = ""
+        if signal_name == "position":
+            interface_data = self.interface_data()
+            velocity_var = interface_data["velocity"]["variable"]
+            position_var = interface_data["position"]["variable"]
+            ret = f"    if ({velocity_var} != 0) {{\n"
+            ret += f"        {position_var} += (int32_t)(((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0);\n"
+            ret += "    }\n"
+        return ret

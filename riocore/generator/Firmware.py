@@ -34,45 +34,42 @@ class Firmware:
                     if pinname not in self.virtual_pins:
                         self.virtual_pins.append(pinname)
 
-        self.linked_pins = []
-        self.top()
+        self.interface_c()
+        self.riocore_h()
+        self.riocore_c()
+        self.simulation_c()
+        self.makefile()
 
-    def top(self):
-        output = []
-        
-        buffer_size_bytes = self.project.buffer_size // 8
-        
-        sysclk_speed = self.project.config["speed"]
-        input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
-        input_variables_list += ["timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]"]
-        self.iface_in = []
-        self.iface_out = []
-        output_pos = self.project.buffer_size
-
-
-        output.append("")
-        output.append("#include <stdio.h>")
-        output.append("#include <stdint.h>")
-        output.append("#include <stdbool.h>")
-        output.append("#include <string.h>")
-        output.append("#include <time.h>")
-        output.append("struct timespec ns_timestamp;")
-
-        output.append("")
-        output.append("long rtapi_get_time() {")
-        output.append("    clock_gettime(CLOCK_REALTIME, &ns_timestamp);")
-        output.append("    return ns_timestamp.tv_nsec;")
-        output.append("}")
-        output.append("")
-        output.append("void rtapi_delay() {")
-        output.append("")
-        output.append("}")
-        output.append("")
-
-
-
+    def interface_c(self):
         protocol = self.project.config["jdata"].get("protocol", "SPI")
+        if protocol == "UDP":
+            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c")):
+                if protocol == ppath.split(os.sep)[-2]:
+                    rdata = open(ppath, "r").read()
+                    rdata = rdata.replace("rtapi_print", "printf")
+                    rdata = rdata.replace("strerror(errno)", '"error"')
+                    rdata = rdata.replace("errno", "1")
 
+                    idata = "\n"
+                    idata += "#include <unistd.h>\n"
+                    idata += "#include <time.h>\n"
+                    idata += "\n"
+                    idata += "struct timespec ns_timestamp;\n"
+                    idata += "\n"
+                    idata += "long rtapi_get_time() {\n"
+                    idata += "    clock_gettime(CLOCK_MONOTONIC, &ns_timestamp);\n"
+                    idata += "    return (double)ns_timestamp.tv_sec * 1000000000 + ns_timestamp.tv_nsec;\n"
+                    idata += "}\n"
+                    idata += "\n"
+                    idata += "void rtapi_delay(int ns) {\n"
+                    idata += "    usleep(ns / 1000);\n"
+                    idata += "}\n"
+                    idata += "\n"
+                    idata += rdata
+                    open(os.path.join(self.firmware_path, "interface.c"), "w").write(idata)
+
+    def riocore_h(self):
+        sysclk_speed = self.project.config["speed"]
         ip = "192.168.10.194"
         port = 2390
         for plugin_instance in self.project.plugin_instances:
@@ -85,165 +82,25 @@ class Firmware:
         src_port = self.project.config["jdata"].get("src_port", port)
         dst_port = self.project.config["jdata"].get("dst_port", port)
 
-        if port and ip:
-            output.append(f"#define UDP_IP \"{ip}\"")
-            output.append(f"#define SRC_PORT {dst_port}")
-            output.append(f"#define DST_PORT {src_port}")
-
-
+        output = []
+        output.append("#include <stdio.h>")
+        output.append("#include <unistd.h>")
+        output.append("#include <stdint.h>")
+        output.append("#include <stdbool.h>")
+        output.append("#include <string.h>")
+        output.append("#include <time.h>")
         output.append("")
         output.append(f"#define CLOCK_SPEED {sysclk_speed}")
         output.append(f"#define BUFFER_SIZE {self.project.buffer_size//8} // {self.project.buffer_size} bits")
+        if port and ip:
+            output.append(f'#define UDP_IP "{ip}"')
+            output.append(f"#define SRC_PORT {dst_port}")
+            output.append(f"#define DST_PORT {src_port}")
+            output.append("")
+
+        output.append("void read_rxbuffer(uint8_t *rxBuffer);")
+        output.append("void write_txbuffer(uint8_t *txBuffer);")
         output.append("")
-
-
-        generic_spi = self.project.config["jdata"].get("generic_spi", False)
-        rpi5 = self.project.config["jdata"].get("rpi5", False)
-        if protocol == "SPI" and generic_spi is True:
-            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_generic")):
-                if protocol == ppath.split(os.sep)[-2]:
-                    output.append("/*")
-                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                    output.append("*/")
-                    output.append(open(ppath, "r").read())
-        elif protocol == "SPI" and rpi5 is True:
-            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_rpi5")):
-                if protocol == ppath.split(os.sep)[-2]:
-                    output.append("/*")
-                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                    output.append("*/")
-                    output.append(open(ppath, "r").read())
-        else:
-            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c")):
-                if protocol == ppath.split(os.sep)[-2]:
-                    output.append("/*")
-                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                    output.append("*/")
-                    idata = open(ppath, "r").read()
-                    idata = idata.replace("rtapi_print", "printf")
-                    idata = idata.replace("strerror(errno)", "\"error\"")
-                    idata = idata.replace("errno", "1")
-                    output.append(idata)
-
-
-
-
-
-
-        output.append("""
-
-int udp_rx(uint8_t *rxBuffer, uint16_t size) {
-    int i;
-    int ret;
-    long t1;
-    long t2;
-    uint8_t rxBufferTmp[BUFFER_SIZE*2];
-
-    // Receive incoming datagram
-    t1 = rtapi_get_time();
-    do {
-        ret = recv(udpSocket, rxBufferTmp, BUFFER_SIZE*2, 0);
-        if (ret < 0) {
-            rtapi_delay(READ_PCK_DELAY_NS);
-        }
-        t2 = rtapi_get_time();
-    }
-    while ((ret < 0) && ((t2 - t1) < 2*1000*1000));
-
-    if (ret > 0) {
-        errCount = 0;
-        if (ret == BUFFER_SIZE) {
-            memcpy(rxBuffer, rxBufferTmp, BUFFER_SIZE);
-        } else {
-            printf("wrong size = %d\\n", ret);
-            for (i = 0; i < ret; i++) {
-                printf("%d ", rxBufferTmp[i]);
-            }
-            printf("\\n");
-        }
-        /*
-        printf("rx:");
-        for (i = 0; i < ret; i++) {
-            printf(" %d,", rxBuffer[i]);
-        }
-        printf("\\n");
-        */
-    } else {
-        errCount++;
-        printf("Ethernet TIMEOUT: N = %d (ret: %d)\\n", errCount, ret);
-    }
-
-    return ret;
-}
-
-
-int udp_tx(uint8_t *txBuffer, uint16_t size) {
-    uint16_t ret = 0;
-    // Send datagram
-    ret = send(udpSocket, txBuffer, BUFFER_SIZE, 0);
-
-    return ret;
-}
-
-""")
-
-
-
-
-
-
-        output.append("int interface_init(void) {")
-        if protocol == "UART":
-            output.append("    uart_init();")
-        elif protocol == "SPI":
-            output.append("    spi_init();")
-        elif protocol == "UDP":
-            output.append("    udp_init();")
-        else:
-            print("ERROR: unsupported interface")
-            sys.exit(1)
-        output.append("}")
-        output.append("")
-
-        output.append("void interface_exit(void) {")
-        if protocol == "UART":
-            output.append("    uart_exit();")
-        elif protocol == "SPI":
-            output.append("    spi_exit();")
-        elif protocol == "UDP":
-            output.append("    udp_exit();")
-        output.append("}")
-        output.append("")
-
-
-
-
-
-
-
-
-
-
-
-
-        for plugin_instance in self.project.plugin_instances:
-            for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] in self.virtual_pins:
-                    pinname = pin_config["pin"].replace(":", "_")
-                    if pin_config["direction"] == "output":
-                        output.append(f"    wire {pin_config['varname']};")
-                        output.append(f"    assign {pinname} = {pin_config['varname']}; // {pin_config['direction']}")
-                    elif pin_config["direction"] == "input":
-                        output.append(f"    wire {pin_config['varname']};")
-                        output.append(f"    assign {pin_config['varname']} = {pinname}; // {pin_config['direction']}")
-
-        # multiplexing
-        if self.project.multiplexed_input:
-            output.append(f"    reg [{self.project.multiplexed_input_size-1}:0] MULTIPLEXED_INPUT_VALUE;")
-            output.append("    reg [7:0] MULTIPLEXED_INPUT_ID;")
-        if self.project.multiplexed_output:
-            output.append(f"    wire [{self.project.multiplexed_output_size-1}:0] MULTIPLEXED_OUTPUT_VALUE;")
-            output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
         for plugin_instance in self.project.plugin_instances:
             for data_name, data_config in plugin_instance.interface_data().items():
@@ -254,9 +111,42 @@ int udp_tx(uint8_t *txBuffer, uint16_t size) {
                     multiplexed = data_config.get("multiplexed", False)
                     if variable_size > 1:
                         if multiplexed and direction == "output":
-                            output.append(f"uint{variable_size}_t {variable_name} = 0;")
+                            output.append(f"extern int{variable_size}_t {variable_name};")
                         else:
-                            output.append(f"uint{variable_size}_t {variable_name} = 0;")
+                            output.append(f"extern int{variable_size}_t {variable_name};")
+                    else:
+                        if multiplexed and direction == "output":
+                            output.append(f"extern bool {variable_name};")
+                        else:
+                            output.append(f"extern bool {variable_name};")
+        output.append("")
+
+        open(os.path.join(self.firmware_path, "riocore.h"), "w").write("\n".join(output))
+
+    def riocore_c(self):
+        output = []
+        output.append("")
+        output.append("#include <stdio.h>")
+        output.append("#include <unistd.h>")
+        output.append("#include <stdint.h>")
+        output.append("#include <stdbool.h>")
+        output.append("#include <string.h>")
+        output.append("#include <time.h>")
+        output.append("#include <riocore.h>")
+        output.append("")
+
+        for plugin_instance in self.project.plugin_instances:
+            for data_name, data_config in plugin_instance.interface_data().items():
+                if not data_config.get("expansion"):
+                    variable_name = data_config["variable"]
+                    variable_size = data_config["size"]
+                    direction = data_config["direction"]
+                    multiplexed = data_config.get("multiplexed", False)
+                    if variable_size > 1:
+                        if multiplexed and direction == "output":
+                            output.append(f"int{variable_size}_t {variable_name} = 0;")
+                        else:
+                            output.append(f"int{variable_size}_t {variable_name} = 0;")
                     else:
                         if multiplexed and direction == "output":
                             output.append(f"bool {variable_name} = 0;")
@@ -264,7 +154,6 @@ int udp_tx(uint8_t *txBuffer, uint16_t size) {
                             output.append(f"bool {variable_name} = 0;")
         output.append("")
         output.append("")
-
 
         output.append("// PC -> MC")
         output.append("void read_rxbuffer(uint8_t *rxBuffer) {")
@@ -307,14 +196,11 @@ int udp_tx(uint8_t *txBuffer, uint16_t size) {
         output.append("}")
         output.append("")
 
-
-
         output.append("// MC -> PC")
         output.append("void write_txbuffer(uint8_t *txBuffer) {")
         output_pos = self.project.buffer_size
+
         # header
-
-
         output.append("    txBuffer[0] = 97;")
         output.append("    txBuffer[1] = 116;")
         output.append("    txBuffer[2] = 97;")
@@ -343,38 +229,103 @@ int udp_tx(uint8_t *txBuffer, uint16_t size) {
         output.append("")
         output.append("}")
         output.append("")
+        print(f"writing firmware to: {self.firmware_path}")
+        open(os.path.join(self.firmware_path, "riocore.c"), "w").write("\n".join(output))
 
+    def simulation_c(self):
+        buffer_size_bytes = self.project.buffer_size // 8
 
-
-
-        output.append("int main(void) {")
+        output = []
+        output.append("#include <stdio.h>")
+        output.append("#include <stdint.h>")
+        output.append("#include <stdbool.h>")
+        output.append("#include <string.h>")
+        output.append("#include <riocore.h>")
         output.append("")
-        
+
+        protocol = self.project.config["jdata"].get("protocol", "SPI")
+
+        output.append("int udp_init(const char *dstAddress, int dstPort, int srcPort);")
+        output.append("void udp_tx(uint8_t *txBuffer, uint16_t size);")
+        output.append("int udp_rx(uint8_t *rxBuffer, uint16_t size);")
+        output.append("void udp_exit();")
+        output.append("")
+
+        output.append("int interface_init(void) {")
+        if protocol == "UART":
+            output.append("    uart_init();")
+        elif protocol == "SPI":
+            output.append("    spi_init();")
+        elif protocol == "UDP":
+            output.append("    udp_init(UDP_IP, DST_PORT, SRC_PORT);")
+        else:
+            print("ERROR: unsupported interface")
+            sys.exit(1)
+        output.append("}")
+        output.append("")
+
+        output.append("void interface_exit(void) {")
+        if protocol == "UART":
+            output.append("    uart_exit();")
+        elif protocol == "SPI":
+            output.append("    spi_exit();")
+        elif protocol == "UDP":
+            output.append("    udp_exit();")
+        output.append("}")
+        output.append("")
+
+        output.append("void simulation(void) {")
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            variable_name = data_config["variable"]
+            variable_size = data_config["size"]
+            if data_config["direction"] == "input":
+                if hasattr(plugin_instance, "simulate_c"):
+                    output.append(plugin_instance.simulate_c(1000, data_name))
+
+        output.append("}")
+        output.append("")
+
         buffer_init = ["0"] * buffer_size_bytes
-        
+        output.append("int main(void) {")
+        output.append("    uint16_t ret = 0;")
         output.append(f"    uint8_t rxBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
         output.append(f"    uint8_t txBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
-        output.append(f"    uint16_t ret = 0;")
         output.append("")
-        output.append("    udp_init();")
-        output.append("")
+        output.append("    interface_init();")
         output.append("")
         output.append("    while (1) {")
         output.append("        ret = udp_rx(rxBuffer, BUFFER_SIZE);")
-        output.append("        printf(\"ret = %i\\n\", ret);")
+        output.append("        if (rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {")
+        output.append("            read_rxbuffer(rxBuffer);")
+        output.append("            write_txbuffer(txBuffer);")
+        output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
         output.append("")
-        output.append("        read_rxbuffer(rxBuffer);")
-        output.append("        write_txbuffer(txBuffer);")
-        output.append("")
-        output.append("        udp_tx(txBuffer, BUFFER_SIZE);")
+        output.append("            simulation();")
+        output.append("        }")
         output.append("    }")
+        output.append("    return 0;")
         output.append("}")
         output.append("")
-        output.append("")
-
-
-        output.append("")
-        output.append("")
         print(f"writing firmware to: {self.firmware_path}")
-        open(os.path.join(self.firmware_path, "main.c"), "w").write("\n".join(output))
+        open(os.path.join(self.firmware_path, "simulator.c"), "w").write("\n".join(output))
 
+
+    def makefile(self):
+        output = []
+        output.append("")
+        output.append("all: simulator")
+        output.append("")
+        output.append("clean:")
+        output.append("	rm -f simulator")
+        output.append("")
+        output.append("simulator: simulator.c riocore.c interface.c")
+        output.append("	gcc -o simulator -Os -I. simulator.c riocore.c interface.c")
+        output.append("")
+        output.append("simulator_run: simulator")
+        output.append("	./simulator")
+        output.append("")
+        open(os.path.join(self.firmware_path, "Makefile"), "w").write("\n".join(output))

@@ -119,7 +119,7 @@ class component:
         elif protocol == "SPI":
             output.append("    spi_init();")
         elif protocol == "UDP":
-            output.append("    udp_init();")
+            output.append("    udp_init(UDP_IP, DST_PORT, SRC_PORT);")
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)
@@ -188,7 +188,8 @@ class component:
         elif protocol == "SPI":
             output.append("            spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
         elif protocol == "UDP":
-            output.append("            ret = udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+            output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE);")
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)
