@@ -78,7 +78,6 @@ class Plugin(PluginBase):
     def convert_c(self, signal_name, signal_setup):
         scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
         zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])
-        instances_name = self.instances_name.upper()
         return f"""
             if (((uint32_t)value & (1<<23))) {{
                 value = value - 16777216;

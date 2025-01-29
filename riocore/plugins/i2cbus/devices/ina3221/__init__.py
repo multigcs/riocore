@@ -186,17 +186,17 @@ class i2c_device:
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name.endswith("_valid"):
-            return f"value = value / 1000;"
+            return "value = value / 1000;"
         elif signal_name.endswith("_current1"):
-            return f"value = value / 20;"
+            return "value = value / 20;"
         elif signal_name.endswith("_voltage1"):
-            return f"value = value / 1000;"
+            return "value = value / 1000;"
         elif signal_name.endswith("_current2"):
-            return f"value = value / 20;"
+            return "value = value / 20;"
         elif signal_name.endswith("_voltage2"):
-            return f"value = value / 1000;"
+            return "value = value / 1000;"
         elif signal_name.endswith("_current3"):
-            return f"value = value / 20;"
+            return "value = value / 20;"
         elif signal_name.endswith("_voltage3"):
-            return f"value = value / 1000;"
-        return value
+            return "value = value / 1000;"
+        return ""

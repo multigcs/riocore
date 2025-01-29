@@ -127,9 +127,9 @@ class i2c_device:
         if signal_name.endswith("_valid"):
             return ""
         elif signal_name.endswith("_voltage"):
-            return f"""
+            return """
             value = value / 2000;
             """
-        return f"""
+        return """
         value = value * 1000 / 8192;
         """

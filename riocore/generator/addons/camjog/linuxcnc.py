@@ -7,7 +7,6 @@ addon_path = os.path.dirname(__file__)
 
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = linuxcnc_config.get("gui", "axis")
 
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):

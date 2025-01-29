@@ -97,6 +97,11 @@ def receive(project):
         byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
         byte_start = project.buffer_bytes - 1 - byte_start
         rxdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
+
+        value = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+
+        print("> MULTIPLEXED RX", value)
+
         input_pos -= variable_size
         if project.multiplexed_output_id < project.multiplexed_output - 1:
             project.multiplexed_output_id += 1
@@ -165,6 +170,23 @@ def transmit(project):
     byte_start = project.buffer_bytes - 1 - byte_start
     txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
     output_pos -= variable_size
+
+    if project.multiplexed_input:
+        variable_size = project.multiplexed_input_size
+        byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
+        byte_start = project.buffer_bytes - 1 - byte_start
+        txdata[byte_start - (byte_size - 1) : byte_start + 1] = [0] * (variable_size // 8)
+        output_pos -= variable_size
+
+        # print("< MULTIPLEXED", [0] * (variable_size // 8))
+
+        variable_size = 8
+        byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
+        byte_start = project.buffer_bytes - 1 - byte_start
+        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(0)))[0:byte_size]
+        output_pos -= variable_size
+
+        # print("< MULTIPLEXED", [0] * (variable_size // 8))
 
     for size, plugin_instance, data_name, data_config in project.get_interface_data():
         expansion = data_config.get("expansion", False)

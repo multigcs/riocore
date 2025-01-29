@@ -7,7 +7,6 @@ addon_path = os.path.dirname(__file__)
 
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = linuxcnc_config.get("gui", "axis")
     robojog_config = linuxcnc_config.get("robojog", {})
     robojog_enable = robojog_config.get("enable", False)
     if robojog_enable:

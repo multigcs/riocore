@@ -127,7 +127,7 @@ def md2label(text):
                 table = False
                 formated.append("</table>\n")
             if not line.strip():
-                formated.append(f"<br/>\n")
+                formated.append("<br/>\n")
             else:
                 for ch in line:
                     if ch == " ":

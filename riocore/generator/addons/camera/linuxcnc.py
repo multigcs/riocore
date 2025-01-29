@@ -1,6 +1,5 @@
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = linuxcnc_config.get("gui", "axis")
     for camera_num, camera in enumerate(linuxcnc_config.get("camera", [])):
         if camera and camera.get("enable"):
             camera_device = camera.get("device", f"/dev/video{camera_num}")

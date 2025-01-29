@@ -34,9 +34,6 @@ class i2c_device:
             },
         }
 
-        MCP4725_CMD_WRITEDAC = 0x40
-        MCP4725_CMD_WRITEDACEEPROM = 0x60
-
         self.PARAMS = {}
         self.INITS = []
         self.STEPS = [
