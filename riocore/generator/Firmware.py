@@ -1,10 +1,6 @@
 import glob
-import hashlib
-import importlib
+import sys
 import os
-import shutil
-import stat
-import json
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -102,23 +98,30 @@ class Firmware:
         output.append("void write_txbuffer(uint8_t *txBuffer);")
         output.append("")
 
+        if self.project.multiplexed_input:
+            output.append("extern float MULTIPLEXER_INPUT_VALUE;")
+            output.append("extern uint8_t MULTIPLEXER_INPUT_ID;")
+        if self.project.multiplexed_output:
+            output.append("extern float MULTIPLEXER_OUTPUT_VALUE;")
+            output.append("extern uint8_t MULTIPLEXER_OUTPUT_ID;")
+
         for plugin_instance in self.project.plugin_instances:
             for data_name, data_config in plugin_instance.interface_data().items():
                 if not data_config.get("expansion"):
                     variable_name = data_config["variable"]
                     variable_size = data_config["size"]
-                    direction = data_config["direction"]
-                    multiplexed = data_config.get("multiplexed", False)
-                    if variable_size > 1:
-                        if multiplexed and direction == "output":
-                            output.append(f"extern int{variable_size}_t {variable_name};")
-                        else:
-                            output.append(f"extern int{variable_size}_t {variable_name};")
+                    variable_bytesize = variable_size // 8
+                    if plugin_instance.TYPE == "frameio":
+                        output.append(f"extern uint8_t {variable_name}[{variable_bytesize}];")
+                    elif variable_size > 1:
+                        variable_size_align = 8
+                        for isize in (8, 16, 32, 64):
+                            variable_size_align = isize
+                            if isize >= variable_size:
+                                break
+                        output.append(f"extern int{variable_size_align}_t {variable_name};")
                     else:
-                        if multiplexed and direction == "output":
-                            output.append(f"extern bool {variable_name};")
-                        else:
-                            output.append(f"extern bool {variable_name};")
+                        output.append(f"extern bool {variable_name};")
         output.append("")
 
         open(os.path.join(self.firmware_path, "riocore.h"), "w").write("\n".join(output))
@@ -135,23 +138,31 @@ class Firmware:
         output.append("#include <riocore.h>")
         output.append("")
 
+        if self.project.multiplexed_output:
+            output.append("float MULTIPLEXER_INPUT_VALUE;")
+            output.append("uint8_t MULTIPLEXER_INPUT_ID;")
+        if self.project.multiplexed_input:
+            output.append("float MULTIPLEXER_OUTPUT_VALUE;")
+            output.append("uint8_t MULTIPLEXER_OUTPUT_ID;")
+
         for plugin_instance in self.project.plugin_instances:
             for data_name, data_config in plugin_instance.interface_data().items():
                 if not data_config.get("expansion"):
                     variable_name = data_config["variable"]
                     variable_size = data_config["size"]
-                    direction = data_config["direction"]
                     multiplexed = data_config.get("multiplexed", False)
-                    if variable_size > 1:
-                        if multiplexed and direction == "output":
-                            output.append(f"int{variable_size}_t {variable_name} = 0;")
-                        else:
-                            output.append(f"int{variable_size}_t {variable_name} = 0;")
+                    variable_bytesize = variable_size // 8
+                    if plugin_instance.TYPE == "frameio":
+                        output.append(f"uint8_t {variable_name}[{variable_bytesize}];")
+                    elif variable_size > 1:
+                        variable_size_align = 8
+                        for isize in (8, 16, 32, 64):
+                            variable_size_align = isize
+                            if isize >= variable_size:
+                                break
+                        output.append(f"int{variable_size_align}_t {variable_name} = 0;")
                     else:
-                        if multiplexed and direction == "output":
-                            output.append(f"bool {variable_name} = 0;")
-                        else:
-                            output.append(f"bool {variable_name} = 0;")
+                        output.append(f"bool {variable_name} = 0;")
         output.append("")
         output.append("")
 
@@ -169,12 +180,12 @@ class Firmware:
             variable_size = self.project.multiplexed_output_size
             byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
             byte_start = self.project.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&MULTIPLEXER_INPUT_VALUE, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
+            output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_VALUE, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
             input_pos -= variable_size
             variable_size = 8
             byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
             byte_start = self.project.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&MULTIPLEXER_INPUT_ID, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
+            output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_ID, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
             input_pos -= variable_size
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
@@ -209,6 +220,18 @@ class Firmware:
         output_pos -= 32
         # timestamp
         output_pos -= 32
+
+        if self.project.multiplexed_input:
+            variable_size = self.project.multiplexed_input_size
+            byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
+            byte_start = self.project.buffer_bytes - 1 - byte_start
+            output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &MULTIPLEXER_OUTPUT_VALUE, {byte_size}); // {output_pos}")
+            output_pos -= variable_size
+            variable_size = 8
+            byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
+            byte_start = self.project.buffer_bytes - 1 - byte_start
+            output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
+            output_pos -= variable_size
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
@@ -280,8 +303,6 @@ class Firmware:
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
                 continue
-            variable_name = data_config["variable"]
-            variable_size = data_config["size"]
             if data_config["direction"] == "input":
                 if hasattr(plugin_instance, "simulate_c"):
                     output.append(plugin_instance.simulate_c(1000, data_name))
@@ -312,7 +333,6 @@ class Firmware:
         output.append("")
         print(f"writing firmware to: {self.firmware_path}")
         open(os.path.join(self.firmware_path, "simulator.c"), "w").write("\n".join(output))
-
 
     def makefile(self):
         output = []
