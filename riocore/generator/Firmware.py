@@ -35,6 +35,7 @@ class Firmware:
         self.riocore_c()
         self.simulation_c()
         self.makefile()
+        self.platformio()
 
     def interface_c(self):
         protocol = self.project.config["jdata"].get("protocol", "SPI")
@@ -98,6 +99,9 @@ class Firmware:
         output.append("void write_txbuffer(uint8_t *txBuffer);")
         output.append("")
 
+        output.append("extern uint8_t rxBuffer[BUFFER_SIZE];")
+        output.append("extern uint8_t txBuffer[BUFFER_SIZE];")
+
         if self.project.multiplexed_input:
             output.append("extern float MULTIPLEXER_INPUT_VALUE;")
             output.append("extern uint8_t MULTIPLEXER_INPUT_ID;")
@@ -137,6 +141,11 @@ class Firmware:
         output.append("#include <time.h>")
         output.append("#include <riocore.h>")
         output.append("")
+
+        buffer_size_bytes = self.project.buffer_size // 8
+        buffer_init = ["0"] * buffer_size_bytes
+        output.append(f"uint8_t rxBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
+        output.append(f"uint8_t txBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
 
         if self.project.multiplexed_output:
             output.append("float MULTIPLEXER_INPUT_VALUE;")
@@ -256,8 +265,6 @@ class Firmware:
         open(os.path.join(self.firmware_path, "riocore.c"), "w").write("\n".join(output))
 
     def simulation_c(self):
-        buffer_size_bytes = self.project.buffer_size // 8
-
         output = []
         output.append("#include <stdio.h>")
         output.append("#include <stdint.h>")
@@ -310,11 +317,8 @@ class Firmware:
         output.append("}")
         output.append("")
 
-        buffer_init = ["0"] * buffer_size_bytes
         output.append("int main(void) {")
         output.append("    uint16_t ret = 0;")
-        output.append(f"    uint8_t rxBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
-        output.append(f"    uint8_t txBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
         output.append("")
         output.append("    interface_init();")
         output.append("")
@@ -333,6 +337,99 @@ class Firmware:
         output.append("")
         print(f"writing firmware to: {self.firmware_path}")
         open(os.path.join(self.firmware_path, "simulator.c"), "w").write("\n".join(output))
+
+    def platformio(self):
+        output = []
+        output.append("")
+
+        output.append("""
+#define ETH_CLK_MODE ETH_CLOCK_GPIO17_OUT
+#define ETH_PHY_POWER 12
+
+#include <ETH.h>
+#include <ESPmDNS.h>
+#include <WiFiUdp.h>
+
+extern "C" {
+    #include <riocore.h>
+}
+
+WiFiUDP Udp;
+
+void setup(){
+    Serial.begin(115200);
+    while (!Serial);
+
+    ETH.begin();
+
+    // setup static ip
+    IPAddress myIP(192, 168, 80, 141);
+    IPAddress myGW(192, 168, 80, 1);
+    IPAddress mySN(255, 255, 255, 0);
+    ETH.config(myIP, myGW, mySN);
+
+    Udp.begin(SRC_PORT);
+
+    Serial.println("UDP2SPI Bridge for LinuxCNC - RIO");
+}
+""")
+
+        output.append("void simulation(void) {")
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            if data_config["direction"] == "input":
+                if hasattr(plugin_instance, "simulate_c"):
+                    output.append(plugin_instance.simulate_c(1000, data_name))
+
+        output.append("}")
+        output.append("")
+
+        output.append("""
+
+void loop() {
+    int packetSize = Udp.parsePacket();
+    if (packetSize) {
+        IPAddress remoteIp = Udp.remoteIP();
+        int len = Udp.read(rxBuffer, BUFFER_SIZE);
+        if (rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {
+            read_rxbuffer(rxBuffer);
+            write_txbuffer(txBuffer);
+            Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+            Udp.write((uint8_t*)txBuffer, BUFFER_SIZE);
+            Udp.endPacket();
+
+            simulation();
+        }
+    }
+
+    //Serial.write((uint8_t*)packetBuffer, len);
+}
+""")
+
+        pio_path = os.path.join(self.firmware_path, "esp32-poe-iso")
+        pio_src_path = os.path.join(pio_path, "src")
+        os.makedirs(pio_src_path, exist_ok=True)
+        pio_lib_path = os.path.join(pio_path, "lib", "riocore")
+        os.makedirs(pio_lib_path, exist_ok=True)
+        open(os.path.join(pio_src_path, "main.ino"), "w").write("\n".join(output))
+
+        output = []
+        output.append("")
+        output.append("[env:esp32-evb]")
+        output.append("platform = espressif32")
+        output.append("board = esp32-poe-iso")
+        output.append("framework = arduino")
+        output.append("")
+        open(os.path.join(pio_path, "platformio.ini"), "w").write("\n".join(output))
+
+        try:
+            os.symlink(os.path.join("..", "..", "..", "riocore.h"), os.path.join(pio_lib_path, "riocore.h"))
+            os.symlink(os.path.join("..", "..", "..", "riocore.c"), os.path.join(pio_lib_path, "riocore.c"))
+        except Exception:
+            pass
 
     def makefile(self):
         output = []
