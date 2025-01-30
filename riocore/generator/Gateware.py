@@ -12,7 +12,6 @@ class Gateware:
     def __init__(self, project):
         self.project = project
         self.gateware_path = os.path.join(project.config["output_path"], "Gateware")
-        os.makedirs(self.gateware_path, exist_ok=True)
         project.config["riocore_path"] = riocore_path
 
     def globals(self):
@@ -35,6 +34,8 @@ class Gateware:
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
+
+        os.makedirs(self.gateware_path, exist_ok=True)
 
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
         if os.path.isfile(toolchains_json_path):
