@@ -55,6 +55,8 @@ class Plugin(PluginBase):
         output = []
         for pin_name, pin_config in self.pins().items():
             direction = pin_config["direction"]
+            interface_data = self.interface_data()
             pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
-            output.append(f"    value_bit = digitalRead({pin_define_name});")
+            bit_var = interface_data["bit"]["variable"]
+            output.append(f"    {bit_var} = digitalRead({pin_define_name});")
         return "\n".join(output)

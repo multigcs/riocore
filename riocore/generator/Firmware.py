@@ -125,7 +125,7 @@ class Firmware:
                                 break
                         output.append(f"extern int{variable_size_align}_t {variable_name};")
                     else:
-                        output.append(f"extern bool {variable_name};")
+                        output.append(f"extern uint8_t {variable_name};")
         output.append("")
 
         open(os.path.join(self.firmware_path, "riocore.h"), "w").write("\n".join(output))
@@ -171,7 +171,7 @@ class Firmware:
                                 break
                         output.append(f"int{variable_size_align}_t {variable_name} = 0;")
                     else:
-                        output.append(f"bool {variable_name} = 0;")
+                        output.append(f"uint8_t {variable_name} = 0;")
         output.append("")
         output.append("")
 
@@ -220,6 +220,11 @@ class Firmware:
         output.append("void write_txbuffer(uint8_t *txBuffer) {")
         output_pos = self.project.buffer_size
 
+        output.append("    int n = 0;")
+        output.append("    for (n = 0; n < BUFFER_SIZE; n++) {{")
+        output.append("        txBuffer[n] = 0;")
+        output.append("    }")
+
         # header
         output.append("    txBuffer[0] = 97;")
         output.append("    txBuffer[1] = 116;")
@@ -261,7 +266,6 @@ class Firmware:
         output.append("")
         output.append("}")
         output.append("")
-        print(f"writing firmware to: {self.firmware_path}")
         open(os.path.join(self.firmware_path, "riocore.c"), "w").write("\n".join(output))
 
     def simulation_c(self):
@@ -335,7 +339,6 @@ class Firmware:
         output.append("    return 0;")
         output.append("}")
         output.append("")
-        print(f"writing firmware to: {self.firmware_path}")
         open(os.path.join(self.firmware_path, "simulator.c"), "w").write("\n".join(output))
 
     def platformio(self):
@@ -370,9 +373,42 @@ void setup(){
 
     Udp.begin(SRC_PORT);
 
+    riocore_setup();
+
     Serial.println("UDP2SPI Bridge for LinuxCNC - RIO");
 }
 """)
+
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            if hasattr(plugin_instance, "firmware_defines"):
+                output.append(plugin_instance.firmware_defines())
+        output.append("")
+
+        output.append("void riocore_setup(void) {")
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            if hasattr(plugin_instance, "firmware_setup"):
+                output.append(plugin_instance.firmware_setup())
+        output.append("}")
+        output.append("")
+
+        output.append("void riocore_loop(void) {")
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            if hasattr(plugin_instance, "firmware_loop"):
+                output.append(plugin_instance.firmware_loop())
+        output.append("}")
+        output.append("")
 
         output.append("void simulation(void) {")
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
@@ -396,6 +432,9 @@ void loop() {
         int len = Udp.read(rxBuffer, BUFFER_SIZE);
         if (rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {
             read_rxbuffer(rxBuffer);
+
+            riocore_loop();
+
             write_txbuffer(txBuffer);
             Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
             Udp.write((uint8_t*)txBuffer, BUFFER_SIZE);
