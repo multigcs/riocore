@@ -81,6 +81,9 @@ class Simulator:
         output.append("void udp_exit();")
         output.append("")
 
+        output.append("int32_t joint_position[12];")
+        output.append("")
+
         output.append("int interface_init(void) {")
         if protocol == "UART":
             output.append("    uart_init();")
@@ -104,15 +107,56 @@ class Simulator:
         output.append("}")
         output.append("")
 
+        joint_n = 0
         output.append("void simulation(void) {")
+        output.append("    float offset = 0.0;")
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
                 continue
+            interface_data = plugin_instance.interface_data()
+            signal_config = plugin_instance.signals().get(data_name, {})
+            if plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
+                position_var = interface_data["position"]["variable"]
+                if "velocity" in interface_data:
+                    velocity_var = interface_data["velocity"]["variable"]
+                    output.append(f"    if ({velocity_var} != 0) {{")
+                    output.append(f"        offset = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0;")
+                    output.append("        // for testing")
+                    output.append("        if ((int32_t)offset == 0 && offset > 0.0) {")
+                    output.append("            offset = 1.0;")
+                    output.append("        } else if ((int32_t)offset == 0 && offset < 0.0) {")
+                    output.append("            offset = -1.0;")
+                    output.append("        }")
+                    output.append(f"        {position_var} += (int32_t)offset;")
+                    output.append("    }")
+                output.append(f"    joint_position[{joint_n}] = {position_var};")
+                joint_n += 1
+
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            interface_data = plugin_instance.interface_data()
+            signal_config = plugin_instance.signals().get(data_name, {})
+            userconfig = signal_config.get("userconfig", {})
+            net = userconfig.get("net")
             if data_config["direction"] == "input":
-                if hasattr(plugin_instance, "simulate_c"):
-                    output.append(plugin_instance.simulate_c(1000, data_name))
+                if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
+                    jn = net.split(".")[1]
+                    var = interface_data["bit"]["variable"]
+                    if jn == "2" and joint_n < 5:
+                        # Z-Axis
+                        output.append(f"    if (joint_position[{jn}] > 10000) {{")
+                    else:
+                        output.append(f"    if (joint_position[{jn}] < 0) {{")
+                    output.append(f"        {var} = 1;")
+                    output.append("    } else {")
+                    output.append(f"        {var} = 0;")
+                    output.append("    }")
+
 
         output.append("")
         output.append('    printf("\\n\\n");')
