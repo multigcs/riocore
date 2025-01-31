@@ -1,10 +1,7 @@
-import glob
-import sys
 import os
+from riocore.generator import cclient
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
-
-from riocore.generator import cclient
 
 
 class Firmware:
@@ -161,4 +158,3 @@ void loop() {
         open(os.path.join(self.pio_path, "platformio.ini"), "w").write("\n".join(output))
 
         print(f"writing firmware to: {self.pio_path}")
-

@@ -400,6 +400,9 @@ class WinForm(QWidget):
                         if "port" in plugin_instance.plugin_setup:
                             port = plugin_instance.plugin_setup["port"]
 
+        ip = self.project.config["jdata"].get("ip", ip)
+        port = self.project.config["jdata"].get("port", port)
+
         vlayout_left.addWidget(device)
         vlayout_left.addStretch()
 

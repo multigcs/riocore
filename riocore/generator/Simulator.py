@@ -1,10 +1,10 @@
 import glob
 import sys
 import os
+from riocore.generator import cclient
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
-from riocore.generator import cclient
 
 class Simulator:
     def __init__(self, project):
@@ -15,8 +15,6 @@ class Simulator:
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
-        toolchain = self.config.get("toolchain")
-
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
             for pin in plugin_instance.expansion_outputs():
@@ -116,6 +114,21 @@ class Simulator:
                 if hasattr(plugin_instance, "simulate_c"):
                     output.append(plugin_instance.simulate_c(1000, data_name))
 
+        output.append("")
+        output.append('    printf("\\n\\n");')
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            # multiplexed = data_config.get("multiplexed", False)
+            # expansion = data_config.get("expansion", False)
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "output":
+                output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
+        output.append('    printf("\\n");')
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            # multiplexed = data_config.get("multiplexed", False)
+            # expansion = data_config.get("expansion", False)
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "input":
+                output.append(f'    printf("< {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
         output.append("}")
         output.append("")
 
@@ -126,7 +139,7 @@ class Simulator:
         output.append("")
         output.append("    while (1) {")
         output.append("        ret = udp_rx(rxBuffer, BUFFER_SIZE);")
-        output.append("        if (rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {")
+        output.append("        if (ret == BUFFER_SIZE && rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {")
         output.append("            read_rxbuffer(rxBuffer);")
         output.append("            write_txbuffer(txBuffer);")
         output.append("            udp_tx(txBuffer, BUFFER_SIZE);")

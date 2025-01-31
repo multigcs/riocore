@@ -35,6 +35,8 @@ int udp_init(const char *dstAddress, int dstPort, int srcPort) {
     srcAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     srcAddr.sin_port = htons(srcPort);
 
+    rtapi_print("INFO: listening on udp port: %s:%i\n", "0.0.0.0", srcPort);
+
     // bind the local socket to SCR_PORT
     ret = bind(udpSocket, (struct sockaddr *) &srcAddr, sizeof(srcAddr));
     if (ret < 0) {
@@ -81,6 +83,10 @@ int udp_rx(uint8_t *rxBuffer, uint16_t size) {
     long t1;
     long t2;
     uint8_t rxBufferTmp[1024];
+
+    for (i = 0; i < 1024; i++) {
+        rxBufferTmp[i] = 0;
+    }
 
     // Receive incoming datagram
     t1 = rtapi_get_time();

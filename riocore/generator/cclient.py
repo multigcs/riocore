@@ -1,5 +1,6 @@
 import os
 
+
 def riocore_h(project, folder):
     sysclk_speed = project.config["speed"]
     ip = "192.168.10.194"
@@ -64,6 +65,7 @@ def riocore_h(project, folder):
     output.append("")
 
     open(os.path.join(folder, "riocore.h"), "w").write("\n".join(output))
+
 
 def riocore_c(project, folder):
     output = []
