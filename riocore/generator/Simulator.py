@@ -157,7 +157,6 @@ class Simulator:
                     output.append(f"        {var} = 0;")
                     output.append("    }")
 
-
         output.append("")
         output.append('    printf("\\n\\n");')
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():

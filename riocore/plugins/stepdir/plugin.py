@@ -110,4 +110,3 @@ class Plugin(PluginBase):
             if velocity != 0:
                 velocity = self.system_setup["speed"] / velocity / 2
                 interface_data["position"]["value"] += int(velocity / duration)
-
