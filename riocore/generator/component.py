@@ -35,8 +35,8 @@ class component:
 
         ip = self.project.config["jdata"].get("ip", ip)
         port = self.project.config["jdata"].get("port", port)
-        src_port = self.project.config["jdata"].get("src_port", port)
         dst_port = self.project.config["jdata"].get("dst_port", port)
+        src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1))
 
         defines = {
             "MODNAME": '"rio"',

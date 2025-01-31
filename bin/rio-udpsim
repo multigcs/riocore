@@ -143,6 +143,8 @@ def receive(project):
 
 
 def simulate(project):
+    sysclk_speed = project.config["speed"]
+    duration = 1000
     for size, plugin_instance, data_name, data_config in project.get_interface_data():
         expansion = data_config.get("expansion", False)
         if expansion:
@@ -150,9 +152,15 @@ def simulate(project):
         multiplexed = data_config.get("multiplexed", False)
         if multiplexed:
             continue
-        if data_config["direction"] == "output" or data_config["direction"] == "inout":
-            if hasattr(plugin_instance, "simulate"):
-                plugin_instance.simulate(1000, data_name)
+
+        interface_data = plugin_instance.interface_data()
+        # signal_config = plugin_instance.signals().get(data_name, {})
+        if plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
+            if "velocity" in interface_data and interface_data["enable"]["value"]:
+                velocity = interface_data["velocity"]["value"]
+                if velocity != 0:
+                    velocity = sysclk_speed / velocity / 2
+                    interface_data["position"]["value"] += int(velocity / duration)
 
 
 def transmit(project):

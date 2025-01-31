@@ -120,8 +120,9 @@ class Simulator:
             if plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
                 position_var = interface_data["position"]["variable"]
                 if "velocity" in interface_data:
+                    enable_var = interface_data["enable"]["variable"]
                     velocity_var = interface_data["velocity"]["variable"]
-                    output.append(f"    if ({velocity_var} != 0) {{")
+                    output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
                     output.append(f"        offset = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0;")
                     output.append("        // for testing")
                     output.append("        if ((int32_t)offset == 0 && offset > 0.0) {")
@@ -193,7 +194,7 @@ class Simulator:
         output.append("    return 0;")
         output.append("}")
         output.append("")
-        open(os.path.join(self.simulator_path, "simulator.c"), "w").write("\n".join(output))
+        open(os.path.join(self.simulator_path, "main.c"), "w").write("\n".join(output))
 
     def makefile(self):
         output = []
@@ -203,8 +204,8 @@ class Simulator:
         output.append("clean:")
         output.append("	rm -f simulator")
         output.append("")
-        output.append("simulator: simulator.c riocore.c interface.c")
-        output.append("	gcc -o simulator -Os -I. simulator.c riocore.c interface.c")
+        output.append("simulator: main.c riocore.c interface.c")
+        output.append("	gcc -o simulator -Os -I. main.c riocore.c interface.c")
         output.append("")
         output.append("simulator_run: simulator")
         output.append("	./simulator")

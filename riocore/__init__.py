@@ -941,6 +941,7 @@ class Project:
             plugin_instance.convert2signals()
 
     def generator(self, preview=False):
+        protocol = self.config["jdata"].get("protocol", "SPI")
         toolchain = self.config.get("toolchain")
         generate_pll = True
         if toolchain == "platformio":
@@ -949,7 +950,8 @@ class Project:
             if preview:
                 generate_pll = False
             self.generator_gateware.generator(generate_pll=generate_pll)
-        self.generator_simulator.generator()
+        if protocol == "UDP":
+            self.generator_simulator.generator()
         self.generator_linuxcnc.generator()
         target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)

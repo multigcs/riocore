@@ -12,8 +12,8 @@ def riocore_h(project, folder):
 
     ip = project.config["jdata"].get("ip", ip)
     port = project.config["jdata"].get("port", port)
-    src_port = project.config["jdata"].get("src_port", port)
     dst_port = project.config["jdata"].get("dst_port", port)
+    src_port = project.config["jdata"].get("src_port", str(int(port) + 1))
 
     output = []
     output.append("#include <stdio.h>")
@@ -147,7 +147,11 @@ def riocore_c(project, folder):
             if variable_size > 1:
                 output.append(f"    memcpy(&{variable_name}, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size}); // {input_pos}")
             else:
-                output.append(f"    {variable_name} = (rxBuffer[{byte_start}] & (1<<{bit_offset})); // {input_pos}")
+                output.append(f"    if ((rxBuffer[{byte_start}] & (1<<{bit_offset})) == 0) {{")
+                output.append(f"        {variable_name} = 0;")
+                output.append("    } else {")
+                output.append(f"        {variable_name} = 1;")
+                output.append("    }")
             input_pos -= variable_size
 
     output.append("}")
