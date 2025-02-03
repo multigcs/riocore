@@ -1214,6 +1214,7 @@ class LinuxCNC:
 
                         if section != tab:
                             continue
+                        print("### section", section, tab)
 
                         if hasattr(gui_gen, f"draw_{dtype}"):
                             title = haltitles.get(halname, halname)

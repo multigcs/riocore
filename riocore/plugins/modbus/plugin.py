@@ -84,7 +84,6 @@ class Plugin(PluginBase):
         for signal_name, config in self.plugin_setup.get("config", {}).items():
             n_values = config.get("values", 0)
             ctype = config["type"]
-            vformat = config["format"]
             if ctype == 101:
                 config["instance"] = hy_vfd.hy_vfd(self.SIGNALS, signal_name, config)
                 if hasattr(config["instance"], "on_error"):
@@ -93,9 +92,6 @@ class Plugin(PluginBase):
                 is_bool = False
                 if ctype in {2, 5, 15}:
                     is_bool = True
-                if ctype == 6 and vformat == "b":
-                    is_bool = True
-
                 if n_values > 1:
                     for vn in range(0, n_values):
                         value_name = f"{signal_name}_{vn}"
@@ -163,9 +159,7 @@ class Plugin(PluginBase):
         for signal_name, config in self.plugin_setup.get("config", {}).items():
             n_values = config.get("values", 0)
             ctype = config["type"]
-            vformat = config["format"]
             address = config["address"]
-            signal_values = config.get("values", 1)
             register = self.int2list(config["register"])
             error_values = config.get("error_values", "").strip().replace(",", " ").split()
             n_values = self.int2list(len(error_values))
@@ -175,17 +169,13 @@ class Plugin(PluginBase):
                 pass
             elif direction == "output" and error_values:
                 if config["values"] > 1:
-                    if ctype == 15 or (ctype == 6 and vformat == "b"):
-                        n_bytes = (signal_values + 7) // 8
-                        n_bytes_list = self.int2list(n_bytes)
-                        byteslist = [0] * n_bytes
-                        for vn in range(signal_values):
-                            byte_n = vn // 8
-                            bn = vn - (byte_n * 8)
-                            value = error_values[0]
-                            if value == 1:
-                                byteslist[n_bytes - 1 - byte_n] |= 1 << bn
-                        cmd = [address, ctype] + register + n_bytes_list + byteslist
+                    if ctype == 15:
+                        cmd = [address, ctype] + register + n_values + [1]
+                        bitvalues = 0
+                        for value in error_values:
+                            if int(value) == 1:
+                                bitvalues = bitvalues | (1 << vn)
+                        cmd.append(bitvalues)
                     else:
                         cmd = [address, ctype] + register + n_values
                         for value in error_values:
@@ -373,7 +363,6 @@ class Plugin(PluginBase):
             self.timeout = config.get("timeout", self.TIMEOUT) + self.delay
             address = config["address"]
             ctype = config["type"]
-            vformat = config["format"]
             self.signal_name = signal_name
             self.signal_address = address
             self.is_float = config.get("is_float", False)
@@ -382,18 +371,15 @@ class Plugin(PluginBase):
             n_values = self.int2list(self.signal_values)
             if direction == "output":
                 if self.signal_values > 1:
-                    if ctype == 15 or (ctype == 6 and vformat == "b"):
-                        n_bytes = (self.signal_values + 7) // 8
-                        n_bytes_list = self.int2list(n_bytes)
-                        byteslist = [0] * n_bytes
-                        for vn in range(self.signal_values):
-                            byte_n = vn // 8
-                            bn = vn - (byte_n * 8)
+                    if ctype == 15:
+                        cmd = [address, ctype] + register + n_values + [1]
+                        bitvalues = 0
+                        for vn in range(0, self.signal_values):
                             value_name = f"{self.signal_name}_{vn}"
                             value = self.SIGNALS[value_name]["value"]
                             if value == 1:
-                                byteslist[n_bytes - 1 - byte_n] |= 1 << bn
-                        cmd = [address, ctype] + register + n_bytes_list + byteslist
+                                bitvalues = bitvalues | (1 << vn)
+                        cmd.append(bitvalues)
                     else:
                         cmd = [address, ctype] + register + n_values
                         for vn in range(0, self.signal_values):
@@ -467,6 +453,7 @@ class Plugin(PluginBase):
                         output.append(f"                    if (data_addr == {address} && data_len == 1) {{")
                         for vn in range(0, self.signal_values):
                             value_name = f"value_{self.signal_name}_{vn}"
+
                             output.append(f"                        if ((frame_data[3] & (1<<{vn})) != 0) {{")
                             output.append(f"                            {value_name} = 1;")
                             output.append("                        } else {")
@@ -583,7 +570,6 @@ class Plugin(PluginBase):
             timeout = signal_config.get("timeout", self.TIMEOUT) + delay
             address = signal_config["address"]
             ctype = signal_config["type"]
-            vformat = signal_config["format"]
             self.signal_values = signal_config.get("values", 1)
             self.is_float = signal_config.get("is_float", False)
             register = self.int2list(signal_config["register"])
@@ -599,40 +585,32 @@ class Plugin(PluginBase):
                 output += signal_config["instance"].frameio_tx_c()
             elif direction == "output":
                 if self.signal_values > 1:
-                    if ctype == 15 or (ctype == 6 and vformat == "b"):
+                    if ctype == 15:
                         output.append("                // set 1bit values")
-                        output.append(f"                frame_data[0] = {address};")
-                        output.append(f"                frame_data[1] = {ctype};")
-                        output.append(f"                frame_data[2] = {register[0]};")
-                        output.append(f"                frame_data[3] = {register[1]};")
-                        n_bytes = (self.signal_values + 7) // 8
-                        n_bytes_list = self.int2list(n_bytes)
-                        output.append(f"                frame_data[4] = {n_bytes_list[0]};")
-                        output.append(f"                frame_data[5] = {n_bytes_list[1]};")
-                        for vb in range(n_bytes):
-                            output.append(f"                frame_data[{6 + vb}] = 0; // data byte")
-                        for vn in range(self.signal_values):
-                            byte_n = vn // 8
-                            bn = vn - (byte_n * 8)
-                            value_name = f"{self.signal_name}_{vn}"
-                            output.append(f"                if (value_{value_name} == 1) {{")
-                            output.append(f"                    frame_data[{6 + (n_bytes - 1 - byte_n)}] |= (1<<{bn});")
-                            output.append("                }")
-                        output.append(f"                frame_len = {7 + vb};")
-
                     else:
                         output.append("                // set 16bit values")
-                        output.append(f"                frame_data[0] = {address};")
-                        output.append(f"                frame_data[1] = {ctype};")
-                        output.append(f"                frame_data[2] = {register[0]};")
-                        output.append(f"                frame_data[3] = {register[1]};")
-                        output.append(f"                frame_data[4] = {n_values[0]};")
-                        output.append(f"                frame_data[5] = {n_values[1]};")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    output.append(f"                frame_data[4] = {n_values[0]};")
+                    output.append(f"                frame_data[5] = {n_values[1]};")
+                    output.append("                frame_data[6] = 1;")
+                    if ctype == 15:
+                        output.append("                uint8_t bitvalues = 0;")
                         for vn in range(0, self.signal_values):
                             value_name = f"{self.signal_name}_{vn}"
-                            output.append(f"                frame_data[{5 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
-                            output.append(f"                frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
-                        output.append(f"                frame_len = {7 + vn * 2};")
+                            output.append(f"                if (value_{value_name} == 1) {{")
+                            output.append(f"                    bitvalues |= (1<<{vn});")
+                            output.append("                }")
+                        output.append("                frame_data[7] = bitvalues;")
+                        output.append("                frame_len = 8;")
+                    else:
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            output.append(f"                frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
+                            output.append(f"                frame_data[{7 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
+                        output.append(f"                frame_len = {8 + vn * 2};")
                 else:
                     if ctype == 5:
                         output.append("                // set coil value")

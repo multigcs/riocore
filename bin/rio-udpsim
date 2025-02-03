@@ -122,16 +122,6 @@ def receive(project):
             if plugin_instance.TYPE == "frameio":
                 data_config["value"] = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
 
-                # modbus test
-                if plugin_instance.NAME == "modbus":
-                    frame_len = data_config["value"][1]
-                    frame_data = data_config["value"][2:frame_len]
-                    frame_addr = frame_data[0]
-                    frame_function = frame_data[1]
-                    frame_register = frame_data[2:4]
-                    frame_reglen = frame_data[4:6]
-                    print("frame", frame_data, frame_addr, frame_function, frame_register, frame_reglen)
-
             elif variable_size > 1:
                 byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
                 if len(byte_pack) < 4:
