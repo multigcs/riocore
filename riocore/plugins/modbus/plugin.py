@@ -177,6 +177,9 @@ class Plugin(PluginBase):
                 if config["values"] > 1:
                     if ctype == 15 or (ctype == 6 and vformat == "b"):
                         n_bytes = (signal_values + 7) // 8
+                        if ctype == 6 and n_bytes == 1:
+                            # func:6 needs 16bit values
+                            n_bytes = 2
                         n_bytes_list = self.int2list(n_bytes)
                         byteslist = [0] * n_bytes
                         for vn in range(signal_values):
@@ -384,6 +387,9 @@ class Plugin(PluginBase):
                 if self.signal_values > 1:
                     if ctype == 15 or (ctype == 6 and vformat == "b"):
                         n_bytes = (self.signal_values + 7) // 8
+                        if ctype == 6 and n_bytes == 1:
+                            # func:6 needs 16bit values
+                            n_bytes = 2
                         n_bytes_list = self.int2list(n_bytes)
                         byteslist = [0] * n_bytes
                         for vn in range(self.signal_values):
@@ -606,6 +612,9 @@ class Plugin(PluginBase):
                         output.append(f"                frame_data[2] = {register[0]};")
                         output.append(f"                frame_data[3] = {register[1]};")
                         n_bytes = (self.signal_values + 7) // 8
+                        if ctype == 6 and n_bytes == 1:
+                            # func:6 needs 16bit values
+                            n_bytes = 2
                         n_bytes_list = self.int2list(n_bytes)
                         output.append(f"                frame_data[4] = {n_bytes_list[0]};")
                         output.append(f"                frame_data[5] = {n_bytes_list[1]};")
