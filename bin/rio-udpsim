@@ -126,12 +126,11 @@ def receive(project):
                 if plugin_instance.NAME == "modbus":
                     frame_len = data_config["value"][1]
                     frame_data = data_config["value"][2:frame_len]
-                    frame_addr = frame_data[0]
-                    frame_function = frame_data[1]
-                    frame_register = frame_data[2:4]
-                    frame_reglen = frame_data[4:6]
+                    # frame_addr = frame_data[0]
+                    # frame_function = frame_data[1]
+                    # frame_register = frame_data[2:4]
+                    # frame_reglen = frame_data[4:6]
                     print("# modbus output: ", frame_data)
-
 
             elif variable_size > 1:
                 byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
@@ -151,6 +150,7 @@ def receive(project):
                     stepper[f"{plugin_instance.instances_name}"] = 0
 
     return True
+
 
 def simulate(project):
     sysclk_speed = project.config["speed"]

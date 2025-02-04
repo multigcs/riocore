@@ -88,6 +88,18 @@ class Plugin(PluginBase):
                 config["instance"] = hy_vfd.hy_vfd(self.SIGNALS, signal_name, config)
                 if hasattr(config["instance"], "on_error"):
                     self.ON_ERROR_CMDS += config["instance"].on_error()
+            elif ctype == 201:
+                self.SIGNALS[signal_name] = {
+                    "direction": config["direction"],
+                    "unit": config.get("unit", ""),
+                    "scale": config.get("scale", 1.0),
+                    "format": config.get("format", "07d"),
+                    "plugin_setup": config,
+                    "min": 0,
+                    "max": 1,
+                    "bool": True,
+                    "display": {"section": "modbus", "title": signal_name.title()},
+                }
             else:
                 is_bool = False
                 if ctype in {2, 5, 15}:
@@ -159,15 +171,17 @@ class Plugin(PluginBase):
         for signal_name, config in self.plugin_setup.get("config", {}).items():
             n_values = config.get("values", 0)
             ctype = config["type"]
-            address = config["address"]
-            register = self.int2list(config["register"])
             error_values = config.get("error_values", "").strip().replace(",", " ").split()
-            n_values = self.int2list(len(error_values))
             direction = config["direction"]
             cmd = []
             if ctype == 101:
                 pass
+            elif ctype == 201:
+                pass
             elif direction == "output" and error_values:
+                address = config["address"]
+                register = self.int2list(config["register"])
+                n_values = self.int2list(len(error_values))
                 if config["values"] > 1:
                     if ctype == 15:
                         cmd = [address, ctype] + register + n_values + [1]
@@ -354,8 +368,26 @@ class Plugin(PluginBase):
             self.signal_active = 0
         signal_name = list(self.plugin_setup["config"])[self.signal_active]
         config = self.plugin_setup["config"][signal_name]
+
         if config["type"] == 101:
             cmd = config["instance"].frameio_tx(frame_ack, frame_timeout)
+
+        elif config["type"] == 201:
+            # custom boolean command
+            direction = config["direction"]
+            self.delay = config.get("delay", self.DELAY) * 2
+            self.timeout = config.get("timeout", self.TIMEOUT) + self.delay
+            address = config["address"]
+            custom_on = config["on"]
+            custom_off = config["off"]
+            self.signal_name = signal_name
+            self.signal_address = address
+            value = self.SIGNALS[signal_name]["value"]
+            if value == 1:
+                cmd = [address] + custom_on
+            else:
+                cmd = [address] + custom_off
+
         else:
             cmd = []
             direction = config["direction"]
@@ -533,13 +565,15 @@ class Plugin(PluginBase):
             address = signal_config["address"]
             ctype = signal_config["type"]
             self.signal_values = signal_config.get("values", 1)
-            register = self.int2list(signal_config["register"])
-            n_values = self.int2list(self.signal_values)
             self.signal_name = signal_name
             self.signal_address = address
             if ctype == 101:
                 pass
+            elif ctype == 201:
+                pass
             elif direction == "input":
+                register = self.int2list(signal_config["register"])
+                n_values = self.int2list(self.signal_values)
                 if self.signal_values > 1:
                     output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
                     for vn in range(0, self.signal_values):
@@ -572,18 +606,36 @@ class Plugin(PluginBase):
             ctype = signal_config["type"]
             self.signal_values = signal_config.get("values", 1)
             self.is_float = signal_config.get("is_float", False)
-            register = self.int2list(signal_config["register"])
-            n_values = self.int2list(self.signal_values)
             self.signal_name = signal_name
             self.signal_address = address
             output.append(f"            case {sn}: {{")
             output.append(f"                // {signal_name}")
             output.append(f"                delay = {delay};")
             output.append(f"                timeout = {timeout};")
+
             if ctype == 101:
                 output.append("                // handle hy_vfd")
                 output += signal_config["instance"].frameio_tx_c()
+
+            elif ctype == 201:
+                # custom boolean command
+                custom_on = signal_config["on"]
+                custom_off = signal_config["off"]
+                output.append("                // custom boolean command")
+                output.append(f"                frame_data[0] = {address};")
+                output.append(f"                if (value_{self.signal_name} == 1) {{")
+                for bn, cbyte in enumerate(custom_on):
+                    output.append(f"                    frame_data[{1 + bn}] = {cbyte};")
+                output.append(f"                    frame_len = {len(custom_on) + 1};")
+                output.append("                } else {")
+                for bn, cbyte in enumerate(custom_off):
+                    output.append(f"                    frame_data[{1 + bn}] = {cbyte};")
+                output.append(f"                    frame_len = {len(custom_on) + 1};")
+                output.append("                }")
+
             elif direction == "output":
+                register = self.int2list(signal_config["register"])
+                n_values = self.int2list(self.signal_values)
                 if self.signal_values > 1:
                     if ctype == 15:
                         output.append("                // set 1bit values")
@@ -633,6 +685,8 @@ class Plugin(PluginBase):
                         output.append(f"                frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
                     output.append("                frame_len = 6;")
             else:
+                register = self.int2list(signal_config["register"])
+                n_values = self.int2list(self.signal_values)
                 if self.is_float:
                     n_values = self.int2list(self.signal_values * 2)
                     output.append("                // request 32bit float value")
