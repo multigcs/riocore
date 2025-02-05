@@ -894,7 +894,7 @@ class Project:
             self.multiplexed_input_id = unpack("<i", bytes(byte_pack))[0]
             input_pos -= variable_size
 
-        if self.multiplexed_input:
+            # set mpx value
             mpxid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data():
                 multiplexed = data_config.get("multiplexed", False)
