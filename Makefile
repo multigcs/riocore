@@ -44,6 +44,8 @@ exifclean:
 	rm -rf riocore/modules/*/*.png_original
 	exiftool -all= riocore/plugins/i2cbus/devices/*/*.png
 	rm -rf riocore/plugins/i2cbus/devices/*/*.png_original
+	exiftool -all= riocore/plugins/modbus/images/*.png
+	rm -rf riocore/plugins/modbus/images/*.png_original
 
 pyvenv: clean dist
 	python3 -m venv pyvenv
