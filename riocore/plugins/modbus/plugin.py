@@ -107,6 +107,8 @@ class Plugin(PluginBase):
                     is_bool = True
                 elif ctype == 6 and datatype == "bool":
                     is_bool = True
+                    if n_values > 16:
+                        print("ERROR: modbus: you can use max 16 booleans with func:6")
                 if n_values > 1:
                     for vn in range(0, n_values):
                         value_name = f"{signal_name}_{vn}"
