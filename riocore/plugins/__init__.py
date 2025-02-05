@@ -225,7 +225,10 @@ class PluginBase:
         data = {}
         for name, setup in self.INTERFACE.items():
             if "value" not in setup:
-                setup["value"] = 0
+                if self.TYPE == "frameio":
+                    setup["value"] = [0]
+                else:
+                    setup["value"] = 0
             size = setup.get("size", 32)
             direction = setup["direction"].upper().replace("PUT", "")
             data[name] = setup

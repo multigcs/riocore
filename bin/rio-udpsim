@@ -119,16 +119,6 @@ def receive(project):
             if plugin_instance.TYPE == "frameio":
                 data_config["value"] = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
 
-                # modbus test
-                if plugin_instance.NAME == "modbus":
-                    frame_len = data_config["value"][1]
-                    frame_data = data_config["value"][2:frame_len]
-                    # frame_addr = frame_data[0]
-                    # frame_function = frame_data[1]
-                    # frame_register = frame_data[2:4]
-                    # frame_reglen = frame_data[4:6]
-                    print("# modbus output: ", frame_data)
-
             elif variable_size > 1:
                 byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
                 if len(byte_pack) < 4:
@@ -154,7 +144,13 @@ def display(project):
         if data_config["direction"] == "output":
             title = f"{plugin_instance.instances_name}.{data_name}"
             value = data_config["value"]
-            print(f">{title}: {value}")
+            if plugin_instance.NAME == "modbus":
+                frame_seq = value[0]
+                frame_len = value[1]
+                frame_data = value[2:frame_len]
+                print(f">{title}: {frame_seq:03d} {frame_data}")
+            else:
+                print(f">{title}: {value}")
     print("")
 
 
@@ -163,15 +159,29 @@ def simulate(project):
     duration = 1000
     for size, plugin_instance, data_name, data_config in project.get_interface_data():
         expansion = data_config.get("expansion", False)
-        if expansion:
-            continue
         multiplexed = data_config.get("multiplexed", False)
-        if multiplexed:
-            continue
-
         interface_data = plugin_instance.interface_data()
         # signal_config = plugin_instance.signals().get(data_name, {})
-        if plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
+
+        if plugin_instance.TYPE == "frameio" and data_config["direction"] == "output" and plugin_instance.NAME == "modbus":
+            frame_len = data_config["value"][1]
+            frame_data = data_config["value"][2:frame_len]
+
+            if data_config.get("last_frame", []) == data_config["value"]:
+                # delay the update to simulate modbus
+                seqn = interface_data["rxdata"]["value"][0]
+                response = frame_data
+                rlen = len(response)
+                rframe = [rlen] + response
+                if interface_data["rxdata"]["value"][1:] != rframe:
+                    seqn += 1
+                    if seqn > 255:
+                        seqn = 0
+                interface_data["rxdata"]["value"] = [seqn] + rframe
+
+            data_config["last_frame"] = data_config["value"]
+
+        elif plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
             if "velocity" in interface_data and interface_data["enable"]["value"]:
                 velocity = interface_data["velocity"]["value"]
                 if velocity != 0:
@@ -219,14 +229,17 @@ def transmit(project):
         multiplexed = data_config.get("multiplexed", False)
         if multiplexed:
             continue
-        variable_size = data_config["size"]
         if data_config["direction"] == "input" or data_config["direction"] == "inout":
+            variable_size = data_config["size"]
             value = data_config["value"]
             byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
             byte_start = project.buffer_bytes - 1 - byte_start
             if plugin_instance.TYPE == "frameio":
                 if not value:
                     value = [0] * byte_size
+                else:
+                    diff = byte_size - len(value)
+                    value += [0] * diff
                 txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
             elif variable_size > 1:
                 txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]

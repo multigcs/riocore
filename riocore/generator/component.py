@@ -210,7 +210,7 @@ class component:
         if protocol == "UDP":
             output.append("                if (ret != BUFFER_SIZE) {")
             output.append(
-                '                    rtapi_print("%i: wrong data size (%i %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
+                '                    rtapi_print("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
             )
             output.append("                } else {")
             output.append(
