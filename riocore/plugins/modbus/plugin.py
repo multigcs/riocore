@@ -465,6 +465,7 @@ class Plugin(PluginBase):
     def globals_c(self):
         output = []
         output.append(f"uint8_t {self.instances_name}_signal_active = 0;")
+        output.append(f"uint8_t {self.instances_name}_signal_next = 0;")
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
             ctype = signal_config["type"]
             if ctype == 101:
@@ -616,10 +617,66 @@ class Plugin(PluginBase):
             sn += 1
         output.append("        }")
         output.append("")
-        output.append(f"        if ({self.instances_name}_signal_active < {len(self.plugin_setup.get('config', {})) - 1}) {{")
-        output.append(f"            {self.instances_name}_signal_active++;")
-        output.append("        } else {")
-        output.append(f"            {self.instances_name}_signal_active = 0;")
+
+        output.append("        // check for changes on prio values")
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            priority = signal_config.get("priority", 0)
+            if priority > 0:
+                direction = signal_config["direction"]
+                signal_values = signal_config.get("values", 1)
+                self.is_float = signal_config.get("is_float", False)
+                dt_default = "int"
+                if self.is_float:
+                    dt_default = "float"
+                self.datatype = signal_config.get("datatype", dt_default)
+                ctype = "float"
+                if self.datatype == "bool":
+                    ctype = "bool"
+                if direction == "output":
+                    if signal_values > 1:
+                        for vn in range(0, signal_values):
+                            value_name = f"{signal_name}_{vn}"
+                            output.append(f"        static {ctype} last_value_{value_name} = 0;")
+                    else:
+                        output.append(f"        static {ctype} last_value_{signal_name} = 0;")
+
+        for prio in range(9, 0, -1):
+            sn = 0
+            for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+                priority = signal_config.get("priority", 0)
+                if prio == priority:
+                    direction = signal_config["direction"]
+                    ctype = signal_config["type"]
+                    signal_values = signal_config.get("values", 1)
+                    if direction == "output" and priority > 0:
+                        if signal_values > 1:
+                            priochecks = []
+                            for vn in range(0, signal_values):
+                                value_name = f"{signal_name}_{vn}"
+                                priochecks.append(f"last_value_{value_name} != value_{value_name}")
+                            output.append(f"        if ({' || '.join(priochecks)}) {{")
+                            for vn in range(0, signal_values):
+                                value_name = f"{signal_name}_{vn}"
+                                output.append(f"            last_value_{value_name} = value_{value_name};")
+                            output.append(f"            {self.instances_name}_signal_active = {sn};")
+                            output.append("        } else ")
+                        else:
+                            output.append(f"        if (last_value_{signal_name} != value_{signal_name}) {{")
+                            for vn in range(0, signal_values):
+                                value_name = f"{signal_name}_{vn}"
+                                output.append(f"            last_value_{signal_name} = value_{signal_name};")
+                            output.append(f"            {self.instances_name}_signal_active = {sn};")
+                            output.append("        } else ")
+
+                sn += 1
+
+        output.append("        {")
+        output.append(f"            if ({self.instances_name}_signal_next < {len(self.plugin_setup.get('config', {})) - 1}) {{")
+        output.append(f"                {self.instances_name}_signal_next++;")
+        output.append("            } else {")
+        output.append(f"                {self.instances_name}_signal_next = 0;")
+        output.append("            }")
+        output.append(f"            {self.instances_name}_signal_active = {self.instances_name}_signal_next;")
         output.append("        }")
         output.append("")
         output.append(f"        switch ({self.instances_name}_signal_active) {{")
@@ -631,6 +688,7 @@ class Plugin(PluginBase):
             address = signal_config["address"]
             ctype = signal_config["type"]
             self.signal_values = signal_config.get("values", 1)
+            self.priority = signal_config.get("priority", 0)
             self.is_float = signal_config.get("is_float", False)
             dt_default = "int"
             if self.is_float:
