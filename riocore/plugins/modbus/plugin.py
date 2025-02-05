@@ -84,6 +84,7 @@ class Plugin(PluginBase):
         for signal_name, config in self.plugin_setup.get("config", {}).items():
             n_values = config.get("values", 0)
             ctype = config["type"]
+            datatype = config.get("datatype", "int")
             if ctype == 101:
                 config["instance"] = hy_vfd.hy_vfd(self.SIGNALS, signal_name, config)
                 if hasattr(config["instance"], "on_error"):
@@ -103,6 +104,8 @@ class Plugin(PluginBase):
             else:
                 is_bool = False
                 if ctype in {2, 5, 15}:
+                    is_bool = True
+                elif ctype == 6 and datatype == "bool":
                     is_bool = True
                 if n_values > 1:
                     for vn in range(0, n_values):
@@ -301,7 +304,7 @@ class Plugin(PluginBase):
                                     print(f"ERROR: wrong address {address} != {signal_address}")
                                 elif direction == "input":
                                     vlen = 2
-                                    if self.is_float:
+                                    if self.datatype == "float":
                                         vlen = 4
                                     start_pos = 3 + vn * vlen
                                     if ctype == 2:
@@ -318,7 +321,7 @@ class Plugin(PluginBase):
                                         if value_list and len(value_list) == vlen:
                                             vscale = self.SIGNALS[value_name]["scale"]
                                             direction = self.SIGNALS[value_name]["direction"]
-                                            if self.is_float and value_list and len(value_list) == vlen:
+                                            if self.datatype == "float" and value_list and len(value_list) == vlen:
                                                 self.SIGNALS[value_name]["value"] = unpack(">f", bytearray(value_list))[0]
                                             else:
                                                 self.SIGNALS[value_name]["value"] = self.list2int(value_list)
@@ -337,7 +340,7 @@ class Plugin(PluginBase):
                             else:
                                 vscale = self.SIGNALS[self.signal_name]["scale"]
                                 direction = self.SIGNALS[self.signal_name]["direction"]
-                                if self.is_float:
+                                if self.datatype == "float":
                                     self.SIGNALS[self.signal_name]["value"] = unpack(">f", bytearray(frame_data[3:-2]))[0]
                                 else:
                                     self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
@@ -398,6 +401,10 @@ class Plugin(PluginBase):
             self.signal_name = signal_name
             self.signal_address = address
             self.is_float = config.get("is_float", False)
+            dt_default = "int"
+            if self.is_float:
+                dt_default = "float"
+            self.datatype = config.get("datatype", dt_default)
             self.signal_values = config.get("values", 1)
             register = self.int2list(config["register"])
             n_values = self.int2list(self.signal_values)
@@ -412,6 +419,20 @@ class Plugin(PluginBase):
                             if value == 1:
                                 bitvalues = bitvalues | (1 << vn)
                         cmd.append(bitvalues)
+
+                    elif ctype == 6 and self.datatype == "bool":
+                        cmd = [address, ctype] + register
+                        bitvalues = [0, 0]
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            value = self.SIGNALS[value_name]["value"]
+                            if value == 1:
+                                if vn < 8:
+                                    bitvalues[1] |= 1 << vn
+                                else:
+                                    bitvalues[0] |= 1 << (vn - 8)
+                        cmd += bitvalues
+
                     else:
                         cmd = [address, ctype] + register + n_values
                         for vn in range(0, self.signal_values):
@@ -424,7 +445,7 @@ class Plugin(PluginBase):
                         value *= 65280
                     cmd = [address, ctype] + register + self.int2list(value)
             else:
-                if self.is_float:
+                if self.datatype == "float":
                     n_values = self.int2list(self.signal_values * 2)
                     cmd = [address, ctype] + register + n_values
                 else:
@@ -468,6 +489,10 @@ class Plugin(PluginBase):
             ctype = signal_config["type"]
             vscale = signal_config.get("scale", 1.0)
             self.is_float = signal_config.get("is_float", False)
+            dt_default = "int"
+            if self.is_float:
+                dt_default = "float"
+            self.datatype = signal_config.get("datatype", dt_default)
             self.signal_values = signal_config.get("values", 1)
             self.signal_name = signal_name
             self.signal_address = address
@@ -485,7 +510,6 @@ class Plugin(PluginBase):
                         output.append(f"                    if (data_addr == {address} && data_len == 1) {{")
                         for vn in range(0, self.signal_values):
                             value_name = f"value_{self.signal_name}_{vn}"
-
                             output.append(f"                        if ((frame_data[3] & (1<<{vn})) != 0) {{")
                             output.append(f"                            {value_name} = 1;")
                             output.append("                        } else {")
@@ -511,7 +535,7 @@ class Plugin(PluginBase):
                         output.append(f"                        {value_name}_valid = 0;")
                     output.append("                    }")
                 else:
-                    if self.is_float:
+                    if self.datatype == "float":
                         output.append("                    // get single 32bit float value")
                         output.append("                    data_len = frame_data[2];")
                         output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 4}) {{")
@@ -606,6 +630,10 @@ class Plugin(PluginBase):
             ctype = signal_config["type"]
             self.signal_values = signal_config.get("values", 1)
             self.is_float = signal_config.get("is_float", False)
+            dt_default = "int"
+            if self.is_float:
+                dt_default = "float"
+            self.datatype = signal_config.get("datatype", dt_default)
             self.signal_name = signal_name
             self.signal_address = address
             output.append(f"            case {sn}: {{")
@@ -639,16 +667,13 @@ class Plugin(PluginBase):
                 if self.signal_values > 1:
                     if ctype == 15:
                         output.append("                // set 1bit values")
-                    else:
-                        output.append("                // set 16bit values")
-                    output.append(f"                frame_data[0] = {address};")
-                    output.append(f"                frame_data[1] = {ctype};")
-                    output.append(f"                frame_data[2] = {register[0]};")
-                    output.append(f"                frame_data[3] = {register[1]};")
-                    output.append(f"                frame_data[4] = {n_values[0]};")
-                    output.append(f"                frame_data[5] = {n_values[1]};")
-                    output.append("                frame_data[6] = 1;")
-                    if ctype == 15:
+                        output.append(f"                frame_data[0] = {address};")
+                        output.append(f"                frame_data[1] = {ctype};")
+                        output.append(f"                frame_data[2] = {register[0]};")
+                        output.append(f"                frame_data[3] = {register[1]};")
+                        output.append(f"                frame_data[4] = {n_values[0]};")
+                        output.append(f"                frame_data[5] = {n_values[1]};")
+                        output.append("                frame_data[6] = 1;")
                         output.append("                uint8_t bitvalues = 0;")
                         for vn in range(0, self.signal_values):
                             value_name = f"{self.signal_name}_{vn}"
@@ -657,7 +682,36 @@ class Plugin(PluginBase):
                             output.append("                }")
                         output.append("                frame_data[7] = bitvalues;")
                         output.append("                frame_len = 8;")
+
+                    elif ctype == 6 and self.datatype == "bool":
+                        output.append("                // set 1bit values")
+                        output.append(f"                frame_data[0] = {address};")
+                        output.append(f"                frame_data[1] = {ctype};")
+                        output.append(f"                frame_data[2] = {register[0]};")
+                        output.append(f"                frame_data[3] = {register[1]};")
+                        output.append("                uint8_t bitvalues[2] = {0, 0};")
+                        for vn in range(0, self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            output.append(f"                if (value_{value_name} == 1) {{")
+                            if vn < 8:
+                                output.append(f"                    bitvalues[1] |= (1<<{vn});")
+                            else:
+                                output.append(f"                    bitvalues[0] |= (1<<{vn - 8});")
+
+                            output.append("                }")
+                        output.append("                frame_data[4] = bitvalues[0];")
+                        output.append("                frame_data[5] = bitvalues[1];")
+                        output.append("                frame_len = 6;")
+
                     else:
+                        output.append("                // set 16bit values")
+                        output.append(f"                frame_data[0] = {address};")
+                        output.append(f"                frame_data[1] = {ctype};")
+                        output.append(f"                frame_data[2] = {register[0]};")
+                        output.append(f"                frame_data[3] = {register[1]};")
+                        output.append(f"                frame_data[4] = {n_values[0]};")
+                        output.append(f"                frame_data[5] = {n_values[1]};")
+                        output.append("                frame_data[6] = 1;")
                         for vn in range(0, self.signal_values):
                             value_name = f"{self.signal_name}_{vn}"
                             output.append(f"                frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
@@ -687,7 +741,7 @@ class Plugin(PluginBase):
             else:
                 register = self.int2list(signal_config["register"])
                 n_values = self.int2list(self.signal_values)
-                if self.is_float:
+                if self.datatype == "float":
                     n_values = self.int2list(self.signal_values * 2)
                     output.append("                // request 32bit float value")
                     output.append(f"                frame_data[0] = {address};")

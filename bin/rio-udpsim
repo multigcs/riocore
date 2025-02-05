@@ -158,8 +158,8 @@ def simulate(project):
     sysclk_speed = project.config["speed"]
     duration = 1000
     for size, plugin_instance, data_name, data_config in project.get_interface_data():
-        expansion = data_config.get("expansion", False)
-        multiplexed = data_config.get("multiplexed", False)
+        # expansion = data_config.get("expansion", False)
+        # multiplexed = data_config.get("multiplexed", False)
         interface_data = plugin_instance.interface_data()
         # signal_config = plugin_instance.signals().get(data_name, {})
 

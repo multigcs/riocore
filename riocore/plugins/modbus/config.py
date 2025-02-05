@@ -40,6 +40,7 @@ DEVICE_TEMPLATES = {
                 "type": 4,
                 "register": 0,
                 "is_float": True,
+                "datatype": "float",
                 "values": 1,
                 "scale": 1.0,
                 "unit": "V",
@@ -54,6 +55,7 @@ DEVICE_TEMPLATES = {
                 "type": 4,
                 "register": 8,
                 "is_float": True,
+                "datatype": "float",
                 "values": 1,
                 "scale": 1.0,
                 "unit": "A",
@@ -68,6 +70,7 @@ DEVICE_TEMPLATES = {
                 "type": 4,
                 "register": 18,
                 "is_float": True,
+                "datatype": "float",
                 "values": 1,
                 "scale": 1.0,
                 "unit": "W",
@@ -82,6 +85,7 @@ DEVICE_TEMPLATES = {
                 "type": 4,
                 "register": 42,
                 "is_float": True,
+                "datatype": "float",
                 "values": 1,
                 "scale": 1.0,
                 "unit": "Cos",
@@ -96,6 +100,7 @@ DEVICE_TEMPLATES = {
                 "type": 4,
                 "register": 54,
                 "is_float": True,
+                "datatype": "float",
                 "values": 1,
                 "scale": 1.0,
                 "unit": "Hz",
@@ -110,6 +115,7 @@ DEVICE_TEMPLATES = {
                 "type": 4,
                 "register": 256,
                 "is_float": True,
+                "datatype": "float",
                 "values": 1,
                 "scale": 1.0,
                 "unit": "kWh",
@@ -196,10 +202,11 @@ class config:
                 "default": 1,
                 "on_special": False,
             },
-            "is_float": {
-                "description": "data format is float (4byte)",
-                "type": bool,
-                "default": False,
+            "datatype": {
+                "description": "data format",
+                "type": "combo",
+                "options": ["float", "int", "bool"],
+                "default": "float",
                 "on_special": False,
             },
             "scale": {
@@ -255,7 +262,7 @@ class config:
                 value = data["default"]
             if data["type"] == "combo":
                 for n in range(0, data["widget"].count()):
-                    if data["widget"].itemText(n).startswith(f"{value} "):
+                    if data["widget"].itemText(n) == value or data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
             elif data["type"] is bool:
                 data["widget"].setChecked(value)
@@ -328,7 +335,7 @@ class config:
                 value = self.config[config_name].get(name, data["default"])
             if data["type"] == "combo":
                 for n in range(0, data["widget"].count()):
-                    if data["widget"].itemText(n).startswith(f"{value} "):
+                    if data["widget"].itemText(n) == value or data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
             elif data["type"] is bool:
                 data["widget"].setChecked(value)
