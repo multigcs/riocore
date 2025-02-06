@@ -365,7 +365,7 @@ class edit_bool(QCheckBox):
 
 
 class edit_combobox(QComboBox):
-    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None):
+    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, need_enter=False):
         super().__init__()
         self.win = win
         self.cb = cb
@@ -395,7 +395,11 @@ class edit_combobox(QComboBox):
                 print(f"ERROR: {default} is not a option")
         else:
             self.setCurrentIndex(options.index(""))
-        self.editTextChanged.connect(self.change)
+        if need_enter:
+            self.currentIndexChanged.connect(self.change)
+            self.textActivated.connect(self.change)
+        else:
+            self.editTextChanged.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
 
     def wheelEvent(self, *args, **kwargs):

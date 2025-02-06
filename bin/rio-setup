@@ -488,6 +488,13 @@ class TabSignals:
             for signal_name, signal_config in plugin_instance.signals().items():
                 signal_direction = signal_config["direction"]
                 signal_halname = signal_config["halname"]
+
+                if "signals" not in plugin_instance.setup_object:
+                    plugin_instance.setup_object["signals"] = {}
+                if signal_name not in plugin_instance.setup_object["signals"]:
+                    plugin_instance.setup_object["signals"][signal_name] = {}
+                setup_object = plugin_instance.setup_object["signals"][signal_name]
+
                 is_bool = signal_config.get("bool", False)
                 htype = "bit" if is_bool else "float"
 
@@ -504,7 +511,7 @@ class TabSignals:
                 elif signal_setp:
                     key = "setp"
 
-                options_net = []
+                options_net = [""]
                 for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
                     if is_bool:
                         if halpin_info.get("type") is bool:
@@ -512,7 +519,7 @@ class TabSignals:
                     elif halpin_info.get("type") is not bool:
                         options_net.append(halpin)
 
-                options_func = []
+                options_func = [""]
                 for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
                     if is_bool:
                         if halpin_info.get("type") is bool:
@@ -521,11 +528,11 @@ class TabSignals:
                         options_func.append(halpin)
 
                 if key == "function":
-                    widget = self.parent.edit_item(userconfig, "function", {"type": "select", "options": options_func, "default": ""}, cb=self.sig_edit_cb)
+                    widget = self.parent.edit_item(setup_object, "function", {"type": "select", "options": options_func, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                 elif key == "setp":
-                    widget = self.parent.edit_item(userconfig, "setp", {"type": str, "default": ""}, cb=self.sig_edit_cb)
+                    widget = self.parent.edit_item(setup_object, "setp", {"type": str, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                 else:
-                    widget = self.parent.edit_item(userconfig, "net", {"type": "select", "options": options_net, "default": ""}, cb=self.sig_edit_cb)
+                    widget = self.parent.edit_item(setup_object, "net", {"type": "select", "options": options_net, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
 
                 table_data.append(
                     (f"rio.{signal_halname}", {"output": "<-", "input": "->", "inout": "<->"}.get(signal_direction, signal_direction), signal_net, htype, key, plugin_instance, signal_name, widget)
@@ -2214,13 +2221,13 @@ class WinForm(QWidget):
         self.struct_clean(config)
         return config
 
-    def edit_item(self, obj, key, var_setup=None, cb=None, help_text=None):
+    def edit_item(self, obj, key, var_setup=None, cb=None, help_text=None, need_enter=False):
         if var_setup is None:
             var_setup = {}
         if help_text is None:
             help_text = var_setup.get("help_text", var_setup.get("description"))
         if var_setup["type"] == "select":
-            return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"))
+            return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
         elif var_setup["type"] is int:
             return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] is float:

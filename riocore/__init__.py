@@ -112,6 +112,7 @@ class Plugins:
 
             if plugin_type in self.plugin_modules:
                 plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
+                plugin_instance.setup_object = plugin_config
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
                         if pin_config["pin"] == "" or pin_config["pin"] is None:
