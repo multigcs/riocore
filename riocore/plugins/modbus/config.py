@@ -640,3 +640,19 @@ class config:
         if dialog.exec():
             self.instance.plugin_setup["config"] = self.config
             return ""
+
+
+if __name__ == "__main__":
+    import json
+    import sys
+    from PyQt5.QtWidgets import QApplication
+
+    app = QApplication(sys.argv)
+
+    class mock_instance:
+        plugin_setup = {}
+
+    instance = mock_instance()
+    config_gui = config(instance)
+    config_gui.run()
+    print(json.dumps(instance.plugin_setup, indent=4))
