@@ -18,6 +18,8 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
+    QWidget,
+    QTabWidget,
 )
 
 
@@ -25,9 +27,22 @@ DEVICE_TEMPLATES = {
     "NT18B07": {
         "image": "NT18B07.jpg",
         "info": "7x Temperature Input (NTC)",
-        "comment": "",
+        "comment": "7channel Temperature sensors",
         "setup": {
-            "temp7": {"address": 18, "type": 3, "register": 0, "values": 2, "scale": 0.1, "unit": "\u00b0C", "error_values": "", "format": "0.1f", "timeout": 100, "delay": 60, "direction": "input"},
+            "temp7": {
+                "address": 18,
+                "type": 3,
+                "register": 0,
+                "values": 2,
+                "scale": 0.1,
+                "unit": "\u00b0C",
+                "error_values": "",
+                "format": "0.1f",
+                "datatype": "int",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "input",
+            },
         },
     },
     "N4D3E16": {
@@ -92,7 +107,7 @@ DEVICE_TEMPLATES = {
     "DDS519MR": {
         "image": "DDS519MR.jpg",
         "info": "Energie-Meter",
-        "comment": "needs to change serial setup (Parity: even -> none)",
+        "comment": "you have to change serial setup (Parity: even -> none)",
         "setup": {
             "voltage": {
                 "address": 16,
@@ -182,8 +197,8 @@ DEVICE_TEMPLATES = {
     },
     "EBYTE MA01-AXCX4020": {
         "image": "MA01-AXCX4020.jpg",
-        "info": "4x Digital In / 2x Digital Out (Relais)",
-        "comment": "",
+        "info": "4 x Digital In + 2 x Digital Out",
+        "comment": "4x Digital In / 2x Digital Out (Relais)",
         "setup": {
             "do2": {
                 "address": 11,
@@ -218,8 +233,8 @@ DEVICE_TEMPLATES = {
     },
     "EBYTE MA01-XACX0440": {
         "image": "MA01-XACX0440.jpg",
-        "info": "4x Analog-In (0-20mA) / 4x Digital-Out (Relais)",
-        "comment": "",
+        "info": "4 x Analog In + 4 x Digital Out",
+        "comment": "4x Analog-In (0-20mA) / 4x Digital-Out (Relais)",
         "setup": {
             "do4": {
                 "address": 32,
@@ -277,6 +292,7 @@ class config:
                 "type": str,
                 "description": "Value-Name",
                 "default": "",
+                "tab": "general",
             },
             "address": {
                 "description": "Slave-Address",
@@ -284,12 +300,14 @@ class config:
                 "min": 1,
                 "max": 253,
                 "default": 1,
+                "tab": "general",
             },
             "type": {
                 "description": "Function-Code",
                 "type": "combo",
                 "options": [],
                 "default": "",
+                "tab": "general",
             },
             "register": {
                 "description": "start register",
@@ -298,6 +316,7 @@ class config:
                 "max": 65534,
                 "default": 0,
                 "on_special": False,
+                "tab": "general",
             },
             "values": {
                 "description": "number of values",
@@ -306,6 +325,7 @@ class config:
                 "max": 16,
                 "default": 1,
                 "on_special": False,
+                "tab": "general",
             },
             "datatype": {
                 "description": "data format",
@@ -313,6 +333,7 @@ class config:
                 "options": ["float", "int", "bool"],
                 "default": "float",
                 "on_special": False,
+                "tab": "general",
             },
             "scale": {
                 "description": "Value-Scale",
@@ -320,24 +341,28 @@ class config:
                 "decimals": 6,
                 "default": 1.0,
                 "on_special": False,
+                "tab": "misc",
             },
             "unit": {
                 "description": "Unit-String",
                 "type": str,
                 "default": "",
                 "on_special": False,
+                "tab": "misc",
             },
             "error_values": {
                 "description": "default values on connection error",
                 "type": str,
                 "default": "",
                 "on_special": False,
+                "tab": "misc",
             },
             "format": {
                 "description": "Display-Format",
                 "type": str,
                 "default": "d",
                 "on_special": False,
+                "tab": "misc",
             },
             "timeout": {
                 "description": "response timeout",
@@ -345,6 +370,7 @@ class config:
                 "min": 100,
                 "max": 100000,
                 "default": 100,
+                "tab": "misc",
             },
             "delay": {
                 "description": "Delay after receive (free bus)",
@@ -352,6 +378,7 @@ class config:
                 "min": 0,
                 "max": 1000,
                 "default": 60,
+                "tab": "misc",
             },
             "priority": {
                 "description": "output priority / change detection",
@@ -359,6 +386,7 @@ class config:
                 "min": 0,
                 "max": 9,
                 "default": 0,
+                "tab": "misc",
             },
         }
 
@@ -485,9 +513,17 @@ class config:
                 image.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio))
             template_name.setText(selected)
             info.setText(device_data["info"])
-            description_text = f"{device_data['comment']}\n\n{json.dumps(device_data['setup'], indent=4)}"
+
+            description_text = [device_data["comment"]]
+            description_text.append("")
+            for name, data in device_data["setup"].items():
+                description_text.append(f"{name}:")
+                description_text.append(f"  func: {data['type']} ({self.fc_mapping.get(data['type'], ['???'])[0]})")
+                description_text.append(f"  register: {data.get('register')} values: {data.get('values')} type: {data.get('datatype')}")
+                description_text.append("")
+
             description.clear()
-            description.insertPlainText(description_text)
+            description.insertPlainText("\n".join(description_text))
 
         infotext = ""
         descriptiontext = ""
@@ -499,11 +535,13 @@ class config:
         if self.styleSheet:
             dialog.setStyleSheet(self.styleSheet)
 
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog.buttonBox.rejected.connect(dialog.reject)
         dialog.layout = QVBoxLayout()
         hlayout = QHBoxLayout()
         vlayout_left = QVBoxLayout()
+        vlayout_right = QVBoxLayout()
 
         message = QLabel("Template-Name:")
         vlayout_left.addWidget(message)
@@ -511,21 +549,13 @@ class config:
         table = QTableWidget()
         table.setColumnCount(1)
         table.setHorizontalHeaderItem(0, QTableWidgetItem("Templates"))
-
         table.setRowCount(len(DEVICE_TEMPLATES))
-
         for row, device in enumerate(DEVICE_TEMPLATES):
             pitem = QTableWidgetItem(device)
             table.setItem(row, 0, pitem)
 
         table.setFixedWidth(200)
         vlayout_left.addWidget(table)
-
-        image = QLabel()
-        image.setFixedWidth(200)
-        image.setFixedHeight(200)
-
-        vlayout_left.addWidget(image)
 
         vlayout = QVBoxLayout()
         template_name = QLabel("")
@@ -543,9 +573,19 @@ class config:
         hlayout.addLayout(vlayout)
         dialog.layout.addLayout(hlayout)
         table.cellClicked.connect(change)
+        table.currentCellChanged.connect(change)
+
+        image = QLabel()
+        image.setFixedWidth(200)
+        image.setFixedHeight(200)
+        vlayout_right.addWidget(image, stretch=0)
+        vlayout_right.addStretch()
+        hlayout.addLayout(vlayout_right)
 
         dialog.layout.addWidget(dialog.buttonBox)
         dialog.setLayout(dialog.layout)
+
+        change(0, 0)
 
         if dialog.exec():
             template = template_name.text()
@@ -563,12 +603,18 @@ class config:
         dialog.setWindowTitle("Modbus-Configuration")
         dialog.setMinimumWidth(800)
         dialog.setMinimumHeight(600)
-        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
+        dialog.buttonBox.rejected.connect(dialog.reject)
 
         dialog.layout = QVBoxLayout()
         hlayout = QHBoxLayout()
+        dialog.layout.addLayout(hlayout)
+
         vlayout_left = QVBoxLayout()
+        hlayout.addLayout(vlayout_left)
+        vlayout_right = QVBoxLayout()
+        hlayout.addLayout(vlayout_right)
 
         message = QLabel("Modbus-Values:")
         vlayout_left.addWidget(message)
@@ -577,12 +623,24 @@ class config:
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setHorizontalHeaderLabels(["Name", "Addr", "Val's", "Type"])
         self.tableWidget.cellClicked.connect(self.table_select)
+        self.tableWidget.currentCellChanged.connect(self.table_select)
         self.table_load()
-
         vlayout_left.addWidget(self.tableWidget)
-        edit_layout = QGridLayout()
 
-        row_n = 0
+        tabwidget = QTabWidget()
+        tab_genearal_layout = QVBoxLayout()
+        tab_general_widget = QWidget()
+        tab_general_widget.setLayout(tab_genearal_layout)
+        tab_misc_layout = QVBoxLayout()
+        tab_misc_widget = QWidget()
+        tab_misc_widget.setLayout(tab_misc_layout)
+        tabwidget.addTab(tab_general_widget, "General")
+        tabwidget.addTab(tab_misc_widget, "Misc")
+        vlayout_right.addWidget(tabwidget)
+
+        button_layout = QGridLayout()
+        vlayout_right.addLayout(button_layout)
+
         for name, data in self.widgets.items():
             if data["type"] == "combo":
                 data["widget"] = QComboBox()
@@ -605,31 +663,30 @@ class config:
             else:
                 data["widget"] = QLineEdit(data["default"])
             data["widget"].setToolTip(data["description"])
+            value_layout = QHBoxLayout()
+            value_layout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"))
+            value_layout.addWidget(data["widget"])
 
-            edit_layout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"), row_n, 1)
-            edit_layout.addWidget(data["widget"], row_n, 2)
-            row_n += 1
+            if data["tab"] == "general":
+                tab_genearal_layout.addLayout(value_layout)
+            else:
+                tab_misc_layout.addLayout(value_layout)
 
         button_add = QPushButton("New")
         button_add.clicked.connect(self.add_item)
-        edit_layout.addWidget(button_add, row_n, 1)
+        button_layout.addWidget(button_add, 0, 1)
 
         button_save = QPushButton("Save")
         button_save.clicked.connect(self.save_item)
-        edit_layout.addWidget(button_save, row_n, 2)
+        button_layout.addWidget(button_save, 0, 2)
 
         button_del = QPushButton("Remove")
         button_del.clicked.connect(self.del_item)
-        edit_layout.addWidget(button_del, row_n + 1, 1)
+        button_layout.addWidget(button_del, 1, 1)
 
         button_template = QPushButton("Template")
         button_template.clicked.connect(self.select_template)
-        edit_layout.addWidget(button_template, row_n + 1, 2)
-
-        hlayout.addLayout(vlayout_left)
-        hlayout.addLayout(edit_layout)
-
-        dialog.layout.addLayout(hlayout)
+        button_layout.addWidget(button_template, 1, 2)
 
         dialog.layout.addWidget(dialog.buttonBox)
         dialog.setLayout(dialog.layout)
@@ -650,7 +707,26 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     class mock_instance:
-        plugin_setup = {}
+        plugin_setup = {
+            "config": {
+                "do4": {
+                    "address": 32,
+                    "type": 15,
+                    "register": 0,
+                    "values": 4,
+                    "scale": 1.0,
+                    "unit": "",
+                    "error_values": "",
+                    "format": "d",
+                    "timeout": 100,
+                    "delay": 60,
+                    "datatype": "bool",
+                    "direction": "output",
+                    "priority": 5,
+                },
+                "ain": {"address": 32, "type": 4, "register": 0, "values": 4, "delay": 100, "scale": 0.0061, "unit": "mA", "format": "04.1f", "datatype": "bool", "direction": "input"},
+            }
+        }
 
     instance = mock_instance()
     config_gui = config(instance)
