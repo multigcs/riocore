@@ -220,6 +220,51 @@ class Plugin(PluginBase):
         self.signal_values = 0
         self.signal_name = None
 
+    def cfggraph(self, title, gAll):
+        lcports = []
+        signalports = []
+
+        addresses = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            address = signal_defaults.get("plugin_setup", {}).get("address")
+            if address and address not in addresses:
+                addresses.append(address)
+
+        for address in addresses:
+            signalports.append(f"<device_{address}>DEVICE{address}")
+            gAll.edge(f"{title}:device_{address}", f"{title}_device_{address}:conn", dir="normal", color="white", fontcolor="white")
+            dev_title = f"{title}_device_{address}"
+            devports = []
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                dev_address = signal_defaults.get("plugin_setup", {}).get("address")
+                if dev_address != address:
+                    continue
+                devports.append(f"<signal_{signal_name}>{signal_name}")
+                # signalports.append(f"<signal_{signal_name}>{signal_name}")
+                signal_config = self.plugin_setup.get("signals", {}).get(signal_name)
+                if signal_config:
+                    net = signal_config.get("net")
+                    function = signal_config.get("function")
+                    signal_direction = self.SIGNALS.get(signal_name, {}).get("direction")
+                    direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
+                    if function:
+                        gAll.edge(f"{dev_title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                        lcports.append(f"<{function}>{function}")
+                    if net:
+                        gAll.edge(f"{dev_title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                        lcports.append(f"<{net}>{net}")
+
+            gAll.node(
+                dev_title,
+                shape="record",
+                label=f"{{ <conn>DEVICE{address} | {{ {'|'.join(devports)} }} }}",
+                fontsize="11pt",
+                style="rounded, filled",
+                fillcolor="lightblue",
+            )
+
+        return (lcports, signalports)
+
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
