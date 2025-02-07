@@ -357,8 +357,88 @@ graph LR;
             for key, ifaces in i2c_dev.SIGNALS.items():
                 if not expansion:
                     self.SIGNALS[key] = ifaces
+                    if setup["subbus"]:
+                        self.SIGNALS[key]["device_id"] = f"{name}({setup['address']})"
+                    else:
+                        self.SIGNALS[key]["device_id"] = f"{name}({setup['subbus']}-{setup['address']})"
+                    self.SIGNALS[key]["subbus"] = setup["subbus"]
 
         self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
+
+    def cfggraph(self, title, gAll):
+        lcports = []
+        signalports = []
+        sub_title = f"{title}_mpx"
+        signalports.append("<bus>I2C")
+
+        subs = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            sub = signal_defaults.get("subbus")
+            if sub != "none" and sub not in subs:
+                subid = f"<sub{sub}>sub{sub}"
+                if subid not in subs:
+                    subs.append(subid)
+
+        if subs:
+            gAll.edge(f"{title}:bus", f"{sub_title}:conn", dir="normal", color="white", fontcolor="white")
+            gAll.node(
+                sub_title,
+                shape="record",
+                label=f"{{ <conn>Multiplexer | {{ {'|'.join(subs)} }} }}",
+                fontsize="11pt",
+                style="rounded, filled",
+                fillcolor="lightblue",
+            )
+
+        devices = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            device_id = signal_defaults.get("device_id")
+            if device_id and device_id not in devices:
+                devices.append(device_id)
+
+        for device in devices:
+            sub = None
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                device_id = signal_defaults.get("device_id")
+                if device_id != device:
+                    continue
+                sub = signal_defaults.get("subbus")
+                break
+            if sub and sub != "none":
+                gAll.edge(f"{sub_title}:sub{sub}", f"{title}_device_{device}:conn", dir="normal", color="white", fontcolor="white")
+            else:
+                gAll.edge(f"{title}:bus", f"{title}_device_{device}:conn", dir="normal", color="white", fontcolor="white")
+            dev_title = f"{title}_device_{device}"
+            devports = []
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                sub = signal_defaults.get("subbus")
+                device_id = signal_defaults.get("device_id")
+                if device_id != device:
+                    continue
+                devports.append(f"<signal_{signal_name}>{signal_name}")
+                signal_config = self.plugin_setup.get("signals", {}).get(signal_name)
+                if signal_config:
+                    net = signal_config.get("net")
+                    function = signal_config.get("function")
+                    signal_direction = self.SIGNALS.get(signal_name, {}).get("direction")
+                    direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
+                    if function:
+                        gAll.edge(f"{dev_title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                        lcports.append(f"<{function}>{function}")
+                    if net:
+                        gAll.edge(f"{dev_title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                        lcports.append(f"<{net}>{net}")
+
+            gAll.node(
+                dev_title,
+                shape="record",
+                label=f"{{ <conn>{device} | {{ {'|'.join(devports)} }} }}",
+                fontsize="11pt",
+                style="rounded, filled",
+                fillcolor="lightblue",
+            )
+
+        return (lcports, signalports)
 
     def add_steps(self, setup, steps):
         verilog_data = []
