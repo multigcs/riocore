@@ -436,6 +436,12 @@ class TabSignals:
                     is_bool = signal_config.get("bool", False)
                     htype = "bit" if is_bool else "float"
 
+                    if "signals" not in plugin_instance.setup_object:
+                        plugin_instance.setup_object["signals"] = {}
+                    if signal_name not in plugin_instance.setup_object["signals"]:
+                        plugin_instance.setup_object["signals"][signal_name] = {}
+                    setup_object = plugin_instance.setup_object["signals"][signal_name]
+
                     if "userconfig" not in signal_config:
                         signal_config["userconfig"] = {}
                     userconfig = signal_config["userconfig"]
@@ -474,11 +480,11 @@ class TabSignals:
                             options_func.append(halpin)
 
                     if key == "function":
-                        widget = self.parent.edit_item(userconfig, "function", {"type": "select", "options": options_func, "default": ""}, cb=self.sig_edit_cb)
+                        widget = self.parent.edit_item(setup_object, "function", {"type": "select", "options": options_func, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                     elif key == "setp":
-                        widget = self.parent.edit_item(userconfig, "setp", {"type": str, "default": ""}, cb=self.sig_edit_cb)
+                        widget = self.parent.edit_item(setup_object, "setp", {"type": str, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                     else:
-                        widget = self.parent.edit_item(userconfig, "net", {"type": "select", "options": options_net, "default": ""}, cb=self.sig_edit_cb)
+                        widget = self.parent.edit_item(setup_object, "net", {"type": "select", "options": options_net, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
 
                     table_data.append(
                         (f"rio.{signal_halname}", {"output": "<-", "input": "->", "inout": "<->"}.get(signal_direction, signal_direction), signal_net, htype, key, plugin_instance, signal_name, widget)
@@ -2003,10 +2009,14 @@ class WinForm(QWidget):
 
         # loading slot/module configs
         self.modules = {}
-        for module in self.config.get("modules", []):
+        if "modules" not in self.config:
+            self.config["modules"] = []
+        for m_num, module in enumerate(self.config["modules"]):
             slot_name = module.get("slot")
             module_name = module.get("module")
-            module_setup = module.get("setup", {})
+            if "setup" not in module:
+                self.config["modules"][m_num]["setup"] = {}
+            module_setup = module["setup"]
             module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
             moduleJsonStr = open(module_path, "r").read()
             module_defaults = json.loads(moduleJsonStr)
@@ -2055,7 +2065,6 @@ class WinForm(QWidget):
                 uid = f"{uid_prefix}{unum}"
                 plugin_config["uid"] = uid
             self.plugin_uids.append(uid)
-
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
 
         self.items = {}
