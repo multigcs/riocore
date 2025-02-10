@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.9.2
+
+...
+
+
 ## v0.9.1
 
 ### Gui and Generator
