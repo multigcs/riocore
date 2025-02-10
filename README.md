@@ -110,7 +110,7 @@ Using a TangNano9k or other board supported by the open-cad-suite? Check out the
 
 you can edit your configuration file by hand (text-editor) or using the setup tool (rio-setup):
 ```
-PYTHONPATH=. bin/rio-setup my_config.json
+bin/rio-setup my_config.json
 ```
 
 ![basic setup](./doc/images/basic_setup.png)
@@ -126,7 +126,7 @@ you can also do this things on your console:
 
 generate:
 ```
-PYTHONPATH=. bin/rio-generator my_config.json
+bin/rio-generator my_config.json
 ```
 ```
 loading: my_config.json
