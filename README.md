@@ -68,10 +68,18 @@ list of all  toolchains: [TOOLCHAINS](riocore/generator/toolchains/README.md)
 
 ## Getting Started <a name = "getting_started"></a>
 
-There are 2 ways of getting started. 
+There are multiple ways of getting started. 
 
- 1. Install riocore on the linux  [host](#host).
- 2. Use [docker](DOCKER.md).
+ 1. Installer-Script (debian-bookworm only)  [installer](#installer).
+ 2. Install riocore on the linux  [host](#host).
+ 3. Use [docker](DOCKER.md).
+
+### Installer-Script (debian-bookworm only) <a name = "installer"></a>
+if you have a Debian-Bookworm installation (e.g. from the LinuxCNC ISO or the LinuxCNC raspberry image)
+you can simply use this script to install all depends and the icestorm and gowin toolchain (gowin only on Intel/AMD)
+```
+wget -O- https://www.multixmedia.org/riocore-installer.sh | bash
+```
 
 ### Install ricore on the host <a name = "host"></a>
 

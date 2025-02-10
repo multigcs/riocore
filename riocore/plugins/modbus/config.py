@@ -466,7 +466,10 @@ class config:
         self.tableWidget.resizeColumnToContents(3)
 
     def table_select(self, item):
-        config_name = self.tableWidget.item(item, 0).text()
+        table_item = self.tableWidget.item(item, 0)
+        if not table_item:
+                return
+        config_name = table_item.text()
         self.config_selected = config_name
         for name, data in self.widgets.items():
             if name == "name":
