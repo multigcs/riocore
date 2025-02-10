@@ -3,11 +3,11 @@
 ## v0.9.1
 
 ### Gui and Generator
-* better Windows support
 * support for gladevcp, pyvcp, qtpyvcp, qtvcp
 * some little fixes and improvements
 * adding support for virtual pins
 * now you can use the same input pin in multiple plugins
+* now runs partially on Windows/MacOS (not realy supported)
 
 ### Plugins
 * new plugin: [i2cbus](riocore/plugins/i2cbus/README.md) (i2c bus support with some device drivers)
