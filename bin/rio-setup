@@ -10,23 +10,39 @@ import importlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
 from functools import partial
 
-if os.path.isfile("./riocore/__init__.py"):
-    sys.path.insert(0, "./")
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
 
-import graphviz
 import riocore
+from riocore import VERSION
 from riocore import halpins
 
+from riocore import cfggraph
 from riocore import axisgraph
 from riocore import halgraph
 from riocore import vcp
-from riocore.plugins import Modifiers
-from riocore.widgets import MyQSvgWidget, MyQLabel, MyStandardItem, edit_float, edit_int, edit_text, edit_bool, edit_combobox, STYLESHEET, STYLESHEET_CHECKBOX_GREEN_RED, STYLESHEET_BUTTON
+from riocore.modifiers import Modifiers
+from riocore.widgets import (
+    MyQSvgWidget,
+    MyQLabel,
+    MyStandardItem,
+    edit_float,
+    edit_int,
+    edit_text,
+    edit_bool,
+    edit_combobox,
+    edit_avgfilter,
+    STYLESHEET,
+    STYLESHEET_CHECKBOX_GREEN_RED,
+    STYLESHEET_BUTTON,
+    STYLESHEET_TABBAR,
+)
 
 
 from PyQt5 import QtSvg
@@ -59,6 +75,68 @@ from PyQt5.QtWidgets import (
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
+
+
+def md2label(text):
+    hlist = False
+    table = False
+    formated = []
+    table_format = []
+    for line in text.split("\n"):
+        if not formated and not line.strip():
+            continue
+        elif not formated:
+            formated.append("<html>\n")
+
+        if line.startswith("#"):
+            formated.append(f"<h3>{line.strip('#')}<h3><br/>\n")
+        elif line.startswith("* "):
+            if not hlist:
+                formated.append("<ul>\n")
+            formated.append(f"<li>{line[2:]}</li>\n")
+            hlist = True
+        elif line.startswith("|"):
+            cols = line.split("|")[1:-1]
+            if not table:
+                table_format = []
+                formated.append("<table border='1'>\n")
+            elif not table_format:
+                table_format = cols
+                continue
+            formated.append(" <tr>")
+            for col_n, col in enumerate(cols):
+                if not table:
+                    formated.append(f"<th>{col.strip()}</th>")
+                else:
+                    col = col.strip()
+                    if col and col[0] == "[" and col[-1] == ")" and "](" in col:
+                        col = col.split("]")[0][1:]
+                    if table_format[col_n].strip() == ":---:":
+                        formated.append(f"<td align='center'>{col.strip()}</td>")
+                    elif table_format[col_n].strip() == "---:":
+                        formated.append(f"<td align='right'>{col.strip()}</td>")
+                    else:
+                        formated.append(f"<td>{col.strip()}</td>")
+            formated.append("</tr>\n")
+            table = True
+        else:
+            if hlist:
+                hlist = False
+                formated.append("</ul>\n")
+            elif table:
+                table = False
+                formated.append("</table>\n")
+            if not line.strip():
+                formated.append("<br/>\n")
+            else:
+                for ch in line:
+                    if ch == " ":
+                        formated.append("&nbsp;")
+                    else:
+                        break
+                formated.append(f"{line}<br/>\n")
+    formated.append("\n</html>\n")
+    return "".join(formated)
 
 
 class PinButton(QPushButton):
@@ -250,6 +328,7 @@ class TabLinuxCNC:
             "riocomp.c": QPlainTextEdit(),
         }
         self.linuxcnc_tabwidget = QTabWidget()
+        self.linuxcnc_tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         for filename, widget in self.linuxcnc.items():
             widget.clear()
             widget.insertPlainText("")
@@ -268,7 +347,7 @@ class TabLinuxCNC:
         config_name = self.parent.config.get("name")
         for filename, widget in self.linuxcnc.items():
             widget.clear()
-            file_path = f"{self.parent.output_path}/{config_name}/LinuxCNC/{filename}"
+            file_path = os.path.join(self.parent.output_path, config_name, "LinuxCNC", filename)
             if os.path.isfile(file_path):
                 file_content = open(file_path, "r").read()
                 widget.insertPlainText(file_content)
@@ -287,6 +366,7 @@ class TabGateware:
             "Flash-Output": QPlainTextEdit(),
         }
         self.gateware_tabwidget = QTabWidget()
+        self.gateware_tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         for filename, widget in self.gateware.items():
             widget.clear()
             widget.insertPlainText("")
@@ -306,12 +386,14 @@ class TabGateware:
 
         for filename, widget in self.gateware.items():
             if not filename.endswith("-Output"):
-                file_content = open(f"{self.parent.output_path}/{config_name}/Gateware/{filename}", "r").read()
+                file_content = open(os.path.join(self.parent.output_path, config_name, "Gateware", filename), "r").read()
                 widget.clear()
                 widget.insertPlainText(file_content)
                 if filename == "rio.v":
                     hash_md5 = hashlib.md5()
-                    hash_md5.update(file_content.encode())
+                    with open(os.path.join(self.parent.output_path, config_name, "Gateware", filename), "rb") as f:
+                        for chunk in iter(lambda: f.read(4096), b""):
+                            hash_md5.update(chunk)
                     self.parent.gateware_hash = hash_md5.hexdigest()
 
 
@@ -354,6 +436,12 @@ class TabSignals:
                     is_bool = signal_config.get("bool", False)
                     htype = "bit" if is_bool else "float"
 
+                    if "signals" not in plugin_instance.setup_object:
+                        plugin_instance.setup_object["signals"] = {}
+                    if signal_name not in plugin_instance.setup_object["signals"]:
+                        plugin_instance.setup_object["signals"][signal_name] = {}
+                    setup_object = plugin_instance.setup_object["signals"][signal_name]
+
                     if "userconfig" not in signal_config:
                         signal_config["userconfig"] = {}
                     userconfig = signal_config["userconfig"]
@@ -392,11 +480,11 @@ class TabSignals:
                             options_func.append(halpin)
 
                     if key == "function":
-                        widget = self.parent.edit_item(userconfig, "function", {"type": "select", "options": options_func, "default": ""}, cb=self.sig_edit_cb)
+                        widget = self.parent.edit_item(setup_object, "function", {"type": "select", "options": options_func, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                     elif key == "setp":
-                        widget = self.parent.edit_item(userconfig, "setp", {"type": str, "default": ""}, cb=self.sig_edit_cb)
+                        widget = self.parent.edit_item(setup_object, "setp", {"type": str, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                     else:
-                        widget = self.parent.edit_item(userconfig, "net", {"type": "select", "options": options_net, "default": ""}, cb=self.sig_edit_cb)
+                        widget = self.parent.edit_item(setup_object, "net", {"type": "select", "options": options_net, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
 
                     table_data.append(
                         (f"rio.{signal_halname}", {"output": "<-", "input": "->", "inout": "<->"}.get(signal_direction, signal_direction), signal_net, htype, key, plugin_instance, signal_name, widget)
@@ -406,6 +494,13 @@ class TabSignals:
             for signal_name, signal_config in plugin_instance.signals().items():
                 signal_direction = signal_config["direction"]
                 signal_halname = signal_config["halname"]
+
+                if "signals" not in plugin_instance.setup_object:
+                    plugin_instance.setup_object["signals"] = {}
+                if signal_name not in plugin_instance.setup_object["signals"]:
+                    plugin_instance.setup_object["signals"][signal_name] = {}
+                setup_object = plugin_instance.setup_object["signals"][signal_name]
+
                 is_bool = signal_config.get("bool", False)
                 htype = "bit" if is_bool else "float"
 
@@ -422,7 +517,7 @@ class TabSignals:
                 elif signal_setp:
                     key = "setp"
 
-                options_net = []
+                options_net = [""]
                 for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
                     if is_bool:
                         if halpin_info.get("type") is bool:
@@ -430,7 +525,7 @@ class TabSignals:
                     elif halpin_info.get("type") is not bool:
                         options_net.append(halpin)
 
-                options_func = []
+                options_func = [""]
                 for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
                     if is_bool:
                         if halpin_info.get("type") is bool:
@@ -439,11 +534,11 @@ class TabSignals:
                         options_func.append(halpin)
 
                 if key == "function":
-                    widget = self.parent.edit_item(userconfig, "function", {"type": "select", "options": options_func, "default": ""}, cb=self.sig_edit_cb)
+                    widget = self.parent.edit_item(setup_object, "function", {"type": "select", "options": options_func, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                 elif key == "setp":
-                    widget = self.parent.edit_item(userconfig, "setp", {"type": str, "default": ""}, cb=self.sig_edit_cb)
+                    widget = self.parent.edit_item(setup_object, "setp", {"type": str, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
                 else:
-                    widget = self.parent.edit_item(userconfig, "net", {"type": "select", "options": options_net, "default": ""}, cb=self.sig_edit_cb)
+                    widget = self.parent.edit_item(setup_object, "net", {"type": "select", "options": options_net, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
 
                 table_data.append(
                     (f"rio.{signal_halname}", {"output": "<-", "input": "->", "inout": "<->"}.get(signal_direction, signal_direction), signal_net, htype, key, plugin_instance, signal_name, widget)
@@ -643,6 +738,7 @@ class TabHal:
     def __init__(self, parent=None):
         self.parent = parent
         self.hal_img = MyQSvgWidget()
+        self.graph = halgraph.HalGraph()
 
     def widget(self):
         return self.hal_img
@@ -652,7 +748,7 @@ class TabHal:
 
     def update(self):
         config_name = self.parent.config.get("name")
-        svg_data = halgraph.HalGraph(f"{self.parent.output_path}/{config_name}/LinuxCNC/rio.ini").svg()
+        svg_data = self.graph.svg(os.path.join(self.parent.output_path, config_name, "LinuxCNC", "rio.ini"))
         if svg_data:
             self.hal_img.load(svg_data)
 
@@ -661,6 +757,7 @@ class TabAxis:
     def __init__(self, parent=None):
         self.parent = parent
         self.hal_img = MyQSvgWidget()
+        self.graph = axisgraph.AxisGraph()
 
     def widget(self):
         return self.hal_img
@@ -670,8 +767,8 @@ class TabAxis:
 
     def update(self):
         config_name = self.parent.config.get("name")
-        config_folder = f"{self.parent.output_path}/{config_name}/LinuxCNC"
-        svg_data = axisgraph.AxisGraph(f"{config_folder}/rio.hal", f"{config_folder}/rio.ini").svg()
+        config_folder = os.path.join(self.parent.output_path, config_name, "LinuxCNC")
+        svg_data = self.graph.svg(os.path.join(config_folder, "rio.hal"), os.path.join(config_folder, "rio.ini"))
         if svg_data:
             self.hal_img.load(svg_data)
 
@@ -685,7 +782,7 @@ class TabOverview:
         self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_widget.setWidgetResizable(True)
         self.scroll_widget.setWidget(self.overview_img)
-        self.map = None
+        self.graph = cfggraph.ConfigGraph(parent)
 
     def widget(self):
         return self.scroll_widget
@@ -694,300 +791,12 @@ class TabOverview:
         pass
 
     def update(self):
-        num = 0
-        fpga_name = f"{self.parent.config.get('boardcfg')}"
-
-        gAll = graphviz.Digraph("G", format="png")
-        gAll.attr(rankdir="LR")
-        gAll.attr(bgcolor="black")
-
-        lcports = []
-        sports = []
-
-        # show slots
-        for slot in self.parent.slots:
-            slot_name = slot.get("name")
-            slot_pins = slot.get("pins", {})
-            mportsl = []
-            mportsr = []
-            for pin_name, pin in slot_pins.items():
-                if isinstance(pin, dict):
-                    pin = pin["pin"]
-                pin_id = f"{slot_name}_{pin_name}"
-                mportsl.append(f"<{pin}>{pin}")
-                mportsr.append(f"<{pin_id}>{pin_name}")
-
-            label = f"{{ {{{' | '.join(mportsl)}}} | {slot_name} | {{{' | '.join(mportsr)}}} }}"
-            sports.append(label)
-
-        joint_n = 0
-        for plugin_instance in self.parent.plugins.plugin_instances:
-            pports = []
-            name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
-            title = plugin_instance.NAME
-            if name:
-                title = f"{name} ({plugin_instance.NAME})"
-
-            if plugin_instance.TYPE == "expansion":
-                title = plugin_instance.expansion_prefix
-
-            for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
-                pports.append(f"<{pin_name}>{pin_name}")
-                if not pin_setup and pin_defaults.get("optional") is True:
-                    continue
-                if "pin" not in pin_setup and pin_defaults.get("optional") is True:
-                    continue
-                pin = pin_setup.get("pin")
-                if not pin:
-                    continue
-
-                con_dev = fpga_name
-                con_pin = pin
-
-                if pin and pin in self.parent.expansion_pins:
-                    con_dev = "_".join(pin.split("_")[0:-1])
-                    con_pin = pin.replace("[", "").replace("]", "")
-
-                if ":" in con_pin:
-                    con_pin = con_pin.replace(":", "_")
-
-                if pin_defaults["direction"] == "input":
-                    modifiers = pin_setup.get("modifier", [])
-                    color = "green"
-                    arrow_dir = "forward"
-                else:
-                    modifiers = pin_setup.get("modifier", [])
-                    if modifiers:
-                        modifiers = reversed(modifiers)
-                    color = "red"
-                    arrow_dir = "back"
-
-                if modifiers:
-                    modifier_chain = []
-                    for modifier_num, modifier in enumerate(modifiers):
-                        modifier_type = modifier["type"]
-                        modifier_chain.append(modifier_type)
-                    modifier_label = f"{{ <l> | {' | '.join(modifier_chain)} | <r> }}"
-                    gAll.edge(f"{con_dev}:{con_pin}", f"{name}_{pin_name}_{modifier_type}_{modifier_num}:l", dir=arrow_dir, color=color)
-                    con_dev = f"{name}_{pin_name}_{modifier_type}_{modifier_num}"
-                    con_pin = "r"
-                    gAll.node(
-                        f"{name}_{pin_name}_{modifier_type}_{modifier_num}",
-                        shape="record",
-                        label=modifier_label,
-                        fontsize="11pt",
-                        style="rounded, filled",
-                        fillcolor="lightyellow",
-                    )
-
-                gAll.edge(f"{con_dev}:{con_pin}", f"{title}:{pin_name}", dir=arrow_dir, color=color)
-
-                if pin and ":" not in pin and pin not in self.parent.expansion_pins:
-                    sports.append(f"<{pin}>{pin}")
-
-                num += 1
-
-            signalports = []
-            for signal_name, signal_config in plugin_instance.plugin_setup.get("signals", {}).items():
-                net = signal_config.get("net")
-                function = signal_config.get("function")
-                signalports.append(f"<signal_{signal_name}>{signal_name}")
-                signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
-                direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
-
-                if not net and not function and plugin_instance.plugin_setup.get("is_joint", False):
-                    if signal_name == "position" and signal_direction == "input":
-                        hal_pin = f"joint.{joint_n}.motor-pos-fb"
-                        gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
-                        lcports.append(f"<{hal_pin}>{hal_pin}")
-                    elif signal_name == "position" and signal_direction == "output":
-                        hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                        gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                        lcports.append(f"<{hal_pin}>{hal_pin}")
-                    elif signal_name == "velocity":
-                        hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                        gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                        lcports.append(f"<{hal_pin}>{hal_pin}")
-
-                if function:
-                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                    lcports.append(f"<{function}>{function}")
-                if net:
-                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                    lcports.append(f"<{net}>{net}")
-
-            if plugin_instance.TYPE == "expansion":
-                eports = []
-                for pname in plugin_instance.expansion_outputs():
-                    eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
-                for pname in plugin_instance.expansion_inputs():
-                    eports.append(f"<{pname.replace('[', '').replace(']', '')}>{pname}")
-
-                label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(eports)}}} }}"
-
-            elif signalports:
-                label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(signalports)}}} }}"
-            else:
-                label = f"{{ {{{' | '.join(pports)}}} | {title} }}"
-
-            gAll.node(
-                title,
-                shape="record",
-                label=label,
-                fontsize="11pt",
-                style="rounded, filled",
-                fillcolor="lightblue",
-                URL=f"instance:{name.replace(' ', '#')}",
-            )
-
-            if plugin_instance.plugin_setup.get("is_joint", False):
-                joint_n += 1
-
-        for module_data in self.parent.config.get("modules", []):
-            slot_name = module_data.get("slot")
-            module_name = module_data.get("module")
-            title = slot_name
-            if module_name:
-                title = f"{module_name} ({title})"
-
-            for plugin_instance in self.parent.modules[slot_name]["instances"]:
-                pports = []
-                name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
-                title = plugin_instance.NAME
-                if name:
-                    title = f"{name} ({plugin_instance.NAME})"
-                for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                    pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
-                    if "pin_mapped" not in pin_setup:
-                        continue
-
-                    pin = f"{slot_name}_{pin_setup['pin_mapped']}"
-                    con_dev = fpga_name
-                    con_pin = pin
-
-                    if pin and pin in self.parent.expansion_pins:
-                        con_dev = "_".join(pin.split("_")[0:-1])
-                        con_pin = pin.replace("[", "").replace("]", "")
-
-                    if pin_defaults["direction"] == "input":
-                        modifiers = pin_setup.get("modifier", [])
-                        color = "green"
-                        arrow_dir = "forward"
-                    else:
-                        modifiers = pin_setup.get("modifier", [])
-                        if modifiers:
-                            modifiers = reversed(modifiers)
-                        color = "red"
-                        arrow_dir = "back"
-
-                    if modifiers:
-                        modifier_chain = []
-                        for modifier_num, modifier in enumerate(modifiers):
-                            modifier_type = modifier["type"]
-                            modifier_chain.append(modifier_type)
-                        modifier_label = f"{{ <l> | {' | '.join(modifier_chain)} | <r> }}"
-                        gAll.edge(f"{con_dev}:{con_pin}", f"{name}_{pin_name}_{modifier_type}_{modifier_num}:l", dir=arrow_dir, color=color)
-                        con_dev = f"{name}_{pin_name}_{modifier_type}_{modifier_num}"
-                        con_pin = "r"
-                        gAll.node(
-                            f"{name}_{pin_name}_{modifier_type}_{modifier_num}",
-                            shape="record",
-                            label=modifier_label,
-                            fontsize="11pt",
-                            style="rounded, filled",
-                            fillcolor="lightyellow",
-                        )
-
-                    gAll.edge(f"{con_dev}:{con_pin}", f"{title}:{pin_name}", dir=arrow_dir, color=color)
-                    pports.append(f"<{pin_name}>{pin_name}")
-
-                signalports = []
-                for signal_name, signal_config in plugin_instance.plugin_setup.get("signals", {}).items():
-                    net = signal_config.get("net")
-                    function = signal_config.get("function")
-                    signalports.append(f"<signal_{signal_name}>{signal_name}")
-                    signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
-                    direction_mapping = {"input": "forward", "output": "back", "inout": "both"}
-
-                    if not net and not function and plugin_instance.plugin_setup.get("is_joint", False):
-                        if signal_name == "position" and signal_direction == "input":
-                            hal_pin = f"joint.{joint_n}.motor-pos-fb"
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
-                            lcports.append(f"<{hal_pin}>{hal_pin}")
-                        elif signal_name == "position" and signal_direction == "output":
-                            hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                            lcports.append(f"<{hal_pin}>{hal_pin}")
-                        elif signal_name == "velocity":
-                            hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                            gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                            lcports.append(f"<{hal_pin}>{hal_pin}")
-
-                    if function:
-                        gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                        lcports.append(f"<{function}>{function}")
-                    if net:
-                        gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
-                        lcports.append(f"<{net}>{net}")
-
-                if signalports:
-                    label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(signalports)}}} }}"
-                else:
-                    label = f"{{ {{{' | '.join(pports)}}} | {title} }}"
-                gAll.node(
-                    title,
-                    shape="record",
-                    label=label,
-                    fontsize="11pt",
-                    style="rounded, filled",
-                    fillcolor="lightblue",
-                    URL=f"instance:{name.replace(' ', '#')}",
-                )
-
-                if plugin_instance.plugin_setup.get("is_joint", False):
-                    joint_n += 1
-
-        label = f"{{ {{ {fpga_name}\\nPhysical-Pins | {' | '.join(sports)}}} }}"
-        gAll.node(f"{fpga_name}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-
-        label = f"{{ {{ LinuxCNC\\nHAL-Pins | {' | '.join(lcports)}}} }}"
-        gAll.node(
-            "hal",
-            shape="record",
-            label=label,
-            fontsize="11pt",
-            style="rounded, filled",
-            fillcolor="lightgreen",
-        )
-
-        self.map = {}
-        for line in gAll.pipe(format="imap").decode().split("\n"):
-            if line.startswith("rect "):
-                parts = line.split()
-                instance = parts[1].split(":")[1].replace("#", " ")
-                begin = parts[2].split(",")
-                end = parts[3].split(",")
-                self.map[instance] = (int(begin[0]), int(begin[1]), int(end[0]), int(end[1]))
-
-        png_data = gAll.pipe()
-        self.overview_img.load(png_data)
+        png_data = self.graph.png()
+        if png_data:
+            self.overview_img.load(png_data)
 
     def on_click(self, x, y):
-        for instance, pos in self.map.items():
-            if x >= pos[0] and x <= pos[2] and y >= pos[1] and y <= pos[3]:
-                for plugin_instance in self.parent.plugins.plugin_instances:
-                    name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
-                    if name == instance:
-                        self.parent.edit_plugin(plugin_instance, None, is_new=False)
-                        return
-                for module_data in self.parent.config.get("modules", []):
-                    slot_name = module_data.get("slot")
-                    for plugin_instance in self.parent.modules[slot_name]["instances"]:
-                        name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
-                        if name == instance:
-                            self.parent.edit_plugin(plugin_instance, None, is_new=False)
-                            return
+        self.graph.on_click(x, y)
 
 
 class TabJson:
@@ -1051,7 +860,7 @@ class TabBoard:
         self.pinlabels = {}
 
         pinimage = self.parent.board.get("pinimage", "board.png")
-        pinimage_path = f"{self.parent.boardcfg_path}/{pinimage}"
+        pinimage_path = os.path.join(self.parent.boardcfg_path, pinimage)
         if not pinimage or not os.path.isfile(pinimage_path):
             if self.parent.tabwidget.tabText(0) == "Board":
                 self.parent.tabwidget.removeTab(0)
@@ -1247,7 +1056,7 @@ class WinForm(QWidget):
         self.setLayout(layout)
 
         splitter = QSplitter(Qt.Horizontal)
-        layout.addWidget(splitter)
+        layout.addWidget(splitter, stretch=1)
 
         self.treeview = QTreeView()
         splitter.addWidget(self.treeview)
@@ -1272,8 +1081,8 @@ class WinForm(QWidget):
         else:
             if os.path.isfile(args.config):
                 self.config_file = args.config
-            elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
-                self.config_file = f"{riocore_path}/configs/{args.config}"
+            elif os.path.isfile(os.path.join(riocore_path, "configs", args.config)):
+                self.config_file = os.path.join(riocore_path, "configs", args.config)
             else:
                 print(f"can not load: {args.config}")
                 exit(1)
@@ -1285,6 +1094,7 @@ class WinForm(QWidget):
             self.vcp = None
 
         self.tabwidget = QTabWidget()
+        self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         splitter.addWidget(self.tabwidget)
 
         self.gateware_hash = None
@@ -1310,12 +1120,12 @@ class WinForm(QWidget):
 
         container = QWidget()
         button_layout = QHBoxLayout(container)
-        layout.addWidget(container)
+        layout.addWidget(container, stretch=0)
 
         info_container = QWidget()
         info_layout = QHBoxLayout(info_container)
         self.info_widget = QLabel("loading...")
-        layout.addWidget(info_container)
+        layout.addWidget(info_container, stretch=0)
 
         info_layout.addWidget(self.info_widget)
         info_layout.addStretch()
@@ -1383,9 +1193,12 @@ class WinForm(QWidget):
             button_layout.addWidget(button)
 
         self.addons = {}
-        for addon_path in sorted(glob.glob(f"{riocore_path}/generator/addons/*/config.py")):
-            addon_name = addon_path.split("/")[-2]
-            self.addons[addon_name] = importlib.import_module(".config", f"riocore.generator.addons.{addon_name}")
+        for addon_path in sorted(glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "config.py"))):
+            addon_name = addon_path.split(os.sep)[-2]
+            try:
+                self.addons[addon_name] = importlib.import_module(".config", f"riocore.generator.addons.{addon_name}")
+            except Exception as err:
+                print(f"ERROR: loading {addon_name}: {err}")
 
         self.json_load()
         self.config_original = self.clean_config(self.config)
@@ -1409,11 +1222,58 @@ class WinForm(QWidget):
         self.treeview.resize(tree_width, win_height)
         splitter.setSizes((tree_width, img_width))
 
+        self.show()
+
         self.generate_cb(preview=True)
+        self.tabs["Overview"].update()
         self.check_status()
+
+        self.startup_dialog_timer = 0
+        # self.startup_window_show()
+
+        if args.expand:
+            self.load_tree(args.expand)
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(1000)
+        self.timer.start(2000)
+
+    def startup_window_show(self):
+        self.startup_dialog = QDialog()
+        self.startup_dialog.setWindowTitle("Wellcome")
+        self.startup_dialog.setMinimumWidth(320)
+        self.startup_dialog.setMinimumHeight(160)
+        self.startup_dialog.setStyleSheet(STYLESHEET)
+
+        hlayout = QHBoxLayout()
+        self.startup_dialog.setLayout(hlayout)
+
+        vlayout = QVBoxLayout()
+        hlayout.addLayout(vlayout)
+
+        label = QLabel("LinuxCNC - RIO")
+        label.setFont(QFont("Arial", 16))
+        vlayout.addWidget(label)
+        vlayout.addStretch()
+
+        label = QLabel(f"v {VERSION.VERSION}")
+        label.setFont(QFont("Arial", 12))
+        vlayout.addWidget(label)
+
+        label = QLabel("GPL-2.0 license ")
+        label.setFont(QFont("Arial", 12))
+        vlayout.addWidget(label)
+
+        hlayout.addStretch()
+
+        label = QLabel()
+        pixmap = QPixmap(os.path.join(riocore_path, "files", "rio-logo-128x128.png"))
+        label.setPixmap(pixmap)
+        hlayout.addWidget(label)
+
+        self.startup_dialog_timer = 2
+
+        self.startup_dialog.show()
 
     def select_board(self):
         def load_config_from():
@@ -1422,7 +1282,7 @@ class WinForm(QWidget):
             name = file_dialog.getOpenFileName(
                 self,
                 "Load Config",
-                f"{riocore_path}/configs/",
+                os.path.join(riocore_path, "configs"),
                 f"config ( {' '.join(suffix_list)} )" "Load Config",
                 "",
             )
@@ -1434,18 +1294,18 @@ class WinForm(QWidget):
             board_path = board_list[idx]
             board_folder = None
             if board_path.endswith(".json"):
-                board_name = board_path.split("/")[-1].replace(".json", "")
+                board_name = board_path.split(os.sep)[-1].replace(".json", "")
             else:
-                board_name = board_path.split("/")[-1]
+                board_name = board_path.split(os.sep)[-1]
                 board_folder = board_path
-                board_path = f"{board_path}/board.json"
+                board_path = os.path.join(board_path, "board.json")
 
             board_raw = open(board_path, "r").read()
             board_config = json.loads(board_raw)
 
             if board_folder:
                 pinimage = board_config.get("pinimage", "board.png")
-                image_path = f"{board_folder}/{pinimage}"
+                image_path = os.path.join(board_folder, pinimage)
                 if os.path.isfile(image_path):
                     pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
                     image_label.setPixmap(pixmap)
@@ -1484,14 +1344,14 @@ class WinForm(QWidget):
 
         board_list = []
         board_n = 0
-        for path in sorted(glob.glob(f"{riocore_path}/boards/*")):
+        for path in sorted(glob.glob(os.path.join(riocore_path, "boards", "*"))):
             if path.endswith(".json"):
-                board_name = path.split("/")[-1].replace(".json", "")
+                board_name = path.split(os.sep)[-1].replace(".json", "")
             else:
-                if not os.path.isfile(f"{path}/board.json"):
+                if not os.path.isfile(os.path.join(path, "board.json")):
                     print(f"WARNING: can not found board.json in {path}")
                     continue
-                board_name = path.split("/")[-1]
+                board_name = path.split(os.sep)[-1]
             board_table.setRowCount(board_n + 1)
             board_list.append(path)
             pitem = QTableWidgetItem(board_name)
@@ -1558,22 +1418,24 @@ class WinForm(QWidget):
             self.button_generate.setEnabled(True)
 
             # checking generated config
-            if os.path.isfile(f"Output/{config_name}/.config.json"):
-                ret = os.system(f"diff {self.config_file} Output/{config_name}/.config.json >/dev/null")
-            else:
-                ret = 1
-            if ret == 0:
-                self.info_generated.setChecked(True)
-                self.button_generate.setStyleSheet("background-color: green;")
-                self.button_compile.setEnabled(True)
-            else:
+            path_config_json = os.path.join("Output", config_name, ".config.json")
+            diffs = True
+            if os.path.isfile(path_config_json) and os.path.isfile(self.config_file):
+                old = open(self.config_file, "r").read()
+                new = open(path_config_json, "r").read()
+                diffs = old != new
+            if diffs:
                 self.info_generated.setChecked(False)
                 self.button_generate.setStyleSheet("background-color: red;")
                 self.button_compile.setEnabled(False)
+            else:
+                self.info_generated.setChecked(True)
+                self.button_generate.setStyleSheet("background-color: green;")
+                self.button_compile.setEnabled(True)
 
         # checking gateware
         hash_compiled = ""
-        hash_compiled_file = f"Output/{config_name}/Gateware/hash_compiled.txt"
+        hash_compiled_file = os.path.join("Output", config_name, "Gateware", "hash_compiled.txt")
         if os.path.isfile(hash_compiled_file):
             hash_compiled = open(hash_compiled_file, "r").read()
         if hash_compiled == self.gateware_hash:
@@ -1586,7 +1448,7 @@ class WinForm(QWidget):
             self.button_flash.setEnabled(False)
 
         hash_flashed = ""
-        hash_flashed_file = f"Output/{config_name}/Gateware/hash_flashed.txt"
+        hash_flashed_file = os.path.join("Output", config_name, "Gateware", "hash_flashed.txt")
         if os.path.isfile(hash_flashed_file):
             hash_flashed = open(hash_flashed_file, "r").read()
         if hash_flashed == self.gateware_hash:
@@ -1597,6 +1459,11 @@ class WinForm(QWidget):
             self.button_flash.setStyleSheet("background-color: red;")
 
     def runTimer(self):
+        if self.startup_dialog_timer > 1:
+            self.startup_dialog_timer -= 1
+        elif self.startup_dialog_timer == 1:
+            self.startup_dialog.hide()
+
         for tab in self.tabs:
             self.tabs[tab].timer()
 
@@ -1604,6 +1471,7 @@ class WinForm(QWidget):
             self.request_generate -= 1
         elif self.request_generate == 1:
             self.generate_cb(preview=True)
+            self.tabs["Overview"].update()
             self.request_generate = 0
 
         if self.request_load_tree > 1:
@@ -1631,11 +1499,11 @@ class WinForm(QWidget):
         if self.compile_sub is not None:
             widget = self.tabs["Gateware"].gateware["Compile-Output"]
             config_name = self.config.get("name")
-            log_path = f"Output/{config_name}/Gateware/compile.log"
+            log_path = os.path.join("Output", config_name, "Gateware", "compile.log")
             if os.path.isfile(log_path):
                 logdata = open(log_path, "r").read()
             else:
-                logdata = f"logfile not found: {logdata}"
+                logdata = f"logfile not found: {log_path}"
             widget.clear()
             duration = time.time() - self.compile_start
 
@@ -1658,11 +1526,11 @@ class WinForm(QWidget):
         if self.flash_sub is not None:
             widget = self.tabs["Gateware"].gateware["Flash-Output"]
             config_name = self.config.get("name")
-            log_path = f"Output/{config_name}/Gateware/flash.log"
+            log_path = os.path.join("Output", config_name, "Gateware", "flash.log")
             if os.path.isfile(log_path):
                 logdata = open(log_path, "r").read()
             else:
-                logdata = f"logfile not found: {logdata}"
+                logdata = f"logfile not found: {log_path}"
             widget.clear()
             duration = time.time() - self.flash_start
 
@@ -1728,18 +1596,16 @@ class WinForm(QWidget):
     def get_path(self, path):
         if os.path.exists(path):
             return path
-        elif os.path.exists(f"{riocore_path}/{path}"):
-            return f"{riocore_path}/{path}"
-        elif os.path.exists(f"{riocore_path}/{path}"):
-            return f"{riocore_path}/{path}"
+        elif os.path.exists(os.path.join(riocore_path, path)):
+            return os.path.join(riocore_path, path)
         print(f"can not find path: {path}")
         exit(1)
 
     def get_boardpath(self, board):
         pathes = [
             f"{board}.json",
-            f"{riocore_path}/boards/{board}.json",
-            f"{riocore_path}/boards/{board}/board.json",
+            os.path.join(riocore_path, "boards", f"{board}.json"),
+            os.path.join(riocore_path, "boards", board, "board.json"),
         ]
         for path in pathes:
             if os.path.exists(path):
@@ -1748,11 +1614,11 @@ class WinForm(QWidget):
         exit(1)
 
     def testgui(self):
-        print("starting testgui..", f"{os.path.dirname(__file__)}/rio-test")
+        testgui_path = os.path.join(os.path.dirname(__file__), "rio-test")
+        print(f"starting testgui.. ({testgui_path})")
         filename = f"{self.config_file}.test-gui-temp.json"
         self.save_config(filename)
-        testgui_path = f"{os.path.dirname(__file__)}/rio-test"
-        os.system(f"({testgui_path} {filename} ; rm {filename}) &")
+        os.system(f"({sys.executable} {testgui_path} {filename} ; rm {filename}) &")
 
     def add_plugin(self, pin_id, slot_name=None):
         boardcfg = self.config.get("boardcfg")
@@ -1867,8 +1733,8 @@ class WinForm(QWidget):
                 return
 
             plugin_name = plugin_table.item(idx, 0).text()
-            plugin_path = f"{riocore_path}/plugins/{plugin_name}"
-            image_path = f"{plugin_path}/image.png"
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+            image_path = os.path.join(plugin_path, "image.png")
             if os.path.isfile(image_path):
                 pixmap = QPixmap(image_path)
                 image_label.setPixmap(pixmap)
@@ -1888,6 +1754,12 @@ class WinForm(QWidget):
             for signal_name, signal_info in plugin_infos[plugin_name]["signals"].items():
                 description += f"  {signal_name}: {signal_info['direction']}\n"
 
+            try:
+                description = md2label(description)
+            except Exception as error:
+                print(f"ERROR: formating description: {error}")
+                print(description)
+
             description_label.setText(description)
             dialog.selected = plugin_name
 
@@ -1902,6 +1774,8 @@ class WinForm(QWidget):
                 plugin_table.setRowCount(row + 1)
                 plugin_table.setItem(row, 0, pitem)
                 row += 1
+            if row > 0:
+                show_plugin_info(0)
 
         plugin_table = QTableWidget()
         plugin_table.setColumnCount(1)
@@ -1918,7 +1792,7 @@ class WinForm(QWidget):
 
         mid_layout = QVBoxLayout()
         mid_widget = QWidget()
-        mid_widget.setFixedWidth(400)
+        mid_widget.setMinimumWidth(400)
         mid_widget.setLayout(mid_layout)
         name_label = QLabel("name")
         name_label_font = QFont()
@@ -1929,8 +1803,13 @@ class WinForm(QWidget):
         info_label = QLabel("info")
         mid_layout.addWidget(info_label)
         description_label = QLabel("description")
-        mid_layout.addWidget(description_label)
-        mid_layout.addStretch()
+        description_label.setAlignment(Qt.AlignTop)
+        description_scroll = QScrollArea()
+        description_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        description_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        description_scroll.setWidgetResizable(True)
+        description_scroll.setWidget(description_label)
+        mid_layout.addWidget(description_scroll, stretch=1)
 
         right_layout = QVBoxLayout()
         right_widget = QWidget()
@@ -1945,13 +1824,12 @@ class WinForm(QWidget):
         plugin_search = QLineEdit("")
         plugin_search.textChanged.connect(search)
         left_layout.addWidget(plugin_search)
-        left_layout.addWidget(plugin_table)
-        left_layout.addStretch()
+        left_layout.addWidget(plugin_table, stretch=1)
 
         infos = QHBoxLayout()
-        infos.addWidget(left_widget, stretch=1)
+        infos.addWidget(left_widget, stretch=0)
         infos.addWidget(mid_widget, stretch=3)
-        infos.addWidget(right_widget, stretch=1)
+        infos.addWidget(right_widget, stretch=0)
 
         dialog.layout.addLayout(infos)
         dialog.layout.addWidget(dialog_buttonBox)
@@ -1966,8 +1844,16 @@ class WinForm(QWidget):
                     "pins": {},
                 }
             )
-
             plugin_config = self.config["plugins"][plugin_id]
+
+            uid_prefix = plugin_config["type"]
+            unum = 0
+            print(self.plugin_uids)
+            while f"{uid_prefix}{unum}" in self.plugin_uids:
+                unum += 1
+            self.plugin_uids.append(f"{uid_prefix}{unum}")
+            plugin_config["uid"] = f"{uid_prefix}{unum}"
+
             plugin_instance = self.plugins.load_plugin(plugin_id, plugin_config, self.config)
 
             if "pins" not in plugin_config:
@@ -2109,6 +1995,7 @@ class WinForm(QWidget):
 
     def config_load(self):
         self.info_widget.setText(self.config_file)
+        self.plugin_uids = []
 
         slot_pinmapping = {}
         self.slots = self.board.get("slots", []) + self.config.get("slots", [])
@@ -2122,11 +2009,15 @@ class WinForm(QWidget):
 
         # loading slot/module configs
         self.modules = {}
-        for module in self.config.get("modules", []):
+        if "modules" not in self.config:
+            self.config["modules"] = []
+        for m_num, module in enumerate(self.config["modules"]):
             slot_name = module.get("slot")
             module_name = module.get("module")
-            module_setup = module.get("setup", {})
-            module_path = self.get_path(f"modules/{module_name}/module.json")
+            if "setup" not in module:
+                self.config["modules"][m_num]["setup"] = {}
+            module_setup = module["setup"]
+            module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
             moduleJsonStr = open(module_path, "r").read()
             module_defaults = json.loads(moduleJsonStr)
 
@@ -2144,6 +2035,15 @@ class WinForm(QWidget):
                                 module_setup[plugin_name]["pins"][pin]["pin_mapped"] = pname
                                 del module_setup[plugin_name]["pins"][pin]["pin"]
 
+                uid = module_setup[plugin_name].get("uid")
+                if not uid:
+                    uid_prefix = module_setup[plugin_name]["type"]
+                    unum = 0
+                    while f"{uid_prefix}{unum}" in self.plugin_uids:
+                        unum += 1
+                    uid = f"{uid_prefix}{unum}"
+                    module_setup[plugin_name]["uid"] = uid
+                self.plugin_uids.append(uid)
                 mplugins.load_plugin(plugin_id, module_setup[plugin_name], self.config)
 
             self.modules[slot_name] = {
@@ -2156,6 +2056,15 @@ class WinForm(QWidget):
         # loading plugins
         self.plugins = riocore.Plugins()
         for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
+            uid = plugin_config.get("uid")
+            if not uid:
+                uid_prefix = plugin_config["type"]
+                unum = 0
+                while f"{uid_prefix}{unum}" in self.plugin_uids:
+                    unum += 1
+                uid = f"{uid_prefix}{unum}"
+                plugin_config["uid"] = uid
+            self.plugin_uids.append(uid)
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
 
         self.items = {}
@@ -2164,15 +2073,14 @@ class WinForm(QWidget):
         self.pinmapping_rev = {}
         self.expansion_pins = []
         for plugin_instance in self.plugins.plugin_instances:
-            if plugin_instance.TYPE == "expansion":
-                for pin in plugin_instance.expansion_outputs():
-                    self.expansion_pins.append(pin)
-                    if pin not in self.pinlist:
-                        self.pinlist.append(pin)
-                for pin in plugin_instance.expansion_inputs():
-                    self.expansion_pins.append(pin)
-                    if pin not in self.pinlist:
-                        self.pinlist.append(pin)
+            for pin in plugin_instance.expansion_outputs():
+                self.expansion_pins.append(pin)
+                if pin not in self.pinlist:
+                    self.pinlist.append(pin)
+            for pin in plugin_instance.expansion_inputs():
+                self.expansion_pins.append(pin)
+                if pin not in self.pinlist:
+                    self.pinlist.append(pin)
 
             for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
                 if "pins" not in plugin_instance.plugin_setup:
@@ -2215,7 +2123,7 @@ class WinForm(QWidget):
             fpga_type = board.get("type")
             package = board.get("package")
             check_name = family.lower().replace(" ", "_")
-            check_path = f"riocore/chipdata/{check_name}.json"
+            check_path = os.path.join("riocore", "chipdata", f"{check_name}.json")
 
             gwin_mapping = {
                 "GW1NSR-LV4CQN48PC6/I5": ("GW1NSR-4C", "QFN48P"),
@@ -2230,7 +2138,7 @@ class WinForm(QWidget):
 
             if fpga_type in gwin_mapping:
                 fpga_type, package = gwin_mapping[fpga_type]
-                check_path = f"riocore/chipdata/{fpga_type}.json"
+                check_path = os.path.join("riocore", "chipdata", f"{fpga_type}.json")
 
             if os.path.isfile(check_path):
                 chipJsonStr = open(check_path, "r").read()
@@ -2246,20 +2154,20 @@ class WinForm(QWidget):
         load_pins(self.board)
         self.pinlist.sort(key=sort_key)
 
-        boards_path = self.get_path("boards/")
-        modules_path = self.get_path("modules/")
+        boards_path = self.get_path("boards")
+        modules_path = self.get_path("modules")
 
         self.interfaces = []
-        for path in sorted(glob.glob(f"{riocore_path}/interfaces/*")):
-            self.interfaces.append(path.split("/")[-1])
+        for path in sorted(glob.glob(os.path.join(riocore_path, "interfaces", "*"))):
+            self.interfaces.append(path.split(os.sep)[-1])
         self.boards = []
-        for path in sorted(glob.glob(f"{boards_path}/*/board.json")):
-            self.boards.append(path.split("/")[-2].split(".")[0])
-        for path in sorted(glob.glob(f"{boards_path}/*.json")):
-            self.boards.append(path.split("/")[-1].split(".")[0])
+        for path in sorted(glob.glob(os.path.join(boards_path, "*", "board.json"))):
+            self.boards.append(path.split(os.sep)[-2].split(".")[0])
+        for path in sorted(glob.glob(os.path.join(boards_path, "*.json"))):
+            self.boards.append(path.split(os.sep)[-1].split(".")[0])
         self.module_names = []
-        for path in sorted(glob.glob(f"{modules_path}/*/module.json")):
-            self.module_names.append(path.split("/")[-2])
+        for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
+            self.module_names.append(path.split(os.sep)[-2])
         self.slotnames = []
         for slot in self.slots:
             slot_name = slot.get("name")
@@ -2277,9 +2185,8 @@ class WinForm(QWidget):
             self.request_generate = 2
             self.request_pin_table_load = 2
             self.request_sig_table_load = 2
-            self.tabs["Overview"].update()
-            self.tabs["Json"].update()
             self.info_widget.setText(self.config_file)
+            self.tabs["Json"].update()
         except Exception as error:
             print(f"ERROR: {error}")
             self.info_widget.setText(f"ERROR: {error}")
@@ -2323,19 +2230,35 @@ class WinForm(QWidget):
         self.struct_clean(config)
         return config
 
-    def edit_item(self, obj, key, var_setup=None, cb=None, help_text=None):
+    def edit_item(self, obj, key, var_setup=None, cb=None, help_text=None, need_enter=False):
         if var_setup is None:
             var_setup = {}
         if help_text is None:
             help_text = var_setup.get("help_text", var_setup.get("description"))
         if var_setup["type"] == "select":
-            return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"))
+            return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
         elif var_setup["type"] is int:
             return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] is float:
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
         elif var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "avgfilter":
+            return edit_avgfilter(self, obj, key, vmin=0, vmax=10000, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "vpins":
+            default = var_setup.get("default")
+            options = ["sysclk", "ERROR", "ESTOP", "INTERFACE_SYNC"]
+            for plugin_instance in self.plugins.plugin_instances:
+                for pin, pin_data in plugin_instance.pins().items():
+                    direction = pin_data.get("direction")
+                    varname = pin_data.get("varname")
+                    if varname and direction in {"input", "output"}:
+                        options.append(varname)
+                        options.append(f"{varname}_RAW")
+            if default not in options:
+                options.append(default)
+            return edit_combobox(self, obj, key, options, cb=cb, help_text=help_text, default=default)
+
         return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
 
     def del_module(self, slot_name):
@@ -2353,7 +2276,7 @@ class WinForm(QWidget):
                 # split module into plugins
                 if module_data.get("setup") is None:
                     module_name = module_data.get("module")
-                    module_path = self.get_path(f"modules/{module_name}/module.json")
+                    module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
                     moduleJsonStr = open(module_path, "r").read()
                     module_defaults = json.loads(moduleJsonStr)
                     module_data["setup"] = {}
@@ -2415,16 +2338,24 @@ class WinForm(QWidget):
             self.config["linuxcnc"] = {}
 
         for key, var_setup in {
-            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3},
-            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"]},
-            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual"},
-            "gui": {"type": "select", "options": ["axis", "qtdragon", "tklinuxcnc", "touchy", "probe_basic", "gmoccapy"], "default": "axis"},
+            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
+            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the mashine"},
+            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
+            "gui": {
+                "type": "select",
+                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy", "gscreen"],
+                "default": "axis",
+                "help_text": "linuxcnc gui to use",
+            },
+            "vcp_mode": {"type": "select", "options": ["ALL", "CONFIGURED", "NONE"], "default": "ALL", "help_text": "pyvcp gui generate mode"},
+            "vcp_pos": {"type": "select", "options": ["RIGHT", "BOTTOM", "TAB"], "default": "RIGHT", "help_text": "position of the vcp gui for extra controls"},
+            "vcp_type": {"type": "select", "options": ["auto", "pyvcp", "qtvcp", "gladevcp"], "default": "auto", "help_text": "vcp type, depends on the gui"},
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
         }.items():
             aitem = MyStandardItem()
             tree_lcnc.appendRow(
                 [
-                    MyStandardItem(key.title()),
+                    MyStandardItem(key.title().replace("_", "-")),
                     aitem,
                 ]
             )
@@ -2665,16 +2596,22 @@ class WinForm(QWidget):
     def tree_expand(self, tpath):
         def iter_childs(entry, prefix=""):
             row = 0
-            item = self.model.itemData(entry.child(row, 0))
+            child = entry.child(row, 0)
+            item = self.model.itemData(child)
             while item:
+                if item:
+                    title = item[0]
+                    if prefix:
+                        newpath = f"{prefix}/{title}"
+                    else:
+                        newpath = title
+                    if tpath.lower().startswith(newpath.lower()):
+                        self.treeview.expand(child)
+                        iter_childs(child, prefix=newpath)
+
                 row += 1
                 child = entry.child(row, 0)
                 item = self.model.itemData(child)
-                if item:
-                    title = item[0]
-                    if tpath.startswith(f"{prefix}/{title}"):
-                        self.treeview.expand(child)
-                    iter_childs(child, prefix=f"{prefix}/{title}")
 
         row = 0
         item = self.model.itemData(self.model.index(row, 0))
@@ -2686,7 +2623,7 @@ class WinForm(QWidget):
                 title = item[0]
                 if tpath.startswith(f"/{title}"):
                     self.treeview.expand(child)
-                iter_childs(self.model.index(row, 0), prefix=f"/{title}")
+                iter_childs(child, prefix=f"/{title}")
 
     def slot_change(self, widget):
         self.config_load()
@@ -2710,7 +2647,7 @@ class WinForm(QWidget):
             if not module_name or not slot_name:
                 return
 
-            module_path = self.get_path(f"modules/{module_name}/module.json")
+            module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
             moduleJsonStr = open(module_path, "r").read()
             module_defaults = json.loads(moduleJsonStr)
 
@@ -2837,17 +2774,11 @@ class WinForm(QWidget):
 
         dialog.layout.addWidget(QLabel(f"Type: {modifier_type}"))
 
-        if modifier_type == "onerror":
-            dialog.layout.addWidget(QLabel("Invert:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "invert", {"type": bool, "default": False}, cb=None))
-        elif modifier_type == "debounce":
-            dialog.layout.addWidget(QLabel("Delay:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "delay", {"type": int, "default": 16}, cb=None))
-        elif modifier_type == "pwm":
-            dialog.layout.addWidget(QLabel("Frequency:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "frequency", {"type": int, "default": 1}, cb=None))
-            dialog.layout.addWidget(QLabel("DTY:"))
-            dialog.layout.addWidget(self.edit_item(modifier_config, "dty", {"type": int, "default": 50}, cb=None))
+        moptions = Modifiers().info()
+        if modifier_type in moptions:
+            for key, option in moptions[modifier_type].get("options", {}).items():
+                dialog.layout.addWidget(QLabel(option.get("title", key.title())))
+                dialog.layout.addWidget(self.edit_item(modifier_config, key, option, cb=None))
 
         dialog.mlabel = QLabel("")
         dialog.layout.addWidget(dialog.mlabel)
@@ -2860,26 +2791,64 @@ class WinForm(QWidget):
             modifier_list[dialog.modifier_id] = modifier_config
 
     def modifier_list_add(self, parent_layout, modifier_list):
+        modifiers = Modifiers()
         dialog = QDialog()
         dialog.setWindowTitle("add Modifier")
         dialog.setStyleSheet(STYLESHEET)
-
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
 
-        dialog.layout = QVBoxLayout()
-        label = QLabel("Modifier:")
-        dialog.layout.addWidget(label)
-        combo = QComboBox(self)
-        for modifier_name in Modifiers().pin_modifier_list():
-            combo.addItem(modifier_name)
-        dialog.layout.addWidget(combo)
+        def show_modifier_info(row):
+            modifier_type = modifier_table.item(row, 0).text()
+            info = modifiers.info().get(modifier_type)
+            infotext = info.get("info", "")
+            options = info.get("options", "")
+            title = info.get("title", modifier_type.title())
+            dialog.label.setText(f"Modifier: {title}")
+            textlines = ["", infotext, ""]
 
-        dialog.layout.addWidget(dialog_buttonBox)
+            if options:
+                textlines.append("Options:")
+                for key, option in options.items():
+                    title = option.get("title", key.title())
+                    default = option.get("default", "")
+                    oinfo = option.get("help_text", "")
+                    textlines.append(f" {title}: {oinfo} (default: {default})")
+
+            dialog.info.setText("\n".join(textlines))
+
+        dialog.layout = QHBoxLayout()
+        modifier_table = QTableWidget()
+        modifier_table.setColumnCount(1)
+        modifier_table.setHorizontalHeaderItem(0, QTableWidgetItem("Modifier"))
+        header = modifier_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        modifier_n = 0
+        for modifier_name in modifiers.pin_modifier_list():
+            modifier_table.setRowCount(modifier_n + 1)
+            pitem = QTableWidgetItem(modifier_name)
+            modifier_table.setItem(modifier_n, 0, pitem)
+            modifier_n += 1
+
+        modifier_table.currentCellChanged.connect(show_modifier_info)
+        modifier_table.setFixedWidth(200)
+        dialog.layout.addWidget(modifier_table, stretch=1)
+
+        dialog.vlayout = QVBoxLayout()
+        dialog.label = QLabel("Modifier-Info:")
+        dialog.vlayout.addWidget(dialog.label, stretch=0)
+        dialog.info = QLabel("...")
+        dialog.info.setWordWrap(True)
+        dialog.info.setFixedWidth(300)
+        dialog.info.setAlignment(Qt.AlignTop)
+        dialog.vlayout.addWidget(dialog.info, stretch=1)
+        dialog.layout.addLayout(dialog.vlayout)
+        dialog.vlayout.addWidget(dialog_buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
-            modifier_type = combo.currentText()
+            row = modifier_table.currentRow()
+            modifier_type = modifier_table.item(row, 0).text()
             modifier_list.append({"type": modifier_type})
             self.modifier_list_update(parent_layout, modifier_list)
             if modifier_type != "invert":
@@ -3122,6 +3091,7 @@ class WinForm(QWidget):
             joint_options[pkey]["default"] = value
 
         joint_tabs = QTabWidget()
+        joint_tabs.setStyleSheet(STYLESHEET_TABBAR)
 
         general_layout = QVBoxLayout()
         label = QLabel("Joint-Setup")
@@ -3310,6 +3280,13 @@ class WinForm(QWidget):
                 signal_setup["offset"] = {"type": float, "default": 0.0}
                 signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
 
+            if not signal_defaults.get("bool") and signal_direction == "input":
+                signal_cols = QHBoxLayout()
+                signal_rows.addLayout(signal_cols)
+                signal_cols.addWidget(QLabel("AVG-Filter"), stretch=1)
+                signal_setup["filters"] = {"type": "avgfilter", "default": 0}
+                signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "filters", signal_setup["filters"], cb=update), stretch=5)
+
             display_frame = QGroupBox(self)
             display_frame.setTitle("Display")
             display_frame.setToolTip(help_text)
@@ -3355,6 +3332,7 @@ class WinForm(QWidget):
             if not signal_defaults.get("bool", False):
                 display_setup["min"] = {"type": float, "default": None}
                 display_setup["max"] = {"type": float, "default": None}
+                display_setup["initval"] = {"type": float, "default": 0.0}
             for option, option_setup in display_setup.items():
                 display_cols = QHBoxLayout()
                 display_rows.addLayout(display_cols)
@@ -3450,6 +3428,7 @@ class WinForm(QWidget):
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
         tab_widget = QTabWidget()
+        tab_widget.setStyleSheet(STYLESHEET_TABBAR)
 
         if is_new and plugin_instance.TYPE == "joint":
             if "position" in plugin_instance.SIGNALS:
@@ -3473,8 +3452,8 @@ class WinForm(QWidget):
                 tab_widget.addTab(signals_tab, "Signals")
 
         right_layout = QVBoxLayout()
-        plugin_path = f"{riocore_path}/plugins/{plugin_instance.NAME}"
-        image_path = f"{plugin_path}/image.png"
+        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+        image_path = os.path.join(plugin_path, "image.png")
         if os.path.isfile(image_path):
             ilabel = QLabel(self)
             pixmap = QPixmap(image_path)
@@ -3503,7 +3482,7 @@ class WinForm(QWidget):
                 plugin_config[key] = plugin_config_backup[key]
 
     def config_plugin(self, plugin_instance, plugin_id, widget):
-        if os.path.isfile(f"{riocore_path}/plugins/{plugin_instance.NAME}/config.py"):
+        if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
             config_box = plugin_config.config(plugin_instance, styleSheet=STYLESHEET)
             config_box.run()
@@ -3526,10 +3505,10 @@ class WinForm(QWidget):
 
         def show_module_info(idx):
             module_name = dialog.module_names[idx]
-            module_path = f"{riocore_path}/modules/{module_name}"
-            moduleJsonStr = open(f"{module_path}/module.json", "r").read()
+            module_path = os.path.join(riocore_path, "modules", module_name)
+            moduleJsonStr = open(os.path.join(module_path, "module.json"), "r").read()
             module_defaults = json.loads(moduleJsonStr)
-            image_path = f"{module_path}/module.png"
+            image_path = os.path.join(module_path, "module.png")
             if os.path.isfile(image_path):
                 pixmap = QPixmap(image_path)
                 image_label.setPixmap(pixmap)
@@ -3555,7 +3534,7 @@ class WinForm(QWidget):
         for module_name in self.module_names:
             check = True
             if not slot_select:
-                module_path = self.get_path(f"modules/{module_name}/module.json")
+                module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
                 moduleJsonStr = open(module_path, "r").read()
                 module_defaults = json.loads(moduleJsonStr)
                 for plugin in module_defaults.get("plugins"):
@@ -3656,7 +3635,11 @@ class WinForm(QWidget):
         widget.insertPlainText("...")
 
         self.flash_start = time.time()
-        self.flash_sub = subprocess.Popen(f"(cd Output/{config_name}/Gateware/ ; make load 2>&1 | tee flash.log)", shell=True, close_fds=True)
+        gw_path = os.path.join("Output", config_name, "Gateware")
+        if sys.platform.startswith("win"):
+            self.flash_sub = subprocess.Popen(f"(cd {gw_path} && make load > flash.log && cd {os.getcwd()})", shell=True, close_fds=True)
+        else:
+            self.flash_sub = subprocess.Popen(f"(cd {gw_path} && make load 2>&1 | tee flash.log)", shell=True, close_fds=True)
         self.button_flash.setEnabled(False)
         self.info_widget.setText("flashing...")
 
@@ -3670,7 +3653,11 @@ class WinForm(QWidget):
         widget.insertPlainText("...")
 
         self.compile_start = time.time()
-        self.compile_sub = subprocess.Popen(f"(cd Output/{config_name}/Gateware/ ; make clean all 2>&1 | tee compile.log)", shell=True, close_fds=True)
+        gw_path = os.path.join("Output", config_name, "Gateware")
+        if sys.platform.startswith("win"):
+            self.compile_sub = subprocess.Popen(f"(cd {gw_path} && make clean all > compile.log && cd {os.getcwd()})", shell=True, close_fds=True)
+        else:
+            self.compile_sub = subprocess.Popen(f"(cd {gw_path} && make clean all 2>&1 | tee compile.log)", shell=True, close_fds=True)
         self.button_compile.setEnabled(False)
         self.info_widget.setText("compiling...")
 
@@ -3694,8 +3681,8 @@ class WinForm(QWidget):
         except Exception as error:
             print(f"ERROR loading output: {error}")
 
-        if preview:
-            os.system(f"rm -rf {self.output_path}/")
+        if preview and self.output_path and os.path.isdir(self.output_path):
+            shutil.rmtree(self.output_path)
         self.info_widget.setText("generate...done")
 
     def generate(self, output_path=None, preview=False):
@@ -3703,16 +3690,19 @@ class WinForm(QWidget):
         if not output_path:
             output_path = "Output"
         try:
-            generator_path = f"{riocore_path}/../bin/rio-generator"
+            generator_path = os.path.join(os.path.dirname(riocore_path), "bin", "rio-generator")
             if not os.path.isfile(generator_path):
                 generator_path = "rio-generator"
 
             if preview:
                 open(f"{self.config_file}_tmp.json", "w").write(json.dumps(config, indent=4))
-                os.system(f"{generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
-                os.system(f"rm {self.config_file}_tmp.json")
+                if sys.platform.startswith("win"):
+                    os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path}")
+                else:
+                    os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
+                os.remove(f"{self.config_file}_tmp.json")
             else:
-                os.system(f"{generator_path} {self.config_file} {output_path}")
+                os.system(f"{sys.executable} {generator_path} {self.config_file} {output_path}")
                 self.check_status()
         except Exception as error:
             print(f"ERROR generating output: {error}")
@@ -3724,7 +3714,7 @@ class WinForm(QWidget):
         if self.config_file:
             name = file_dialog.getSaveFileName(self, "Save File", self.config_file, "json (*.json)")
         else:
-            name = file_dialog.getSaveFileName(self, "Save File", f"{riocore_path}/configs/", "json (*.json)")
+            name = file_dialog.getSaveFileName(self, "Save File", os.path.join(riocore_path, "configs"), "json (*.json)")
 
         if name[0]:
             if not name[0].endswith(".json"):
@@ -3812,13 +3802,19 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("config", help="config", nargs="?", type=str, default=None)
-    parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
+    parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
+    parser.add_argument("expand", help="expand tree", nargs="?", type=str, default=None)
+    if sys.platform.startswith("win"):
+        parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=True, action="store_true")
+    else:
+        parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
     args = parser.parse_args()
 
     if args.nostyle:
         STYLESHEET = ""
+        STYLESHEET_CHECKBOX_GREEN_RED = ""
+        STYLESHEET_BUTTON = ""
+        STYLESHEET_TABBAR = ""
 
     form = WinForm(args)
-    form.show()
     sys.exit(app.exec_())

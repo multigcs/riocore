@@ -1,30 +1,12 @@
 # spipoti
+
+<img align="right" width="320" src="image.png">
+
 **spi digital poti**
 
-Analog-Outout via spi digital poti
+Analog-Output via spi digital poti
 
 Keywords: analog poti dac
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "spipoti",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -65,6 +47,24 @@ name of this plugin instance
  * size: 8 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "spipoti",
+    "pins": {
+        "mosi": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

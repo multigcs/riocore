@@ -1,24 +1,12 @@
 # pwmin
+
+<img align="right" width="320" src="image.png">
+
 **pwm input**
 
 measuring pulse len
 
 Keywords: pulse digital
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "pwmin",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -71,6 +59,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "pwmin",
+    "pins": {
+        "pwm": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -1,4 +1,6 @@
 import importlib
+import sys
+import os
 import shutil
 import subprocess
 
@@ -8,6 +10,9 @@ class Toolchain:
         self.config = config
         self.gateware_path = f"{self.config['output_path']}/Gateware"
         self.riocore_path = config["riocore_path"]
+        self.toolchain_path = self.config.get("toolchains_json", {}).get("vivado", "")
+        if self.toolchain_path and not self.toolchain_path.endswith("bin"):
+            self.toolchain_path = os.path.join(self.toolchain_path, "bin")
 
     def info(cls):
         info = {
@@ -36,16 +41,20 @@ class Toolchain:
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.xdc")
         pins_generator.Pins(self.config).generate(path)
 
-        vivado = shutil.which("vivado")
-        if vivado is None:
-            print("WARNING: can not found toolchain installation in PATH: vivado")
-            print("  example: export PATH=$PATH:/opt/Xilinx/Vivado/2023.1/bin")
+        if sys.platform == "linux":
+            vivado = shutil.which("vivado")
+            if vivado is None:
+                print("WARNING: can not found toolchain installation in PATH: vivado")
+                print("  example: export PATH=$PATH:/opt/Xilinx/Vivado/2023.1/bin")
 
         verilogs = " ".join(self.config["verilog_files"])
         makefile_data = []
         makefile_data.append("")
         makefile_data.append("# Toolchain: Vivado")
         makefile_data.append("")
+        if self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append("")
         makefile_data.append("PROJECT  := rio")
         makefile_data.append("TOP      := rio")
         makefile_data.append(f"PART     := {self.config['type']}")
@@ -102,4 +111,4 @@ class Toolchain:
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

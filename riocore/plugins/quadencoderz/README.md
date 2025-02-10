@@ -1,30 +1,12 @@
 # quadencoderz
+
+<img align="right" width="320" src="image.png">
+
 **quadencoder with index pin**
 
-usable as spindle-encoder for rigid tapping and thread cutting
+usable as spindle-encoder for rigid tapping and thread cutting.  It is critical that your position-scale and QUAD_TYPE match, see the details in the description for QUAD_TYPE
 
 Keywords: feedback encoder rotary linear glassscale  index
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "quadencoderz",
-    "pins": {
-        "a": {
-            "pin": "0"
-        },
-        "b": {
-            "pin": "1"
-        },
-        "z": {
-            "pin": "2"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -45,12 +27,20 @@ index pin
 ## Options:
 *user-options*
 ### quad_type:
-encoder type
+The count from the encoder will be bitshifted by the value of QUAD_TYPE.  Use 0 for 4x mode.  The position-scale should match.  For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.
 
  * type: int
  * min: 0
  * max: 4
  * default: 2
+
+### rps_sum:
+number of collected values before calculate the rps value
+
+ * type: int
+ * min: 0
+ * max: 100
+ * default: 10
 
 ### name:
 name of this plugin instance
@@ -108,11 +98,30 @@ calculates revolutions per minute
  * direction: input
 
 
+## Basic-Example:
+```
+{
+    "type": "quadencoderz",
+    "pins": {
+        "a": {
+            "pin": "0"
+        },
+        "b": {
+            "pin": "1"
+        },
+        "z": {
+            "pin": "2"
+        }
+    }
+}
+```
+
 ## Full-Example:
 ```
 {
     "type": "quadencoderz",
     "quad_type": 2,
+    "rps_sum": 10,
     "name": "",
     "pins": {
         "a": {

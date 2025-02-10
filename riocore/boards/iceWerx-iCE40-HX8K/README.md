@@ -2,7 +2,7 @@
 **Devantech iceWerx iCE40-HX8K FPGA**
 
 * URL: [https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga](https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga)
-* Toolchain: icestorm
+* Toolchain: [icestorm](../../generator/toolchains/icestorm/README.md)
 * Family: ice40
 * Type: hx8k
 * Package: cb132

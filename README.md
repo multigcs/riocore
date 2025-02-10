@@ -58,13 +58,13 @@ and do not, take any responsibility for such compliance
 * [cnc-aus-holz (de)](https://www.cnc-aus-holz.at/)
 
 ## Boards <a name = "boards"></a>
-here is a small overview of the boards: [BOARDS](BOARDS.md)
+list of all boards: [BOARDS](riocore/boards/README.md)
 
 ## Plugins/Drivers <a name = "plugins"></a>
-here is a small overview of the plugins: [PLUGINS](PLUGINS.md)
+list of all plugins: [PLUGINS](riocore/plugins/README.md)
 
 ## supported Toolchains <a name = "toolchains"></a>
-here is a small overview of the boards: [TOOLCHAINS](TOOLCHAINS.md)
+list of all  toolchains: [TOOLCHAINS](riocore/generator/toolchains/README.md)
 
 ## Getting Started <a name = "getting_started"></a>
 
@@ -81,6 +81,12 @@ git clone https://github.com/multigcs/riocore.git
 cd riocore
 ```
 
+- installing dependencies via apt:
+```
+apt-get update
+apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml
+```
+
 make sure that the toolchain matching your fpga is in the path:
 ```
 export PATH=$PATH:/opt/oss-cad-suite/bin/
@@ -95,7 +101,7 @@ than copy a config file that is near to your setup:
 cp riocore/configs/Tangoboard/config-spi.json my_config.json
 ```
 
-## [DOCKER](DOCKER.md)
+## [DOCKER](DOCKER.md) (alternative)
 
 Using a TangNano9k or other board supported by the open-cad-suite? Check out the docker setup for an easy to use all in one way to run the riocore ui and generator, including flashing: [DOCKER](DOCKER.md)
 
@@ -104,7 +110,7 @@ Using a TangNano9k or other board supported by the open-cad-suite? Check out the
 
 you can edit your configuration file by hand (text-editor) or using the setup tool (rio-setup):
 ```
-PYTHONPATH=. bin/rio-setup my_config.json
+bin/rio-setup my_config.json
 ```
 
 ![basic setup](./doc/images/basic_setup.png)
@@ -120,7 +126,7 @@ you can also do this things on your console:
 
 generate:
 ```
-PYTHONPATH=. bin/rio-generator my_config.json
+bin/rio-generator my_config.json
 ```
 ```
 loading: my_config.json

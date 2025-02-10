@@ -1,33 +1,12 @@
 # spi
+
+<img align="right" width="320" src="image.png">
+
 **spi interface for host comunication**
 
 for direct connections to Raspberry-PI or over UDB2SPI-Bridges
 
 Keywords: interface spi raspberry rpi
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "spi",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "miso": {
-            "pin": "1"
-        },
-        "sclk": {
-            "pin": "2"
-        },
-        "sel": {
-            "pin": "3"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -64,6 +43,27 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "spi",
+    "pins": {
+        "mosi": {
+            "pin": "0"
+        },
+        "miso": {
+            "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "sel": {
+            "pin": "3"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

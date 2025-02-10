@@ -1,30 +1,12 @@
 # tlc549c
+
+<img align="right" width="320" src="image.png">
+
 **spi adc input**
 
 Analog input via tlc549 ADC
 
 Keywords: analog adc
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "tlc549c",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -67,6 +49,24 @@ measured voltage
  * size: 8 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "tlc549c",
+    "pins": {
+        "miso": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

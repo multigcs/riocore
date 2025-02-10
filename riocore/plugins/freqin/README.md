@@ -1,24 +1,12 @@
 # freqin
+
+<img align="right" width="320" src="image.png">
+
 **frequency input**
 
 to messurement digital frequencies
 
 Keywords: frequency
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "freqin",
-    "pins": {
-        "freq": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -36,6 +24,15 @@ minimum measured frequency (for faster updates)
  * min: 1
  * max: 10000
  * default: 10
+ * unit: Hz
+
+### freq_max:
+maximum measured frequency (for filtering)
+
+ * type: int
+ * min: 10
+ * max: 10000000
+ * default: 1000000
  * unit: Hz
 
 ### name:
@@ -72,11 +69,24 @@ name of this plugin instance
  * direction: input
 
 
+## Basic-Example:
+```
+{
+    "type": "freqin",
+    "pins": {
+        "freq": {
+            "pin": "0"
+        }
+    }
+}
+```
+
 ## Full-Example:
 ```
 {
     "type": "freqin",
     "freq_min": 10,
+    "freq_max": 1000000,
     "name": "",
     "pins": {
         "freq": {

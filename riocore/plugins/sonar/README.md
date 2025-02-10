@@ -1,27 +1,12 @@
 # sonar
+
+<img align="right" width="320" src="image.png">
+
 **sonar sensor for distance measurement**
 
 to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)
 
 Keywords: distance ultrasonic level oil water
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "sonar",
-    "pins": {
-        "trigger": {
-            "pin": "0"
-        },
-        "echo": {
-            "pin": "1"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -60,6 +45,21 @@ distance between sensor and object
  * size: 32 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "sonar",
+    "pins": {
+        "trigger": {
+            "pin": "0"
+        },
+        "echo": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

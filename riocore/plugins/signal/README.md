@@ -1,20 +1,12 @@
 # signal
+
+<img align="right" width="320" src="image.png">
+
 **virtual signal**
 
 virtual signal
 
 Keywords: virtual
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "signal",
-    "pins": {}
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -52,6 +44,14 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "signal",
+    "pins": {}
+}
+```
 
 ## Full-Example:
 ```

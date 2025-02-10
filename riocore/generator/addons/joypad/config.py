@@ -1,5 +1,5 @@
 import os
-import fcntl
+import sys
 import glob
 from functools import partial
 
@@ -16,6 +16,9 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget,
 )
+
+if sys.platform == "linux":
+    import fcntl
 
 from riocore.widgets import MyStandardItem
 
@@ -111,6 +114,8 @@ def load_tree(parent, tree_lcnc):
         timer.start(300)
 
         if dialog.exec():
+            if "joypad" not in parent.config["linuxcnc"]:
+                parent.config["linuxcnc"]["joypad"] = {}
             for action, atype in ALL_ACTIONS.items():
                 halname = actions[action].text()
                 if halname:
@@ -125,7 +130,8 @@ def load_tree(parent, tree_lcnc):
         devices = []
         for device_path in glob.glob("/dev/input/event*"):
             name = device_get_name(device_path)
-            devices.append(name)
+            if name:
+                devices.append(name)
 
         dialog = QDialog()
         dialog.setWindowTitle("select device")
@@ -174,10 +180,13 @@ def load_tree(parent, tree_lcnc):
         button_add.clicked.connect(add_joypad)
         button_add.setMaximumSize(button_add.sizeHint())
         buttons_layout.addWidget(button_add)
-    button_wizard = QPushButton("wizard")
-    button_wizard.clicked.connect(wiz_joypad)
-    button_wizard.setMaximumSize(button_wizard.sizeHint())
-    buttons_layout.addWidget(button_wizard)
+
+    if sys.platform == "linux":
+        button_wizard = QPushButton("wizard")
+        button_wizard.clicked.connect(wiz_joypad)
+        button_wizard.setMaximumSize(button_wizard.sizeHint())
+        buttons_layout.addWidget(button_wizard)
+
     buttons_layout.addStretch()
     parent.treeview.setIndexWidget(bitem.index(), buttons_widget)
 

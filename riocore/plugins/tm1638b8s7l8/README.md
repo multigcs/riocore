@@ -1,30 +1,12 @@
 # tm1638b8s7l8
+
+<img align="right" width="320" src="image.png">
+
 **7segment display with buttons**
 
 with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)
 
 Keywords: display info status keyboard buttons
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "tm1638b8s7l8",
-    "pins": {
-        "sel": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "data": {
-            "pin": "2"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -268,6 +250,24 @@ first 2 digits (0 -> 99)
  * direction: output
  * multiplexed: True
 
+
+## Basic-Example:
+```
+{
+    "type": "tm1638b8s7l8",
+    "pins": {
+        "sel": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "data": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

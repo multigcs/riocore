@@ -1,24 +1,12 @@
 # ds18b20
+
+<img align="right" width="320" src="image.png">
+
 **1Wire Temperature sensor**
 
 for cheap 1wire temperature sensor's, only one per pin is supported at the moment
 
 Keywords: adc analog temperature
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "ds18b20",
-    "pins": {
-        "one_wire": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -52,6 +40,18 @@ name of this plugin instance
  * size: 16 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "ds18b20",
+    "pins": {
+        "one_wire": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -1,24 +1,12 @@
 # freqout
+
+<img align="right" width="320" src="image.png">
+
 **frequency output**
 
 to output variable frequency signals
 
 Keywords: frequency
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "freqout",
-    "pins": {
-        "freq": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -55,6 +43,18 @@ output frequency
  * size: 32 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "freqout",
+    "pins": {
+        "freq": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

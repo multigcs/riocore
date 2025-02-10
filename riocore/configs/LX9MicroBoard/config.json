@@ -1,0 +1,45 @@
+{
+    "name": "LX9MicroBoard",
+    "boardcfg": "LX9MicroBoard",
+    "plugins": [
+        {
+            "type": "uart",
+            "pins": {
+                "rx": {
+                    "pin": "UART:RX"
+                },
+                "tx": {
+                    "pin": "UART:TX"
+                }
+            },
+            "uid": "uart0"
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D1"
+                }
+            },
+            "uid": "blink0"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "SW:S5"
+                }
+            },
+            "uid": "bitin1"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "LED:D2"
+                }
+            },
+            "uid": "bitout0"
+        }
+    ]
+}

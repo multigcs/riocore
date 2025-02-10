@@ -1,33 +1,12 @@
 # stepper
+
+<img align="right" width="320" src="image.png">
+
 **stepper driver output for H-Bridges like L298**
 
 direct stepper driver with 4pin's directly controlled by the FPGA
 
 Keywords: stepper joint hbridge
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "stepper",
-    "pins": {
-        "a1": {
-            "pin": "0"
-        },
-        "a2": {
-            "pin": "1"
-        },
-        "b1": {
-            "pin": "2"
-        },
-        "b2": {
-            "pin": "3"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -110,6 +89,27 @@ position feedback
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "stepper",
+    "pins": {
+        "a1": {
+            "pin": "0"
+        },
+        "a2": {
+            "pin": "1"
+        },
+        "b1": {
+            "pin": "2"
+        },
+        "b2": {
+            "pin": "3"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

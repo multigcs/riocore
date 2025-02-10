@@ -1,6 +1,8 @@
 # shiftreg
-**Expansion to add I/O's via shiftregister's**
 
+<img align="right" width="320" src="image.png">
+
+**Expansion to add I/O's via shiftregister's**
 
 do not use this for high frequency signals !!!
 
@@ -30,33 +32,7 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 ### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
 [![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
 
-        
-
 Keywords: expansion digital io
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "shiftreg",
-    "pins": {
-        "out": {
-            "pin": "0"
-        },
-        "in": {
-            "pin": "1"
-        },
-        "sclk": {
-            "pin": "2"
-        },
-        "load": {
-            "pin": "3"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -113,6 +89,27 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "shiftreg",
+    "pins": {
+        "out": {
+            "pin": "0"
+        },
+        "in": {
+            "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "load": {
+            "pin": "3"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -1,4 +1,7 @@
 # icewerxadc
+
+<img align="right" width="320" src="image.png">
+
 **4-channel adc of the iceWerx-board**
 
 to read analog signals from the iceWerx-board
@@ -9,30 +12,10 @@ https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
 
 should work also with the iceFUN board
 
-        
-
 Keywords: analog adc voltage ampere
-
-
-![image.png](image.png)
 
 ## Limitations
 * boards: iceWerx-iCE40-HX8K, OctoBot
-
-## Basic-Example:
-```
-{
-    "type": "icewerxadc",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -111,6 +94,21 @@ name of this plugin instance
  * direction: input
  * multiplexed: True
 
+
+## Basic-Example:
+```
+{
+    "type": "icewerxadc",
+    "pins": {
+        "tx": {
+            "pin": "0"
+        },
+        "rx": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

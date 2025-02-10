@@ -18,7 +18,13 @@ STYLESHEET = """
 """
 STYLESHEET_CHECKBOX = """
     QCheckBox::indicator::unchecked {
-        background-color: lightgray;
+        background-color: darkgray;
+    }
+"""
+STYLESHEET_CHECKBOX_BIG = """
+    QCheckBox::indicator {
+        width: 40px;
+        height: 40px;
     }
 """
 STYLESHEET_BUTTON = """
@@ -32,6 +38,32 @@ STYLESHEET_CHECKBOX_GREEN_RED = """
     }
     QCheckBox::indicator::unchecked {
         background-color: red;
+    }
+"""
+
+# MacOS tabs default to white backgrounds, making them unreadable without more styling.
+STYLESHEET_TABBAR = """
+    QTabWidget::tab-bar {
+        left: 0;
+    }
+
+    QTabBar::tab {
+        background-color: #333333;
+        border: 1px solid #222222;
+        color: white;
+        padding: 5px 10px;
+    }
+
+    QTabBar::tab:selected {
+        background-color: #444444;
+        border-bottom-color: #444444;
+    }
+
+    QTabWidget::pane {
+        top: -1px;
+        margin-top: 0;
+        padding: 10px;
+        border: 1px solid black;
     }
 """
 
@@ -215,10 +247,71 @@ class edit_int(QSpinBox):
             self.win.display()
 
 
+class edit_avgfilter(QSpinBox):
+    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None):
+        super().__init__()
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.setValue(0)
+        if help_text:
+            self.setToolTip(help_text)
+        if vmin:
+            self.setMinimum(vmin)
+        else:
+            self.setMinimum(-99999999)
+        if vmax:
+            self.setMaximum(vmax)
+        else:
+            self.setMaximum(99999999)
+        if key in obj:
+            if obj[key]:
+                self.setValue(obj[key][0].get("depth", 0))
+
+        self.valueChanged.connect(self.change)
+        self.editingFinished.connect(self.change)
+        self.setFocusPolicy(Qt.StrongFocus)
+
+    def wheelEvent(self, *args, **kwargs):
+        if self.hasFocus():
+            return QSpinBox.wheelEvent(self, *args, **kwargs)
+
+    def change(self):
+        if self.value() != self.default:
+            if self.key not in self.obj:
+                self.obj[self.key] = []
+            fpos = -1
+            for pn, part in enumerate(self.obj[self.key]):
+                if part.get("type") == "avg":
+                    fpos = pn
+                    break
+            if fpos != -1:
+                self.obj[self.key][fpos]["depth"] = self.value()
+            else:
+                self.obj[self.key].append({"type": "avg", "depth": self.value()})
+
+        elif self.key in self.obj:
+            if self.key not in self.obj:
+                self.obj[self.key] = []
+            fpos = -1
+            for pn, part in enumerate(self.obj[self.key]):
+                if part.get("type") == "avg":
+                    fpos = pn
+                    break
+            if fpos != -1:
+                self.obj[self.key].pop(fpos)
+        if self.cb:
+            self.cb(self.value())
+        else:
+            self.win.display()
+
+
 class edit_text(QLineEdit):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
         super().__init__()
-        self.setMaxLength(25)
+        self.setMaxLength(50)
         self.win = win
         self.cb = cb
         self.obj = obj
@@ -272,7 +365,7 @@ class edit_bool(QCheckBox):
 
 
 class edit_combobox(QComboBox):
-    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None):
+    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, need_enter=False):
         super().__init__()
         self.win = win
         self.cb = cb
@@ -302,7 +395,11 @@ class edit_combobox(QComboBox):
                 print(f"ERROR: {default} is not a option")
         else:
             self.setCurrentIndex(options.index(""))
-        self.editTextChanged.connect(self.change)
+        if need_enter:
+            self.currentIndexChanged.connect(self.change)
+            self.textActivated.connect(self.change)
+        else:
+            self.editTextChanged.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
 
     def wheelEvent(self, *args, **kwargs):

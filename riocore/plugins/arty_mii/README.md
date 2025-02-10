@@ -1,74 +1,14 @@
 # arty_mii
+
+<img align="right" width="320" src="image.png">
+
 **udp interface for host comunication - experimental - Arty7-35t only**
 
 Keywords: network ethernet interface udp
 
-
-![image.png](image.png)
-
 ## Limitations
 * boards: Arty-a7-35t
 * toolchains: vivado
-
-## Basic-Example:
-```
-{
-    "type": "arty_mii",
-    "pins": {
-        "phy_rx_clk": {
-            "pin": "F15"
-        },
-        "phy_rxd0": {
-            "pin": "D18"
-        },
-        "phy_rxd1": {
-            "pin": "E17"
-        },
-        "phy_rxd2": {
-            "pin": "E18"
-        },
-        "phy_rxd3": {
-            "pin": "G17"
-        },
-        "phy_rx_dv": {
-            "pin": "G16"
-        },
-        "phy_rx_er": {
-            "pin": "C17"
-        },
-        "phy_tx_clk": {
-            "pin": "H16"
-        },
-        "phy_txd0": {
-            "pin": "H14"
-        },
-        "phy_txd1": {
-            "pin": "J14"
-        },
-        "phy_txd2": {
-            "pin": "J13"
-        },
-        "phy_txd3": {
-            "pin": "H17"
-        },
-        "phy_tx_en": {
-            "pin": "H15"
-        },
-        "phy_col": {
-            "pin": "D17"
-        },
-        "phy_crs": {
-            "pin": "G14"
-        },
-        "phy_ref_clk": {
-            "pin": "G18"
-        },
-        "phy_reset_n": {
-            "pin": "C16"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -192,6 +132,66 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "arty_mii",
+    "pins": {
+        "phy_rx_clk": {
+            "pin": "F15"
+        },
+        "phy_rxd0": {
+            "pin": "D18"
+        },
+        "phy_rxd1": {
+            "pin": "E17"
+        },
+        "phy_rxd2": {
+            "pin": "E18"
+        },
+        "phy_rxd3": {
+            "pin": "G17"
+        },
+        "phy_rx_dv": {
+            "pin": "G16"
+        },
+        "phy_rx_er": {
+            "pin": "C17"
+        },
+        "phy_tx_clk": {
+            "pin": "H16"
+        },
+        "phy_txd0": {
+            "pin": "H14"
+        },
+        "phy_txd1": {
+            "pin": "J14"
+        },
+        "phy_txd2": {
+            "pin": "J13"
+        },
+        "phy_txd3": {
+            "pin": "H17"
+        },
+        "phy_tx_en": {
+            "pin": "H15"
+        },
+        "phy_col": {
+            "pin": "D17"
+        },
+        "phy_crs": {
+            "pin": "G14"
+        },
+        "phy_ref_clk": {
+            "pin": "G18"
+        },
+        "phy_reset_n": {
+            "pin": "C16"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

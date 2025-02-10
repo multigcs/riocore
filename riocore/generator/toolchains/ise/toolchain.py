@@ -1,4 +1,6 @@
 import importlib
+import sys
+import os
 import shutil
 
 
@@ -7,6 +9,9 @@ class Toolchain:
         self.config = config
         self.gateware_path = f"{self.config['output_path']}/Gateware"
         self.riocore_path = config["riocore_path"]
+        self.toolchain_path = self.config.get("toolchains_json", {}).get("ise", "")
+        if self.toolchain_path and not self.toolchain_path.endswith("lin64"):
+            self.toolchain_path = os.path.join(self.toolchain_path, "bin", "lin64")
 
     def info(cls):
         info = {
@@ -20,10 +25,11 @@ class Toolchain:
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.ucf")
         pins_generator.Pins(self.config).generate(path)
 
-        ngdbuild = shutil.which("ngdbuild")
-        if ngdbuild is None:
-            print("WARNING: can not found toolchain installation in PATH: ise (ngdbuild)")
-            print("  example: export PATH=$PATH:/opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/")
+        if sys.platform == "linux":
+            ngdbuild = shutil.which("ngdbuild")
+            if ngdbuild is None:
+                print("WARNING: can not found toolchain installation in PATH: ise (ngdbuild)")
+                print("  example: export PATH=$PATH:/opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/")
 
         verilogs = " ".join(self.config["verilog_files"])
 
@@ -34,6 +40,9 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("# Toolchain: ISE/Webpack")
         makefile_data.append("")
+        if self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append("")
         makefile_data.append("PROJECT  := rio")
         makefile_data.append("TOP      := rio")
         makefile_data.append(f"PART     := {self.config['type']}")
@@ -73,5 +82,13 @@ class Toolchain:
             makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f")
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
+        makefile_data.append("sload: $(PROJECT).bit")
+        sflashcmd = self.config.get("sflashcmd")
+        if sflashcmd:
+            makefile_data.append(f"	{sflashcmd}")
+        else:
+            makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit")
+        makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        makefile_data.append("")
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

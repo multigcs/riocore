@@ -10,13 +10,16 @@ import time
 import traceback
 from functools import partial
 
-if os.path.isfile("./riocore/__init__.py"):
-    sys.path.insert(0, "./")
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
 
 import riocore
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
+    QProxyStyle,
+    QStyle,
+    QScrollArea,
     QLineEdit,
     QApplication,
     QCheckBox,
@@ -34,24 +37,26 @@ from PyQt5.QtWidgets import (
     QTabWidget,
 )
 
-STYLESHEET = """
-    background-color: #444444;
-    color: white;
-"""
-STYLESHEET_CHECKBOX = """
-    QCheckBox::indicator::unchecked {
-        background-color: lightgray;
-    }
-"""
+from riocore.widgets import STYLESHEET, STYLESHEET_CHECKBOX, STYLESHEET_TABBAR, STYLESHEET_CHECKBOX_BIG
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--debug", "-d", help="debug", default=False, action="store_true")
+if sys.platform.startswith("win"):
+    parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=True, action="store_true")
+else:
+    parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
+parser.add_argument("--touch", "-t", help="touchscreen optimization", default=False, action="store_true")
+parser.add_argument("--debug", "-d", help="debug output", default=False, action="store_true")
+parser.add_argument("--noimage", "-N", help="do not display image", default=False, action="store_true")
 parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
 parser.add_argument("--vertical", "-v", help="vertical tabs", default=False, action="store_true")
 parser.add_argument("--graphs", "-g", help="show graphs", default=False, action="store_true")
+parser.add_argument("--helper", "-H", help="show helper values", default=False, action="store_true")
+parser.add_argument("--by-instance", "-I", help="tabs by plugin instance", default=False, action="store_true")
+parser.add_argument("--instance-name", "-s", help="show only one instance", type=str, default=None)
+parser.add_argument("--plugin-name", "-S", help="show only one plgin", type=str, default=None)
 parser.add_argument("--buffer", "-b", help="buffer size for graphs", type=int, default=100)
-parser.add_argument("config", help="config", nargs="?", type=str, default=None)
-parser.add_argument("target", help="target", nargs="?", type=str, default="")
+parser.add_argument("config", help="json configuration file", nargs="?", type=str, default=None)
+parser.add_argument("target", help="interface string", nargs="?", type=str, default="")
 parser.add_argument("tab", help="tab", nargs="?", type=str, default="")
 args = parser.parse_args()
 
@@ -59,19 +64,31 @@ args = parser.parse_args()
 riocore_path = os.path.dirname(riocore.__file__)
 
 
+class SliderProxyStyle(QProxyStyle):
+    def pixelMetric(self, metric, option, widget):
+        if metric == QStyle.PM_SliderThickness:
+            return 40
+        elif metric == QStyle.PM_SliderLength:
+            return 40
+        return super().pixelMetric(metric, option, widget)
+
+
 class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
-        self.setWindowTitle("LinuxCNC-RIO - TestGui")
+        self.setWindowTitle("RIO - TestGui")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
-        self.setStyleSheet(STYLESHEET)
+        if not args.nostyle:
+            self.setStyleSheet(STYLESHEET)
 
         self.listFile = QListWidget()
         layout = QGridLayout()
         self.setLayout(layout)
 
         self.tabwidget = QTabWidget()
+        if not args.nostyle:
+            self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         self.tabwidget.setMovable(True)
         if args.vertical:
             self.tabwidget.setTabPosition(QTabWidget.West)
@@ -81,8 +98,8 @@ class WinForm(QWidget):
 
         if os.path.isfile(args.config):
             self.config_file = args.config
-        elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
-            self.config_file = f"{riocore_path}/configs/{args.config}"
+        elif os.path.isfile(os.path.join(riocore_path, "configs", args.config)):
+            self.config_file = os.path.join(riocore_path, "configs", args.config)
         else:
             print(f"can not load: {args.config}")
             exit(1)
@@ -98,180 +115,227 @@ class WinForm(QWidget):
             sys.exit(0)
 
         self.project.connect(target)
-
         self.haldata = self.project.haldata()
-
-        plugin_types = set()
-        for plugin_instance, haldata in self.haldata.items():
-            if haldata.get("input") or haldata.get("output"):
-                plugin_types.add(plugin_instance.NAME)
 
         self.ucount = 0
         if args.graphs:
             import pyqtgraph as pg
 
             self.time = list(range(args.buffer))
-            pen = pg.mkPen(color=(255, 255, 255))
+        else:
+            pg = None
 
-        for tab_num, plugin_type in enumerate(sorted(plugin_types)):
-            tab_widget = QWidget()
-            self.tabwidget.addTab(tab_widget, plugin_type.title())
-
-            # tab_layout = QGridLayout()
-            tab_layout1 = QHBoxLayout()
-            tab_widget.setLayout(tab_layout1)
-
-            tab_layout = QVBoxLayout()
-            tab_layout1.addLayout(tab_layout, stretch=3)
-
-            plugin_path = f"{riocore_path}/plugins/{plugin_type}"
-            image_path = f"{plugin_path}/image.png"
-            if os.path.isfile(image_path):
-                ilabel = QLabel(self)
-                pixmap = QPixmap(image_path)
-                ilabel.setPixmap(pixmap)
-                self.resize(pixmap.width(), pixmap.height())
-                tab_layout1.addWidget(ilabel, stretch=1)
-
+        if args.by_instance:
+            # tabs by instance
+            tab_num = 0
             for plugin_instance, haldata in self.haldata.items():
-                if plugin_instance.NAME != plugin_type:
+                plugin_type = plugin_instance.NAME
+                if args.instance_name and plugin_instance.title != args.instance_name:
+                    continue
+                if args.plugin_name and plugin_type != args.plugin_name:
                     continue
 
-                num_signals = len(plugin_instance.SIGNALS)
-                if num_signals > 1:
-                    row_layout = QHBoxLayout()
-                    tab_layout.addLayout(row_layout)
-                    row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"))
+                tab_layout = self.add_tab(plugin_type.title(), plugin_type=plugin_type)
+                self.draw_instance(plugin_instance, haldata, tab_layout, pg, tab_num=tab_num)
+                tab_layout.addStretch()
+                tab_num += 1
 
-                for hdir in ("output", "input", "inout"):
-                    for halname, signal in haldata.get(hdir, {}).items():
-                        value = signal["value"]
-                        userconfig = signal.get("userconfig", {})
+        else:
+            # tabs by plugin type
+            plugin_types = set()
+            for plugin_instance, haldata in self.haldata.items():
+                if args.instance_name and plugin_instance.title != args.instance_name:
+                    continue
+                if haldata.get("input") or haldata.get("output"):
+                    plugin_types.add(plugin_instance.NAME)
+            for tab_num, plugin_type in enumerate(sorted(plugin_types)):
+                if args.plugin_name and plugin_type != args.plugin_name:
+                    continue
 
-                        halname_np = halname.split(".", 1)[-1]
-                        halname_np = userconfig.get("display", {}).get("title", halname_np)
+                tab_layout = self.add_tab(plugin_type.title(), plugin_type=plugin_type)
+                for plugin_instance, haldata in self.haldata.items():
+                    if plugin_instance.NAME != plugin_type:
+                        continue
+                    if args.instance_name and plugin_instance.title != args.instance_name:
+                        continue
 
-                        wid = f"widget_{plugin_instance.title}"
-                        gid = f"graph_{plugin_instance.title}"
-                        virtual = signal.get("virtual", False)
-                        helper = signal.get("helper", False)
-                        direction = signal.get("direction")
-
-                        row_layout = QHBoxLayout()
-                        tab_layout.addLayout(row_layout)
-                        if num_signals == 1:
-                            row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"), stretch=2)
-                        if helper:
-                            print(halname, helper)
-                            row_layout.addWidget(QLabel(f"        {halname_np}"), stretch=2)
-                        else:
-                            row_layout.addWidget(QLabel(f"    {halname_np}"), stretch=2)
-
-                        if virtual:
-                            # swap direction vor virt signals
-                            if direction == "input":
-                                direction = "output"
-                            else:
-                                direction = "input"
-                        if signal.get("bool"):
-                            signal[wid] = QCheckBox()
-                            signal[wid].setChecked(value)
-                            signal[wid].setStyleSheet(STYLESHEET_CHECKBOX)
-                            if args.graphs and direction == "input":
-                                signal[f"graph_tab_{plugin_instance.title}"] = tab_num
-                                signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
-                                plot_graph = pg.PlotWidget()
-                                plot_graph.setBackground("black")
-                                plot_graph.showGrid(x=True, y=True)
-                                plot_graph.setYRange(0, 1)
-                                signal[f"graphw_{plugin_instance.title}"] = plot_graph
-                                signal[f"history_{plugin_instance.title}"] = [0 for _ in range(args.buffer)]
-                                signal[gid] = plot_graph.plot(
-                                    self.time,
-                                    signal[f"history_{plugin_instance.title}"],
-                                    name="Value",
-                                    pen=pen,
-                                )
-                                row_layout.addWidget(plot_graph)
-                            row_layout.addWidget(signal[wid], stretch=6)
-
-                        elif direction == "input":
-                            signal[wid] = QLabel("")
-                            if args.graphs:
-                                signal[f"graph_tab_{plugin_instance.title}"] = tab_num
-                                signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
-                                plot_graph = pg.PlotWidget()
-                                plot_graph.setBackground("black")
-                                plot_graph.showGrid(x=True, y=True)
-                                plot_graph.setYRange(0, 1)
-                                signal[f"graphw_{plugin_instance.title}"] = plot_graph
-                                signal[f"history_{plugin_instance.title}"] = [0 for _ in range(args.buffer)]
-                                signal[gid] = plot_graph.plot(
-                                    self.time,
-                                    signal[f"history_{plugin_instance.title}"],
-                                    name="Value",
-                                    pen=pen,
-                                )
-                                row_layout.addWidget(plot_graph)
-                            row_layout.addWidget(signal[wid], stretch=6)
-                        else:
-                            vmin = signal.get("userconfig", {}).get("min", signal.get("min", 0))
-                            vmax = signal.get("userconfig", {}).get("max", signal.get("max", 100000))
-                            signal[wid] = QSlider(Qt.Horizontal)
-                            signal[wid].setMinimum(int(vmin))
-                            signal[wid].setMaximum(int(vmax))
-                            signal[wid].setSingleStep(1)
-                            signal[wid].setPageStep(int((vmax - vmin) // 1000))
-                            # signal[wid].setTickPosition(QSlider.TicksBelow)
-                            signal[wid].setValue(value)
-                            signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
-                            row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
-                            button = QPushButton("0")
-                            button.clicked.connect(partial(self.slider_reset, signal[wid]))
-                            row_layout.addWidget(signal[wid], stretch=6)
-                            row_layout.addWidget(button, stretch=1)
-
-                if args.debug and plugin_instance.TYPE == "frameio":
-                    row_layout = QHBoxLayout()
-                    tab_layout.addLayout(row_layout)
-                    row_layout.addWidget(QLabel("      >SEND"), stretch=2)
-                    plugin_instance.frame_tx_overwride_widget = QLineEdit()
-                    row_layout.addWidget(plugin_instance.frame_tx_overwride_widget, stretch=5)
-                    button_set = QPushButton("SET")
-                    row_layout.addWidget(button_set, stretch=1)
-                    button_clear = QPushButton("CLEAR")
-                    row_layout.addWidget(button_clear, stretch=1)
-
-                    row_layout = QHBoxLayout()
-                    tab_layout.addLayout(row_layout)
-                    row_layout.addWidget(QLabel("      >TX"), stretch=1)
-                    plugin_instance.frame_tx_id_widget = QLabel("LEN")
-                    row_layout.addWidget(plugin_instance.frame_tx_id_widget, stretch=1)
-                    plugin_instance.frame_tx_widget = QLineEdit("TX")
-                    row_layout.addWidget(plugin_instance.frame_tx_widget, stretch=6)
-
-                    button_set.clicked.connect(partial(self.framecopy, plugin_instance))
-                    button_clear.clicked.connect(partial(self.frameclear, plugin_instance))
-
-                    row_layout = QHBoxLayout()
-                    tab_layout.addLayout(row_layout)
-                    row_layout.addWidget(QLabel("      <RX"), stretch=1)
-                    plugin_instance.frame_rx_id_widget = QLabel("LEN")
-                    row_layout.addWidget(plugin_instance.frame_rx_id_widget, stretch=1)
-                    plugin_instance.frame_rx_widget = QLineEdit("RX")
-                    row_layout.addWidget(plugin_instance.frame_rx_widget, stretch=6)
-
-                    if hasattr(plugin_instance, "testgui_frameio_init"):
-                        plugin_instance.testgui_frameio_init(tab_layout)
-
-            tab_layout.addStretch()
-
-            if args.tab and args.tab.lower() == plugin_type.lower():
-                self.tabwidget.setCurrentWidget(tab_widget)
+                    self.draw_instance(plugin_instance, haldata, tab_layout, pg, tab_num=tab_num)
+                tab_layout.addStretch()
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(args.interval)
+
+    def add_tab(self, title, plugin_type=None):
+        tab_widget = QWidget()
+        scroll_widget = QScrollArea()
+        scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_widget.setWidgetResizable(True)
+        scroll_widget.setWidget(tab_widget)
+        self.tabwidget.addTab(scroll_widget, title)
+        tab_layout1 = QHBoxLayout()
+        tab_widget.setLayout(tab_layout1)
+        tab_layout = QVBoxLayout()
+        tab_layout1.addLayout(tab_layout, stretch=3)
+        tab_layout_r = QVBoxLayout()
+        tab_layout1.addLayout(tab_layout_r, stretch=0)
+        if plugin_type:
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_type)
+            if not args.noimage:
+                image_path = os.path.join(plugin_path, "image.png")
+                if os.path.isfile(image_path):
+                    ilabel = QLabel(self)
+                    pixmap = QPixmap(image_path)
+                    ilabel.setPixmap(pixmap)
+                    self.resize(pixmap.width(), pixmap.height())
+                    tab_layout_r.addWidget(ilabel, stretch=0)
+                    tab_layout_r.addStretch()
+            if args.tab and args.tab.lower() == plugin_type.lower():
+                self.tabwidget.setCurrentWidget(scroll_widget)
+        return tab_layout
+
+    def draw_instance(self, plugin_instance, haldata, layout, pg, tab_num=0):
+        if pg:
+            pen = pg.mkPen(color=(255, 255, 255))
+        num_signals = len(plugin_instance.SIGNALS)
+        if num_signals > 1:
+            row_layout = QHBoxLayout()
+            layout.addLayout(row_layout)
+            row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"))
+
+        for hdir in ("output", "input", "inout"):
+            for halname, signal in haldata.get(hdir, {}).items():
+                value = signal["value"]
+                userconfig = signal.get("userconfig", {})
+
+                halname_np = halname.split(".", 1)[-1]
+                halname_np = userconfig.get("display", {}).get("title", halname_np)
+
+                wid = f"widget_{plugin_instance.title}"
+                gid = f"graph_{plugin_instance.title}"
+                virtual = signal.get("virtual", False)
+                direction = signal.get("direction")
+                helper = signal.get("helper", False)
+                if helper and not args.helper:
+                    continue
+
+                row_layout = QHBoxLayout()
+                layout.addLayout(row_layout)
+                if num_signals == 1:
+                    row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"), stretch=2)
+                if helper:
+                    row_layout.addWidget(QLabel(f"        {halname_np}"), stretch=2)
+                else:
+                    row_layout.addWidget(QLabel(f"    {halname_np}"), stretch=2)
+
+                if virtual:
+                    # swap direction vor virt signals
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
+
+                if signal.get("bool"):
+                    signal[wid] = QCheckBox()
+                    signal[wid].setChecked(value)
+                    if not args.nostyle:
+                        signal[wid].setStyleSheet(STYLESHEET_CHECKBOX)
+
+                    if args.touch:
+                        signal[wid].setStyleSheet(STYLESHEET_CHECKBOX_BIG)
+
+                    if args.graphs and direction == "input":
+                        signal[f"graph_tab_{plugin_instance.title}"] = tab_num
+                        signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
+                        plot_graph = pg.PlotWidget()
+                        plot_graph.setBackground("black")
+                        plot_graph.showGrid(x=True, y=True)
+                        plot_graph.setYRange(0, 1)
+                        signal[f"graphw_{plugin_instance.title}"] = plot_graph
+                        signal[f"history_{plugin_instance.title}"] = [0 for _ in range(args.buffer)]
+                        signal[gid] = plot_graph.plot(
+                            self.time,
+                            signal[f"history_{plugin_instance.title}"],
+                            name="Value",
+                            pen=pen,
+                        )
+                        row_layout.addWidget(plot_graph)
+                    row_layout.addWidget(signal[wid], stretch=6)
+
+                elif direction == "input":
+                    signal[wid] = QLabel("--")
+                    if args.graphs:
+                        signal[f"graph_tab_{plugin_instance.title}"] = tab_num
+                        signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
+                        plot_graph = pg.PlotWidget()
+                        plot_graph.setBackground("black")
+                        plot_graph.showGrid(x=True, y=True)
+                        plot_graph.setYRange(0, 1)
+                        signal[f"graphw_{plugin_instance.title}"] = plot_graph
+                        signal[f"history_{plugin_instance.title}"] = [0 for _ in range(args.buffer)]
+                        signal[gid] = plot_graph.plot(
+                            self.time,
+                            signal[f"history_{plugin_instance.title}"],
+                            name="Value",
+                            pen=pen,
+                        )
+                        row_layout.addWidget(plot_graph)
+                    row_layout.addWidget(signal[wid], stretch=6)
+                else:
+                    vmin = int(signal.get("userconfig", {}).get("display", {}).get("min", signal.get("min", 0)))
+                    vmax = int(signal.get("userconfig", {}).get("display", {}).get("max", signal.get("max", 1000)))
+                    steps = int(vmax / 100)
+                    signal[wid] = QSlider(Qt.Horizontal)
+                    if args.touch:
+                        style = SliderProxyStyle(signal[wid].style())
+                        signal[wid].setStyle(style)
+                    signal[wid].setMinimum(int(vmin))
+                    signal[wid].setMaximum(int(vmax))
+                    signal[wid].setSingleStep(steps)
+                    signal[wid].setPageStep(steps * 10)
+                    # signal[wid].setTickPosition(QSlider.TicksBelow)
+                    signal[wid].setMinimumWidth(200)
+                    signal[wid].setValue(value)
+                    signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
+                    row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
+                    button = QPushButton("0")
+                    button.clicked.connect(partial(self.slider_reset, signal[wid]))
+                    row_layout.addWidget(signal[wid], stretch=6)
+                    row_layout.addWidget(button, stretch=1)
+
+        if args.debug and plugin_instance.TYPE == "frameio":
+            row_layout = QHBoxLayout()
+            layout.addLayout(row_layout)
+            row_layout.addWidget(QLabel("      >SEND"), stretch=2)
+            plugin_instance.frame_tx_overwride_widget = QLineEdit()
+            row_layout.addWidget(plugin_instance.frame_tx_overwride_widget, stretch=5)
+            button_set = QPushButton("SET")
+            row_layout.addWidget(button_set, stretch=1)
+            button_clear = QPushButton("CLEAR")
+            row_layout.addWidget(button_clear, stretch=1)
+
+            row_layout = QHBoxLayout()
+            layout.addLayout(row_layout)
+            row_layout.addWidget(QLabel("      >TX"), stretch=1)
+            plugin_instance.frame_tx_id_widget = QLabel("LEN")
+            row_layout.addWidget(plugin_instance.frame_tx_id_widget, stretch=1)
+            plugin_instance.frame_tx_widget = QLineEdit("TX")
+            row_layout.addWidget(plugin_instance.frame_tx_widget, stretch=6)
+
+            button_set.clicked.connect(partial(self.framecopy, plugin_instance))
+            button_clear.clicked.connect(partial(self.frameclear, plugin_instance))
+
+            row_layout = QHBoxLayout()
+            layout.addLayout(row_layout)
+            row_layout.addWidget(QLabel("      <RX"), stretch=1)
+            plugin_instance.frame_rx_id_widget = QLabel("LEN")
+            row_layout.addWidget(plugin_instance.frame_rx_id_widget, stretch=1)
+            plugin_instance.frame_rx_widget = QLineEdit("RX")
+            row_layout.addWidget(plugin_instance.frame_rx_widget, stretch=6)
+
+            if hasattr(plugin_instance, "testgui_frameio_init"):
+                plugin_instance.testgui_frameio_init(layout)
 
     def framecopy(self, plugin_instance, c):
         frame = plugin_instance.frame_tx_widget.text()
@@ -293,7 +357,8 @@ class WinForm(QWidget):
         dialog.setWindowTitle("select target")
         dialog.setFixedWidth(500)
         dialog.setFixedHeight(400)
-        dialog.setStyleSheet(STYLESHEET)
+        if not args.nostyle:
+            dialog.setStyleSheet(STYLESHEET)
 
         dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
@@ -335,6 +400,9 @@ class WinForm(QWidget):
                         if "port" in plugin_instance.plugin_setup:
                             port = plugin_instance.plugin_setup["port"]
 
+        ip = self.project.config["jdata"].get("ip", ip)
+        port = self.project.config["jdata"].get("port", port)
+
         vlayout_left.addWidget(device)
         vlayout_left.addStretch()
 
@@ -374,6 +442,9 @@ class WinForm(QWidget):
 
             for plugin_instance, haldata in self.haldata.items():
                 for halname, signal in haldata.get("output", {}).items():
+                    if f"widget_{plugin_instance.title}" not in signal:
+                        continue
+
                     if signal.get("bool"):
                         if signal[f"widget_{plugin_instance.title}"].isChecked():
                             self.project.signal_value_set(halname, 1)
@@ -381,7 +452,11 @@ class WinForm(QWidget):
                             self.project.signal_value_set(halname, 0)
                     else:
                         value = signal[f"widget_{plugin_instance.title}"].value()
-                        signal[f"widget_out_{plugin_instance.title}"].setText(f"{value:05d}")
+                        userconfig = signal.get("userconfig", {})
+                        value_unit = userconfig.get("display", {}).get("unit", signal.get("unit", ""))
+                        scale = signal.get("userconfig", {}).get("scale", 1.0)
+                        value_scaled = value / scale
+                        signal[f"widget_out_{plugin_instance.title}"].setText(f"{value_scaled:06.1f} {value_unit}")
                         self.project.signal_value_set(halname, value)
 
                 for halname, signal in haldata.get("inout", {}).items():
@@ -418,7 +493,7 @@ class WinForm(QWidget):
                 print("rx:", rxdata)
                 print((stop - start) * 1000)
 
-            if not args.debug:
+            if not args.debug or True:
                 if len(rxdata) != self.project.buffer_bytes:
                     print(f"ERROR: reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
                     # return
@@ -428,14 +503,18 @@ class WinForm(QWidget):
                     print(f"ERROR: reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
                     # return
 
-            if rxdata:
-                self.project.rxdata_set(rxdata)
+            self.project.rxdata_set(rxdata)
+            if args.debug:
+                print("TIMESTAMP", self.project.timestamp, self.project.duration)
 
             if args.graphs:
                 self.time = self.time[1:]
                 self.time.append(self.time[-1] + 1)
 
             for plugin_instance, haldata in self.haldata.items():
+                # if f"widget_{plugin_instance.title}" not in signal:
+                #    continue
+
                 if args.debug and plugin_instance.TYPE == "frameio":
                     txframe_raw = plugin_instance.INTERFACE["txdata"]["value"]
                     txframe = []
@@ -446,33 +525,38 @@ class WinForm(QWidget):
                         txframe.append(str(int(p)))
                     frame_tx_id = int(txframe[0])
                     frame_tx_len = int(txframe[1])
+
                     plugin_instance.frame_tx_id_widget.setText(str(frame_tx_id))
                     plugin_instance.frame_tx_widget.setText(" ".join(txframe[2 : (frame_tx_len + 2)]))
 
                     if hasattr(plugin_instance, "testgui_frameio_update"):
                         plugin_instance.testgui_frameio_update(True, txframe)
-
                     rxframe_raw = plugin_instance.INTERFACE["rxdata"]["value"]
                     rxframe = []
-                    for p in rxframe_raw:
-                        rxframe.append(str(int(p)))
-                    frame_rx_id = int(rxframe[1])
-                    frame_rx_len = int(rxframe[2])
-                    plugin_instance.frame_rx_id_widget.setText(str(frame_rx_id))
-                    plugin_instance.frame_rx_widget.setText(" ".join(reversed(rxframe[3 : (frame_rx_len + 3)])))
+                    if rxframe_raw:
+                        for p in rxframe_raw:
+                            rxframe.append(str(int(p)))
+                        frame_rx_id = int(rxframe[1])
+                        frame_rx_len = int(rxframe[2])
+                        plugin_instance.frame_rx_id_widget.setText(str(frame_rx_id))
+                        plugin_instance.frame_rx_widget.setText(" ".join(reversed(rxframe[3 : (frame_rx_len + 3)])))
 
-                    if hasattr(plugin_instance, "testgui_frameio_update"):
-                        plugin_instance.testgui_frameio_update(False, rxframe)
+                        if hasattr(plugin_instance, "testgui_frameio_update"):
+                            plugin_instance.testgui_frameio_update(False, rxframe)
 
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
-                    value_format = signal.get("format", "d")
+                    value_format = signal.get("format", "0.2f")
                     value_unit = signal.get("unit", "")
                     userconfig = signal.get("userconfig", {})
                     value_unit = userconfig.get("display", {}).get("unit", value_unit)
                     value_format = userconfig.get("display", {}).get("format", value_format)
                     value_offset = userconfig.get("offset", 0.0)
                     value_scale = userconfig.get("scale", 1.0)
+
+                    helper = signal.get("helper", False)
+                    if helper and not args.helper:
+                        continue
 
                     if value_scale != 1.0 or value_offset:
                         value = (value + value_offset) / value_scale

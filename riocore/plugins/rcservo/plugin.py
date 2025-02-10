@@ -51,7 +51,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.FIRMWARE_SUPPORT = True
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

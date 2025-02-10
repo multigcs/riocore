@@ -17,29 +17,18 @@
             "baud": 1000000
         },
         {
-            "type": "bitout",
-            "name": "blink",
+            "type": "flipflop_in",
             "pins": {
-                "bit": {
-                    "pin": "10",
+                "set": {
+                    "pin": "SW:S1",
                     "modifier": [
                         {
                             "type": "invert"
-                        },
-                        {
-                            "type": "pwm"
                         }
                     ]
-                }
-            }
-        },
-        {
-            "type": "bitin",
-            "name": "in1",
-            "pins": {
-                "bit": {
-                    "pin": "3",
-                    "pull": "up",
+                },
+                "reset": {
+                    "pin": "SW:S2",
                     "modifier": [
                         {
                             "type": "invert"
@@ -49,12 +38,40 @@
             }
         },
         {
-            "type": "bitin",
-            "name": "in2",
+            "type": "sinepwm",
             "pins": {
-                "bit": {
-                    "pin": "4",
-                    "pull": "up",
+                "out0": {
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pin": "LED:L1"
+                },
+                "out1": {
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pin": "LED:L2"
+                },
+                "out2": {
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pin": "LED:L3"
+                }
+            },
+            "phases": 3
+        },
+        {
+            "type": "pdmout",
+            "pins": {
+                "pdm": {
+                    "pin": "LED:L6",
                     "modifier": [
                         {
                             "type": "invert"
@@ -62,6 +79,34 @@
                     ]
                 }
             }
+        },
+        {
+            "type": "bitcopy",
+            "pins": {
+                "bit": {
+                    "pin": "PIN:48"
+                }
+            },
+            "origin": "PINOUT_SINEPWM2_OUT0"
+        },
+        {
+            "type": "bitcopy",
+            "pins": {
+                "bit": {
+                    "pin": "PIN:49"
+                }
+            },
+            "origin": "PINOUT_SINEPWM2_OUT1"
+        },
+        {
+            "type": "bitcopy",
+            "pins": {
+                "bit": {
+                    "pin": "PIN:31"
+                }
+            },
+            "origin": "PINOUT_SINEPWM2_OUT2"
         }
-    ]
+    ],
+    "toolchain": "icestorm"
 }

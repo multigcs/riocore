@@ -1,24 +1,12 @@
 # rcservo
+
+<img align="right" width="320" src="image.png">
+
 **rc-servo output**
 
 to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 
 Keywords: joint rcservo
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "rcservo",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -84,6 +72,18 @@ absolute position (-100 = 1ms / 100 = 2ms)
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "rcservo",
+    "pins": {
+        "pwm": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

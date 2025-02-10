@@ -1,24 +1,12 @@
 # wled
+
+<img align="right" width="320" src="image.png">
+
 **ws2812b interface**
 
 simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each led
 
 Keywords: led rgb status info
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "wled",
-    "pins": {
-        "data": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -87,6 +75,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "wled",
+    "pins": {
+        "data": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

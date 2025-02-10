@@ -1,54 +1,12 @@
 # dis7seg
+
+<img align="right" width="320" src="image.png">
+
 **7segment display with buttons**
 
 only usable for devboards with 7segment display / better using other 7seg plugins
 
 Keywords: info display
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "dis7seg",
-    "pins": {
-        "en1": {
-            "pin": "0"
-        },
-        "en2": {
-            "pin": "1"
-        },
-        "en3": {
-            "pin": "2"
-        },
-        "en4": {
-            "pin": "3"
-        },
-        "seg_a": {
-            "pin": "4"
-        },
-        "seg_b": {
-            "pin": "5"
-        },
-        "seg_c": {
-            "pin": "6"
-        },
-        "seg_d": {
-            "pin": "7"
-        },
-        "seg_e": {
-            "pin": "8"
-        },
-        "seg_f": {
-            "pin": "9"
-        },
-        "seg_g": {
-            "pin": "10"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -132,6 +90,48 @@ number to display
  * direction: output
  * multiplexed: True
 
+
+## Basic-Example:
+```
+{
+    "type": "dis7seg",
+    "pins": {
+        "en1": {
+            "pin": "0"
+        },
+        "en2": {
+            "pin": "1"
+        },
+        "en3": {
+            "pin": "2"
+        },
+        "en4": {
+            "pin": "3"
+        },
+        "seg_a": {
+            "pin": "4"
+        },
+        "seg_b": {
+            "pin": "5"
+        },
+        "seg_c": {
+            "pin": "6"
+        },
+        "seg_d": {
+            "pin": "7"
+        },
+        "seg_e": {
+            "pin": "8"
+        },
+        "seg_f": {
+            "pin": "9"
+        },
+        "seg_g": {
+            "pin": "10"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+#
+#
+
+from struct import pack, unpack
+import os
+import socket
+import sys
+
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
+
+
+import riocore
+
+
+class Interface:
+    def __init__(self, cstr):
+        (self.NET_IP, self.NET_PORT) = cstr.split(":")
+
+        self.pkg_out = 0
+        self.pkg_in = 0
+        self.last_clinet = None
+
+        print("IP:", self.NET_IP)
+        print("PORT:", self.NET_PORT)
+
+        self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.socket.bind(("0.0.0.0", int(self.NET_PORT)))
+        # clear buffer
+        try:
+            self.socket.settimeout(0.2)
+            self.socket.recvfrom(100000)
+        except Exception as err:
+            print(f"WARNING: can not set timeouts: {err}")
+
+    def receive(self, data):
+        self.socket.settimeout(1.2)
+        try:
+            msgFromServer = self.socket.recvfrom(len(data) * 4)
+            self.last_clinet = msgFromServer[1]
+
+            # print("#", list(msgFromServer[0]))
+
+            if len(msgFromServer[0]) == len(data):
+                rec = list(msgFromServer[0])
+            else:
+                print(f"{self.pkg_out}/{self.pkg_in} WRONG DATASIZE: {len(msgFromServer[0])} / {len(data)}")
+                rec = list(msgFromServer[0])
+        except TimeoutError:
+            print("Network TimeoutError")
+            rec = []
+        return rec
+
+    def transmit(self, data):
+        self.socket.sendto(bytes(data), self.last_clinet)
+
+
+stepper = {}
+
+
+def receive(project):
+    data = [0] * int((project.buffer_size + 7) / 8)
+    rxdata = net.receive(data)
+
+    if len(rxdata) < 4 or rxdata[0] != 116 or rxdata[1] != 105 or rxdata[2] != 114 or rxdata[3] != 119:
+        print("rx error: ", rxdata)
+        return False
+
+    input_pos = project.buffer_size - project.header_size
+
+    if project.multiplexed_output:
+        # mpx value
+        variable_size = project.multiplexed_output_size
+        byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
+        byte_start = project.buffer_bytes - 1 - byte_start
+        byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+        if len(byte_pack) < 4:
+            byte_pack += [0] * (4 - len(byte_pack))
+        if byte_size == 8:
+            project.multiplexed_output_value = unpack("<d", bytes(byte_pack))[0]
+        else:
+            project.multiplexed_output_value = unpack("<i", bytes(byte_pack))[0]
+        input_pos -= variable_size
+
+        # mpx id
+        variable_size = 8
+        byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
+        byte_start = project.buffer_bytes - 1 - byte_start
+        byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+        if len(byte_pack) < 4:
+            byte_pack += [0] * (4 - len(byte_pack))
+        project.multiplexed_output_id = unpack("<i", bytes(byte_pack))[0]
+        input_pos -= variable_size
+
+        # set plugin value from mpx
+        mpxid = 0
+        for size, plugin_instance, data_name, data_config in project.get_interface_data():
+            multiplexed = data_config.get("multiplexed", False)
+            if not multiplexed:
+                continue
+            variable_size = data_config["size"]
+            if data_config["direction"] == "output":
+                if project.multiplexed_output_id == mpxid:
+                    data_config["value"] = project.multiplexed_output_value
+                mpxid += 1
+
+    for size, plugin_instance, data_name, data_config in project.get_interface_data():
+        expansion = data_config.get("expansion", False)
+        if expansion:
+            continue
+        multiplexed = data_config.get("multiplexed", False)
+        if multiplexed:
+            continue
+        variable_size = data_config["size"]
+        if data_config["direction"] == "output" or data_config["direction"] == "inout":
+            byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
+            byte_start = project.buffer_bytes - 1 - byte_start
+            if plugin_instance.TYPE == "frameio":
+                data_config["value"] = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+
+            elif variable_size > 1:
+                byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+                if len(byte_pack) < 4:
+                    byte_pack += [0] * (4 - len(byte_pack))
+                data_config["value"] = unpack("<i", bytes(byte_pack))[0]
+
+            else:
+                data_config["value"] = 1 if rxdata[byte_start] & (1 << bit_offset) else 0
+
+            input_pos -= variable_size
+
+            # print(">", plugin_instance.instances_name, data_name, data_config["value"])
+
+            if data_name == "velocity":
+                if f"{plugin_instance.instances_name}" not in stepper:
+                    stepper[f"{plugin_instance.instances_name}"] = 0
+
+    return True
+
+
+def display(project):
+    for size, plugin_instance, data_name, data_config in project.get_interface_data():
+        if data_config["direction"] == "output":
+            title = f"{plugin_instance.instances_name}.{data_name}"
+            value = data_config["value"]
+            if plugin_instance.NAME == "modbus":
+                frame_seq = value[0]
+                frame_len = value[1]
+                frame_data = value[2:frame_len]
+                print(f">{title}: {frame_seq:03d} {frame_data}")
+            else:
+                print(f">{title}: {value}")
+    print("")
+
+
+def simulate(project):
+    sysclk_speed = project.config["speed"]
+    duration = 1000
+    for size, plugin_instance, data_name, data_config in project.get_interface_data():
+        # expansion = data_config.get("expansion", False)
+        # multiplexed = data_config.get("multiplexed", False)
+        interface_data = plugin_instance.interface_data()
+        # signal_config = plugin_instance.signals().get(data_name, {})
+
+        if plugin_instance.TYPE == "frameio" and data_config["direction"] == "output" and plugin_instance.NAME == "modbus":
+            frame_len = data_config["value"][1]
+            frame_data = data_config["value"][2:frame_len]
+
+            if data_config.get("last_frame", []) == data_config["value"]:
+                # delay the update to simulate modbus
+                seqn = interface_data["rxdata"]["value"][0]
+                response = frame_data
+                rlen = len(response)
+                rframe = [rlen] + response
+                if interface_data["rxdata"]["value"][1:] != rframe:
+                    seqn += 1
+                    if seqn > 255:
+                        seqn = 0
+                interface_data["rxdata"]["value"] = [seqn] + rframe
+
+            data_config["last_frame"] = data_config["value"]
+
+        elif plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
+            if "velocity" in interface_data and interface_data["enable"]["value"]:
+                velocity = interface_data["velocity"]["value"]
+                if velocity != 0:
+                    velocity = sysclk_speed / velocity / 2
+                    interface_data["position"]["value"] += int(velocity / duration)
+
+
+def transmit(project):
+    txdata = [0] * int((project.buffer_size + 7) / 8)
+    txdata[0] = 0x61
+    txdata[1] = 0x74
+    txdata[2] = 0x61
+    txdata[3] = 0x64
+    output_pos = project.buffer_size - project.header_size
+
+    # timestamp
+    value = 1234
+    variable_size = 32
+    byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
+    byte_start = project.buffer_bytes - 1 - byte_start
+    txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
+    output_pos -= variable_size
+
+    if project.multiplexed_input:
+        variable_size = project.multiplexed_input_size
+        byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
+        byte_start = project.buffer_bytes - 1 - byte_start
+        txdata[byte_start - (byte_size - 1) : byte_start + 1] = [0] * (variable_size // 8)
+        output_pos -= variable_size
+
+        # print("< MULTIPLEXED", [0] * (variable_size // 8))
+
+        variable_size = 8
+        byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
+        byte_start = project.buffer_bytes - 1 - byte_start
+        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(0)))[0:byte_size]
+        output_pos -= variable_size
+
+        # print("< MULTIPLEXED", [0] * (variable_size // 8))
+
+    for size, plugin_instance, data_name, data_config in project.get_interface_data():
+        expansion = data_config.get("expansion", False)
+        if expansion:
+            continue
+        multiplexed = data_config.get("multiplexed", False)
+        if multiplexed:
+            continue
+        if data_config["direction"] == "input" or data_config["direction"] == "inout":
+            variable_size = data_config["size"]
+            value = data_config["value"]
+            byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
+            byte_start = project.buffer_bytes - 1 - byte_start
+            if plugin_instance.TYPE == "frameio":
+                if not value:
+                    value = [0] * byte_size
+                else:
+                    diff = byte_size - len(value)
+                    value += [0] * diff
+                txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
+            elif variable_size > 1:
+                txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
+            else:
+                if value == 1:
+                    txdata[byte_start] |= 1 << bit_offset
+            output_pos -= variable_size
+
+            # print("<", plugin_instance.instances_name, data_name, value)
+
+    net.transmit(txdata)
+
+
+config = sys.argv[1]
+project = riocore.Project(config)
+net = Interface("127.0.0.1:2390")
+connected = False
+
+while True:
+    if receive(project):
+        if connected is False:
+            print("connected")
+            connected = True
+        transmit(project)
+        simulate(project)
+        display(project)
+    else:
+        connected = False

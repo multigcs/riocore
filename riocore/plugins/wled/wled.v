@@ -38,7 +38,7 @@ module wled
             write <= 1;
         end else begin
             if (led_num < NUM_LEDS) begin
-                led_num <= led_num + 1;
+                led_num <= led_num + 8'd1;
             end else begin
                 led_num <= 0;
             end

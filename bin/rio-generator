@@ -6,64 +6,117 @@ import argparse
 import os
 import sys
 
-if os.path.isfile("./riocore/__init__.py"):
-    sys.path.insert(0, "./")
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
 
 import riocore
+from riocore import halgraph
 
 riocore_path = os.path.dirname(riocore.__file__)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("config", help="json config file", nargs="?", type=str, default=None)
+parser.add_argument("config", help="json config file", nargs=1, type=str, default=None)
 parser.add_argument("output", help="output directory", nargs="?", type=str, default=None)
 parser.add_argument("--preview", "-p", help="generate preview / no pll config", default=False, action="store_true")
 parser.add_argument("--build", "-b", help="build gateware", default=False, action="store_true")
 parser.add_argument("--flash", "-f", help="flash gateware", default=False, action="store_true")
+parser.add_argument("--ram", "-r", help="flash gateware to sram", default=False, action="store_true")
+if sys.platform == "linux":
+    parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
+    parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
 args = parser.parse_args()
 
 if args.config:
-    if args.config.endswith(".json"):
-        if os.path.isfile(args.config):
-            config_file = args.config
-        elif os.path.isfile(f"{riocore_path}/configs/{args.config}"):
-            config_file = f"{riocore_path}/configs/{args.config}"
+    if args.config[0].endswith(".json"):
+        if os.path.isfile(args.config[0]):
+            config_file = args.config[0]
+        elif os.path.isfile(f"{riocore_path}/configs/{args.config[0]}"):
+            config_file = f"{riocore_path}/configs/{args.config[0]}"
         else:
-            print(f"can not load: {args.config}")
+            print(f"can not load: {args.config[0]}")
             exit(1)
         print(f"loading: {config_file}")
         project = riocore.Project(config_file, args.output)
         project.generator(preview=args.preview)
 
         config_name = project.config.get("name")
+        gateware_path = os.path.join("Output", config_name, "Gateware")
+        startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
+
+        try:
+            ini_path = os.path.join("Output", config_name, "LinuxCNC", "rio.ini")
+            svg_path = os.path.join("Output", config_name, "LinuxCNC", "halgraph.svg")
+            graph = halgraph.HalGraph()
+            svg_data = graph.svg(ini_path)
+            if svg_data:
+                open(svg_path, "wb").write(svg_data)
+        except Exception as error:
+            print(f"WARING: failed to write halgraph.svg: {error}")
 
         if args.build:
-            cmd = f"(cd Output/{config_name}/Gateware/ ; make clean all)"
+            cmd = f"(cd {gateware_path} && make clean all)"
             print("")
             print("running:")
             print(f"  {cmd}")
+            if sys.platform.startswith("win"):
+                print(f"  cd {os.getcwd()}")
             print("")
-            os.system(cmd)
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
         if args.flash:
-            cmd = f"(cd Output/{config_name}/Gateware/ ; make load)"
+            cmd = f"(cd {gateware_path} && make load)"
+            print("")
+            print("running:")
+            print(f"  {cmd}")
+            if sys.platform.startswith("win"):
+                print(f"  cd {os.getcwd()}")
+            print("")
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
+        if args.ram:
+            cmd = f"(cd {gateware_path} && make sload)"
+            print("")
+            print("running:")
+            print(f"  {cmd}")
+            if sys.platform.startswith("win"):
+                print(f"  cd {os.getcwd()}")
+            print("")
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
+        if sys.platform == "linux" and args.start:
+            if args.ngc:
+                ngc_realpath = os.path.realpath(args.ngc)
+                cmd = f"sh {startsh_path} {ngc_realpath}"
+            else:
+                cmd = f"sh {startsh_path}"
             print("")
             print("running:")
             print(f"  {cmd}")
             print("")
-            os.system(cmd)
+            ret = os.system(cmd)
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
 
-    elif args.config.startswith("testbench:"):
-        plugin = args.config.split(":")[-1]
+    elif args.config[0].startswith("testbench:"):
+        plugin = args.config[0].split(":")[-1]
         plugins = riocore.Plugins()
         plugin_instance = plugins.load_plugin(plugin, {"type": plugin}, {"speed": 1000000, "jdata": {"clock": {"speed": 1000000}}})
         plugins.testbench_builder(plugin, plugin_instance)
 
-    elif args.config.startswith("plugininfo:"):
-        plugin = args.config.split(":")[-1]
+    elif args.config[0].startswith("plugininfo:"):
+        plugin = args.config[0].split(":")[-1]
         plugins = riocore.Plugins()
         print(plugins.info(plugin))
 
-    elif args.config.startswith("pluginlist"):
-        plugin = args.config.split(":")[-1]
+    elif args.config[0].startswith("pluginlist"):
+        plugin = args.config[0].split(":")[-1]
         plugins = riocore.Plugins()
         for line in plugins.list():
             print(line)

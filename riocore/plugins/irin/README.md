@@ -1,24 +1,12 @@
 # irin
+
+<img align="right" width="320" src="image.png">
+
 **IR-Remote input**
 
 that was just a gimmick, not really useful
 
 Keywords: remote control keyboard
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "irin",
-    "pins": {
-        "ir": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -51,6 +39,18 @@ name of this plugin instance
  * size: 8 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "irin",
+    "pins": {
+        "ir": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

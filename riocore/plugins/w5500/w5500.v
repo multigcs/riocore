@@ -32,7 +32,7 @@ module w5500
             clk_counter <= DIVIDER;
             mclk <= ~mclk;
         end else begin
-            clk_counter <= clk_counter - 1;
+            clk_counter <= clk_counter - 1'd1;
         end
     end
 
@@ -42,10 +42,6 @@ module w5500
     reg flush_requested = 1'b0;
     reg [BUFFER_SIZE-1:0] data_to_ethernet = 0;
     reg data_out_valid = 1'b0;
-`ifdef WIZNET5500_ACCEPT_INSTRUCTIONS
-    reg [31:0] instruction_input = 32'd0;
-    reg instruction_input_valid = 1'b0;
-`endif
     wire ethernet_available;
     reg do_transmit = 0;
 
@@ -82,14 +78,6 @@ module w5500
                    .mosi(mosi),
                    .spi_clk(sclk),
                    .spi_chip_select_n(sel),
-    `ifdef WIZNET5500_READ_DATA
-                   .data_read(data_read),
-                   .data_read_valid(data_read_valid),
-    `endif
-    `ifdef WIZNET5500_ACCEPT_INSTRUCTIONS
-                   .instruction_input_valid(instruction_input_valid),
-                   .instruction_input(instruction_input),
-    `endif
                    .is_available(ethernet_available),
                    .data_input(data_to_ethernet),
                    .data_input_valid(data_out_valid),
@@ -116,10 +104,6 @@ module wiznet5500
      (
          input clk,
          input miso,
-   `ifdef WIZNET5500_ACCEPT_INSTRUCTIONS
-         input instruction_input_valid,
-         input [31:0] instruction_input,
-   `endif
          input data_input_valid,
          input [BUFFER_SIZE_TX-1:0] data_input,
          output reg [BUFFER_SIZE_RX-1:0] data_output,
@@ -127,10 +111,6 @@ module wiznet5500
          output reg mosi,
          output reg spi_clk = 1'b0,
          output reg spi_chip_select_n,
-         output reg[7:0] data_read = 8'd0,
-   `ifdef WIZNET5500_READ_DATA
-         output reg data_read_valid = 1'b0,
-   `endif
          output reg data_output_valid = 0,
          output is_available
      );
@@ -234,7 +214,6 @@ module wiznet5500
     localparam STATE_SET_PORT_0 =	     5'd16;
     localparam STATE_SET_PORT_1 =	     5'd17;
 
-
     reg is_busy = 1'b0;
     reg [BUFFER_SIZE_RX+HEADER_SIZE+24-1:0] rx_buffer = 0;
     reg [31:0] current_instruction;
@@ -242,20 +221,14 @@ module wiznet5500
     reg [4:0] state = STATE_INITIALIZING;
     reg [4:0] next_state = STATE_UNDEFINED;
     reg [5:0] initialization_progress = 6'b000000;
+    reg [7:0] data_read = 8'd0;
     reg waiting_for_socket = 1'b0;
     reg is_initialized = 1'b0;
     reg is_check_rx = 0;
     reg [(BUFFER_SIZE_TX+24-1):0] tx_buffer;
 
-`ifdef WIZNET5500_ACCEPT_INSTRUCTIONS
-    assign is_available = !is_busy && !data_input_valid && !flush_requested && !instruction_input_valid;
-`else
     assign is_available = !is_busy && !data_input_valid && !flush_requested;
-`endif
 
-    reg [31:0] local_ip = IP_ADDR;
-    reg [31:0] local_gw = GW_ADDR;
-    reg [31:0] net_mask = NET_MASK;
     reg [31:0] dst_ip = {8'd192, 8'd168, 8'd10, 8'd0};
     reg [15:0] dst_port = 16'd2390;
     reg [10:0] rx_size = 11'd0;
@@ -449,22 +422,22 @@ module wiznet5500
                 6: current_instruction <= {SET_MAC_ADDRESS_BYTE_5, MAC_ADDR[7:0]};
 
                 // Set our IP address
-                7: current_instruction <= {SET_SOURCE_IP_ADDRESS_0, local_ip[31:24]};
-                8: current_instruction <= {SET_SOURCE_IP_ADDRESS_1, local_ip[23:16]};
-                9: current_instruction <= {SET_SOURCE_IP_ADDRESS_2, local_ip[15:8]};
-                10: current_instruction <= {SET_SOURCE_IP_ADDRESS_3, local_ip[7:0]};
+                7: current_instruction <= {SET_SOURCE_IP_ADDRESS_0, IP_ADDR[31:24]};
+                8: current_instruction <= {SET_SOURCE_IP_ADDRESS_1, IP_ADDR[23:16]};
+                9: current_instruction <= {SET_SOURCE_IP_ADDRESS_2, IP_ADDR[15:8]};
+                10: current_instruction <= {SET_SOURCE_IP_ADDRESS_3, IP_ADDR[7:0]};
 
                 // Set the gateway address
-                11: current_instruction <= {SET_GATEWAY_ADDRESS_0, local_gw[31:24]};
-                12: current_instruction <= {SET_GATEWAY_ADDRESS_1, local_gw[23:16]};
-                13: current_instruction <= {SET_GATEWAY_ADDRESS_2, local_gw[15:8]};
-                14: current_instruction <= {SET_GATEWAY_ADDRESS_3, local_gw[7:0]};
+                11: current_instruction <= {SET_GATEWAY_ADDRESS_0, GW_ADDR[31:24]};
+                12: current_instruction <= {SET_GATEWAY_ADDRESS_1, GW_ADDR[23:16]};
+                13: current_instruction <= {SET_GATEWAY_ADDRESS_2, GW_ADDR[15:8]};
+                14: current_instruction <= {SET_GATEWAY_ADDRESS_3, GW_ADDR[7:0]};
 
                 // Set the subnet mask
-                15: current_instruction <= {SET_SUBNET_MASK_0, net_mask[31:24]};
-                16: current_instruction <= {SET_SUBNET_MASK_1, net_mask[23:16]};
-                17: current_instruction <= {SET_SUBNET_MASK_2, net_mask[15:8]};
-                18: current_instruction <= {SET_SUBNET_MASK_3, net_mask[7:0]};
+                15: current_instruction <= {SET_SUBNET_MASK_0, NET_MASK[31:24]};
+                16: current_instruction <= {SET_SUBNET_MASK_1, NET_MASK[23:16]};
+                17: current_instruction <= {SET_SUBNET_MASK_2, NET_MASK[15:8]};
+                18: current_instruction <= {SET_SUBNET_MASK_3, NET_MASK[7:0]};
 
                 // Set socket 0's mode
                 19: current_instruction <= SET_SOCKET_0_MODE;
@@ -498,18 +471,6 @@ module wiznet5500
                     waiting_for_socket <= 1'b1;
                 end
             endcase
-   `ifdef WIZNET5500_ACCEPT_INSTRUCTIONS      
-        end else if (state == STATE_IDLE && instruction_input_valid == 1'b1) begin
-            spi_clk <= 1'b0;
-            state <= STATE_SENDING_COMMAND;
-            spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 10'd0;
-            current_instruction <= instruction_input;
-      `ifdef WIZNET5500_READ_DATA
-            data_read_valid <= 1'b0;
-      `endif
-            is_busy <= 1'b1;
-   `endif
         end else if (state == STATE_IDLE && data_input_valid == 1'b1) begin
             tx_buffer <= {tx_buffer_write_pointer, 8'b00010100, data_input};
             spi_clk <= 1'b0;

@@ -1,0 +1,295 @@
+{
+    "name": "LX9MicroBoard",
+    "description": "LX9MicroBoard - Spartan6 devboard\non my debian12, it works with openFPGAloader",
+    "url": "https://www.avnet.com/opasdata/d120001/medias/docus/178/PB-AES-S6MB-LX9-G-V1.pdf",
+    "toolchain": "ise",
+    "family": "xc6",
+    "type": "xc6slx9-csg324",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 -f rio.bit",
+    "sflashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 rio.bit",
+    "package": "csg324",
+    "clock_40": {
+        "speed": "40000000",
+        "pin": "V10",
+        "startup": "CClk"
+    },
+    "clock_66": {
+        "speed": "66700000",
+        "pin": "K15",
+        "startup": "CClk"
+    },
+    "clock": {
+        "speed": "100000000",
+        "pin": "C10",
+        "startup": "CClk"
+    },
+    "slots": [
+        {
+            "name": "UART",
+            "comment": "UART over USB",
+            "pins": {
+                "RX": {
+                    "pin": "R7",
+                    "pos": [
+                        581,
+                        45
+                    ]
+                },
+                "TX": {
+                    "pin": "T7",
+                    "pos": [
+                        581,
+                        65
+                    ]
+                }
+            }
+        },
+        {
+            "name": "I2C",
+            "comment": "I2C for the CDCE913",
+            "pins": {
+                "SCL": "P12",
+                "SDA": "U13"
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "LEDs",
+            "pins": {
+                "D1": {
+                    "pin": "P4",
+                    "rotate": true,
+                    "pos": [
+                        310,
+                        200
+                    ]
+                },
+                "D2": {
+                    "pin": "L6",
+                    "rotate": true,
+                    "pos": [
+                        328,
+                        200
+                    ]
+                },
+                "D3": {
+                    "pin": "F5",
+                    "rotate": true,
+                    "pos": [
+                        323,
+                        5
+                    ]
+                },
+                "D4": {
+                    "pin": "C2",
+                    "rotate": true,
+                    "pos": [
+                        341,
+                        5
+                    ]
+                }
+            }
+        },
+        {
+            "name": "SW",
+            "comment": "dip-switches",
+            "pins": {
+                "S0": {
+                    "pin": "B3",
+                    "rotate": true,
+                    "pos": [
+                        210,
+                        100
+                    ]
+                },
+                "S1": {
+                    "pin": "A3",
+                    "rotate": true,
+                    "pos": [
+                        223,
+                        100
+                    ]
+                },
+                "S2": {
+                    "pin": "B4",
+                    "rotate": true,
+                    "pos": [
+                        236,
+                        100
+                    ]
+                },
+                "S3": {
+                    "pin": "A4",
+                    "rotate": true,
+                    "pos": [
+                        249,
+                        100
+                    ]
+                },
+                "S5": {
+                    "pin": "V4",
+                    "pos": [
+                        489,
+                        67
+                    ]
+                }
+            }
+        },
+        {
+            "name": "PMOD1",
+            "comment": "PMOD1 on J5",
+            "pins": {
+                "P1": {
+                    "pin": "F15",
+                    "rotate": true,
+                    "pos": [
+                        210,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "F16",
+                    "rotate": true,
+                    "pos": [
+                        230,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "C17",
+                    "rotate": true,
+                    "pos": [
+                        250,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "C18",
+                    "rotate": true,
+                    "pos": [
+                        270,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "F14",
+                    "rotate": true,
+                    "pos": [
+                        210,
+                        2
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "G14",
+                    "rotate": true,
+                    "pos": [
+                        230,
+                        2
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "D17",
+                    "rotate": true,
+                    "pos": [
+                        250,
+                        2
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "D18",
+                    "rotate": true,
+                    "pos": [
+                        270,
+                        2
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "PMOD2",
+            "comment": "PMOD2 on J4",
+            "pins": {
+                "P1": {
+                    "pin": "H12",
+                    "rotate": true,
+                    "pos": [
+                        365,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "G13",
+                    "rotate": true,
+                    "pos": [
+                        385,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "E16",
+                    "rotate": true,
+                    "pos": [
+                        405,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "E18",
+                    "rotate": true,
+                    "pos": [
+                        425,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "K12",
+                    "rotate": true,
+                    "pos": [
+                        365,
+                        2
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "K13",
+                    "rotate": true,
+                    "pos": [
+                        385,
+                        2
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "F17",
+                    "rotate": true,
+                    "pos": [
+                        405,
+                        2
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "F18",
+                    "rotate": true,
+                    "pos": [
+                        425,
+                        2
+                    ],
+                    "direction": "all"
+                }
+            }
+        }
+    ]
+}

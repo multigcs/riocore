@@ -1,30 +1,12 @@
 # counter
+
+<img align="right" width="320" src="image.png">
+
 **pulse counter input**
 
 to counting digital pulses, supporting up,down and reset signals
 
 Keywords: counter pulse
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "counter",
-    "pins": {
-        "up": {
-            "pin": "0"
-        },
-        "down": {
-            "pin": "1"
-        },
-        "reset": {
-            "pin": "2"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -71,6 +53,24 @@ name of this plugin instance
  * size: 32 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "counter",
+    "pins": {
+        "up": {
+            "pin": "0"
+        },
+        "down": {
+            "pin": "1"
+        },
+        "reset": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

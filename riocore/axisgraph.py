@@ -2,15 +2,18 @@ import graphviz
 
 
 class AxisGraph:
-    def __init__(self, hal_file, ini_file):
-        self.gAll = graphviz.Digraph("G", format="svg")
-        self.gAll.attr(rankdir="LR")
-        self.gAll.attr(bgcolor="black")
-        self.hal_data = open(hal_file, "r").read()
-        self.ini_data = open(ini_file, "r").read()
+    def __init__(self):
+        pass
 
-    def svg(self):
+    def svg(self, hal_file, ini_file):
         try:
+            self.gAll = graphviz.Digraph("G", format="svg")
+            self.gAll.attr(rankdir="LR")
+            self.gAll.attr(bgcolor="black")
+
+            self.hal_data = open(hal_file, "r").read()
+            self.ini_data = open(ini_file, "r").read()
+
             ja_links = {}
             last_section = None
             last_axis = None
@@ -88,7 +91,7 @@ class AxisGraph:
                 infos = "|".join(kins.split())
                 label = f"{{{{Kins|{infos}}}}}"
                 self.gAll.node(
-                    f"kins",
+                    "kins",
                     shape="record",
                     label=label,
                     fontsize="11pt",

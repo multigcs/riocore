@@ -10,8 +10,9 @@ import sys
 import traceback
 
 from .generator.Gateware import Gateware
-from .generator.LinuxCNC import LinuxCNC
+from .generator.Simulator import Simulator
 from .generator.Firmware import Firmware
+from .generator.LinuxCNC import LinuxCNC
 
 riocore_path = os.path.dirname(__file__)
 
@@ -23,7 +24,7 @@ class Plugins:
 
     def list(self):
         plugins = []
-        for plugin_path in sorted(glob.glob(f"{riocore_path}/plugins/*/plugin.py")):
+        for plugin_path in sorted(glob.glob(os.path.join(riocore_path, "plugins", "*", "plugin.py"))):
             plugin_name = os.path.basename(os.path.dirname(plugin_path))
             plugins.append({"name": plugin_name, "path": plugin_path})
         return plugins
@@ -32,24 +33,24 @@ class Plugins:
         output = []
         self.load_plugins({"plugins": [{"type": plugin_name}]})
         plugin = self.plugin_instances[-1]
+        plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+        image_path = os.path.join(plugin_path, "image.png")
 
         output.append(f"# {plugin.NAME}")
+
+        if os.path.isfile(image_path):
+            output.append("")
+            output.append('<img align="right" width="320" src="image.png">')
+            output.append("")
 
         if plugin.INFO:
             output.append(f"**{plugin.INFO}**")
             output.append("")
         if plugin.DESCRIPTION:
-            output.append(plugin.DESCRIPTION)
+            output.append(plugin.DESCRIPTION.strip())
             output.append("")
         if plugin.KEYWORDS:
             output.append(f"Keywords: {plugin.KEYWORDS}")
-            output.append("")
-
-        plugin_path = f"{riocore_path}/plugins/{plugin_name}"
-        image_path = f"{plugin_path}/image.png"
-        if os.path.isfile(image_path):
-            output.append("")
-            output.append("![image.png](image.png)")
             output.append("")
 
         if plugin.LIMITATIONS:
@@ -58,11 +59,12 @@ class Plugins:
                 output.append(f"* {key}: {', '.join(values)}")
             output.append("")
 
-        output.append("## Basic-Example:")
-        output.append("```")
-        output.append(json.dumps(plugin.basic_config(), indent=4))
-        output.append("```")
-        output.append("")
+        if plugin.GRAPH:
+            output.append("```mermaid")
+            output.append(plugin.GRAPH.strip())
+            output.append("```")
+            output.append("")
+
         output.append("## Pins:")
         output.append("*FPGA-pins*")
         output.append(plugin.show_pins())
@@ -78,6 +80,11 @@ class Plugins:
         output.append("## Interfaces:")
         output.append("*transport layer*")
         output.append(plugin.show_interfaces())
+        output.append("")
+        output.append("## Basic-Example:")
+        output.append("```")
+        output.append(json.dumps(plugin.basic_config(), indent=4))
+        output.append("```")
         output.append("")
         output.append("## Full-Example:")
         output.append("```")
@@ -95,17 +102,17 @@ class Plugins:
         try:
             plugin_type = plugin_config["type"]
             if plugin_type not in self.plugin_modules:
-                if os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/plugin.py"):
-                    # print(f"loading plugin {plugin_type}")
+                if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_type, "plugin.py")):
                     self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
-                elif os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v"):
-                    if self.plugin_builder(plugin_type, f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v", plugin_config):
+                elif os.path.isfile(os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v")):
+                    if self.plugin_builder(plugin_type, os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v"), plugin_config):
                         self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
                 elif not plugin_type or plugin_type[0] != "_":
                     print(f"WARNING: plugin not found: {plugin_type}")
 
             if plugin_type in self.plugin_modules:
                 plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
+                plugin_instance.setup_object = plugin_config
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
                         if pin_config["pin"] == "" or pin_config["pin"] is None:
@@ -122,11 +129,14 @@ class Plugins:
             print("##################################")
             traceback.print_exc(file=sys.stdout)
             print("##################################")
+            return False
+        return True
 
     def load_plugins(self, config, system_setup=None):
         if config["plugins"]:
             for plugin_id, plugin_config in enumerate(config["plugins"]):
-                self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)
+                if not self.load_plugin(plugin_id, plugin_config, system_setup=system_setup):
+                    exit(1)
             return self.plugin_instances
         return None
 
@@ -239,7 +249,7 @@ class Plugins:
             tbfile.append("")
             tbfile.append("endmodule")
             tbfile.append("")
-            open(f"{riocore_path}/plugins/{plugin_type}/testb.v", "w").write("\n".join(tbfile))
+            open(os.path.join(riocore_path, "plugins", plugin_type, "testb.v"), "w").write("\n".join(tbfile))
 
             gtkwfile = []
             gtkwfile.append("[*]")
@@ -267,7 +277,7 @@ class Plugins:
                 pn += 1
 
             gtkwfile.append("")
-            open(f"{riocore_path}/plugins/{plugin_type}/testb.gtkw", "w").write("\n".join(gtkwfile))
+            open(os.path.join(riocore_path, "plugins", plugin_type, "testb.gtkw"), "w").write("\n".join(gtkwfile))
 
             makefile = []
             makefile.append("")
@@ -276,15 +286,14 @@ class Plugins:
             makefile.append("testb:")
             makefile.append(f"	iverilog -Wall -o testb.out testb.v {plugin_type}.v")
             makefile.append("	vvp testb.out")
-            makefile.append("	#gtkwave testb.vcd")
-            makefile.append("	gtkwave testb.gtkw")
+            makefile.append("	test -e testb.gtkw && gtkwave testb.gtkw || gtkwave testb.vcd")
             makefile.append("")
             makefile.append("clean:")
             makefile.append("	rm -rf testb.out testb.vcd")
             makefile.append("")
-            open(f"{riocore_path}/plugins/{plugin_type}/Makefile", "w").write("\n".join(makefile))
+            open(os.path.join(riocore_path, "plugins", plugin_type, "Makefile"), "w").write("\n".join(makefile))
 
-            print(f"(cd {riocore_path}/plugins/{plugin_type} ; make)")
+            print(f"(cd {os.path.join(riocore_path, 'plugins', plugin_type)} ; make)")
 
             return True
 
@@ -430,13 +439,13 @@ class Plugins:
                         initfile.append(f"        # instance_parameter[\"{parameter_name}\"] = self.plugin_setup.get(\"{parameter_name.lower()}\", \"{parameter_setup['default']}\")")
                     initfile.append("        return instances")
                     initfile.append("")
-                if os.path.isfile(f"{riocore_path}/plugins/{plugin_name}/plugin.py"):
-                    print(f"WARNING: file allready exsits: {riocore_path}/plugins/{plugin_name}/plugin.py")
+                if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py")):
+                    print(f"WARNING: file allready exsits: {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')}")
                     print("\n".join(initfile))
                     print("")
                 else:
-                    print(f"INFO: writing plugin setup to {riocore_path}/plugins/{plugin_name}/plugin.py (please edit)")
-                    open(f"{riocore_path}/plugins/{plugin_name}/plugin.py", "w").write("\n".join(initfile))
+                    print(f"INFO: writing plugin setup to {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')} (please edit)")
+                    open(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py"), "w").write("\n".join(initfile))
                     print("")
 
                 if plugin_config.get("init") is True:
@@ -462,14 +471,16 @@ class Plugins:
 class Project:
     def __init__(self, configuration, output_path=None):
         plugins = Plugins()
+        self.timestamp = 0
+        self.timestamp_last = 0
+        self.duration = 0
         self.load_config(configuration, output_path)
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
-        if self.config["toolchain"] == "platformio":
-            self.generator_firmware = Firmware(self)
-        else:
-            self.generator_gateware = Gateware(self)
+        self.generator_gateware = Gateware(self)
+        self.generator_simulator = Simulator(self)
+        self.generator_firmware = Firmware(self)
 
         # check names
         varnames = {}
@@ -484,17 +495,13 @@ class Project:
     def get_path(self, path):
         if os.path.exists(path):
             return path
-        elif os.path.exists(f"{riocore_path}/{path}"):
-            return f"{riocore_path}/{path}"
-        print(f"path not found: {path} or {riocore_path}/{path}")
+        elif os.path.exists(os.path.join(riocore_path, path)):
+            return os.path.join(riocore_path, path)
+        print(f"path not found: {path} or {os.path.join(riocore_path, path)}")
         exit(1)
 
     def get_boardpath(self, board):
-        pathes = [
-            f"{board}.json",
-            f"{riocore_path}/boards/{board}.json",
-            f"{riocore_path}/boards/{board}/board.json",
-        ]
+        pathes = [f"{board}.json", os.path.join(riocore_path, "boards", f"{board}.json"), os.path.join(riocore_path, "boards", board, "board.json")]
         for path in pathes:
             if os.path.exists(path):
                 return path
@@ -559,8 +566,8 @@ class Project:
         # loading modules
         project["modules"] = {}
         modules_path = self.get_path("modules")
-        for path in sorted(glob.glob(f"{modules_path}/*/module.json")):
-            module = path.split("/")[-2]
+        for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
+            module = path.split(os.sep)[-2]
             mdata = open(path, "r").read()
             project["modules"][module] = json.loads(mdata)
 
@@ -627,7 +634,7 @@ class Project:
         self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc", 0))
         self.config["sysclk_pin"] = project["jdata"]["clock"]["pin"]
         self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
-        self.config["output_path"] = f"{output_path}/{project['jdata']['name']}"
+        self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
         self.config["toolchain"] = project["jdata"]["toolchain"]
         self.config["family"] = project["jdata"].get("family", "UNKNOWN")
@@ -642,6 +649,7 @@ class Project:
                 self.setup_merge(setup[key], value)
 
     def calc_buffersize(self):
+        self.timestamp_size = 32
         self.header_size = 32
         self.input_size = 0
         self.output_size = 0
@@ -656,33 +664,42 @@ class Project:
                 self.interface_sizes.add(data_config["size"])
                 variable_size = data_config["size"]
                 multiplexed = data_config.get("multiplexed", False)
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
                 if data_config["direction"] == "input":
-                    if multiplexed:
-                        self.multiplexed_input += 1
-                        self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
-                        if self.multiplexed_input_size < 8:
-                            self.multiplexed_input_size = 8
-                    else:
-                        self.input_size += variable_size
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_input += 1
+                            self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
+                            if self.multiplexed_input_size < 8:
+                                self.multiplexed_input_size = 8
+                        else:
+                            self.input_size += variable_size
                 elif data_config["direction"] == "output":
-                    if multiplexed:
-                        self.multiplexed_output += 1
-                        self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
-                        if self.multiplexed_output_size < 8:
-                            self.multiplexed_output_size = 8
-                    else:
-                        self.output_size += variable_size
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_output += 1
+                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
+                            if self.multiplexed_output_size < 8:
+                                self.multiplexed_output_size = 8
+                        else:
+                            self.output_size += variable_size
 
         if self.multiplexed_input:
             self.input_size += self.multiplexed_input_size + 8
         if self.multiplexed_output:
             self.output_size += self.multiplexed_output_size + 8
 
-        self.input_size = self.input_size + self.header_size
+        self.input_size = self.input_size + self.header_size + self.timestamp_size
         self.output_size = self.output_size + self.header_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
         self.buffer_bytes = self.buffer_size // 8
         self.config["buffer_size"] = self.buffer_size
+
+        # print("# PC->FPGA", self.output_size)
+        # print("# FPGA->PC", self.input_size)
+        # print("# MAX", self.buffer_size)
 
     def get_bype_pos(self, bitpos, variable_size):
         byte_pos = (bitpos + 7) // 8
@@ -702,7 +719,7 @@ class Project:
 
     def connect(self, cstr):
         connection = None
-        for ppath in sorted(glob.glob(f"{os.path.dirname(__file__)}/interfaces/*/*.py")):
+        for ppath in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "interfaces", "*", "*.py"))):
             plugin = os.path.basename(os.path.dirname(ppath))
             interface = importlib.import_module(".interface", f"riocore.interfaces.{plugin}")
             if interface.Interface.check(cstr):
@@ -761,7 +778,7 @@ class Project:
                 direction = signal_config["direction"]
                 virtual = signal_config.get("virtual", False)
                 if virtual:
-                    # swap direction vor virt signals
+                    # swap direction for virt signals
                     if direction == "input":
                         direction = "output"
                     else:
@@ -772,6 +789,7 @@ class Project:
         return haldata
 
     def txdata_get(self):
+        # send from pc to fpga
         txdata = [0] * self.buffer_bytes
         txdata[0] = 0x74
         txdata[1] = 0x69
@@ -781,12 +799,14 @@ class Project:
         # convert signals to interface variables
         for plugin_instance in self.plugin_instances:
             plugin_instance.convert2interface()
-        # set buffer
 
         if self.multiplexed_output:
             mpx_value = 0
             mpxid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data():
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
@@ -815,6 +835,9 @@ class Project:
                 self.multiplexed_output_id = 0
 
         for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -826,10 +849,6 @@ class Project:
                 if plugin_instance.TYPE == "frameio":
                     if not value:
                         value = [0] * byte_size
-
-                    # for pv in value:
-                    #    print(pv)
-
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
                 elif variable_size > 1:
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
@@ -840,7 +859,19 @@ class Project:
         return txdata
 
     def rxdata_set(self, rxdata):
+        if not rxdata:
+            return
         input_pos = self.buffer_size - self.header_size
+
+        # get timestamp from FPGA
+        variable_size = self.timestamp_size
+        byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
+        byte_start = self.buffer_bytes - 1 - byte_start
+        byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
+        self.timestamp_last = self.timestamp
+        self.timestamp = unpack("<I", bytes(byte_pack))[0] / self.config["speed"]
+        self.duration = self.timestamp - self.timestamp_last
+        input_pos -= variable_size
 
         if self.multiplexed_input:
             variable_size = self.multiplexed_input_size
@@ -849,7 +880,11 @@ class Project:
             byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
             if len(byte_pack) < 4:
                 byte_pack += [0] * (4 - len(byte_pack))
-            self.multiplexed_input_value = unpack("<i", bytes(byte_pack))[0]
+            if byte_size == 8:
+                self.multiplexed_input_value = unpack("<d", bytes(byte_pack))[0]
+            else:
+                self.multiplexed_input_value = unpack("<i", bytes(byte_pack))[0]
+
             input_pos -= variable_size
             variable_size = 8
             byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
@@ -860,7 +895,7 @@ class Project:
             self.multiplexed_input_id = unpack("<i", bytes(byte_pack))[0]
             input_pos -= variable_size
 
-        if self.multiplexed_input:
+            # set mpx value
             mpxid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data():
                 multiplexed = data_config.get("multiplexed", False)
@@ -873,10 +908,14 @@ class Project:
                     mpxid += 1
 
         for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
             variable_size = data_config["size"]
+
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
                 byte_start = self.buffer_bytes - 1 - byte_start
@@ -894,18 +933,26 @@ class Project:
                 data_config["value"] = value
                 input_pos -= variable_size
 
+        for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            plugin_instance.timestamp = self.timestamp
+            plugin_instance.duration = self.duration
+
         # convert interface variables to signals
         for plugin_instance in self.plugin_instances:
             plugin_instance.convert2signals()
 
     def generator(self, preview=False):
+        protocol = self.config["jdata"].get("protocol", "SPI")
+        toolchain = self.config.get("toolchain")
         generate_pll = True
-        if preview:
-            generate_pll = False
-        if self.config["toolchain"] == "platformio":
+        if toolchain == "platformio":
             self.generator_firmware.generator()
         else:
+            if preview:
+                generate_pll = False
             self.generator_gateware.generator(generate_pll=generate_pll)
+        if protocol == "UDP":
+            self.generator_simulator.generator()
         self.generator_linuxcnc.generator()
-        target = f"{self.config['output_path']}/.config.json"
+        target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)

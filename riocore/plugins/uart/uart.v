@@ -54,7 +54,7 @@ module uart
             end else if (TxD_start == 1) begin
                 TxD_start <= 0;
                 if (tx_counter < BUFFER_SIZE/8-1) begin
-                    tx_counter <= tx_counter+1;
+                    tx_counter <= tx_counter + 1'd1;
                     tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-1-8:0], 8'd0};
                 end else begin
                     tx_state <= 0;
@@ -63,7 +63,7 @@ module uart
         end else if (RxD_data_ready == 1) begin
             if (rx_counter < BUFFER_SIZE/8-1) begin
                 rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE-1-8:0], RxD_data};
-                rx_counter <= rx_counter + 1;
+                rx_counter <= rx_counter + 1'd1;
             end else begin
                 // TODO: check MSGID
                 rx_data <= {rx_data_buffer[BUFFER_SIZE-1-8:0], RxD_data};

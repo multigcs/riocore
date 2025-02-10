@@ -182,7 +182,7 @@ error = False
 
 boardcfg = {}
 if "boardcfg" in data:
-    boardcfg = json.loads(open(f"riocore/boards/{data['boardcfg']}.json", "r").read())
+    boardcfg = json.loads(open(f"riocore/boards/{data['boardcfg']}/board.json", "r").read())
 
 
 pinmapping = {}
@@ -190,6 +190,8 @@ for slot in boardcfg.get("slots", []):
     slot_name = slot["name"]
     for pin_id, pin in slot["pins"].items():
         pin_name = f"{slot_name}:{pin_id}"
+        if isinstance(pin, dict):
+            pin = pin["pin"]
         pinmapping[pin] = pin_name
 
 if "plugins" not in data:

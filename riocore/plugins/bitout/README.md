@@ -1,24 +1,12 @@
 # bitout
+
+<img align="right" width="320" src="image.png">
+
 **singe bit output pin**
 
 to control relais, leds, valves, ....
 
 Keywords: led relais valve lamp motor magnet
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "bitout",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -51,6 +39,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "bitout",
+    "pins": {
+        "bit": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

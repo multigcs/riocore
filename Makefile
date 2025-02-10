@@ -6,10 +6,13 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	find ./riocore/ ./tests/ ./bin/ -type f | grep "\.py$$\|bin/" | xargs -r -l ruff format -q
+	ruff format -q bin/ riocore/
 
 check:
-	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check
+	ruff check bin/ riocore/
+
+check_fix:
+	ruff check --fix bin/ riocore/
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/
@@ -33,10 +36,16 @@ pypi: clean dist
 exifclean:
 	exiftool -all= riocore/boards/*/*.png
 	rm -rf riocore/boards/*/*.png_original
+	exiftool -all= riocore/configs/*/*.png
+	rm -rf riocore/configs/*/*.png_original
 	exiftool -all= riocore/plugins/*/*.png
 	rm -rf riocore/plugins/*/*.png_original
 	exiftool -all= riocore/modules/*/*.png
 	rm -rf riocore/modules/*/*.png_original
+	exiftool -all= riocore/plugins/i2cbus/devices/*/*.png
+	rm -rf riocore/plugins/i2cbus/devices/*/*.png_original
+	exiftool -all= riocore/plugins/modbus/images/*.png
+	rm -rf riocore/plugins/modbus/images/*.png_original
 
 pyvenv: clean dist
 	python3 -m venv pyvenv

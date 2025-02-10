@@ -13,8 +13,10 @@ class Interface:
         print("IP:", self.NET_IP)
         print("PORT:", self.NET_PORT)
 
+        bind_port = int(self.NET_PORT) + 1
+
         self.socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        self.socket.bind(("0.0.0.0", int(self.NET_PORT)))
+        self.socket.bind(("0.0.0.0", bind_port))
         # clear buffer
         try:
             self.socket.settimeout(0.2)

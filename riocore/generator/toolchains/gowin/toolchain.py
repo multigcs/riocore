@@ -1,5 +1,6 @@
 import importlib
 import re
+import sys
 import os
 import shutil
 import subprocess
@@ -10,6 +11,9 @@ class Toolchain:
         self.config = config
         self.gateware_path = f"{self.config['output_path']}/Gateware"
         self.riocore_path = config["riocore_path"]
+        self.toolchain_path = self.config.get("toolchains_json", {}).get("gowin", "")
+        if self.toolchain_path and not self.toolchain_path.endswith("bin"):
+            self.toolchain_path = os.path.join(self.toolchain_path, "bin")
 
     def info(cls):
         info = {
@@ -23,6 +27,13 @@ wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.9.03_Education_linux.tar.gz"
 tar xzvpf Gowin_V1.9.9.03_Education_linux.tar.gz
 rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
 ```
+
+```
+# win: https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_x64_win.zip
+# lin: https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_linux.tar.gz
+
+```
+
 """,
         }
         return info
@@ -30,7 +41,8 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
     def pll(self, clock_in, clock_out):
         if self.config["jdata"]["family"] == "GW1N-9C":
             result = subprocess.check_output(
-                f"python3 {self.riocore_path}/files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{self.gateware_path}/pll.v' -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True
+                f"python3 {os.path.join(self.riocore_path, 'files', 'gowin-pll.py')} -d 'GW1NR-9 C6/I5' -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}",
+                shell=True,
             )
             achieved = re.findall(r"Achieved output frequency:\s*(\d*\.\d*)\s*MHz", result.decode())
             if achieved:
@@ -46,10 +58,11 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)
 
-        gw_sh = shutil.which("gw_sh")
-        if gw_sh is None:
-            print("WARNING: can not found toolchain installation in PATH: gowin (gw_sh)")
-            print("  example: export PATH=$PATH:/opt/gowin/IDE/bin")
+        if sys.platform == "linux":
+            gw_sh = shutil.which("gw_sh")
+            if gw_sh is None:
+                print("WARNING: can not found toolchain installation in PATH: gowin (gw_sh)")
+                print("  example: export PATH=$PATH:/opt/gowin/IDE/bin")
 
         verilogs = " ".join(self.config["verilog_files"])
 
@@ -60,11 +73,17 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             family_gowin = "GW1NR-9C"
         else:
             family_gowin = family
+        board_id = board.lower()
+        if board_id == "tangoboard":
+            board_id = "tangnano9k"
 
         makefile_data = []
         makefile_data.append("")
-        makefile_data.append("# Toolchain: Gowin and Icestorm")
+        makefile_data.append("# Toolchain: Gowin")
         makefile_data.append("")
+        if self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append("")
         makefile_data.append("PROJECT  := rio")
         makefile_data.append("TOP      := rio")
         makefile_data.append(f"FAMILY   := {family}")
@@ -76,49 +95,143 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         makefile_data.append("all: impl/pnr/project.fs")
         makefile_data.append("")
         makefile_data.append("clean:")
-        makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
+        if sys.platform.startswith("win"):
+            makefile_data.append("	del /q $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
+        else:
+            makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
         makefile_data.append("")
         makefile_data.append("$(PROJECT).tcl: pins.cst $(VERILOGS)")
-        makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
-        makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
-        makefile_data.append('	@echo "add_file rio.sdc" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "add_file pins.cst" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "set_option -top_module $(TOP)" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "set_option -verilog_std v2001" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "set_option -vhdl_std vhd2008" >> $(PROJECT).tcl')
-        set_options = self.config.get(
-            "set_options",
-            [
-                "use_sspi_as_gpio",
-                "use_mspi_as_gpio",
-                "use_done_as_gpio",
-                "use_ready_as_gpio",
-                "use_reconfign_as_gpio",
-                "use_i2c_as_gpio",
-            ],
-        )
-        if family in {"GW5A-25A", "GW5A-25B"}:
-            set_options.append("use_cpu_as_gpio")
+        if sys.platform.startswith("win"):
+            makefile_data.append("	@echo set_device -name $(FAMILY_GOWIN) $(DEVICE) > $(PROJECT).tcl")
+            for verilog in self.config["verilog_files"]:
+                makefile_data.append(f"	@echo add_file {verilog} >> $(PROJECT).tcl")
+            makefile_data.append("	@echo add_file rio.sdc >> $(PROJECT).tcl")
+            makefile_data.append("	@echo add_file pins.cst >> $(PROJECT).tcl")
+            makefile_data.append("	@echo set_option -top_module $(TOP) >> $(PROJECT).tcl")
+            makefile_data.append("	@echo set_option -verilog_std v2001 >> $(PROJECT).tcl")
+            makefile_data.append("	@echo set_option -vhdl_std vhd2008 >> $(PROJECT).tcl")
+            set_options = self.config.get(
+                "set_options",
+                [
+                    "use_sspi_as_gpio",
+                    "use_mspi_as_gpio",
+                    "use_done_as_gpio",
+                    "use_ready_as_gpio",
+                    "use_reconfign_as_gpio",
+                    "use_i2c_as_gpio",
+                ],
+            )
+            if family in {"GW5A-25A", "GW5A-25B"}:
+                set_options.append("use_cpu_as_gpio")
 
-        for set_option in set_options:
-            makefile_data.append(f'	@echo "set_option -{set_option} 1" >> $(PROJECT).tcl')
-        makefile_data.append('	@echo "run all" >> $(PROJECT).tcl')
-        makefile_data.append("")
-        makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
-        makefile_data.append("	gw_sh $(PROJECT).tcl")
-        makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
-        makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
-        makefile_data.append("")
-        makefile_data.append("load: impl/pnr/project.fs")
+            for set_option in set_options:
+                makefile_data.append(f"	@echo set_option -{set_option} 1 >> $(PROJECT).tcl")
+            makefile_data.append("	@echo run all >> $(PROJECT).tcl")
+            makefile_data.append("")
+            makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
+            makefile_data.append("	gw_sh $(PROJECT).tcl")
+            makefile_data.append("	copy hash_new.txt hash_compiled.txt")
+            # makefile_data.append('	type impl\\pnr\\project.rpt.txt')
+            makefile_data.append("")
+            makefile_data.append("load: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs -f")
+            makefile_data.append("	copy hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
+            makefile_data.append("sload: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs")
+            makefile_data.append("	copy hash_new.txt hash_flashed.txt")
+        else:
+            makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
+            makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
+            makefile_data.append('	@echo "add_file rio.sdc" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "add_file pins.cst" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "set_option -top_module $(TOP)" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "set_option -verilog_std v2001" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "set_option -vhdl_std vhd2008" >> $(PROJECT).tcl')
+            set_options = self.config.get(
+                "set_options",
+                [
+                    "use_sspi_as_gpio",
+                    "use_mspi_as_gpio",
+                    "use_done_as_gpio",
+                    "use_ready_as_gpio",
+                    "use_reconfign_as_gpio",
+                    "use_i2c_as_gpio",
+                ],
+            )
+            if family in {"GW5A-25A", "GW5A-25B"}:
+                set_options.append("use_cpu_as_gpio")
 
-        board_id = board.lower()
-        if board_id == "tangoboard":
-            board_id = "tangnano9k"
-        makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
-        makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            for set_option in set_options:
+                makefile_data.append(f'	@echo "set_option -{set_option} 1" >> $(PROJECT).tcl')
+            makefile_data.append('	@echo "run all" >> $(PROJECT).tcl')
+            makefile_data.append("")
+            makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
+            makefile_data.append("	gw_sh $(PROJECT).tcl")
+            makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
+            makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
+            makefile_data.append("")
+            makefile_data.append("load: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
+            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
+            makefile_data.append("sload: impl/pnr/project.fs")
+            makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs")
+            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
+
+        if sys.platform.startswith("win"):
+            tcl_data = []
+            tcl_data.append(f"set_device -name {family_gowin} {ftype}")
+            for verilog in self.config["verilog_files"]:
+                tcl_data.append(f"add_file {verilog}")
+            tcl_data.append("add_file rio.sdc")
+            tcl_data.append("add_file pins.cst")
+            tcl_data.append("set_option -top_module rio")
+            tcl_data.append("set_option -verilog_std v2001")
+            tcl_data.append("set_option -vhdl_std vhd2008")
+            set_options = self.config.get(
+                "set_options",
+                [
+                    "use_sspi_as_gpio",
+                    "use_mspi_as_gpio",
+                    "use_done_as_gpio",
+                    "use_ready_as_gpio",
+                    "use_reconfign_as_gpio",
+                    "use_i2c_as_gpio",
+                ],
+            )
+            if family in {"GW5A-25A", "GW5A-25B"}:
+                set_options.append("use_cpu_as_gpio")
+
+            for set_option in set_options:
+                tcl_data.append(f"set_option -{set_option} 1")
+            tcl_data.append("run all")
+            tcl_data.append("")
+            open(os.path.join(path, "rio.tcl"), "w").write("\n".join(tcl_data))
+
+            build_data = []
+            build_data.append("")
+            if self.toolchain_path:
+                build_data.append(f"SET PATH=%PATH%;{self.toolchain_path}")
+                build_data.append("")
+            build_data.append("del /q rio.fs rio.json rio_pnr.json abc.history impl")
+            build_data.append("gw_sh rio.tcl")
+            build_data.append("copy hash_new.txt hash_compiled.txt")
+            build_data.append("")
+            build_data.append("")
+            open(os.path.join(path, "build.bat"), "w").write("\n".join(build_data))
+
+            flash_data = []
+            flash_data.append("")
+            flash_data.append(f"openFPGALoader -b {board_id} impl\\pnr\\project.fs -f")
+            flash_data.append("copy hash_new.txt hash_flashed.txt")
+            flash_data.append("")
+            flash_data.append("")
+            open(os.path.join(path, "flash.bat"), "w").write("\n".join(flash_data))
 
         # generating timing constraints (.sdc)
         speed_ns = 1000000000 / self.config["speed"]
@@ -128,7 +241,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             speed_ns = 1000000000 / int(value)
             sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name {key} [get_ports {{{key}}}]")
         sdc_data.append("")
-        open(f"{path}/rio.sdc", "w").write("\n".join(sdc_data))
+        open(os.path.join(path, "rio.sdc"), "w").write("\n".join(sdc_data))
 
         # generating project file for the gowin toolchain
         prj_data = []
@@ -155,9 +268,9 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         prj_data.append('    <File path="pins.cst" type="file.cst" enable="1"/>')
         prj_data.append("    </FileList>")
         prj_data.append("</Project>")
-        open(f"{path}/rio.gprj", "w").write("\n".join(prj_data))
+        open(os.path.join(path, "rio.gprj"), "w").write("\n".join(prj_data))
 
-        os.makedirs(f"{path}/impl", exist_ok=True)
+        os.makedirs(os.path.join(path, "impl"), exist_ok=True)
         pps_data = """{
  "Allow_Duplicate_Modules" : false,
  "Annotated_Properties_for_Analyst" : true,
@@ -242,4 +355,4 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
  "show_all_warnings" : false,
  "turn_off_bg" : false
 }"""
-        open(f"{path}/impl/project_process_config.json", "w").write("\n".join(pps_data))
+        open(os.path.join(path, "impl", "project_process_config.json"), "w").write("\n".join(pps_data))

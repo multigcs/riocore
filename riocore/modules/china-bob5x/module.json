@@ -72,11 +72,7 @@
       "pins": {
         "bit": {
           "pin": "P17",
-          "modifier": [
-            {
-              "type": "invert"
-            }
-          ]
+          "modifier": []
         }
       },
       "signals": {

@@ -35,6 +35,7 @@ import math
 import argparse
 import os
 import sys
+import signal
 from functools import partial
 
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
@@ -57,6 +58,10 @@ try:
     h = hal.component("camjog")
     h.newpin("axis.x.jog-counts", hal.HAL_S32, hal.HAL_OUT)
     h.newpin("axis.y.jog-counts", hal.HAL_S32, hal.HAL_OUT)
+    h.newpin("axis.x.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+    h.newpin("axis.y.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+    h.newpin("axis.x.cal", hal.HAL_FLOAT, hal.HAL_IN)
+    h.newpin("axis.y.cal", hal.HAL_FLOAT, hal.HAL_IN)
     h.ready()
     no_hal = False
 except Exception:
@@ -142,8 +147,8 @@ class MyImage(QLabel):
             (offset_x, offset_y) = self.parent.convert_to_cam((self.new_x, self.new_y))
 
             if self.parent.options["mode"] == "goto":
-                h["axis.x.jog-counts"] += offset_x
-                h["axis.y.jog-counts"] += offset_y
+                h["axis.x.jog-counts"] += int(offset_x / h["axis.x.jog-scale"] * h["axis.x.cal"])
+                h["axis.y.jog-counts"] += int(offset_y / h["axis.y.jog-scale"] * h["axis.y.cal"])
 
             elif self.parent.options["mode"] == "touch":
                 self.parent.options["points"] = []
@@ -165,8 +170,10 @@ class MyImage(QLabel):
             diff_y = self.old_y - event.pos().y()
             s = self.parent.options["scale"]
             z = self.parent.options["zoom"]
-            h["axis.x.jog-counts"] = self.old_counts_x + int(diff_x / z / s)
-            h["axis.y.jog-counts"] = self.old_counts_y + int(diff_y / z / s)
+            offset_x = int(diff_x / z / s)
+            offset_y = int(diff_y / z / s)
+            h["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / h["axis.x.jog-scale"] * h["axis.x.cal"])
+            h["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / h["axis.y.jog-scale"] * h["axis.y.cal"])
 
 
 class WinForm(QWidget):
@@ -272,6 +279,9 @@ class WinForm(QWidget):
         self.camera.image.connect(self.update_image)
         self.camera.start()
 
+    def exit(self):
+        self.camera.stop_capture()
+
     def change_mode(self, mode):
         self.options["mode"] = mode
         if mode == "edges" or mode == "touch":
@@ -308,123 +318,122 @@ class WinForm(QWidget):
         return (int((point[0] + cx) * s * z), int((point[1] + cy) * s * z))
 
     def update_image(self, frame):
-        if self.options["view"] == "edge":
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            frame = cv2.Canny(gray, 70, 135)
+        try:
+            if self.options["view"] == "edge":
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                frame = cv2.Canny(gray, 70, 135)
 
-        elif self.options["view"] == "contours":
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            elif self.options["view"] == "contours":
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                gray = cv2.bilateralFilter(gray, 9, 75, 75)
+                edges = cv2.Canny(gray, 70, 135)
+                contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-            gray = cv2.bilateralFilter(gray, 9, 75, 75)
+                for cnt in contours:
+                    approx = cv2.approxPolyDP(cnt, 0.009 * cv2.arcLength(cnt, True), True)
+                    cv2.drawContours(frame, [approx], 0, (0, 0, 255), 1)
 
-            edges = cv2.Canny(gray, 70, 135)
+                """
+                corners = cv2.goodFeaturesToTrack(edges, 4, .8, 100)
+                offset = 25
+                for corner in corners:
+                    x,y = corner.ravel()
+                    cv2.circle(frame,(x, y), 5, (36, 255, 12), -1)
+                    x, y = int(x), int(y)
+                    cv2.rectangle(frame, (x - offset, y - offset), (x + offset, y + offset), (36, 255, 12), 1)
+                """
 
-            contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            elif self.options["view"] == "gray":
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            for cnt in contours:
-                approx = cv2.approxPolyDP(cnt, 0.009 * cv2.arcLength(cnt, True), True)
-                cv2.drawContours(frame, [approx], 0, (0, 0, 255), 1)
+            s = self.options["scale"]
+            z = self.options["zoom"]
+            w = self.options["width"]
+            h = self.options["height"]
+            cx = w // 2
+            cy = h // 2
 
-            """
-            corners = cv2.goodFeaturesToTrack(edges, 4, .8, 100)
-            offset = 25
-            for corner in corners:
-                x,y = corner.ravel()
-                cv2.circle(frame,(x, y), 5, (36, 255, 12), -1)
-                x, y = int(x), int(y)
-                cv2.rectangle(frame, (x - offset, y - offset), (x + offset, y + offset), (36, 255, 12), 1)
-            """
+            # scale image
+            nw = int(w * s * z)
+            nh = int(h * s * z)
+            frame = cv2.resize(frame, (nw, nh), interpolation=cv2.INTER_LINEAR)
 
-        elif self.options["view"] == "gray":
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # draw center lines
+            cv2.line(frame, (0, nh // 2), (nw, nh // 2), (255, 0, 0), 1)
+            cv2.line(frame, (nw // 2, 0), (nw // 2, nh), (255, 0, 0), 1)
 
-        s = self.options["scale"]
-        z = self.options["zoom"]
-        w = self.options["width"]
-        h = self.options["height"]
-        cx = w // 2
-        cy = h // 2
-
-        # scale image
-        nw = int(w * s * z)
-        nh = int(h * s * z)
-        frame = cv2.resize(frame, (nw, nh), interpolation=cv2.INTER_LINEAR)
-
-        # draw center lines
-        cv2.line(frame, (0, nh // 2), (nw, nh // 2), (255, 0, 0), 1)
-        cv2.line(frame, (nw // 2, 0), (nw // 2, nh), (255, 0, 0), 1)
-
-        # draw points
-        last_point = None
-        for pn, point in enumerate(self.options["points"]):
-            point = self.convert_to_screen(point)
-            cv2.circle(frame, point, 10, (0, 255, 0), 2)
-            if last_point is not None:
-                cv2.line(frame, last_point, point, (0, 255, 0), 2)
-            last_point = point
-
-        if len(self.options["points"]) == 3:
-            self.options["edges"] = self.options["points"]
-        elif len(self.options["points"]) == 4:
-            self.options["edges"] = self.options["points"] + self.options["points"][:1]
-        else:
-            self.options["edges"] = []
-
-        if self.options["edges"]:
-            # create polygon
-            polygon = []
-            for point in self.options["edges"]:
-                point = self.convert_to_screen(point)
-                polygon.append(point)
-
-            # check polygon direction
-            last_point = polygon[0]
-            point = polygon[1]
-            center = line_center_2d(last_point, point)
-            angle = angle_of_line(last_point, point)
-            ap_x = center[0] + 1 * math.sin(angle)
-            ap_y = center[1] - 1 * math.cos(angle)
-            aoff = 0.0
-            if is_inside_polygon(polygon, (ap_x, ap_y)):
-                aoff = math.pi
-
-            # calc offsets and vectors
-            radius = 40
+            # draw points
             last_point = None
-            for point in polygon:
-                cv2.circle(frame, point, 10, (0, 0, 255), 2)
+            for pn, point in enumerate(self.options["points"]):
+                point = self.convert_to_screen(point)
+                cv2.circle(frame, point, 10, (0, 255, 0), 2)
                 if last_point is not None:
-                    cv2.line(frame, last_point, point, (0, 0, 255), 2)
-
-                    center = line_center_2d(last_point, point)
-                    cv2.circle(frame, (int(center[0]), int(center[1])), 10, (0, 0, 255), 2)
-
-                    angle = angle_of_line(last_point, point) + aoff
-                    agrid = int(((angle * 180 / math.pi) + 45) / 90) * 90
-                    # print(agrid)
-
-                    ap_x = center[0] + radius * math.sin(agrid * math.pi / 180.0)
-                    ap_y = center[1] - radius * math.cos(agrid * math.pi / 180.0)
-
-                    ap2_x = center[0] + -radius * math.sin(agrid * math.pi / 180.0)
-                    ap2_y = center[1] - -radius * math.cos(agrid * math.pi / 180.0)
-
-                    cv2.line(frame, (int(ap_x), int(ap_y)), (int(ap2_x), int(ap2_y)), (0, 0, 255), 3)
-
+                    cv2.line(frame, last_point, point, (0, 255, 0), 2)
                 last_point = point
 
-        if self.options["touch"]:
-            point = self.convert_to_screen(self.options["touch"])
-            cv2.circle(frame, point, 10, (0, 255, 255), 2)
+            if len(self.options["points"]) == 3:
+                self.options["edges"] = self.options["points"]
+            elif len(self.options["points"]) == 4:
+                self.options["edges"] = self.options["points"] + self.options["points"][:1]
+            else:
+                self.options["edges"] = []
 
-        # center image
-        offset_x = int(((cx * z) - cx) * s)
-        offset_y = int(((cy * z) - cy) * s)
-        frame = frame[offset_y : offset_y + int(h * s), offset_x : offset_x + int(w * s)]
+            if self.options["edges"]:
+                # create polygon
+                polygon = []
+                for point in self.options["edges"]:
+                    point = self.convert_to_screen(point)
+                    polygon.append(point)
 
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
-        self.video_img.setPixmap(QPixmap.fromImage(image))
+                # check polygon direction
+                last_point = polygon[0]
+                point = polygon[1]
+                center = line_center_2d(last_point, point)
+                angle = angle_of_line(last_point, point)
+                ap_x = center[0] + 1 * math.sin(angle)
+                ap_y = center[1] - 1 * math.cos(angle)
+                aoff = 0.0
+                if is_inside_polygon(polygon, (ap_x, ap_y)):
+                    aoff = math.pi
+
+                # calc offsets and vectors
+                radius = 40
+                last_point = None
+                for point in polygon:
+                    cv2.circle(frame, point, 10, (0, 0, 255), 2)
+                    if last_point is not None:
+                        cv2.line(frame, last_point, point, (0, 0, 255), 2)
+
+                        center = line_center_2d(last_point, point)
+                        cv2.circle(frame, (int(center[0]), int(center[1])), 10, (0, 0, 255), 2)
+
+                        angle = angle_of_line(last_point, point) + aoff
+                        agrid = int(((angle * 180 / math.pi) + 45) / 90) * 90
+                        # print(agrid)
+
+                        ap_x = center[0] + radius * math.sin(agrid * math.pi / 180.0)
+                        ap_y = center[1] - radius * math.cos(agrid * math.pi / 180.0)
+
+                        ap2_x = center[0] + -radius * math.sin(agrid * math.pi / 180.0)
+                        ap2_y = center[1] - -radius * math.cos(agrid * math.pi / 180.0)
+
+                        cv2.line(frame, (int(ap_x), int(ap_y)), (int(ap2_x), int(ap2_y)), (0, 0, 255), 3)
+
+                    last_point = point
+
+            if self.options["touch"]:
+                point = self.convert_to_screen(self.options["touch"])
+                cv2.circle(frame, point, 10, (0, 255, 255), 2)
+
+            # center image
+            offset_x = int(((cx * z) - cx) * s)
+            offset_y = int(((cy * z) - cy) * s)
+            frame = frame[offset_y : offset_y + int(h * s), offset_x : offset_x + int(w * s)]
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
+            self.video_img.setPixmap(QPixmap.fromImage(image))
+        except Exception as err:
+            print("ERROR: UPDATE IMAGE: ", err)
 
 
 class CameraThread(QThread):
@@ -452,17 +461,28 @@ class CameraThread(QThread):
     def run(self):
         self.start_capture()
         while self.capture:
-            ret, frame = self.capture.read()
-            if ret:
-                self.image.emit(frame)
+            try:
+                ret, frame = self.capture.read()
+                if ret:
+                    self.image.emit(frame)
+            except Exception as err:
+                print("ERROR: camjog", err)
 
     def stop(self):
         self.stop_capture()
         super().stop()
 
 
+def sigint_handler(signal, frame):
+    print("INFO: camjog Interrupted")
+    sys.exit(0)
+
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
     form = WinForm()
     form.show()
-    sys.exit(app.exec_())
+    ret = app.exec_()
+    form.exit()
+    sys.exit(ret)

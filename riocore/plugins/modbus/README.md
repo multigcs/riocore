@@ -1,30 +1,12 @@
 # modbus
+
+<img align="right" width="320" src="image.png">
+
 **generic modbus plugin**
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 
 Keywords: modbus vfd spindle expansion analog digital
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "modbus",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -95,6 +77,24 @@ the signals of this plugin are user configurable
  * size: 128 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "modbus",
+    "pins": {
+        "tx": {
+            "pin": "0"
+        },
+        "rx": {
+            "pin": "1"
+        },
+        "tx_enable": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

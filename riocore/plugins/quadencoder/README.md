@@ -1,27 +1,12 @@
 # quadencoder
+
+<img align="right" width="320" src="image.png">
+
 **quadencoder**
 
 usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
 
 Keywords: feedback encoder rotary linear glassscale
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "quadencoder",
-    "pins": {
-        "a": {
-            "pin": "0"
-        },
-        "b": {
-            "pin": "1"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -45,6 +30,14 @@ encoder type
  * min: 0
  * max: 4
  * default: 2
+
+### rps_sum:
+number of collected values before calculate the rps value
+
+ * type: int
+ * min: 0
+ * max: 100
+ * default: 10
 
 ### name:
 name of this plugin instance
@@ -82,11 +75,27 @@ calculates revolutions per minute
  * direction: input
 
 
+## Basic-Example:
+```
+{
+    "type": "quadencoder",
+    "pins": {
+        "a": {
+            "pin": "0"
+        },
+        "b": {
+            "pin": "1"
+        }
+    }
+}
+```
+
 ## Full-Example:
 ```
 {
     "type": "quadencoder",
     "quad_type": 2,
+    "rps_sum": 10,
     "name": "",
     "pins": {
         "a": {

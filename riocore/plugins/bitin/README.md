@@ -1,24 +1,12 @@
 # bitin
+
+<img align="right" width="320" src="image.png">
+
 **single input pin**
 
 to read switches or other 1bit signals
 
 Keywords: switch limit estop keyboard
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "bitin",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -51,6 +39,18 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "bitin",
+    "pins": {
+        "bit": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

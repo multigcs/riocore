@@ -1,4 +1,6 @@
 import importlib
+import sys
+import os
 import shutil
 
 
@@ -7,6 +9,9 @@ class Toolchain:
         self.config = config
         self.gateware_path = f"{self.config['output_path']}/Gateware"
         self.riocore_path = config["riocore_path"]
+        self.toolchain_path = self.config.get("toolchains_json", {}).get("verilator", "")
+        if self.toolchain_path and not self.toolchain_path.endswith("bin"):
+            self.toolchain_path = os.path.join(self.toolchain_path, "bin")
 
     def info(cls):
         info = {
@@ -19,14 +24,20 @@ class Toolchain:
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
-        verilator = shutil.which("verilator")
-        if verilator is None:
-            print("WARNING: can not found toolchain installation in PATH: verilator")
+        if sys.platform == "linux":
+            verilator = shutil.which("verilator")
+            if verilator is None:
+                print("WARNING: can not found toolchain installation in PATH: verilator")
 
         verilogs = " ".join(self.config["verilog_files"])
 
         makefile_data = []
         makefile_data.append("")
+        makefile_data.append("# Toolchain: Verilator")
+        makefile_data.append("")
+        if self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append("")
         makefile_data.append("PROJECT   := rio")
         makefile_data.append("TOP       := rio")
         makefile_data.append(f"VERILOGS  := {verilogs}")
@@ -41,7 +52,7 @@ class Toolchain:
         makefile_data.append("	rm -rf obj_dir")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
         top_arguments = []
         for pname in sorted(list(self.config["pinlists"])):
@@ -171,4 +182,4 @@ int main(int argc, char** argv) {
         """
         )
 
-        open(f"{path}/main.cpp", "w").write("\n".join(main_cpp))
+        open(os.path.join(path, "main.cpp"), "w").write("\n".join(main_cpp))

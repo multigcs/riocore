@@ -1,82 +1,6 @@
 import time
 
-
-class Modifiers:
-    def pin_modifier_debounce(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
-        width = modifier.get("delay", 16)
-        instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
-            "module": "debouncer",
-            "parameter": {"WIDTH": width},
-            "arguments": {
-                "clk": "sysclk",
-                "din": pin_varname,
-                "dout": f"{pin_varname}_DEBOUNCED",
-            },
-            "predefines": [f"wire {pin_varname}_DEBOUNCED;"],
-        }
-        pin_varname = f"{pin_varname}_DEBOUNCED"
-        return pin_varname
-
-    def pin_modifier_toggle(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
-        instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
-            "module": "toggle",
-            "arguments": {
-                "clk": "sysclk",
-                "din": pin_varname,
-                "dout": f"{pin_varname}_TOGGLED",
-            },
-            "predefines": [f"wire {pin_varname}_TOGGLED;"],
-        }
-        pin_varname = f"{pin_varname}_TOGGLED"
-        return pin_varname
-
-    def pin_modifier_invert(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
-        instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
-            "predefines": [
-                f"wire {pin_varname}_INVERTED;",
-                f"assign {pin_varname}_INVERTED = ~{pin_varname};",
-            ],
-        }
-        pin_varname = f"{pin_varname}_INVERTED"
-        return pin_varname
-
-    def pin_modifier_onerror(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
-        invert = modifier.get("invert", False)
-        invert_char = "~"
-        if invert:
-            invert_char = ""
-        instances[f"onerror{modifier_num}_{self.instances_name}_{pin_name}"] = {
-            "predefines": [
-                f"wire {pin_varname}_ONERROR;",
-                f"assign {pin_varname}_ONERROR = {pin_varname} & {invert_char}ERROR;",
-            ],
-        }
-        pin_varname = f"{pin_varname}_ONERROR"
-        return pin_varname
-
-    def pin_modifier_pwm(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
-        frequency = modifier.get("frequency", 1)
-        dty = modifier.get("dty", 50)
-        frequency_divider = system_setup["speed"] // frequency
-        dty_divider = frequency_divider * dty // 100
-        instances[f"pwm{modifier_num}_{self.instances_name}_{pin_name}"] = {
-            "module": "pwmmod",
-            "parameter": {"DIVIDER_FREQ": frequency_divider, "DIVIDER_DTY": dty_divider},
-            "arguments": {
-                "clk": "sysclk",
-                "din": pin_varname,
-                "dout": f"{pin_varname}_PWM",
-            },
-        }
-        pin_varname = f"{pin_varname}_PWM"
-        return pin_varname
-
-    def pin_modifier_list(self, direction=None):
-        modifiers = []
-        for part in dir(self):
-            if part.startswith("pin_modifier_") and part != "pin_modifier_list":
-                modifiers.append(part.split("_")[2])
-        return modifiers
+from riocore.modifiers import Modifiers
 
 
 class PluginBase:
@@ -89,20 +13,28 @@ class PluginBase:
         self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []
+        self.VERILOGS_DATA = {}
         self.NAME = ""
         self.TYPE = "io"
         self.INFO = ""
         self.DESCRIPTION = ""
+        self.GRAPH = ""
         self.KEYWORDS = ""
         self.ORIGIN = ""
         self.GATEWARE_SUPPORT = True
-        self.FIRMWARE_SUPPORT = False
         self.OPTIONS = {}
         self.PLUGIN_CONFIG = False
         self.LIMITATIONS = {}
         self.system_setup = system_setup
         self.plugin_id = plugin_id
+        self.duration = 0
+        self.timestamp = 0
         self.plugin_setup = plugin_setup
+
+        if "uid" not in self.plugin_setup:
+            self.plugin_setup["uid"] = f"{plugin_setup.get('type')}{self.plugin_id}"
+        self.instances_name = self.plugin_setup["uid"]
+
         self.setup()
 
         if self.TYPE == "frameio":
@@ -147,24 +79,20 @@ class PluginBase:
             self.expansion_prefix = ename.upper()
             self.expansions.append(self.expansion_prefix)
 
+    def signed(self, n, byte_count):
+        return int.from_bytes(n.to_bytes(byte_count, "little", signed=False), "little", signed=True)
+
     def update_title(self):
-        self.instances_name = f"{self.NAME}{self.plugin_id}"
         self.title = self.plugin_setup.get("name") or self.instances_name
-
-    def firmware_defines(self):
-        return ""
-
-    def firmware_setup(self):
-        return ""
-
-    def firmware_loop(self):
-        return ""
 
     def setup(self):
         pass
 
     def gateware_files(self):
         return self.VERILOGS
+
+    def gateware_virtual_files(self):
+        return self.VERILOGS_DATA
 
     def convert2interface(self):
         if self.TYPE == "frameio":
@@ -297,7 +225,10 @@ class PluginBase:
         data = {}
         for name, setup in self.INTERFACE.items():
             if "value" not in setup:
-                setup["value"] = 0
+                if self.TYPE == "frameio":
+                    setup["value"] = [0]
+                else:
+                    setup["value"] = 0
             size = setup.get("size", 32)
             direction = setup["direction"].upper().replace("PUT", "")
             data[name] = setup
@@ -315,6 +246,17 @@ class PluginBase:
             bits = self.plugin_setup.get("bits", 8)
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
+        else:
+            for data_name, data_config in self.interface_data().items():
+                direction = data_config["direction"]
+                if data_config.get("expansion") and direction == "output":
+                    variable = data_config["variable"]
+                    bits = data_config.get("size", 8)
+                    if bits == 1:
+                        expansion_pins.append(f"{variable}")
+                    else:
+                        for num in range(0, bits):
+                            expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
     def expansion_inputs(self):
@@ -323,14 +265,45 @@ class PluginBase:
             bits = self.plugin_setup.get("bits", 8)
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
+        else:
+            for data_name, data_config in self.interface_data().items():
+                direction = data_config["direction"]
+                if data_config.get("expansion") and direction == "input":
+                    variable = data_config["variable"]
+                    bits = data_config.get("size", 8)
+                    if bits == 1:
+                        expansion_pins.append(f"{variable}")
+                    else:
+                        for num in range(0, bits):
+                            expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
     def gateware_defines(self, direct=False):
         defines = []
         if self.TYPE == "expansion":
             bits = self.plugin_setup.get("bits", 8)
+            default = self.plugin_setup.get("default", 0)
             defines.append(f"wire [{bits-1}:0] {self.expansion_prefix}_INPUT;")
-            defines.append(f"wire [{bits-1}:0] {self.expansion_prefix}_OUTPUT;")
+            defines.append(f"reg [{bits-1}:0] {self.expansion_prefix}_OUTPUT = {default};")
+
+        for data_name, data_config in self.interface_data().items():
+            if data_config.get("expansion"):
+                direction = data_config["direction"]
+                variable = data_config["variable"]
+                size = data_config["size"]
+                bit_n = data_config["bit"]
+                if direction == "output":
+                    default = data_config.get("default", 0)
+                    if size == 1:
+                        if default & (1 << bit_n):
+                            defines.append(f"reg [{size-1}:0] {variable} = 1'd1;")
+                        else:
+                            defines.append(f"reg [{size-1}:0] {variable} = 1'd0;")
+                    else:
+                        defines.append(f"reg [{size-1}:0] {variable} = {size}'d{default};")
+                else:
+                    defines.append(f"wire [{size-1}:0] {variable};")
+
         return defines
 
     def gateware_pin_modifiers(self, instances, instance, pin_name, pin_config, pin_varname):

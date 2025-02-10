@@ -6,8 +6,8 @@ import argparse
 import os
 import sys
 
-if os.path.isfile("./riocore/__init__.py"):
-    sys.path.insert(0, "./")
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
 
 import riocore
 
@@ -55,12 +55,12 @@ if args.list:
 elif args.generate:
     plugins = riocore.Plugins()
     for plugin in plugins.list():
-        filename = f"riocore/plugins/{plugin['name']}/README.md"
+        filename = os.path.join("riocore", "plugins", plugin["name"], "README.md")
         print(filename)
         text = plugins.info(plugin["name"])
         open(filename, "w").write(text)
 
-    filename = "PLUGINS.md"
+    filename = "riocore/plugins/README.md"
     print(filename)
     text = []
 
@@ -82,12 +82,12 @@ elif args.generate:
         for plugin_instance in plugins.plugin_instances:
             if plugin_instance.TYPE == ptype:
                 image = ""
-                plugin_path = f"{riocore_path}/plugins/{plugin_instance.NAME}"
-                image_path = f"{plugin_path}/image.png"
+                plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+                image_path = os.path.join(plugin_path, "image.png")
                 if os.path.isfile(image_path):
-                    image = f'<img src="riocore/plugins/{plugin_instance.NAME}/image.png" height="48">'
+                    image = f'<img src="{plugin_instance.NAME}/image.png" height="48">'
 
-                text.append(f"| {title} | [{plugin_instance.NAME}](riocore/plugins/{plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} |")
+                text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} |")
 
                 title = ""
 

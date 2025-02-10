@@ -1,4 +1,6 @@
 import importlib
+import sys
+import os
 import shutil
 import re
 import subprocess
@@ -9,6 +11,9 @@ class Toolchain:
         self.config = config
         self.gateware_path = f"{self.config['output_path']}/Gateware"
         self.riocore_path = config["riocore_path"]
+        self.toolchain_path = self.config.get("toolchains_json", {}).get("quartus", "")
+        if self.toolchain_path and not self.toolchain_path.endswith("bin"):
+            self.toolchain_path = os.path.join(self.toolchain_path, "bin")
 
     def info(cls):
         info = {
@@ -50,10 +55,11 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
-        quartus_sh = shutil.which("quartus_sh")
-        if quartus_sh is None:
-            print("WARNING: can not found toolchain installation in PATH: quartus")
-            print("  example: export PATH=$PATH:/opt/intelFPGA_lite/22.1std/quartus/bin/")
+        if sys.platform == "linux":
+            quartus_sh = shutil.which("quartus_sh")
+            if quartus_sh is None:
+                print("WARNING: can not found toolchain installation in PATH: quartus")
+                print("  example: export PATH=$PATH:/opt/intelFPGA_lite/22.1std/quartus/bin/")
 
         verilogs = " ".join(self.config["verilog_files"])
         clkname = "sysclk_in"
@@ -64,6 +70,9 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("")
         makefile_data.append("# Toolchain: Quartus")
         makefile_data.append("")
+        if self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append("")
         makefile_data.append("PROJECT   := rio")
         makefile_data.append("TOP       := rio")
         makefile_data.append(f"PART      := {ftype}")
@@ -158,7 +167,7 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
         clock = self.config["speed"]
         sdc_data = []
@@ -167,4 +176,4 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         sdc_data.append("derive_pll_clocks")
         sdc_data.append("derive_clock_uncertainty")
         sdc_data.append("")
-        open(f"{path}/rio.sdc", "w").write("\n".join(sdc_data))
+        open(os.path.join(path, "rio.sdc"), "w").write("\n".join(sdc_data))

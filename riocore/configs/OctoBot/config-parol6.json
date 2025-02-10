@@ -20,7 +20,8 @@
                 "sel": {
                     "pin": "G3"
                 }
-            }
+            },
+            "uid": "w55000"
         },
         {
             "type": "stepdir",
@@ -47,7 +48,8 @@
                 "home_latch_vel": 4.0,
                 "max_velocity": 60.0,
                 "max_acceleration": 300.0
-            }
+            },
+            "uid": "stepdir0"
         },
         {
             "type": "stepdir",
@@ -74,7 +76,8 @@
                 "home_latch_vel": 4.0,
                 "max_velocity": 60.0,
                 "max_acceleration": 300.0
-            }
+            },
+            "uid": "stepdir1"
         },
         {
             "type": "stepdir",
@@ -101,7 +104,8 @@
                 "home_latch_vel": -4.0,
                 "max_velocity": 60.0,
                 "max_acceleration": 300.0
-            }
+            },
+            "uid": "stepdir2"
         },
         {
             "type": "stepdir",
@@ -127,7 +131,8 @@
                 "home_latch_vel": 10.0,
                 "max_velocity": 60.0,
                 "max_acceleration": 300.0
-            }
+            },
+            "uid": "stepdir3"
         },
         {
             "type": "stepdir",
@@ -154,7 +159,8 @@
                 "home": 1.0,
                 "max_velocity": 60.0,
                 "max_acceleration": 300.0
-            }
+            },
+            "uid": "stepdir4"
         },
         {
             "type": "stepdir",
@@ -181,7 +187,8 @@
                 "home": 0.0,
                 "max_velocity": 60.0,
                 "max_acceleration": 300.0
-            }
+            },
+            "uid": "stepdir5"
         },
         {
             "type": "wled",
@@ -189,7 +196,8 @@
                 "data": {
                     "pin": "M7"
                 }
-            }
+            },
+            "uid": "wled0"
         },
         {
             "type": "bitin",
@@ -209,7 +217,8 @@
                 "bit": {
                     "net": "joint.0.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin0"
         },
         {
             "type": "bitin",
@@ -224,7 +233,8 @@
                 "bit": {
                     "net": "joint.1.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin1"
         },
         {
             "type": "bitin",
@@ -239,7 +249,8 @@
                 "bit": {
                     "net": "joint.2.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin2"
         },
         {
             "type": "bitin",
@@ -259,7 +270,8 @@
                 "bit": {
                     "net": "joint.3.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin3"
         },
         {
             "type": "bitin",
@@ -274,7 +286,8 @@
                 "bit": {
                     "net": "joint.4.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin4"
         },
         {
             "type": "bitin",
@@ -294,7 +307,8 @@
                 "bit": {
                     "net": "joint.5.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin5"
         },
         {
             "type": "bitin",
@@ -309,7 +323,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitin6"
         },
         {
             "type": "bitin",
@@ -324,7 +339,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitin7"
         },
         {
             "type": "rcservo",
@@ -347,7 +363,8 @@
                 "enable": {
                     "setp": "1"
                 }
-            }
+            },
+            "uid": "rcservo0"
         },
         {
             "type": "bitout",
@@ -361,7 +378,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout0"
         },
         {
             "type": "bitout",
@@ -375,7 +393,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout1"
         },
         {
             "type": "bitout",
@@ -389,7 +408,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout2"
         },
         {
             "type": "bitout",
@@ -403,7 +423,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout3"
         },
         {
             "type": "bitout",
@@ -417,7 +438,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout4"
         },
         {
             "type": "bitout",
@@ -431,7 +453,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout5"
         },
         {
             "type": "bitout",
@@ -445,7 +468,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout6"
         },
         {
             "type": "bitout",
@@ -462,7 +486,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout7"
         },
         {
             "type": "blink",
@@ -477,7 +502,8 @@
                     ]
                 }
             },
-            "frequency": 1.0
+            "frequency": 1.0,
+            "uid": "blink0"
         },
         {
             "type": "blink",
@@ -492,7 +518,8 @@
                     ]
                 }
             },
-            "frequency": 5.0
+            "frequency": 5.0,
+            "uid": "blink1"
         },
         {
             "type": "icewerxadc",
@@ -651,7 +678,8 @@
                     ],
                     "scale": 0.191
                 }
-            }
+            },
+            "uid": "icewerxadc0"
         },
         {
             "type": "modbus",
@@ -682,7 +710,8 @@
                     "scale": 1,
                     "format": "d"
                 }
-            }
+            },
+            "uid": "modbus0"
         }
     ],
     "linuxcnc": {
@@ -748,8 +777,6 @@
                 "max_limit": 170
             }
         },
-        "robojog": {
-            "enable": true
-        }
+        "_vcp_type": "gladevcp"
     }
 }

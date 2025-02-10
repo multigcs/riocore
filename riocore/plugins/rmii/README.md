@@ -1,55 +1,16 @@
 # rmii
+
+<img align="right" width="320" src="image.png">
+
 **rmii udp interface (experimental)**
 
 rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)
 
 Keywords: interface network ethernet udp
 
-
-![image.png](image.png)
-
 ## Limitations
 * boards: TangPrimer20K
 * toolchains: gowin
-
-## Basic-Example:
-```
-{
-    "type": "rmii",
-    "pins": {
-        "netrmii_clk50m": {
-            "pin": "0"
-        },
-        "netrmii_rx_crs": {
-            "pin": "1"
-        },
-        "netrmii_mdc": {
-            "pin": "2"
-        },
-        "netrmii_txen": {
-            "pin": "3"
-        },
-        "netrmii_mdio": {
-            "pin": "4"
-        },
-        "netrmii_txd_0": {
-            "pin": "5"
-        },
-        "netrmii_txd_1": {
-            "pin": "6"
-        },
-        "netrmii_rxd_0": {
-            "pin": "7"
-        },
-        "netrmii_rxd_1": {
-            "pin": "8"
-        },
-        "phyrst": {
-            "pin": "9"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -141,6 +102,45 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "rmii",
+    "pins": {
+        "netrmii_clk50m": {
+            "pin": "0"
+        },
+        "netrmii_rx_crs": {
+            "pin": "1"
+        },
+        "netrmii_mdc": {
+            "pin": "2"
+        },
+        "netrmii_txen": {
+            "pin": "3"
+        },
+        "netrmii_mdio": {
+            "pin": "4"
+        },
+        "netrmii_txd_0": {
+            "pin": "5"
+        },
+        "netrmii_txd_1": {
+            "pin": "6"
+        },
+        "netrmii_rxd_0": {
+            "pin": "7"
+        },
+        "netrmii_rxd_1": {
+            "pin": "8"
+        },
+        "phyrst": {
+            "pin": "9"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

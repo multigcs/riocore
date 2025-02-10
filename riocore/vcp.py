@@ -24,7 +24,7 @@ try:
     from lxml import etree
 except Exception:
     etree = None
-    print("INFO: can not loat lxml")
+    print("INFO: can not load lxml")
 
 
 class MyGauge(QWidget):
@@ -200,14 +200,15 @@ class MyVCP:
             layout.itemAt(i).widget().setParent(None)
 
         xml = open(filename, "rb").read()
-        root = etree.fromstring(xml, parser=etree.XMLParser(remove_comments=True))
+        if etree is not None:
+            root = etree.fromstring(xml.decode("latin-1"), parser=etree.XMLParser(remove_comments=True))
 
-        if self.widget_tab:
-            index = self.widget_tab.indexOf(self.widget_tab.currentWidget())
-            self.active_tab = self.widget_tab.tabText(index)
+            if self.widget_tab:
+                index = self.widget_tab.indexOf(self.widget_tab.currentWidget())
+                self.active_tab = self.widget_tab.tabText(index)
 
-        for child in root.iterchildren():
-            self.show_element(child, layout)
+            for child in root.iterchildren():
+                self.show_element(child, layout)
 
     def show_element(self, element, layout):
         if hasattr(self, f"show_{element.tag}"):
@@ -215,6 +216,15 @@ class MyVCP:
         else:
             print(f"missing type: {element.tag}")
             layout.addWidget(QLabel(f"## {element.tag} ##"))
+
+    def show_boxanchor(self, element, layout):
+        pass
+
+    def show_boxexpand(self, element, layout):
+        pass
+
+    def show_boxfill(self, element, layout):
+        pass
 
     def show_radiobutton(self, element, layout):
         choices = []

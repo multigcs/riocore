@@ -152,7 +152,7 @@
             "comment": "PMOD 1A",
             "pins": {
                 "P1": {
-                    "pin": "40",
+                    "pin": "4",
                     "pos": [
                         209,
                         65

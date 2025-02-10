@@ -1,27 +1,12 @@
 # udpoti
+
+<img align="right" width="320" src="image.png">
+
 **digital-poti with up/down+dir interface**
 
 controling digital poti for analog outputs
 
 Keywords: analog dac poti
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "udpoti",
-    "pins": {
-        "updown": {
-            "pin": "0"
-        },
-        "increment": {
-            "pin": "1"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -75,6 +60,21 @@ name of this plugin instance
  * size: 32 bit
  * direction: output
 
+
+## Basic-Example:
+```
+{
+    "type": "udpoti",
+    "pins": {
+        "updown": {
+            "pin": "0"
+        },
+        "increment": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

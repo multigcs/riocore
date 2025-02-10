@@ -1,27 +1,12 @@
 # hx711
+
+<img align="right" width="320" src="image.png">
+
 **digital weight sensor**
 
 to measure weight's
 
 Keywords: adc analog weight
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "hx711",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -88,6 +73,21 @@ name of this plugin instance
  * direction: input
  * multiplexed: True
 
+
+## Basic-Example:
+```
+{
+    "type": "hx711",
+    "pins": {
+        "miso": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

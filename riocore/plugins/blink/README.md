@@ -1,24 +1,12 @@
 # blink
+
+<img align="right" width="320" src="image.png">
+
 **blinking output pin**
 
 outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals
 
 Keywords: led blinking
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "blink",
-    "pins": {
-        "led": {
-            "pin": "0"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -50,6 +38,18 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
+
+## Basic-Example:
+```
+{
+    "type": "blink",
+    "pins": {
+        "led": {
+            "pin": "0"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

@@ -52,17 +52,17 @@ class Plugin(PluginBase):
         instance["arguments"] = {
             "clk": instance["arguments"]["clk"],
             "data": instance["arguments"]["data"],
-            "green": f"WLED{self.plugin_id}_GREEN",
-            "blue": f"WLED{self.plugin_id}_BLUE",
-            "red": f"WLED{self.plugin_id}_RED",
+            "green": f"{self.instances_name.upper()}_GREEN",
+            "blue": f"{self.instances_name.upper()}_BLUE",
+            "red": f"{self.instances_name.upper()}_RED",
         }
-        instance_predefines.append(f"wire [{num_leds-1}:0] WLED{self.plugin_id}_GREEN;")
-        instance_predefines.append(f"wire [{num_leds-1}:0] WLED{self.plugin_id}_BLUE;")
-        instance_predefines.append(f"wire [{num_leds-1}:0] WLED{self.plugin_id}_RED;")
+        instance_predefines.append(f"wire [{num_leds-1}:0] {self.instances_name.upper()}_GREEN;")
+        instance_predefines.append(f"wire [{num_leds-1}:0] {self.instances_name.upper()}_BLUE;")
+        instance_predefines.append(f"wire [{num_leds-1}:0] {self.instances_name.upper()}_RED;")
         for led in range(num_leds):
-            instance_predefines.append(f"assign WLED{self.plugin_id}_GREEN[{num_leds-led-1}] = VAROUT1_WLED{self.plugin_id}_{led}_GREEN;")
-            instance_predefines.append(f"assign WLED{self.plugin_id}_BLUE[{num_leds-led-1}] = VAROUT1_WLED{self.plugin_id}_{led}_BLUE;")
-            instance_predefines.append(f"assign WLED{self.plugin_id}_RED[{num_leds-led-1}] = VAROUT1_WLED{self.plugin_id}_{led}_RED;")
+            instance_predefines.append(f"assign {self.instances_name.upper()}_GREEN[{num_leds-led-1}] = VAROUT1_{self.instances_name.upper()}_{led}_GREEN;")
+            instance_predefines.append(f"assign {self.instances_name.upper()}_BLUE[{num_leds-led-1}] = VAROUT1_{self.instances_name.upper()}_{led}_BLUE;")
+            instance_predefines.append(f"assign {self.instances_name.upper()}_RED[{num_leds-led-1}] = VAROUT1_{self.instances_name.upper()}_{led}_RED;")
         instance_parameter["NUM_LEDS"] = num_leds
         instance_parameter["LEVEL"] = level
         instance_parameter["CLK_MHZ"] = self.system_setup["speed"] // 1000000

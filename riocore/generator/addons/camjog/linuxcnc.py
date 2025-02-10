@@ -7,12 +7,14 @@ addon_path = os.path.dirname(__file__)
 
 def ini(parent, ini_setup):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = parent.project.config["jdata"].get("gui", "axis")
 
-    source = f"{addon_path}/camjog.py"
-    target = f"{parent.component_path}/camjog.py"
-    shutil.copy(source, target)
-    os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+    for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
+        if camjog and camjog.get("enable"):
+            source = f"{addon_path}/camjog.py"
+            target = f"{parent.component_path}/camjog.py"
+            shutil.copy(source, target)
+            os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+            break
 
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
@@ -21,10 +23,9 @@ def ini(parent, ini_setup):
             height = camjog.get("height", 480)
             scale = camjog.get("scale", 1.0)
             tabname = camjog.get("tabname", f"camjog-{camjog_num}")
-            tablocation = camjog.get("tablocation", "Pyngcgui")
             ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAMJOG{camjog_num}"] = tabname
-            if gui != "axis":
-                ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAMJOG{camjog_num}"] = tablocation
+            if parent.gui_tablocation:
+                ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAMJOG{camjog_num}"] = parent.gui_tablocation
 
             cmd_args = ["halcmd loadusr -Wn camjog ./camjog.py"]
             cmd_args.append("--xid {XID}")
@@ -42,7 +43,7 @@ def ini(parent, ini_setup):
 
 def gui(parent):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    gui = parent.project.config["jdata"].get("gui", "axis")
+    gui = linuxcnc_config.get("gui", "axis")
     if gui != "qtdragon":
         offset_num = 0
         for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
@@ -62,29 +63,31 @@ def gui(parent):
 
 
 def hal(parent):
-    output = []
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
-    parent.postgui_components_add("camjog")
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
+            parent.postgui_components_add("camjog")
             # jog axis
             for axis_name, axis_config in parent.axis_dict.items():
                 if axis_name not in {"X", "Y"}:
                     continue
 
-                joints = axis_config["joints"]
+                cal = camjog.get(f"{axis_name.lower()}_cal", 0.1)
+                # joints = axis_config["joints"]
                 axis_low = axis_name.lower()
-                parent.hal_setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
-                parent.hal_setp_add(f"axis.{axis_low}.jog-enable", 1)
-                parent.hal_setp_add(f"axis.{axis_low}.jog-scale", 0.01)
-                parent.hal_net_add(f"camjog.axis.{axis_low}.jog-counts", f"axis.{axis_low}.jog-counts")
+                parent.halg.setp_add(f"camjog.axis.{axis_low}.cal", cal)
+                parent.halg.net_add(f"axis.{axis_low}.jog-scale", f"camjog.axis.{axis_low}.jog-scale")
+                parent.halg.net_add(f"camjog.axis.{axis_low}.jog-counts", f"axis.{axis_low}.jog-counts")
+
+                parent.halg.setp_add(f"axis.{axis_low}.jog-scale", 0.01)
+                parent.halg.setp_add(f"axis.{axis_low}.jog-vel-mode", 0)
+                parent.halg.setp_add(f"axis.{axis_low}.jog-enable", 1)
+
+                """
                 for joint, joint_setup in joints.items():
-                    parent.hal_setp_add(f"joint.{joint}.jog-vel-mode", 0)
-                    parent.hal_setp_add(f"joint.{joint}.jog-enable", 1)
-                    parent.hal_setp_add(f"joint.{joint}.jog-scale", 0.01)
-                    parent.hal_net_add(f"camjog.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
-
-            output.append("")
+                    parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 0)
+                    parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
+                    #parent.halg.setp_add(f"joint.{joint}.jog-scale", jscale)
+                    parent.halg.net_add(f"camjog.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
+                """
             break
-
-    return output

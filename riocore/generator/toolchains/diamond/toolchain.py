@@ -1,12 +1,17 @@
 import importlib
+import sys
+import os
 import shutil
 
 
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = f"{self.config['output_path']}/Gateware"
+        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
         self.riocore_path = config["riocore_path"]
+        self.toolchain_path = self.config.get("toolchains_json", {}).get("diamond", "")
+        if self.toolchain_path and not self.toolchain_path.endswith("bin"):
+            self.toolchain_path = os.path.join(self.toolchain_path, "bin")
 
     def info(cls):
         info = {
@@ -20,9 +25,10 @@ class Toolchain:
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
         pins_generator.Pins(self.config).generate(path)
 
-        diamondc = shutil.which("diamondc")
-        if diamondc is None:
-            print("WARNING: can not found toolchain installation in PATH: diamondc")
+        if sys.platform == "linux":
+            diamondc = shutil.which("diamondc")
+            if diamondc is None:
+                print("WARNING: can not found toolchain installation in PATH: diamondc")
 
         verilogs = " ".join(self.config["verilog_files"])
 
@@ -30,6 +36,9 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("# Toolchain: Diamond")
         makefile_data.append("")
+        if self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append("")
         makefile_data.append("PROJECT  := rio")
         makefile_data.append("TOP      := rio")
         makefile_data.append(f"PART     := {self.config['type']}")
@@ -72,4 +81,4 @@ class Toolchain:
         makefile_data.append("	rm -rf build $(PROJECT).ldf $(PROJECT).tcl syn.tcl")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{path}/Makefile", "w").write("\n".join(makefile_data))
+        open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

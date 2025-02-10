@@ -1,30 +1,12 @@
 # max6675
+
+<img align="right" width="320" src="image.png">
+
 **SPI temperature sensor**
 
 to messurement very high temperatures of up to 1250 degrees Celsius
 
 Keywords: analog adc
-
-
-![image.png](image.png)
-
-## Basic-Example:
-```
-{
-    "type": "max6675",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
 
 ## Pins:
 *FPGA-pins*
@@ -66,6 +48,24 @@ name of this plugin instance
  * size: 16 bit
  * direction: input
 
+
+## Basic-Example:
+```
+{
+    "type": "max6675",
+    "pins": {
+        "miso": {
+            "pin": "0"
+        },
+        "sclk": {
+            "pin": "1"
+        },
+        "sel": {
+            "pin": "2"
+        }
+    }
+}
+```
 
 ## Full-Example:
 ```

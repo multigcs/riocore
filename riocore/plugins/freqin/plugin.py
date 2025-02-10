@@ -25,6 +25,14 @@ class Plugin(PluginBase):
                 "unit": "Hz",
                 "description": "minimum measured frequency (for faster updates)",
             },
+            "freq_max": {
+                "default": 1000000,
+                "type": int,
+                "min": 10,
+                "max": 10000000,
+                "unit": "Hz",
+                "description": "maximum measured frequency (for filtering)",
+            },
         }
         self.INTERFACE = {
             "frequency": {
@@ -39,6 +47,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "frequency": {
                 "direction": "input",
+                "format": "0.1f",
                 "unit": "Hz",
             },
             "valid": {
@@ -46,6 +55,7 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
+        self.vlast = 0
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -61,14 +71,31 @@ class Plugin(PluginBase):
         return instances
 
     def convert(self, signal_name, signal_setup, value):
+        freq_max = int(self.plugin_setup.get("freq_max", self.OPTIONS["freq_max"]["default"]))
+        vmax = self.system_setup["speed"] // freq_max
         if signal_name == "frequency":
-            if value != 0:
+            if value > vmax:
                 value = self.system_setup["speed"] / value
+                self.vlast = value
+            elif value != 0:
+                value = self.vlast
+            else:
+                self.vlast = 0
         return value
 
     def convert_c(self, signal_name, signal_setup):
-        return """
-        if (value != 0) {
-            value = OSC_CLOCK / value;
-        }
-        """
+        if signal_name == "frequency":
+            freq_max = int(self.plugin_setup.get("freq_max", self.OPTIONS["freq_max"]["default"]))
+            vmax = self.system_setup["speed"] // freq_max
+            return f"""
+            static float vlast = 0;
+            if (value > {vmax}) {{
+                value = OSC_CLOCK / value;
+                vlast = value;
+            }} else if (value != 0) {{
+                value = vlast;
+            }} else {{
+                vlast = 0;
+            }}
+            """
+        return ""

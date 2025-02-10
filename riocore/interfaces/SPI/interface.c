@@ -4199,4 +4199,5 @@ int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
     return 1;
 }
 
-
+void spi_exit(void) {
+}
