@@ -2,7 +2,6 @@
 #
 #
 
-import pytest
 
 from riocore.generator.hal import hal_generator
 

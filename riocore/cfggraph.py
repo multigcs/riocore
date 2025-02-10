@@ -347,7 +347,9 @@ class ConfigGraph:
                     instance = parts[1].split(":")[1].replace("#", " ")
                     begin = parts[2].split(",")
                     end = parts[3].split(",")
-                    self.map[instance] = (int(begin[0]), int(begin[1]), int(end[0]), int(end[1]))
+                    if instance not in self.map:
+                        self.map[instance] = []
+                    self.map[instance].append((int(begin[0]), int(begin[1]), int(end[0]), int(end[1])))
 
             return gAll.pipe()
 
@@ -357,17 +359,18 @@ class ConfigGraph:
     def on_click(self, x, y):
         if self.map is None:
             return
-        for instance, pos in self.map.items():
-            if x >= pos[0] and x <= pos[2] and y >= pos[1] and y <= pos[3]:
-                for plugin_instance in self.parent.plugins.plugin_instances:
-                    name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
-                    if name == instance:
-                        self.parent.edit_plugin(plugin_instance, None, is_new=False)
-                        return
-                for module_data in self.parent.config.get("modules", []):
-                    slot_name = module_data.get("slot")
-                    for plugin_instance in self.parent.modules[slot_name]["instances"]:
+        for instance, positions in self.map.items():
+            for pos in positions:
+                if x >= pos[0] and x <= pos[2] and y >= pos[1] and y <= pos[3]:
+                    for plugin_instance in self.parent.plugins.plugin_instances:
                         name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
                         if name == instance:
                             self.parent.edit_plugin(plugin_instance, None, is_new=False)
                             return
+                    for module_data in self.parent.config.get("modules", []):
+                        slot_name = module_data.get("slot")
+                        for plugin_instance in self.parent.modules[slot_name]["instances"]:
+                            name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
+                            if name == instance:
+                                self.parent.edit_plugin(plugin_instance, None, is_new=False)
+                                return

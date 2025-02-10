@@ -2,9 +2,7 @@
 #
 #
 
-import pytest
 
-from lxml import etree
 
 from riocore.generator.pyvcp import pyvcp
 

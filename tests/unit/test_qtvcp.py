@@ -2,7 +2,6 @@
 #
 #
 
-import pytest
 
 from lxml import etree
 
@@ -28,311 +27,272 @@ def test_qtvcp():
     <widget class="QWidget" name="centralwidget">
       <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-          <widget class="QGroupBox" name="groupBox_rio">
-            <property name="title">
-              <string>RIO</string>
-            </property>
-            <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-              </sizepolicy>
-            </property>
-            <property name="minimumSize">
-              <size>
-                <width>200</width>
-                <height>0</height>
-              </size>
-            </property>
-            <property name="alignment">
-              <set>Qt::AlignCenter</set>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_30">
-              <property name="spacing">
-                <number>6</number>
-              </property>
-              <property name="leftMargin">
-                <number>2</number>
-              </property>
-              <property name="topMargin">
-                <number>2</number>
-              </property>
-              <property name="rightMargin">
-                <number>2</number>
-              </property>
-              <property name="bottomMargin">
-                <number>2</number>
-              </property>
-              <item>
-                <widget class="QTabWidget" name="tabWidget_setup">
-                  <widget class="QWidget" name="tab_tab1">
-                    <attribute name="title">
-                      <string>tab1</string>
-                    </attribute>
-                    <layout class="QVBoxLayout" name="layout_stat">
-                      <property name="spacing">
-                        <number>0</number>
-                      </property>
-                      <property name="leftMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                        <number>0</number>
-                      </property>
-                      <item>
-                        <layout class="QVBoxLayout">
-                          <property name="leftMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="topMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="rightMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="bottomMargin">
-                            <number>5</number>
-                          </property>
-                          <item>
-                            <layout class="QHBoxLayout">
-                              <property name="leftMargin">
-                                <number>5</number>
-                              </property>
-                              <property name="topMargin">
-                                <number>5</number>
-                              </property>
-                              <property name="rightMargin">
-                                <number>5</number>
-                              </property>
-                              <property name="bottomMargin">
-                                <number>5</number>
-                              </property>
-                              <item>
-                                <widget class="QLabel">
-                                  <property name="text">
-                                    <string>led1</string>
-                                  </property>
-                                  <property name="indent">
-                                    <number>4</number>
-                                  </property>
-                                </widget>
-                              </item>
-                              <item>
-                                <widget class="LED" name="hal_led">
-                                  <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                                      <horstretch>0</horstretch>
-                                      <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                  </property>
-                                  <property name="diameter">
-                                    <number>16</number>
-                                  </property>
-                                  <property name="minimumSize">
-                                    <size>
-                                      <width>32</width>
-                                      <height>32</height>
-                                    </size>
-                                  </property>
-                                  <property name="color">
-                                    <color>
-                                      <red>85</red>
-                                      <green>255</green>
-                                      <blue>0</blue>
-                                    </color>
-                                  </property>
-                                  <property name="maximumSize">
-                                    <size>
-                                      <width>32</width>
-                                      <height>32</height>
-                                    </size>
-                                  </property>
-                                </widget>
-                              </item>
-                            </layout>
-                          </item>
-                          <item>
-                            <widget class="QWidget" native="true"/>
-                          </item>
-                        </layout>
-                      </item>
-                    </layout>
-                  </widget>
-                  <widget class="QWidget" name="tab_tab2">
-                    <attribute name="title">
-                      <string>tab2</string>
-                    </attribute>
-                    <layout class="QVBoxLayout" name="layout_stat">
-                      <property name="spacing">
-                        <number>0</number>
-                      </property>
-                      <property name="leftMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                        <number>0</number>
-                      </property>
-                      <item>
-                        <layout class="QVBoxLayout">
-                          <property name="leftMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="topMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="rightMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="bottomMargin">
-                            <number>5</number>
-                          </property>
-                          <item>
-                            <layout class="QHBoxLayout">
-                              <property name="leftMargin">
-                                <number>5</number>
-                              </property>
-                              <property name="topMargin">
-                                <number>5</number>
-                              </property>
-                              <property name="rightMargin">
-                                <number>5</number>
-                              </property>
-                              <property name="bottomMargin">
-                                <number>5</number>
-                              </property>
-                              <item>
-                                <widget class="QLabel">
-                                  <property name="text">
-                                    <string>check1</string>
-                                  </property>
-                                  <property name="indent">
-                                    <number>4</number>
-                                  </property>
-                                </widget>
-                              </item>
-                              <item>
-                                <widget class="PushButton" name="hal_check1">
-                                  <property name="minimumSize">
-                                    <size>
-                                      <width>30</width>
-                                      <height>30</height>
-                                    </size>
-                                  </property>
-                                  <property name="maximumSize">
-                                    <size>
-                                      <width>30</width>
-                                      <height>30</height>
-                                    </size>
-                                  </property>
-                                  <property name="styleSheet">
-                                    <string notr="true">
+          <widget class="QTabWidget" name="tabWidget_setup">
+            <widget class="QWidget" name="tab_tab1">
+              <attribute name="title">
+                <string>tab1</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="layout_stat">
+                <property name="spacing">
+                  <number>0</number>
+                </property>
+                <property name="leftMargin">
+                  <number>0</number>
+                </property>
+                <property name="topMargin">
+                  <number>0</number>
+                </property>
+                <property name="rightMargin">
+                  <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                  <number>0</number>
+                </property>
+                <item>
+                  <layout class="QVBoxLayout">
+                    <property name="leftMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
+                      <number>5</number>
+                    </property>
+                    <item>
+                      <layout class="QHBoxLayout">
+                        <property name="leftMargin">
+                          <number>5</number>
+                        </property>
+                        <property name="topMargin">
+                          <number>5</number>
+                        </property>
+                        <property name="rightMargin">
+                          <number>5</number>
+                        </property>
+                        <property name="bottomMargin">
+                          <number>5</number>
+                        </property>
+                        <item>
+                          <widget class="QLabel">
+                            <property name="text">
+                              <string>led1</string>
+                            </property>
+                            <property name="indent">
+                              <number>4</number>
+                            </property>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="LED" name="hal_led">
+                            <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                              </sizepolicy>
+                            </property>
+                            <property name="diameter">
+                              <number>16</number>
+                            </property>
+                            <property name="minimumSize">
+                              <size>
+                                <width>32</width>
+                                <height>32</height>
+                              </size>
+                            </property>
+                            <property name="color">
+                              <color>
+                                <red>85</red>
+                                <green>255</green>
+                                <blue>0</blue>
+                              </color>
+                            </property>
+                            <property name="maximumSize">
+                              <size>
+                                <width>32</width>
+                                <height>32</height>
+                              </size>
+                            </property>
+                          </widget>
+                        </item>
+                      </layout>
+                    </item>
+                    <item>
+                      <widget class="QWidget" native="true"/>
+                    </item>
+                  </layout>
+                </item>
+              </layout>
+            </widget>
+            <widget class="QWidget" name="tab_tab2">
+              <attribute name="title">
+                <string>tab2</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="layout_stat">
+                <property name="spacing">
+                  <number>0</number>
+                </property>
+                <property name="leftMargin">
+                  <number>0</number>
+                </property>
+                <property name="topMargin">
+                  <number>0</number>
+                </property>
+                <property name="rightMargin">
+                  <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                  <number>0</number>
+                </property>
+                <item>
+                  <layout class="QVBoxLayout">
+                    <property name="leftMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
+                      <number>5</number>
+                    </property>
+                    <item>
+                      <layout class="QHBoxLayout">
+                        <property name="leftMargin">
+                          <number>5</number>
+                        </property>
+                        <property name="topMargin">
+                          <number>5</number>
+                        </property>
+                        <property name="rightMargin">
+                          <number>5</number>
+                        </property>
+                        <property name="bottomMargin">
+                          <number>5</number>
+                        </property>
+                        <item>
+                          <widget class="QLabel">
+                            <property name="text">
+                              <string>check1</string>
+                            </property>
+                            <property name="indent">
+                              <number>4</number>
+                            </property>
+                          </widget>
+                        </item>
+                        <item>
+                          <widget class="PushButton" name="hal_check1">
+                            <property name="minimumSize">
+                              <size>
+                                <width>30</width>
+                                <height>30</height>
+                              </size>
+                            </property>
+                            <property name="maximumSize">
+                              <size>
+                                <width>30</width>
+                                <height>30</height>
+                              </size>
+                            </property>
+                            <property name="styleSheet">
+                              <string notr="true">
                 QLabel {
                     color: rgb(235, 235, 235);
                 }
              </string>
-                                  </property>
-                                  <property name="text">
-                                    <string>x</string>
-                                  </property>
-                                  <property name="checkable">
-                                    <bool>true</bool>
-                                  </property>
-                                  <property name="checked">
-                                    <bool>false</bool>
-                                  </property>
-                                </widget>
-                              </item>
-                            </layout>
-                          </item>
-                          <item>
-                            <widget class="QWidget" native="true"/>
-                          </item>
-                        </layout>
-                      </item>
-                    </layout>
-                  </widget>
-                  <widget class="QWidget" name="tab_tab3">
-                    <attribute name="title">
-                      <string>tab3</string>
-                    </attribute>
-                    <layout class="QVBoxLayout" name="layout_stat">
-                      <property name="spacing">
-                        <number>0</number>
-                      </property>
-                      <property name="leftMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                        <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                        <number>0</number>
-                      </property>
-                      <item>
-                        <layout class="QVBoxLayout">
-                          <property name="leftMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="topMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="rightMargin">
-                            <number>5</number>
-                          </property>
-                          <property name="bottomMargin">
-                            <number>5</number>
-                          </property>
-                          <item>
-                            <widget class="PushButton" name="hal_button1">
-                              <property name="text">
-                                <string>BUTTON11</string>
-                              </property>
-                              <property name="minimumSize">
-                                <size>
-                                  <width>70</width>
-                                  <height>50</height>
-                                </size>
-                              </property>
-                              <property name="maximumSize">
-                                <size>
-                                  <width>16777215</width>
-                                  <height>54</height>
-                                </size>
-                              </property>
-                              <property name="styleSheet">
-                                <string notr="true">
+                            </property>
+                            <property name="text">
+                              <string>x</string>
+                            </property>
+                            <property name="checkable">
+                              <bool>true</bool>
+                            </property>
+                            <property name="checked">
+                              <bool>false</bool>
+                            </property>
+                          </widget>
+                        </item>
+                      </layout>
+                    </item>
+                    <item>
+                      <widget class="QWidget" native="true"/>
+                    </item>
+                  </layout>
+                </item>
+              </layout>
+            </widget>
+            <widget class="QWidget" name="tab_tab3">
+              <attribute name="title">
+                <string>tab3</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="layout_stat">
+                <property name="spacing">
+                  <number>0</number>
+                </property>
+                <property name="leftMargin">
+                  <number>0</number>
+                </property>
+                <property name="topMargin">
+                  <number>0</number>
+                </property>
+                <property name="rightMargin">
+                  <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                  <number>0</number>
+                </property>
+                <item>
+                  <layout class="QVBoxLayout">
+                    <property name="leftMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                      <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
+                      <number>5</number>
+                    </property>
+                    <item>
+                      <widget class="PushButton" name="hal_button1">
+                        <property name="text">
+                          <string>BUTTON11</string>
+                        </property>
+                        <property name="minimumSize">
+                          <size>
+                            <width>70</width>
+                            <height>50</height>
+                          </size>
+                        </property>
+                        <property name="maximumSize">
+                          <size>
+                            <width>16777215</width>
+                            <height>54</height>
+                          </size>
+                        </property>
+                        <property name="styleSheet">
+                          <string notr="true">
 QLabel {
     color: rgb(235, 235, 235);
 }
                  </string>
-                              </property>
-                            </widget>
-                          </item>
-                          <item>
-                            <widget class="QWidget" native="true"/>
-                          </item>
-                        </layout>
-                      </item>
-                    </layout>
-                  </widget>
-                </widget>
-              </item>
-            </layout>
+                        </property>
+                      </widget>
+                    </item>
+                    <item>
+                      <widget class="QWidget" native="true"/>
+                    </item>
+                  </layout>
+                </item>
+              </layout>
+            </widget>
           </widget>
         </item>
       </layout>

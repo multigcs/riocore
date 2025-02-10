@@ -2,7 +2,6 @@
 #
 #
 
-import pytest
 
 from lxml import etree
 
@@ -167,15 +166,6 @@ def test_gladevcp():
         </child>
       </object>
     </child>
-  </object>
-  <object class="EMC_Action_MDI" id="hal_action_mdi1">
-    <property name="command">G53 G0  X0 Y0 Z0</property>
-  </object>
-  <object class="EMC_Action_MDI" id="hal_action_mdi2">
-    <property name="command">g0 X0 Y0 Z0</property>
-  </object>
-  <object class="EMC_ToggleAction_MDI" id="hal_toggleaction_mdi1">
-    <property name="command"> O&lt;oword&gt; call [${spin-f}] [${check}] [${toggle}] [${scale}] [${spin-f}]  [${combo-s}]</property>
   </object>
 </interface>
 """

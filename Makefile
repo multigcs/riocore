@@ -6,13 +6,13 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	find ./riocore/ ./tests/ ./bin/ -type f | grep "\.py$$\|bin/" | xargs -r -l ruff format -q
+	ruff format -q bin/ riocore/
 
 check:
-	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check
+	ruff check bin/ riocore/
 
 check_fix:
-	find ./riocore/ ./bin/ -type f | grep ".py$$\|bin/" | xargs -r -l ruff check --fix
+	ruff check --fix bin/ riocore/
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/

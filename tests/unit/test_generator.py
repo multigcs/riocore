@@ -48,14 +48,12 @@ def test_generator(config, target, protocol):
             "192.168.20.194",
             [-1, -2, -3, -4],
             {
-                "DEFAULT_LINEAR_VELOCITY": "60.0",
                 "MAX_LINEAR_VELOCITY": "60.0",
                 "INCREMENTS": "5mm 1mm .5mm .1mm .05mm .01mm",
                 "JOINTS": "4",
                 "KINEMATICS": "trivkins coordinates=XYYZ kinstype=B",
                 "COORDINATES": "X YY Z",
                 "DEFAULT_LINEAR_VELOCITY": "5.0",
-                "MAX_LINEAR_VELOCITY": "60.0",
             },
         ),
     ),
@@ -73,7 +71,9 @@ def test_generator_ini(config, target, protocol, ip, home_sequence, ini_values):
         riocomp_c = open(f"tests/unit/output/{target}/LinuxCNC/riocomp.c", "r").read()
         if f'#define UDP_IP "{ip}"' not in riocomp_c:
             assert False
-        if "udp_trx(txBuffer, rxBuffer, BUFFER_SIZE);" not in riocomp_c:
+        if "udp_tx(txBuffer, BUFFER_SIZE);" not in riocomp_c:
+            assert False
+        if "udp_rx(rxBuffer, BUFFER_SIZE);" not in riocomp_c:
             assert False
         rio_v = open(f"tests/unit/output/{target}/Gateware/rio.v", "r").read()
         if "w5500 #(" not in rio_v:

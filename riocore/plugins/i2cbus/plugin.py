@@ -429,6 +429,7 @@ graph LR;
                         gAll.edge(f"{dev_title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
                         lcports.append(f"<{net}>{net}")
 
+            name = self.plugin_setup.get("name", self.title)
             gAll.node(
                 dev_title,
                 shape="record",
@@ -436,6 +437,7 @@ graph LR;
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",
+                URL=f"instance:{name.replace(' ', '#')}",
             )
 
         return (lcports, signalports)

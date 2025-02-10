@@ -81,6 +81,12 @@ git clone https://github.com/multigcs/riocore.git
 cd riocore
 ```
 
+- installing dependencies via apt:
+```
+apt-get update
+apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml
+```
+
 make sure that the toolchain matching your fpga is in the path:
 ```
 export PATH=$PATH:/opt/oss-cad-suite/bin/
@@ -95,7 +101,7 @@ than copy a config file that is near to your setup:
 cp riocore/configs/Tangoboard/config-spi.json my_config.json
 ```
 
-## [DOCKER](DOCKER.md)
+## [DOCKER](DOCKER.md) (alternative)
 
 Using a TangNano9k or other board supported by the open-cad-suite? Check out the docker setup for an easy to use all in one way to run the riocore ui and generator, including flashing: [DOCKER](DOCKER.md)
 
