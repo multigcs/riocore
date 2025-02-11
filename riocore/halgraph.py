@@ -31,9 +31,9 @@ class HalGraph:
     ):
         pass
 
-    def svg(self, ini_file):
+    def png(self, ini_file):
         try:
-            self.gAll = graphviz.Digraph("G", format="svg")
+            self.gAll = graphviz.Digraph("G", format="png")
             self.gAll.attr(rankdir="LR")
             base_dir = os.path.dirname(ini_file)
             ini_data = open(ini_file, "r").read()
