@@ -174,22 +174,65 @@ class PinButton(QPushButton):
 
 
 class ImageMap(QLabel):
+    last_x = -1
+    last_y = -1
+    last_action = 0
+    moved = 0
+
     def __init__(self, parent):
-        super(QLabel, self).__init__(parent)
+        super(QLabel, self).__init__(parent.parent)
         self.parent = parent
 
     def mousePressEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        self.last_x = x
+        self.last_y = y
+        self.last_action = 1
+        self.moved = 0
         if event.button() == Qt.RightButton:
             self.setPin(event.pos())
 
+    def mouseReleaseEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        self.last_action = 0
+        self.moved = 0
+
+    def mouseMoveEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        if self.last_action == 1:
+            xs = self.parent.scroll_widget.horizontalScrollBar()
+            ys = self.parent.scroll_widget.verticalScrollBar()
+            xs_last = xs.value()
+            ys_last = ys.value()
+            diff_x = x - self.last_x
+            diff_y = y - self.last_y
+            if abs(diff_x) > 4 or abs(diff_y) > 4:
+                self.moved = 1
+            xs.setValue(xs_last - diff_x)
+            ys.setValue(ys_last - diff_y)
+
+    """
+    def wheelEvent(self, event):
+        delta = event.angleDelta()
+        if delta.y() < 0:
+            if self.parent.scale > 0.1:
+                self.parent.scale -= 0.1
+        else:
+            if self.parent.scale < 10.0:
+                self.parent.scale += 0.1
+    """
+
     def setPin(self, pos):
         grid = 5
-        pos_x = pos.x()
-        pos_y = pos.y()
+        pos_x = pos.x() / self.parent.scale
+        pos_y = pos.y() / self.parent.scale
         used_pos_x = set()
         used_pos_y = set()
         used_pins = []
-        for slot in self.parent.slots:
+        for slot in self.parent.parent.slots:
             for pin_name, pin_data in slot["pins"].items():
                 if isinstance(pin_data, str):
                     used_pins.append(pin_data)
@@ -210,8 +253,8 @@ class ImageMap(QLabel):
                 break
 
         pin_name_default = "P1"
-        if self.parent.slots:
-            last_slot = self.parent.slots[-1]
+        if self.parent.parent.slots:
+            last_slot = self.parent.parent.slots[-1]
             pin_name_num = 1
             found = True
             while found:
@@ -233,7 +276,7 @@ class ImageMap(QLabel):
         dialog.layout.addWidget(message)
         slot_select = QComboBox()
         slot_select.setEditable(True)
-        for slot in reversed(self.parent.slots):
+        for slot in reversed(self.parent.parent.slots):
             slot_select.addItem(slot["name"])
         dialog.layout.addWidget(slot_select)
 
@@ -246,7 +289,7 @@ class ImageMap(QLabel):
         dialog.layout.addWidget(message)
         pin_select = QComboBox()
         pin_select.setEditable(True)
-        for pin in self.parent.pinlist:
+        for pin in self.parent.parent.pinlist:
             if ":" not in pin and pin not in used_pins:
                 pin_select.addItem(pin)
         dialog.layout.addWidget(pin_select)
@@ -294,13 +337,13 @@ class ImageMap(QLabel):
                 pin_cfg = {"pin": pin, "pos": [int(pos_x), int(pos_y)], "direction": direction_str}
 
                 slot_n = -1
-                for sn, slot in enumerate(self.parent.slots):
+                for sn, slot in enumerate(self.parent.parent.slots):
                     if slot["name"] == slot_name:
                         slot_n = sn
                         break
 
                 if slot_n == -1:
-                    self.parent.slots.append(
+                    self.parent.parent.slots.append(
                         {
                             "name": slot_name,
                             "comment": "",
@@ -309,10 +352,10 @@ class ImageMap(QLabel):
                         }
                     )
                 else:
-                    self.parent.slots[slot_n]["pins"][name] = pin_cfg
+                    self.parent.parent.slots[slot_n]["pins"][name] = pin_cfg
 
-                print(json.dumps(self.parent.slots, indent=4))
-                self.parent.request_pin_table_load = 1
+                print(json.dumps(self.parent.parent.slots, indent=4))
+                self.parent.parent.request_pin_table_load = 1
             else:
                 print("ERROR: missing informations")
 
@@ -921,6 +964,8 @@ class TabJson:
 
 
 class TabBoard:
+    scale = 1.0
+
     def __init__(self, parent=None):
         self.parent = parent
         self.img_container = QWidget()
@@ -969,7 +1014,7 @@ class TabBoard:
         pinlayout_pixmap = QPixmap(pinimage_path)
         self.boardimg.setFixedSize(pinlayout_pixmap.size())
 
-        pinlayout_image = ImageMap(self.parent)
+        pinlayout_image = ImageMap(self)
         pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
         pinlayout_image.setFixedSize(pinlayout_pixmap.size())
         pinlayout_image.setPixmap(pinlayout_pixmap)
