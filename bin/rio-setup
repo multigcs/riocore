@@ -3927,10 +3927,10 @@ class WinForm(QWidget):
             title = f"{plugin_instance.title} ({plugin_instance.NAME})"
         help_text = plugin_instance.INFO
 
-        iconItem = MyStandardItem(title, help_text=help_text)
         plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
         image_path = os.path.join(plugin_path, "image.png")
 
+        iconItem = MyStandardItem("", help_text=help_text)
         aitem = MyStandardItem()
         parent.appendRow(
             [
@@ -3944,13 +3944,23 @@ class WinForm(QWidget):
         buttons_widget = QWidget()
         buttons_widget.setLayout(buttons_layout)
 
+        title_layout = QHBoxLayout()
+        title_layout.setContentsMargins(0, 0, 0, 0)
+        title_widget = QWidget()
+        title_widget.setLayout(title_layout)
+
         ilabel = QLabel()
         ilabel.setFixedSize(24, 24)
         if os.path.isfile(image_path):
             pixmap = QPixmap(image_path)
             ilabel.setPixmap(pixmap)
             ilabel.setScaledContents(True)
-        buttons_layout.addWidget(ilabel)
+
+        title_layout.addWidget(ilabel)
+        title_layout.addWidget(QLabel(title))
+        self.treeview.setIndexWidget(iconItem.index(), title_widget)
+
+        # buttons_layout.addWidget(ilabel)
 
         button_edit = QPushButton("edit")
         cb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
