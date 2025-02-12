@@ -47,7 +47,7 @@ from riocore.widgets import (
 
 from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
-from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
+from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon
 from PyQt5.QtWidgets import (
     QSplitter,
     QMessageBox,
@@ -963,6 +963,29 @@ class TabJson:
         # self.jsonpreview.verticalScrollBar().setValue(0)
 
 
+class TabPlugins:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.treeview = QTreeView()
+
+        # splitter.addWidget(self.treeview)
+        # self.treeview.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(["Name", "Value"])
+        self.model.itemChanged.connect(parent.itemChanged)
+        self.treeview.setModel(self.model)
+        self.treeview.setUniformRowHeights(True)
+
+    def widget(self):
+        return self.treeview
+
+    def timer(self):
+        pass
+
+    def update(self):
+        pass
+
+
 class TabBoard:
     scale = 1.0
 
@@ -1203,6 +1226,7 @@ class WinForm(QWidget):
         splitter = QSplitter(Qt.Horizontal)
         layout.addWidget(splitter, stretch=1)
 
+        """
         self.treeview = QTreeView()
         splitter.addWidget(self.treeview)
         # self.treeview.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -1211,6 +1235,7 @@ class WinForm(QWidget):
         self.model.itemChanged.connect(self.itemChanged)
         self.treeview.setModel(self.model)
         self.treeview.setUniformRowHeights(True)
+        """
 
         if not args.config:
             self.config_file = None
@@ -1240,6 +1265,9 @@ class WinForm(QWidget):
 
         self.tabwidget = QTabWidget()
         self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
+        self.tabwidget.setTabPosition(QTabWidget.West)
+        self.tabwidget.setDocumentMode(True)
+
         splitter.addWidget(self.tabwidget)
 
         self.gateware_hash = None
@@ -1249,6 +1277,7 @@ class WinForm(QWidget):
         self.flash_start = 0
 
         self.tabs = {
+            "Plugins": TabPlugins(self),
             "Board": TabBoard(self),
             "Overview": TabOverview(self),
             "Hal": TabHal(self),
@@ -1259,6 +1288,9 @@ class WinForm(QWidget):
             "LinuxCNC": TabLinuxCNC(self),
             "Gateware": TabGateware(self),
         }
+
+        self.treeview = self.tabs["Plugins"].widget()
+        self.model = self.tabs["Plugins"].model
 
         for title, tab in self.tabs.items():
             self.tabwidget.addTab(tab.widget(), title)
@@ -3889,17 +3921,20 @@ class WinForm(QWidget):
 
     def tree_add_plugin(self, parent, plugin_instance, nopins=False, expand=False):
         name = plugin_instance.plugin_setup.get("name")
-        title = plugin_instance.NAME
         if name:
             title = f"{name} ({plugin_instance.NAME})"
         else:
             title = f"{plugin_instance.title} ({plugin_instance.NAME})"
         help_text = plugin_instance.INFO
 
+        iconItem = MyStandardItem(title, help_text=help_text)
+        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+        image_path = os.path.join(plugin_path, "image.png")
+
         aitem = MyStandardItem()
         parent.appendRow(
             [
-                MyStandardItem(title, help_text=help_text),
+                iconItem,
                 aitem,
             ]
         )
@@ -3908,6 +3943,14 @@ class WinForm(QWidget):
         buttons_layout.setContentsMargins(0, 0, 0, 0)
         buttons_widget = QWidget()
         buttons_widget.setLayout(buttons_layout)
+
+        ilabel = QLabel()
+        ilabel.setFixedSize(24, 24)
+        if os.path.isfile(image_path):
+            pixmap = QPixmap(image_path)
+            ilabel.setPixmap(pixmap)
+            ilabel.setScaledContents(True)
+        buttons_layout.addWidget(ilabel)
 
         button_edit = QPushButton("edit")
         cb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
