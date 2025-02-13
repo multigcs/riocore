@@ -1,6 +1,14 @@
 #!/bin/bash
 #
+# installer script for LinuxCNC-RIO
 #
+
+if ! lsb_release -c | grep -s -q "bookworm"
+then
+	echo "ONLY FOR DEBIAN BOOKWORK"
+	exit 1
+fi
+
 
 PWD="`pwd`"
 SYSTEM="arm64"
