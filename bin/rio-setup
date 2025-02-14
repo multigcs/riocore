@@ -1906,10 +1906,10 @@ class WinForm(QWidget):
         dialog.setLayout(dialog.layout)
 
         def show_plugin_info(idx):
-            if not plugin_table.item(idx, 0):
+            if not plugin_table.item(idx, 1):
                 return
 
-            plugin_name = plugin_table.item(idx, 0).text()
+            plugin_name = plugin_table.item(idx, 1).text()
             plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
             image_path = os.path.join(plugin_path, "image.png")
             if os.path.isfile(image_path):
@@ -1947,25 +1947,47 @@ class WinForm(QWidget):
                 stext = f'{plugin_name} {plugin_infos[plugin_name]["info"]} {plugin_infos[plugin_name]["description"]} {plugin_infos[plugin_name]["keywords"]}'
                 if search_str.lower() not in stext.lower():
                     continue
-                pitem = QTableWidgetItem(plugin_name)
                 plugin_table.setRowCount(row + 1)
-                plugin_table.setItem(row, 0, pitem)
+                plugin_table.setItem(row, 0, QTableWidgetItem(""))
+                plugin_table.setItem(row, 1, QTableWidgetItem(plugin_name))
+                plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+                image_path = os.path.join(plugin_path, "image.png")
+                if os.path.isfile(image_path):
+                    ilabel = QLabel(self)
+                    ilabel.setFixedSize(24, 24)
+                    pixmap = QPixmap(image_path)
+                    ilabel.setPixmap(pixmap)
+                    ilabel.setScaledContents(True)
+                    plugin_table.setCellWidget(row, 0, ilabel)
                 row += 1
             if row > 0:
                 show_plugin_info(0)
 
         plugin_table = QTableWidget()
-        plugin_table.setColumnCount(1)
-        plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugins"))
+        plugin_table.setColumnCount(2)
+        plugin_table.verticalHeader().setVisible(False)
+        plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        plugin_table.setHorizontalHeaderItem(1, QTableWidgetItem("Name"))
         plugin_table.setRowCount(len(possible_plugins))
         for row, plugin_name in enumerate(possible_plugins):
-            pitem = QTableWidgetItem(plugin_name)
-            plugin_table.setItem(row, 0, pitem)
+            plugin_table.setItem(row, 0, QTableWidgetItem(""))
+            plugin_table.setItem(row, 1, QTableWidgetItem(plugin_name))
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+            image_path = os.path.join(plugin_path, "image.png")
+            if os.path.isfile(image_path):
+                ilabel = QLabel(self)
+                ilabel.setFixedSize(24, 24)
+                pixmap = QPixmap(image_path)
+                ilabel.setPixmap(pixmap)
+                ilabel.setScaledContents(True)
+                plugin_table.setCellWidget(row, 0, ilabel)
+
         plugin_table.setFixedWidth(200)
         plugin_table.cellClicked.connect(show_plugin_info)
         plugin_table.currentCellChanged.connect(show_plugin_info)
         header = plugin_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
 
         mid_layout = QVBoxLayout()
         mid_widget = QWidget()
