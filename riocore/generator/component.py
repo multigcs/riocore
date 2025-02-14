@@ -783,7 +783,6 @@ class component:
                     if virtual:
                         continue
                     if signal_config["direction"] == "input" and not signal_source and not signal_config.get("helper", False):
-                        output.append(f"    convert_{varname.lower()}(data);")
                         signal_setups = {}
                         signal_setup = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
                         if signal_setup:
@@ -797,6 +796,8 @@ class component:
                             for signal_filter in signal_setup.get("filters", []):
                                 if signal_filter.get("type") == "avg":
                                     output.append(f"    filter_avg_{vname.lower()}(data);")
+
+                        output.append(f"    convert_{varname.lower()}(data);")
 
         output.append("}")
         output.append("")
