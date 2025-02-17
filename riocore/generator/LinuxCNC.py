@@ -373,7 +373,7 @@ class LinuxCNC:
         elif machinetype in {"puma"}:
             kinematics = "pumakins"
             kinematics_options = ""
-        elif machinetype in {"melfa"}:
+        elif machinetype in {"melfa", "melfa_nogl"}:
             kinematics = "genserkins"
             kinematics_options = ""
             ini_setup["RS274NGC"]["RS274NGC_STARTUP_CODE"] = "G10 L2 P7 X0 Y0 Z0 A-180 B0 C0 G59.1"
@@ -1082,7 +1082,7 @@ class LinuxCNC:
             gui_gen.draw_tab_begin(tab.title())
 
             if tab == "status":
-                if machinetype == "melfa":
+                if machinetype in {"melfa", "melfa_nogl"}:
                     if hasattr(gui_gen, "draw_multilabel"):
                         pname = gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["WORLD COORD", "JOINT COORD"]})
                         self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
@@ -1094,7 +1094,7 @@ class LinuxCNC:
                     if embed_vismach:
                         self.halg.net_add(pname, f"{embed_vismach}.plotclear")
 
-                    self.halg.net_add(pname, "vismach.plotclear")
+                    # self.halg.net_add(pname, "vismach.plotclear")
 
                     for joint in range(6):
                         pname = gui_gen.draw_meter(f"Joint{joint + 1}", f"joint_pos{joint}", setup={"size": 100, "min": -360, "max": 360})
@@ -1365,10 +1365,11 @@ class LinuxCNC:
             self.halg.fmt_add_top("# loading rotarydelta gl-view")
             self.halg.fmt_add_top("loadusr -W rotarydelta MIN_JOINT=-420")
             self.halg.fmt_add_top("")
-        elif machinetype == "melfa":
-            self.halg.fmt_add_top("# loading melfa gui")
-            self.halg.fmt_add_top("loadusr -W melfagui")
-            self.halg.fmt_add_top("")
+        elif machinetype in {"melfa", "melfa_nogl"}:
+            if machinetype != "melfa_nogl":
+                self.halg.fmt_add_top("# loading melfa gui")
+                self.halg.fmt_add_top("loadusr -W melfagui")
+                self.halg.fmt_add_top("")
 
             self.halg.fmt_add_top("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
             self.halg.fmt_add_top("")
@@ -1382,8 +1383,9 @@ class LinuxCNC:
                 elif not os.path.isdir(target):
                     shutil.copytree(source, target)
 
-            for joint in range(6):
-                self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
+            if machinetype != "melfa_nogl":
+                for joint in range(6):
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
 
             linuxcnc_setp = {
                 "genserkins.A-0": 0,
@@ -1409,7 +1411,7 @@ class LinuxCNC:
         if embed_vismach:
             if embed_vismach in {"fanuc_200f"}:
                 for joint in range(len(self.axis_dict)):
-                    if machinetype == "melfa":
+                    if machinetype in {"melfa", "melfa_nogl"}:
                         # melfa has some inverted joints
                         if joint in {1, 2, 3}:
                             self.halg.net_add(f"(joint.{joint}.pos-fb * -1)", f"{embed_vismach}.joint{joint + 1}")
@@ -1540,7 +1542,7 @@ class LinuxCNC:
         self.num_axis = 0
         self.axis_dict = {}
 
-        if machinetype in {"melfa", "puma"}:
+        if machinetype in {"melfa", "melfa_nogl", "puma"}:
             self.AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C"]
 
         named_axis = []
@@ -1599,7 +1601,7 @@ class LinuxCNC:
                     if axis_name == "X":
                         home_sequence_default = 1
 
-                elif machinetype == "melfa":
+                elif machinetype in {"melfa", "melfa_nogl"}:
                     home_sequence_default = 2
                     if axis_name == "X":
                         home_sequence_default = 2
@@ -1689,7 +1691,7 @@ class LinuxCNC:
                 # joint_setup["HOME_FINAL_VEL"] *= -1.0
                 # joint_setup["HOME_OFFSET"] *= -1.0
 
-                if machinetype not in {"scara", "melfa", "puma", "lathe"}:
+                if machinetype not in {"scara", "melfa", "melfa_nogl", "puma", "lathe"}:
                     if axis_name in {"Z"}:
                         joint_setup["HOME_SEARCH_VEL"] *= -1.0
                         joint_setup["HOME_LATCH_VEL"] *= -1.0
@@ -1708,7 +1710,7 @@ class LinuxCNC:
                         joint_setup["TYPE"] = "LINEAR"
                     else:
                         joint_setup["TYPE"] = "ANGULAR"
-                elif machinetype in {"melfa", "puma"}:
+                elif machinetype in {"melfa", "melfa_nogl", "puma"}:
                     joint_setup["TYPE"] = "ANGULAR"
                 else:
                     if axis_name in {"A", "C", "B"}:
