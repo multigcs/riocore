@@ -2,6 +2,7 @@
 | Name | Info |
 | --- | --- |
 | [diamond](diamond/README.md) | lattice diamond |
+| [efinity](efinity/README.md) | Efinity |
 | [gowin](gowin/README.md) | Gowin EDA |
 | [icestorm](icestorm/README.md) | Icestorm (yosys/nextpnr) |
 | [ise](ise/README.md) | Xilinx/AMD ISE WebPACK |

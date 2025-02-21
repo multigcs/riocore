@@ -1,0 +1,14 @@
+{
+    "name": "FireAnt",
+    "boardcfg": "FireAnt",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "J4"
+                }
+            }
+        }
+    ]
+}
