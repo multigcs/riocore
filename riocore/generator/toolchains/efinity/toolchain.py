@@ -15,9 +15,9 @@ class Toolchain:
 
     def info(cls):
         info = {
-            "url": "https://www.intel.de/content/www/de/de/products/details/fpga/development-tools/efinity-prime.html",
-            "info": "Efinity",
-            "description": "",
+            "url": "https://www.efinixinc.com/",
+            "info": "Efinix - Efinity",
+            "description": "untested",
         }
         return info
 
