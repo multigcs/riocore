@@ -7,7 +7,10 @@ module freqin
          output reg valid = 0,
          output reg [31:0] frequency = 0
      );
-    reg [31:0] freq_cnt = 0;
+
+    localparam CNT_BITS = clog2(RESET_CNT + 1);
+
+    reg [CNT_BITS:0] freq_cnt = 0;
     reg error = 1;
 
     reg[2:0] SIGr;  always @(posedge clk) SIGr <= {SIGr[1:0], freq};
