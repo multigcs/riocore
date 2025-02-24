@@ -2,7 +2,18 @@
 
 ## v0.9.2
 
-...
+### Gui and Generator
+* better overview graph
+* adding icons to some table's/tree's
+
+### Plugins
+* better freqin (valid flag)
+
+### Pin-Modifier
+* fixing debouncer
+
+### Toolchans
+* initial/experimental Efinix / Efinity support
 
 
 ## v0.9.1
