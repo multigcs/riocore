@@ -74,11 +74,8 @@ class Plugin(PluginBase):
         freq_max = int(self.plugin_setup.get("freq_max", self.OPTIONS["freq_max"]["default"]))
         vmax = self.system_setup["speed"] // freq_max
         if signal_name == "frequency":
-            if value > vmax:
+            if value != 0:
                 value = self.system_setup["speed"] / value
-                self.vlast = value
-            elif value != 0:
-                value = self.vlast
             else:
                 self.vlast = 0
         return value
@@ -87,15 +84,10 @@ class Plugin(PluginBase):
         if signal_name == "frequency":
             freq_max = int(self.plugin_setup.get("freq_max", self.OPTIONS["freq_max"]["default"]))
             vmax = self.system_setup["speed"] // freq_max
-            return f"""
+            return """
             static float vlast = 0;
-            if (value > {vmax}) {{
+            if (value > 0) {
                 value = OSC_CLOCK / value;
-                vlast = value;
-            }} else if (value != 0) {{
-                value = vlast;
-            }} else {{
-                vlast = 0;
-            }}
+            }
             """
         return ""

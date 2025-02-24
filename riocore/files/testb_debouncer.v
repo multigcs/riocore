@@ -26,9 +26,9 @@ module testb_debouncer;
         #10
 
         din = 1;
-        #20
+        #40
         din = 0;
-        #1
+        #11
         din = 1;
         #100
         din = 0;
@@ -38,7 +38,7 @@ module testb_debouncer;
         # 100 $finish;
     end
 
-    debouncer #(.WIDTH(5)) debouncer0 (
+    debouncer #(.WIDTH(10)) debouncer0 (
         .clk(clk),
         .din(din),
         .dout(dout)

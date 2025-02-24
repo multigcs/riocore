@@ -12,17 +12,25 @@ module debouncer
     reg [WIDTH_BITS:0] din_cnt = 0;
 
     always @(posedge clk) begin
-        if (din == 0) begin
-            if (din_cnt > 0) begin
-                din_cnt <= din_cnt - 1;
+        if (dout == 1) begin
+            if (din == 0) begin
+                if (din_cnt > 0) begin
+                    din_cnt <= din_cnt - 1;
+                end else begin
+                    dout <= 0;
+                end
             end else begin
-                dout <= 0;
+                din_cnt <= WIDTH;
             end
         end else begin
-            if (din_cnt > WIDTH) begin
-                dout <= 1;
+            if (din == 1) begin
+                if (din_cnt > WIDTH) begin
+                    dout <= 1;
+                end else begin
+                    din_cnt <= din_cnt + 1;
+                end
             end else begin
-                din_cnt <= din_cnt + 1;
+                din_cnt <= 0;
             end
         end
     end
