@@ -81,6 +81,18 @@ class MyQLabel(QLabel):
         y = int(event.pos().y() / self.scale)
         self.parent.on_click(x, y)
 
+    def mouseReleaseEvent(self, event):
+        if hasattr(self.parent, "on_release"):
+            x = int(event.pos().x() / self.scale)
+            y = int(event.pos().y() / self.scale)
+            self.parent.on_release(x, y)
+
+    def mouseMoveEvent(self, event):
+        if hasattr(self.parent, "on_move"):
+            x = int(event.pos().x() / self.scale)
+            y = int(event.pos().y() / self.scale)
+            self.parent.on_move(x, y)
+
     def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
         delta = event.angleDelta()
         if delta.y() < 0:

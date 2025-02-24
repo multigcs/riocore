@@ -6,7 +6,7 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	ruff format -q bin/ riocore/
+	ruff format bin/rio* riocore/
 
 check:
 	ruff check bin/ riocore/

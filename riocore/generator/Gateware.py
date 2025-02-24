@@ -54,6 +54,7 @@ class Gateware:
                         "quartus": "",
                         "icestorm": "",
                         "ise": "",
+                        "efinity": "",
                     },
                     indent=4,
                 )
@@ -361,17 +362,21 @@ class Gateware:
             else:
                 print("INFO: preview-mode / no pll generated")
 
-            self.verilogs.append("pll.v")
-            output.append("    wire sysclk;")
-            output.append("    wire locked;")
-            if self.project.config["jdata"]["family"] == "MAX 10":
-                output.append("    pll mypll(.inclk0(sysclk_in), .c0(sysclk), .locked(locked));")
-            elif self.project.config["jdata"]["family"] == "xc7":
-                output.append("    wire sysclk25;")
-                output.append("    wire reset;")
-                output.append("    pll mypll(.clock_in(sysclk_in), .clock_out(sysclk), .clock25_out(sysclk25), .locked(locked), .reset(reset));")
+            if self.project.config["jdata"]["family"] == "Trion":
+                output.append("    wire sysclk;")
+                output.append("    assign sysclk = sysclk_in;")
             else:
-                output.append("    pll mypll(sysclk_in, sysclk, locked);")
+                self.verilogs.append("pll.v")
+                output.append("    wire sysclk;")
+                output.append("    wire locked;")
+                if self.project.config["jdata"]["family"] == "MAX 10":
+                    output.append("    pll mypll(.inclk0(sysclk_in), .c0(sysclk), .locked(locked));")
+                elif self.project.config["jdata"]["family"] == "xc7":
+                    output.append("    wire sysclk25;")
+                    output.append("    wire reset;")
+                    output.append("    pll mypll(.clock_in(sysclk_in), .clock_out(sysclk), .clock25_out(sysclk25), .locked(locked), .reset(reset));")
+                else:
+                    output.append("    pll mypll(sysclk_in, sysclk, locked);")
         else:
             output.append("    wire sysclk;")
             output.append("    assign sysclk = sysclk_in;")

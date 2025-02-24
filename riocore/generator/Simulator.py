@@ -1,6 +1,8 @@
 import glob
 import sys
 import os
+import stat
+
 from riocore.generator import cclient
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -35,6 +37,26 @@ class Simulator:
         self.interface_c()
         self.simulation_c()
         self.makefile()
+        self.startscript()
+
+    def startscript(self):
+        output = ["#!/bin/sh"]
+        output.append("")
+        output.append("set -e")
+        output.append("set -x")
+        output.append("")
+        output.append('DIRNAME=`dirname "$0"`')
+        output.append("")
+        output.append("(")
+        output.append('    cd "$DIRNAME/"')
+        output.append("    make simulator_run")
+        output.append(")")
+        output.append("")
+        output.append("")
+        os.makedirs(self.simulator_path, exist_ok=True)
+        target = os.path.join(self.simulator_path, "start.sh")
+        open(target, "w").write("\n".join(output))
+        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
     def interface_c(self):
         protocol = self.project.config["jdata"].get("protocol", "SPI")

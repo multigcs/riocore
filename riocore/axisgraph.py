@@ -5,9 +5,9 @@ class AxisGraph:
     def __init__(self):
         pass
 
-    def svg(self, hal_file, ini_file):
+    def png(self, hal_file, ini_file):
         try:
-            self.gAll = graphviz.Digraph("G", format="svg")
+            self.gAll = graphviz.Digraph("G", format="png")
             self.gAll.attr(rankdir="LR")
             self.gAll.attr(bgcolor="black")
 

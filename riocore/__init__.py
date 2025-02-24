@@ -640,6 +640,7 @@ class Project:
         self.config["family"] = project["jdata"].get("family", "UNKNOWN")
         self.config["type"] = project["jdata"].get("type", "UNKNOWN")
         self.config["package"] = project["jdata"].get("package", "UNKNOWN")
+        self.config["timing_model"] = project["jdata"].get("timing_model", "UNKNOWN")
 
     def setup_merge(self, setup, defaults):
         for key, value in defaults.items():

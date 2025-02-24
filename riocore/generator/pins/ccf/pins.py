@@ -22,7 +22,7 @@ class Pins:
                     drive = pin_config.get("drive", "4")
                     options.append(f"DRIVE={drive}")
                     slew = pin_config.get("slew", "SLOW").lower()
-                    options.append(f"DRIVE={slew}")
+                    options.append(f"SLEW={slew}")
 
                 data.append(f"Net \"{pin_config['varname']}\" Loc = \"{pin_config['pin']}\" {' '.join(options)};")
 

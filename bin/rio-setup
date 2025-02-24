@@ -47,7 +47,7 @@ from riocore.widgets import (
 
 from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
-from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
+from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon
 from PyQt5.QtWidgets import (
     QSplitter,
     QMessageBox,
@@ -174,22 +174,65 @@ class PinButton(QPushButton):
 
 
 class ImageMap(QLabel):
+    last_x = -1
+    last_y = -1
+    last_action = 0
+    moved = 0
+
     def __init__(self, parent):
-        super(QLabel, self).__init__(parent)
+        super(QLabel, self).__init__(parent.parent)
         self.parent = parent
 
     def mousePressEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        self.last_x = x
+        self.last_y = y
+        self.last_action = 1
+        self.moved = 0
         if event.button() == Qt.RightButton:
             self.setPin(event.pos())
 
+    def mouseReleaseEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        self.last_action = 0
+        self.moved = 0
+
+    def mouseMoveEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        if self.last_action == 1:
+            xs = self.parent.scroll_widget.horizontalScrollBar()
+            ys = self.parent.scroll_widget.verticalScrollBar()
+            xs_last = xs.value()
+            ys_last = ys.value()
+            diff_x = x - self.last_x
+            diff_y = y - self.last_y
+            if abs(diff_x) > 4 or abs(diff_y) > 4:
+                self.moved = 1
+            xs.setValue(xs_last - diff_x)
+            ys.setValue(ys_last - diff_y)
+
+    """
+    def wheelEvent(self, event):
+        delta = event.angleDelta()
+        if delta.y() < 0:
+            if self.parent.scale > 0.1:
+                self.parent.scale -= 0.1
+        else:
+            if self.parent.scale < 10.0:
+                self.parent.scale += 0.1
+    """
+
     def setPin(self, pos):
         grid = 5
-        pos_x = pos.x()
-        pos_y = pos.y()
+        pos_x = pos.x() / self.parent.scale
+        pos_y = pos.y() / self.parent.scale
         used_pos_x = set()
         used_pos_y = set()
         used_pins = []
-        for slot in self.parent.slots:
+        for slot in self.parent.parent.slots:
             for pin_name, pin_data in slot["pins"].items():
                 if isinstance(pin_data, str):
                     used_pins.append(pin_data)
@@ -210,8 +253,8 @@ class ImageMap(QLabel):
                 break
 
         pin_name_default = "P1"
-        if self.parent.slots:
-            last_slot = self.parent.slots[-1]
+        if self.parent.parent.slots:
+            last_slot = self.parent.parent.slots[-1]
             pin_name_num = 1
             found = True
             while found:
@@ -233,7 +276,7 @@ class ImageMap(QLabel):
         dialog.layout.addWidget(message)
         slot_select = QComboBox()
         slot_select.setEditable(True)
-        for slot in reversed(self.parent.slots):
+        for slot in reversed(self.parent.parent.slots):
             slot_select.addItem(slot["name"])
         dialog.layout.addWidget(slot_select)
 
@@ -246,7 +289,7 @@ class ImageMap(QLabel):
         dialog.layout.addWidget(message)
         pin_select = QComboBox()
         pin_select.setEditable(True)
-        for pin in self.parent.pinlist:
+        for pin in self.parent.parent.pinlist:
             if ":" not in pin and pin not in used_pins:
                 pin_select.addItem(pin)
         dialog.layout.addWidget(pin_select)
@@ -294,13 +337,13 @@ class ImageMap(QLabel):
                 pin_cfg = {"pin": pin, "pos": [int(pos_x), int(pos_y)], "direction": direction_str}
 
                 slot_n = -1
-                for sn, slot in enumerate(self.parent.slots):
+                for sn, slot in enumerate(self.parent.parent.slots):
                     if slot["name"] == slot_name:
                         slot_n = sn
                         break
 
                 if slot_n == -1:
-                    self.parent.slots.append(
+                    self.parent.parent.slots.append(
                         {
                             "name": slot_name,
                             "comment": "",
@@ -309,10 +352,10 @@ class ImageMap(QLabel):
                         }
                     )
                 else:
-                    self.parent.slots[slot_n]["pins"][name] = pin_cfg
+                    self.parent.parent.slots[slot_n]["pins"][name] = pin_cfg
 
-                print(json.dumps(self.parent.slots, indent=4))
-                self.parent.request_pin_table_load = 1
+                print(json.dumps(self.parent.parent.slots, indent=4))
+                self.parent.parent.request_pin_table_load = 1
             else:
                 print("ERROR: missing informations")
 
@@ -735,32 +778,78 @@ class TabPins:
 
 
 class TabHal:
+    last_x = -1
+    last_y = -1
+    last_action = 0
+    moved = 0
+
     def __init__(self, parent=None):
         self.parent = parent
-        self.hal_img = MyQSvgWidget()
+        self.overview_img = MyQLabel(self)
+        self.scroll_widget = QScrollArea()
+        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setWidgetResizable(True)
+        self.scroll_widget.setWidget(self.overview_img)
         self.graph = halgraph.HalGraph()
 
     def widget(self):
-        return self.hal_img
+        return self.scroll_widget
 
     def timer(self):
         pass
 
     def update(self):
         config_name = self.parent.config.get("name")
-        svg_data = self.graph.svg(os.path.join(self.parent.output_path, config_name, "LinuxCNC", "rio.ini"))
-        if svg_data:
-            self.hal_img.load(svg_data)
+        png_data = self.graph.png(os.path.join(self.parent.output_path, config_name, "LinuxCNC", "rio.ini"))
+        if png_data:
+            self.overview_img.load(png_data)
+
+    def on_click(self, x, y):
+        self.last_x = x
+        self.last_y = y
+        self.last_action = 1
+        self.moved = 0
+
+    def on_release(self, x, y):
+        self.last_action = 0
+        if not self.moved:
+            if hasattr(self.graph, "on_click"):
+                self.graph.on_click(x, y)
+        self.moved = 0
+
+    def on_move(self, x, y):
+        if self.last_action == 1:
+            xs = self.scroll_widget.horizontalScrollBar()
+            ys = self.scroll_widget.verticalScrollBar()
+            xs_last = xs.value()
+            ys_last = ys.value()
+            diff_x = x - self.last_x
+            diff_y = y - self.last_y
+            if abs(diff_x) > 4 or abs(diff_y) > 4:
+                self.moved = 1
+            xs.setValue(xs_last - diff_x)
+            ys.setValue(ys_last - diff_y)
 
 
 class TabAxis:
+    last_x = -1
+    last_y = -1
+    last_action = 0
+    moved = 0
+
     def __init__(self, parent=None):
         self.parent = parent
-        self.hal_img = MyQSvgWidget()
+        self.overview_img = MyQLabel(self)
+        self.scroll_widget = QScrollArea()
+        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setWidgetResizable(True)
+        self.scroll_widget.setWidget(self.overview_img)
         self.graph = axisgraph.AxisGraph()
 
     def widget(self):
-        return self.hal_img
+        return self.scroll_widget
 
     def timer(self):
         pass
@@ -768,12 +857,43 @@ class TabAxis:
     def update(self):
         config_name = self.parent.config.get("name")
         config_folder = os.path.join(self.parent.output_path, config_name, "LinuxCNC")
-        svg_data = self.graph.svg(os.path.join(config_folder, "rio.hal"), os.path.join(config_folder, "rio.ini"))
-        if svg_data:
-            self.hal_img.load(svg_data)
+        png_data = self.graph.png(os.path.join(config_folder, "rio.hal"), os.path.join(config_folder, "rio.ini"))
+        if png_data:
+            self.overview_img.load(png_data)
+
+    def on_click(self, x, y):
+        self.last_x = x
+        self.last_y = y
+        self.last_action = 1
+        self.moved = 0
+
+    def on_release(self, x, y):
+        self.last_action = 0
+        if not self.moved:
+            if hasattr(self.graph, "on_click"):
+                self.graph.on_click(x, y)
+        self.moved = 0
+
+    def on_move(self, x, y):
+        if self.last_action == 1:
+            xs = self.scroll_widget.horizontalScrollBar()
+            ys = self.scroll_widget.verticalScrollBar()
+            xs_last = xs.value()
+            ys_last = ys.value()
+            diff_x = x - self.last_x
+            diff_y = y - self.last_y
+            if abs(diff_x) > 4 or abs(diff_y) > 4:
+                self.moved = 1
+            xs.setValue(xs_last - diff_x)
+            ys.setValue(ys_last - diff_y)
 
 
 class TabOverview:
+    last_x = -1
+    last_y = -1
+    last_action = 0
+    moved = 0
+
     def __init__(self, parent=None):
         self.parent = parent
         self.overview_img = MyQLabel(self)
@@ -796,7 +916,30 @@ class TabOverview:
             self.overview_img.load(png_data)
 
     def on_click(self, x, y):
-        self.graph.on_click(x, y)
+        self.last_x = x
+        self.last_y = y
+        self.last_action = 1
+        self.moved = 0
+
+    def on_release(self, x, y):
+        self.last_action = 0
+        if not self.moved:
+            if hasattr(self.graph, "on_click"):
+                self.graph.on_click(x, y)
+        self.moved = 0
+
+    def on_move(self, x, y):
+        if self.last_action == 1:
+            xs = self.scroll_widget.horizontalScrollBar()
+            ys = self.scroll_widget.verticalScrollBar()
+            xs_last = xs.value()
+            ys_last = ys.value()
+            diff_x = x - self.last_x
+            diff_y = y - self.last_y
+            if abs(diff_x) > 4 or abs(diff_y) > 4:
+                self.moved = 1
+            xs.setValue(xs_last - diff_x)
+            ys.setValue(ys_last - diff_y)
 
 
 class TabJson:
@@ -820,7 +963,32 @@ class TabJson:
         # self.jsonpreview.verticalScrollBar().setValue(0)
 
 
+class TabPlugins:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.treeview = QTreeView()
+
+        # splitter.addWidget(self.treeview)
+        # self.treeview.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(["Name", "Value"])
+        self.model.itemChanged.connect(parent.itemChanged)
+        self.treeview.setModel(self.model)
+        self.treeview.setUniformRowHeights(True)
+
+    def widget(self):
+        return self.treeview
+
+    def timer(self):
+        pass
+
+    def update(self):
+        pass
+
+
 class TabBoard:
+    scale = 1.0
+
     def __init__(self, parent=None):
         self.parent = parent
         self.img_container = QWidget()
@@ -869,7 +1037,7 @@ class TabBoard:
         pinlayout_pixmap = QPixmap(pinimage_path)
         self.boardimg.setFixedSize(pinlayout_pixmap.size())
 
-        pinlayout_image = ImageMap(self.parent)
+        pinlayout_image = ImageMap(self)
         pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
         pinlayout_image.setFixedSize(pinlayout_pixmap.size())
         pinlayout_image.setPixmap(pinlayout_pixmap)
@@ -1058,6 +1226,7 @@ class WinForm(QWidget):
         splitter = QSplitter(Qt.Horizontal)
         layout.addWidget(splitter, stretch=1)
 
+        """
         self.treeview = QTreeView()
         splitter.addWidget(self.treeview)
         # self.treeview.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -1066,6 +1235,7 @@ class WinForm(QWidget):
         self.model.itemChanged.connect(self.itemChanged)
         self.treeview.setModel(self.model)
         self.treeview.setUniformRowHeights(True)
+        """
 
         if not args.config:
             self.config_file = None
@@ -1095,6 +1265,9 @@ class WinForm(QWidget):
 
         self.tabwidget = QTabWidget()
         self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
+        self.tabwidget.setTabPosition(QTabWidget.West)
+        self.tabwidget.setDocumentMode(True)
+
         splitter.addWidget(self.tabwidget)
 
         self.gateware_hash = None
@@ -1104,6 +1277,7 @@ class WinForm(QWidget):
         self.flash_start = 0
 
         self.tabs = {
+            "Plugins": TabPlugins(self),
             "Board": TabBoard(self),
             "Overview": TabOverview(self),
             "Hal": TabHal(self),
@@ -1114,6 +1288,9 @@ class WinForm(QWidget):
             "LinuxCNC": TabLinuxCNC(self),
             "Gateware": TabGateware(self),
         }
+
+        self.treeview = self.tabs["Plugins"].widget()
+        self.model = self.tabs["Plugins"].model
 
         for title, tab in self.tabs.items():
             self.tabwidget.addTab(tab.widget(), title)
@@ -1729,10 +1906,10 @@ class WinForm(QWidget):
         dialog.setLayout(dialog.layout)
 
         def show_plugin_info(idx):
-            if not plugin_table.item(idx, 0):
+            if not plugin_table.item(idx, 1):
                 return
 
-            plugin_name = plugin_table.item(idx, 0).text()
+            plugin_name = plugin_table.item(idx, 1).text()
             plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
             image_path = os.path.join(plugin_path, "image.png")
             if os.path.isfile(image_path):
@@ -1770,25 +1947,47 @@ class WinForm(QWidget):
                 stext = f'{plugin_name} {plugin_infos[plugin_name]["info"]} {plugin_infos[plugin_name]["description"]} {plugin_infos[plugin_name]["keywords"]}'
                 if search_str.lower() not in stext.lower():
                     continue
-                pitem = QTableWidgetItem(plugin_name)
                 plugin_table.setRowCount(row + 1)
-                plugin_table.setItem(row, 0, pitem)
+                plugin_table.setItem(row, 0, QTableWidgetItem(""))
+                plugin_table.setItem(row, 1, QTableWidgetItem(plugin_name))
+                plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+                image_path = os.path.join(plugin_path, "image.png")
+                if os.path.isfile(image_path):
+                    ilabel = QLabel(self)
+                    ilabel.setFixedSize(24, 24)
+                    pixmap = QPixmap(image_path)
+                    ilabel.setPixmap(pixmap)
+                    ilabel.setScaledContents(True)
+                    plugin_table.setCellWidget(row, 0, ilabel)
                 row += 1
             if row > 0:
                 show_plugin_info(0)
 
         plugin_table = QTableWidget()
-        plugin_table.setColumnCount(1)
-        plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugins"))
+        plugin_table.setColumnCount(2)
+        plugin_table.verticalHeader().setVisible(False)
+        plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        plugin_table.setHorizontalHeaderItem(1, QTableWidgetItem("Name"))
         plugin_table.setRowCount(len(possible_plugins))
         for row, plugin_name in enumerate(possible_plugins):
-            pitem = QTableWidgetItem(plugin_name)
-            plugin_table.setItem(row, 0, pitem)
+            plugin_table.setItem(row, 0, QTableWidgetItem(""))
+            plugin_table.setItem(row, 1, QTableWidgetItem(plugin_name))
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+            image_path = os.path.join(plugin_path, "image.png")
+            if os.path.isfile(image_path):
+                ilabel = QLabel(self)
+                ilabel.setFixedSize(24, 24)
+                pixmap = QPixmap(image_path)
+                ilabel.setPixmap(pixmap)
+                ilabel.setScaledContents(True)
+                plugin_table.setCellWidget(row, 0, ilabel)
+
         plugin_table.setFixedWidth(200)
         plugin_table.cellClicked.connect(show_plugin_info)
         plugin_table.currentCellChanged.connect(show_plugin_info)
         header = plugin_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
 
         mid_layout = QVBoxLayout()
         mid_widget = QWidget()
@@ -3744,17 +3943,20 @@ class WinForm(QWidget):
 
     def tree_add_plugin(self, parent, plugin_instance, nopins=False, expand=False):
         name = plugin_instance.plugin_setup.get("name")
-        title = plugin_instance.NAME
         if name:
             title = f"{name} ({plugin_instance.NAME})"
         else:
             title = f"{plugin_instance.title} ({plugin_instance.NAME})"
         help_text = plugin_instance.INFO
 
+        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+        image_path = os.path.join(plugin_path, "image.png")
+
+        iconItem = MyStandardItem("", help_text=help_text)
         aitem = MyStandardItem()
         parent.appendRow(
             [
-                MyStandardItem(title, help_text=help_text),
+                iconItem,
                 aitem,
             ]
         )
@@ -3763,6 +3965,24 @@ class WinForm(QWidget):
         buttons_layout.setContentsMargins(0, 0, 0, 0)
         buttons_widget = QWidget()
         buttons_widget.setLayout(buttons_layout)
+
+        title_layout = QHBoxLayout()
+        title_layout.setContentsMargins(0, 0, 0, 0)
+        title_widget = QWidget()
+        title_widget.setLayout(title_layout)
+
+        ilabel = QLabel()
+        ilabel.setFixedSize(24, 24)
+        if os.path.isfile(image_path):
+            pixmap = QPixmap(image_path)
+            ilabel.setPixmap(pixmap)
+            ilabel.setScaledContents(True)
+
+        title_layout.addWidget(ilabel)
+        title_layout.addWidget(QLabel(title))
+        self.treeview.setIndexWidget(iconItem.index(), title_widget)
+
+        # buttons_layout.addWidget(ilabel)
 
         button_edit = QPushButton("edit")
         cb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
