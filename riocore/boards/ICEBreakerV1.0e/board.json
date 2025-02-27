@@ -111,7 +111,7 @@
                         15,
                         195
                     ],
-                    "direction": "input"
+                    "direction": "all"
                 },
                 "MISO": {
                     "pin": "17",
@@ -119,7 +119,7 @@
                         15,
                         210
                     ],
-                    "direction": "output"
+                    "direction": "all"
                 },
                 "MOSI": {
                     "pin": "14",
@@ -127,7 +127,7 @@
                         15,
                         225
                     ],
-                    "direction": "input"
+                    "direction": "all"
                 },
                 "SEL": {
                     "pin": "12",
@@ -135,7 +135,7 @@
                         15,
                         240
                     ],
-                    "direction": "input"
+                    "direction": "all"
                 },
                 "IO3": {
                     "pin": "13",
