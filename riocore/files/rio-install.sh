@@ -7,7 +7,7 @@
 
 
 UNAME_M="`uname -m`"
-APT_PACKAGES="wget git tar python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-stdeb dh-python python3-pyqt5 python3-pyqt5.qtsvg make"
+APT_PACKAGES="wget git tar python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-stdeb dh-python python3-pyqt5 python3-pyqt5.qtsvg make openfpgaloader"
 DF_B=`df -m ./ | tail -n 1 | awk '{print $4}'`
 
 # checking disk-space
