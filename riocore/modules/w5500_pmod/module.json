@@ -8,17 +8,17 @@
             "ip": "192.168.10.195",
             "port": 2390,
             "pins": {
-                "mosi": {
-                    "pin": "P3"
-                },
-                "miso": {
-                    "pin": "P4"
-                },
                 "sclk": {
                     "pin": "P1"
                 },
                 "sel": {
                     "pin": "P2"
+                },
+                "mosi": {
+                    "pin": "P3"
+                },
+                "miso": {
+                    "pin": "P4"
                 }
             }
         }
