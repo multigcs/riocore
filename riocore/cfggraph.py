@@ -164,33 +164,35 @@ class ConfigGraph:
                 else:
                     for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
                         signalports.append(f"<signal_{signal_name}>{signal_name}")
+                        signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
+                        direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
                         signal_config = plugin_instance.plugin_setup.get("signals", {}).get(signal_name)
+
+                        net = None
+                        function = None
                         if signal_config:
                             net = signal_config.get("net")
                             function = signal_config.get("function")
-                            signal_direction = plugin_instance.SIGNALS.get(signal_name, {}).get("direction")
-                            direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
-
-                            if not net and not function and plugin_instance.plugin_setup.get("is_joint", False):
-                                if signal_name == "position" and signal_direction == "input":
-                                    hal_pin = f"joint.{joint_n}.motor-pos-fb"
-                                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
-                                    lcports.append(f"<{hal_pin}>{hal_pin}")
-                                elif signal_name == "position" and signal_direction == "output":
-                                    hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                                    lcports.append(f"<{hal_pin}>{hal_pin}")
-                                elif signal_name == "velocity":
-                                    hal_pin = f"joint.{joint_n}.motor-pos-cmd"
-                                    gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
-                                    lcports.append(f"<{hal_pin}>{hal_pin}")
-
                             if function:
                                 gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
                                 lcports.append(f"<{function}>{function}")
                             if net:
                                 gAll.edge(f"{title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
                                 lcports.append(f"<{net}>{net}")
+
+                        elif plugin_instance.plugin_setup.get("is_joint", False):
+                            if signal_name == "position" and signal_direction == "input":
+                                hal_pin = f"joint.{joint_n}.motor-pos-fb"
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="normal", color="white", fontcolor="white")
+                                lcports.append(f"<{hal_pin}>{hal_pin}")
+                            elif signal_name == "position" and signal_direction == "output":
+                                hal_pin = f"joint.{joint_n}.motor-pos-cmd"
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
+                                lcports.append(f"<{hal_pin}>{hal_pin}")
+                            elif signal_name == "velocity":
+                                hal_pin = f"joint.{joint_n}.motor-pos-cmd"
+                                gAll.edge(f"{title}:signal_{signal_name}", f"hal:{hal_pin}", dir="back", color="white", fontcolor="white")
+                                lcports.append(f"<{hal_pin}>{hal_pin}")
 
                 # expansion ports
                 eports = []
