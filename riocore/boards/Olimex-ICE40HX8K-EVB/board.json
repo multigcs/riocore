@@ -13,8 +13,7 @@
     "slots": [
         {
             "name": "EXT",
-            "comment": "",
-            "default": "",
+            "comment": "GPIO1",
             "pins": {
                 "P5": {
                     "pin": "E4",
@@ -272,8 +271,7 @@
         },
         {
             "name": "PGM",
-            "comment": "",
-            "default": "",
+            "comment": "Programming Connector",
             "pins": {
                 "P3": {
                     "pin": "L11",
