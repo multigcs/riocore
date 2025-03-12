@@ -999,7 +999,7 @@ class TabBoard:
         self.pininfo = QLabel("")
         self.pininfo_timer = 0
 
-        ipin_layout = QVBoxLayout()
+        ipin_layout = QHBoxLayout()
         self.ipin_widget = QWidget()
         self.ipin_widget.setLayout(ipin_layout)
         ipin_layout.addWidget(self.img_container)
@@ -1196,13 +1196,15 @@ class TabBoard:
                 for net in networks:
                     infotext.append(f" {net}")
 
+            ilen = 30
+            off = ilen - 4
             start = 0
-            end = 9
-            if infoline > 3:
-                start = infoline - 3
-                end = infoline + 6
+            end = ilen
+            if infoline > off - 1:
+                start = infoline - off
+                end = start + ilen
             displayed = infotext[start:end]
-            fill = 10 - len(displayed)
+            fill = ilen + 1 - len(displayed)
             displayed += [""] * fill
             self.pininfo.setText("\n".join(displayed))
             self.pininfo_timer = 0
