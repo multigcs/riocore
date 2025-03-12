@@ -269,6 +269,85 @@
                     "direction": "all"
                 }
             }
+        },
+        {
+            "name": "PGM",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "P3": {
+                    "pin": "L11",
+                    "comment": "RxD PIO2_40",
+                    "pos": [
+                        270,
+                        50
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "T16",
+                    "comment": "TxD PIO2_41",
+                    "pos": [
+                        270,
+                        20
+                    ],
+                    "direction": "all"
+                },
+                "P5": {
+                    "pin": "M10",
+                    "comment": "CDONE",
+                    "pos": [
+                        300,
+                        50
+                    ],
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "N11",
+                    "comment": "CRESET",
+                    "pos": [
+                        300,
+                        20
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "P11",
+                    "comment": "SDI",
+                    "pos": [
+                        330,
+                        50
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "P12",
+                    "comment": "SDO",
+                    "pos": [
+                        330,
+                        20
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "R11",
+                    "comment": "SCK",
+                    "pos": [
+                        360,
+                        50
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "R12",
+                    "comment": "SS_B",
+                    "pos": [
+                        360,
+                        20
+                    ],
+                    "direction": "all"
+                }
+            }
         }
     ]
 }
