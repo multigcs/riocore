@@ -334,7 +334,7 @@ class ImageMap(QLabel):
                 direction_str = "all"
 
             if slot_name and name and pin:
-                pin_cfg = {"pin": pin, "pos": [int(pos_x), int(pos_y)], "direction": direction_str}
+                pin_cfg = {"pin": pin, "pos": [int(float(pos_x)), int(float(pos_y))], "direction": direction_str}
 
                 slot_n = -1
                 for sn, slot in enumerate(self.parent.parent.slots):

@@ -9,5 +9,266 @@
     "clock": {
         "speed": "100000000",
         "pin": "J3"
-    }
+    },
+    "slots": [
+        {
+            "name": "EXT",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "P5": {
+                    "pin": "E4",
+                    "comment": "PIO3_00",
+                    "pos": [
+                        473,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "B2",
+                    "comment": "PIO3_01",
+                    "pos": [
+                        442,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "F5",
+                    "comment": "PIO3_02",
+                    "pos": [
+                        411,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "B1",
+                    "comment": "PIO3_03",
+                    "pos": [
+                        380,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P13": {
+                    "pin": "C1",
+                    "comment": "PIO3_04",
+                    "pos": [
+                        349,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "C2",
+                    "comment": "PIO3_05",
+                    "pos": [
+                        318,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "F4",
+                    "comment": "PIO3_06",
+                    "pos": [
+                        287,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P19": {
+                    "pin": "D2",
+                    "comment": "PIO3_07",
+                    "pos": [
+                        256,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P21": {
+                    "pin": "G5",
+                    "comment": "PIO3_08",
+                    "pos": [
+                        225,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P23": {
+                    "pin": "D1",
+                    "comment": "PIO3_09",
+                    "pos": [
+                        194,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P25": {
+                    "pin": "G4",
+                    "comment": "PIO3_10",
+                    "pos": [
+                        163,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P27": {
+                    "pin": "E3",
+                    "comment": "PIO3_11",
+                    "pos": [
+                        132,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P29": {
+                    "pin": "H5",
+                    "comment": "PIO3_12",
+                    "pos": [
+                        101,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P31": {
+                    "pin": "E2",
+                    "comment": "PIO3_13",
+                    "pos": [
+                        70,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P33": {
+                    "pin": "G3",
+                    "comment": "PIO3_14",
+                    "pos": [
+                        39,
+                        660
+                    ],
+                    "direction": "all"
+                },
+                "P34": {
+                    "pin": "F3",
+                    "comment": "PIO3_15",
+                    "pos": [
+                        39,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P32": {
+                    "pin": "H3",
+                    "comment": "PIO3_16",
+                    "pos": [
+                        70,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P30": {
+                    "pin": "F2",
+                    "comment": "PIO3_17",
+                    "pos": [
+                        101,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P28": {
+                    "pin": "H6",
+                    "comment": "PIO3_18",
+                    "pos": [
+                        132,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P26": {
+                    "pin": "F1",
+                    "comment": "PIO3_19",
+                    "pos": [
+                        163,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P24": {
+                    "pin": "H4",
+                    "comment": "PIO3_20",
+                    "pos": [
+                        194,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P22": {
+                    "pin": "G2",
+                    "comment": "PIO3_21",
+                    "pos": [
+                        225,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P20": {
+                    "pin": "J4",
+                    "comment": "PIO3_22",
+                    "pos": [
+                        256,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P18": {
+                    "pin": "H2",
+                    "comment": "PIO3_23",
+                    "pos": [
+                        287,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P16": {
+                    "pin": "J5",
+                    "comment": "PIO3_24",
+                    "pos": [
+                        318,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "G1",
+                    "comment": "PIO3_25",
+                    "pos": [
+                        349,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "H1",
+                    "comment": "PIO3_27",
+                    "pos": [
+                        380,
+                        691
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "J2",
+                    "comment": "PIO3_28",
+                    "pos": [
+                        411,
+                        691
+                    ],
+                    "direction": "all"
+                }
+            }
+        }
+    ]
 }
