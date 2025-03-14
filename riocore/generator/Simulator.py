@@ -2,6 +2,7 @@ import glob
 import sys
 import os
 import stat
+import shutil
 
 from riocore.generator import cclient
 
@@ -11,12 +12,26 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 class Simulator:
     def __init__(self, project):
         self.project = project
+        self.glsim = False
         self.simulator_path = os.path.join(project.config["output_path"], "Simulator")
         os.makedirs(self.simulator_path, exist_ok=True)
         project.config["riocore_path"] = riocore_path
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
+
+        jdata = self.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype", "mill")
+
+        if machinetype in {"mill", "corexy"}:
+            self.glsim = True
+            source = os.path.join(riocore_path, "", "generator", "glsim", f"{machinetype}.c")
+            target = os.path.join(self.simulator_path, "glsim.c")
+            shutil.copy(source, target)
+        else:
+            self.glsim = False
+
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
             for pin in plugin_instance.expansion_outputs():
@@ -36,8 +51,11 @@ class Simulator:
         cclient.riocore_c(self.project, self.simulator_path)
         self.interface_c()
         self.simulation_c()
+        self.simulation_h()
+        self.main_c()
         self.makefile()
         self.startscript()
+
 
     def startscript(self):
         output = ["#!/bin/sh"]
@@ -86,6 +104,18 @@ class Simulator:
                     idata += rdata
                     open(os.path.join(self.simulator_path, "interface.c"), "w").write(idata)
 
+    def simulation_h(self):
+        output = []
+        output.append("#include <stdint.h>")
+        output.append("extern uint8_t sim_running;")
+
+        output.append("")
+        output.append("extern volatile int32_t joint_position[12];")
+        output.append("")
+
+        output.append("void* simThread(void* vargp);")
+        open(os.path.join(self.simulator_path, "simulator.h"), "w").write("\n".join(output))
+
     def simulation_c(self):
         output = []
         output.append("#include <stdio.h>")
@@ -93,6 +123,8 @@ class Simulator:
         output.append("#include <stdbool.h>")
         output.append("#include <string.h>")
         output.append("#include <riocore.h>")
+        output.append("")
+        output.append("uint8_t sim_running = 1;")
         output.append("")
 
         protocol = self.project.config["jdata"].get("protocol", "SPI")
@@ -103,7 +135,7 @@ class Simulator:
         output.append("void udp_exit();")
         output.append("")
 
-        output.append("int32_t joint_position[12];")
+        output.append("volatile int32_t joint_position[12];")
         output.append("")
 
         output.append("int interface_init(void) {")
@@ -198,12 +230,12 @@ class Simulator:
         output.append("}")
         output.append("")
 
-        output.append("int main(void) {")
+        output.append("void* simThread(void* vargp) {")
         output.append("    uint16_t ret = 0;")
         output.append("")
         output.append("    interface_init();")
         output.append("")
-        output.append("    while (1) {")
+        output.append("    while (sim_running) {")
         output.append("        ret = udp_rx(rxBuffer, BUFFER_SIZE);")
         output.append("        if (ret == BUFFER_SIZE && rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {")
         output.append("            read_rxbuffer(rxBuffer);")
@@ -213,6 +245,29 @@ class Simulator:
         output.append("            simulation();")
         output.append("        }")
         output.append("    }")
+        output.append("    return NULL;")
+        output.append("}")
+        output.append("")
+        open(os.path.join(self.simulator_path, "simulator.c"), "w").write("\n".join(output))
+
+    def main_c(self):
+        output = []
+        output.append("#include <pthread.h>")
+        output.append("#include <simulator.h>")
+        output.append("")
+        output.append("int glsim_run(int argc, char** argv);")
+        output.append("")
+        output.append("int main(int argc, char** argv) {")
+        output.append("    pthread_t thread_id;")
+        output.append("    pthread_create(&thread_id, NULL, simThread, NULL);")
+        output.append("")
+        if self.glsim:
+            output.append("    glsim_run(argc, argv);")
+        else:
+            output.append("    while(1) {}")
+
+        output.append("    sim_running = 0;")
+        output.append("    pthread_join(thread_id, NULL);")
         output.append("    return 0;")
         output.append("}")
         output.append("")
@@ -226,8 +281,12 @@ class Simulator:
         output.append("clean:")
         output.append("	rm -f simulator")
         output.append("")
-        output.append("simulator: main.c riocore.c interface.c")
-        output.append("	gcc -o simulator -Os -I. main.c riocore.c interface.c")
+        if self.glsim:
+            output.append("simulator: main.c simulator.c glsim.c riocore.c interface.c")
+            output.append("	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c interface.c -lGL -lGLU -lglut")
+        else:
+            output.append("simulator: main.c simulator.c riocore.c interface.c")
+            output.append("	gcc -o simulator -Os -I. main.c simulator.c riocore.c interface.c")
         output.append("")
         output.append("simulator_run: simulator")
         output.append("	./simulator")
