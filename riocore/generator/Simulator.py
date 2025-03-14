@@ -12,6 +12,8 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 class Simulator:
     def __init__(self, project):
         self.project = project
+        self.webots_home = "/usr/local/webots"
+        self.webots = False
         self.glsim = False
         self.simulator_path = os.path.join(project.config["output_path"], "Simulator")
         os.makedirs(self.simulator_path, exist_ok=True)
@@ -24,13 +26,17 @@ class Simulator:
         linuxcnc_config = jdata.get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype", "mill")
 
-        if machinetype in {"mill", "corexy"}:
+        if machinetype in {"melfa"}:
+            self.webots = True
+            self.glsim = True
+            source = os.path.join(riocore_path, "", "generator", "glsim", f"webots-{machinetype}.c")
+            target = os.path.join(self.simulator_path, "glsim.c")
+            shutil.copy(source, target)
+        elif machinetype in {"mill", "corexy", "melfa"}:
             self.glsim = True
             source = os.path.join(riocore_path, "", "generator", "glsim", f"{machinetype}.c")
             target = os.path.join(self.simulator_path, "glsim.c")
             shutil.copy(source, target)
-        else:
-            self.glsim = False
 
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
@@ -56,7 +62,6 @@ class Simulator:
         self.makefile()
         self.startscript()
 
-
     def startscript(self):
         output = ["#!/bin/sh"]
         output.append("")
@@ -65,6 +70,10 @@ class Simulator:
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
+        if self.webots:
+            # output.append(f"export WEBOTS_HOME={self.webots_home}")
+            # output.append(f"export LD_LIBRARY_PATH={self.webots_home}/lib/controller/")
+            output.append("")
         output.append("(")
         output.append('    cd "$DIRNAME/"')
         output.append("    make simulator_run")
@@ -275,6 +284,15 @@ class Simulator:
 
     def makefile(self):
         output = []
+        gcc_options = ""
+
+        if self.webots:
+            output.append("")
+            output.append(f"WEBOTS_HOME ?= {self.webots_home}")
+            output.append(f"LD_LIBRARY_PATH ?= $(WEBOTS_HOME)/lib/controller/")
+            output.append("")
+            gcc_options = "-I$(WEBOTS_HOME)/include/controller/c/ -L$(WEBOTS_HOME)/lib/controller/ -lController"
+
         output.append("")
         output.append("all: simulator")
         output.append("")
@@ -283,12 +301,15 @@ class Simulator:
         output.append("")
         if self.glsim:
             output.append("simulator: main.c simulator.c glsim.c riocore.c interface.c")
-            output.append("	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c interface.c -lGL -lGLU -lglut")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c interface.c {gcc_options} -lm -lGL -lGLU -lglut")
         else:
             output.append("simulator: main.c simulator.c riocore.c interface.c")
-            output.append("	gcc -o simulator -Os -I. main.c simulator.c riocore.c interface.c")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c riocore.c interface.c {gcc_options} -lm")
         output.append("")
         output.append("simulator_run: simulator")
-        output.append("	./simulator")
+        if self.webots:
+            output.append("	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) WEBOTS_HOME=$(WEBOTS_HOME) ./simulator")
+        else:
+            output.append("	./simulator")
         output.append("")
         open(os.path.join(self.simulator_path, "Makefile"), "w").write("\n".join(output))
