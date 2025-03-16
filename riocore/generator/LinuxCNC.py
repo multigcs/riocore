@@ -170,16 +170,19 @@ class LinuxCNC:
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
     def cfglink(self):
-        jdata = self.project.config["jdata"]
-        linuxcnc_config = jdata.get("linuxcnc", {})
-        name = jdata.get("name")
-        source = os.path.realpath(self.component_path)
-        target_dir = os.path.join(os.path.expanduser("~"), "linuxcnc", "configs")
-        target_file = os.path.join(target_dir, name)
-        if os.path.exists(target_file):
-            os.unlink(target_file)
-        os.makedirs(target_dir, exist_ok=True)
-        os.symlink(source, target_file)
+        try:
+            jdata = self.project.config["jdata"]
+            linuxcnc_config = jdata.get("linuxcnc", {})
+            name = jdata.get("name")
+            source = os.path.realpath(self.component_path)
+            target_dir = os.path.join(os.path.expanduser("~"), "linuxcnc", "configs")
+            target_file = os.path.join(target_dir, name)
+            if os.path.exists(target_file):
+                os.unlink(target_file)
+            os.makedirs(target_dir, exist_ok=True)
+            os.symlink(source, target_file)
+        except Exception as error:
+            print(f"ERROR(cgflink): {error}")
 
     def readme(self):
         jdata = self.project.config["jdata"]
