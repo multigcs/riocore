@@ -234,6 +234,23 @@ EOF
 </channel>
 EOF
 
+	mkdir -p ~/.local/share/applications/
+	cat <<EOF > ~/.local/share/applications/rio-setup.desktop
+[Desktop Entry]
+Version=1.0
+Name=RIO-Setup
+Comment=RIO-Setup tool
+Type=Application
+Exec=xfce4-terminal -e "bash -c 'cd $TARGETDIR/riocore; ./bin/rio-setup'"
+Icon=linuxcncicon
+X-GNOME-DocPath=
+Terminal=false
+StartupNotify=false
+X-AppStream-Ignore=true
+Categories=Science;Utility;Engineering;X-CNC;
+Keywords=cnc;linuxcnc;cncprog;
+EOF
+
 fi
 
 if grep -s -q '"probe_basic"' in $TEMPFILE
