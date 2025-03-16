@@ -176,9 +176,10 @@ class LinuxCNC:
         source = os.path.realpath(self.component_path)
         target_dir = os.path.join(os.path.expanduser("~"), "linuxcnc", "configs")
         target_file = os.path.join(target_dir, name)
-        if not os.path.exists(target_file):
-            os.makedirs(target_dir, exist_ok=True)
-            os.symlink(source, target_file)
+        if os.path.exists(target_file):
+            os.unlink(target_file)
+        os.makedirs(target_dir, exist_ok=True)
+        os.symlink(source, target_file)
 
     def readme(self):
         jdata = self.project.config["jdata"]
@@ -261,7 +262,8 @@ class LinuxCNC:
         open(target, "w").write("\n".join(output))
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
-    def generator(self):
+    def generator(self, preview=False):
+        self.preview = preview
         jdata = self.project.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         gui = linuxcnc_config.get("gui", "axis")
@@ -300,9 +302,10 @@ class LinuxCNC:
             #    self.gui_type = "qtvcp"
             #    self.gui_prefix = "qtvcp"
 
+        if not self.preview:
+            self.cfglink()
         self.startscript()
         self.readme()
-        self.cfglink()
         component(self.project)
         self.hal()
         self.riof()

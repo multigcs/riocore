@@ -954,6 +954,6 @@ class Project:
             self.generator_gateware.generator(generate_pll=generate_pll)
         if protocol == "UDP":
             self.generator_simulator.generator()
-        self.generator_linuxcnc.generator()
+        self.generator_linuxcnc.generator(preview=preview)
         target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)
