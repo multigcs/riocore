@@ -203,6 +203,9 @@ xset s noblank
 
 EOF
 		sudo chmod 755 /usr/local/bin/startup.sh
+		xset -dpms
+		xset s off
+		xset s noblank
 
 		mkdir -p ~/.config/autostart/
 		cat <<EOF > ~/.config/autostart/startup.desktop
