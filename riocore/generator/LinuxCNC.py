@@ -169,6 +169,70 @@ class LinuxCNC:
             addon_name = addon_path.split(os.sep)[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
+    def cfglink(self):
+        jdata = self.project.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        name = jdata.get("name")
+        source = os.path.realpath(self.component_path)
+        target_dir = os.path.join(os.path.expanduser("~"), "linuxcnc", "configs")
+        target_file = os.path.join(target_dir, name)
+        if not os.path.exists(target_file):
+            os.makedirs(target_dir, exist_ok=True)
+            os.symlink(source, target_file)
+
+    def readme(self):
+        jdata = self.project.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        name = jdata.get("name")
+
+        output = [f"RIO - {name}"]
+        output.append("")
+        for name in ("description", "boardcfg", "gui", "protocol"):
+            value = jdata.get(name)
+            if value:
+                output.append(f"{name.title()}: {value}")
+        output.append(f"Configuration: {self.project.config['json_file']}")
+        output.append("")
+
+        protocol = jdata.get("protocol", "SPI")
+        if protocol == "UDP":
+            ip = "192.168.10.194"
+            port = 2390
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.TYPE == "interface":
+                    ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
+                    port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
+            ip = self.project.config["jdata"].get("ip", ip)
+            port = self.project.config["jdata"].get("port", port)
+            dst_port = self.project.config["jdata"].get("dst_port", port)
+            output.append("UDP-Configuration:")
+            output.append(f"  Target-IP: {ip}")
+            output.append(f"  Target-Port: {dst_port}")
+            output.append("")
+
+        output.append("FPGA:")
+        for name in ("toolchain", "family", "type"):
+            value = self.project.config.get(name)
+            if value:
+                output.append(f"  {name.title()}: {value}")
+        output.append("")
+
+        output.append("Plugins:")
+        plugins = {}
+        for plugin in self.project.config["plugins"]:
+            ptype = plugin["type"]
+            if ptype not in plugins:
+                plugins[ptype] = 0
+            plugins[ptype] += 1
+        for plugin, num in plugins.items():
+            output.append(f"  {plugin} ({num}x)")
+        output.append("")
+
+        output.append("")
+        os.makedirs(self.component_path, exist_ok=True)
+        target = os.path.join(self.component_path, "README")
+        open(target, "w").write("\n".join(output))
+
     def startscript(self):
         jdata = self.project.config["jdata"]
         startup = jdata.get("startup")
@@ -237,6 +301,8 @@ class LinuxCNC:
             #    self.gui_prefix = "qtvcp"
 
         self.startscript()
+        self.readme()
+        self.cfglink()
         component(self.project)
         self.hal()
         self.riof()
