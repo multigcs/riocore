@@ -185,57 +185,9 @@ class LinuxCNC:
             print(f"ERROR(cgflink): {error}")
 
     def readme(self):
-        jdata = self.project.config["jdata"]
-        linuxcnc_config = jdata.get("linuxcnc", {})
-        name = jdata.get("name")
-
-        output = [f"RIO - {name}"]
-        output.append("")
-        for name in ("description", "boardcfg", "gui", "protocol"):
-            value = jdata.get(name)
-            if value:
-                output.append(f"{name.title()}: {value}")
-        output.append(f"Configuration: {self.project.config['json_file']}")
-        output.append("")
-
-        protocol = jdata.get("protocol", "SPI")
-        if protocol == "UDP":
-            ip = "192.168.10.194"
-            port = 2390
-            for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.TYPE == "interface":
-                    ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
-                    port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
-            ip = self.project.config["jdata"].get("ip", ip)
-            port = self.project.config["jdata"].get("port", port)
-            dst_port = self.project.config["jdata"].get("dst_port", port)
-            output.append("UDP-Configuration:")
-            output.append(f"  Target-IP: {ip}")
-            output.append(f"  Target-Port: {dst_port}")
-            output.append("")
-
-        output.append("FPGA:")
-        for name in ("toolchain", "family", "type"):
-            value = self.project.config.get(name)
-            if value:
-                output.append(f"  {name.title()}: {value}")
-        output.append("")
-
-        output.append("Plugins:")
-        plugins = {}
-        for plugin in self.project.config["plugins"]:
-            ptype = plugin["type"]
-            if ptype not in plugins:
-                plugins[ptype] = 0
-            plugins[ptype] += 1
-        for plugin, num in plugins.items():
-            output.append(f"  {plugin} ({num}x)")
-        output.append("")
-
-        output.append("")
         os.makedirs(self.component_path, exist_ok=True)
         target = os.path.join(self.component_path, "README")
-        open(target, "w").write("\n".join(output))
+        open(target, "w").write(self.project.info())
 
     def startscript(self):
         jdata = self.project.config["jdata"]

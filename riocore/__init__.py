@@ -492,6 +492,57 @@ class Project:
                 else:
                     print(f"ERROR: varname allready exist: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
 
+    def info(self):
+        jdata = self.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        name = jdata.get("name")
+
+        output = [f"RIO - {name}"]
+        output.append("")
+        for name in ("description", "boardcfg", "gui", "protocol"):
+            value = jdata.get(name)
+            if value:
+                output.append(f"{name.title()}: {value}")
+        output.append(f"Configuration: {self.config['json_file']}")
+        output.append("")
+
+        protocol = jdata.get("protocol", "SPI")
+        if protocol == "UDP":
+            ip = "192.168.10.194"
+            port = 2390
+            for plugin_instance in self.plugin_instances:
+                if plugin_instance.TYPE == "interface":
+                    ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
+                    port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
+            ip = self.config["jdata"].get("ip", ip)
+            port = self.config["jdata"].get("port", port)
+            dst_port = self.config["jdata"].get("dst_port", port)
+            output.append("UDP-Configuration:")
+            output.append(f"  Target-IP: {ip}")
+            output.append(f"  Target-Port: {dst_port}")
+            output.append("")
+
+        output.append("FPGA:")
+        for name in ("toolchain", "family", "type"):
+            value = self.config.get(name)
+            if value:
+                output.append(f"  {name.title()}: {value}")
+        output.append("")
+
+        output.append("Plugins:")
+        plugins = {}
+        for plugin in self.config["plugins"]:
+            ptype = plugin["type"]
+            if ptype not in plugins:
+                plugins[ptype] = 0
+            plugins[ptype] += 1
+        for plugin, num in plugins.items():
+            output.append(f"  {plugin} ({num}x)")
+        output.append("")
+
+        output.append("")
+        return "\n".join(output)
+
     def get_path(self, path):
         if os.path.exists(path):
             return path
