@@ -1528,11 +1528,13 @@ class WinForm(QWidget):
         for path in sorted(glob.glob(os.path.join(riocore_path, "boards", "*"))):
             if path.endswith(".json"):
                 board_name = path.split(os.sep)[-1].replace(".json", "")
-            else:
+            elif os.path.isdir(path):
                 if not os.path.isfile(os.path.join(path, "board.json")):
                     print(f"WARNING: can not found board.json in {path}")
                     continue
                 board_name = path.split(os.sep)[-1]
+            else:
+                continue
             board_table.setRowCount(board_n + 1)
             board_list.append(path)
             pitem = QTableWidgetItem(board_name)
