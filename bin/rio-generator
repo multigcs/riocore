@@ -26,6 +26,8 @@ parser.add_argument("--ram", "-r", help="flash gateware to sram", default=False,
 if sys.platform == "linux":
     parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
     parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
+    parser.add_argument("--simulator", "-S", help="start in simulator mode", default=False, action="store_true")
+    parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
 args = parser.parse_args()
 
 if args.config:
@@ -39,11 +41,21 @@ if args.config:
             exit(1)
         print(f"loading: {config_file}")
         project = riocore.Project(config_file, args.output)
+
+        if args.simulator:
+            project.config["jdata"]["linuxcnc"]["simulation"] = True
+
+        if args.udpsim:
+            project.config["jdata"]["protocol"] = "UDP"
+            project.config["jdata"]["ip"] = "127.0.0.1"
+            project.config["jdata"]["port"] = "2390"
+
         project.generator(preview=args.preview)
 
         config_name = project.config.get("name")
         gateware_path = os.path.join("Output", config_name, "Gateware")
         startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
+        simulatorsh_path = os.path.join("Output", config_name, "Simulator", "start.sh")
 
         try:
             ini_path = os.path.join("Output", config_name, "LinuxCNC", "rio.ini")
@@ -91,7 +103,15 @@ if args.config:
             if ret != 0:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
-        if sys.platform == "linux" and args.start:
+        if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
+            if args.udpsim:
+                cmd = f"sh {simulatorsh_path} &"
+                print("")
+                print("running:")
+                print(f"  {cmd}")
+                print("")
+                ret = os.system(cmd)
+
             if args.ngc:
                 ngc_realpath = os.path.realpath(args.ngc)
                 cmd = f"sh {startsh_path} {ngc_realpath}"
