@@ -281,6 +281,6 @@ class HalGraph:
 if __name__ == "__main__":
     ini_path = sys.argv[1]
     graph = HalGraph()
-    svg_data = graph.svg(ini_path)
-    if svg_data:
-        print(svg_data.decode())
+    png_data = graph.png(ini_path)
+    if png_data:
+        print(png_data.decode())
