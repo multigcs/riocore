@@ -1610,7 +1610,7 @@ class WinForm(QWidget):
 
             name_label.setText(config_name)
             description = []
-            for key in ("name", "description", "type", "family", "toolchain"):
+            for key in ("name", "description", "boardcfg"):
                 value = config_config.get(key)
                 description.append(f"{key.title()}: {value}")
             description_label.setText("\n".join(description))
