@@ -1230,36 +1230,17 @@ class WinForm(QWidget):
         splitter = QSplitter(Qt.Horizontal)
         layout.addWidget(splitter, stretch=1)
 
-        """
-        self.treeview = QTreeView()
-        splitter.addWidget(self.treeview)
-        # self.treeview.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(["Name", "Value"])
-        self.model.itemChanged.connect(self.itemChanged)
-        self.treeview.setModel(self.model)
-        self.treeview.setUniformRowHeights(True)
-        """
-
         if not args.config:
-            self.config_file = None
-            boardcfg = self.select_board()
-            if boardcfg:
-                self.config = {
-                    "name": boardcfg,
-                    "boardcfg": boardcfg,
-                    "plugins": [],
-                }
-            elif self.config_file is None:
+            if not self.main_dialog():
                 exit(1)
-        else:
+
+        elif args.config:
             if os.path.isfile(args.config):
                 self.config_file = args.config
             elif os.path.isfile(os.path.join(riocore_path, "configs", args.config)):
                 self.config_file = os.path.join(riocore_path, "configs", args.config)
             else:
                 print(f"can not load: {args.config}")
-                exit(1)
 
         try:
             self.vcp = vcp.MyVCP()
@@ -1410,7 +1391,6 @@ class WinForm(QWidget):
         self.check_status()
 
         self.startup_dialog_timer = 0
-        # self.startup_window_show()
 
         if args.expand:
             self.load_tree(args.expand)
@@ -1419,58 +1399,59 @@ class WinForm(QWidget):
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(2000)
 
-    def startup_window_show(self):
-        self.startup_dialog = QDialog()
-        self.startup_dialog.setWindowTitle("Wellcome")
-        self.startup_dialog.setMinimumWidth(320)
-        self.startup_dialog.setMinimumHeight(160)
-        self.startup_dialog.setStyleSheet(STYLESHEET)
+    def main_dialog(self):
+        dialog = QDialog()
+        dialog.setWindowTitle("rio-setup")
+        dialog.setStyleSheet(STYLESHEET)
+        dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
 
-        hlayout = QHBoxLayout()
-        self.startup_dialog.setLayout(hlayout)
+        def select_config():
+            self.config_file = self.select_config()
+            if self.config_file is None:
+                exit(1)
+            dialog.accept()
 
-        vlayout = QVBoxLayout()
-        hlayout.addLayout(vlayout)
+        def select_board():
+            self.config_file = None
+            boardcfg = self.select_board()
+            if boardcfg:
+                self.config = {
+                    "name": boardcfg,
+                    "boardcfg": boardcfg,
+                    "plugins": [],
+                }
+            else:
+                exit(1)
+            dialog.accept()
 
-        label = QLabel("LinuxCNC - RIO")
-        label.setFont(QFont("Arial", 16))
-        vlayout.addWidget(label)
-        vlayout.addStretch()
+        def select_file():
+            self.load_config_from()
+            dialog.accept()
 
-        label = QLabel(f"v {VERSION.VERSION}")
-        label.setFont(QFont("Arial", 12))
-        vlayout.addWidget(label)
+        def select_exit():
+            exit(1)
 
-        label = QLabel("GPL-2.0 license ")
-        label.setFont(QFont("Arial", 12))
-        vlayout.addWidget(label)
+        button_config = QPushButton("Select Config")
+        button_config.clicked.connect(select_config)
+        dialog.layout.addWidget(button_config)
+        button_board = QPushButton("Select Board")
+        button_board.clicked.connect(select_board)
+        dialog.layout.addWidget(button_board)
+        button_file = QPushButton("Open config file from...")
+        button_file.clicked.connect(select_file)
+        dialog.layout.addWidget(button_file)
+        dialog.layout.addStretch()
 
-        hlayout.addStretch()
+        button_exit = QPushButton("Exit")
+        button_exit.clicked.connect(select_exit)
+        dialog.layout.addWidget(button_exit)
 
-        label = QLabel()
-        pixmap = QPixmap(os.path.join(riocore_path, "files", "rio-logo-128x128.png"))
-        label.setPixmap(pixmap)
-        hlayout.addWidget(label)
-
-        self.startup_dialog_timer = 2
-
-        self.startup_dialog.show()
+        if dialog.exec():
+            return True
+        return False
 
     def select_board(self):
-        def load_config_from():
-            file_dialog = QFileDialog(self)
-            suffix_list = ["*.json"]
-            name = file_dialog.getOpenFileName(
-                self,
-                "Load Config",
-                os.path.join(riocore_path, "configs"),
-                f"config ( {' '.join(suffix_list)} )" "Load Config",
-                "",
-            )
-            if name[0]:
-                dialog.close()
-                self.config_file = name[0]
-
         def show_board_info(idx):
             board_path = board_list[idx]
             board_folder = None
@@ -1513,9 +1494,6 @@ class WinForm(QWidget):
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog_buttonBox.rejected.connect(dialog.reject)
-        load_button = QPushButton(self.tr("Load existing config"))
-        load_button.clicked.connect(load_config_from)
-        dialog_buttonBox.addButton(load_button, QDialogButtonBox.ActionRole)
 
         board_table = QTableWidget()
         board_table.setColumnCount(1)
@@ -1575,6 +1553,118 @@ class WinForm(QWidget):
         dialog.layout.addWidget(dialog_buttonBox)
 
         show_board_info(0)
+
+        if dialog.exec():
+            return dialog.selected
+
+    def load_config_from(self):
+        file_dialog = QFileDialog(self)
+        suffix_list = ["*.json"]
+        name = file_dialog.getOpenFileName(
+            self,
+            "Load Config",
+            os.path.join(riocore_path, "configs"),
+            f"config ( {' '.join(suffix_list)} )" "Load Config",
+            "",
+        )
+        if name[0]:
+            self.config_file = name[0]
+
+    def select_config(self):
+        def show_config_info(idx):
+            config_path = config_list[idx]
+            config_name = config_path.split(os.sep)[-1]
+            config_folder = os.path.dirname(config_path)
+            config_raw = open(config_path, "r").read()
+            config_config = json.loads(config_raw)
+
+            boardcfg = config_config.get("boardcfg")
+            boardcfg_path = ""
+            if boardcfg:
+                board_file = self.get_boardpath(boardcfg)
+                boardcfg_path = os.path.dirname(board_file)
+
+            image_path = os.path.join(boardcfg_path, "board.png")
+            if os.path.isfile(image_path):
+                pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
+                image_label.setPixmap(pixmap)
+            else:
+                image_label.clear()
+
+            name_label.setText(config_name)
+            description = []
+            for key in ("name", "description", "type", "family", "toolchain"):
+                value = config_config.get(key)
+                description.append(f"{key.title()}: {value}")
+            description_label.setText("\n".join(description))
+            dialog.selected = config_path
+
+        dialog = QDialog()
+        dialog.setWindowTitle("load config")
+        dialog.setStyleSheet(STYLESHEET)
+        # dialog.setMinimumWidth(800)
+        dialog.setMinimumHeight(480)
+
+        dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
+
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+
+        config_table = QTableWidget()
+        config_table.setColumnCount(1)
+        config_table.setHorizontalHeaderItem(0, QTableWidgetItem("configs"))
+        header = config_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+
+        config_list = []
+        config_n = 0
+        for path in sorted(glob.glob(os.path.join(riocore_path, "configs", "*", "*.json"))):
+            if path.endswith(".json"):
+                config_name = path.split(os.sep)[-2] + "/" + path.split(os.sep)[-1]
+            else:
+                continue
+            config_table.setRowCount(config_n + 1)
+            config_list.append(path)
+            pitem = QTableWidgetItem(config_name)
+            config_table.setItem(config_n, 0, pitem)
+            config_n += 1
+
+        config_table.setFixedWidth(300)
+        config_table.cellClicked.connect(show_config_info)
+        config_table.currentCellChanged.connect(show_config_info)
+
+        mid_layout = QVBoxLayout()
+        mid_widget = QWidget()
+        mid_widget.setFixedWidth(400)
+        mid_widget.setLayout(mid_layout)
+        name_label = QLabel("name")
+        name_label_font = QFont()
+        name_label_font.setBold(True)
+        name_label.setFont(name_label_font)
+
+        mid_layout.addWidget(name_label)
+        description_label = QLabel("description")
+        mid_layout.addWidget(description_label)
+        mid_layout.addStretch()
+
+        right_layout = QVBoxLayout()
+        right_widget = QWidget()
+        right_widget.setLayout(right_layout)
+        image_label = QLabel(self)
+        right_layout.addWidget(image_label)
+        right_layout.addStretch()
+
+        infos = QHBoxLayout()
+        infos.addWidget(config_table, stretch=1)
+        infos.addWidget(mid_widget, stretch=3)
+        infos.addWidget(right_widget, stretch=1)
+
+        dialog.layout.addLayout(infos)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        show_config_info(0)
 
         if dialog.exec():
             return dialog.selected
