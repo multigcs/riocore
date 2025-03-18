@@ -46,6 +46,7 @@ if args.config:
             project.config["jdata"]["linuxcnc"]["simulation"] = True
 
         if args.udpsim:
+            project.config["jdata"]["linuxcnc"]["simulation"] = False
             project.config["jdata"]["protocol"] = "UDP"
             project.config["jdata"]["ip"] = "127.0.0.1"
             project.config["jdata"]["port"] = "2390"
