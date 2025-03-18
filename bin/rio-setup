@@ -51,6 +51,7 @@ from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt
 from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon
 from PyQt5.QtWidgets import (
+    QStyle,
     QSplitter,
     QMessageBox,
     QHeaderView,
@@ -1433,17 +1434,24 @@ class WinForm(QWidget):
             exit(1)
 
         button_config = QPushButton("Select Config")
+        button_config.setIcon(self.style().standardIcon(QStyle.SP_ComputerIcon))
+        button_config.setFixedSize(200, 100)
         button_config.clicked.connect(select_config)
         dialog.layout.addWidget(button_config)
         button_board = QPushButton("Select Board")
+        button_board.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
+        button_board.setFixedSize(200, 100)
         button_board.clicked.connect(select_board)
         dialog.layout.addWidget(button_board)
         button_file = QPushButton("Open config file from...")
+        button_file.setIcon(self.style().standardIcon(QStyle.SP_DirIcon))
+        button_file.setFixedSize(200, 100)
         button_file.clicked.connect(select_file)
         dialog.layout.addWidget(button_file)
         dialog.layout.addStretch()
 
         button_exit = QPushButton("Exit")
+        button_exit.setIcon(self.style().standardIcon(QStyle.SP_DialogCancelButton))
         button_exit.clicked.connect(select_exit)
         dialog.layout.addWidget(button_exit)
 
