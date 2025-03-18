@@ -5,6 +5,7 @@
 
 static float angleX = 0.0f;
 static float angleY = 0.0f;
+static float scale = 1.0f;
 
 static uint8_t running = 1;
 
@@ -20,7 +21,7 @@ void initGL() {
     glEnable(GL_LIGHT0);        // Enable light #0
 
     // Set up light parameters
-    GLfloat lightPos[] = { 0.0f, 10.0f, 10.0f, 1.0f };
+    GLfloat lightPos[] = { 0.0f, 5.0f, -10.0f, 1.0f };
     GLfloat lightAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
     GLfloat lightDiffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
     GLfloat lightSpecular[] = {1.0f,1.0f,1.0f,1.0f};
@@ -38,20 +39,18 @@ void drawCNCMill() {
 
     // Base
     glPushMatrix();
-        glColor3f(0.3f, 0.3f, 0.3f);
-        //glTranslatef(0.0f, 0.0f, -0.2f);
-        glScalef(4.0f, 2.0f, 0.3f);
+        glColor3f(0.3f, 0.5f, 1.0f);
+        glTranslatef(0.0f, 0.0f, -0.1f);
+        glScalef(4.0f, 2.0f, 0.1f);
         glutSolidCube(1.0);
     glPopMatrix();
 
-    // Vertical column
+    // Mill
     glPushMatrix();
         glColor3f(0.5f, 0.5f, 0.5f);
-
-        glTranslatef(-joint_position[0] / 10000.0, -joint_position[1] / 10000.0, joint_position[2] / 10000.0);
-
-        glScalef(0.1f, 0.1f, 0.3f);
-        glutSolidCube(2.0);
+        glTranslatef(-(joint_position[0]) / 10000.0 + 2.0, -(joint_position[1]) / 10000.0 + 1.0, joint_position[2] / 10000.0);
+        glScalef(0.1f, 0.1f, 0.1f);
+        glutSolidCube(1.0);
     glPopMatrix();
 
 }
@@ -67,8 +66,9 @@ void display() {
               0.0f, 0.0f, 1.0f); // Up direction
 
     // Apply rotations
-    glRotatef(angleX, 1.0f, 0.0f, 0.0f);
-    glRotatef(angleY, 0.0f, 1.0f, 0.0f);
+    glRotatef(-angleX, 1.0f, 0.0f, 0.0f);
+    glRotatef(-angleY, 0.0f, 1.0f, 0.0f);
+    glScalef(scale, scale, scale);
 
     // Draw the CNC mill
     drawCNCMill();
@@ -121,7 +121,11 @@ void keyboard(unsigned char key, int x, int y) {
 
 // Mouse button callback
 void mouseButton(int button, int state, int x, int y) {
-    if (button == GLUT_LEFT_BUTTON) {
+    if (button == 3) {
+        scale += 0.05;
+    } else if (button == 4 && scale > 0.1) {
+        scale -= 0.05;
+    } else if (button == GLUT_LEFT_BUTTON) {
         if (state == GLUT_DOWN) {
             isDragging = 1;
             lastMouseX = x;
