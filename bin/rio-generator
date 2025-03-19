@@ -63,6 +63,12 @@ if args.config:
             project.config["jdata"]["ip"] = "127.0.0.1"
             project.config["jdata"]["port"] = "2390"
 
+            for pn, plugin in enumerate(project.config["jdata"]["plugins"]):
+                if plugin.get("is_joint", False):
+                    if "joint" not in plugin:
+                        project.config["jdata"]["plugins"][pn]["joint"] = {}
+                    project.config["jdata"]["plugins"][pn]["joint"]["scale"] = 100.0
+
         project.generator(preview=args.preview)
 
         config_name = project.config.get("name")
