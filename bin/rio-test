@@ -48,6 +48,7 @@ else:
     parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
 parser.add_argument("--touch", "-t", help="touchscreen optimization", default=False, action="store_true")
 parser.add_argument("--debug", "-d", help="debug output", default=False, action="store_true")
+parser.add_argument("--pid", "-p", help="using pid for joints", default=False, action="store_true")
 parser.add_argument("--noimage", "-N", help="do not display image", default=False, action="store_true")
 parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
 parser.add_argument("--vertical", "-v", help="vertical tabs", default=False, action="store_true")
@@ -64,6 +65,48 @@ args = parser.parse_args()
 
 
 riocore_path = os.path.dirname(riocore.__file__)
+
+
+pid_controller = {}
+
+
+class PIDController:
+    def __init__(self, Kp, Ki, Kd, setpoint):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.setpoint = setpoint
+        self.previous_error = 0
+        self.integral = 0
+
+    def compute(self, process_variable, dt):
+        # Calculate error
+        error = self.setpoint - process_variable
+        # Proportional term
+        P_out = self.Kp * error
+        # Integral term
+        self.integral += error * dt
+        I_out = self.Ki * self.integral
+        # Derivative term
+        derivative = (error - self.previous_error) / dt
+        D_out = self.Kd * derivative
+        # Compute total output
+        output = P_out + I_out + D_out
+        # Update previous error
+        self.previous_error = error
+        return output
+
+
+def pidloop(data):
+    if "pid" not in data:
+        data["pid"] = PIDController(Kp=250.0, Ki=0.0, Kd=0.0, setpoint=0.0)
+
+    if data["time"]:
+        tdiff = time.time() - data["time"]
+        data["pid"].setpoint = data["input"]
+        data["output"] = data["pid"].compute(data["feedback"], tdiff)
+
+    data["time"] = time.time()
 
 
 class SliderProxyStyle(QProxyStyle):
@@ -284,6 +327,15 @@ class WinForm(QWidget):
                         )
                         row_layout.addWidget(plot_graph)
                     row_layout.addWidget(signal[wid], stretch=6)
+
+                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                        if plugin_instance.instances_name not in pid_controller:
+                            pid_controller[plugin_instance.instances_name] = {}
+                        pid_controller[plugin_instance.instances_name]["time"] = 0
+                        pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["input"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["output"] = 0.0
+
                 else:
                     vmin = int(signal.get("userconfig", {}).get("display", {}).get("min", signal.get("min", 0)))
                     vmax = int(signal.get("userconfig", {}).get("display", {}).get("max", signal.get("max", 1000)))
@@ -305,6 +357,14 @@ class WinForm(QWidget):
                     button.clicked.connect(partial(self.slider_reset, signal[wid]))
                     row_layout.addWidget(signal[wid], stretch=6)
                     row_layout.addWidget(button, stretch=1)
+
+                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                        if plugin_instance.instances_name not in pid_controller:
+                            pid_controller[plugin_instance.instances_name] = {}
+                        pid_controller[plugin_instance.instances_name]["time"] = 0
+                        pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["input"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["output"] = 0.0
 
         if args.debug and plugin_instance.TYPE == "frameio":
             row_layout = QHBoxLayout()
@@ -458,6 +518,12 @@ class WinForm(QWidget):
                         value_unit = userconfig.get("display", {}).get("unit", signal.get("unit", ""))
                         scale = signal.get("userconfig", {}).get("scale", 1.0)
                         value_scaled = value / scale
+
+                        if args.pid and plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                            pid_controller[plugin_instance.instances_name]["input"] = value
+                            pidloop(pid_controller[plugin_instance.instances_name])
+                            value = pid_controller[plugin_instance.instances_name]["output"]
+
                         signal[f"widget_out_{plugin_instance.title}"].setText(f"{value_scaled:06.1f} {value_unit}")
                         self.project.signal_value_set(halname, value)
 
@@ -555,6 +621,9 @@ class WinForm(QWidget):
                     value_format = userconfig.get("display", {}).get("format", value_format)
                     value_offset = userconfig.get("offset", 0.0)
                     value_scale = userconfig.get("scale", 1.0)
+
+                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                        pid_controller[plugin_instance.instances_name]["feedback"] = value
 
                     helper = signal.get("helper", False)
                     if helper and not args.helper:
