@@ -1,3 +1,4 @@
 PyQt5>=5.15
 graphviz>=0.20
 pyqtgraph>=0.13.3
+psutil==5.9.4
