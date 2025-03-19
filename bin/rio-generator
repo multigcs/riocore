@@ -123,7 +123,7 @@ if args.config:
                 print("running:")
                 print(f"  {cmd}")
                 print("")
-                proc_sim = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+                proc_sim = subprocess.Popen(cmd, shell=True)
 
             if args.ngc:
                 ngc_realpath = os.path.realpath(args.ngc)
