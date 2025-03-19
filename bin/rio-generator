@@ -5,6 +5,8 @@
 import argparse
 import os
 import sys
+import subprocess
+import psutil
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
     sys.path.insert(0, os.getcwd())
@@ -30,6 +32,14 @@ if sys.platform == "linux":
     parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
 args = parser.parse_args()
 
+
+def kill(proc_pid):
+    process = psutil.Process(proc_pid)
+    for proc in process.children(recursive=True):
+        proc.kill()
+    process.kill()
+
+
 if args.config:
     if args.config[0].endswith(".json"):
         if os.path.isfile(args.config[0]):
@@ -41,6 +51,8 @@ if args.config:
             exit(1)
         print(f"loading: {config_file}")
         project = riocore.Project(config_file, args.output)
+        if "linuxcnc" not in project.config["jdata"]:
+            project.config["jdata"]["linuxcnc"] = {}
 
         if args.simulator:
             project.config["jdata"]["linuxcnc"]["simulation"] = True
@@ -106,12 +118,12 @@ if args.config:
                 sys.exit(1)
         if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
             if args.udpsim:
-                cmd = f"sh {simulatorsh_path} &"
+                cmd = f"sh {simulatorsh_path}"
                 print("")
                 print("running:")
                 print(f"  {cmd}")
                 print("")
-                ret = os.system(cmd)
+                proc_sim = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 
             if args.ngc:
                 ngc_realpath = os.path.realpath(args.ngc)
@@ -123,6 +135,11 @@ if args.config:
             print(f"  {cmd}")
             print("")
             ret = os.system(cmd)
+            if args.udpsim:
+                print(f"stopping {proc_sim.pid} and sub processes..")
+                kill(proc_sim.pid)
+                print("..done")
+
             if ret != 0:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
