@@ -19,6 +19,8 @@
 
 unsigned char heightmap[HM_WIDTH][HM_HEIGHT];
 
+static float offsetX = 0.0f;
+static float offsetY = 0.0f;
 static float angleX = 0.0f;
 static float angleY = 0.0f;
 static float scale = 1.0f;
@@ -28,6 +30,7 @@ static uint8_t running = 1;
 // Variables for mouse interaction
 static int lastMouseX, lastMouseY;
 static int isDragging = 0;
+static int isTranslate = 0;
 
 // Function to initialize OpenGL settings
 void initGL() {
@@ -75,7 +78,7 @@ void drawCNCMill() {
     float hpos_x = (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * HM_WIDTH);
     float hpos_y = (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * HM_HEIGHT);
 
-    int offset = 3;
+    int offset = 2;
     for (int y = hpos_y - offset; y < hpos_y + offset; y++) {
         for (int x = hpos_x - offset; x < hpos_x + offset; x++) {
             if (x >= 0 && y >= 0 && x < HM_WIDTH && y < HM_HEIGHT) {
@@ -88,8 +91,12 @@ void drawCNCMill() {
 
     for (int y = 0; y < HM_HEIGHT; y++) {
         for (int x = 0; x < HM_WIDTH; x++) {
+            if (heightmap[x][y] == 0) {
+                glColor3f(0.1f, 0.1f, 1.0f);
+            } else {
+                glColor3f(0.3f, 0.5f, 0.2f);
+            }
             glVertex3f(GL_WIDTH - ((float)x / HM_WIDTH * GL_WIDTH), GL_HEIGHT - ((float)y / HM_HEIGHT * GL_HEIGHT), 0.015 - (float)heightmap[x][y] / 255.0 / 10.0);
-
         }
     }
     glEnd();
@@ -121,6 +128,10 @@ void display() {
     // Apply rotations
     glRotatef(-angleX, 1.0f, 0.0f, 0.0f);
     glRotatef(-angleY, 0.0f, 1.0f, 0.0f);
+
+    glTranslatef(offsetX, offsetY, 0.0);
+
+
     glScalef(scale, scale, scale);
 
     // Draw the CNC mill
@@ -178,13 +189,25 @@ void mouseButton(int button, int state, int x, int y) {
         scale += 0.05;
     } else if (button == 4 && scale > 0.1) {
         scale -= 0.05;
-    } else if (button == GLUT_LEFT_BUTTON) {
+    } else if (button == GLUT_RIGHT_BUTTON) {
         if (state == GLUT_DOWN) {
             isDragging = 1;
+            isTranslate = 1;
             lastMouseX = x;
             lastMouseY = y;
         } else {
             isDragging = 0;
+            isTranslate = 0;
+        }
+    } else if (button == GLUT_LEFT_BUTTON) {
+        if (state == GLUT_DOWN) {
+            isDragging = 1;
+            isTranslate = 0;
+            lastMouseX = x;
+            lastMouseY = y;
+        } else {
+            isDragging = 0;
+            isTranslate = 0;
         }
     }
 }
@@ -195,17 +218,22 @@ void mouseMotion(int x, int y) {
         int dx = x - lastMouseX;
         int dy = y - lastMouseY;
 
-        // Adjust rotation angles based on mouse movement
-        angleY += dx * 0.5f;
-        angleX += dy * 0.5f;
+        if (isTranslate) {
+            // Adjust rotation angles based on mouse movement
+            offsetX += dx * -0.01f;
+            offsetY += dy * 0.01f;
+        } else {
+            // Adjust rotation angles based on mouse movement
+            angleY += dx * 0.5f;
+            angleX += dy * 0.5f;
 
-        // Limit the angleX to prevent flipping
-        if (angleX > 90.0f) angleX = 90.0f;
-        if (angleX < -90.0f) angleX = -90.0f;
+            // Limit the angleX to prevent flipping
+            if (angleX > 90.0f) angleX = 90.0f;
+            if (angleX < -90.0f) angleX = -90.0f;
+        }
 
         lastMouseX = x;
         lastMouseY = y;
-
         glutPostRedisplay();
     }
 }
