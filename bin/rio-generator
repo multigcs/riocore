@@ -69,7 +69,7 @@ if args.config:
                 jdata["ip"] = "127.0.0.1"
                 jdata["port"] = "2390"
 
-                for pm, module in enumerate(jdata["modules"]):
+                for pm, module in enumerate(jdata.get("modules", [])):
                     for name, plugin in module.get("setup").items():
                         if plugin.get("is_joint", False):
                             if "joint" not in plugin:
