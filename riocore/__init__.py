@@ -176,7 +176,7 @@ class Plugins:
                 size = data_config["size"]
                 if data_config["direction"] == "output":
                     if size > 1:
-                        tbfile.append(f"    reg signed [{size-1}:0] {data_name} = {size}'d0;")
+                        tbfile.append(f"    reg signed [{size - 1}:0] {data_name} = {size}'d0;")
                     else:
                         if data_name == "enable":
                             tbfile.append(f"    reg {data_name} = 1;")
@@ -184,7 +184,7 @@ class Plugins:
                             tbfile.append(f"    reg {data_name} = 0;")
                 else:
                     if size > 1:
-                        tbfile.append(f"    wire signed [{size-1}:0] {data_name};")
+                        tbfile.append(f"    wire signed [{size - 1}:0] {data_name};")
                     else:
                         tbfile.append(f"    wire {data_name};")
 
@@ -271,7 +271,7 @@ class Plugins:
                 size = data_config["size"]
                 gtkwfile.append(f"@{pn}")
                 if size > 1:
-                    gtkwfile.append(f"testb.{data_name}[{size-1}:0]")
+                    gtkwfile.append(f"testb.{data_name}[{size - 1}:0]")
                 else:
                     gtkwfile.append(f"testb.{data_name}")
                 pn += 1
@@ -398,7 +398,7 @@ class Plugins:
                 initfile.append("        self.PINDEFAULTS = {")
                 for pin_name, pin_setup in pindefaults.items():
                     initfile.append(f'            "{pin_name}": {{')
-                    initfile.append(f"                \"direction\": \"{pin_setup['direction']}\",")
+                    initfile.append(f'                "direction": "{pin_setup["direction"]}",')
                     initfile.append('                "invert": False,')
                     initfile.append('                "pull": None,')
                     initfile.append("            },")
@@ -407,15 +407,15 @@ class Plugins:
                     initfile.append("        self.INTERFACE = {")
                     for interface_name, interface_setup in interface.items():
                         initfile.append(f'            "{interface_name}": {{')
-                        initfile.append(f"                \"size\": {interface_setup['size']},")
-                        initfile.append(f"                \"direction\": \"{interface_setup['direction']}\",")
+                        initfile.append(f'                "size": {interface_setup["size"]},')
+                        initfile.append(f'                "direction": "{interface_setup["direction"]}",')
                         initfile.append("            },")
                     initfile.append("        }")
                 if signals:
                     initfile.append("        self.SIGNALS = {")
                     for signal_name, signal_setup in signals.items():
                         initfile.append(f'            "{signal_name}": {{')
-                        initfile.append(f"                \"direction\": \"{signal_setup['direction']}\",")
+                        initfile.append(f'                "direction": "{signal_setup["direction"]}",')
                         if signal_setup["size"] == 1:
                             initfile.append('                "bool": True,')
                         initfile.append("            },")
@@ -436,7 +436,7 @@ class Plugins:
                             initfile.append('        # frequency = int(self.plugin_setup.get("frequency", 100))')
                             initfile.append(f'        # {parameter_name.lower()} = self.system_setup["speed"] // frequency')
                             initfile.append(f'        # instance_parameter["{parameter_name}"] = {parameter_name.lower()}')
-                        initfile.append(f"        # instance_parameter[\"{parameter_name}\"] = self.plugin_setup.get(\"{parameter_name.lower()}\", \"{parameter_setup['default']}\")")
+                        initfile.append(f'        # instance_parameter["{parameter_name}"] = self.plugin_setup.get("{parameter_name.lower()}", "{parameter_setup["default"]}")')
                     initfile.append("        return instances")
                     initfile.append("")
                 if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py")):

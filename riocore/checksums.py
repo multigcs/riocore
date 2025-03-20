@@ -334,7 +334,7 @@ class crc8(object):
 
     def update(self, bytes_):
         if isinstance(bytes_, str):
-            raise TypeError("Unicode-objects must be encoded before" " hashing")
+            raise TypeError("Unicode-objects must be encoded before hashing")
         elif not isinstance(bytes_, (bytes, bytearray)):
             if isinstance(bytes_, (list)):
                 bytes_ = bytearray(bytes_)

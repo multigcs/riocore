@@ -204,7 +204,7 @@ class Gateware:
         size = 32
         pack_list = []
         for bit_num in range(0, size, 8):
-            pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
             output_pos -= 8
         output_variables_list.append(f"// PC -> FPGA ({self.project.output_size} + FILL)")
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
@@ -217,14 +217,14 @@ class Gateware:
             size = self.project.multiplexed_input_size
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
+                pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
             self.iface_in.append([variable_name, size])
             variable_name = "MULTIPLEXED_INPUT_ID"
             size = 8
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
+                pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
             self.iface_in.append([variable_name, size])
 
@@ -233,7 +233,7 @@ class Gateware:
             size = self.project.multiplexed_output_size
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+                pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
             self.iface_out.append([variable_name, size])
@@ -241,7 +241,7 @@ class Gateware:
             size = 8
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+                pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
             self.iface_out.append([variable_name, size])
@@ -256,7 +256,7 @@ class Gateware:
                     pack_list = []
                     if size >= 8:
                         for bit_num in range(0, size, 8):
-                            pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
+                            pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
                     else:
                         pack_list.append(f"{variable_name}")
                     input_variables_list.append(f"{', '.join(pack_list)}")
@@ -266,10 +266,10 @@ class Gateware:
                     pack_list = []
                     if size >= 8:
                         for bit_num in range(0, size, 8):
-                            pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+                            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                             output_pos -= 8
                     else:
-                        pack_list.append(f"rx_data[{output_pos-1}]")
+                        pack_list.append(f"rx_data[{output_pos - 1}]")
                         output_pos -= 1
                     output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
                     self.iface_out.append([variable_name, size])
@@ -280,7 +280,7 @@ class Gateware:
 
         diff = self.project.buffer_size - self.project.output_size
         if self.project.buffer_size > self.project.output_size:
-            output_variables_list.append(f"// assign FILL = rx_data[{diff-1}:0];")
+            output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
 
         if output_pos != diff:
             print("ERROR: wrong buffer sizes")
@@ -328,7 +328,7 @@ class Gateware:
         output.append(f"        {arguments_string}")
         output.append("    );")
         output.append("")
-        output.append(f"    parameter BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size//8} bytes")
+        output.append(f"    parameter BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size // 8} bytes")
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
 
@@ -405,8 +405,8 @@ class Gateware:
         output.append("    end")
         output.append("")
 
-        output.append(f"    wire[{self.project.buffer_size-1}:0] rx_data;")
-        output.append(f"    wire[{self.project.buffer_size-1}:0] tx_data;")
+        output.append(f"    wire[{self.project.buffer_size - 1}:0] rx_data;")
+        output.append(f"    wire[{self.project.buffer_size - 1}:0] tx_data;")
         output.append("")
         output.append("    reg [31:0] timestamp = 0;")
         output.append("    reg signed [31:0] header_tx = 0;")
@@ -448,10 +448,10 @@ class Gateware:
 
         # multiplexing
         if self.project.multiplexed_input:
-            output.append(f"    reg [{self.project.multiplexed_input_size-1}:0] MULTIPLEXED_INPUT_VALUE;")
+            output.append(f"    reg [{self.project.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE;")
             output.append("    reg [7:0] MULTIPLEXED_INPUT_ID;")
         if self.project.multiplexed_output:
-            output.append(f"    wire [{self.project.multiplexed_output_size-1}:0] MULTIPLEXED_OUTPUT_VALUE;")
+            output.append(f"    wire [{self.project.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
         for plugin_instance in self.project.plugin_instances:
@@ -463,9 +463,9 @@ class Gateware:
                     multiplexed = data_config.get("multiplexed", False)
                     if variable_size > 1:
                         if multiplexed and direction == "output":
-                            output.append(f"    reg [{variable_size-1}:0] {variable_name} = 0;")
+                            output.append(f"    reg [{variable_size - 1}:0] {variable_name} = 0;")
                         else:
-                            output.append(f"    wire [{variable_size-1}:0] {variable_name};")
+                            output.append(f"    wire [{variable_size - 1}:0] {variable_name};")
                     else:
                         if multiplexed and direction == "output":
                             output.append(f"    reg {variable_name};")
@@ -542,7 +542,7 @@ class Gateware:
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")
             output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
-            output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.project.multiplexed_input-1}) begin")
+            output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.project.multiplexed_input - 1}) begin")
             output.append("                MULTIPLEXED_INPUT_ID = MULTIPLEXED_INPUT_ID + 1'd1;")
             output.append("            end else begin")
             output.append("                MULTIPLEXED_INPUT_ID = 0;")
@@ -559,7 +559,7 @@ class Gateware:
                     if size == 1:
                         output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name};")
                     else:
-                        output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name}[{size-1}:0];")
+                        output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name}[{size - 1}:0];")
                     output.append("            end")
                     mpid += 1
             output.append("        end")
@@ -576,7 +576,7 @@ class Gateware:
                 direction = data_config["direction"]
                 if direction == "output":
                     output.append(f"        if (MULTIPLEXED_OUTPUT_ID == {mpid}) begin")
-                    output.append(f"            {variable_name} <= MULTIPLEXED_OUTPUT_VALUE[{size-1}:0];")
+                    output.append(f"            {variable_name} <= MULTIPLEXED_OUTPUT_VALUE[{size - 1}:0];")
                     output.append("        end")
                     mpid += 1
             output.append("    end")

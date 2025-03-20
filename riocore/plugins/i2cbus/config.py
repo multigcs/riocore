@@ -403,7 +403,7 @@ class config:
             f"{iname}",
             f"sda: {pin_sda}",
             f"scl: {pin_scl}",
-            f"speed: {speed/1000:0.1f}kHz",
+            f"speed: {speed / 1000:0.1f}kHz",
         ]
 
         label = f"{{ {{{'|'.join(infos)}}} }}"

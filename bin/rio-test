@@ -552,7 +552,7 @@ class WinForm(QWidget):
 
             txdata = self.project.txdata_get()
             if args.debug:
-                print(f"tx ({len(txdata*8)}): {txdata}")
+                print(f"tx ({len(txdata * 8)}): {txdata}")
 
             start = time.time()
             rxdata = self.project.transfare(txdata)

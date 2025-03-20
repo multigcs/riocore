@@ -27,7 +27,7 @@ class Pins:
                     iostandard = pin_config.get("iostandard", "3.3-V LVTTL").upper()
                     # drive = pin_config.get("drive", "4")
                     # slew = pin_config.get("slew", "SLOW").upper()
-                    data.append(f"set_instance_assignment -name IO_STANDARD \"{iostandard}\" -to {pin_config['varname']}")
+                    data.append(f'set_instance_assignment -name IO_STANDARD "{iostandard}" -to {pin_config["varname"]}')
 
             data.append("")
         open(os.path.join(path, "pins.qdf"), "w").write("\n".join(data))

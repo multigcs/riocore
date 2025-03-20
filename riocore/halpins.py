@@ -400,7 +400,7 @@ LINUXCNC_SIGNALS = {
         "spindle.0.reverse": {"help": "Spindle 0 Reverse", "type": bool},
         "spindle.0.speed-cmd-rps": {"help": "", "type": float},
         "spindle.0.speed-out": {"help": "Spindle 0 Speed output", "type": float},
-        "spindle.0.speed-out-abs": {"help": "Spindle 0 Speed output " "(Absolut)", "type": float},
+        "spindle.0.speed-out-abs": {"help": "Spindle 0 Speed output (Absolut)", "type": float},
         "spindle.0.speed-out-rps": {"help": "", "type": float},
         "spindle.0.speed-out-rps-abs": {"help": "", "type": float},
     },

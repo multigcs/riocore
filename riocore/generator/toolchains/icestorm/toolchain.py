@@ -47,9 +47,9 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             prefix = self.toolchain_path[0] + os.sep
 
         if self.config["jdata"]["family"] == "ecp5":
-            result = subprocess.check_output(f"{prefix}ecppll -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
+            result = subprocess.check_output(f'{prefix}ecppll -f "{os.path.join(self.gateware_path, "pll.v")}" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}', shell=True)
         elif self.config["jdata"]["type"] == "up5k":
-            result = subprocess.check_output(f"{prefix}icepll -p -m -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
+            result = subprocess.check_output(f'{prefix}icepll -p -m -f "{os.path.join(self.gateware_path, "pll.v")}" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}', shell=True)
             achieved = re.findall(r"F_PLLOUT:\s*(\d*\.\d*)\s*MHz \(achieved\)", result.decode())
             if achieved:
                 new_speed = int(float(achieved[0]) * 1000000)
@@ -57,7 +57,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                     print(f"WARNING: achieved PLL frequency is: {new_speed}")
                     self.config["speed"] = new_speed
         else:
-            result = subprocess.check_output(f"{prefix}icepll -q -m -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}", shell=True)
+            result = subprocess.check_output(f'{prefix}icepll -q -m -f "{os.path.join(self.gateware_path, "pll.v")}" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}', shell=True)
             # print(result.decode())
 
     def generate(self, path):
@@ -99,10 +99,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
 
         prepack_data = []
         for key, value in self.config["timing_constraints"].items():
-            prepack_data.append(f'ctx.addClock("{key}", {int(value)/1000000})')
+            prepack_data.append(f'ctx.addClock("{key}", {int(value) / 1000000})')
 
         for key, value in self.config["timing_constraints_instance"].items():
-            prepack_data.append(f'ctx.addClock("{key}", {int(value)/1000000})')
+            prepack_data.append(f'ctx.addClock("{key}", {int(value) / 1000000})')
 
         prepack_data.append("")
         open(os.path.join(path, "prepack.py"), "w").write("\n".join(prepack_data))

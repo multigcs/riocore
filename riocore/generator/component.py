@@ -669,8 +669,8 @@ class component:
                                             output.append("        values[n] = values[n + 1];")
                                             output.append("        avg_value += values[n];")
                                             output.append("    }")
-                                            output.append(f"    values[{depth-1}] = value;")
-                                            output.append(f"    avg_value += values[{depth-1}];")
+                                            output.append(f"    values[{depth - 1}] = value;")
+                                            output.append(f"    avg_value += values[{depth - 1}];")
                                             output.append(f"    avg_value /= {depth};")
                                             output.append("")
                                             if org_post != new_post:
@@ -850,12 +850,12 @@ class component:
             variable_size = self.project.multiplexed_output_size
             byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
             byte_start = self.project.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &data->MULTIPLEXER_OUTPUT_VALUE, {byte_size}); // {output_pos}")
+            output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->MULTIPLEXER_OUTPUT_VALUE, {byte_size}); // {output_pos}")
             output_pos -= variable_size
             variable_size = 8
             byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
             byte_start = self.project.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &data->MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
+            output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
             output_pos -= variable_size
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
@@ -869,7 +869,7 @@ class component:
                 byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
                 byte_start = self.project.buffer_bytes - 1 - byte_start
                 if variable_size > 1:
-                    output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &data->{variable_name}, {byte_size}); // {output_pos}")
+                    output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->{variable_name}, {byte_size}); // {output_pos}")
                 else:
                     output.append(f"    txBuffer[{byte_start}] |= (data->{variable_name}<<{bit_offset}); // {output_pos}")
                 output_pos -= variable_size
@@ -892,25 +892,25 @@ class component:
         variable_size = 32
         byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
         byte_start = self.project.buffer_bytes - 1 - byte_start
-        output.append(f"    // memcpy(&header, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size}) // {input_pos};")
+        output.append(f"    // memcpy(&header, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}) // {input_pos};")
         input_pos -= variable_size
 
         variable_size = 32
         byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
         byte_start = self.project.buffer_bytes - 1 - byte_start
-        output.append(f"    memcpy(&fpga_timestamp, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size}); // {input_pos}")
+        output.append(f"    memcpy(&fpga_timestamp, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
         input_pos -= variable_size
 
         if self.project.multiplexed_input:
             variable_size = self.project.multiplexed_input_size
             byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
             byte_start = self.project.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&data->MULTIPLEXER_INPUT_VALUE, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
+            output.append(f"    memcpy(&data->MULTIPLEXER_INPUT_VALUE, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")
             input_pos -= variable_size
             variable_size = 8
             byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
             byte_start = self.project.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&data->MULTIPLEXER_INPUT_ID, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
+            output.append(f"    memcpy(&data->MULTIPLEXER_INPUT_ID, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")
             input_pos -= variable_size
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
@@ -924,7 +924,7 @@ class component:
                 byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
                 byte_start = self.project.buffer_bytes - 1 - byte_start
                 if variable_size > 1:
-                    output.append(f"    memcpy(&data->{variable_name}, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size}); // {input_pos}")
+                    output.append(f"    memcpy(&data->{variable_name}, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
                 else:
                     output.append(f"    data->{variable_name} = (rxBuffer[{byte_start}] & (1<<{bit_offset})); // {input_pos}")
                 input_pos -= variable_size

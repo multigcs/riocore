@@ -16,15 +16,15 @@ class Pins:
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False):
                         print('WARNING: please change your pin-config to : "pull": "up"')
-                        data.append(f"NET \"{pin_config['varname']}\"       PULLUP | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                        data.append(f'NET "{pin_config["varname"]}"       PULLUP | LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
                     elif pin_config.get("pulldown", False):
                         print('WARNING: please change your pin-config to : "pull": "down"')
-                        data.append(f"NET \"{pin_config['varname']}\"       PULLDOWN | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                        data.append(f'NET "{pin_config["varname"]}"       PULLDOWN | LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
                     elif pin_config.get("pull"):
-                        data.append(f"NET \"{pin_config['varname']}\"       PULL{pin_config['pull'].upper()} | LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                        data.append(f'NET "{pin_config["varname"]}"       PULL{pin_config["pull"].upper()} | LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
                     else:
-                        data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} ;")
+                        data.append(f'NET "{pin_config["varname"]}"       LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
                 else:
-                    data.append(f"NET \"{pin_config['varname']}\"       LOC = \"{pin_config['pin']}\" | IOSTANDARD = {iostandard} | DRIVE = {drive} | SLEW = {slew} ;")
+                    data.append(f'NET "{pin_config["varname"]}"       LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} | DRIVE = {drive} | SLEW = {slew} ;')
             data.append("")
         open(os.path.join(path, "pins.ucf"), "w").write("\n".join(data))

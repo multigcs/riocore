@@ -5,6 +5,7 @@
 import argparse
 import os
 import sys
+import json
 import subprocess
 import psutil
 
@@ -50,27 +51,42 @@ if args.config:
             print(f"can not load: {args.config[0]}")
             exit(1)
         print(f"loading: {config_file}")
+
+        if args.udpsim or args.simulator:
+            # rewrite config for simulator
+            jdata = json.loads(open(config_file, "r").read())
+
+            if args.simulator:
+                if "linuxcnc" not in jdata:
+                    jdata["linuxcnc"] = {}
+                jdata["linuxcnc"]["simulation"] = True
+
+            elif args.udpsim:
+                if "linuxcnc" not in jdata:
+                    jdata["linuxcnc"] = {}
+                jdata["linuxcnc"]["simulation"] = False
+                jdata["protocol"] = "UDP"
+                jdata["ip"] = "127.0.0.1"
+                jdata["port"] = "2390"
+
+                for pm, module in enumerate(jdata["modules"]):
+                    for name, plugin in module.get("setup").items():
+                        if plugin.get("is_joint", False):
+                            if "joint" not in plugin:
+                                jdata["modules"][pm]["setup"][name]["joint"] = {}
+                            jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
+
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("is_joint", False):
+                        if "joint" not in plugin:
+                            jdata["plugins"][pn]["joint"] = {}
+                        jdata["plugins"][pn]["joint"]["scale"] = 100.0
+
+            open("/tmp/tmp-config.json", "w").write(json.dumps(jdata, indent=4))
+            config_file = "/tmp/tmp-config.json"
+
         project = riocore.Project(config_file, args.output)
-        if "linuxcnc" not in project.config["jdata"]:
-            project.config["jdata"]["linuxcnc"] = {}
-
-        if args.simulator:
-            project.config["jdata"]["linuxcnc"]["simulation"] = True
-
-        if args.udpsim:
-            project.config["jdata"]["linuxcnc"]["simulation"] = False
-            project.config["jdata"]["protocol"] = "UDP"
-            project.config["jdata"]["ip"] = "127.0.0.1"
-            project.config["jdata"]["port"] = "2390"
-
-            for pn, plugin in enumerate(project.config["jdata"]["plugins"]):
-                if plugin.get("is_joint", False):
-                    if "joint" not in plugin:
-                        project.config["jdata"]["plugins"][pn]["joint"] = {}
-                    project.config["jdata"]["plugins"][pn]["joint"]["scale"] = 100.0
-
         project.generator(preview=args.preview)
-
         config_name = project.config.get("name")
         gateware_path = os.path.join("Output", config_name, "Gateware")
         startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")

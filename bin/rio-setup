@@ -1581,7 +1581,7 @@ class WinForm(QWidget):
             self,
             "Load Config",
             os.path.join(riocore_path, "configs"),
-            f"config ( {' '.join(suffix_list)} )" "Load Config",
+            f"config ( {' '.join(suffix_list)} )Load Config",
             "",
         )
         if name[0]:
@@ -2057,7 +2057,7 @@ class WinForm(QWidget):
             plugin_table.setRowCount(0)
             row = 0
             for plugin_name in possible_plugins:
-                stext = f'{plugin_name} {plugin_infos[plugin_name]["info"]} {plugin_infos[plugin_name]["description"]} {plugin_infos[plugin_name]["keywords"]}'
+                stext = f"{plugin_name} {plugin_infos[plugin_name]['info']} {plugin_infos[plugin_name]['description']} {plugin_infos[plugin_name]['keywords']}"
                 if search_str.lower() not in stext.lower():
                     continue
                 plugin_table.setRowCount(row + 1)
@@ -3305,19 +3305,19 @@ class WinForm(QWidget):
             svg_data = []
             if x < x2:
                 svg_data.append(f'<line x1="{x}" y1="{y}" x2="{x2}" y2="{y}" stroke="{color}" stroke-width="1"></line>')
-                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2-10}" y2="{y-3}" stroke="{color}" stroke-width="1"></line>')
-                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2-10}" y2="{y+3}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2 - 10}" y2="{y - 3}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2 - 10}" y2="{y + 3}" stroke="{color}" stroke-width="1"></line>')
             else:
                 svg_data.append(f'<line x1="{x}" y1="{y}" x2="{x2}" y2="{y}" stroke="{color}" stroke-width="1"></line>')
-                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2+10}" y2="{y-3}" stroke="{color}" stroke-width="1"></line>')
-                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2+10}" y2="{y+3}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2 + 10}" y2="{y - 3}" stroke="{color}" stroke-width="1"></line>')
+                svg_data.append(f'<line x1="{x2}" y1="{y}" x2="{x2 + 10}" y2="{y + 3}" stroke="{color}" stroke-width="1"></line>')
             return svg_data
 
         def svg_line_h(x, y, w, color="rgb(255, 255, 255)"):
-            return [f'<line x1="{x}" y1="{y}" x2="{x+w}" y2="{y}" stroke="{color}" stroke-width="1"></line>']
+            return [f'<line x1="{x}" y1="{y}" x2="{x + w}" y2="{y}" stroke="{color}" stroke-width="1"></line>']
 
         def svg_line_v(x, y, h, color="rgb(255, 255, 255)"):
-            return [f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y+h}" stroke="{color}" stroke-width="1"></line>']
+            return [f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y + h}" stroke="{color}" stroke-width="1"></line>']
 
         def svg_text(x, y, text, center=False, color="rgb(255, 255, 255)"):
             if center:

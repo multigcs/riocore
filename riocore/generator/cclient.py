@@ -24,7 +24,7 @@ def riocore_h(project, folder):
     output.append("#include <time.h>")
     output.append("")
     output.append(f"#define CLOCK_SPEED {sysclk_speed}")
-    output.append(f"#define BUFFER_SIZE {project.buffer_size//8} // {project.buffer_size} bits")
+    output.append(f"#define BUFFER_SIZE {project.buffer_size // 8} // {project.buffer_size} bits")
     if port and ip:
         output.append(f'#define UDP_IP "{ip}"')
         output.append(f"#define SRC_PORT {dst_port}")
@@ -119,19 +119,19 @@ def riocore_c(project, folder):
     variable_size = 32
     byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
     byte_start = project.buffer_bytes - 1 - byte_start
-    output.append(f"    // memcpy(&header, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size}) // {input_pos};")
+    output.append(f"    // memcpy(&header, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}) // {input_pos};")
     input_pos -= variable_size
 
     if project.multiplexed_output:
         variable_size = project.multiplexed_output_size
         byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
         byte_start = project.buffer_bytes - 1 - byte_start
-        output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_VALUE, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
+        output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_VALUE, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")
         input_pos -= variable_size
         variable_size = 8
         byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
         byte_start = project.buffer_bytes - 1 - byte_start
-        output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_ID, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size});")
+        output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_ID, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")
         input_pos -= variable_size
 
     for size, plugin_instance, data_name, data_config in project.get_interface_data():
@@ -145,7 +145,7 @@ def riocore_c(project, folder):
             byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
             byte_start = project.buffer_bytes - 1 - byte_start
             if variable_size > 1:
-                output.append(f"    memcpy(&{variable_name}, &rxBuffer[{byte_start-(byte_size-1)}], {byte_size}); // {input_pos}")
+                output.append(f"    memcpy(&{variable_name}, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
             else:
                 output.append(f"    if ((rxBuffer[{byte_start}] & (1<<{bit_offset})) == 0) {{")
                 output.append(f"        {variable_name} = 0;")
@@ -180,12 +180,12 @@ def riocore_c(project, folder):
         variable_size = project.multiplexed_input_size
         byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
         byte_start = project.buffer_bytes - 1 - byte_start
-        output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &MULTIPLEXER_OUTPUT_VALUE, {byte_size}); // {output_pos}")
+        output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &MULTIPLEXER_OUTPUT_VALUE, {byte_size}); // {output_pos}")
         output_pos -= variable_size
         variable_size = 8
         byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
         byte_start = project.buffer_bytes - 1 - byte_start
-        output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
+        output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
         output_pos -= variable_size
 
     for size, plugin_instance, data_name, data_config in project.get_interface_data():
@@ -199,7 +199,7 @@ def riocore_c(project, folder):
             byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
             byte_start = project.buffer_bytes - 1 - byte_start
             if variable_size > 1:
-                output.append(f"    memcpy(&txBuffer[{byte_start-(byte_size-1)}], &{variable_name}, {byte_size}); // {output_pos}")
+                output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &{variable_name}, {byte_size}); // {output_pos}")
             else:
                 output.append(f"    txBuffer[{byte_start}] |= ({variable_name}<<{bit_offset}); // {output_pos}")
             output_pos -= variable_size

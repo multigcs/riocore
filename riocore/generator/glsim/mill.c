@@ -3,6 +3,22 @@
 #include <stdlib.h>
 #include <simulator.h>
 
+// OpenGL size
+#define GL_WIDTH  4.0
+#define GL_HEIGHT 3.0
+
+// Virtual size (in mm / scale = steps/mm)
+#define VIRT_SCALE  100.0
+#define VIRT_WIDTH  400.0
+#define VIRT_HEIGHT 300.0
+
+// Heightmap size
+#define HM_WIDTH  800
+#define HM_HEIGHT 600
+
+
+unsigned char heightmap[HM_WIDTH][HM_HEIGHT];
+
 static float angleX = 0.0f;
 static float angleY = 0.0f;
 static float scale = 1.0f;
@@ -21,7 +37,7 @@ void initGL() {
     glEnable(GL_LIGHT0);        // Enable light #0
 
     // Set up light parameters
-    GLfloat lightPos[] = { 0.0f, 5.0f, -10.0f, 1.0f };
+    GLfloat lightPos[] = { 0.0f, 5.0f, 5.0f, 1.0f };
     GLfloat lightAmbient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
     GLfloat lightDiffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
     GLfloat lightSpecular[] = {1.0f,1.0f,1.0f,1.0f};
@@ -31,27 +47,64 @@ void initGL() {
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
 
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Background color
+    glClearColor(0.1f, 0.1f, 0.5f, 1.0f); // Background color
 }
 
 // Function to draw a simple CNC mill
 void drawCNCMill() {
 
+
     // Base
+    /*
     glPushMatrix();
         glColor3f(0.3f, 0.5f, 1.0f);
         glTranslatef(0.0f, 0.0f, -0.1f);
-        glScalef(4.0f, 2.0f, 0.1f);
+        glScalef(GL_WIDTH, GL_HEIGHT, 0.1f);
         glutSolidCube(1.0);
+    glPopMatrix();
+    */
+
+    glPushMatrix();
+    glTranslatef(-(GL_WIDTH / 2.0), -(GL_HEIGHT / 2.0), 0.0f);
+
+    glPushMatrix();
+    glColor3f(0.3f, 0.5f, 1.0f);
+    glPointSize(1);
+    glBegin(GL_POINTS);
+
+    float hpos_x = (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * HM_WIDTH);
+    float hpos_y = (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * HM_HEIGHT);
+
+    int offset = 3;
+    for (int y = hpos_y - offset; y < hpos_y + offset; y++) {
+        for (int x = hpos_x - offset; x < hpos_x + offset; x++) {
+            if (x >= 0 && y >= 0 && x < HM_WIDTH && y < HM_HEIGHT) {
+                if (joint_position[2] < 0.0) {
+                    heightmap[x][y] = joint_position[2] / VIRT_SCALE / 50 * 255;
+                }
+            }
+        }
+    }
+
+    for (int y = 0; y < HM_HEIGHT; y++) {
+        for (int x = 0; x < HM_WIDTH; x++) {
+            glVertex3f(GL_WIDTH - ((float)x / HM_WIDTH * GL_WIDTH), GL_HEIGHT - ((float)y / HM_HEIGHT * GL_HEIGHT), 0.015 - (float)heightmap[x][y] / 255.0 / 10.0);
+
+        }
+    }
+    glEnd();
     glPopMatrix();
 
     // Mill
     glPushMatrix();
         glColor3f(0.5f, 0.5f, 0.5f);
-        glTranslatef(-(joint_position[0]) / 10000.0 + 2.0, -(joint_position[1]) / 10000.0 + 1.0, joint_position[2] / 10000.0);
+        glTranslatef(GL_WIDTH - (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.1);
         glScalef(0.1f, 0.1f, 0.1f);
         glutSolidCube(1.0);
     glPopMatrix();
+
+    glPopMatrix();
+
 
 }
 

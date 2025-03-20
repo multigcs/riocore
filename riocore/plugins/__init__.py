@@ -283,8 +283,8 @@ class PluginBase:
         if self.TYPE == "expansion":
             bits = self.plugin_setup.get("bits", 8)
             default = self.plugin_setup.get("default", 0)
-            defines.append(f"wire [{bits-1}:0] {self.expansion_prefix}_INPUT;")
-            defines.append(f"reg [{bits-1}:0] {self.expansion_prefix}_OUTPUT = {default};")
+            defines.append(f"wire [{bits - 1}:0] {self.expansion_prefix}_INPUT;")
+            defines.append(f"reg [{bits - 1}:0] {self.expansion_prefix}_OUTPUT = {default};")
 
         for data_name, data_config in self.interface_data().items():
             if data_config.get("expansion"):
@@ -296,13 +296,13 @@ class PluginBase:
                     default = data_config.get("default", 0)
                     if size == 1:
                         if default & (1 << bit_n):
-                            defines.append(f"reg [{size-1}:0] {variable} = 1'd1;")
+                            defines.append(f"reg [{size - 1}:0] {variable} = 1'd1;")
                         else:
-                            defines.append(f"reg [{size-1}:0] {variable} = 1'd0;")
+                            defines.append(f"reg [{size - 1}:0] {variable} = 1'd0;")
                     else:
-                        defines.append(f"reg [{size-1}:0] {variable} = {size}'d{default};")
+                        defines.append(f"reg [{size - 1}:0] {variable} = {size}'d{default};")
                 else:
-                    defines.append(f"wire [{size-1}:0] {variable};")
+                    defines.append(f"wire [{size - 1}:0] {variable};")
 
         return defines
 
