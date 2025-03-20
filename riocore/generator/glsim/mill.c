@@ -1,5 +1,6 @@
 
 #include <GL/glut.h>
+#include <GL/freeglut_ext.h>
 #include <stdlib.h>
 #include <simulator.h>
 
@@ -106,8 +107,9 @@ void drawCNCMill() {
     glPushMatrix();
         glColor3f(0.5f, 0.5f, 0.5f);
         glTranslatef(GL_WIDTH - (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.1);
-        glScalef(0.1f, 0.1f, 0.1f);
-        glutSolidCube(1.0);
+        //glScalef(0.1f, 0.1f, 0.1f);
+        //glutSolidCube(1.0);
+        glutSolidCylinder((float)offset / HM_WIDTH * GL_WIDTH, 0.2, 10, 2);
     glPopMatrix();
 
     glPopMatrix();
@@ -189,7 +191,7 @@ void mouseButton(int button, int state, int x, int y) {
         scale += 0.05;
     } else if (button == 4 && scale > 0.1) {
         scale -= 0.05;
-    } else if (button == GLUT_RIGHT_BUTTON) {
+    } else if (button == GLUT_LEFT_BUTTON) {
         if (state == GLUT_DOWN) {
             isDragging = 1;
             isTranslate = 1;
@@ -199,7 +201,7 @@ void mouseButton(int button, int state, int x, int y) {
             isDragging = 0;
             isTranslate = 0;
         }
-    } else if (button == GLUT_LEFT_BUTTON) {
+    } else if (button == GLUT_RIGHT_BUTTON) {
         if (state == GLUT_DOWN) {
             isDragging = 1;
             isTranslate = 0;
@@ -250,7 +252,7 @@ int glsim_run(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
-    glutCreateWindow("CNC Mill in OpenGL with Mouse Control");
+    glutCreateWindow("CNC Mill Simulator");
 
     initGL();
 
