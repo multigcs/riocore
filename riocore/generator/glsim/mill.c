@@ -68,17 +68,8 @@ void drawCNCMill() {
     glPopMatrix();
     */
 
-    glPushMatrix();
-    glTranslatef(-(GL_WIDTH / 2.0), -(GL_HEIGHT / 2.0), 0.0f);
-
-    glPushMatrix();
-    glColor3f(0.3f, 0.5f, 1.0f);
-    glPointSize(1);
-    glBegin(GL_POINTS);
-
     float hpos_x = (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * HM_WIDTH);
     float hpos_y = (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * HM_HEIGHT);
-
     int offset = 2;
     for (int y = hpos_y - offset; y < hpos_y + offset; y++) {
         for (int x = hpos_x - offset; x < hpos_x + offset; x++) {
@@ -90,6 +81,15 @@ void drawCNCMill() {
         }
     }
 
+
+    glPushMatrix();
+    glTranslatef(-(GL_WIDTH / 2.0), -(GL_HEIGHT / 2.0), 0.0f);
+
+
+    /*
+    glPushMatrix();
+    glPointSize(1);
+    glBegin(GL_POINTS);
     for (int y = 0; y < HM_HEIGHT; y++) {
         for (int x = 0; x < HM_WIDTH; x++) {
             if (heightmap[x][y] == 0) {
@@ -97,7 +97,43 @@ void drawCNCMill() {
             } else {
                 glColor3f(0.3f, 0.5f, 0.2f);
             }
-            glVertex3f(GL_WIDTH - ((float)x / HM_WIDTH * GL_WIDTH), GL_HEIGHT - ((float)y / HM_HEIGHT * GL_HEIGHT), 0.015 - (float)heightmap[x][y] / 255.0 / 10.0);
+            float px = GL_WIDTH - ((float)x / HM_WIDTH * GL_WIDTH);
+            float py = GL_HEIGHT - ((float)y / HM_HEIGHT * GL_HEIGHT);
+            float pz = 0.015 - (float)heightmap[x][y] / 255.0 / 10.0;
+            glVertex3f(px, py, pz);
+        }
+    }
+    glEnd();
+    glPopMatrix();
+    */
+
+
+    glPushMatrix();
+    glBegin(GL_TRIANGLES);
+    for (int y = 0; y < HM_HEIGHT; y++) {
+        for (int x = 0; x < HM_WIDTH; x++) {
+            if (heightmap[x][y] == 0) {
+                glColor3f(0.1f, 0.1f, 1.0f);
+            } else {
+                glColor3f(0.3f, 0.5f, 0.2f);
+            }
+            float px = GL_WIDTH - ((float)x / HM_WIDTH * GL_WIDTH);
+            float py = GL_HEIGHT - ((float)y / HM_HEIGHT * GL_HEIGHT);
+            float px1 = GL_WIDTH - ((float)(x+1) / HM_WIDTH * GL_WIDTH);
+            float py1 = GL_HEIGHT - ((float)(y+1) / HM_HEIGHT * GL_HEIGHT);
+            float pz = 0.015 - (float)heightmap[x][y] / 255.0 / 10.0;
+            glVertex3f(px, py, pz);
+            pz = 0.015 - (float)heightmap[x+1][y] / 255.0 / 10.0;
+            glVertex3f(px1, py, pz);
+            pz = 0.015 - (float)heightmap[x][y+1] / 255.0 / 10.0;
+            glVertex3f(px, py1, pz);
+
+            pz = 0.015 - (float)heightmap[x+1][y] / 255.0 / 10.0;
+            glVertex3f(px1, py, pz);
+            pz = 0.015 - (float)heightmap[x+1][y+1] / 255.0 / 10.0;
+            glVertex3f(px1, py1, pz);
+            pz = 0.015 - (float)heightmap[x][y+1] / 255.0 / 10.0;
+            glVertex3f(px, py1, pz);
         }
     }
     glEnd();
