@@ -224,7 +224,8 @@ class rosbridge(cbase):
         output.append("    fpga_stamp_last = timestamp;")
         # output.append("    printf(\" %f %f  \\n\", duration2, *data->duration);")
 
-        output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
+        # output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
+        output.append("    if (1) {")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         output.append("        if (*data->sys_simulation != 1) {")
@@ -351,6 +352,7 @@ class rosbridge(cbase):
         output.append("    ros::Rate loop_rate(10);")
         output.append("")
         output.append("    while (ros::ok()) {")
+        output.append("        rio_readwrite();")
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:

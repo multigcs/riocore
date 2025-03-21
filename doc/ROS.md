@@ -65,5 +65,8 @@ rostopic pub -1 /tangbob/wled0/0_green std_msgs/Bool "data: 1"
 rostopic pub -1 /tangbob/wled0/0_green std_msgs/Bool "data: 0"
 ```
 
+```
+rostopic echo /tangbob/joint_0/position
+```
 
 
