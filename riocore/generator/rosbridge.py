@@ -350,8 +350,6 @@ class rosbridge(cbase):
         output.append("")
         output.append("    ros::Rate loop_rate(10);")
         output.append("")
-        output.append("    int count = 0;")
-        output.append("")
         output.append("    while (ros::ok()) {")
         output.append("")
 
@@ -381,7 +379,6 @@ class rosbridge(cbase):
         output.append("")
         output.append("        ros::spinOnce();")
         output.append("        loop_rate.sleep();")
-        output.append("        ++count;")
         output.append("    }")
         output.append("")
         output.append("    return 0;")
