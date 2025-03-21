@@ -353,7 +353,6 @@ class rosbridge(cbase):
         output.append("    int count = 0;")
         output.append("")
         output.append("    while (ros::ok()) {")
-        output.append('        printf("## loop1\\n");')
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
