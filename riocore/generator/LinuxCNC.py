@@ -8,6 +8,7 @@ import stat
 from riocore import halpins
 from riocore.generator.hal import hal_generator
 from riocore.generator.component import component
+from riocore.generator.rosbridge import rosbridge
 from riocore.generator.pyvcp import pyvcp
 from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
@@ -177,7 +178,7 @@ class LinuxCNC:
             source = os.path.realpath(self.component_path)
             target_dir = os.path.join(os.path.expanduser("~"), "linuxcnc", "configs")
             target_file = os.path.join(target_dir, name)
-            if os.path.exists(target_file):
+            if os.path.islink(target_file):
                 os.unlink(target_file)
             os.makedirs(target_dir, exist_ok=True)
             os.symlink(source, target_file)
@@ -262,6 +263,7 @@ class LinuxCNC:
         self.startscript()
         self.readme()
         component(self.project)
+        rosbridge(self.project)
         self.hal()
         self.riof()
         self.vcp_gui()
