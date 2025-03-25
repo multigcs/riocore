@@ -291,7 +291,7 @@ class Simulator:
         if self.webots:
             output.append("")
             output.append(f"WEBOTS_HOME ?= {self.webots_home}")
-            output.append(f"LD_LIBRARY_PATH ?= $(WEBOTS_HOME)/lib/controller/")
+            output.append("LD_LIBRARY_PATH ?= $(WEBOTS_HOME)/lib/controller/")
             output.append("")
             gcc_options = "-I$(WEBOTS_HOME)/include/controller/c/ -L$(WEBOTS_HOME)/lib/controller/ -lController"
 

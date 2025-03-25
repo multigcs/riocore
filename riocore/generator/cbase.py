@@ -1,3 +1,10 @@
+import glob
+import os
+import sys
+
+riocore_path = os.path.dirname(os.path.dirname(__file__))
+
+
 class cbase:
     def c_signal_converter(self):
         comp_signals = []
@@ -546,5 +553,402 @@ class cbase:
                 mpid += 1
 
         output.append("}")
+        output.append("")
+        return output
+
+    def variables(self):
+        output = []
+        output.append("typedef struct {")
+        output.append("    // hal variables")
+        output.append(f"    {self.typemap.get('bool')}   *sys_enable;")
+        output.append(f"    {self.typemap.get('bool')}   *sys_enable_request;")
+        output.append(f"    {self.typemap.get('bool')}   *sys_status;")
+        output.append(f"    {self.typemap.get('bool')}   *sys_simulation;")
+        output.append(f"    {self.typemap.get('u32')}   *fpga_timestamp;")
+        output.append(f"    {self.typemap.get('float')} *duration;")
+
+        if self.project.multiplexed_output:
+            output.append("    float MULTIPLEXER_OUTPUT_VALUE;")
+            output.append("    uint8_t MULTIPLEXER_OUTPUT_ID;")
+        if self.project.multiplexed_input:
+            output.append("    float MULTIPLEXER_INPUT_VALUE;")
+            output.append("    uint8_t MULTIPLEXER_INPUT_ID;")
+
+        for plugin_instance in self.project.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                halname = signal_config["halname"]
+                varname = signal_config["varname"]
+                var_prefix = signal_config["var_prefix"]
+                direction = signal_config["direction"]
+                boolean = signal_config.get("bool")
+                signal_source = signal_config.get("source")
+                hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                vtype = self.typemap.get(hal_type, hal_type)
+                virtual = signal_config.get("virtual")
+                component = signal_config.get("component")
+                if virtual and component:
+                    # swap direction vor virt signals in component
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
+                elif virtual:
+                    continue
+                if not boolean:
+                    output.append(f"    {vtype} *{varname};")
+                    if not signal_source and not signal_config.get("helper", False):
+                        if direction == "input" and hal_type == "float":
+                            output.append(f"    {vtype} *{varname}_ABS;")
+                            output.append(f"    {self.typemap.get('s32')} *{varname}_S32;")
+                            output.append(f"    {self.typemap.get('u32')} *{varname}_U32_ABS;")
+                        if not virtual:
+                            output.append(f"    {self.typemap.get('float')} *{varname}_SCALE;")
+                            output.append(f"    {self.typemap.get('float')} *{varname}_OFFSET;")
+                else:
+                    output.append(f"    {self.typemap.get('bool')}   *{varname};")
+                    if direction == "input":
+                        output.append(f"    {self.typemap.get('bool')}   *{varname}_not;")
+                    if signal_config.get("is_index_out"):
+                        output.append(f"    {self.typemap.get('bool')}   *{var_prefix}_INDEX_RESET;")
+                        output.append(f"    {self.typemap.get('bool')}   *{var_prefix}_INDEX_WAIT;")
+
+        output.append("    // raw variables")
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
+            variable_name = data_config["variable"]
+            variable_size = data_config["size"]
+            variable_bytesize = variable_size // 8
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"    uint8_t {variable_name}[{variable_bytesize}];")
+            elif variable_size > 1:
+                variable_size_align = 8
+                for isize in (8, 16, 32, 64):
+                    variable_size_align = isize
+                    if isize >= variable_size:
+                        break
+                output.append(f"    int{variable_size_align}_t {variable_name};")
+            else:
+                output.append(f"    bool {variable_name};")
+        output.append("")
+        output.append("} data_t;")
+        output.append("static data_t *data;")
+        output.append("")
+
+        output.append("void register_signals(void) {")
+        output.append("    int retval = 0;")
+
+        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
+            variable_name = data_config["variable"]
+            variable_size = data_config["size"]
+            variable_bytesize = variable_size // 8
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"    memset(&data->{variable_name}, 0, {variable_bytesize});")
+            elif variable_size > 1:
+                output.append(f"    data->{variable_name} = 0;")
+            else:
+                output.append(f"    data->{variable_name} = 0;")
+        output.append("")
+
+        output.append(self.vinit("sys_status", "bool", "sys-status", "input"))
+        output.append(self.vinit("sys_enable", "bool", "sys-enable", "output"))
+        output.append(self.vinit("sys_enable_request", "bool", "sys-enable-request", "output"))
+        output.append(self.vinit("sys_simulation", "bool", "sys-simulation", "output"))
+        output.append(self.vinit("duration", "float", "duration", "input"))
+        output.append("    *data->duration = rtapi_get_time();")
+        for plugin_instance in self.project.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                halname = signal_config["halname"]
+                direction = signal_config["direction"]
+                varname = signal_config["varname"]
+                var_prefix = signal_config["var_prefix"]
+                boolean = signal_config.get("bool")
+                hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                vtype = self.typemap.get(hal_type, hal_type)
+                signal_source = signal_config.get("source")
+                virtual = signal_config.get("virtual")
+                component = signal_config.get("component")
+                if virtual:
+                    continue
+                if not boolean:
+                    if not signal_source and not signal_config.get("helper", False) and not virtual:
+                        output.append(self.vinit(f"{varname}_SCALE", "float", f"{halname}-scale", "output"))
+                        output.append(f"    *data->{varname}_SCALE = 1.0;")
+                        output.append(self.vinit(f"{varname}_OFFSET", "float", f"{halname}-offset", "output"))
+                        output.append(f"    *data->{varname}_OFFSET = 0.0;")
+                    output.append(self.vinit(varname, "float", halname, direction))
+                    output.append(f"    *data->{varname} = 0;")
+                    if direction == "input" and hal_type == "float" and not signal_source and not signal_config.get("helper", False):
+                        output.append(self.vinit(f"{varname}_ABS", "float", f"{halname}-abs", direction))
+                        output.append(f"    *data->{varname}_ABS = 0;")
+                        output.append(self.vinit(f"{varname}_S32", "s32", f"{halname}-s32", direction))
+                        output.append(f"    *data->{varname}_S32 = 0;")
+                        output.append(self.vinit(f"{varname}_U32_ABS", "u32", f"{halname}-u32-abs", direction))
+                        output.append(f"    *data->{varname}_U32_ABS = 0;")
+                else:
+                    output.append(self.vinit(varname, "bool", halname, direction))
+                    output.append(f"    *data->{varname} = 0;")
+                    if direction == "input":
+                        output.append(self.vinit(f"{varname}_not", "bool", f"{halname}-not", direction))
+                        output.append(f"    *data->{varname}_not = 1 - *data->{varname};")
+                    if signal_config.get("is_index_out"):
+                        output.append(self.vinit(f"{varname}_INDEX_RESET", "bool", f"{halname}-reset", direction))
+                        output.append(f"    *data->{var_prefix}_INDEX_RESET = 0;")
+                        output.append(self.vinit(f"{varname}_INDEX_WAIT", "bool", f"{halname}-wait", direction))
+                        output.append(f"    *data->{var_prefix}_INDEX_WAIT = 0;")
+
+        output.append("}")
+        output.append("")
+        return output
+
+    def mainc(self, project):
+        output = []
+        output.append("// Generated by rio-generator")
+        if "serial":
+            self.header_list += ["fcntl.h", "termios.h"]
+
+        protocol = self.project.config["jdata"].get("protocol", "SPI")
+
+        ip = "192.168.10.194"
+        port = 2390
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE == "interface":
+                ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
+                port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
+
+        ip = self.project.config["jdata"].get("ip", ip)
+        port = self.project.config["jdata"].get("port", port)
+        dst_port = self.project.config["jdata"].get("dst_port", port)
+        src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1))
+
+        defines = {
+            "MODNAME": '"rio"',
+            "PREFIX": '"rio"',
+            "JOINTS": "3",
+            "BUFFER_SIZE": self.project.buffer_bytes,
+            "OSC_CLOCK": self.project.config["speed"],
+        }
+
+        if port and ip:
+            defines["UDP_IP"] = f'"{ip}"'
+            defines["SRC_PORT"] = src_port
+            defines["DST_PORT"] = dst_port
+        defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
+        defines["SERIAL_BAUD"] = "B1000000"
+
+        defines["SPI_PIN_MOSI"] = "10"
+        defines["SPI_PIN_MISO"] = "9"
+        defines["SPI_PIN_CLK"] = "11"
+        defines["SPI_PIN_CS"] = "8"  # CE1 = 7
+        defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
+
+        for header in self.header_list:
+            output.append(f"#include <{header}>")
+        output.append("")
+
+        if self.rtapi_mode:
+            for key, value in self.module_info.items():
+                output.append(f'MODULE_{key}("{value}");')
+            output.append("")
+
+        for key, value in defines.items():
+            output.append(f"#define {key} {value}")
+        output.append("")
+
+        if not self.rtapi_mode:
+            idata = "\n"
+            idata += "struct timespec ns_timestamp;\n"
+            idata += "\n"
+            idata += "long rtapi_get_time() {\n"
+            idata += "    clock_gettime(CLOCK_MONOTONIC, &ns_timestamp);\n"
+            idata += "    return (double)ns_timestamp.tv_sec * 1000000000 + ns_timestamp.tv_nsec;\n"
+            idata += "}\n"
+            idata += "\n"
+            idata += "void rtapi_delay(int ns) {\n"
+            idata += "    usleep(ns / 1000);\n"
+            idata += "}\n"
+            idata += "\n"
+            output.append(idata)
+
+        output.append("static int 			      comp_id;")
+        output.append("static const char 	      *modname = MODNAME;")
+        output.append("static const char 	      *prefix = PREFIX;")
+        output.append("")
+        output.append("uint32_t pkg_counter = 0;")
+        output.append("uint32_t err_total = 0;")
+        output.append("uint32_t err_counter = 0;")
+        output.append("")
+        output.append("long stamp_last = 0;")
+        output.append("float fpga_stamp_last = 0;")
+        output.append("uint32_t fpga_timestamp = 0;")
+        output.append("")
+        output.append("void rio_readwrite();")
+        output.append("int error_handler(int retval);")
+        output.append("")
+
+        output += self.variables()
+
+        generic_spi = self.project.config["jdata"].get("generic_spi", False)
+        rpi5 = self.project.config["jdata"].get("rpi5", False)
+        if protocol == "SPI" and generic_spi is True:
+            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_generic")):
+                if protocol == ppath.split(os.sep)[-2]:
+                    output.append("/*")
+                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                    output.append("*/")
+                    iface_data = open(ppath, "r").read()
+        elif protocol == "SPI" and rpi5 is True:
+            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_rpi5")):
+                if protocol == ppath.split(os.sep)[-2]:
+                    output.append("/*")
+                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                    output.append("*/")
+                    iface_data = open(ppath, "r").read()
+        else:
+            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c")):
+                if protocol == ppath.split(os.sep)[-2]:
+                    output.append("/*")
+                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                    output.append("*/")
+                    iface_data = open(ppath, "r").read()
+        if not self.rtapi_mode:
+            iface_data = iface_data.replace("rtapi_print", "printf")
+            iface_data = iface_data.replace("strerror(errno)", '"error"')
+            iface_data = iface_data.replace("errno", "1")
+        output.append(iface_data)
+
+        output.append("int interface_init(void) {")
+        if protocol == "UART":
+            output.append("    uart_init();")
+        elif protocol == "SPI":
+            output.append("    spi_init();")
+        elif protocol == "UDP":
+            output.append("    udp_init(UDP_IP, DST_PORT, SRC_PORT);")
+        else:
+            print("ERROR: unsupported interface")
+            sys.exit(1)
+        output.append("    return 0;")
+        output.append("}")
+        output.append("")
+
+        output.append("void interface_exit(void) {")
+        if protocol == "UART":
+            output.append("    uart_exit();")
+        elif protocol == "SPI":
+            output.append("    spi_exit();")
+        elif protocol == "UDP":
+            output.append("    udp_exit();")
+        output.append("}")
+        output.append("")
+
+        output.append("")
+        output.append("/*")
+        output.append("    hal functions")
+        output.append("*/")
+
+        output.append(open(os.path.join(riocore_path, "files", self.filename_functions), "r").read())
+
+        output.append("")
+        output.append("/***********************************************************************")
+        output.append("*                         PLUGIN GLOBALS                               *")
+        output.append("************************************************************************/")
+        output.append("")
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE == "frameio":
+                output.append(f"long {plugin_instance.instances_name}_last_rx = 0;")
+            for line in plugin_instance.globals_c().strip().split("\n"):
+                output.append(line)
+        output.append("")
+        output.append("/***********************************************************************/")
+        output.append("")
+
+        output += self.c_signal_converter()
+        output += self.c_buffer_converter()
+        output += self.c_buffer()
+        output.append("void rio_readwrite() {")
+        output.append("    int ret = 0;")
+        output.append("    uint8_t i = 0;")
+        output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
+        output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
+        output.append("    if (*data->sys_enable_request == 1) {")
+        output.append("        *data->sys_status = 1;")
+        output.append("    }")
+        output.append("    long stamp_new = rtapi_get_time();")
+        output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
+        output.append("    stamp_last = stamp_new;")
+
+        output.append("    float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;")
+        output.append("    *data->duration = timestamp - fpga_stamp_last;")
+        output.append("    fpga_stamp_last = timestamp;")
+
+        if self.rtapi_mode:
+            output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
+        else:
+            output.append("    if (1) {")
+        output.append("        pkg_counter += 1;")
+        output.append("        convert_outputs();")
+        output.append("        if (*data->sys_simulation != 1) {")
+        output.append("            write_txbuffer(txBuffer);")
+
+        if protocol == "UART":
+            output.append("            uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+        elif protocol == "SPI":
+            output.append("            spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+        elif protocol == "UDP":
+            output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE);")
+        else:
+            print("ERROR: unsupported interface")
+            sys.exit(1)
+
+        if protocol == "UDP":
+            output.append("            if (ret == BUFFER_SIZE && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
+        else:
+            output.append("            if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
+        output.append("                if (err_counter > 0) {")
+        output.append("                    err_counter = 0;")
+        output.append(f'                    {self.printf}("recovered..\\n");')
+        output.append("                }")
+        output.append("                read_rxbuffer(rxBuffer);")
+        output.append("                convert_inputs();")
+        output.append("            } else {")
+        output.append("                err_counter += 1;")
+        output.append("                err_total += 1;")
+        if protocol == "UDP":
+            output.append("                if (ret != BUFFER_SIZE) {")
+            output.append(
+                f'                    {self.printf}("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
+            )
+            output.append("                } else {")
+            output.append(
+                f'                    {self.printf}("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
+            )
+            output.append("                }")
+        else:
+            output.append(f'            {self.printf}("wronng data (%i/3): ", err_counter);')
+        if protocol == "UDP":
+            output.append("                for (i = 0; i < ret; i++) {")
+        else:
+            output.append("                for (i = 0; i < BUFFER_SIZE; i++) {")
+        output.append(f'                    {self.printf}("%d ",rxBuffer[i]);')
+        output.append("                }")
+        output.append(f'                {self.printf}("\\n");')
+        output.append("                if (err_counter > 3) {")
+        output.append(f'                    {self.printf}("too many errors..\\n");')
+        output.append("                    *data->sys_status = 0;")
+        output.append("                }")
+        output.append("            }")
+        output.append("        } else {")
+        output.append("            convert_inputs();")
+        output.append("        }")
+        output.append("    } else {")
+        output.append("        *data->sys_status = 0;")
+        output.append("    }")
+        output.append("}")
+        output.append("")
         output.append("")
         return output

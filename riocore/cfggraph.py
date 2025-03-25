@@ -1,8 +1,4 @@
-import json
 import graphviz
-
-from PyQt5.QtCore import Qt, QByteArray, QBuffer, QIODevice, QPointF
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QColor, QPainterPath
 
 
 class ConfigGraph:

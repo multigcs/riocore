@@ -173,7 +173,6 @@ class LinuxCNC:
     def cfglink(self):
         try:
             jdata = self.project.config["jdata"]
-            linuxcnc_config = jdata.get("linuxcnc", {})
             name = jdata.get("name")
             source = os.path.realpath(self.component_path)
             target_dir = os.path.join(os.path.expanduser("~"), "linuxcnc", "configs")

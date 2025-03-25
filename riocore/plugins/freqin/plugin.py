@@ -71,8 +71,6 @@ class Plugin(PluginBase):
         return instances
 
     def convert(self, signal_name, signal_setup, value):
-        freq_max = int(self.plugin_setup.get("freq_max", self.OPTIONS["freq_max"]["default"]))
-        vmax = self.system_setup["speed"] // freq_max
         if signal_name == "frequency":
             if value != 0:
                 value = self.system_setup["speed"] / value
@@ -82,8 +80,6 @@ class Plugin(PluginBase):
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "frequency":
-            freq_max = int(self.plugin_setup.get("freq_max", self.OPTIONS["freq_max"]["default"]))
-            vmax = self.system_setup["speed"] // freq_max
             return """
             static float vlast = 0;
             if (value > 0) {

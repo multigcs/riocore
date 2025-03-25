@@ -494,9 +494,7 @@ class Project:
 
     def info(self):
         jdata = self.config["jdata"]
-        linuxcnc_config = jdata.get("linuxcnc", {})
         name = jdata.get("name")
-
         output = [f"RIO - {name}"]
         output.append("")
         for name in ("description", "boardcfg", "gui", "protocol"):
