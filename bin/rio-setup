@@ -1355,6 +1355,11 @@ class WinForm(QWidget):
             button.clicked.connect(self.open_pyvcp)
             button_layout.addWidget(button)
 
+        if sys.platform.startswith("linux") and shutil.which("linuxcnc"):
+            button = QPushButton("Simulator")
+            button.clicked.connect(self.start_simulator)
+            button_layout.addWidget(button)
+
         self.addons = {}
         for addon_path in sorted(glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "config.py"))):
             addon_name = addon_path.split(os.sep)[-2]
@@ -2502,6 +2507,12 @@ class WinForm(QWidget):
         except Exception as error:
             print(f"ERROR: {error}")
             self.info_widget.setText(f"ERROR: {error}")
+
+    def start_simulator(self):
+        if shutil.which("linuxcnc"):
+            self.generate("OutputTMP", preview=True, simulator=True)
+            if os.path.isdir("OutputTMP"):
+                shutil.rmtree("OutputTMP")
 
     def open_pyvcp(self):
         if self.vcp is not None:
@@ -3997,7 +4008,7 @@ class WinForm(QWidget):
             shutil.rmtree(self.output_path)
         self.info_widget.setText("generate...done")
 
-    def generate(self, output_path=None, preview=False):
+    def generate(self, output_path=None, preview=False, simulator=False):
         config = self.clean_config(self.config)
         if not output_path:
             output_path = "Output"
@@ -4011,7 +4022,10 @@ class WinForm(QWidget):
                 if sys.platform.startswith("win"):
                     os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path}")
                 else:
-                    os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
+                    if simulator:
+                        os.system(f"{sys.executable} {generator_path} -U -p {self.config_file}_tmp.json {output_path}")
+                    else:
+                        os.system(f"{sys.executable} {generator_path} -p {self.config_file}_tmp.json {output_path} >/dev/null")
                 os.remove(f"{self.config_file}_tmp.json")
             else:
                 os.system(f"{sys.executable} {generator_path} {self.config_file} {output_path}")
