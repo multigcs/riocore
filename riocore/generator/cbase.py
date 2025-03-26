@@ -332,7 +332,7 @@ class cbase:
                                     if compensations:
                                         for name, cscale in compensations.items():
                                             csource = position_mapping.get(name)
-                                            output.append(f"    value += {csource} / {cscale};")
+                                            output.append(f"    value += *data->{csource} / {cscale};")
 
                                     if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
                                         output.append("    if (*data->sys_simulation == 1) {")
