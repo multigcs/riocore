@@ -2,6 +2,8 @@
 #include <GL/glut.h>
 #include <GL/freeglut_ext.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <simulator.h>
 
 // OpenGL size
@@ -22,9 +24,9 @@ unsigned char heightmap[HM_WIDTH][HM_HEIGHT];
 
 static float offsetX = 0.0f;
 static float offsetY = 0.0f;
-static float angleX = 0.0f;
+static float angleX = 30.0f;
 static float angleY = 0.0f;
-static float scale = 1.0f;
+static float scale = 0.9f;
 
 static uint8_t running = 1;
 
@@ -57,17 +59,6 @@ void initGL() {
 // Function to draw a simple CNC mill
 void drawCNCMill() {
 
-
-    // Base
-    /*
-    glPushMatrix();
-        glColor3f(0.3f, 0.5f, 1.0f);
-        glTranslatef(0.0f, 0.0f, -0.1f);
-        glScalef(GL_WIDTH, GL_HEIGHT, 0.1f);
-        glutSolidCube(1.0);
-    glPopMatrix();
-    */
-
     float hpos_x = (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * HM_WIDTH);
     float hpos_y = (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * HM_HEIGHT);
     int offset = 2;
@@ -84,28 +75,6 @@ void drawCNCMill() {
 
     glPushMatrix();
     glTranslatef(-(GL_WIDTH / 2.0), -(GL_HEIGHT / 2.0), 0.0f);
-
-
-    /*
-    glPushMatrix();
-    glPointSize(1);
-    glBegin(GL_POINTS);
-    for (int y = 0; y < HM_HEIGHT; y++) {
-        for (int x = 0; x < HM_WIDTH; x++) {
-            if (heightmap[x][y] == 0) {
-                glColor3f(0.1f, 0.1f, 1.0f);
-            } else {
-                glColor3f(0.3f, 0.5f, 0.2f);
-            }
-            float px = GL_WIDTH - ((float)x / HM_WIDTH * GL_WIDTH);
-            float py = GL_HEIGHT - ((float)y / HM_HEIGHT * GL_HEIGHT);
-            float pz = 0.015 - (float)heightmap[x][y] / 255.0 / 10.0;
-            glVertex3f(px, py, pz);
-        }
-    }
-    glEnd();
-    glPopMatrix();
-    */
 
 
     glPushMatrix();
@@ -148,7 +117,11 @@ void drawCNCMill() {
         glutSolidCylinder((float)offset / HM_WIDTH * GL_WIDTH, 0.2, 10, 2);
     glPopMatrix();
 
+
     glPopMatrix();
+
+
+
 
 
 }
@@ -159,21 +132,37 @@ void display() {
     glLoadIdentity();
 
     // Position the camera
-    gluLookAt(0.0f, 5.0f, 5.0f, // Eye position
+    gluLookAt(0.0f, 5.0f, 0.0f, // Eye position
               0.0f, 0.0f, 0.0f,  // Look-at point
               0.0f, 0.0f, 1.0f); // Up direction
 
-    // Apply rotations
+    glPushMatrix();
     glRotatef(-angleX, 1.0f, 0.0f, 0.0f);
     glRotatef(-angleY, 0.0f, 1.0f, 0.0f);
-
     glTranslatef(offsetX, offsetY, 0.0);
-
-
     glScalef(scale, scale, scale);
-
-    // Draw the CNC mill
     drawCNCMill();
+    glPopMatrix();
+
+
+    char text[1024] = "";
+    void* font = GLUT_BITMAP_9_BY_15;
+    glColor3d(1.0, 0.0, 0.0);
+
+    for (int j = 0; j < NUM_JOINTS; j++) {
+        sprintf(text, "%i = %0.03f", j, (float)joint_position[j] / 100);
+
+        glPushMatrix();
+        glTranslatef(4.2, -3, 3.0 - (float)j * 0.2);
+        glRasterPos2i(0, 0);
+
+        for (int i = 0; i < strlen(text); i++) {
+            char c = text[i];
+            glutBitmapCharacter(font, c);
+        }
+        glPopMatrix();
+
+    }
 
     glutSwapBuffers();
 }

@@ -116,10 +116,12 @@ class Simulator:
     def simulation_h(self):
         output = []
         output.append("#include <stdint.h>")
-        output.append("extern uint8_t sim_running;")
-
         output.append("")
-        output.append("extern volatile int32_t joint_position[12];")
+        output.append(f"#define NUM_JOINTS {self.joints}")
+        output.append("")
+        output.append("extern uint8_t sim_running;")
+        output.append("")
+        output.append("extern volatile int32_t joint_position[NUM_JOINTS];")
         output.append("")
 
         output.append("void* simThread(void* vargp);")
@@ -131,6 +133,7 @@ class Simulator:
         output.append("#include <stdint.h>")
         output.append("#include <stdbool.h>")
         output.append("#include <string.h>")
+        output.append("#include <simulator.h>")
         output.append("#include <riocore.h>")
         output.append("")
         output.append("uint8_t sim_running = 1;")
@@ -144,7 +147,7 @@ class Simulator:
         output.append("void udp_exit();")
         output.append("")
 
-        output.append("volatile int32_t joint_position[12];")
+        output.append("volatile int32_t joint_position[NUM_JOINTS];")
         output.append("")
 
         output.append("int interface_init(void) {")
@@ -197,6 +200,8 @@ class Simulator:
                     output.append("    }")
                 output.append(f"    joint_position[{joint_n}] = {position_var};")
                 joint_n += 1
+
+        self.joints = joint_n
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
