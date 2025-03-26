@@ -112,18 +112,22 @@ void drawCNCMill() {
     glPushMatrix();
         glColor3f(0.5f, 0.5f, 0.5f);
         glTranslatef(GL_WIDTH - (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.1);
-        //glScalef(0.1f, 0.1f, 0.1f);
-        //glutSolidCube(1.0);
         glutSolidCylinder((float)offset / HM_WIDTH * GL_WIDTH, 0.2, 10, 2);
     glPopMatrix();
 
 
     glPopMatrix();
 
+}
 
-
-
-
+void draw_text(char *text) {
+    void* font = GLUT_BITMAP_9_BY_15;
+    glRasterPos2i(0, 0);
+    for (int i = 0; i < strlen(text); i++) {
+        char c = text[i];
+        glutBitmapCharacter(font, c);
+    }
+    glPopMatrix();
 }
 
 // Display callback
@@ -145,24 +149,28 @@ void display() {
     glPopMatrix();
 
 
-    char text[1024] = "";
-    void* font = GLUT_BITMAP_9_BY_15;
+     char text[1024] = "";
     glColor3d(1.0, 0.0, 0.0);
 
+    int tl = 0;
     for (int j = 0; j < NUM_JOINTS; j++) {
         sprintf(text, "%i = %0.03f", j, (float)joint_position[j] / 100);
-
         glPushMatrix();
-        glTranslatef(4.2, -3, 3.0 - (float)j * 0.2);
-        glRasterPos2i(0, 0);
-
-        for (int i = 0; i < strlen(text); i++) {
-            char c = text[i];
-            glutBitmapCharacter(font, c);
-        }
-        glPopMatrix();
-
+        glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
+        draw_text(text);
+        tl++;
     }
+
+    tl = 0;
+    for (int j = 0; j < NUM_HOMESWS; j++) {
+        sprintf(text, "%i", home_switch[j]);
+        glPushMatrix();
+        glTranslatef(3.0, -3, 3.0 - (float)tl * 0.2);
+        draw_text(text);
+        tl++;
+    }
+
+
 
     glutSwapBuffers();
 }

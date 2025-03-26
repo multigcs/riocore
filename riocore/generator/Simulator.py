@@ -21,7 +21,6 @@ class Simulator:
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
-
         jdata = self.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype", "mill")
@@ -118,16 +117,22 @@ class Simulator:
         output.append("#include <stdint.h>")
         output.append("")
         output.append(f"#define NUM_JOINTS {self.joints}")
+        output.append(f"#define NUM_HOMESWS {self.homes}")
         output.append("")
         output.append("extern uint8_t sim_running;")
         output.append("")
         output.append("extern volatile int32_t joint_position[NUM_JOINTS];")
+        output.append("extern volatile int32_t home_switch[NUM_HOMESWS];")
         output.append("")
 
         output.append("void* simThread(void* vargp);")
         open(os.path.join(self.simulator_path, "simulator.h"), "w").write("\n".join(output))
 
     def simulation_c(self):
+        jdata = self.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype", "mill")
+
         output = []
         output.append("#include <stdio.h>")
         output.append("#include <stdint.h>")
@@ -148,6 +153,7 @@ class Simulator:
         output.append("")
 
         output.append("volatile int32_t joint_position[NUM_JOINTS];")
+        output.append("volatile int32_t home_switch[NUM_HOMESWS];")
         output.append("")
 
         output.append("int interface_init(void) {")
@@ -203,6 +209,7 @@ class Simulator:
 
         self.joints = joint_n
 
+        home_n = 0
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
@@ -216,15 +223,19 @@ class Simulator:
                 if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
                     jn = net.split(".")[1]
                     var = interface_data["bit"]["variable"]
-                    if jn == "2" and joint_n < 5:
+                    if jn == "2" and machinetype not in {"melfa"}:
                         # Z-Axis
-                        output.append(f"    if (joint_position[{jn}] > 10000) {{")
+                        output.append(f"    if (joint_position[{jn}] > 2000.0) {{")
                     else:
-                        output.append(f"    if (joint_position[{jn}] < 0) {{")
+                        output.append(f"    if (joint_position[{jn}] < 0.0) {{")
                     output.append(f"        {var} = 1;")
                     output.append("    } else {")
                     output.append(f"        {var} = 0;")
                     output.append("    }")
+                    output.append(f"    home_switch[{home_n}] = {var};")
+                    home_n += 1
+
+        self.homes = home_n
 
         output.append("")
         output.append('    printf("\\n\\n");')
