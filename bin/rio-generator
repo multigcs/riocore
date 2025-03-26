@@ -88,13 +88,16 @@ if args.config:
         project = riocore.Project(config_file, args.output)
         project.generator(preview=args.preview)
         config_name = project.config.get("name")
-        gateware_path = os.path.join("Output", config_name, "Gateware")
-        startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
-        simulatorsh_path = os.path.join("Output", config_name, "Simulator", "start.sh")
+        output_path = "Output"
+        if args.output:
+            output_path = args.output
+        gateware_path = os.path.join(output_path, config_name, "Gateware")
+        startsh_path = os.path.join(output_path, config_name, "LinuxCNC", "start.sh")
+        simulatorsh_path = os.path.join(output_path, config_name, "Simulator", "start.sh")
 
         try:
-            ini_path = os.path.join("Output", config_name, "LinuxCNC", "rio.ini")
-            svg_path = os.path.join("Output", config_name, "LinuxCNC", "halgraph.png")
+            ini_path = os.path.join(output_path, config_name, "LinuxCNC", "rio.ini")
+            svg_path = os.path.join(output_path, config_name, "LinuxCNC", "halgraph.png")
             graph = halgraph.HalGraph()
             svg_data = graph.png(ini_path)
             if svg_data:
