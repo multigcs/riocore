@@ -155,7 +155,12 @@ class cbase:
         output.append("")
 
         output.append("// input: rxBuffer -> VAROUT -> calc -> SIGOUT")
+        position_mapping = {}
         for plugin_instance in self.project.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_name == "position":
+                    varname = signal_config["varname"]
+                    position_mapping[plugin_instance.title] = varname
             if plugin_instance.TYPE == "frameio":
                 for data_name, data_config in plugin_instance.interface_data().items():
                     variable_name = data_config["variable"]
@@ -322,6 +327,12 @@ class cbase:
                                     output.append("    float raw_value = value;")
                                     output.append("    value = value + offset;")
                                     output.append("    value = value / scale;")
+
+                                    compensations = plugin_instance.plugin_setup.get("joint", {}).get("compensation", {})
+                                    if compensations:
+                                        for name, cscale in compensations.items():
+                                            csource = position_mapping.get(name)
+                                            output.append(f"    value += {csource} / {cscale};")
 
                                     if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
                                         output.append("    if (*data->sys_simulation == 1) {")
