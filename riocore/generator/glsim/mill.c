@@ -149,12 +149,19 @@ void display() {
     glPopMatrix();
 
 
-     char text[1024] = "";
+    char text[1024] = "";
     glColor3d(1.0, 0.0, 0.0);
 
     int tl = 0;
     for (int j = 0; j < NUM_JOINTS; j++) {
         sprintf(text, "%i = %0.03f", j, (float)joint_position[j] / 100);
+        glPushMatrix();
+        glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
+        draw_text(text);
+        tl++;
+    }
+    for (int j = 0; j < NUM_BITOUTS; j++) {
+        sprintf(text, "bit: %i", bitout_stat[j]);
         glPushMatrix();
         glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);
@@ -169,8 +176,6 @@ void display() {
         draw_text(text);
         tl++;
     }
-
-
 
     glutSwapBuffers();
 }

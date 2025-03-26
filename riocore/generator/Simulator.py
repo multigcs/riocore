@@ -118,11 +118,13 @@ class Simulator:
         output.append("")
         output.append(f"#define NUM_JOINTS {self.joints}")
         output.append(f"#define NUM_HOMESWS {self.homes}")
+        output.append(f"#define NUM_BITOUTS {self.bitouts}")
         output.append("")
         output.append("extern uint8_t sim_running;")
         output.append("")
         output.append("extern volatile int32_t joint_position[NUM_JOINTS];")
         output.append("extern volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append("extern volatile int32_t bitout_stat[NUM_BITOUTS];")
         output.append("")
 
         output.append("void* simThread(void* vargp);")
@@ -154,6 +156,7 @@ class Simulator:
 
         output.append("volatile int32_t joint_position[NUM_JOINTS];")
         output.append("volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append("volatile int32_t bitout_stat[NUM_BITOUTS];")
         output.append("")
 
         output.append("int interface_init(void) {")
@@ -210,6 +213,7 @@ class Simulator:
         self.joints = joint_n
 
         home_n = 0
+        bitout_n = 0
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
@@ -234,8 +238,14 @@ class Simulator:
                     output.append("    }")
                     output.append(f"    home_switch[{home_n}] = {var};")
                     home_n += 1
+            if data_config["direction"] == "output":
+                if data_name == "bit":
+                    var = interface_data["bit"]["variable"]
+                    output.append(f"    bitout_stat[{bitout_n}] = {var};")
+                    bitout_n += 1
 
         self.homes = home_n
+        self.bitouts = bitout_n
 
         output.append("")
         output.append('    printf("\\n\\n");')
