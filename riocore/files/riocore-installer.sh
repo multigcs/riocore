@@ -91,7 +91,7 @@ then
 	fi
 	echo "installing dependencies"
 	sudo apt-get update || doexit 1
-	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil || doexit 1
+	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil openfpgaloader || doexit 1
 fi
 
 if grep -s -q '"rio"' in $TEMPFILE
