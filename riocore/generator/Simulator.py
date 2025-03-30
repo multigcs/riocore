@@ -227,7 +227,7 @@ class Simulator:
                 if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
                     jn = net.split(".")[1]
                     var = interface_data["bit"]["variable"]
-                    if jn == "2" and machinetype not in {"melfa"}:
+                    if self.project.axis_dict.get("Z", {}).get("joints", {}).get(int(jn)) and machinetype not in {"melfa", "melfa_nogl"}:
                         # Z-Axis
                         output.append(f"    if (joint_position[{jn}] > 2000.0) {{")
                     else:

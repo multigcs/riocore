@@ -334,7 +334,7 @@ class LinuxCNC:
     def ini_mdi_command(self, command, title=None):
         """Used by addons to add mdi-command's and prevent doubles"""
         jdata = self.project.config["jdata"]
-        ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.axis_dict, gui_type=self.gui_type)
+        ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.project.axis_dict, gui_type=self.gui_type)
         mdi_index = None
         mdi_n = 0
         for key, value in ini["HALUI"].items():
@@ -556,7 +556,7 @@ class LinuxCNC:
         if aios > 64:
             print("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
 
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type)
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type)
 
         for section, section_options in linuxcnc_config.get("ini", {}).items():
             if section not in ini_setup:
@@ -583,7 +583,7 @@ class LinuxCNC:
                     output.append(f"{key} = {value}")
             output.append("")
 
-        for axis_name, axis_config in self.axis_dict.items():
+        for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
             output.append(f"[AXIS_{axis_name}]")
             axis_setup = copy.deepcopy(self.AXIS_DEFAULTS)
@@ -847,7 +847,7 @@ class LinuxCNC:
                     halname_wheel = "riof.jog.wheelilowpass.out"
 
                 if halname_wheel:
-                    for axis_name, axis_config in self.axis_dict.items():
+                    for axis_name, axis_config in self.project.axis_dict.items():
                         joints = axis_config["joints"]
                         laxis = axis_name.lower()
                         self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
@@ -872,7 +872,7 @@ class LinuxCNC:
                                 self.halg.net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
             else:
-                for axis_name, axis_config in self.axis_dict.items():
+                for axis_name, axis_config in self.project.axis_dict.items():
                     joints = axis_config["joints"]
                     laxis = axis_name.lower()
                     fname = f"wheel_{laxis}"
@@ -964,7 +964,7 @@ class LinuxCNC:
                         self.halg.net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
                         # pname = gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         # self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
-                        for axis_id, axis_config in self.axis_dict.items():
+                        for axis_id, axis_config in self.project.axis_dict.items():
                             joints = axis_config["joints"]
                             laxis = axis_id.lower()
                             if axis_name == laxis:
@@ -981,7 +981,7 @@ class LinuxCNC:
                                         self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
                         joint_n += 1
             else:
-                for axis_id, axis_config in self.axis_dict.items():
+                for axis_id, axis_config in self.project.axis_dict.items():
                     joints = axis_config["joints"]
                     laxis = axis_id.lower()
                     self.halg.fmt_add("")
@@ -1029,7 +1029,7 @@ class LinuxCNC:
         vcp_sections = linuxcnc_config.get("vcp_sections", [])
         vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.axis_dict, gui_type=self.gui_type)
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, gui_type=self.gui_type)
 
         if gui in {"flexgui"}:
             os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
@@ -1435,7 +1435,7 @@ class LinuxCNC:
 
         if embed_vismach:
             if embed_vismach in {"fanuc_200f"}:
-                for joint in range(len(self.axis_dict)):
+                for joint in range(len(self.project.axis_dict)):
                     if machinetype in {"melfa", "melfa_nogl"}:
                         # melfa has some inverted joints
                         if joint in {1, 2, 3}:
@@ -1496,7 +1496,7 @@ class LinuxCNC:
                         else:
                             self.halg.net_add(f"rio.{halname}", f"{rprefix}.{halname}")
 
-        for axis_name, axis_config in self.axis_dict.items():
+        for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
             for joint, joint_setup in joints.items():
                 position_mode = joint_setup["position_mode"]
@@ -1565,7 +1565,7 @@ class LinuxCNC:
         pin_num = 0
         self.num_joints = 0
         self.num_axis = 0
-        self.axis_dict = {}
+        self.project.axis_dict = {}
 
         if machinetype in {"melfa", "melfa_nogl", "puma"}:
             self.AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C"]
@@ -1582,14 +1582,14 @@ class LinuxCNC:
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if not axis_name:
                     for name in self.AXIS_NAMES:
-                        if name not in self.axis_dict and name not in named_axis:
+                        if name not in self.project.axis_dict and name not in named_axis:
                             axis_name = name
                             break
                 if axis_name:
-                    if axis_name not in self.axis_dict:
-                        self.axis_dict[axis_name] = {"joints": {}}
+                    if axis_name not in self.project.axis_dict:
+                        self.project.axis_dict[axis_name] = {"joints": {}}
                     feedback = plugin_instance.plugin_setup.get("joint", {}).get("feedback")
-                    self.axis_dict[axis_name]["joints"][self.num_joints] = {
+                    self.project.axis_dict[axis_name]["joints"][self.num_joints] = {
                         "type": plugin_instance.NAME,
                         "axis": axis_name,
                         "joint": self.num_joints,
@@ -1600,7 +1600,7 @@ class LinuxCNC:
                         self.feedbacks.append(feedback.replace(":", "."))
                     self.num_joints += 1
 
-        self.num_axis = len(self.axis_dict)
+        self.num_axis = len(self.project.axis_dict)
 
         # getting all home switches
         joint_homeswitches = []
@@ -1612,7 +1612,7 @@ class LinuxCNC:
                     if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
                         joint_homeswitches.append(int(net.split(".")[1]))
 
-        for axis_name, axis_config in self.axis_dict.items():
+        for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
             # print(f"  # Axis: {axis_name}")
             for joint, joint_setup in joints.items():
