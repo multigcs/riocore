@@ -1640,11 +1640,14 @@ class LinuxCNC:
                         home_sequence_default = 2
                     elif axis_name == "C":
                         home_sequence_default = 1
-
                 else:
-                    home_sequence_default = 2
                     if axis_name == "Z":
                         home_sequence_default = 1
+                    elif len(joints) > 1:
+                        home_sequence_default = -2
+                    else:
+                        home_sequence_default = 2
+
                 home_sequence = joint_config.get("home_sequence", home_sequence_default)
                 if home_sequence == "auto":
                     home_sequence = home_sequence_default
