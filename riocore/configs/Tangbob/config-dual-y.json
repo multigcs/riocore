@@ -1,0 +1,299 @@
+{
+    "name": "Tangbob",
+    "boardcfg": "Tangbob",
+    "description": "Tangbob with one 5x china BOB",
+    "protocol": "UDP",
+    "plugins": [
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                }
+            },
+            "uid": "w55000"
+        },
+        {
+            "type": "wled",
+            "pins": {
+                "data": {
+                    "pin": "WLED:DATA"
+                }
+            },
+            "signals": {
+                "0_green": {
+                    "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused"
+                },
+                "0_red": {
+                    "net": "axisui.error"
+                },
+                "0_blue": {
+                    "net": "halui.mode.is-auto"
+                }
+            },
+            "uid": "wled0"
+        },
+        {
+            "type": "modbus",
+            "pins": {
+                "tx": {
+                    "pin": "MODBUS:TX"
+                },
+                "rx": {
+                    "pin": "MODBUS:RX"
+                },
+                "tx_enable": {
+                    "pin": "MODBUS:TX_ENABLE"
+                }
+            },
+            "uid": "modbus0"
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "10"
+                }
+            },
+            "uid": "blink0"
+        },
+        {
+            "type": "i2cbus",
+            "pins": {
+                "sda": {
+                    "pin": "I2C:sda"
+                },
+                "scl": {
+                    "pin": "I2C:scl"
+                }
+            },
+            "uid": "i2cbus0",
+            "config": {
+                "devices": {
+                    "lm75_0": {
+                        "type": "lm75",
+                        "address": "0x48",
+                        "subbus": "none"
+                    }
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        },
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pin": "LEFT:P14"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "halui.machine.is-on",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "uid": "bitout0"
+        },
+        {
+            "type": "bitin",
+            "name": "home-x",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "LEFT:P12"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "uid": "bitin0"
+        },
+        {
+            "type": "bitin",
+            "name": "home-y1",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "LEFT:P13"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "uid": "bitin1"
+        },
+        {
+            "type": "bitin",
+            "name": "home-y2",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "LEFT:P15"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "uid": "bitin2"
+        },
+        {
+            "type": "bitin",
+            "name": "home-z",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "LEFT:P10"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "uid": "bitin3"
+        },
+        {
+            "type": "bitout",
+            "name": "spindle-enable",
+            "pins": {
+                "bit": {
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pin": "LEFT:P17"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "uid": "bitout1"
+        },
+        {
+            "type": "pwmout",
+            "name": "pwm",
+            "pins": {
+                "pwm": {
+                    "modifier": [
+                        {
+                            "type": "invert"
+                        }
+                    ],
+                    "pin": "LEFT:P1"
+                }
+            },
+            "uid": "pwmout0"
+        },
+        {
+            "type": "bitin",
+            "name": "probe",
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "LEFT:P11"
+                }
+            },
+            "uid": "bitin4"
+        },
+        {
+            "name": "joint-0",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir0",
+            "pins": {
+                "step": {
+                    "pin": "LEFT:P2"
+                },
+                "dir": {
+                    "pin": "LEFT:P3"
+                }
+            },
+            "axis": "X"
+        },
+        {
+            "name": "joint-1",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir1",
+            "pins": {
+                "step": {
+                    "pin": "LEFT:P4"
+                },
+                "dir": {
+                    "pin": "LEFT:P5"
+                }
+            },
+            "axis": "Y"
+        },
+        {
+            "name": "joint-2",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir2",
+            "pins": {
+                "step": {
+                    "pin": "LEFT:P6"
+                },
+                "dir": {
+                    "pin": "LEFT:P7"
+                }
+            },
+            "axis": "Y"
+        },
+        {
+            "name": "joint-3",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir3",
+            "pins": {
+                "step": {
+                    "pin": "LEFT:P8"
+                },
+                "dir": {
+                    "pin": "LEFT:P9"
+                }
+            },
+            "axis": "Z"
+        }
+    ]
+}
