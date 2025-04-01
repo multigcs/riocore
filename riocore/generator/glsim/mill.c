@@ -39,8 +39,8 @@ static int isTranslate = 0;
 void initGL() {
     glEnable(GL_DEPTH_TEST);    // Enable depth testing for 3D
     glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);      // Enable lighting
-    glEnable(GL_LIGHT0);        // Enable light #0
+//    glEnable(GL_LIGHTING);      // Enable lighting
+//    glEnable(GL_LIGHT0);        // Enable light #0
 
     // Set up light parameters
     GLfloat lightPos[] = { 0.0f, 5.0f, 5.0f, 1.0f };
@@ -48,35 +48,44 @@ void initGL() {
     GLfloat lightDiffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
     GLfloat lightSpecular[] = {1.0f,1.0f,1.0f,1.0f};
 
+/*
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
     glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-
+*/
     glClearColor(0.1f, 0.1f, 0.5f, 1.0f); // Background color
 }
 
 // Function to draw a simple CNC mill
 void drawCNCMill() {
 
-    float hpos_x = (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * HM_WIDTH);
-    float hpos_y = (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * HM_HEIGHT);
+    float pos_x = joint_position[x_joints[0]];
+    float pos_y = joint_position[y_joints[0]];
+    float pos_z = joint_position[z_joints[0]];
+
+
+    // update heightmap
+    float hpos_x = (pos_x / VIRT_SCALE / VIRT_WIDTH * HM_WIDTH);
+    float hpos_y = (pos_y / VIRT_SCALE / VIRT_HEIGHT * HM_HEIGHT);
     int offset = 2;
     for (int y = hpos_y - offset; y < hpos_y + offset; y++) {
         for (int x = hpos_x - offset; x < hpos_x + offset; x++) {
             if (x >= 0 && y >= 0 && x < HM_WIDTH && y < HM_HEIGHT) {
-                if (joint_position[2] < 0.0) {
-                    heightmap[x][y] = joint_position[2] / VIRT_SCALE / 50 * 255;
+                if (pos_z < 0.0) {
+                    heightmap[x][y] = pos_z / VIRT_SCALE / 50 * 255;
                 }
             }
         }
     }
 
 
+
+
     glPushMatrix();
     glTranslatef(-(GL_WIDTH / 2.0), -(GL_HEIGHT / 2.0), 0.0f);
 
-
+    // draw heightmap
     glPushMatrix();
     glBegin(GL_TRIANGLES);
     for (int y = 0; y < HM_HEIGHT; y++) {
@@ -108,13 +117,52 @@ void drawCNCMill() {
     glEnd();
     glPopMatrix();
 
-    // Mill
+    // spindle
     glPushMatrix();
-        glColor3f(0.5f, 0.5f, 0.5f);
-        glTranslatef(GL_WIDTH - (joint_position[0] / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (joint_position[1] / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.1);
-        glutSolidCylinder((float)offset / HM_WIDTH * GL_WIDTH, 0.2, 10, 2);
+    glColor3f(0.9f, 0.1f, 0.1f);
+    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), (pos_z / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT) + 0.3);
+    glScalef(0.03, 0.03, 0.2);
+    glutSolidCube(1.0);
     glPopMatrix();
 
+    // draw Millbit 
+    glPushMatrix();
+    glColor3f(0.5f, 0.9f, 0.5f);
+    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), (pos_z / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT));
+    glutSolidCylinder((float)offset / HM_WIDTH * GL_WIDTH, 0.2, 10, 2);
+    glPopMatrix();
+
+    // draw gantry
+    glPushMatrix();
+    glColor3f(0.5f, 0.5f, 0.9f);
+    glTranslatef(GL_WIDTH / 2.0, GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT)-0.02, 0.3);
+    glScalef(GL_WIDTH, 0.02, 0.2);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // draw X KUS
+    glColor3f(0.5f, 0.5f, 0.5f);
+    glPushMatrix();
+    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.3);
+    glScalef(0.1, 0.02, 0.1);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // draw Y KUS
+    glPushMatrix();
+    glTranslatef(GL_WIDTH, GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.0);
+    glScalef(0.02, 0.2, 0.1);
+    glutSolidCube(1.0);
+    glPopMatrix();
+
+    // draw Y2 KUS
+    if (NUM_JOINTS_Y > 1) {
+        glPushMatrix();
+        glTranslatef(0.0, GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.0);
+        glScalef(0.02, 0.2, 0.1);
+        glutSolidCube(1.0);
+        glPopMatrix();
+    }
 
     glPopMatrix();
 

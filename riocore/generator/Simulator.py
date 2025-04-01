@@ -127,6 +127,17 @@ class Simulator:
         output.append("extern volatile int32_t bitout_stat[NUM_BITOUTS];")
         output.append("")
 
+        for axis, data in self.project.axis_dict.items():
+            joints = list(data.get("joints", {}))
+            output.append(f"#define NUM_JOINTS_{axis} {len(joints)}")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            joints = list(data.get("joints", {}))
+            output.append(f"#define NUM_JOINTS_{axis} {len(joints)}")
+            output.append(f"extern int {axis.lower()}_joints[NUM_JOINTS_{axis}];")
+        output.append("")
+
         output.append("void* simThread(void* vargp);")
         open(os.path.join(self.simulator_path, "simulator.h"), "w").write("\n".join(output))
 
@@ -157,6 +168,11 @@ class Simulator:
         output.append("volatile int32_t joint_position[NUM_JOINTS];")
         output.append("volatile int32_t home_switch[NUM_HOMESWS];")
         output.append("volatile int32_t bitout_stat[NUM_BITOUTS];")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            joints = list(data.get("joints", {}))
+            output.append(f"int {axis.lower()}_joints[NUM_JOINTS_{axis}] = {{{', '.join([str(j) for j in joints])}}};")
         output.append("")
 
         output.append("int interface_init(void) {")
