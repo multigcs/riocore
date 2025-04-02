@@ -56,6 +56,41 @@ if args.config:
             # rewrite config for simulator
             jdata = json.loads(open(config_file, "r").read())
 
+            if jdata["linuxcnc"]["machinetype"] in {"melfa"}:
+                for pm, module in enumerate(jdata.get("modules", [])):
+                    for name, plugin in module.get("setup").items():
+                        if plugin.get("signals", {}).get("bit", {}).get("net", "").endswith(".home-sw-in"):
+                            jdata["modules"][pm]["setup"][name]["signals"]["bit"]["net"] = ""
+
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("signals", {}).get("bit", {}).get("net", "").endswith(".home-sw-in"):
+                        jdata["plugins"][pn]["signals"]["bit"]["net"] = ""
+
+                for pm, module in enumerate(jdata.get("modules", [])):
+                    for name, plugin in module.get("setup").items():
+                        if plugin.get("is_joint", False):
+                            if "joint" not in plugin:
+                                jdata["modules"][pm]["setup"][name]["joint"] = {}
+                            jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_search_vel"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_latch_vel"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_final_vel"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_sequence"] = 0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_offset"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home"] = 0.001
+
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("is_joint", False):
+                        if "joint" not in plugin:
+                            jdata["plugins"][pn]["joint"] = {}
+                        jdata["plugins"][pn]["joint"]["scale"] = 100.0
+                        jdata["plugins"][pn]["joint"]["home_search_vel"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home_latch_vel"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home_final_vel"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home_sequence"] = 0
+                        jdata["plugins"][pn]["joint"]["home_offset"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home"] = 0.001
+
             if args.simulator:
                 if "linuxcnc" not in jdata:
                     jdata["linuxcnc"] = {}
