@@ -23,6 +23,61 @@ class ConfigGraph:
             lcports = []
             sports = []
 
+            parport_n = 0
+            gpio_config = self.parent.config.get("gpios", [])
+            for gpio in gpio_config:
+                if gpio.get("type") == "rpi":
+                    pass
+                elif gpio.get("type") == "parport":
+                    pp_addr = gpio.get("address", "0x378")
+                    pp_mode = gpio.get("mode", "0 out")
+                    mportsr = []
+                    for pn in range(0, 18):
+                        mportsr.append(f"<{pn}>P{pn}")
+
+                    label = f"{{ {{ Parport-{parport_n}\\n{pp_addr} | {' | '.join(mportsr)}}} }}"
+                    gAll.node(f"parport.{parport_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+                    parport_n += 1
+
+            linuxcnc_config = self.parent.config.get("linuxcnc", {})
+            for net in linuxcnc_config.get("net", []):
+                net_source = net.get("source")
+                net_target = net.get("target")
+                net_name = net.get("name") or None
+                if net_source and net_target:
+                    if net_source.startswith("parport."):
+                        hal_pin = net_target
+                        ppin = int(net_source.split("-")[1])
+                        gAll.edge(f"parport.0:{ppin}", f"hal:{hal_pin}", dir="forward", color="green")
+                        lcports.append(f"<{hal_pin}>{hal_pin}")
+                    elif net_target.startswith("parport."):
+                        hal_pin = net_source
+                        ppin = int(net_target.split("-")[1])
+                        gAll.edge(f"parport.0:{ppin}", f"hal:{hal_pin}", dir="back", color="red")
+                        lcports.append(f"<{hal_pin}>{hal_pin}")
+
+            stepgen_n = 0
+            for component in linuxcnc_config.get("components", []):
+                comp_type = component.get("type")
+                if comp_type == "stepgen":
+                    comp_pins = component.get("pins", {})
+                    comp_mode = component.get("mode", 0)
+                    pin_step = comp_pins.get("step")
+                    pin_dir = comp_pins.get("dir")
+
+                    label = f"{{ {{ <step>step | <dir>dir }} | {{ StepGen-{stepgen_n} }} | {{ <cmd>cmd | <fb>fb }} }}"
+                    gAll.node(f"stepgen.{stepgen_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+                    if pin_step.startswith("parport."):
+                        port_step = int(pin_step.split(".")[1])
+                        ppin_step = int(pin_step.split("-")[1])
+                        gAll.edge(f"parport.{port_step}:{ppin_step}", f"stepgen.{stepgen_n}:step", dir="back", color="red")
+                    if pin_dir.startswith("parport."):
+                        port_dir = int(pin_dir.split(".")[1])
+                        ppin_dir = int(pin_dir.split("-")[1])
+                        gAll.edge(f"parport.{port_dir}:{ppin_dir}", f"stepgen.{stepgen_n}:dir", dir="back", color="red")
+
+                    stepgen_n += 1
+
             # show slots
             for slot in self.parent.slots:
                 slot_name = slot.get("name")
@@ -354,119 +409,6 @@ class ConfigGraph:
                     self.map[instance].append((int(begin[0]), int(begin[1]), int(end[0]), int(end[1])))
 
             return gAll.pipe()
-
-            """
-            jmap = json.loads(gAll.pipe(format="json").decode())
-            x, y, w, h = jmap["bb"].split(",")
-            pw = int(w)
-            ph = int(h)
-            pixmap = QPixmap(int(w) + 5, int(h) + 5)
-            pixmap.fill(Qt.black)
-            painter = QPainter(pixmap)
-            color = QColor("red")
-            pen = QPen(color, 1)
-            painter.setPen(pen)
-            # painter.drawLine(0, 0, pw, ph);
-
-            def hex_to_rgb(hex):
-                return tuple(int(hex[i : i + 2], 16) for i in (0, 2, 4))
-
-            for edge in jmap.get("edges", []):
-                for draw in edge.get("_draw_", {}):
-                    if draw.get("op") == "c":
-                        rgb = hex_to_rgb(draw["color"][1:])
-                        color.setRgb(*rgb)
-                        pen = QPen(color, 1)
-                        painter.setPen(pen)
-                    elif draw.get("op") == "b":
-                        x, y = draw["points"].pop(0)
-                        y = ph - y
-                        path = QPainterPath()
-                        path.moveTo(x, y)
-                        while len(draw["points"]) >= 3:
-                            cpoints = []
-                            x, y = draw["points"].pop(0)
-                            y = ph - y
-                            cpoints.append(float(x))
-                            cpoints.append(float(y))
-                            x, y = draw["points"].pop(0)
-                            y = ph - y
-                            cpoints.append(float(x))
-                            cpoints.append(float(y))
-                            x, y = draw["points"].pop(0)
-                            y = ph - y
-                            cpoints.append(float(x))
-                            cpoints.append(float(y))
-                            path.cubicTo(*cpoints)
-
-                        painter.drawPath(path)
-
-            color = QColor("white")
-            pen = QPen(color, 1)
-            painter.setPen(pen)
-
-            for part in jmap["objects"]:
-                # print(part)
-                url = part.get("URL")
-                for ldraw in part.get("_draw_"):
-                    # if draw.get("op") == "c":
-                    #    rgb = hex_to_rgb(draw["color"][1:])
-                    #    color.setRgb(*rgb)
-                    #    pen = QPen(color, 1)
-                    #    painter.setPen(pen)
-                    if ldraw["op"] == "L":
-                        x1, y1 = ldraw["points"][0]
-                        x2, y2 = ldraw["points"][1]
-
-                        x1 = int(float(x1))
-                        y1 = ph - int(float(y1))
-                        x2 = int(float(x2))
-                        y2 = ph - int(float(y2))
-                        w = x2 - x1
-                        h = y2 - y1
-
-                        # painter.drawRect(x1, y1, w, h)
-                        painter.drawLine(x1, y1, x2, y2)
-
-                for ldraw in part.get("_ldraw_"):
-                    # if draw.get("op") == "c":
-                    #    rgb = hex_to_rgb(draw["color"][1:])
-                    #    color.setRgb(*rgb)
-                    #    pen = QPen(color, 1)
-                    #    painter.setPen(pen)
-                    if ldraw["op"] == "T":
-                        x, y = ldraw["pt"]
-                        y = ph - y
-                        w = ldraw["width"]
-                        if ldraw["align"] == "c":
-                            x -= w / 2
-                            y += 3
-                        painter.drawText(QPointF(x, y), ldraw["text"])
-
-                for rect in part.get("rects").split(" "):
-                    x1, y1, x2, y2 = rect.split(",")
-                    x1 = int(float(x1))
-                    y1 = ph - int(float(y1))
-                    x2 = int(float(x2))
-                    y2 = ph - int(float(y2))
-                    w = x2 - x1
-                    h = y2 - y1
-
-                    painter.drawRect(x1, y1, w, h)
-                    if url:
-                        instance = url.split(":")[1].replace("#", " ")
-                        if instance not in self.map:
-                            self.map[instance] = []
-                        self.map[instance].append((int(float(x1)), int(float(y2)), int(float(x2)), int(float(y1))))
-
-            painter.end()
-
-            png_bytes = QByteArray()
-            png_buffer = QBuffer(png_bytes)
-            png_buffer.open(QIODevice.WriteOnly)
-            pixmap.save(png_buffer, "PNG")
-            return png_bytes
-            """
 
         except Exception as error:
             print(f"ERROR(overview): {error}")

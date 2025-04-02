@@ -48,6 +48,10 @@ class LinuxCNC:
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
         "STEPGEN_MAXACCEL": 2000.0,
+        "STEPGEN_STEPLEN": 1,
+        "STEPGEN_STEPSPACE": 0,
+        "STEPGEN_DIRHOLD": 35000,
+        "STEPGEN_DIRSETUP": 35000,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
         "HOME_SEARCH_VEL": -30.0,
@@ -643,21 +647,27 @@ class LinuxCNC:
                 if position_mode == "absolute":
                     for key, value in joint_config.items():
                         if key in self.JOINT_DEFAULTS:
+                            if joint_setup["type"] != "stepgen" and key.startswith("STEPGEN_"):
+                                continue
                             output.append(f"{key:18s} = {value}")
-
                 elif position_halname and feedback_halname:
                     pid_setup = self.PID_DEFAULTS.copy()
                     for key, value in pid_setup.items():
                         setup_value = joint_config.get(f"PID_{key.upper()}")
                         if setup_value:
                             value = setup_value
+                        if joint_setup["type"] != "stepgen" and key.startswith("STEPGEN_"):
+                            continue
                         output.append(f"{key:18s} = {value}")
                     output.append("")
                     for key, value in joint_config.items():
                         if key in self.JOINT_DEFAULTS:
+                            if joint_setup["type"] != "stepgen" and key.startswith("STEPGEN_"):
+                                continue
                             if key.endswith("_VELOCITY"):
                                 output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                             output.append(f"{key:18s} = {value}")
+
                 output.append("")
 
         path_subroutines = ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH")
@@ -1304,6 +1314,7 @@ class LinuxCNC:
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+        gpio_config = self.project.config["jdata"].get("gpios", [])
         simulation = linuxcnc_config.get("simulation", False)
         gui = linuxcnc_config.get("gui", "axis")
         machinetype = linuxcnc_config.get("machinetype")
@@ -1445,9 +1456,87 @@ class LinuxCNC:
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
+        gpios = {}
+        parports = []
+        for gpio in gpio_config:
+            if gpio.get("type") == "rpi":
+                pass
+            elif gpio.get("type") == "parport":
+                pp_addr = gpio.get("address", "0x378")
+                pp_mode = gpio.get("mode", "0 out")
+                parports.append(pp_mode)
+
+        if parports:
+            self.halg.fmt_add_top(f"# parport component for {len(parports)} port(s)")
+            self.halg.fmt_add_top(f"loadrt hal_parport cfg={','.join(parports)}")
+            for pn, _parport in enumerate(parports):
+                self.halg.setp_add(f"parport.{pn}.reset-time", "5000")
+                self.halg.fmt_add_top(f"addf parport.{pn}.read base-thread")
+                self.halg.fmt_add_top(f"addf parport.{pn}.write base-thread")
+                self.halg.fmt_add_top(f"addf parport.{pn}.reset base-thread")
+                self.halg.fmt_add_top("")
+
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
             self.halg.setp_add(f"{key}", value)
+
+        for net in linuxcnc_config.get("net", []):
+            net_source = net.get("source")
+            net_target = net.get("target")
+            net_name = net.get("name") or None
+            if net_source and net_target:
+                self.halg.net_add(net_source, net_target, net_name)
+
+        stepgens = []
+        pwmgens = []
+        spindle_num = 0
+        for component in linuxcnc_config.get("components", []):
+            comp_type = component.get("type")
+            if comp_type == "stepgen":
+                comp_pins = component.get("pins", {})
+                comp_mode = component.get("mode", 0)
+                snum = len(stepgens)
+                stepgens.append(str(comp_mode))
+                pin_step = comp_pins.get("step")
+                pin_dir = comp_pins.get("dir")
+                joint = snum + 1
+                self.halg.setp_add(f"{pin_step}-reset", "1")
+                self.halg.net_add(f"stepgen.{snum}.step", pin_step, f"j{joint}step-pin")
+                self.halg.net_add(f"stepgen.{snum}.dir", pin_dir, f"j{joint}dir-pin")
+
+            if comp_type == "pwmgen":
+                comp_pins = component.get("pins", {})
+                comp_mode = component.get("mode", 1)
+                pnum = len(pwmgens)
+                pwmgens.append(str(comp_mode))
+                pin_pwm = comp_pins.get("pwm")
+                pin_dir = comp_pins.get("dir")
+
+                self.halg.setp_add(f"pwmgen.{pnum}.pwm-freq", "100.0")
+                self.halg.setp_add(f"pwmgen.{pnum}.scale", "1166.6666666666665")
+                self.halg.setp_add(f"pwmgen.{pnum}.offset", "0.11428571428571428")
+                self.halg.setp_add(f"pwmgen.{pnum}.dither-pwm", "true")
+
+                self.halg.net_add(f"spindle.{spindle_num}.speed-out", f"pwmgen.{pnum}.value")
+                self.halg.net_add(f"spindle.{spindle_num}.on", f"pwmgen.{pnum}.enable")
+                self.halg.net_add(f"spindle.{spindle_num}.forward", pin_dir)
+                self.halg.net_add(f"pwmgen.{pnum}.pwm", pin_pwm)
+                spindle_num += 1
+
+        if stepgens:
+            self.halg.fmt_add_top(f"# stepgen component for {len(stepgens)} joint(s)")
+            self.halg.fmt_add_top(f"loadrt stepgen step_type={','.join(stepgens)}")
+            self.halg.fmt_add_top("addf stepgen.make-pulses base-thread")
+            self.halg.fmt_add_top("addf stepgen.capture-position servo-thread")
+            self.halg.fmt_add_top("addf stepgen.update-freq servo-thread")
+            self.halg.fmt_add_top("")
+
+        if pwmgens:
+            self.halg.fmt_add_top(f"# pwmgen component for {len(pwmgens)} output(s)")
+            self.halg.fmt_add_top(f"loadrt pwmgen output_type={','.join(pwmgens)}")
+            self.halg.fmt_add_top("addf pwmgen.make-pulses base-thread")
+            self.halg.fmt_add_top("addf pwmgen.update servo-thread")
+            self.halg.fmt_add_top("")
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1515,8 +1604,19 @@ class LinuxCNC:
                         self.halg.net_add(f"corexy.{corexy_axis}-cmd", f"corexy.{corexy_axis}-fb", f"j{joint}pos-cmd-{corexy_axis}")
                         self.halg.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb-{corexy_axis}")
                     else:
-                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
-                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
+                        if joint_setup["type"] == "stepgen":
+                            snum = joint_setup["plugin_instance"].snum
+                            self.halg.setp_add(f"stepgen.{snum}.maxaccel", f"[JOINT_{joint}]STEPGEN_MAXACCEL")
+                            self.halg.setp_add(f"stepgen.{snum}.steplen", f"[JOINT_{joint}]STEPGEN_STEPLEN")
+                            self.halg.setp_add(f"stepgen.{snum}.stepspace", f"[JOINT_{joint}]STEPGEN_STEPSPACE")
+                            self.halg.setp_add(f"stepgen.{snum}.dirhold", f"[JOINT_{joint}]STEPGEN_DIRHOLD")
+                            self.halg.setp_add(f"stepgen.{snum}.dirsetup", f"[JOINT_{joint}]STEPGEN_DIRSETUP")
+                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"stepgen.{snum}.position-cmd", f"j{joint}pos-cmd")
+                            self.halg.net_add(f"stepgen.{snum}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
+                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"stepgen.{snum}.enable", f"j{joint}senable")
+                        else:
+                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
+                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
 
                     if enable_halname:
                         self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{enable_halname}", f"j{joint}enable")
@@ -1600,6 +1700,35 @@ class LinuxCNC:
                         self.feedbacks.append(feedback.replace(":", "."))
                     self.num_joints += 1
 
+        stepgen_num = 0
+        for component in linuxcnc_config.get("components", []):
+            comp_type = component.get("type")
+            if comp_type == "stepgen":
+                component["num"] = stepgen_num
+                axis_name = component.get("axis")
+
+                if not axis_name:
+                    for name in self.AXIS_NAMES:
+                        if name not in self.project.axis_dict and name not in named_axis:
+                            axis_name = name
+                            break
+                if axis_name:
+                    if axis_name not in self.project.axis_dict:
+                        self.project.axis_dict[axis_name] = {"joints": {}}
+                    feedback = component.get("joint", {}).get("feedback")
+                    self.project.axis_dict[axis_name]["joints"][self.num_joints] = {
+                        "type": "stepgen",
+                        "axis": axis_name,
+                        "joint": self.num_joints,
+                        "plugin_instance": joint_stepgen(component),
+                        "feedback": feedback or True,
+                    }
+                    if feedback:
+                        self.feedbacks.append(feedback.replace(":", "."))
+                    self.num_joints += 1
+
+                stepgen_num += 1
+
         self.num_axis = len(self.project.axis_dict)
 
         # getting all home switches
@@ -1656,16 +1785,20 @@ class LinuxCNC:
                 position = joint_signals.get("position")
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
+
+                prefix = "rio."
                 if enable:
-                    enable_halname = f"rio.{enable['halname']}"
+                    enable_halname = f"{prefix}{enable['halname']}"
                 if velocity:
-                    position_halname = f"rio.{velocity['halname']}"
+                    position_halname = f"{prefix}{velocity['halname']}"
                     position_mode = "relative"
                 elif position:
-                    position_halname = f"rio.{position['halname']}"
+                    position_halname = f"{prefix}{position['halname']}"
+                    position_mode = "absolute"
+                elif joint_setup["type"] == "stepgen":
                     position_mode = "absolute"
                 elif dty:
-                    position_halname = f"rio.{dty['halname']}"
+                    position_halname = f"{prefix}{dty['halname']}"
                     position_mode = "relative"
 
                 feedback_scale = position_scale
@@ -1673,7 +1806,7 @@ class LinuxCNC:
                 feedback = joint_config.get("feedback")
                 feedback = joint_setup.get("feedback")
                 if position_mode == "relative" and feedback is True:
-                    feedback_halname = f"rio.{position['halname']}"
+                    feedback_halname = f"{prefix}{position['halname']}"
                     feedback_scale = position_scale
                 elif position_mode == "relative":
                     if ":" in feedback:
@@ -1691,7 +1824,7 @@ class LinuxCNC:
                                 if sub_direction != "input":
                                     print("ERROR: can not use this as feedback (no input signal):", sub_signal_config)
                                     exit(1)
-                                feedback_halname = f"rio.{sub_signal_config['halname']}"
+                                feedback_halname = f"{prefix}{sub_signal_config['halname']}"
                                 feedback_signal = feedback_halname.split(".")[-1]
                                 feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("signals", {}).get(feedback_signal, {}).get("scale", 1.0))
                                 found = True
@@ -1760,3 +1893,16 @@ class LinuxCNC:
             for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
                 key = key.upper()
                 axis_config[key] = value
+
+
+class joint_stepgen:
+    def __init__(self, component):
+        self.snum = component["num"]
+        self.component = component
+        self.instances_name = component.get("name", f"stepgen{self.snum}")
+        self.plugin_setup = component
+        self.TYPE = "stepgen"
+        self.SIGNALS = {}
+
+    def signals(self):
+        return {}
