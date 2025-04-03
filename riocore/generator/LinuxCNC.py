@@ -1336,6 +1336,18 @@ class LinuxCNC:
                         "boolean": boolean,
                     }
 
+        # loading gpio drivers (parport / rpi)
+        gpios = {}
+        parports = []
+        for gpio in gpio_config:
+            if gpio.get("type") == "rpi":
+                pass
+            elif gpio.get("type") == "parport":
+                pp_addr = gpio.get("address", "0x378")
+                pp_mode = gpio.get("mode", "0 out")
+                parports.append(pp_mode)
+                self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
+
         self.halg = hal_generator(halpin_info)
 
         self.halg.fmt_add_top("# load the realtime components")
@@ -1456,15 +1468,6 @@ class LinuxCNC:
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
-        gpios = {}
-        parports = []
-        for gpio in gpio_config:
-            if gpio.get("type") == "rpi":
-                pass
-            elif gpio.get("type") == "parport":
-                pp_addr = gpio.get("address", "0x378")
-                pp_mode = gpio.get("mode", "0 out")
-                parports.append(pp_mode)
 
         if parports:
             self.halg.fmt_add_top(f"# parport component for {len(parports)} port(s)")
@@ -1495,14 +1498,7 @@ class LinuxCNC:
             if comp_type == "stepgen":
                 comp_pins = component.get("pins", {})
                 comp_mode = component.get("mode", 0)
-                snum = len(stepgens)
                 stepgens.append(str(comp_mode))
-                pin_step = comp_pins.get("step")
-                pin_dir = comp_pins.get("dir")
-                joint = snum + 1
-                self.halg.setp_add(f"{pin_step}-reset", "1")
-                self.halg.net_add(f"stepgen.{snum}.step", pin_step, f"j{joint}step-pin")
-                self.halg.net_add(f"stepgen.{snum}.dir", pin_dir, f"j{joint}dir-pin")
 
             if comp_type == "pwmgen":
                 comp_pins = component.get("pins", {})
@@ -1614,6 +1610,15 @@ class LinuxCNC:
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"stepgen.{snum}.position-cmd", f"j{joint}pos-cmd")
                             self.halg.net_add(f"stepgen.{snum}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
                             self.halg.net_add(f"joint.{joint}.amp-enable-out", f"stepgen.{snum}.enable", f"j{joint}senable")
+
+                            comp_pins = joint_setup["plugin_instance"].component["pins"]
+                            pin_step = comp_pins.get("step")
+                            pin_dir = comp_pins.get("dir")
+                            self.halg.setp_add(f"{pin_step}-reset", "1")
+                            self.halg.net_add(f"stepgen.{snum}.step", pin_step, f"j{joint}step-pin")
+                            self.halg.net_add(f"stepgen.{snum}.dir", pin_dir, f"j{joint}dir-pin")
+
+
                         else:
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
