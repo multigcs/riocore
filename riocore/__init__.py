@@ -138,7 +138,7 @@ class Plugins:
                 if not self.load_plugin(plugin_id, plugin_config, system_setup=system_setup):
                     exit(1)
             return self.plugin_instances
-        return None
+        return []
 
     def testbench_builder(self, plugin_type, plugin_instance):
         print(f"try to build testbench for {plugin_type}")
@@ -478,7 +478,10 @@ class Project:
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
-        self.generator_gateware = Gateware(self)
+        if self.config["toolchain"]:
+            self.generator_gateware = Gateware(self)
+        else:
+            self.generator_gateware = None
         self.generator_simulator = Simulator(self)
         self.generator_firmware = Firmware(self)
 
@@ -529,7 +532,7 @@ class Project:
 
         output.append("Plugins:")
         plugins = {}
-        for plugin in self.config["plugins"]:
+        for plugin in self.config.get("plugins", []):
             ptype = plugin["type"]
             if ptype not in plugins:
                 plugins[ptype] = 0
@@ -593,7 +596,7 @@ class Project:
             project["json_file"] = configuration
             project["json_path"] = os.path.dirname(configuration)
 
-        project["plugins"] = copy.deepcopy(project["jdata"].get("plugins"))
+        project["plugins"] = copy.deepcopy(project["jdata"].get("plugins", []))
         project["board_data"] = {}
 
         # loading board data
@@ -679,13 +682,13 @@ class Project:
                     exit(1)
 
         self.config = project
-        self.config["speed"] = int(project["jdata"]["clock"]["speed"])
-        self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc", 0))
-        self.config["sysclk_pin"] = project["jdata"]["clock"]["pin"]
-        self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
-        self.config["toolchain"] = project["jdata"]["toolchain"]
+        self.config["speed"] = int(project["jdata"].get("clock", {}).get("speed", 1))
+        self.config["osc_clock"] = int(project["jdata"].get("clock", {}).get("osc", 0))
+        self.config["sysclk_pin"] = project["jdata"].get("clock", {}).get("pin")
+        self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
+        self.config["toolchain"] = project["jdata"].get("toolchain")
         self.config["family"] = project["jdata"].get("family", "UNKNOWN")
         self.config["type"] = project["jdata"].get("type", "UNKNOWN")
         self.config["package"] = project["jdata"].get("package", "UNKNOWN")
@@ -1000,7 +1003,8 @@ class Project:
         else:
             if preview:
                 generate_pll = False
-            self.generator_gateware.generator(generate_pll=generate_pll)
+            if self.generator_gateware:
+                self.generator_gateware.generator(generate_pll=generate_pll)
         if protocol == "UDP":
             self.generator_simulator.generator()
         self.generator_linuxcnc.generator(preview=preview)

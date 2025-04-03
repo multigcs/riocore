@@ -365,7 +365,7 @@ class LinuxCNC:
         embed_vismach = linuxcnc_config.get("embed_vismach")
 
         netlist = []
-        for plugin in jdata["plugins"]:
+        for plugin in jdata.get("plugins", []):
             for signal in plugin.get("signals", {}).values():
                 if net := signal.get("net"):
                     netlist.append(net)
