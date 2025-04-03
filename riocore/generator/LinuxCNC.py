@@ -170,6 +170,7 @@ class LinuxCNC:
         self.configuration_path = f"{self.base_path}"
         self.create_axis_config()
         self.addons = {}
+        self.gpionames = {}
         for addon_path in glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "linuxcnc.py")):
             addon_name = addon_path.split(os.sep)[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
@@ -265,8 +266,9 @@ class LinuxCNC:
             self.cfglink()
         self.startscript()
         self.readme()
-        component(self.project)
-        rosbridge(self.project)
+        if self.project.config["toolchain"]:
+            component(self.project)
+            rosbridge(self.project)
         self.hal()
         self.riof()
         self.vcp_gui()
@@ -1337,15 +1339,18 @@ class LinuxCNC:
                     }
 
         # loading gpio drivers (parport / rpi)
-        gpios = {}
+        rpigpios = []
         parports = []
         for gpio in gpio_config:
             if gpio.get("type") == "rpi":
-                pass
+                rpi_pins = gpio.get("pins", [])
+                rpigpios.append(rpi_pins)
+                self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
+
             elif gpio.get("type") == "parport":
                 pp_addr = gpio.get("address", "0x378")
                 pp_mode = gpio.get("mode", "0 out")
-                parports.append(pp_mode)
+                parports.append(f"{pp_addr} {pp_mode}")
                 self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
 
         self.halg = hal_generator(halpin_info)
@@ -1355,15 +1360,16 @@ class LinuxCNC:
         self.halg.fmt_add_top(
             "loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO"
         )
-        self.halg.fmt_add_top("loadrt rio")
-        self.halg.fmt_add_top("")
-        self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
 
-        if simulation:
-            self.halg.fmt_add_top("setp rio.sys-simulation 1")
-        else:
-            self.halg.fmt_add_top("setp rio.sys-simulation 0")
-        self.halg.fmt_add_top("")
+        if self.project.config["toolchain"]:
+            self.halg.fmt_add_top("loadrt rio")
+            self.halg.fmt_add_top("")
+            self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
+            if simulation:
+                self.halg.fmt_add_top("setp rio.sys-simulation 1")
+            else:
+                self.halg.fmt_add_top("setp rio.sys-simulation 0")
+            self.halg.fmt_add_top("")
 
         num_pids = self.num_joints
         self.halg.fmt_add_top(f"loadrt pid num_chan={num_pids}")
@@ -1374,11 +1380,16 @@ class LinuxCNC:
         self.halg.fmt_add_top("# add the rio and motion functions to threads")
         self.halg.fmt_add_top("addf motion-command-handler servo-thread")
         self.halg.fmt_add_top("addf motion-controller servo-thread")
-        self.halg.fmt_add_top("addf rio.readwrite servo-thread")
+        if self.project.config["toolchain"]:
+            self.halg.fmt_add_top("addf rio.readwrite servo-thread")
         self.halg.fmt_add_top("")
-        self.halg.net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
-        self.halg.net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
-        self.halg.net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
+
+        if self.project.config["toolchain"]:
+            self.halg.net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
+            self.halg.net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
+            self.halg.net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
+        else:
+            self.halg.net_add("iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
 
         if gui not in {"qtdragon", "qtdragon_hd"}:
             if toolchange == "manual":
@@ -1468,16 +1479,59 @@ class LinuxCNC:
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
+        if rpigpios:
+            self.halg.fmt_add_top(f"# rpi gpio component")
+            inputs = rpigpios[0].get("inputs", [])
+            outputs = rpigpios[0].get("outputs", [])
+            resets = rpigpios[0].get("reset", [])
+            args = []
+            if inputs:
+                args.append(f"inputs={','.join(inputs)}")
+                for pin in inputs:
+                    self.gpionames[f"hal_gpio.{pin}-in"] = "rpigpio"
+                    self.gpionames[f"hal_gpio.{pin}-in-not"] = "rpigpio"
+            if outputs:
+                args.append(f"outputs={','.join(outputs)}")
+                for pin in outputs:
+                    self.gpionames[f"hal_gpio.{pin}-out"] = "rpigpio"
+                    self.gpionames[f"hal_gpio.{pin}-out-invert"] = "rpigpio"
+                    self.gpionames[f"hal_gpio.{pin}-out-reset"] = "rpigpio"
+            if resets:
+                for pin in resets:
+                    if pin not in outputs:
+                        print(f"ERROR: gpio pin {pin} must be an output")
+                args.append(f"resets={','.join(resets)}")
+            self.halg.fmt_add_top(f"loadrt hal_gpio {' '.join(args)}")
+            self.halg.fmt_add_top("addf hal_gpio.read base-thread")
+            self.halg.fmt_add_top("addf hal_gpio.write base-thread")
+            self.halg.fmt_add_top("")
 
         if parports:
             self.halg.fmt_add_top(f"# parport component for {len(parports)} port(s)")
-            self.halg.fmt_add_top(f"loadrt hal_parport cfg={','.join(parports)}")
-            for pn, _parport in enumerate(parports):
+            self.halg.fmt_add_top(f'loadrt hal_parport cfg="{" ".join(parports)}"')
+            for pn, pmode in enumerate(parports):
                 self.halg.setp_add(f"parport.{pn}.reset-time", "5000")
                 self.halg.fmt_add_top(f"addf parport.{pn}.read base-thread")
                 self.halg.fmt_add_top(f"addf parport.{pn}.write base-thread")
                 self.halg.fmt_add_top(f"addf parport.{pn}.reset base-thread")
-                self.halg.fmt_add_top("")
+
+                mode_outputs = {
+                    "in": [1, 14, 16, 17],
+                    "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
+                    "epp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
+                    "x": [2, 3, 4, 5, 6, 7, 8, 9],
+                }
+                outpins = mode_outputs.get(pmode.split()[-1])
+                for pin in range(1, 18):
+                    if pin in outpins:
+                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-out"] = "parport"
+                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-invert"] = "parport"
+                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-reset"] = "parport"
+                    else:
+                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-in"] = "parport"
+                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-in-not"] = "parport"
+
+            self.halg.fmt_add_top("")
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
@@ -1613,11 +1667,21 @@ class LinuxCNC:
 
                             comp_pins = joint_setup["plugin_instance"].component["pins"]
                             pin_step = comp_pins.get("step")
+                            if not self.gpionames.get(pin_step):
+                                print(f"ERROR: step pin not found: {pin_step}")
+                            if not pin_step.endswith("-out"):
+                                print(f"ERROR: step pin in not an output: {pin_step}")
+
                             pin_dir = comp_pins.get("dir")
-                            self.halg.setp_add(f"{pin_step}-reset", "1")
+                            if not self.gpionames.get(pin_dir):
+                                print(f"ERROR: dir pin not found: {pin_dir}")
+                            if not pin_dir.endswith("-out"):
+                                print(f"ERROR: dir pin in not an output: {pin_dir}")
+
+                            if pin_step.startswith("parport."):
+                                self.halg.setp_add(f"{pin_step}-reset", "1")
                             self.halg.net_add(f"stepgen.{snum}.step", pin_step, f"j{joint}step-pin")
                             self.halg.net_add(f"stepgen.{snum}.dir", pin_dir, f"j{joint}dir-pin")
-
 
                         else:
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")

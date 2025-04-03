@@ -480,10 +480,12 @@ class Project:
         self.generator_linuxcnc = LinuxCNC(self)
         if self.config["toolchain"]:
             self.generator_gateware = Gateware(self)
+            self.generator_simulator = Simulator(self)
+            self.generator_firmware = Firmware(self)
         else:
             self.generator_gateware = None
-        self.generator_simulator = Simulator(self)
-        self.generator_firmware = Firmware(self)
+            self.generator_simulator = None
+            self.generator_firmware = None
 
         # check names
         varnames = {}

@@ -27,14 +27,21 @@ class ConfigGraph:
             gpio_config = self.parent.config.get("gpios", [])
             for gpio in gpio_config:
                 if gpio.get("type") == "rpi":
-                    pass
+                    rpi_pins = gpio.get("pins", [])
+                    mportsr = []
+                    for pin in rpi_pins.get("inputs", []):
+                        mportsr.append(f"<{pin}-in>{pin}")
+                    for pin in rpi_pins.get("outputs", []):
+                        mportsr.append(f"<{pin}-out>{pin}")
+                    label = f"{{ {{ RPI\\nGPIO-Pins | {' | '.join(mportsr)}}} }}"
+                    gAll.node(f"hal_gpio", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+
                 elif gpio.get("type") == "parport":
-                    pp_addr = gpio.get("address", "0x378")
-                    pp_mode = gpio.get("mode", "0 out")
+                    pp_addr = gpio.get("address", "0")
+                    pp_mode = gpio.get("mode", "out")
                     mportsr = []
                     for pn in range(0, 18):
                         mportsr.append(f"<{pn}>P{pn}")
-
                     label = f"{{ {{ Parport-{parport_n}\\n{pp_addr} | {' | '.join(mportsr)}}} }}"
                     gAll.node(f"parport.{parport_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
                     parport_n += 1
@@ -47,13 +54,25 @@ class ConfigGraph:
                 if net_source and net_target:
                     if net_source.startswith("parport."):
                         hal_pin = net_target
+                        port = int(net_source.split(".")[1])
                         ppin = int(net_source.split("-")[1])
-                        gAll.edge(f"parport.0:{ppin}", f"hal:{hal_pin}", dir="forward", color="green")
+                        gAll.edge(f"parport.{port}:{ppin}", f"hal:{hal_pin}", dir="forward", color="green")
                         lcports.append(f"<{hal_pin}>{hal_pin}")
                     elif net_target.startswith("parport."):
                         hal_pin = net_source
+                        port = int(net_target.split(".")[1])
                         ppin = int(net_target.split("-")[1])
-                        gAll.edge(f"parport.0:{ppin}", f"hal:{hal_pin}", dir="back", color="red")
+                        gAll.edge(f"parport.{port}:{ppin}", f"hal:{hal_pin}", dir="back", color="red")
+                        lcports.append(f"<{hal_pin}>{hal_pin}")
+
+                    elif net_source.startswith("hal_gpio."):
+                        hal_pin = net_target
+                        gAll.edge(net_source.replace(".", ":"), f"hal:{hal_pin}", dir="forward", color="green")
+                        lcports.append(f"<{hal_pin}>{hal_pin}")
+
+                    elif net_target.startswith("hal_gpio."):
+                        hal_pin = net_source
+                        gAll.edge(net_target.replace(".", ":"), f"hal:{hal_pin}", dir="back", color="red")
                         lcports.append(f"<{hal_pin}>{hal_pin}")
 
             stepgen_n = 0
@@ -71,10 +90,14 @@ class ConfigGraph:
                         port_step = int(pin_step.split(".")[1])
                         ppin_step = int(pin_step.split("-")[1])
                         gAll.edge(f"parport.{port_step}:{ppin_step}", f"stepgen.{stepgen_n}:step", dir="back", color="red")
+                    elif pin_step.startswith("hal_gpio."):
+                        gAll.edge(pin_step.replace(".", ":"), f"stepgen.{stepgen_n}:step", dir="back", color="red")
                     if pin_dir.startswith("parport."):
                         port_dir = int(pin_dir.split(".")[1])
                         ppin_dir = int(pin_dir.split("-")[1])
                         gAll.edge(f"parport.{port_dir}:{ppin_dir}", f"stepgen.{stepgen_n}:dir", dir="back", color="red")
+                    elif pin_dir.startswith("hal_gpio."):
+                        gAll.edge(pin_dir.replace(".", ":"), f"stepgen.{stepgen_n}:dir", dir="back", color="red")
 
                     stepgen_n += 1
 
@@ -384,18 +407,20 @@ class ConfigGraph:
                     if plugin_instance.plugin_setup.get("is_joint", False):
                         joint_n += 1
 
-            label = f"{{ {{ {fpga_name}\\nPhysical-Pins | {' | '.join(sports)}}} }}"
-            gAll.node(f"{fpga_name}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+            if sports:
+                label = f"{{ {{ {fpga_name}\\nPhysical-Pins | {' | '.join(sports)}}} }}"
+                gAll.node(f"{fpga_name}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
 
-            label = f"{{ {{ LinuxCNC\\nHAL-Pins | {' | '.join(lcports)}}} }}"
-            gAll.node(
-                "hal",
-                shape="record",
-                label=label,
-                fontsize="11pt",
-                style="rounded, filled",
-                fillcolor="lightgreen",
-            )
+            if lcports:
+                label = f"{{ {{ LinuxCNC\\nHAL-Pins | {' | '.join(lcports)}}} }}"
+                gAll.node(
+                    "hal",
+                    shape="record",
+                    label=label,
+                    fontsize="11pt",
+                    style="rounded, filled",
+                    fillcolor="lightgreen",
+                )
 
             self.map = {}
             for line in gAll.pipe(format="imap").decode().split("\n"):

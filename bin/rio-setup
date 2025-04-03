@@ -3992,7 +3992,6 @@ class WinForm(QWidget):
     def generate_cb(self, preview=False):
         if not self.config["plugins"]:
             print("WARNING: no plugins configured")
-            return
 
         self.info_widget.setText("generate...")
         self.output_path = "Output"
@@ -4000,14 +3999,23 @@ class WinForm(QWidget):
             self.output_path = "OutputTMP"
 
         self.generate(self.output_path, preview=preview)
+        if self.board:
+            try:
+                self.tabs["Gateware"].update()
+            except Exception as error:
+                print(f"ERROR loading gateware files: {error}")
         try:
-            self.tabs["Gateware"].update()
             self.tabs["LinuxCNC"].update()
-            self.tabs["Hal"].update()
-            self.tabs["Axis"].update()
-
         except Exception as error:
-            print(f"ERROR loading output: {error}")
+            print(f"ERROR loading linuxcnc files: {error}")
+        try:
+            self.tabs["Hal"].update()
+        except Exception as error:
+            print(f"ERROR loading hal files: {error}")
+        try:
+            self.tabs["Axis"].update()
+        except Exception as error:
+            print(f"ERROR loading axis files: {error}")
 
         if preview and self.output_path and os.path.isdir(self.output_path):
             shutil.rmtree(self.output_path)
