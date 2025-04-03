@@ -1864,7 +1864,7 @@ class WinForm(QWidget):
 
         # loading board config
         boardcfg = self.config.get("boardcfg")
-        self.boardcfg_path = None
+        self.boardcfg_path = ""
         if boardcfg:
             board_file = self.get_boardpath(boardcfg)
             self.boardcfg_path = os.path.dirname(board_file)
@@ -1872,6 +1872,9 @@ class WinForm(QWidget):
             print(f"loading board: {board_file}")
             boardJsonStr = open(board_file, "r").read()
             self.board = json.loads(boardJsonStr)
+        else:
+            print(f"no board config found")
+            self.board = {}
 
         self.config_load()
 
@@ -2435,6 +2438,8 @@ class WinForm(QWidget):
             return value
 
         def load_pins(board):
+            if not board:
+                return
             # try to load list of pins from chipdb files
             family = board.get("family")
             fpga_type = board.get("type")
