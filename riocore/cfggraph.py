@@ -1,5 +1,7 @@
 import graphviz
 
+from riocore import components
+
 
 class ConfigGraph:
     def __init__(self, parent):
@@ -90,69 +92,22 @@ class ConfigGraph:
                 elif pin.startswith("hal_gpio."):
                     gAll.edge(pin.replace(".", ":"), target, dir=arrow, color=color)
 
-            stepgen_n = 0
-            pwmgen_n = 0
-            encoder_n = 0
+            component_nums = {}
             for component in linuxcnc_config.get("components", []):
                 comp_type = component.get("type")
-                if comp_type == "stepgen":
-                    comp_pins = component.get("pins", {})
-                    comp_mode = str(component.get("mode", "0"))
-                    mode_pins = {
-                        "0": ("step:output", "dir:output"),
-                        "1": ("up:output", "down:output"),
-                        "2": ("phase-A:output", "phase-B:output"),
-                        "3": ("phase-A:output", "phase-B:output", "phase-C:output"),
-                        "4": ("phase-A:output", "phase-B:output", "phase-C:output"),
-                        "5": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
-                        "6": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
-                        "7": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
-                        "8": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
-                        "9": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
-                        "10": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
-                        "11": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
-                        "12": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
-                        "13": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
-                        "14": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
-                        "15": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
-                    }
-                    pins = mode_pins[comp_mode]
-                    signals = ("cmd", "fb")
-                    title = f"StepGen-{stepgen_n}"
-                    prefix = f"stepgen.{stepgen_n}"
-                    stepgen_n += 1
-
-                elif comp_type == "pwmgen":
-                    comp_pins = component.get("pins", {})
-                    comp_mode = str(component.get("mode", "1"))
-                    if comp_mode == "1":
-                        pins = ("pwm:output", "dir:output")
-                    else:
-                        pins = ("up:output", "down:output")
-                    signals = ("en", "value")
-                    title = f"PWMGen-{pwmgen_n}"
-                    prefix = f"pwmgen.{pwmgen_n}"
-                    pwmgen_n += 1
-
-                elif comp_type == "encoder":
-                    comp_pins = component.get("pins", {})
-                    comp_mode = str(component.get("mode", "1"))
-                    pins = ("phase-A:input", "phase-B:input", "phase-Z:input")
-                    signals = ("pos", "idx")
-                    title = f"Encoder-{encoder_n}"
-                    prefix = f"encoder.{encoder_n}"
-                    encoder_n += 1
-                else:
-                    continue
-
-                ports = [f"<{p.split(':')[0]}>{p.split(':')[0]}" for p in pins]
-                label = f"{{ {{ {'|'.join(ports)} }} | {{ {title} }} | {{ {'|'.join(signals)} }} }}"
-                gAll.node(prefix, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-                for pin in pins:
-                    pin_name = pin.split(":")[0]
-                    pin_dir = pin.split(":")[1]
-                    if pin_name in comp_pins:
-                        gpio_con(comp_pins[pin_name], f"{prefix}:{pin_name}", pin_dir)
+                if comp_type not in component_nums:
+                    component_nums[comp_type] = 0
+                component["num"] = component_nums[comp_type]
+                component_nums[comp_type] += 1
+                if hasattr(components, comp_type):
+                    cinstance = getattr(components, comp_type)(component)
+                    comp_pins = cinstance.setup.get("pins", {})
+                    ports = [f"<{p.split(':')[0]}>{p.split(':')[0]}" for p in cinstance.PINS]
+                    label = f"{{ {{ {'|'.join(ports)} }} | {{ {cinstance.TITLE} }} | {{ {'|'.join(cinstance.SIGNALS)} }} }}"
+                    gAll.node(cinstance.PREFIX, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+                    for pin_name, pin_data in cinstance.PINDEFAULTS.items():
+                        if pin_name in comp_pins:
+                            gpio_con(comp_pins[pin_name], f"{cinstance.PREFIX}:{pin_name}", pin_data["direction"])
 
             # show slots
             for slot in self.parent.slots:

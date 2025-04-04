@@ -6,6 +6,7 @@ import shutil
 import stat
 
 from riocore import halpins
+from riocore import components
 from riocore.generator.hal import hal_generator
 from riocore.generator.component import component
 from riocore.generator.rosbridge import rosbridge
@@ -1547,8 +1548,30 @@ class LinuxCNC:
         stepgens = []
         pwmgens = []
         encoders = []
+        component_nums = {}
         for component in linuxcnc_config.get("components", []):
             comp_type = component.get("type")
+            if comp_type not in component_nums:
+                component_nums[comp_type] = 0
+            component["num"] = component_nums[comp_type]
+            component_nums[comp_type] += 1
+
+            if hasattr(components, comp_type):
+                cinstance = getattr(components, comp_type)(component)
+                comp_pins = cinstance.setup.get("pins", {})
+
+                if comp_type != "stepgen":
+                    comp_pins = cinstance.setup.get("pins", {})
+                    options = cinstance.OPTIONS
+                    for option in options:
+                        if option in component:
+                            self.halg.setp_add(f"{cinstance.PREFIX}.{option}", component[option])
+
+                    for pin_name, pin_data in cinstance.PINDEFAULTS.items():
+                        pin_dir = pin_data["direction"]
+                        if pin_name in comp_pins:
+                            self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", comp_pins[pin_name])
+
             if comp_type == "stepgen":
                 comp_pins = component.get("pins", {})
                 comp_mode = str(component.get("mode", "0"))
@@ -1559,31 +1582,12 @@ class LinuxCNC:
                 comp_pins = component.get("pins", {})
                 comp_mode = str(component.get("mode", "1"))
                 pwmgens.append(comp_mode)
-                if comp_mode == "1":
-                    pins = ("pwm", "dir")
-                else:
-                    pins = ("up", "down")
-                options = ("pwm-freq", "scale", "offset", "dither-pwm", "min-dc", "max-dc", "curr-dc")
-                for option in options:
-                    if option in component:
-                        self.halg.setp_add(f"pwmgen.{pnum}.{option}", component[option])
-                for pin in pins:
-                    if pin in comp_pins:
-                        self.halg.net_add(f"pwmgen.{pnum}.{pin}", comp_pins[pin])
 
             elif comp_type == "encoder":
                 enum = len(encoders)
                 comp_pins = component.get("pins", {})
                 comp_mode = str(component.get("mode", "1"))
                 encoders.append(enum)
-                pins = ("phase-A", "phase-B", "phase-Z")
-                options = ("counter-mode", "missing-teeth", "x4-mode")
-                for option in options:
-                    if option in component:
-                        self.halg.setp_add(f"encoder.{enum}.{option}", component[option])
-                for pin in pins:
-                    if pin in comp_pins:
-                        self.halg.net_add(f"encoder.{enum}.{pin}", comp_pins[pin])
 
         if stepgens:
             self.halg.fmt_add_top(f"# stepgen component for {len(stepgens)} joint(s)")
@@ -1599,6 +1603,9 @@ class LinuxCNC:
             self.halg.fmt_add_top("addf pwmgen.make-pulses base-thread")
             self.halg.fmt_add_top("addf pwmgen.update servo-thread")
             self.halg.fmt_add_top("")
+
+        if encoders:
+            self.halg.fmt_add_top(f"# encoder component for {len(encoders)} inputs(s)")
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1791,7 +1798,7 @@ class LinuxCNC:
                         "type": "stepgen",
                         "axis": axis_name,
                         "joint": self.num_joints,
-                        "plugin_instance": joint_stepgen(component),
+                        "plugin_instance": components.stepgen(component),
                         "feedback": feedback or True,
                     }
                     if feedback:
@@ -1964,16 +1971,3 @@ class LinuxCNC:
             for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
                 key = key.upper()
                 axis_config[key] = value
-
-
-class joint_stepgen:
-    def __init__(self, component):
-        self.snum = component["num"]
-        self.component = component
-        self.instances_name = component.get("name", f"stepgen{self.snum}")
-        self.plugin_setup = component
-        self.TYPE = "stepgen"
-        self.SIGNALS = {}
-
-    def signals(self):
-        return {}
