@@ -1546,32 +1546,29 @@ class LinuxCNC:
 
         stepgens = []
         pwmgens = []
-        spindle_num = 0
         for component in linuxcnc_config.get("components", []):
             comp_type = component.get("type")
             if comp_type == "stepgen":
                 comp_pins = component.get("pins", {})
-                comp_mode = component.get("mode", 0)
+                comp_mode = component.get("mode", "0")
                 stepgens.append(str(comp_mode))
 
             elif comp_type == "pwmgen":
+                pnum = len(pwmgens)
                 comp_pins = component.get("pins", {})
                 comp_mode = component.get("mode", 1)
-                pnum = len(pwmgens)
                 pwmgens.append(str(comp_mode))
-                pin_pwm = comp_pins.get("pwm")
-                pin_dir = comp_pins.get("dir")
-
-                self.halg.setp_add(f"pwmgen.{pnum}.pwm-freq", "100.0")
-                self.halg.setp_add(f"pwmgen.{pnum}.scale", "1166.6666666666665")
-                self.halg.setp_add(f"pwmgen.{pnum}.offset", "0.11428571428571428")
-                self.halg.setp_add(f"pwmgen.{pnum}.dither-pwm", "true")
-
-                self.halg.net_add(f"spindle.{spindle_num}.speed-out", f"pwmgen.{pnum}.value")
-                self.halg.net_add(f"spindle.{spindle_num}.on", f"pwmgen.{pnum}.enable")
-                self.halg.net_add(f"spindle.{spindle_num}.forward", pin_dir)
-                self.halg.net_add(f"pwmgen.{pnum}.pwm", pin_pwm)
-                spindle_num += 1
+                if comp_mode == "1":
+                    pins = ("pwm", "dir")
+                else:
+                    pins = ("up", "down")
+                options = ("pwm-freq", "scale", "offset", "dither-pwm")
+                for option in options:
+                    if option in component:
+                        self.halg.setp_add(f"pwmgen.{pnum}.{option}", component[option])
+                for pin in pins:
+                    if pin in comp_pins:
+                        self.halg.net_add(f"pwmgen.{pnum}.{pin}", comp_pins[pin])
 
         if stepgens:
             self.halg.fmt_add_top(f"# stepgen component for {len(stepgens)} joint(s)")
@@ -1664,25 +1661,15 @@ class LinuxCNC:
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"stepgen.{snum}.position-cmd", f"j{joint}pos-cmd")
                             self.halg.net_add(f"stepgen.{snum}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
                             self.halg.net_add(f"joint.{joint}.amp-enable-out", f"stepgen.{snum}.enable", f"j{joint}senable")
-
                             comp_pins = joint_setup["plugin_instance"].component["pins"]
-                            pin_step = comp_pins.get("step")
-                            if not self.gpionames.get(pin_step):
-                                print(f"ERROR: step pin not found: {pin_step}")
-                            if not pin_step.endswith("-out"):
-                                print(f"ERROR: step pin in not an output: {pin_step}")
-
-                            pin_dir = comp_pins.get("dir")
-                            if not self.gpionames.get(pin_dir):
-                                print(f"ERROR: dir pin not found: {pin_dir}")
-                            if not pin_dir.endswith("-out"):
-                                print(f"ERROR: dir pin in not an output: {pin_dir}")
-
-                            if pin_step.startswith("parport."):
-                                self.halg.setp_add(f"{pin_step}-reset", "1")
-                            self.halg.net_add(f"stepgen.{snum}.step", pin_step, f"j{joint}step-pin")
-                            self.halg.net_add(f"stepgen.{snum}.dir", pin_dir, f"j{joint}dir-pin")
-
+                            for name, pin in comp_pins.items():
+                                if not self.gpionames.get(pin):
+                                    print(f"ERROR: {name} pin not found: {pin}")
+                                if not pin.endswith("-out"):
+                                    print(f"ERROR: {name} pin in not an output: {pin}")
+                                if name == "step" and pin.startswith("parport."):
+                                    self.halg.setp_add(f"{pin}-reset", "1")
+                                self.halg.net_add(f"stepgen.{snum}.{name}", pin, f"j{joint}{name}-pin")
                         else:
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")

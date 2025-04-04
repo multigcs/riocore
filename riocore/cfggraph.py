@@ -89,13 +89,32 @@ class ConfigGraph:
                 comp_type = component.get("type")
                 if comp_type == "stepgen":
                     comp_pins = component.get("pins", {})
-                    comp_mode = component.get("mode", 0)
-                    pins = ("step", "dir")
+                    comp_mode = component.get("mode", "0")
+                    mode_pins = {
+                        "0": ("step", "dir"),
+                        "1": ("up", "down"),
+                        "2": ("phase-A", "phase-B"),
+                        "3": ("phase-A", "phase-B", "phase-C"),
+                        "4": ("phase-A", "phase-B", "phase-C"),
+                        "5": ("phase-A", "phase-B", "phase-C", "phase-D"),
+                        "6": ("phase-A", "phase-B", "phase-C", "phase-D"),
+                        "7": ("phase-A", "phase-B", "phase-C", "phase-D"),
+                        "8": ("phase-A", "phase-B", "phase-C", "phase-D"),
+                        "9": ("phase-A", "phase-B", "phase-C", "phase-D"),
+                        "10": ("phase-A", "phase-B", "phase-C", "phase-D"),
+                        "11": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
+                        "12": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
+                        "13": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
+                        "14": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
+                        "15": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
+                    }
+                    pins = mode_pins[comp_mode]
                     ports = [f"<{p}>{p}" for p in pins]
                     label = f"{{ {{ {'|'.join(ports)} }} | {{ StepGen-{stepgen_n} }} | {{ <cmd>cmd | <fb>fb }} }}"
                     gAll.node(f"stepgen.{stepgen_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
                     for pin in pins:
-                        gpio_con(comp_pins.get(pin), f"stepgen.{stepgen_n}:{pin}")
+                        if pin in comp_pins:
+                            gpio_con(comp_pins[pin], f"stepgen.{stepgen_n}:{pin}")
                     stepgen_n += 1
 
                 elif comp_type == "pwmgen":
@@ -109,7 +128,8 @@ class ConfigGraph:
                     label = f"{{ {{ {'|'.join(ports)} }} | {{ PWMGen-{pwmgen_n} }} | {{ <en>en | <value>value }} }}"
                     gAll.node(f"pwmgen.{pwmgen_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
                     for pin in pins:
-                        gpio_con(comp_pins.get(pin), f"pwmgen.{pwmgen_n}:{pin}")
+                        if pin in comp_pins:
+                            gpio_con(comp_pins[pin], f"pwmgen.{pwmgen_n}:{pin}")
 
                     pwmgen_n += 1
 
