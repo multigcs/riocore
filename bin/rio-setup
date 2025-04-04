@@ -1145,25 +1145,6 @@ class TabGpios:
 
                 # self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
 
-    def remove_module(self, slot_name):
-        module_name = self.parent.get_module_by_slot(slot_name)
-        qm = QMessageBox
-        ret = qm.question(self.parent, "remove module", f"Are you sure to remove module '{module_name}' from slot '{slot_name}' ?", qm.Yes | qm.No)
-        if ret == qm.Yes:
-            if "modules" in self.parent.config:
-                for mn, module in enumerate(self.parent.config["modules"]):
-                    if module["slot"] == slot_name:
-                        self.parent.config["modules"].pop(mn)
-                        break
-            del self.parent.modules[slot_name]
-            self.parent.load_tree()
-            if self.board:
-                self.parent.tabs["Board"].update()
-                self.parent.tabs["Pins"].update()
-                self.parent.tabs["Signals"].update()
-            self.tabs["GPIOs"].update()
-            self.parent.display()
-
     def pinlayout_mark(self, pkey):
         slot_name = pkey.split(":")[0]
         infotext = [f"Slot: {slot_name}"]
