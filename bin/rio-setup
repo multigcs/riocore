@@ -1046,7 +1046,48 @@ class TabGpios:
         layout_box.setContentsMargins(0, 0, 0, 0)
         layout_box.addWidget(pinlayout_image)
 
-        pinout = ("3V3", "5V", "GPIO2", "5V", "GPIO3", "GND", "GPIO4", "GPIO14", "GND", "GPIO15", "GPIO17", "GPIO18", "GPIO27", "GND", "GPIO22", "GPIO23", "3V3", "GPIO24", "GPIO10", "GND", "GPIO9", "GPIO25", "GPIO11", "GPIO8", "GND", "GPIO7", "GPIO0", "GPIO1", "GPIO5", "GND", "GPIO6", "GPIO12", "GPIO19", "GND", "GPIO19", "GPIO16", "GPIO26", "GPIO20", "GND", "GPIO21")
+        pinout = (
+            "3V3",
+            "5V",
+            "GPIO2",
+            "5V",
+            "GPIO3",
+            "GND",
+            "GPIO4",
+            "GPIO14",
+            "GND",
+            "GPIO15",
+            "GPIO17",
+            "GPIO18",
+            "GPIO27",
+            "GND",
+            "GPIO22",
+            "GPIO23",
+            "3V3",
+            "GPIO24",
+            "GPIO10",
+            "GND",
+            "GPIO9",
+            "GPIO25",
+            "GPIO11",
+            "GPIO8",
+            "GND",
+            "GPIO7",
+            "GPIO0",
+            "GPIO1",
+            "GPIO5",
+            "GND",
+            "GPIO6",
+            "GPIO12",
+            "GPIO19",
+            "GND",
+            "GPIO19",
+            "GPIO16",
+            "GPIO26",
+            "GPIO20",
+            "GND",
+            "GPIO21",
+        )
 
         self.inputs = []
         self.outputs = []
@@ -1057,7 +1098,6 @@ class TabGpios:
                 self.inputs = rpi_pins.get("inputs", [])
                 self.outputs = rpi_pins.get("outputs", [])
                 resets = rpi_pins.get("reset", [])
-
 
         pins = {}
         for pin_num in range(0, 40):
@@ -1071,7 +1111,6 @@ class TabGpios:
                     "direction": "all",
                 }
 
-
         slot_name = "rpi_gpio"
         for pin_id, pin in pins.items():
             pkey = f"{slot_name}:{pin_id}"
@@ -1082,7 +1121,6 @@ class TabGpios:
                 bgcolor = "blue"
             elif pin_id in self.outputs:
                 bgcolor = "green"
-
 
             if "pos" in pin:
                 self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
@@ -1148,7 +1186,6 @@ class TabGpios:
                     pinfo = f"-> gpio : input"
                 elif label.pin.get("pin", {}) in self.outputs:
                     pinfo = f"-> gpio : output"
-
 
                 if key == pkey:
                     pinfo += " <-"
