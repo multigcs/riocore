@@ -89,6 +89,10 @@ class ConfigGraph:
                     port = int(pin.split(".")[1])
                     ppin = int(pin.split("-")[1])
                     gAll.edge(f"parport.{port}:{ppin}", target, dir=arrow, color=color)
+
+                elif pin.startswith("hal_pi_gpio."):
+                    gAll.edge(pin.replace("_pi_", "_").replace(".pin-0", ".GPIO").replace(".pin-", ".GPIO").replace(".", ":"), target, dir=arrow, color=color)
+
                 elif pin.startswith("hal_gpio."):
                     gAll.edge(pin.replace(".", ":"), target, dir=arrow, color=color)
 
