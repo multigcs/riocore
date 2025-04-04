@@ -89,7 +89,7 @@ class ConfigGraph:
                 comp_type = component.get("type")
                 if comp_type == "stepgen":
                     comp_pins = component.get("pins", {})
-                    comp_mode = component.get("mode", "0")
+                    comp_mode = str(component.get("mode", "0"))
                     mode_pins = {
                         "0": ("step", "dir"),
                         "1": ("up", "down"),
@@ -119,7 +119,7 @@ class ConfigGraph:
 
                 elif comp_type == "pwmgen":
                     comp_pins = component.get("pins", {})
-                    comp_mode = component.get("mode", 1)
+                    comp_mode = str(component.get("mode", "1"))
                     if comp_mode == "1":
                         pins = ("pwm", "dir")
                     else:

@@ -1550,19 +1550,19 @@ class LinuxCNC:
             comp_type = component.get("type")
             if comp_type == "stepgen":
                 comp_pins = component.get("pins", {})
-                comp_mode = component.get("mode", "0")
-                stepgens.append(str(comp_mode))
+                comp_mode = str(component.get("mode", "0"))
+                stepgens.append(comp_mode)
 
             elif comp_type == "pwmgen":
                 pnum = len(pwmgens)
                 comp_pins = component.get("pins", {})
-                comp_mode = component.get("mode", 1)
-                pwmgens.append(str(comp_mode))
+                comp_mode = str(component.get("mode", "1"))
+                pwmgens.append(comp_mode)
                 if comp_mode == "1":
                     pins = ("pwm", "dir")
                 else:
                     pins = ("up", "down")
-                options = ("pwm-freq", "scale", "offset", "dither-pwm")
+                options = ("pwm-freq", "scale", "offset", "dither-pwm", "min-dc", "max-dc", "curr-dc")
                 for option in options:
                     if option in component:
                         self.halg.setp_add(f"pwmgen.{pnum}.{option}", component[option])
