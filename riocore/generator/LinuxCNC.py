@@ -1545,9 +1545,6 @@ class LinuxCNC:
             if net_source and net_target:
                 self.halg.net_add(net_source, net_target, net_name)
 
-        stepgens = []
-        pwmgens = []
-        encoders = []
         component_nums = {}
         for component in linuxcnc_config.get("components", []):
             comp_type = component.get("type")
@@ -1559,53 +1556,22 @@ class LinuxCNC:
             if hasattr(components, comp_type):
                 cinstance = getattr(components, comp_type)(component)
                 comp_pins = cinstance.setup.get("pins", {})
-
                 if comp_type != "stepgen":
                     comp_pins = cinstance.setup.get("pins", {})
                     options = cinstance.OPTIONS
                     for option in options:
                         if option in component:
                             self.halg.setp_add(f"{cinstance.PREFIX}.{option}", component[option])
-
                     for pin_name, pin_data in cinstance.PINDEFAULTS.items():
                         pin_dir = pin_data["direction"]
                         if pin_name in comp_pins:
                             self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", comp_pins[pin_name])
 
-            if comp_type == "stepgen":
-                comp_pins = component.get("pins", {})
-                comp_mode = str(component.get("mode", "0"))
-                stepgens.append(comp_mode)
-
-            elif comp_type == "pwmgen":
-                pnum = len(pwmgens)
-                comp_pins = component.get("pins", {})
-                comp_mode = str(component.get("mode", "1"))
-                pwmgens.append(comp_mode)
-
-            elif comp_type == "encoder":
-                enum = len(encoders)
-                comp_pins = component.get("pins", {})
-                comp_mode = str(component.get("mode", "1"))
-                encoders.append(enum)
-
-        if stepgens:
-            self.halg.fmt_add_top(f"# stepgen component for {len(stepgens)} joint(s)")
-            self.halg.fmt_add_top(f"loadrt stepgen step_type={','.join(stepgens)}")
-            self.halg.fmt_add_top("addf stepgen.make-pulses base-thread")
-            self.halg.fmt_add_top("addf stepgen.capture-position servo-thread")
-            self.halg.fmt_add_top("addf stepgen.update-freq servo-thread")
-            self.halg.fmt_add_top("")
-
-        if pwmgens:
-            self.halg.fmt_add_top(f"# pwmgen component for {len(pwmgens)} output(s)")
-            self.halg.fmt_add_top(f"loadrt pwmgen output_type={','.join(pwmgens)}")
-            self.halg.fmt_add_top("addf pwmgen.make-pulses base-thread")
-            self.halg.fmt_add_top("addf pwmgen.update servo-thread")
-            self.halg.fmt_add_top("")
-
-        if encoders:
-            self.halg.fmt_add_top(f"# encoder component for {len(encoders)} inputs(s)")
+        for component in dir(components):
+            if component[0] != "_":
+                ret = getattr(components, component).loader(None, linuxcnc_config.get("components", []))
+                if ret:
+                    self.halg.fmt_add_top(ret)
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
