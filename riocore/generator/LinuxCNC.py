@@ -1625,11 +1625,12 @@ class LinuxCNC:
             for joint, joint_setup in joints.items():
                 position_mode = joint_setup["position_mode"]
                 position_halname = joint_setup["position_halname"]
+                position_scale_halname = joint_setup["position_scale_halname"]
                 feedback_halname = joint_setup["feedback_halname"]
                 enable_halname = joint_setup["enable_halname"]
                 pin_num = joint_setup["pin_num"]
                 if position_mode == "absolute":
-                    self.halg.setp_add(f"{position_halname}-scale", f"[JOINT_{joint}]SCALE_OUT")
+                    self.halg.setp_add(f"{position_scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
                     if machinetype == "corexy" and axis_name in {"X", "Y"}:
                         corexy_axis = "beta"
                         if axis_name == "X":
@@ -1675,7 +1676,7 @@ class LinuxCNC:
                     self.halg.setp_add(f"pid.{pin_num}.FF2", f"[JOINT_{joint}]FF2")
                     self.halg.setp_add(f"pid.{pin_num}.deadband", f"[JOINT_{joint}]DEADBAND")
                     self.halg.setp_add(f"pid.{pin_num}.maxoutput", f"[JOINT_{joint}]MAXOUTPUT")
-                    self.halg.setp_add(f"{position_halname}-scale", f"[JOINT_{joint}]SCALE_OUT")
+                    self.halg.setp_add(f"{position_scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
                     self.halg.setp_add(f"{feedback_halname}-scale", f"[JOINT_{joint}]SCALE_IN")
 
                     if machinetype == "corexy" and axis_name in {"X", "Y"}:
@@ -1790,6 +1791,7 @@ class LinuxCNC:
             # print(f"  # Axis: {axis_name}")
             for joint, joint_setup in joints.items():
                 position_halname = None
+                position_scale_halname = None
                 enable_halname = None
                 position_mode = None
                 joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
@@ -1827,6 +1829,7 @@ class LinuxCNC:
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
+                position_scale = joint_signals.get("position-scale")
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
 
@@ -1836,14 +1839,17 @@ class LinuxCNC:
                 if velocity:
                     position_halname = f"{prefix}{velocity['halname']}"
                     position_mode = "relative"
+                elif position_scale:
+                    position_scale_halname = f"{position_scale['halname']}"
+                    position_mode = "absolute"
                 elif position:
                     position_halname = f"{prefix}{position['halname']}"
-                    position_mode = "absolute"
-                elif joint_setup["type"] == "stepgen":
                     position_mode = "absolute"
                 elif dty:
                     position_halname = f"{prefix}{dty['halname']}"
                     position_mode = "relative"
+                if not position_scale_halname:
+                    position_scale_halname = f"{position_halname}-scale"
 
                 feedback_scale = position_scale
                 feedback_halname = None
@@ -1879,6 +1885,7 @@ class LinuxCNC:
 
                 joint_setup["position_mode"] = position_mode
                 joint_setup["position_halname"] = position_halname
+                joint_setup["position_scale_halname"] = position_scale_halname
                 joint_setup["feedback_halname"] = feedback_halname
                 joint_setup["enable_halname"] = enable_halname
                 joint_setup["pin_num"] = pin_num

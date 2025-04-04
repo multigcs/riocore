@@ -75,7 +75,11 @@ class stepgen:
         return "\n".join(output)
 
     def signals(self):
-        return {}
+        return {
+            "position-scale": {
+                "halname": f"{self.PREFIX}.position-scale",
+            },
+        }
 
 
 class pwmgen:
