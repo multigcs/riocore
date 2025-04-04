@@ -989,6 +989,198 @@ class TabPlugins:
         pass
 
 
+class TabGpios:
+    scale = 1.0
+
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.img_container = QWidget()
+        self.img_layout = QVBoxLayout(self.img_container)
+        self.boardimg = QWidget()
+        self.img_layout.addWidget(self.boardimg)
+
+        self.pininfo = QLabel("")
+        self.pininfo_timer = 0
+
+        ipin_layout = QHBoxLayout()
+        self.ipin_widget = QWidget()
+        self.ipin_widget.setLayout(ipin_layout)
+        ipin_layout.addWidget(self.img_container)
+        ipin_layout.addWidget(self.pininfo)
+        ipin_layout.addStretch()
+
+        self.scroll_widget = QScrollArea()
+        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll_widget.setWidgetResizable(True)
+        self.scroll_widget.setWidget(self.ipin_widget)
+
+    def widget(self):
+        return self.scroll_widget
+
+    def timer(self):
+        if self.pininfo_timer == 1:
+            self.pininfo_timer = 0
+            self.pininfo.setText("\n".join([""] * 10))
+        elif self.pininfo_timer > 1:
+            self.pininfo_timer -= 1
+
+    def update(self):
+        self.img_layout.removeWidget(self.boardimg)
+        self.boardimg = QWidget()
+        self.pinlabels = {}
+
+        pinimage_path = "/usr/src/MXM/riocore/riocore/files/rpi-gpio.png"
+
+        pinlayout_pixmap = QPixmap(pinimage_path)
+        self.boardimg.setFixedSize(pinlayout_pixmap.size())
+
+        pinlayout_image = ImageMap(self)
+        pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
+        pinlayout_image.setFixedSize(pinlayout_pixmap.size())
+        pinlayout_image.setPixmap(pinlayout_pixmap)
+
+        self.img_layout.addWidget(self.boardimg)
+
+        layout_box = QVBoxLayout(self.boardimg)
+        layout_box.setContentsMargins(0, 0, 0, 0)
+        layout_box.addWidget(pinlayout_image)
+
+        pinout = ("3V3", "5V", "GPIO2", "5V", "GPIO3", "GND", "GPIO4", "GPIO14", "GND", "GPIO15", "GPIO17", "GPIO18", "GPIO27", "GND", "GPIO22", "GPIO23", "3V3", "GPIO24", "GPIO10", "GND", "GPIO9", "GPIO25", "GPIO11", "GPIO8", "GND", "GPIO7", "GPIO0", "GPIO1", "GPIO5", "GND", "GPIO6", "GPIO12", "GPIO19", "GND", "GPIO19", "GPIO16", "GPIO26", "GPIO20", "GND", "GPIO21")
+
+        self.inputs = []
+        self.outputs = []
+        gpio_config = self.parent.config.get("gpios", [])
+        for gpio in gpio_config:
+            if gpio.get("type") == "rpi":
+                rpi_pins = gpio.get("pins", [])
+                self.inputs = rpi_pins.get("inputs", [])
+                self.outputs = rpi_pins.get("outputs", [])
+                resets = rpi_pins.get("reset", [])
+
+
+        pins = {}
+        for pin_num in range(0, 40):
+            pin_name = pinout[pin_num]
+            if pin_name.startswith("GPIO"):
+                x_pos = 30 + (pin_num % 2) * 110
+                y_pos = 60 + (pin_num // 2) * 20.5
+                pins[pin_name] = {
+                    "pin": pin_name,
+                    "pos": [int(x_pos), int(y_pos)],
+                    "direction": "all",
+                }
+
+
+        slot_name = "rpi_gpio"
+        for pin_id, pin in pins.items():
+            pkey = f"{slot_name}:{pin_id}"
+
+            bgcolor = "darkgray"
+            tooltip = f"{slot_name}:{pin_id} {pin['pin']} ({pin.get('direction', 'all')})"
+            if pin_id in self.inputs:
+                bgcolor = "blue"
+            elif pin_id in self.outputs:
+                bgcolor = "green"
+
+
+            if "pos" in pin:
+                self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
+                if pin.get("rotate"):
+                    if len(pin["pos"]) == 4:
+                        self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
+                        self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
+                    else:
+                        self.pinlabels[pkey].setFixedWidth(15)
+                        self.pinlabels[pkey].setFixedHeight(len(pin_id * 15))
+                    self.pinlabels[pkey].setText(pin_id, True)
+                else:
+                    if len(pin["pos"]) == 4:
+                        self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
+                        self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
+                    else:
+                        self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
+                        self.pinlabels[pkey].setFixedHeight(15)
+                    self.pinlabels[pkey].setText(pin_id)
+                self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
+                self.pinlabels[pkey].setToolTip(tooltip)
+
+                # self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
+
+    def remove_module(self, slot_name):
+        module_name = self.parent.get_module_by_slot(slot_name)
+        qm = QMessageBox
+        ret = qm.question(self.parent, "remove module", f"Are you sure to remove module '{module_name}' from slot '{slot_name}' ?", qm.Yes | qm.No)
+        if ret == qm.Yes:
+            if "modules" in self.parent.config:
+                for mn, module in enumerate(self.parent.config["modules"]):
+                    if module["slot"] == slot_name:
+                        self.parent.config["modules"].pop(mn)
+                        break
+            del self.parent.modules[slot_name]
+            self.parent.load_tree()
+            if self.board:
+                self.parent.tabs["Board"].update()
+                self.parent.tabs["Pins"].update()
+                self.parent.tabs["Signals"].update()
+            self.tabs["GPIOs"].update()
+            self.parent.display()
+
+    def pinlayout_mark(self, pkey):
+        slot_name = pkey.split(":")[0]
+        infotext = [f"Slot: {slot_name}"]
+        infotext.append("Pins:")
+        networks = []
+        infoline = 0
+        ln = 0
+        for key, label in self.pinlabels.items():
+            splitted = key.split(":")
+            if splitted[0] == slot_name:
+                color = "darkCyan"
+                label.mark(color)
+                direction = label.pin.get("direction") or "all"
+                comment = label.pin.get("comment") or ""
+                if comment:
+                    comment = f" - {comment}"
+
+                pinfo = ""
+                if label.pin.get("pin", {}) in self.inputs:
+                    pinfo = f"-> gpio : input"
+                elif label.pin.get("pin", {}) in self.outputs:
+                    pinfo = f"-> gpio : output"
+
+
+                if key == pkey:
+                    pinfo += " <-"
+                    infoline = ln
+
+                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}{comment}) {pinfo}")
+                ln += 1
+            else:
+                label.unmark()
+
+        if len(infotext) > 2:
+            if networks:
+                infotext.append("Networks:")
+                for net in networks:
+                    infotext.append(f" {net}")
+
+            ilen = 30
+            off = ilen - 4
+            start = 0
+            end = ilen
+            if infoline > off - 1:
+                start = infoline - off
+                end = start + ilen
+            displayed = infotext[start:end]
+            fill = ilen + 1 - len(displayed)
+            displayed += [""] * fill
+            self.pininfo.setText("\n".join(displayed))
+            self.pininfo_timer = 0
+        else:
+            self.pininfo_timer = 3
+
+
 class TabBoard:
     scale = 1.0
 
@@ -1153,6 +1345,7 @@ class TabBoard:
                 self.parent.tabs["Board"].update()
                 self.parent.tabs["Pins"].update()
                 self.parent.tabs["Signals"].update()
+            self.tabs["GPIOs"].update()
             self.parent.display()
 
     def pinlayout_mark(self, pkey):
@@ -1265,6 +1458,7 @@ class WinForm(QWidget):
         self.tabs = {
             "Plugins": TabPlugins(self),
             "Board": TabBoard(self),
+            "GPIOs": TabGpios(self),
             "Overview": TabOverview(self),
             "Hal": TabHal(self),
             "Axis": TabAxis(self),
@@ -1781,6 +1975,7 @@ class WinForm(QWidget):
             if self.board:
                 self.tabs["Pins"].update()
                 self.tabs["Board"].update()
+            self.tabs["GPIOs"].update()
             self.request_pin_table_load = 0
 
         if self.request_sig_table_load > 1:
@@ -2497,6 +2692,7 @@ class WinForm(QWidget):
             if slot_name:
                 self.slotnames.append(slot_name)
 
+        self.tabs["GPIOs"].update()
         if self.board:
             self.tabs["Board"].update()
             self.tabs["Pins"].update()
