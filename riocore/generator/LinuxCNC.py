@@ -1546,6 +1546,7 @@ class LinuxCNC:
 
         stepgens = []
         pwmgens = []
+        encoders = []
         for component in linuxcnc_config.get("components", []):
             comp_type = component.get("type")
             if comp_type == "stepgen":
@@ -1569,6 +1570,20 @@ class LinuxCNC:
                 for pin in pins:
                     if pin in comp_pins:
                         self.halg.net_add(f"pwmgen.{pnum}.{pin}", comp_pins[pin])
+
+            elif comp_type == "encoder":
+                enum = len(encoders)
+                comp_pins = component.get("pins", {})
+                comp_mode = str(component.get("mode", "1"))
+                encoders.append(enum)
+                pins = ("phase-A", "phase-B", "phase-Z")
+                options = ("counter-mode", "missing-teeth", "x4-mode")
+                for option in options:
+                    if option in component:
+                        self.halg.setp_add(f"encoder.{enum}.{option}", component[option])
+                for pin in pins:
+                    if pin in comp_pins:
+                        self.halg.net_add(f"encoder.{enum}.{pin}", comp_pins[pin])
 
         if stepgens:
             self.halg.fmt_add_top(f"# stepgen component for {len(stepgens)} joint(s)")

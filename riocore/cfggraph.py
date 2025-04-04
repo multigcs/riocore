@@ -76,62 +76,83 @@ class ConfigGraph:
                         lcports.append(f"<{hal_pin}>{hal_pin}")
 
             def gpio_con(pin, target, direction="output"):
+                if direction == "input":
+                    arrow = "forward"
+                    color = "green"
+                else:
+                    arrow = "back"
+                    color = "red"
+
                 if pin.startswith("parport."):
                     port = int(pin.split(".")[1])
                     ppin = int(pin.split("-")[1])
-                    gAll.edge(f"parport.{port}:{ppin}", target, dir="back", color="red")
+                    gAll.edge(f"parport.{port}:{ppin}", target, dir=arrow, color=color)
                 elif pin.startswith("hal_gpio."):
-                    gAll.edge(pin.replace(".", ":"), target, dir="back", color="red")
+                    gAll.edge(pin.replace(".", ":"), target, dir=arrow, color=color)
 
             stepgen_n = 0
             pwmgen_n = 0
+            encoder_n = 0
             for component in linuxcnc_config.get("components", []):
                 comp_type = component.get("type")
                 if comp_type == "stepgen":
                     comp_pins = component.get("pins", {})
                     comp_mode = str(component.get("mode", "0"))
                     mode_pins = {
-                        "0": ("step", "dir"),
-                        "1": ("up", "down"),
-                        "2": ("phase-A", "phase-B"),
-                        "3": ("phase-A", "phase-B", "phase-C"),
-                        "4": ("phase-A", "phase-B", "phase-C"),
-                        "5": ("phase-A", "phase-B", "phase-C", "phase-D"),
-                        "6": ("phase-A", "phase-B", "phase-C", "phase-D"),
-                        "7": ("phase-A", "phase-B", "phase-C", "phase-D"),
-                        "8": ("phase-A", "phase-B", "phase-C", "phase-D"),
-                        "9": ("phase-A", "phase-B", "phase-C", "phase-D"),
-                        "10": ("phase-A", "phase-B", "phase-C", "phase-D"),
-                        "11": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
-                        "12": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
-                        "13": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
-                        "14": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
-                        "15": ("phase-A", "phase-B", "phase-C", "phase-D", "phase-E"),
+                        "0": ("step:output", "dir:output"),
+                        "1": ("up:output", "down:output"),
+                        "2": ("phase-A:output", "phase-B:output"),
+                        "3": ("phase-A:output", "phase-B:output", "phase-C:output"),
+                        "4": ("phase-A:output", "phase-B:output", "phase-C:output"),
+                        "5": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
+                        "6": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
+                        "7": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
+                        "8": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
+                        "9": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
+                        "10": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output"),
+                        "11": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
+                        "12": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
+                        "13": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
+                        "14": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
+                        "15": ("phase-A:output", "phase-B:output", "phase-C:output", "phase-D:output", "phase-E:output"),
                     }
                     pins = mode_pins[comp_mode]
-                    ports = [f"<{p}>{p}" for p in pins]
-                    label = f"{{ {{ {'|'.join(ports)} }} | {{ StepGen-{stepgen_n} }} | {{ <cmd>cmd | <fb>fb }} }}"
-                    gAll.node(f"stepgen.{stepgen_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-                    for pin in pins:
-                        if pin in comp_pins:
-                            gpio_con(comp_pins[pin], f"stepgen.{stepgen_n}:{pin}")
+                    signals = ("cmd", "fb")
+                    title = f"StepGen-{stepgen_n}"
+                    prefix = f"stepgen.{stepgen_n}"
                     stepgen_n += 1
 
                 elif comp_type == "pwmgen":
                     comp_pins = component.get("pins", {})
                     comp_mode = str(component.get("mode", "1"))
                     if comp_mode == "1":
-                        pins = ("pwm", "dir")
+                        pins = ("pwm:output", "dir:output")
                     else:
-                        pins = ("up", "down")
-                    ports = [f"<{p}>{p}" for p in pins]
-                    label = f"{{ {{ {'|'.join(ports)} }} | {{ PWMGen-{pwmgen_n} }} | {{ <en>en | <value>value }} }}"
-                    gAll.node(f"pwmgen.{pwmgen_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-                    for pin in pins:
-                        if pin in comp_pins:
-                            gpio_con(comp_pins[pin], f"pwmgen.{pwmgen_n}:{pin}")
-
+                        pins = ("up:output", "down:output")
+                    signals = ("en", "value")
+                    title = f"PWMGen-{pwmgen_n}"
+                    prefix = f"pwmgen.{pwmgen_n}"
                     pwmgen_n += 1
+
+                elif comp_type == "encoder":
+                    comp_pins = component.get("pins", {})
+                    comp_mode = str(component.get("mode", "1"))
+                    pins = ("phase-A:input", "phase-B:input", "phase-Z:input")
+                    signals = ("pos", "idx")
+                    title = f"Encoder-{encoder_n}"
+                    prefix = f"encoder.{encoder_n}"
+                    encoder_n += 1
+                else:
+                    continue
+
+                ports = [f"<{p.split(':')[0]}>{p.split(':')[0]}" for p in pins]
+                label = f"{{ {{ {'|'.join(ports)} }} | {{ {title} }} | {{ {'|'.join(signals)} }} }}"
+                gAll.node(prefix, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+                for pin in pins:
+                    pin_name = pin.split(":")[0]
+                    pin_dir = pin.split(":")[1]
+                    if pin_name in comp_pins:
+                        gpio_con(comp_pins[pin_name], f"{prefix}:{pin_name}", pin_dir)
 
             # show slots
             for slot in self.parent.slots:
