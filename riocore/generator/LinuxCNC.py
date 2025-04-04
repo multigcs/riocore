@@ -1480,7 +1480,7 @@ class LinuxCNC:
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
-        if rpigpios:
+        if rpigpios and False:
             self.halg.fmt_add_top(f"# rpi gpio component")
             inputs = rpigpios[0].get("inputs", [])
             outputs = rpigpios[0].get("outputs", [])
@@ -1505,6 +1505,31 @@ class LinuxCNC:
             self.halg.fmt_add_top(f"loadrt hal_gpio {' '.join(args)}")
             self.halg.fmt_add_top("addf hal_gpio.read base-thread")
             self.halg.fmt_add_top("addf hal_gpio.write base-thread")
+            self.halg.fmt_add_top("")
+
+        elif rpigpios:
+            self.halg.fmt_add_top(f"# hal_pi_gpio component")
+            inputs = rpigpios[0].get("inputs", [])
+            outputs = rpigpios[0].get("outputs", [])
+            resets = rpigpios[0].get("reset", [])
+            mask_dir = 0
+            mask_exclude = 0
+            for bit_num, pin_num in enumerate(range(2, 28)):
+                pname = f"GPIO{pin_num}"
+                if pname in outputs:
+                    mask_dir |= 1 << bit_num
+                    self.gpionames[f"hal_pi_gpio.pin-{pin_num:02d}-out"] = "rpigpio"
+                elif pname in inputs:
+                    self.gpionames[f"hal_pi_gpio.pin-{pin_num:02d}-in"] = "rpigpio"
+                else:
+                    mask_exclude |= 1 << bit_num
+
+            args = []
+            args.append(f"dir={mask_dir}")
+            args.append(f"exclude={mask_exclude}")
+            self.halg.fmt_add_top(f"loadrt hal_pi_gpio {' '.join(args)}")
+            self.halg.fmt_add_top("addf hal_pi_gpio.read base-thread")
+            self.halg.fmt_add_top("addf hal_pi_gpio.write base-thread")
             self.halg.fmt_add_top("")
 
         if parports:
