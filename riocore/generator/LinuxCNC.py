@@ -1829,7 +1829,8 @@ class LinuxCNC:
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
-                position_scale = joint_signals.get("position-scale")
+                position_scaler = joint_signals.get("position-scale")
+
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
 
@@ -1839,8 +1840,8 @@ class LinuxCNC:
                 if velocity:
                     position_halname = f"{prefix}{velocity['halname']}"
                     position_mode = "relative"
-                elif position_scale:
-                    position_scale_halname = f"{position_scale['halname']}"
+                elif position_scaler:
+                    position_scale_halname = f"{position_scaler['halname']}"
                     position_mode = "absolute"
                 elif position:
                     position_halname = f"{prefix}{position['halname']}"
