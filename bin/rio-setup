@@ -1149,9 +1149,10 @@ class TabBoard:
                         break
             del self.parent.modules[slot_name]
             self.parent.load_tree()
-            self.parent.tabs["Board"].update()
-            self.parent.tabs["Pins"].update()
-            self.parent.tabs["Signals"].update()
+            if self.board:
+                self.parent.tabs["Board"].update()
+                self.parent.tabs["Pins"].update()
+                self.parent.tabs["Signals"].update()
             self.parent.display()
 
     def pinlayout_mark(self, pkey):
@@ -1250,10 +1251,9 @@ class WinForm(QWidget):
             self.vcp = None
 
         self.tabwidget = QTabWidget()
-        self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
+        self.tabwidget.setStyleSheet("QTabBar::tab::disabled {width: 0; height: 0; margin: 0; padding: 0; border: none;} " + STYLESHEET_TABBAR)
         self.tabwidget.setTabPosition(QTabWidget.West)
         self.tabwidget.setDocumentMode(True)
-
         splitter.addWidget(self.tabwidget)
 
         self.gateware_hash = None
@@ -1778,8 +1778,9 @@ class WinForm(QWidget):
         if self.request_pin_table_load > 1:
             self.request_pin_table_load -= 1
         elif self.request_pin_table_load == 1:
-            self.tabs["Pins"].update()
-            self.tabs["Board"].update()
+            if self.board:
+                self.tabs["Pins"].update()
+                self.tabs["Board"].update()
             self.request_pin_table_load = 0
 
         if self.request_sig_table_load > 1:
@@ -2496,10 +2497,16 @@ class WinForm(QWidget):
             if slot_name:
                 self.slotnames.append(slot_name)
 
-        self.tabs["Board"].update()
+        if self.board:
+            self.tabs["Board"].update()
+            self.tabs["Pins"].update()
+            self.tabs["Signals"].update()
+        else:
+            for tab_idx in range(15):
+                if self.tabwidget.tabText(tab_idx) in {"Board", "Pins", "Signals", "Gateware"}:
+                    self.tabwidget.setTabEnabled(tab_idx, False)
+
         self.load_tree()
-        self.tabs["Pins"].update()
-        self.tabs["Signals"].update()
         self.display()
 
     def display(self):
