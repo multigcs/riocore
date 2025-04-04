@@ -1184,13 +1184,14 @@ class TabGpios:
         for pin_id, pin in pins.items():
             slot_name = pin["slotname"]
             title = pin["title"]
+            halname = pin["pin"]
             pkey = f"{slot_name}:{pin_id}"
 
             bgcolor = "darkgray"
             tooltip = f"{slot_name}:{pin_id} {pin['pin']} ({pin.get('direction', 'all')})"
-            if pin_id in self.inputs:
+            if halname in self.inputs:
                 bgcolor = "blue"
-            elif pin_id in self.outputs:
+            elif halname in self.outputs:
                 bgcolor = "green"
 
             if "pos" in pin:
