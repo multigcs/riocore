@@ -75,31 +75,43 @@ class ConfigGraph:
                         gAll.edge(net_target.replace(".", ":"), f"hal:{hal_pin}", dir="back", color="red")
                         lcports.append(f"<{hal_pin}>{hal_pin}")
 
+            def gpio_con(pin, target, direction="output"):
+                if pin.startswith("parport."):
+                    port = int(pin.split(".")[1])
+                    ppin = int(pin.split("-")[1])
+                    gAll.edge(f"parport.{port}:{ppin}", target, dir="back", color="red")
+                elif pin.startswith("hal_gpio."):
+                    gAll.edge(pin.replace(".", ":"), target, dir="back", color="red")
+
             stepgen_n = 0
+            pwmgen_n = 0
             for component in linuxcnc_config.get("components", []):
                 comp_type = component.get("type")
                 if comp_type == "stepgen":
                     comp_pins = component.get("pins", {})
                     comp_mode = component.get("mode", 0)
-                    pin_step = comp_pins.get("step")
-                    pin_dir = comp_pins.get("dir")
-
-                    label = f"{{ {{ <step>step | <dir>dir }} | {{ StepGen-{stepgen_n} }} | {{ <cmd>cmd | <fb>fb }} }}"
+                    pins = ("step", "dir")
+                    ports = [f"<{p}>{p}" for p in pins]
+                    label = f"{{ {{ {'|'.join(ports)} }} | {{ StepGen-{stepgen_n} }} | {{ <cmd>cmd | <fb>fb }} }}"
                     gAll.node(f"stepgen.{stepgen_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-                    if pin_step.startswith("parport."):
-                        port_step = int(pin_step.split(".")[1])
-                        ppin_step = int(pin_step.split("-")[1])
-                        gAll.edge(f"parport.{port_step}:{ppin_step}", f"stepgen.{stepgen_n}:step", dir="back", color="red")
-                    elif pin_step.startswith("hal_gpio."):
-                        gAll.edge(pin_step.replace(".", ":"), f"stepgen.{stepgen_n}:step", dir="back", color="red")
-                    if pin_dir.startswith("parport."):
-                        port_dir = int(pin_dir.split(".")[1])
-                        ppin_dir = int(pin_dir.split("-")[1])
-                        gAll.edge(f"parport.{port_dir}:{ppin_dir}", f"stepgen.{stepgen_n}:dir", dir="back", color="red")
-                    elif pin_dir.startswith("hal_gpio."):
-                        gAll.edge(pin_dir.replace(".", ":"), f"stepgen.{stepgen_n}:dir", dir="back", color="red")
-
+                    for pin in pins:
+                        gpio_con(comp_pins.get(pin), f"stepgen.{stepgen_n}:{pin}")
                     stepgen_n += 1
+
+                elif comp_type == "pwmgen":
+                    comp_pins = component.get("pins", {})
+                    comp_mode = component.get("mode", 1)
+                    if comp_mode == "1":
+                        pins = ("pwm", "dir")
+                    else:
+                        pins = ("up", "down")
+                    ports = [f"<{p}>{p}" for p in pins]
+                    label = f"{{ {{ {'|'.join(ports)} }} | {{ PWMGen-{pwmgen_n} }} | {{ <en>en | <value>value }} }}"
+                    gAll.node(f"pwmgen.{pwmgen_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+                    for pin in pins:
+                        gpio_con(comp_pins.get(pin), f"pwmgen.{pwmgen_n}:{pin}")
+
+                    pwmgen_n += 1
 
             # show slots
             for slot in self.parent.slots:

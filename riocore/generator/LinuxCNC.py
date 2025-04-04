@@ -1554,7 +1554,7 @@ class LinuxCNC:
                 comp_mode = component.get("mode", 0)
                 stepgens.append(str(comp_mode))
 
-            if comp_type == "pwmgen":
+            elif comp_type == "pwmgen":
                 comp_pins = component.get("pins", {})
                 comp_mode = component.get("mode", 1)
                 pnum = len(pwmgens)
