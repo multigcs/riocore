@@ -48,8 +48,8 @@ from riocore.widgets import (
 
 
 from PyQt5 import QtSvg
-from PyQt5.QtCore import QTimer, QPoint, Qt, QSize
-from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon
+from PyQt5.QtCore import QTimer, QPoint, Qt, QSize, QRect
+from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon, QPainter
 from PyQt5.QtWidgets import (
     QStyle,
     QSplitter,
@@ -1029,24 +1029,7 @@ class TabGpios:
         self.img_layout.removeWidget(self.boardimg)
         self.boardimg = QWidget()
         self.pinlabels = {}
-
-        pinimage_path = "/usr/src/MXM/riocore/riocore/files/rpi-gpio.png"
-
-        pinlayout_pixmap = QPixmap(pinimage_path)
-        self.boardimg.setFixedSize(pinlayout_pixmap.size())
-
-        pinlayout_image = ImageMap(self)
-        pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
-        pinlayout_image.setFixedSize(pinlayout_pixmap.size())
-        pinlayout_image.setPixmap(pinlayout_pixmap)
-
-        self.img_layout.addWidget(self.boardimg)
-
-        layout_box = QVBoxLayout(self.boardimg)
-        layout_box.setContentsMargins(0, 0, 0, 0)
-        layout_box.addWidget(pinlayout_image)
-
-        pinout = (
+        rpi_pinout = (
             "3V3",
             "5V",
             "GPIO2",
@@ -1089,30 +1072,118 @@ class TabGpios:
             "GPIO21",
         )
 
+        self.networks = {}
+        linuxcnc_config = self.parent.config.get("linuxcnc", {})
+        for net in linuxcnc_config.get("net", []):
+            net_source = net.get("source")
+            net_target = net.get("target")
+            self.networks[net_source] = net_target
+            self.networks[net_target] = net_source
+
+        for component in linuxcnc_config.get("components", []):
+            for pin, halname in component.get("pins", {}).items():
+                ctype = component["type"]
+                self.networks[halname] = f"{ctype}->{pin}"
+
+        pixmaps = []
+        pins = {}
         self.inputs = []
         self.outputs = []
+        parport_n = 0
         gpio_config = self.parent.config.get("gpios", [])
         for gpio in gpio_config:
-            if gpio.get("type") == "rpi":
+            if gpio.get("type") == "parport":
+                pp_mode = gpio.get("mode", "0 out")
+                pinimage_path = riocore_path + "/files/db25.png"
+                pixmaps.append(QPixmap(pinimage_path))
+
+                mode_outputs = {
+                    "in": [1, 14, 16, 17],
+                    "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
+                    "epp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
+                    "x": [2, 3, 4, 5, 6, 7, 8, 9],
+                }
+                outpins = mode_outputs.get(pp_mode.split()[-1])
+
+                for pin_num in range(1, 18):
+                    title = f"P{parport_n}.{pin_num}"
+                    if pin_num in outpins:
+                        direction = "output"
+                    else:
+                        direction = "input"
+                    pin_name = f"parport.{parport_n}.pin-{pin_num:02d}-{direction.replace('put', '')}"
+                    if pin_num in outpins:
+                        self.outputs.append(pin_name)
+                    else:
+                        self.inputs.append(pin_name)
+                    if pin_num < 14:
+                        x_pos = 20 + parport_n * 168
+                        y_pos = 97 + (pin_num - 1) * 32.4
+                    else:
+                        x_pos = 110 + parport_n * 168
+                        y_pos = 97 + 15 + (pin_num - 14) * 32.4
+                    pins[title] = {
+                        "title": title,
+                        "pin": pin_name,
+                        "pos": [int(x_pos), int(y_pos)],
+                        "direction": direction,
+                        "slotname": f"parport.{parport_n}",
+                        "net": self.networks.get(pin_name, ""),
+                    }
+
+                parport_n += 1
+
+            elif gpio.get("type") == "rpi":
+                pinimage_path = riocore_path + "/files/rpi-gpio.png"
+                pixmaps.append(QPixmap(pinimage_path))
                 rpi_pins = gpio.get("pins", [])
                 self.inputs = rpi_pins.get("inputs", [])
                 self.outputs = rpi_pins.get("outputs", [])
                 resets = rpi_pins.get("reset", [])
+                direction = "all"
+                for pin_num in range(0, 40):
+                    pin_name = rpi_pinout[pin_num]
+                    if pin_name.startswith("GPIO"):
+                        x_pos = 30 + (pin_num % 2) * 110
+                        y_pos = 60 + (pin_num // 2) * 20.5
+                        pins[pin_name] = {
+                            "title": pin_name,
+                            "pin": pin_name,
+                            "pos": [int(x_pos), int(y_pos)],
+                            "direction": direction,
+                            "slotname": "rpi_gpio",
+                            "net": self.networks.get(pin_name, ""),
+                        }
 
-        pins = {}
-        for pin_num in range(0, 40):
-            pin_name = pinout[pin_num]
-            if pin_name.startswith("GPIO"):
-                x_pos = 30 + (pin_num % 2) * 110
-                y_pos = 60 + (pin_num // 2) * 20.5
-                pins[pin_name] = {
-                    "pin": pin_name,
-                    "pos": [int(x_pos), int(y_pos)],
-                    "direction": "all",
-                }
+        if not pixmaps:
+            return
 
-        slot_name = "rpi_gpio"
+        width = 0
+        height = 0
+        for pixmap in pixmaps:
+            width += pixmap.width()
+            height = max(height, pixmap.height())
+        pinlayout_pixmap = QPixmap(width, height)
+        self.painter = QPainter(pinlayout_pixmap)
+        xpos = 0
+        for pixmap in pixmaps:
+            rect = QRect(xpos, 0, pixmap.width(), pixmap.height())
+            self.painter.drawPixmap(rect, pixmap)
+            xpos += pixmap.width()
+
+        self.boardimg.setFixedSize(pinlayout_pixmap.size())
+        pinlayout_image = ImageMap(self)
+        pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
+        pinlayout_image.setFixedSize(pinlayout_pixmap.size())
+        pinlayout_image.setPixmap(pinlayout_pixmap)
+        self.img_layout.addWidget(self.boardimg)
+        layout_box = QVBoxLayout(self.boardimg)
+        layout_box.setContentsMargins(0, 0, 0, 0)
+        layout_box.addWidget(pinlayout_image)
+
         for pin_id, pin in pins.items():
+            slot_name = pin["slotname"]
+            title = pin["title"]
             pkey = f"{slot_name}:{pin_id}"
 
             bgcolor = "darkgray"
@@ -1131,7 +1202,7 @@ class TabGpios:
                     else:
                         self.pinlabels[pkey].setFixedWidth(15)
                         self.pinlabels[pkey].setFixedHeight(len(pin_id * 15))
-                    self.pinlabels[pkey].setText(pin_id, True)
+                    self.pinlabels[pkey].setText(title, True)
                 else:
                     if len(pin["pos"]) == 4:
                         self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
@@ -1139,7 +1210,7 @@ class TabGpios:
                     else:
                         self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
                         self.pinlabels[pkey].setFixedHeight(15)
-                    self.pinlabels[pkey].setText(pin_id)
+                    self.pinlabels[pkey].setText(title)
                 self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
                 self.pinlabels[pkey].setToolTip(tooltip)
 
@@ -1163,16 +1234,15 @@ class TabGpios:
                     comment = f" - {comment}"
 
                 pinfo = ""
-                if label.pin.get("pin", {}) in self.inputs:
-                    pinfo = f"-> gpio : input"
-                elif label.pin.get("pin", {}) in self.outputs:
-                    pinfo = f"-> gpio : output"
-
+                net = label.pin.get("net")
+                if net:
+                    pinfo += net
                 if key == pkey:
                     pinfo += " <-"
                     infoline = ln
 
-                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}{comment}) {pinfo}")
+                # infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}{comment}) {pinfo}")
+                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} {pinfo}")
                 ln += 1
             else:
                 label.unmark()
@@ -1183,7 +1253,7 @@ class TabGpios:
                 for net in networks:
                     infotext.append(f" {net}")
 
-            ilen = 30
+            ilen = 20
             off = ilen - 4
             start = 0
             end = ilen

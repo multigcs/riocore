@@ -89,7 +89,7 @@ class pwmgen:
         self.setup = component
         self.PREFIX = f"pwmgen.{self.snum}"
         self.instances_name = component.get("name", f"pwmgen{self.snum}")
-        self.TITLE = component.get("name", f"Stepgen-{self.snum}").title()
+        self.TITLE = component.get("name", f"Pwmgen-{self.snum}").title()
         self.plugin_setup = component
         self.TYPE = "pwmgen"
         self.SIGNALNAMES = ("enable", "value")
@@ -122,7 +122,7 @@ class pwmgen:
         output = []
         complist = []
         for component in components:
-            if component.get("type") == "stepgen":
+            if component.get("type") == "pwmgen":
                 comp_mode = str(component.get("mode", "0"))
                 complist.append(comp_mode)
 
@@ -183,7 +183,7 @@ class encoder:
         output = []
         complist = []
         for component in components:
-            if component.get("type") == "stepgen":
+            if component.get("type") == "encoder":
                 comp_mode = str(component.get("mode", "0"))
                 complist.append(comp_mode)
 
