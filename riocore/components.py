@@ -29,7 +29,7 @@ class stepgen:
         self.TYPE = "stepgen"
         self.SIGNALNAMES = ("cmd", "fb")
         self.OPTIONS = ()
-        comp_pins = component.get("pins", {})
+        component.get("pins", {})
         comp_mode = str(component.get("mode", "0"))
         self.PINS = self.mode_pins[comp_mode]
 
@@ -95,7 +95,7 @@ class pwmgen:
         self.SIGNALNAMES = ("enable", "value")
         self.OPTIONS = ("pwm-freq", "scale", "offset", "dither-pwm", "min-dc", "max-dc", "curr-dc")
 
-        comp_pins = component.get("pins", {})
+        component.get("pins", {})
         comp_mode = str(component.get("mode", "1"))
         if comp_mode == "1":
             self.PINS = ("pwm:output", "dir:output")
@@ -152,8 +152,8 @@ class encoder:
         self.SIGNALNAMES = ("pos", "idx")
         self.OPTIONS = ("counter-mode", "missing-teeth", "x4-mode")
 
-        comp_pins = component.get("pins", {})
-        comp_mode = str(component.get("mode", "1"))
+        component.get("pins", {})
+        str(component.get("mode", "1"))
         self.PINS = ("phase-A:input", "phase-B:input", "phase-Z:input")
 
         self.PINDEFAULTS = {}

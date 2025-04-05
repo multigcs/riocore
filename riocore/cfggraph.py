@@ -36,11 +36,11 @@ class ConfigGraph:
                     for pin in rpi_pins.get("outputs", []):
                         mportsr.append(f"<{pin}-out>{pin}")
                     label = f"{{ {{ RPI\\nGPIO-Pins | {' | '.join(mportsr)}}} }}"
-                    gAll.node(f"hal_gpio", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
+                    gAll.node("hal_gpio", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
 
                 elif gpio.get("type") == "parport":
                     pp_addr = gpio.get("address", "0")
-                    pp_mode = gpio.get("mode", "out")
+                    gpio.get("mode", "out")
                     mportsr = []
                     for pn in range(0, 18):
                         mportsr.append(f"<{pn}>P{pn}")
@@ -52,7 +52,7 @@ class ConfigGraph:
             for net in linuxcnc_config.get("net", []):
                 net_source = net.get("source")
                 net_target = net.get("target")
-                net_name = net.get("name") or None
+                net.get("name") or None
                 if net_source and net_target:
                     if net_source.startswith("parport."):
                         hal_pin = net_target

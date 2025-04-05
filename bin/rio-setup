@@ -25,10 +25,18 @@ import riocore
 from riocore import VERSION
 from riocore import halpins
 
-from riocore import cfggraph
-from riocore import axisgraph
-from riocore import halgraph
 from riocore import vcp
+
+from riocore.tab_axis import TabAxis
+from riocore.tab_board import TabBoard
+from riocore.tab_gateware import TabGateware
+from riocore.tab_gpio import TabGpios
+from riocore.tab_hal import TabHal
+from riocore.tab_linuxcnc import TabLinuxCNC
+from riocore.tab_overview import TabOverview
+from riocore.tab_pins import TabPins
+from riocore.tab_signals import TabSignals
+
 from riocore.modifiers import Modifiers
 from riocore.widgets import (
     MyQSvgWidget,
@@ -142,809 +150,6 @@ def md2label(text):
     return "".join(formated)
 
 
-class PinButton(QPushButton):
-    def __init__(self, widget, parent=None, pkey=None, bgcolor=None, pin=None):
-        super(QPushButton, self).__init__(widget)
-        self.parent = parent
-        self.pkey = pkey
-        self.bgcolor = bgcolor
-        if not pin:
-            pin = {}
-        self.pin = pin
-        if self.parent and self.bgcolor:
-            self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
-
-    def setText(self, text, rotate=False):
-        if rotate:
-            text = "\n".join(text)
-        QPushButton.setText(self, text)
-
-    def enterEvent(self, event):
-        if self.parent and self.pkey:
-            self.parent.pinlayout_mark(self.pkey)
-
-    def leaveEvent(self, event):
-        if self.parent and self.pkey:
-            self.parent.pinlayout_mark(":")
-
-    def mark(self, color):
-        if self.parent and color:
-            self.setStyleSheet(f"background-color: {color}; font-size:12px;")
-
-    def unmark(self):
-        if self.parent and self.bgcolor:
-            self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
-
-
-class ImageMap(QLabel):
-    last_x = -1
-    last_y = -1
-    last_action = 0
-    moved = 0
-
-    def __init__(self, parent):
-        super(QLabel, self).__init__(parent.parent)
-        self.parent = parent
-
-    def mousePressEvent(self, event):
-        x = int(event.pos().x() / self.parent.scale)
-        y = int(event.pos().y() / self.parent.scale)
-        self.last_x = x
-        self.last_y = y
-        self.last_action = 1
-        self.moved = 0
-        if event.button() == Qt.RightButton:
-            self.setPin(event.pos())
-
-    def mouseReleaseEvent(self, event):
-        x = int(event.pos().x() / self.parent.scale)
-        y = int(event.pos().y() / self.parent.scale)
-        self.last_action = 0
-        self.moved = 0
-
-    def mouseMoveEvent(self, event):
-        x = int(event.pos().x() / self.parent.scale)
-        y = int(event.pos().y() / self.parent.scale)
-        if self.last_action == 1:
-            xs = self.parent.scroll_widget.horizontalScrollBar()
-            ys = self.parent.scroll_widget.verticalScrollBar()
-            xs_last = xs.value()
-            ys_last = ys.value()
-            diff_x = x - self.last_x
-            diff_y = y - self.last_y
-            if abs(diff_x) > 4 or abs(diff_y) > 4:
-                self.moved = 1
-            xs.setValue(xs_last - diff_x)
-            ys.setValue(ys_last - diff_y)
-
-    """
-    def wheelEvent(self, event):
-        delta = event.angleDelta()
-        if delta.y() < 0:
-            if self.parent.scale > 0.1:
-                self.parent.scale -= 0.1
-        else:
-            if self.parent.scale < 10.0:
-                self.parent.scale += 0.1
-    """
-
-    def setPin(self, pos):
-        grid = 5
-        pos_x = pos.x() / self.parent.scale
-        pos_y = pos.y() / self.parent.scale
-        used_pos_x = set()
-        used_pos_y = set()
-        used_pins = []
-        for slot in self.parent.parent.slots:
-            for pin_name, pin_data in slot["pins"].items():
-                if isinstance(pin_data, str):
-                    used_pins.append(pin_data)
-                else:
-                    used_pins.append(pin_data["pin"])
-                    if "pos" in pin_data:
-                        used_pos_x.add(pin_data["pos"][0])
-                        used_pos_y.add(pin_data["pos"][1])
-
-        # align to other positions +-grid size
-        for pos in used_pos_x:
-            if abs(pos - pos_x) <= grid:
-                pos_x = pos
-                break
-        for pos in used_pos_y:
-            if abs(pos - pos_y) <= grid:
-                pos_y = pos
-                break
-
-        pin_name_default = "P1"
-        if self.parent.parent.slots:
-            last_slot = self.parent.parent.slots[-1]
-            pin_name_num = 1
-            found = True
-            while found:
-                found = False
-                for pin_name in last_slot["pins"]:
-                    if f"P{pin_name_num}" == pin_name:
-                        pin_name_num += 1
-                        found = True
-            pin_name_default = f"P{pin_name_num}"
-
-        dialog = QDialog()
-        dialog.setWindowTitle("set pin")
-        dialog.setStyleSheet(STYLESHEET)
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-        dialog.layout = QVBoxLayout()
-
-        message = QLabel("Slot:")
-        dialog.layout.addWidget(message)
-        slot_select = QComboBox()
-        slot_select.setEditable(True)
-        for slot in reversed(self.parent.parent.slots):
-            slot_select.addItem(slot["name"])
-        dialog.layout.addWidget(slot_select)
-
-        message = QLabel("Pin-Name:")
-        dialog.layout.addWidget(message)
-        pin_name = QLineEdit(pin_name_default)
-        dialog.layout.addWidget(pin_name)
-
-        message = QLabel("FPGA-Pin:")
-        dialog.layout.addWidget(message)
-        pin_select = QComboBox()
-        pin_select.setEditable(True)
-        for pin in self.parent.parent.pinlist:
-            if ":" not in pin and pin not in used_pins:
-                pin_select.addItem(pin)
-        dialog.layout.addWidget(pin_select)
-
-        message = QLabel("Direction:")
-        dialog.layout.addWidget(message)
-        direction = QComboBox()
-        direction.addItem("all")
-        direction.addItem("output")
-        direction.addItem("input")
-        dialog.layout.addWidget(direction)
-
-        message = QLabel("PosX:")
-        dialog.layout.addWidget(message)
-        posx = QComboBox()
-        posx.setEditable(True)
-        posx.addItem(str(pos_x))
-        for pos in used_pos_x:
-            posx.addItem(str(pos))
-        dialog.layout.addWidget(posx)
-
-        message = QLabel("PosY:")
-        dialog.layout.addWidget(message)
-        posy = QComboBox()
-        posy.setEditable(True)
-        posy.addItem(str(pos_y))
-        for pos in used_pos_y:
-            posy.addItem(str(pos))
-        dialog.layout.addWidget(posy)
-
-        dialog.layout.addWidget(dialog_buttonBox)
-        dialog.setLayout(dialog.layout)
-
-        if dialog.exec():
-            slot_name = slot_select.currentText()
-            name = pin_name.text()
-            pin = pin_select.currentText()
-            direction_str = direction.currentText()
-            pos_x = posx.currentText()
-            pos_y = posy.currentText()
-            if direction_str == "":
-                direction_str = "all"
-
-            if slot_name and name and pin:
-                pin_cfg = {"pin": pin, "pos": [int(float(pos_x)), int(float(pos_y))], "direction": direction_str}
-
-                slot_n = -1
-                for sn, slot in enumerate(self.parent.parent.slots):
-                    if slot["name"] == slot_name:
-                        slot_n = sn
-                        break
-
-                if slot_n == -1:
-                    self.parent.parent.slots.append(
-                        {
-                            "name": slot_name,
-                            "comment": "",
-                            "default": "",
-                            "pins": {name: pin_cfg},
-                        }
-                    )
-                else:
-                    self.parent.parent.slots[slot_n]["pins"][name] = pin_cfg
-
-                print(json.dumps(self.parent.parent.slots, indent=4))
-                self.parent.parent.request_pin_table_load = 1
-            else:
-                print("ERROR: missing informations")
-
-
-class TabLinuxCNC:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.linuxcnc = {
-            "rio.ini": QPlainTextEdit(),
-            "rio.hal": QPlainTextEdit(),
-            "custom_postgui.hal": QPlainTextEdit(),
-            "rio-gui.xml": QPlainTextEdit(),
-            "riocomp.c": QPlainTextEdit(),
-        }
-        self.linuxcnc_tabwidget = QTabWidget()
-        self.linuxcnc_tabwidget.setStyleSheet(STYLESHEET_TABBAR)
-        for filename, widget in self.linuxcnc.items():
-            widget.clear()
-            widget.insertPlainText("")
-            self.linuxcnc_tabwidget.addTab(widget, filename)
-
-    def setTab(self, name):
-        self.linuxcnc_tabwidget.setCurrentWidget(self.linuxcnc[name])
-
-    def widget(self):
-        return self.linuxcnc_tabwidget
-
-    def timer(self):
-        pass
-
-    def update(self):
-        config_name = self.parent.config.get("name")
-        for filename, widget in self.linuxcnc.items():
-            widget.clear()
-            file_path = os.path.join(self.parent.output_path, config_name, "LinuxCNC", filename)
-            if os.path.isfile(file_path):
-                file_content = open(file_path, "r").read()
-                widget.insertPlainText(file_content)
-
-                if filename == "rio-gui.xml" and self.parent.vcp is not None:
-                    self.parent.vcp.load(file_path)
-
-
-class TabGateware:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.gateware = {
-            "rio.v": QPlainTextEdit(),
-            "Makefile": QPlainTextEdit(),
-            "Compile-Output": QPlainTextEdit(),
-            "Flash-Output": QPlainTextEdit(),
-        }
-        self.gateware_tabwidget = QTabWidget()
-        self.gateware_tabwidget.setStyleSheet(STYLESHEET_TABBAR)
-        for filename, widget in self.gateware.items():
-            widget.clear()
-            widget.insertPlainText("")
-            self.gateware_tabwidget.addTab(widget, filename)
-
-    def setTab(self, name):
-        self.gateware_tabwidget.setCurrentWidget(self.gateware[name])
-
-    def widget(self):
-        return self.gateware_tabwidget
-
-    def timer(self):
-        pass
-
-    def update(self):
-        config_name = self.parent.config.get("name")
-
-        for filename, widget in self.gateware.items():
-            if not filename.endswith("-Output"):
-                file_content = open(os.path.join(self.parent.output_path, config_name, "Gateware", filename), "r").read()
-                widget.clear()
-                widget.insertPlainText(file_content)
-                if filename == "rio.v":
-                    hash_md5 = hashlib.md5()
-                    with open(os.path.join(self.parent.output_path, config_name, "Gateware", filename), "rb") as f:
-                        for chunk in iter(lambda: f.read(4096), b""):
-                            hash_md5.update(chunk)
-                    self.parent.gateware_hash = hash_md5.hexdigest()
-
-
-class TabSignals:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.sig_table = QTableWidget()
-        self.sig_table.setColumnCount(5)
-        self.sig_table.setHorizontalHeaderItem(0, QTableWidgetItem("Halname"))
-        self.sig_table.setHorizontalHeaderItem(1, QTableWidgetItem("Dir"))
-        self.sig_table.setHorizontalHeaderItem(2, QTableWidgetItem("Target"))
-        self.sig_table.setHorizontalHeaderItem(3, QTableWidgetItem("Type"))
-        self.sig_table.setHorizontalHeaderItem(4, QTableWidgetItem("Comment"))
-        self.sig_table.horizontalHeader().sectionClicked.connect(self.onHeaderClickedSignals)
-        self.sig_table_sort_col = 1
-
-    def widget(self):
-        return self.sig_table
-
-    def timer(self):
-        pass
-
-    def update(self):
-        self.sig_table.setRowCount(0)
-        table_data = []
-
-        def sort_key(a):
-            col = a[idx]
-            numbers = re.findall(r"\d+", col)
-            for number in numbers:
-                col = col.replace(number, f"{int(number):09d}")
-            return col.lower()
-
-        for module_data in self.parent.config.get("modules", []):
-            slot_name = module_data.get("slot")
-            for plugin_instance in self.parent.modules[slot_name]["instances"]:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    signal_direction = signal_config["direction"]
-                    signal_halname = signal_config["halname"]
-                    is_bool = signal_config.get("bool", False)
-                    htype = "bit" if is_bool else "float"
-
-                    if "signals" not in plugin_instance.setup_object:
-                        plugin_instance.setup_object["signals"] = {}
-                    if signal_name not in plugin_instance.setup_object["signals"]:
-                        plugin_instance.setup_object["signals"][signal_name] = {}
-                    setup_object = plugin_instance.setup_object["signals"][signal_name]
-
-                    if "userconfig" not in signal_config:
-                        signal_config["userconfig"] = {}
-                    userconfig = signal_config["userconfig"]
-
-                    if "net" not in userconfig:
-                        userconfig["net"] = ""
-                    if "function" not in userconfig:
-                        userconfig["function"] = ""
-                    if "setp" not in userconfig:
-                        userconfig["setp"] = ""
-
-                    signal_net = userconfig.get("net", "")
-                    signal_function = userconfig.get("function", "")
-                    signal_setp = str(userconfig.get("setp", ""))
-
-                    key = "net"
-                    if signal_function:
-                        key = "function"
-                    elif signal_setp:
-                        key = "setp"
-
-                    options_net = []
-                    for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
-                        if is_bool:
-                            if halpin_info.get("type") is bool:
-                                options_net.append(halpin)
-                        elif halpin_info.get("type") is not bool:
-                            options_net.append(halpin)
-
-                    options_func = []
-                    for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
-                        if is_bool:
-                            if halpin_info.get("type") is bool:
-                                options_func.append(halpin)
-                        elif halpin_info.get("type") is not bool:
-                            options_func.append(halpin)
-
-                    if key == "function":
-                        widget = self.parent.edit_item(setup_object, "function", {"type": "select", "options": options_func, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
-                    elif key == "setp":
-                        widget = self.parent.edit_item(setup_object, "setp", {"type": str, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
-                    else:
-                        widget = self.parent.edit_item(setup_object, "net", {"type": "select", "options": options_net, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
-
-                    table_data.append(
-                        (f"rio.{signal_halname}", {"output": "<-", "input": "->", "inout": "<->"}.get(signal_direction, signal_direction), signal_net, htype, key, plugin_instance, signal_name, widget)
-                    )
-
-        for plugin_instance in self.parent.plugins.plugin_instances:
-            for signal_name, signal_config in plugin_instance.signals().items():
-                signal_direction = signal_config["direction"]
-                signal_halname = signal_config["halname"]
-
-                if "signals" not in plugin_instance.setup_object:
-                    plugin_instance.setup_object["signals"] = {}
-                if signal_name not in plugin_instance.setup_object["signals"]:
-                    plugin_instance.setup_object["signals"][signal_name] = {}
-                setup_object = plugin_instance.setup_object["signals"][signal_name]
-
-                is_bool = signal_config.get("bool", False)
-                htype = "bit" if is_bool else "float"
-
-                if "userconfig" not in signal_config:
-                    signal_config["userconfig"] = {}
-                userconfig = signal_config["userconfig"]
-                signal_net = userconfig.get("net", "")
-                signal_function = userconfig.get("function", "")
-                signal_setp = str(userconfig.get("setp", ""))
-
-                key = "net"
-                if signal_function:
-                    key = "function"
-                elif signal_setp:
-                    key = "setp"
-
-                options_net = [""]
-                for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
-                    if is_bool:
-                        if halpin_info.get("type") is bool:
-                            options_net.append(halpin)
-                    elif halpin_info.get("type") is not bool:
-                        options_net.append(halpin)
-
-                options_func = [""]
-                for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
-                    if is_bool:
-                        if halpin_info.get("type") is bool:
-                            options_func.append(halpin)
-                    elif halpin_info.get("type") is not bool:
-                        options_func.append(halpin)
-
-                if key == "function":
-                    widget = self.parent.edit_item(setup_object, "function", {"type": "select", "options": options_func, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
-                elif key == "setp":
-                    widget = self.parent.edit_item(setup_object, "setp", {"type": str, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
-                else:
-                    widget = self.parent.edit_item(setup_object, "net", {"type": "select", "options": options_net, "default": ""}, need_enter=True, cb=self.sig_edit_cb)
-
-                table_data.append(
-                    (f"rio.{signal_halname}", {"output": "<-", "input": "->", "inout": "<->"}.get(signal_direction, signal_direction), signal_net, htype, key, plugin_instance, signal_name, widget)
-                )
-
-        if self.sig_table_sort_col > 0:
-            idx = self.sig_table_sort_col - 1
-            table_data.sort(key=sort_key)
-        elif self.sig_table_sort_col < 0:
-            idx = -self.sig_table_sort_col - 1
-            table_data.sort(key=sort_key, reverse=True)
-
-        for row_n, row in enumerate(table_data):
-            self.sig_table.setRowCount(row_n + 1)
-            for col_n, col in enumerate(row[:5]):
-                pitem = QTableWidgetItem(col)
-                self.sig_table.setItem(row_n, col_n, pitem)
-            self.sig_table.setCellWidget(row_n, 2, row[7])
-
-        for row_n, row in enumerate(table_data):
-            for col_n, col in enumerate(row[:5]):
-                self.sig_table.resizeColumnToContents(col_n)
-            break
-
-        self.sig_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
-
-    def sig_edit_cb(self, widget):
-        self.parent.config_load()
-        self.parent.generate_cb(preview=True)
-        self.parent.request_load_tree = 2
-        self.update()
-        self.parent.tabs["Json"].update()
-
-    def onHeaderClickedSignals(self, logicalIndex):
-        logicalIndex += 1
-        if self.sig_table_sort_col == logicalIndex:
-            self.sig_table_sort_col = -logicalIndex
-        else:
-            self.sig_table_sort_col = logicalIndex
-        self.update()
-
-
-class TabPins:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.pin_table = QTableWidget()
-        self.pin_table.setColumnCount(6)
-        self.pin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Pin"))
-        self.pin_table.setHorizontalHeaderItem(1, QTableWidgetItem("Plugin"))
-        self.pin_table.setHorizontalHeaderItem(2, QTableWidgetItem("Pin-Name"))
-        self.pin_table.setHorizontalHeaderItem(3, QTableWidgetItem("Mapping"))
-        self.pin_table.setHorizontalHeaderItem(4, QTableWidgetItem("Direction"))
-        self.pin_table.setHorizontalHeaderItem(5, QTableWidgetItem("Comment"))
-        self.pin_table.horizontalHeader().sectionClicked.connect(self.onHeaderClickedPins)
-        self.pin_table_sort_col = 1
-
-    def widget(self):
-        return self.pin_table
-
-    def timer(self):
-        pass
-
-    def update(self):
-        self.pin_table.setRowCount(0)
-        in_use = set()
-        table_data = []
-        for plugin_instance in self.parent.plugins.plugin_instances:
-            name = plugin_instance.plugin_setup.get("name")
-            title = plugin_instance.NAME
-            if name:
-                title = f"{name} ({plugin_instance.NAME})"
-
-            for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
-                if not pin_setup and pin_defaults.get("optional") is True:
-                    continue
-                if "pin" not in pin_setup and pin_defaults.get("optional") is True:
-                    continue
-                pin = pin_setup.get("pin")
-                if not pin:
-                    continue
-                pin_real = pin
-
-                mapped = ""
-                if pin in self.parent.pinmapping_rev:
-                    pin_real = pin
-                    mapped = self.parent.pinmapping_rev[pin]
-                elif pin in self.parent.pinmapping:
-                    pin_real = self.parent.pinmapping[pin]
-                    mapped = pin
-
-                comment = ""
-                modifiers = pin_setup.get("modifier")
-                if modifiers:
-                    mlist = set()
-                    for modifier in modifiers:
-                        mlist.add(modifier["type"])
-                    comment = f"{','.join(mlist)}"
-                in_use.add(pin_real)
-
-                widget = self.parent.edit_item(pin_setup, "pin", {"type": "select", "options": self.parent.pinlist, "default": ""}, cb=None)
-                table_data.append((pin_real, title, pin_name, mapped, pin_defaults["direction"], comment, widget))
-
-        for module_data in self.parent.config.get("modules", []):
-            slot_name = module_data.get("slot")
-            module_name = module_data.get("module")
-            title = slot_name
-            if module_name:
-                title = f"{module_name} ({title})"
-
-            for plugin_instance in self.parent.modules[slot_name]["instances"]:
-                name = plugin_instance.plugin_setup.get("name")
-                title = plugin_instance.NAME
-                if name:
-                    title = f"{name} ({plugin_instance.NAME})"
-
-                for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                    pin_setup = plugin_instance.plugin_setup.get("pins", {}).get(pin_name, {})
-                    if not pin_setup and pin_defaults.get("optional") is True:
-                        continue
-                    if "pin" not in pin_setup and pin_defaults.get("optional") is True:
-                        continue
-
-                    pin = pin_setup.get("pin", pin_setup.get("pin_mapped", "???"))
-                    if "[" not in pin:
-                        pin = f"{slot_name}:{pin}"
-                    pin_real = pin
-
-                    mapped = ""
-                    if pin in self.parent.pinmapping_rev:
-                        pin_real = pin
-                        mapped = self.parent.pinmapping_rev[pin]
-                    elif pin in self.parent.pinmapping:
-                        pin_real = self.parent.pinmapping[pin]
-                        mapped = pin
-
-                    comment = ""
-                    modifiers = pin_setup.get("modifier")
-                    if modifiers:
-                        mlist = set()
-                        for modifier in modifiers:
-                            mlist.add(modifier["type"])
-                        comment = f"{','.join(mlist)}"
-                    in_use.add(pin_real)
-
-                    table_data.append((pin_real, title, pin_name, mapped, pin_defaults["direction"], comment, None))
-
-        for pin in self.parent.pinlist:
-            if pin not in in_use:
-                if pin in self.parent.pinmapping:
-                    continue
-                if pin in self.parent.pinmapping_rev:
-                    if self.parent.pinmapping_rev[pin] in in_use:
-                        continue
-                in_use.add(pin)
-                table_data.append((pin, "", "", "", "", "unused", None))
-
-        def sort_key(a):
-            col = a[idx]
-            if not col:
-                return ""
-            numbers = re.findall(r"\d+", col)
-            for number in numbers:
-                col = col.replace(number, f"{int(number):09d}")
-            return col.lower()
-
-        if self.pin_table_sort_col > 0:
-            idx = self.pin_table_sort_col - 1
-            table_data.sort(key=sort_key)
-        elif self.pin_table_sort_col < 0:
-            idx = -self.pin_table_sort_col - 1
-            table_data.sort(key=sort_key, reverse=True)
-
-        for row_n, row in enumerate(table_data):
-            self.pin_table.setRowCount(row_n + 1)
-            for col_n, col in enumerate(row[:6]):
-                pitem = QTableWidgetItem(col)
-                self.pin_table.setItem(row_n, col_n, pitem)
-                self.pin_table.resizeColumnToContents(col_n)
-            self.pin_table.setCellWidget(row_n, 3, row[6])
-
-        for row_n, row in enumerate(table_data):
-            for col_n, col in enumerate(row[:6]):
-                self.pin_table.resizeColumnToContents(col_n)
-        self.pin_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-
-    def onHeaderClickedPins(self, logicalIndex):
-        logicalIndex += 1
-        if self.pin_table_sort_col == logicalIndex:
-            self.pin_table_sort_col = -logicalIndex
-        else:
-            self.pin_table_sort_col = logicalIndex
-        self.update()
-
-
-class TabHal:
-    last_x = -1
-    last_y = -1
-    last_action = 0
-    moved = 0
-
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.overview_img = MyQLabel(self)
-        self.scroll_widget = QScrollArea()
-        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setWidgetResizable(True)
-        self.scroll_widget.setWidget(self.overview_img)
-        self.graph = halgraph.HalGraph()
-
-    def widget(self):
-        return self.scroll_widget
-
-    def timer(self):
-        pass
-
-    def update(self):
-        config_name = self.parent.config.get("name")
-        png_data = self.graph.png(os.path.join(self.parent.output_path, config_name, "LinuxCNC", "rio.ini"))
-        if png_data:
-            self.overview_img.load(png_data)
-
-    def on_click(self, x, y):
-        self.last_x = x
-        self.last_y = y
-        self.last_action = 1
-        self.moved = 0
-
-    def on_release(self, x, y):
-        self.last_action = 0
-        if not self.moved:
-            if hasattr(self.graph, "on_click"):
-                self.graph.on_click(x, y)
-        self.moved = 0
-
-    def on_move(self, x, y):
-        if self.last_action == 1:
-            xs = self.scroll_widget.horizontalScrollBar()
-            ys = self.scroll_widget.verticalScrollBar()
-            xs_last = xs.value()
-            ys_last = ys.value()
-            diff_x = x - self.last_x
-            diff_y = y - self.last_y
-            if abs(diff_x) > 4 or abs(diff_y) > 4:
-                self.moved = 1
-            xs.setValue(xs_last - diff_x)
-            ys.setValue(ys_last - diff_y)
-
-
-class TabAxis:
-    last_x = -1
-    last_y = -1
-    last_action = 0
-    moved = 0
-
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.overview_img = MyQLabel(self)
-        self.scroll_widget = QScrollArea()
-        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setWidgetResizable(True)
-        self.scroll_widget.setWidget(self.overview_img)
-        self.graph = axisgraph.AxisGraph()
-
-    def widget(self):
-        return self.scroll_widget
-
-    def timer(self):
-        pass
-
-    def update(self):
-        config_name = self.parent.config.get("name")
-        config_folder = os.path.join(self.parent.output_path, config_name, "LinuxCNC")
-        png_data = self.graph.png(os.path.join(config_folder, "rio.hal"), os.path.join(config_folder, "rio.ini"))
-        if png_data:
-            self.overview_img.load(png_data)
-
-    def on_click(self, x, y):
-        self.last_x = x
-        self.last_y = y
-        self.last_action = 1
-        self.moved = 0
-
-    def on_release(self, x, y):
-        self.last_action = 0
-        if not self.moved:
-            if hasattr(self.graph, "on_click"):
-                self.graph.on_click(x, y)
-        self.moved = 0
-
-    def on_move(self, x, y):
-        if self.last_action == 1:
-            xs = self.scroll_widget.horizontalScrollBar()
-            ys = self.scroll_widget.verticalScrollBar()
-            xs_last = xs.value()
-            ys_last = ys.value()
-            diff_x = x - self.last_x
-            diff_y = y - self.last_y
-            if abs(diff_x) > 4 or abs(diff_y) > 4:
-                self.moved = 1
-            xs.setValue(xs_last - diff_x)
-            ys.setValue(ys_last - diff_y)
-
-
-class TabOverview:
-    last_x = -1
-    last_y = -1
-    last_action = 0
-    moved = 0
-
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.overview_img = MyQLabel(self)
-        self.scroll_widget = QScrollArea()
-        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setWidgetResizable(True)
-        self.scroll_widget.setWidget(self.overview_img)
-        self.graph = cfggraph.ConfigGraph(parent)
-
-    def widget(self):
-        return self.scroll_widget
-
-    def timer(self):
-        pass
-
-    def update(self):
-        png_data = self.graph.png()
-        if png_data:
-            self.overview_img.load(png_data)
-
-    def on_click(self, x, y):
-        self.last_x = x
-        self.last_y = y
-        self.last_action = 1
-        self.moved = 0
-
-    def on_release(self, x, y):
-        self.last_action = 0
-        if not self.moved:
-            if hasattr(self.graph, "on_click"):
-                self.graph.on_click(x, y)
-        self.moved = 0
-
-    def on_move(self, x, y):
-        if self.last_action == 1:
-            xs = self.scroll_widget.horizontalScrollBar()
-            ys = self.scroll_widget.verticalScrollBar()
-            xs_last = xs.value()
-            ys_last = ys.value()
-            diff_x = x - self.last_x
-            diff_y = y - self.last_y
-            if abs(diff_x) > 4 or abs(diff_y) > 4:
-                self.moved = 1
-            xs.setValue(xs_last - diff_x)
-            ys.setValue(ys_last - diff_y)
-
-
 class TabJson:
     def __init__(self, parent=None):
         self.parent = parent
@@ -963,16 +168,12 @@ class TabJson:
         config = self.parent.clean_config(self.parent.config)
         self.jsonpreview.clear()
         self.jsonpreview.insertPlainText(json.dumps(config, indent=4))
-        # self.jsonpreview.verticalScrollBar().setValue(0)
 
 
 class TabPlugins:
     def __init__(self, parent=None):
         self.parent = parent
         self.treeview = QTreeView()
-
-        # splitter.addWidget(self.treeview)
-        # self.treeview.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Value"])
         self.model.itemChanged.connect(parent.itemChanged)
@@ -989,522 +190,10 @@ class TabPlugins:
         pass
 
 
-class TabGpios:
-    scale = 1.0
-
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.img_container = QWidget()
-        self.img_layout = QVBoxLayout(self.img_container)
-        self.boardimg = QWidget()
-        self.img_layout.addWidget(self.boardimg)
-
-        self.pininfo = QLabel("")
-        self.pininfo_timer = 0
-
-        ipin_layout = QHBoxLayout()
-        self.ipin_widget = QWidget()
-        self.ipin_widget.setLayout(ipin_layout)
-        ipin_layout.addWidget(self.img_container)
-        ipin_layout.addWidget(self.pininfo)
-        ipin_layout.addStretch()
-
-        self.scroll_widget = QScrollArea()
-        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setWidgetResizable(True)
-        self.scroll_widget.setWidget(self.ipin_widget)
-
-    def widget(self):
-        return self.scroll_widget
-
-    def timer(self):
-        if self.pininfo_timer == 1:
-            self.pininfo_timer = 0
-            self.pininfo.setText("\n".join([""] * 10))
-        elif self.pininfo_timer > 1:
-            self.pininfo_timer -= 1
-
-    def update(self):
-        self.img_layout.removeWidget(self.boardimg)
-        self.boardimg = QWidget()
-        self.pinlabels = {}
-        rpi_pinout = (
-            "3V3",
-            "5V",
-            "GPIO2",
-            "5V",
-            "GPIO3",
-            "GND",
-            "GPIO4",
-            "GPIO14",
-            "GND",
-            "GPIO15",
-            "GPIO17",
-            "GPIO18",
-            "GPIO27",
-            "GND",
-            "GPIO22",
-            "GPIO23",
-            "3V3",
-            "GPIO24",
-            "GPIO10",
-            "GND",
-            "GPIO9",
-            "GPIO25",
-            "GPIO11",
-            "GPIO8",
-            "GND",
-            "GPIO7",
-            "GPIO0",
-            "GPIO1",
-            "GPIO5",
-            "GND",
-            "GPIO6",
-            "GPIO12",
-            "GPIO19",
-            "GND",
-            "GPIO19",
-            "GPIO16",
-            "GPIO26",
-            "GPIO20",
-            "GND",
-            "GPIO21",
-        )
-
-        self.networks = {}
-        linuxcnc_config = self.parent.config.get("linuxcnc", {})
-        for net in linuxcnc_config.get("net", []):
-            net_source = net.get("source")
-            net_target = net.get("target")
-            self.networks[net_source] = net_target
-            self.networks[net_target] = net_source
-
-        for component in linuxcnc_config.get("components", []):
-            for pin, halname in component.get("pins", {}).items():
-                ctype = component["type"]
-                self.networks[halname] = f"{ctype}->{pin}"
-
-        pixmaps = []
-        pins = {}
-        self.inputs = []
-        self.outputs = []
-        parport_n = 0
-        gpio_config = self.parent.config.get("gpios", [])
-        for gpio in gpio_config:
-            if gpio.get("type") == "parport":
-                pp_mode = gpio.get("mode", "0 out")
-                pinimage_path = riocore_path + "/files/db25.png"
-                pixmaps.append(QPixmap(pinimage_path))
-
-                mode_outputs = {
-                    "in": [1, 14, 16, 17],
-                    "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "epp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "x": [2, 3, 4, 5, 6, 7, 8, 9],
-                }
-                outpins = mode_outputs.get(pp_mode.split()[-1])
-
-                for pin_num in range(1, 18):
-                    title = f"P{parport_n}.{pin_num}"
-                    if pin_num in outpins:
-                        direction = "output"
-                    else:
-                        direction = "input"
-                    pin_name = f"parport.{parport_n}.pin-{pin_num:02d}-{direction.replace('put', '')}"
-                    if pin_num in outpins:
-                        self.outputs.append(pin_name)
-                    else:
-                        self.inputs.append(pin_name)
-                    if pin_num < 14:
-                        x_pos = 20 + parport_n * 168
-                        y_pos = 97 + (pin_num - 1) * 32.4
-                    else:
-                        x_pos = 110 + parport_n * 168
-                        y_pos = 97 + 15 + (pin_num - 14) * 32.4
-                    pins[title] = {
-                        "title": title,
-                        "pin": pin_name,
-                        "pos": [int(x_pos), int(y_pos)],
-                        "direction": direction,
-                        "slotname": f"parport.{parport_n}",
-                        "net": self.networks.get(pin_name, ""),
-                    }
-
-                parport_n += 1
-
-            elif gpio.get("type") == "rpi":
-                pinimage_path = riocore_path + "/files/rpi-gpio.png"
-                pixmaps.append(QPixmap(pinimage_path))
-                rpi_pins = gpio.get("pins", [])
-                self.inputs = rpi_pins.get("inputs", [])
-                self.outputs = rpi_pins.get("outputs", [])
-                resets = rpi_pins.get("reset", [])
-                direction = "all"
-                for pin_num in range(0, 40):
-                    pin_name = rpi_pinout[pin_num]
-                    if pin_name.startswith("GPIO"):
-                        x_pos = 30 + (pin_num % 2) * 110
-                        y_pos = 60 + (pin_num // 2) * 20.5
-                        pins[pin_name] = {
-                            "title": pin_name,
-                            "pin": pin_name,
-                            "pos": [int(x_pos), int(y_pos)],
-                            "direction": direction,
-                            "slotname": "rpi_gpio",
-                            "net": self.networks.get(pin_name, ""),
-                        }
-
-        if not pixmaps:
-            return
-
-        width = 0
-        height = 0
-        for pixmap in pixmaps:
-            width += pixmap.width()
-            height = max(height, pixmap.height())
-        pinlayout_pixmap = QPixmap(width, height)
-        self.painter = QPainter(pinlayout_pixmap)
-        xpos = 0
-        for pixmap in pixmaps:
-            rect = QRect(xpos, 0, pixmap.width(), pixmap.height())
-            self.painter.drawPixmap(rect, pixmap)
-            xpos += pixmap.width()
-
-        self.boardimg.setFixedSize(pinlayout_pixmap.size())
-        pinlayout_image = ImageMap(self)
-        pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
-        pinlayout_image.setFixedSize(pinlayout_pixmap.size())
-        pinlayout_image.setPixmap(pinlayout_pixmap)
-        self.img_layout.addWidget(self.boardimg)
-        layout_box = QVBoxLayout(self.boardimg)
-        layout_box.setContentsMargins(0, 0, 0, 0)
-        layout_box.addWidget(pinlayout_image)
-
-        for pin_id, pin in pins.items():
-            slot_name = pin["slotname"]
-            title = pin["title"]
-            halname = pin["pin"]
-            pkey = f"{slot_name}:{pin_id}"
-
-            bgcolor = "darkgray"
-            tooltip = f"{slot_name}:{pin_id} {pin['pin']} ({pin.get('direction', 'all')})"
-            if halname in self.inputs:
-                bgcolor = "blue"
-            elif halname in self.outputs:
-                bgcolor = "green"
-
-            if "pos" in pin:
-                self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
-                if pin.get("rotate"):
-                    if len(pin["pos"]) == 4:
-                        self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
-                        self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
-                    else:
-                        self.pinlabels[pkey].setFixedWidth(15)
-                        self.pinlabels[pkey].setFixedHeight(len(pin_id * 15))
-                    self.pinlabels[pkey].setText(title, True)
-                else:
-                    if len(pin["pos"]) == 4:
-                        self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
-                        self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
-                    else:
-                        self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
-                        self.pinlabels[pkey].setFixedHeight(15)
-                    self.pinlabels[pkey].setText(title)
-                self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
-                self.pinlabels[pkey].setToolTip(tooltip)
-
-                # self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
-
-    def pinlayout_mark(self, pkey):
-        slot_name = pkey.split(":")[0]
-        infotext = [f"Slot: {slot_name}"]
-        infotext.append("Pins:")
-        networks = []
-        infoline = 0
-        ln = 0
-        for key, label in self.pinlabels.items():
-            splitted = key.split(":")
-            if splitted[0] == slot_name:
-                color = "darkCyan"
-                label.mark(color)
-                direction = label.pin.get("direction") or "all"
-                comment = label.pin.get("comment") or ""
-                if comment:
-                    comment = f" - {comment}"
-
-                pinfo = ""
-                net = label.pin.get("net")
-                if net:
-                    pinfo += net
-                if key == pkey:
-                    pinfo += " <-"
-                    infoline = ln
-
-                # infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}{comment}) {pinfo}")
-                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} {pinfo}")
-                ln += 1
-            else:
-                label.unmark()
-
-        if len(infotext) > 2:
-            if networks:
-                infotext.append("Networks:")
-                for net in networks:
-                    infotext.append(f" {net}")
-
-            ilen = 20
-            off = ilen - 4
-            start = 0
-            end = ilen
-            if infoline > off - 1:
-                start = infoline - off
-                end = start + ilen
-            displayed = infotext[start:end]
-            fill = ilen + 1 - len(displayed)
-            displayed += [""] * fill
-            self.pininfo.setText("\n".join(displayed))
-            self.pininfo_timer = 0
-        else:
-            self.pininfo_timer = 3
-
-
-class TabBoard:
-    scale = 1.0
-
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.img_container = QWidget()
-        self.img_layout = QVBoxLayout(self.img_container)
-        self.boardimg = QWidget()
-        self.img_layout.addWidget(self.boardimg)
-
-        self.pininfo = QLabel("")
-        self.pininfo_timer = 0
-
-        ipin_layout = QHBoxLayout()
-        self.ipin_widget = QWidget()
-        self.ipin_widget.setLayout(ipin_layout)
-        ipin_layout.addWidget(self.img_container)
-        ipin_layout.addWidget(self.pininfo)
-        ipin_layout.addStretch()
-
-        self.scroll_widget = QScrollArea()
-        self.scroll_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll_widget.setWidgetResizable(True)
-        self.scroll_widget.setWidget(self.ipin_widget)
-
-    def widget(self):
-        return self.scroll_widget
-
-    def timer(self):
-        if self.pininfo_timer == 1:
-            self.pininfo_timer = 0
-            self.pininfo.setText("\n".join([""] * 10))
-        elif self.pininfo_timer > 1:
-            self.pininfo_timer -= 1
-
-    def update(self):
-        self.img_layout.removeWidget(self.boardimg)
-        self.boardimg = QWidget()
-        self.pinlabels = {}
-
-        pinimage = self.parent.board.get("pinimage", "board.png")
-        pinimage_path = os.path.join(self.parent.boardcfg_path, pinimage)
-        if not pinimage or not os.path.isfile(pinimage_path):
-            if self.parent.tabwidget.tabText(0) == "Board":
-                self.parent.tabwidget.removeTab(0)
-            return
-
-        pinlayout_pixmap = QPixmap(pinimage_path)
-        self.boardimg.setFixedSize(pinlayout_pixmap.size())
-
-        pinlayout_image = ImageMap(self)
-        pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
-        pinlayout_image.setFixedSize(pinlayout_pixmap.size())
-        pinlayout_image.setPixmap(pinlayout_pixmap)
-
-        self.img_layout.addWidget(self.boardimg)
-
-        layout_box = QVBoxLayout(self.boardimg)
-        layout_box.setContentsMargins(0, 0, 0, 0)
-        layout_box.addWidget(pinlayout_image)
-
-        for slot in self.parent.slots:
-            slot_name = slot["name"]
-            module_name = self.parent.get_module_by_slot(slot_name)
-
-            if "rect" in slot:
-                pkey = f"{slot_name}:"
-                w = int(slot["rect"][2])
-                h = int(slot["rect"][3])
-                tooltip = f"slot:{slot_name}"
-                bgcolor = "lightblue"
-                if module_name:
-                    bgcolor = "lightgreen"
-                    tooltip += f"\nmodule: {module_name}"
-                self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor)
-                self.pinlabels[pkey].setFixedWidth(w)
-                self.pinlabels[pkey].setFixedHeight(h)
-                self.pinlabels[pkey].setText(pkey)
-                self.pinlabels[pkey].move(QPoint(int(slot["rect"][0]), int(slot["rect"][1])))
-                self.pinlabels[pkey].setToolTip(tooltip)
-                if module_name:
-                    self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
-                else:
-                    self.pinlabels[pkey].clicked.connect(partial(self.parent.add_module, slot_name=slot_name, slot_select=False))
-
-            for pin_id, pin in slot["pins"].items():
-                if isinstance(pin, dict):
-                    # check if pin is allready used
-                    pkey = f"{slot_name}:{pin_id}"
-
-                    bgcolor = "blue"
-                    if "pos" in pin:
-                        tooltip = f"{slot_name}:{pin_id} {pin['pin']} ({pin.get('direction', 'all')})"
-                    else:
-                        tooltip = f"{slot_name}"
-
-                    plugin_instance, pin_name = self.parent.get_plugin_by_pin(pin["pin"])
-                    if module_name:
-                        bgcolor = "green"
-                        tooltip += f"\nmodule: {module_name}"
-                    elif plugin_instance:
-                        bgcolor = "green"
-                        tooltip += f"\n{plugin_instance.title} ({plugin_instance.NAME}) : {pin_name}"
-
-                    if "pos" in pin:
-                        self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
-                        if pin.get("rotate"):
-                            if len(pin["pos"]) == 4:
-                                self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
-                                self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
-                            else:
-                                self.pinlabels[pkey].setFixedWidth(15)
-                                self.pinlabels[pkey].setFixedHeight(len(pin_id * 15))
-                            self.pinlabels[pkey].setText(pin_id, True)
-                        else:
-                            if len(pin["pos"]) == 4:
-                                self.pinlabels[pkey].setFixedWidth(int(pin["pos"][2]))
-                                self.pinlabels[pkey].setFixedHeight(int(pin["pos"][3]))
-                            else:
-                                self.pinlabels[pkey].setFixedWidth(len(pin_id * 10))
-                                self.pinlabels[pkey].setFixedHeight(15)
-                            self.pinlabels[pkey].setText(pin_id)
-                        self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
-                        self.pinlabels[pkey].setToolTip(tooltip)
-
-                        if module_name:
-                            self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
-                        elif plugin_instance:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
-                        else:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.add_plugin, pin_id, slot_name=slot_name))
-
-                    elif "pos" in slot:
-                        self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
-                        self.pinlabels[pkey].setFixedWidth(len(slot_name * 10))
-                        self.pinlabels[pkey].setFixedHeight(15)
-                        self.pinlabels[pkey].setText(slot_name)
-                        self.pinlabels[pkey].move(QPoint(int(slot["pos"][0]), int(slot["pos"][1])))
-                        self.pinlabels[pkey].setToolTip(tooltip)
-
-                        if module_name:
-                            self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
-                        elif plugin_instance:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance))
-                        else:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.add_plugin, pin_id, slot_name=slot_name))
-
-    def remove_module(self, slot_name):
-        module_name = self.parent.get_module_by_slot(slot_name)
-        qm = QMessageBox
-        ret = qm.question(self.parent, "remove module", f"Are you sure to remove module '{module_name}' from slot '{slot_name}' ?", qm.Yes | qm.No)
-        if ret == qm.Yes:
-            if "modules" in self.parent.config:
-                for mn, module in enumerate(self.parent.config["modules"]):
-                    if module["slot"] == slot_name:
-                        self.parent.config["modules"].pop(mn)
-                        break
-            del self.parent.modules[slot_name]
-            self.parent.load_tree()
-            if self.board:
-                self.parent.tabs["Board"].update()
-                self.parent.tabs["Pins"].update()
-                self.parent.tabs["Signals"].update()
-            self.tabs["GPIOs"].update()
-            self.parent.display()
-
-    def pinlayout_mark(self, pkey):
-        slot_name = pkey.split(":")[0]
-        infotext = [f"Slot: {slot_name}"]
-        infotext.append("Pins:")
-        networks = []
-        infoline = 0
-        ln = 0
-        for key, label in self.pinlabels.items():
-            splitted = key.split(":")
-            if splitted[0] == slot_name:
-                color = "darkCyan"
-                label.mark(color)
-                direction = label.pin.get("direction") or "all"
-                comment = label.pin.get("comment") or ""
-                if comment:
-                    comment = f" - {comment}"
-
-                plugin_instance, pin_name = self.parent.get_plugin_by_pin(label.pin.get("pin", {}))
-                pinfo = ""
-                if plugin_instance:
-                    pinfo = f"-> {plugin_instance.title} ({plugin_instance.NAME}) : {pin_name}"
-
-                    for signal_name, signal_config in plugin_instance.signals().items():
-                        if "userconfig" not in signal_config:
-                            signal_config["userconfig"] = {}
-                        userconfig = signal_config["userconfig"]
-                        net = userconfig.get("net")
-                        if net:
-                            networks.append(net)
-
-                if key == pkey:
-                    pinfo += " <-"
-                    infoline = ln
-
-                infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}{comment}) {pinfo}")
-                ln += 1
-            else:
-                label.unmark()
-
-        if len(infotext) > 2:
-            if networks:
-                infotext.append("Networks:")
-                for net in networks:
-                    infotext.append(f" {net}")
-
-            ilen = 30
-            off = ilen - 4
-            start = 0
-            end = ilen
-            if infoline > off - 1:
-                start = infoline - off
-                end = start + ilen
-            displayed = infotext[start:end]
-            fill = ilen + 1 - len(displayed)
-            displayed += [""] * fill
-            self.pininfo.setText("\n".join(displayed))
-            self.pininfo_timer = 0
-        else:
-            self.pininfo_timer = 3
-
-
 class WinForm(QWidget):
     def __init__(self, args, parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("LinuxCNC-RIO - Setup-GUI")
-        # self.showMaximized()
-        # self.setMinimumWidth(1400)
-        # self.setMinimumHeight(900)
         self.setStyleSheet(STYLESHEET)
 
         self.listFile = QListWidget()
@@ -2158,7 +847,6 @@ class WinForm(QWidget):
             boardJsonStr = open(board_file, "r").read()
             self.board = json.loads(boardJsonStr)
         else:
-            print(f"no board config found")
             self.board = {}
 
         self.config_load()
@@ -2929,13 +1617,18 @@ class WinForm(QWidget):
         while self.model.rowCount() > 0:
             self.model.removeRow(0)
 
-        for key, var_setup in {
+        options = {
             "name": {"type": str},
             "description": {"type": str},
             "boardcfg": {"type": "select", "options": self.boards},
-            "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
-            "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
-        }.items():
+        }
+        if self.board:
+            options.update({
+                "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
+                "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
+            })
+
+        for key, var_setup in options.items():
             aitem = MyStandardItem()
             self.model.appendRow(
                 [
@@ -3101,109 +1794,112 @@ class WinForm(QWidget):
                     )
                     self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
 
-        # modules
-        free_slots = False
-        for slot in self.slots:
-            slot_name = slot["name"]
-            if slot_name not in self.modules:
-                free_slots = True
-                break
 
-        bitem = MyStandardItem()
-        self.model.appendRow(
-            [
-                MyStandardItem("Modules", help_text="Module-Configuration"),
-                bitem,
-            ]
-        )
-        tree_modules = self.model.item(self.model.rowCount() - 1)
+        if self.board:
 
-        if free_slots:
-            button = QPushButton("add module")
-            button.clicked.connect(self.add_module)
-            button.setMaximumSize(button.sizeHint())
-            self.treeview.setIndexWidget(bitem.index(), button)
+            # modules
+            free_slots = False
+            for slot in self.slots:
+                slot_name = slot["name"]
+                if slot_name not in self.modules:
+                    free_slots = True
+                    break
 
-        for module_data in self.config.get("modules", []):
-            slot_name = module_data.get("slot")
-            module_name = module_data.get("module")
-            title = slot_name
-            if module_name:
-                title = f"{module_name} ({title})"
-            aitem = MyStandardItem()
-            tree_modules.appendRow(
+            bitem = MyStandardItem()
+            self.model.appendRow(
                 [
-                    MyStandardItem(title),
-                    aitem,
+                    MyStandardItem("Modules", help_text="Module-Configuration"),
+                    bitem,
                 ]
             )
-            module_view = tree_modules.child(tree_modules.rowCount() - 1)
+            tree_modules = self.model.item(self.model.rowCount() - 1)
+
+            if free_slots:
+                button = QPushButton("add module")
+                button.clicked.connect(self.add_module)
+                button.setMaximumSize(button.sizeHint())
+                self.treeview.setIndexWidget(bitem.index(), button)
+
+            for module_data in self.config.get("modules", []):
+                slot_name = module_data.get("slot")
+                module_name = module_data.get("module")
+                title = slot_name
+                if module_name:
+                    title = f"{module_name} ({title})"
+                aitem = MyStandardItem()
+                tree_modules.appendRow(
+                    [
+                        MyStandardItem(title),
+                        aitem,
+                    ]
+                )
+                module_view = tree_modules.child(tree_modules.rowCount() - 1)
+
+                buttons_layout = QHBoxLayout()
+                buttons_layout.setContentsMargins(0, 0, 0, 0)
+                buttons_widget = QWidget()
+                buttons_widget.setLayout(buttons_layout)
+                self.treeview.setIndexWidget(aitem.index(), buttons_widget)
+
+                button_delete = QPushButton("delete")
+                cb = partial(self.del_module, slot_name)
+                button_delete.clicked.connect(cb)
+                button_delete.setToolTip("delete module")
+                button_delete.setMaximumSize(button_delete.sizeHint())
+                buttons_layout.addWidget(button_delete)
+
+                button_split = QPushButton("split")
+                cb = partial(self.split_module, slot_name)
+                button_split.setToolTip("split module into single plugins")
+                button_split.clicked.connect(cb)
+                button_split.setMaximumSize(button_split.sizeHint())
+                buttons_layout.addWidget(button_split)
+
+                buttons_layout.addStretch()
+
+                for key, var_setup in {
+                    "module": {"type": "select", "options": self.module_names},
+                    "slot": {"type": "select", "options": self.slotnames},
+                }.items():
+                    aitem = MyStandardItem()
+                    module_view.appendRow(
+                        [
+                            MyStandardItem(key.title()),
+                            aitem,
+                        ]
+                    )
+                    self.treeview.setIndexWidget(aitem.index(), self.edit_item(module_data, key, var_setup, cb=self.slot_change))
+
+                module_plugins_view = MyStandardItem("Plugins")
+                module_view.appendRow(module_plugins_view)
+
+                for plugin_instance in self.modules[slot_name]["instances"]:
+                    self.tree_add_plugin(module_plugins_view, plugin_instance, nopins=True, expand=False)
+
+            bitem = MyStandardItem()
+            self.model.appendRow(
+                [
+                    MyStandardItem("Plugins"),
+                    bitem,
+                ]
+            )
+            self.tree_plugins = self.model.item(self.model.rowCount() - 1)
 
             buttons_layout = QHBoxLayout()
             buttons_layout.setContentsMargins(0, 0, 0, 0)
             buttons_widget = QWidget()
             buttons_widget.setLayout(buttons_layout)
-            self.treeview.setIndexWidget(aitem.index(), buttons_widget)
 
-            button_delete = QPushButton("delete")
-            cb = partial(self.del_module, slot_name)
-            button_delete.clicked.connect(cb)
-            button_delete.setToolTip("delete module")
-            button_delete.setMaximumSize(button_delete.sizeHint())
-            buttons_layout.addWidget(button_delete)
-
-            button_split = QPushButton("split")
-            cb = partial(self.split_module, slot_name)
-            button_split.setToolTip("split module into single plugins")
-            button_split.clicked.connect(cb)
-            button_split.setMaximumSize(button_split.sizeHint())
-            buttons_layout.addWidget(button_split)
+            button = QPushButton("add plugin")
+            button.clicked.connect(self.add_plugin)
+            button.setMaximumSize(button.sizeHint())
+            buttons_layout.addWidget(button)
 
             buttons_layout.addStretch()
+            self.treeview.setIndexWidget(bitem.index(), buttons_widget)
 
-            for key, var_setup in {
-                "module": {"type": "select", "options": self.module_names},
-                "slot": {"type": "select", "options": self.slotnames},
-            }.items():
-                aitem = MyStandardItem()
-                module_view.appendRow(
-                    [
-                        MyStandardItem(key.title()),
-                        aitem,
-                    ]
-                )
-                self.treeview.setIndexWidget(aitem.index(), self.edit_item(module_data, key, var_setup, cb=self.slot_change))
-
-            module_plugins_view = MyStandardItem("Plugins")
-            module_view.appendRow(module_plugins_view)
-
-            for plugin_instance in self.modules[slot_name]["instances"]:
-                self.tree_add_plugin(module_plugins_view, plugin_instance, nopins=True, expand=False)
-
-        bitem = MyStandardItem()
-        self.model.appendRow(
-            [
-                MyStandardItem("Plugins"),
-                bitem,
-            ]
-        )
-        self.tree_plugins = self.model.item(self.model.rowCount() - 1)
-
-        buttons_layout = QHBoxLayout()
-        buttons_layout.setContentsMargins(0, 0, 0, 0)
-        buttons_widget = QWidget()
-        buttons_widget.setLayout(buttons_layout)
-
-        button = QPushButton("add plugin")
-        button.clicked.connect(self.add_plugin)
-        button.setMaximumSize(button.sizeHint())
-        buttons_layout.addWidget(button)
-
-        buttons_layout.addStretch()
-        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
-
-        for plugin_instance in self.plugins.plugin_instances:
-            self.tree_add_plugin(self.tree_plugins, plugin_instance)
+            for plugin_instance in self.plugins.plugin_instances:
+                self.tree_add_plugin(self.tree_plugins, plugin_instance)
 
         self.treeview.header().resizeSection(0, 300)
         self.treeview.header().resizeSection(1, 200)
@@ -4282,9 +2978,6 @@ class WinForm(QWidget):
         self.info_widget.setText("compiling...")
 
     def generate_cb(self, preview=False):
-        if not self.config["plugins"]:
-            print("WARNING: no plugins configured")
-
         self.info_widget.setText("generate...")
         self.output_path = "Output"
         if preview:

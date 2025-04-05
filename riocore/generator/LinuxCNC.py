@@ -1481,7 +1481,7 @@ class LinuxCNC:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
         if rpigpios and False:
-            self.halg.fmt_add_top(f"# rpi gpio component")
+            self.halg.fmt_add_top("# rpi gpio component")
             inputs = rpigpios[0].get("inputs", [])
             outputs = rpigpios[0].get("outputs", [])
             resets = rpigpios[0].get("reset", [])
@@ -1508,7 +1508,7 @@ class LinuxCNC:
             self.halg.fmt_add_top("")
 
         elif rpigpios:
-            self.halg.fmt_add_top(f"# hal_pi_gpio component")
+            self.halg.fmt_add_top("# hal_pi_gpio component")
             inputs = rpigpios[0].get("inputs", [])
             outputs = rpigpios[0].get("outputs", [])
             resets = rpigpios[0].get("reset", [])
@@ -1571,30 +1571,30 @@ class LinuxCNC:
                 self.halg.net_add(net_source, net_target, net_name)
 
         component_nums = {}
-        for component in linuxcnc_config.get("components", []):
-            comp_type = component.get("type")
+        for comp in linuxcnc_config.get("components", []):
+            comp_type = comp.get("type")
             if comp_type not in component_nums:
                 component_nums[comp_type] = 0
-            component["num"] = component_nums[comp_type]
+            comp["num"] = component_nums[comp_type]
             component_nums[comp_type] += 1
 
             if hasattr(components, comp_type):
-                cinstance = getattr(components, comp_type)(component)
+                cinstance = getattr(components, comp_type)(comp)
                 comp_pins = cinstance.setup.get("pins", {})
                 if comp_type != "stepgen":
                     comp_pins = cinstance.setup.get("pins", {})
                     options = cinstance.OPTIONS
                     for option in options:
-                        if option in component:
-                            self.halg.setp_add(f"{cinstance.PREFIX}.{option}", component[option])
+                        if option in comp:
+                            self.halg.setp_add(f"{cinstance.PREFIX}.{option}", comp[option])
                     for pin_name, pin_data in cinstance.PINDEFAULTS.items():
-                        pin_dir = pin_data["direction"]
+                        pin_data["direction"]
                         if pin_name in comp_pins:
                             self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", comp_pins[pin_name])
 
-        for component in dir(components):
-            if component[0] != "_":
-                ret = getattr(components, component).loader(None, linuxcnc_config.get("components", []))
+        for comp in dir(components):
+            if comp[0] != "_":
+                ret = getattr(components, comp).loader(None, linuxcnc_config.get("components", []))
                 if ret:
                     self.halg.fmt_add_top(ret)
 
@@ -1613,7 +1613,7 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     direction = signal_config["direction"]
                     virtual = signal_config.get("virtual")
-                    component = signal_config.get("component")
+                    comp = signal_config.get("component")
                     rprefix = "rio"
                     if virtual:
                         rprefix = "riov"
@@ -1639,7 +1639,7 @@ class LinuxCNC:
                             self.halg.net_add(netname, f"{rprefix}.{halname}")
                     elif setp:
                         self.halg.setp_add(f"{rprefix}.{halname}", setp)
-                    elif virtual and component:
+                    elif virtual and comp:
                         if direction == "input":
                             self.halg.net_add(f"{rprefix}.{halname}", f"rio.{halname}")
                         else:
@@ -1771,11 +1771,11 @@ class LinuxCNC:
                     self.num_joints += 1
 
         stepgen_num = 0
-        for component in linuxcnc_config.get("components", []):
-            comp_type = component.get("type")
+        for comp in linuxcnc_config.get("components", []):
+            comp_type = comp.get("type")
             if comp_type == "stepgen":
-                component["num"] = stepgen_num
-                axis_name = component.get("axis")
+                comp["num"] = stepgen_num
+                axis_name = comp.get("axis")
 
                 if not axis_name:
                     for name in self.AXIS_NAMES:
@@ -1785,12 +1785,12 @@ class LinuxCNC:
                 if axis_name:
                     if axis_name not in self.project.axis_dict:
                         self.project.axis_dict[axis_name] = {"joints": {}}
-                    feedback = component.get("joint", {}).get("feedback")
+                    feedback = comp.get("joint", {}).get("feedback")
                     self.project.axis_dict[axis_name]["joints"][self.num_joints] = {
                         "type": "stepgen",
                         "axis": axis_name,
                         "joint": self.num_joints,
-                        "plugin_instance": components.stepgen(component),
+                        "plugin_instance": components.stepgen(comp),
                         "feedback": feedback or True,
                     }
                     if feedback:

@@ -1,6 +1,4 @@
-import glob
 import os
-import sys
 import stat
 from riocore.generator.cbase import cbase
 

@@ -1,9 +1,14 @@
+import json
 import riocore
 
 from PyQt5 import QtGui, QtSvg
 from PyQt5.QtCore import QRect, Qt, QSize
 from PyQt5.QtGui import QStandardItem, QPixmap
 from PyQt5.QtWidgets import (
+    QVBoxLayout,
+    QDialogButtonBox,
+    QDialog,
+    QPushButton,
     QLabel,
     QCheckBox,
     QComboBox,
@@ -464,3 +469,224 @@ class modifier_selector(QComboBox):
         else:
             self.pin_setup["modifier"][self.modifier_id]["type"] = selected
         self.win.display()
+
+
+class ImageMap(QLabel):
+    last_x = -1
+    last_y = -1
+    last_action = 0
+    moved = 0
+
+    def __init__(self, parent):
+        super(QLabel, self).__init__(parent.parent)
+        self.parent = parent
+
+    def mousePressEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        self.last_x = x
+        self.last_y = y
+        self.last_action = 1
+        self.moved = 0
+        if event.button() == Qt.RightButton:
+            self.setPin(event.pos())
+
+    def mouseReleaseEvent(self, event):
+        int(event.pos().x() / self.parent.scale)
+        int(event.pos().y() / self.parent.scale)
+        self.last_action = 0
+        self.moved = 0
+
+    def mouseMoveEvent(self, event):
+        x = int(event.pos().x() / self.parent.scale)
+        y = int(event.pos().y() / self.parent.scale)
+        if self.last_action == 1:
+            xs = self.parent.scroll_widget.horizontalScrollBar()
+            ys = self.parent.scroll_widget.verticalScrollBar()
+            xs_last = xs.value()
+            ys_last = ys.value()
+            diff_x = x - self.last_x
+            diff_y = y - self.last_y
+            if abs(diff_x) > 4 or abs(diff_y) > 4:
+                self.moved = 1
+            xs.setValue(xs_last - diff_x)
+            ys.setValue(ys_last - diff_y)
+
+    """
+    def wheelEvent(self, event):
+        delta = event.angleDelta()
+        if delta.y() < 0:
+            if self.parent.scale > 0.1:
+                self.parent.scale -= 0.1
+        else:
+            if self.parent.scale < 10.0:
+                self.parent.scale += 0.1
+    """
+
+    def setPin(self, pos):
+        grid = 5
+        pos_x = pos.x() / self.parent.scale
+        pos_y = pos.y() / self.parent.scale
+        used_pos_x = set()
+        used_pos_y = set()
+        used_pins = []
+        for slot in self.parent.parent.slots:
+            for pin_name, pin_data in slot["pins"].items():
+                if isinstance(pin_data, str):
+                    used_pins.append(pin_data)
+                else:
+                    used_pins.append(pin_data["pin"])
+                    if "pos" in pin_data:
+                        used_pos_x.add(pin_data["pos"][0])
+                        used_pos_y.add(pin_data["pos"][1])
+
+        # align to other positions +-grid size
+        for pos in used_pos_x:
+            if abs(pos - pos_x) <= grid:
+                pos_x = pos
+                break
+        for pos in used_pos_y:
+            if abs(pos - pos_y) <= grid:
+                pos_y = pos
+                break
+
+        pin_name_default = "P1"
+        if self.parent.parent.slots:
+            last_slot = self.parent.parent.slots[-1]
+            pin_name_num = 1
+            found = True
+            while found:
+                found = False
+                for pin_name in last_slot["pins"]:
+                    if f"P{pin_name_num}" == pin_name:
+                        pin_name_num += 1
+                        found = True
+            pin_name_default = f"P{pin_name_num}"
+
+        dialog = QDialog()
+        dialog.setWindowTitle("set pin")
+        dialog.setStyleSheet(STYLESHEET)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog.layout = QVBoxLayout()
+
+        message = QLabel("Slot:")
+        dialog.layout.addWidget(message)
+        slot_select = QComboBox()
+        slot_select.setEditable(True)
+        for slot in reversed(self.parent.parent.slots):
+            slot_select.addItem(slot["name"])
+        dialog.layout.addWidget(slot_select)
+
+        message = QLabel("Pin-Name:")
+        dialog.layout.addWidget(message)
+        pin_name = QLineEdit(pin_name_default)
+        dialog.layout.addWidget(pin_name)
+
+        message = QLabel("FPGA-Pin:")
+        dialog.layout.addWidget(message)
+        pin_select = QComboBox()
+        pin_select.setEditable(True)
+        for pin in self.parent.parent.pinlist:
+            if ":" not in pin and pin not in used_pins:
+                pin_select.addItem(pin)
+        dialog.layout.addWidget(pin_select)
+
+        message = QLabel("Direction:")
+        dialog.layout.addWidget(message)
+        direction = QComboBox()
+        direction.addItem("all")
+        direction.addItem("output")
+        direction.addItem("input")
+        dialog.layout.addWidget(direction)
+
+        message = QLabel("PosX:")
+        dialog.layout.addWidget(message)
+        posx = QComboBox()
+        posx.setEditable(True)
+        posx.addItem(str(pos_x))
+        for pos in used_pos_x:
+            posx.addItem(str(pos))
+        dialog.layout.addWidget(posx)
+
+        message = QLabel("PosY:")
+        dialog.layout.addWidget(message)
+        posy = QComboBox()
+        posy.setEditable(True)
+        posy.addItem(str(pos_y))
+        for pos in used_pos_y:
+            posy.addItem(str(pos))
+        dialog.layout.addWidget(posy)
+
+        dialog.layout.addWidget(dialog_buttonBox)
+        dialog.setLayout(dialog.layout)
+
+        if dialog.exec():
+            slot_name = slot_select.currentText()
+            name = pin_name.text()
+            pin = pin_select.currentText()
+            direction_str = direction.currentText()
+            pos_x = posx.currentText()
+            pos_y = posy.currentText()
+            if direction_str == "":
+                direction_str = "all"
+
+            if slot_name and name and pin:
+                pin_cfg = {"pin": pin, "pos": [int(float(pos_x)), int(float(pos_y))], "direction": direction_str}
+
+                slot_n = -1
+                for sn, slot in enumerate(self.parent.parent.slots):
+                    if slot["name"] == slot_name:
+                        slot_n = sn
+                        break
+
+                if slot_n == -1:
+                    self.parent.parent.slots.append(
+                        {
+                            "name": slot_name,
+                            "comment": "",
+                            "default": "",
+                            "pins": {name: pin_cfg},
+                        }
+                    )
+                else:
+                    self.parent.parent.slots[slot_n]["pins"][name] = pin_cfg
+
+                print(json.dumps(self.parent.parent.slots, indent=4))
+                self.parent.parent.request_pin_table_load = 1
+            else:
+                print("ERROR: missing informations")
+
+
+class PinButton(QPushButton):
+    def __init__(self, widget, parent=None, pkey=None, bgcolor=None, pin=None):
+        super(QPushButton, self).__init__(widget)
+        self.parent = parent
+        self.pkey = pkey
+        self.bgcolor = bgcolor
+        if not pin:
+            pin = {}
+        self.pin = pin
+        if self.parent and self.bgcolor:
+            self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
+
+    def setText(self, text, rotate=False):
+        if rotate:
+            text = "\n".join(text)
+        QPushButton.setText(self, text)
+
+    def enterEvent(self, event):
+        if self.parent and self.pkey:
+            self.parent.pinlayout_mark(self.pkey)
+
+    def leaveEvent(self, event):
+        if self.parent and self.pkey:
+            self.parent.pinlayout_mark(":")
+
+    def mark(self, color):
+        if self.parent and color:
+            self.setStyleSheet(f"background-color: {color}; font-size:12px;")
+
+    def unmark(self):
+        if self.parent and self.bgcolor:
+            self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
