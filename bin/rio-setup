@@ -24,6 +24,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 import riocore
 from riocore import VERSION
 from riocore import halpins
+from riocore import components
 
 from riocore import vcp
 
@@ -1623,10 +1624,12 @@ class WinForm(QWidget):
             "boardcfg": {"type": "select", "options": self.boards},
         }
         if self.board:
-            options.update({
-                "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
-                "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
-            })
+            options.update(
+                {
+                    "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
+                    "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
+                }
+            )
 
         for key, var_setup in options.items():
             aitem = MyStandardItem()
@@ -1674,18 +1677,20 @@ class WinForm(QWidget):
             )
             self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config["linuxcnc"], key, var_setup))
 
-        # linuxcnc addon's
+        # linuxcnc components's (for host gpio's)
         bitem = MyStandardItem()
         tree_lcnc.appendRow(
             [
-                MyStandardItem("AddOn's", help_text="LinuxCNC generator addons"),
+                MyStandardItem("Component's", help_text="LinuxCNC components for host gpio's"),
                 bitem,
             ]
         )
-        tree_lcncaddons = tree_lcnc.child(tree_lcnc.rowCount() - 1)
-        for addon_name, addon in self.addons.items():
-            if hasattr(addon, "load_tree"):
-                addon.load_tree(self, tree_lcncaddons)
+        tree_lcnccomps = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+
+        for comp in dir(components):
+            if comp.startswith("comp_"):
+                comp_class = getattr(components, comp)
+                # TODO: setup dialog like in the modules tree
 
         # rio-functions
         bitem = MyStandardItem()
@@ -1794,9 +1799,20 @@ class WinForm(QWidget):
                     )
                     self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
 
+        # linuxcnc addon's
+        bitem = MyStandardItem()
+        tree_lcnc.appendRow(
+            [
+                MyStandardItem("AddOn's", help_text="LinuxCNC generator addons"),
+                bitem,
+            ]
+        )
+        tree_lcncaddons = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        for addon_name, addon in self.addons.items():
+            if hasattr(addon, "load_tree"):
+                addon.load_tree(self, tree_lcncaddons)
 
         if self.board:
-
             # modules
             free_slots = False
             for slot in self.slots:
@@ -1906,8 +1922,11 @@ class WinForm(QWidget):
 
         if expand:
             self.tree_expand(expand)
-        else:
+        elif self.board:
             self.tree_expand("/Plugins/")
+        else:
+            # TODO:
+            self.tree_expand("/LinuxCNC/")
 
     def tree_expand(self, tpath):
         def iter_childs(entry, prefix=""):

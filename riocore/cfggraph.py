@@ -103,8 +103,8 @@ class ConfigGraph:
                     component_nums[comp_type] = 0
                 component["num"] = component_nums[comp_type]
                 component_nums[comp_type] += 1
-                if hasattr(components, comp_type):
-                    cinstance = getattr(components, comp_type)(component)
+                if hasattr(components, f"comp_{comp_type}"):
+                    cinstance = getattr(components, f"comp_{comp_type}")(component)
                     comp_pins = cinstance.setup.get("pins", {})
                     ports = [f"<{p.split(':')[0]}>{p.split(':')[0]}" for p in cinstance.PINS]
                     label = f"{{ {{ {'|'.join(ports)} }} | {{ {cinstance.TITLE} }} | {{ {'|'.join(cinstance.SIGNALS)} }} }}"

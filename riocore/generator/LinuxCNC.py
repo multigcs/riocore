@@ -1578,8 +1578,8 @@ class LinuxCNC:
             comp["num"] = component_nums[comp_type]
             component_nums[comp_type] += 1
 
-            if hasattr(components, comp_type):
-                cinstance = getattr(components, comp_type)(comp)
+            if hasattr(components, f"comp_{comp_type}"):
+                cinstance = getattr(components, f"comp_{comp_type}")(comp)
                 comp_pins = cinstance.setup.get("pins", {})
                 if comp_type != "stepgen":
                     comp_pins = cinstance.setup.get("pins", {})
@@ -1593,7 +1593,7 @@ class LinuxCNC:
                             self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", comp_pins[pin_name])
 
         for comp in dir(components):
-            if comp[0] != "_":
+            if comp.startswith("comp_"):
                 ret = getattr(components, comp).loader(None, linuxcnc_config.get("components", []))
                 if ret:
                     self.halg.fmt_add_top(ret)
@@ -1790,7 +1790,7 @@ class LinuxCNC:
                         "type": "stepgen",
                         "axis": axis_name,
                         "joint": self.num_joints,
-                        "plugin_instance": components.stepgen(comp),
+                        "plugin_instance": components.comp_stepgen(comp),
                         "feedback": feedback or True,
                     }
                     if feedback:

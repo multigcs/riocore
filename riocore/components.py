@@ -1,4 +1,4 @@
-class stepgen:
+class comp_stepgen:
     mode_pins = {
         "0": ("step:output", "dir:output"),
         "1": ("up:output", "down:output"),
@@ -82,7 +82,7 @@ class stepgen:
         }
 
 
-class pwmgen:
+class comp_pwmgen:
     def __init__(self, component):
         self.snum = component["num"]
         self.component = component
@@ -139,7 +139,7 @@ class pwmgen:
         return {}
 
 
-class encoder:
+class comp_encoder:
     def __init__(self, component):
         self.snum = component["num"]
         self.component = component
