@@ -1363,6 +1363,7 @@ class WinForm(QWidget):
 
         self.items = {}
         self.pinlist = []
+        self.gpiolist = []
         self.pinmapping = {}
         self.pinmapping_rev = {}
         self.expansion_pins = []
@@ -1402,6 +1403,89 @@ class WinForm(QWidget):
                 self.pinmapping_rev[pin] = pin_id
                 if pin_id not in self.pinlist:
                     self.pinlist.append(pin_id)
+
+        rpi_pinout = (
+            "3V3",
+            "5V",
+            "GPIO2",
+            "5V",
+            "GPIO3",
+            "GND",
+            "GPIO4",
+            "GPIO14",
+            "GND",
+            "GPIO15",
+            "GPIO17",
+            "GPIO18",
+            "GPIO27",
+            "GND",
+            "GPIO22",
+            "GPIO23",
+            "3V3",
+            "GPIO24",
+            "GPIO10",
+            "GND",
+            "GPIO9",
+            "GPIO25",
+            "GPIO11",
+            "GPIO8",
+            "GND",
+            "GPIO7",
+            "GPIO0",
+            "GPIO1",
+            "GPIO5",
+            "GND",
+            "GPIO6",
+            "GPIO12",
+            "GPIO19",
+            "GND",
+            "GPIO19",
+            "GPIO16",
+            "GPIO26",
+            "GPIO20",
+            "GND",
+            "GPIO21",
+        )
+        gpio_config = self.config.get("gpios", [])
+        parport_n = 0
+        for gpio in gpio_config:
+            if gpio.get("type") == "parport":
+                pp_mode = gpio.get("mode", "0 out")
+                mode_outputs = {
+                    "in": [1, 14, 16, 17],
+                    "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
+                    "epp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
+                    "x": [2, 3, 4, 5, 6, 7, 8, 9],
+                }
+                outpins = mode_outputs.get(pp_mode.split()[-1])
+
+                for pin_num in range(1, 18):
+                    title = f"P{parport_n}.{pin_num}"
+                    if pin_num in outpins:
+                        direction = "output"
+                    else:
+                        direction = "input"
+                    pin_name = f"parport.{parport_n}.pin-{pin_num:02d}-{direction.replace('put', '')}"
+                    if pin_name not in self.gpiolist:
+                        self.gpiolist.append(pin_name)
+                parport_n += 1
+
+            elif gpio.get("type") == "rpi":
+                rpi_pins = gpio.get("pins", [])
+                self.inputs = rpi_pins.get("inputs", [])
+                self.outputs = rpi_pins.get("outputs", [])
+                rpi_pins.get("reset", [])
+                direction = "all"
+                for pin_num in range(0, 40):
+                    pin_name = rpi_pinout[pin_num]
+                    if pin_name not in self.gpiolist:
+                        self.gpiolist.append(pin_name)
+
+        for component in self.config["linuxcnc"].get("components", []):
+            print("###", component)
+            for pin_name, net in component.get("pins", {}).items():
+                if net not in self.gpiolist:
+                    self.gpiolist.append(net)
 
         def sort_key(value):
             if not value:
@@ -2354,6 +2438,66 @@ class WinForm(QWidget):
 
         return pins_tab
 
+    def edit_component_pins(self, cinstance, component):
+        def update(arg):
+            pass
+            # print("#update", arg, plugin_config)
+
+        myFont = QFont()
+        myFont.setBold(True)
+
+        pins = QVBoxLayout()
+        label = QLabel("Pin-Setup")
+        label.setFont(myFont)
+        pins.addWidget(label)
+
+        if "pins" not in component:
+            component["pins"] = {}
+
+        for pin_name, pin_defaults in cinstance.PINDEFAULTS.items():
+            pin_config = component.get("pins", {}).get(pin_name, {})
+            pin_title = pin_name
+            direction = pin_defaults["direction"]
+            description = pin_defaults.get("description")
+            optional = pin_defaults.get("optional", False)
+            help_text = f"location for {direction} pin: {pin_name}"
+
+            if description:
+                help_text = f"{help_text}: {description}"
+                pin_title = f"{pin_title}: {description}"
+
+            frame = QGroupBox(self)
+            frame.setTitle(pin_title)
+            frame.setToolTip(help_text)
+
+            pin_rows = QVBoxLayout()
+
+            pin_cols = QHBoxLayout()
+            pin_rows.addLayout(pin_cols)
+            pin_cols.addWidget(QLabel(f"Dir: {direction}"), stretch=1)
+
+            # Options
+            pin_cols = QHBoxLayout()
+            pin_rows.addLayout(pin_cols)
+            pin_cols.addWidget(QLabel("Pin:"), stretch=2)
+
+            pin_cols.addWidget(self.edit_item(component["pins"], pin_name, {"type": "select", "options": self.gpiolist, "default": ""}, cb=update), stretch=6)
+
+            frame.setLayout(pin_rows)
+            pins.addWidget(frame)
+
+        pins_widget = QWidget()
+        pins.addStretch()
+        pins_widget.setLayout(pins)
+
+        pins_tab = QScrollArea()
+        pins_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        pins_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        pins_tab.setWidgetResizable(True)
+        pins_tab.setWidget(pins_widget)
+
+        return pins_tab
+
     def draw_joint_home(self, joints_setup, joint_options):
         HOME_SEARCH_VEL = joints_setup.get("home_search_vel", joint_options["home_search_vel"].get("default", 0.0))
         HOME_OFFSET = joints_setup.get("home_offset", joint_options["home_offset"].get("default", 0.0))
@@ -2858,12 +3002,11 @@ class WinForm(QWidget):
         options_tab = self.edit_component_options(cinstance, component)
         tab_widget.addTab(options_tab, "Options")
 
+        pins_tab = self.edit_component_pins(cinstance, component)
+        tab_widget.addTab(pins_tab, "Pins")
+
         """
 
-        pins_tab = self.edit_component_pins(component, component)
-        tab_widget.addTab(pins_tab, "Pins")
-        if is_new:
-            tab_widget.setCurrentWidget(pins_tab)
 
         if component.TYPE == "stepgen" and component.get("is_joint", False):
             joint_tab = self.edit_component_joints(component, component)
