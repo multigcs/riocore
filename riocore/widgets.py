@@ -390,28 +390,31 @@ class edit_combobox(QComboBox):
         self.key = key
         self.default = default
         options = options.copy()
+        options_clean = [opt.split("|")[0] for opt in options]
         if help_text:
             self.setToolTip(help_text)
         if key in obj:
-            if str(obj[key]) not in options:
+            if str(obj[key]) not in options_clean:
                 options.append(str(obj[key]))
+                options_clean.append(str(obj[key]))
         else:
             options.append("")
+            options_clean.append("")
         for option in options:
             self.addItem(option)
         self.setEditable(True)
         if key in obj:
-            if str(obj[key]) in options:
-                self.setCurrentIndex(options.index(str(obj[key])))
+            if str(obj[key]) in options_clean:
+                self.setCurrentIndex(options_clean.index(str(obj[key])))
             else:
                 print(f"ERROR: {obj[key]} is not a option")
         elif default is not None:
-            if default in options:
-                self.setCurrentIndex(options.index(default))
+            if default in options_clean:
+                self.setCurrentIndex(options_clean.index(default))
             else:
                 print(f"ERROR: {default} is not a option")
         else:
-            self.setCurrentIndex(options.index(""))
+            self.setCurrentIndex(options_clean.index(""))
         if need_enter:
             self.currentIndexChanged.connect(self.change)
             self.textActivated.connect(self.change)
@@ -424,12 +427,13 @@ class edit_combobox(QComboBox):
             return QComboBox.wheelEvent(self, *args, **kwargs)
 
     def change(self):
-        if self.currentText() != self.default:
-            self.obj[str(self.key)] = self.currentText()
+        new_value = self.currentText().split("|")[0]
+        if new_value != self.default:
+            self.obj[str(self.key)] = new_value
         elif str(self.key) in self.obj:
             del self.obj[str(self.key)]
         if self.cb:
-            self.cb(self.currentText())
+            self.cb(new_value)
         else:
             self.win.display()
 

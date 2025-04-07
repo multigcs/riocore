@@ -1470,7 +1470,8 @@ class WinForm(QWidget):
             if slot_name:
                 self.slotnames.append(slot_name)
 
-        self.tabs["GPIOs"].update()
+        # self.tabs["GPIOs"].update()
+
         if self.board:
             self.tabs["Board"].update()
             self.tabs["Pins"].update()
@@ -1576,7 +1577,7 @@ class WinForm(QWidget):
                 self.config["modules"].pop(mn)
                 break
         self.config_load()
-        self.display()
+        # self.display()
         self.tree_expand("/Modules/")
 
     def split_module(self, slot_name):
@@ -1608,7 +1609,7 @@ class WinForm(QWidget):
                 self.config["modules"].pop(mn)
                 break
         self.config_load()
-        self.display()
+        # self.display()
         self.tree_expand("/Modules/")
 
     def load_tree(self, expand=None):
@@ -1917,6 +1918,31 @@ class WinForm(QWidget):
             for plugin_instance in self.plugins.plugin_instances:
                 self.tree_add_plugin(self.tree_plugins, plugin_instance)
 
+        bitem = MyStandardItem()
+        self.model.appendRow(
+            [
+                MyStandardItem("Components"),
+                bitem,
+            ]
+        )
+        self.tree_comps = self.model.item(self.model.rowCount() - 1)
+
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_widget = QWidget()
+        buttons_widget.setLayout(buttons_layout)
+
+        button = QPushButton("add comp")
+        # button.clicked.connect(self.add_component)
+        button.setMaximumSize(button.sizeHint())
+        buttons_layout.addWidget(button)
+
+        buttons_layout.addStretch()
+        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
+
+        for component in self.config["linuxcnc"].get("components", []):
+            self.tree_add_component(self.tree_comps, component)
+
         self.treeview.header().resizeSection(0, 300)
         self.treeview.header().resizeSection(1, 200)
 
@@ -2048,7 +2074,16 @@ class WinForm(QWidget):
             dialog.close()
         self.config["plugins"].pop(plugin_id)
         self.config_load()
-        self.display()
+        # self.display()
+
+    def del_component(self, component, widget, dialog=None):
+        plugin_id = plugin_instance.plugin_id
+        if dialog is not None:
+            dialog.is_removed = True
+            dialog.close()
+        self.config["plugins"].pop(plugin_id)
+        self.config_load()
+        # self.display()
 
     def edit_modifier(self, modifier_list, modifier_id, parent_layout=None):
         def update():
@@ -2745,13 +2780,140 @@ class WinForm(QWidget):
         options_tab.setWidget(options_widget)
         return options_tab
 
+    def edit_component_options(self, cinstance, component):
+        def update(arg):
+            # print("#####", arg)
+            pass
+
+        myFont = QFont()
+        myFont.setBold(True)
+
+        options = QVBoxLayout()
+
+        infotext = cinstance.INFO
+        label = QLabel(f"{infotext}\n")
+        label.setFont(myFont)
+        options.addWidget(label)
+
+        iname_row = QHBoxLayout()
+        iname_row.addWidget(QLabel("Name"), stretch=1)
+        iname_label = QLabel(component.get("name"))
+        iname_row.addWidget(iname_label, stretch=3)
+        options.addLayout(iname_row)
+
+        for option_name, option_defaults in cinstance.OPTIONS.items():
+            title = option_name.title()
+            unit = option_defaults.get("unit")
+            if unit:
+                title = f"{title} ({unit})"
+            help_text = option_defaults.get("description", title)
+            option_row = QHBoxLayout()
+            options.addLayout(option_row)
+            option_label = QLabel(title)
+            option_label.setToolTip(help_text)
+            option_row.addWidget(option_label, stretch=1)
+            option_row.addWidget(self.edit_item(component, option_name, option_defaults, cb=update), stretch=3)
+
+        descriptiontext = cinstance.DESCRIPTION
+        label = QLabel(f"{descriptiontext}\n")
+        # options.addWidget(label)
+
+        options_widget = QWidget()
+        options.addStretch()
+        options_widget.setLayout(options)
+
+        options_tab = QScrollArea()
+        options_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        options_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        options_tab.setWidgetResizable(True)
+        options_tab.setWidget(options_widget)
+        return options_tab
+
+    def edit_component(self, component, widget, is_new=False):
+        comp_type = component.get("type")
+        if hasattr(components, f"comp_{comp_type}"):
+            cinstance = getattr(components, f"comp_{comp_type}")(component)
+        else:
+            return
+
+        print(comp_type, cinstance, component)
+
+        component_backup = copy.deepcopy(component)
+
+        dialog = QDialog()
+        dialog.is_removed = False
+        dialog.setWindowTitle(f"edit component {cinstance.TITLE}")
+        dialog.setStyleSheet(STYLESHEET)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+
+        remove_button = QPushButton(self.tr("Remove"))
+        remove_button.clicked.connect(partial(self.del_component, component, dialog=dialog))
+        dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
+
+        tab_widget = QTabWidget()
+        tab_widget.setStyleSheet(STYLESHEET_TABBAR)
+
+        options_tab = self.edit_component_options(cinstance, component)
+        tab_widget.addTab(options_tab, "Options")
+
+        """
+
+        pins_tab = self.edit_component_pins(component, component)
+        tab_widget.addTab(pins_tab, "Pins")
+        if is_new:
+            tab_widget.setCurrentWidget(pins_tab)
+
+        if component.TYPE == "stepgen" and component.get("is_joint", False):
+            joint_tab = self.edit_component_joints(component, component)
+            tab_widget.addTab(joint_tab, "Joint")
+
+        elif component.TYPE != "interface":
+            if component.SIGNALS:
+                signals_tab = self.edit_component_signals(component, component)
+                tab_widget.addTab(signals_tab, "Signals")
+
+        """
+
+        right_layout = QVBoxLayout()
+        """
+        comp_path = os.path.join(riocore_path, "comps", component.NAME)
+        image_path = os.path.join(comp_path, "image.png")
+        if os.path.isfile(image_path):
+            ilabel = QLabel(self)
+            pixmap = QPixmap(image_path)
+            ilabel.setPixmap(pixmap)
+            right_layout.addWidget(ilabel)
+            right_layout.addStretch()
+        """
+        hlayout = QHBoxLayout()
+        hlayout.addWidget(tab_widget)
+        hlayout.addLayout(right_layout)
+
+        dialog_layout = QVBoxLayout()
+        dialog_layout.addLayout(hlayout)
+        dialog_layout.addWidget(dialog_buttonBox)
+        dialog.setLayout(dialog_layout)
+
+        if dialog.exec():
+            self.config_load()
+            # self.display()
+            return
+        if not dialog.is_removed:
+            for key in list(component.keys()):
+                if key not in component_backup:
+                    del component[key]
+            for key in component_backup:
+                component[key] = component_backup[key]
+
     def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False):
         plugin_config = plugin_instance.plugin_setup
         plugin_config_backup = copy.deepcopy(plugin_config)
 
         dialog = QDialog()
         dialog.is_removed = False
-        dialog.setWindowTitle(f"edit Plugin {plugin_instance.NAME}")
+        dialog.setWindowTitle(f"edit plugin {plugin_instance.NAME}")
         dialog.setStyleSheet(STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
@@ -2807,7 +2969,7 @@ class WinForm(QWidget):
 
         if dialog.exec():
             self.config_load()
-            self.display()
+            # self.display()
             return
         if not dialog.is_removed:
             for key in list(plugin_config.keys()):
@@ -2822,8 +2984,8 @@ class WinForm(QWidget):
             config_box = plugin_config.config(plugin_instance, styleSheet=STYLESHEET)
             config_box.run()
         self.config_load()
-        self.load_tree()
-        self.display()
+        # self.load_tree()
+        # self.display()
 
     def select_module(self, last_error=None, set_slot=None, set_module=None, slot_select=True):
         dialog = QDialog()
@@ -3147,6 +3309,37 @@ class WinForm(QWidget):
             button_config.clicked.connect(cb)
             button_config.setMaximumSize(button_config.sizeHint())
             buttons_layout.addWidget(button_config)
+        buttons_layout.addStretch()
+        self.treeview.setIndexWidget(aitem.index(), buttons_widget)
+
+    def tree_add_component(self, parent, component, expand=False):
+        comp_type = component.get("type")
+        iconItem = MyStandardItem(comp_type, help_text="")
+        aitem = MyStandardItem()
+        parent.appendRow(
+            [
+                iconItem,
+                aitem,
+            ]
+        )
+
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_widget = QWidget()
+        buttons_widget.setLayout(buttons_layout)
+
+        button_edit = QPushButton("edit")
+        cb = partial(self.edit_component, component)
+        button_edit.clicked.connect(cb)
+        button_edit.setMaximumSize(button_edit.sizeHint())
+        buttons_layout.addWidget(button_edit)
+
+        button_delete = QPushButton("delete")
+        cb = partial(self.del_component, component)
+        button_delete.clicked.connect(cb)
+        button_delete.setMaximumSize(button_delete.sizeHint())
+        buttons_layout.addWidget(button_delete)
+
         buttons_layout.addStretch()
         self.treeview.setIndexWidget(aitem.index(), buttons_widget)
 
