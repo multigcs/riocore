@@ -58,6 +58,21 @@ JOINT_OPTIONS = {
     },
 }
 
+JOINT_OPTIONS_SOFT = {
+    "stepgen_steplen": {
+        "type": float,
+    },
+    "stepgen_stepspace": {
+        "type": float,
+    },
+    "stepgen_dirhold": {
+        "type": float,
+    },
+    "stepgen_dirsetup": {
+        "type": float,
+    },
+}
+
 RIO_FUNCTION_DEFAULTS = {
     "jog": {
         "wheel": {

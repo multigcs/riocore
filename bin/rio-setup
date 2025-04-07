@@ -1482,7 +1482,6 @@ class WinForm(QWidget):
                         self.gpiolist.append(pin_name)
 
         for component in self.config["linuxcnc"].get("components", []):
-            print("###", component)
             for pin_name, net in component.get("pins", {}).items():
                 if net not in self.gpiolist:
                     self.gpiolist.append(net)
@@ -2692,6 +2691,94 @@ class WinForm(QWidget):
 
         return joint_tabs
 
+    def edit_component_joints(self, cinstance, component):
+        def update(arg):
+            pass
+            #svgWidget.load(self.draw_joint_home(joints_setup, joint_options))
+
+        myFont = QFont()
+        myFont.setBold(True)
+
+        if "joint" not in component:
+            component["joint"] = {}
+        joints_setup = component["joint"]
+
+        joint_options = copy.deepcopy(halpins.JOINT_OPTIONS)
+        joint_options.update(copy.deepcopy(halpins.JOINT_OPTIONS_SOFT))
+
+        for key, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
+            key = key.lower()
+            if key == "scale_out":
+                key = "scale"
+            if key in joint_options:
+                joint_options[key.lower()]["default"] = value
+
+        """
+        for key, value in riocore.generator.LinuxCNC.LinuxCNC.PID_DEFAULTS.items():
+            pkey = f"pid_{key.lower()}"
+            joint_options[pkey] = {}
+            joint_options[pkey]["type"] = float
+            joint_options[pkey]["default"] = value
+        """
+
+        joint_tabs = QTabWidget()
+        joint_tabs.setStyleSheet(STYLESHEET_TABBAR)
+
+        general_layout = QVBoxLayout()
+        label = QLabel("Joint-Setup")
+        label.setFont(myFont)
+        general_layout.addWidget(label)
+
+        for option, option_setup in joint_options.items():
+            if option.startswith("home"):
+                continue
+            if option.startswith("pid_"):
+                continue
+            tootltip = halpins.INI_HELPTEXT["JOINT_NUM"].get(option.upper(), f"{option} config")
+            option_row = QHBoxLayout()
+            option_label = QLabel(option.replace("_", "-").title())
+            option_label.setToolTip(tootltip)
+            option_row.addWidget(option_label, stretch=1)
+
+            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
+
+            option_row.addWidget(option_widget, stretch=3)
+            general_layout.addLayout(option_row)
+
+        general_tab = QWidget()
+        general_layout.addStretch()
+        general_tab.setLayout(general_layout)
+        joint_tabs.addTab(general_tab, "General")
+
+        homing_layout = QVBoxLayout()
+        label = QLabel("Joint-Homing")
+        label.setFont(myFont)
+        homing_layout.addWidget(label)
+        for option, option_setup in joint_options.items():
+            if not option.startswith("home"):
+                continue
+            tootltip = halpins.INI_HELPTEXT["JOINT_NUM"].get(option.upper(), f"{option} config")
+            option_row = QHBoxLayout()
+            option_label = QLabel(option.replace("_", "-").title())
+            option_label.setToolTip(tootltip)
+            option_row.addWidget(option_label, stretch=1)
+            if option == "home_sequence":
+                option_setup = {"default": "auto", "type": "select", "options": ["auto"] + [str(n) for n in range(-9, 9)]}
+            option_widget = self.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
+            option_row.addWidget(option_widget, stretch=3)
+            homing_layout.addLayout(option_row)
+
+        svgWidget = QtSvg.QSvgWidget()
+        update(None)
+        homing_layout.addStretch()
+        homing_layout.addWidget(svgWidget)
+
+        homing_tab = QWidget()
+        homing_tab.setLayout(homing_layout)
+        joint_tabs.addTab(homing_tab, "Homing")
+
+        return joint_tabs
+
     def edit_plugin_signals(self, plugin_instance, plugin_config):
         def update(arg):
             pass
@@ -3005,12 +3092,13 @@ class WinForm(QWidget):
         pins_tab = self.edit_component_pins(cinstance, component)
         tab_widget.addTab(pins_tab, "Pins")
 
+        if comp_type == "stepgen":
+            joint_tab = self.edit_component_joints(cinstance, component)
+            tab_widget.addTab(joint_tab, "Joint")
+
         """
 
 
-        if component.TYPE == "stepgen" and component.get("is_joint", False):
-            joint_tab = self.edit_component_joints(component, component)
-            tab_widget.addTab(joint_tab, "Joint")
 
         elif component.TYPE != "interface":
             if component.SIGNALS:
