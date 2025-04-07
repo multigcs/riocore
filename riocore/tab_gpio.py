@@ -123,6 +123,7 @@ class TabGpios:
                 ctype = component["type"]
                 self.networks[halname] = f"{ctype}->{pin}"
 
+        x_offset = 0
         pixmaps = []
         pins = {}
         self.inputs = []
@@ -133,7 +134,8 @@ class TabGpios:
             if gpio.get("type") == "parport":
                 pp_mode = gpio.get("mode", "0 out")
                 pinimage_path = riocore_path + "/files/db25.png"
-                pixmaps.append(QPixmap(pinimage_path))
+                pixmap = QPixmap(pinimage_path)
+                pixmaps.append(pixmap)
 
                 mode_outputs = {
                     "in": [1, 14, 16, 17],
@@ -155,10 +157,10 @@ class TabGpios:
                     else:
                         self.inputs.append(pin_name)
                     if pin_num < 14:
-                        x_pos = 20 + parport_n * 168
+                        x_pos = x_offset + 20
                         y_pos = 97 + (pin_num - 1) * 32.4
                     else:
-                        x_pos = 110 + parport_n * 168
+                        x_pos = x_offset + 110
                         y_pos = 97 + 15 + (pin_num - 14) * 32.4
                     pins[title] = {
                         "title": title,
@@ -168,12 +170,13 @@ class TabGpios:
                         "slotname": f"parport.{parport_n}",
                         "net": self.networks.get(pin_name, ""),
                     }
-
+                x_offset += pixmap.width()
                 parport_n += 1
 
             elif gpio.get("type") == "rpi":
                 pinimage_path = riocore_path + "/files/rpi-gpio.png"
-                pixmaps.append(QPixmap(pinimage_path))
+                pixmap = QPixmap(pinimage_path)
+                pixmaps.append(pixmap)
                 rpi_pins = gpio.get("pins", [])
                 self.inputs = rpi_pins.get("inputs", [])
                 self.outputs = rpi_pins.get("outputs", [])
@@ -182,8 +185,8 @@ class TabGpios:
                 for pin_num in range(0, 40):
                     pin_name = rpi_pinout[pin_num]
                     if pin_name.startswith("GPIO"):
-                        x_pos = 30 + (pin_num % 2) * 110
-                        y_pos = 60 + (pin_num // 2) * 20.5
+                        x_pos = x_offset + 40 + (pin_num % 2) * 110
+                        y_pos = x_offset + 60 + (pin_num // 2) * 20.5
                         pins[pin_name] = {
                             "title": pin_name,
                             "pin": pin_name,
@@ -192,6 +195,7 @@ class TabGpios:
                             "slotname": "rpi_gpio",
                             "net": self.networks.get(pin_name, ""),
                         }
+                x_offset += pixmap.width()
 
         if not pixmaps:
             return
@@ -203,11 +207,11 @@ class TabGpios:
             height = max(height, pixmap.height())
         pinlayout_pixmap = QPixmap(width, height)
         self.painter = QPainter(pinlayout_pixmap)
-        xpos = 0
+        x_offset = 0
         for pixmap in pixmaps:
-            rect = QRect(xpos, 0, pixmap.width(), pixmap.height())
+            rect = QRect(x_offset, 0, pixmap.width(), pixmap.height())
             self.painter.drawPixmap(rect, pixmap)
-            xpos += pixmap.width()
+            x_offset += pixmap.width()
 
         self.boardimg.setFixedSize(pinlayout_pixmap.size())
         pinlayout_image = ImageMap(self)
