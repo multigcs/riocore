@@ -2694,7 +2694,7 @@ class WinForm(QWidget):
     def edit_component_joints(self, cinstance, component):
         def update(arg):
             pass
-            #svgWidget.load(self.draw_joint_home(joints_setup, joint_options))
+            # svgWidget.load(self.draw_joint_home(joints_setup, joint_options))
 
         myFont = QFont()
         myFont.setBold(True)
