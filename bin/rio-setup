@@ -2955,6 +2955,148 @@ class WinForm(QWidget):
         signals_tab.setWidget(signals_widget)
         return signals_tab
 
+    def edit_component_signals(self, cinstance, component):
+        def update(arg):
+            pass
+            # print("#update", arg, plugin_config)
+
+        def toggleGroup(ctrl):
+            state = ctrl.isChecked()
+            if state:
+                ctrl.setFixedHeight(ctrl.sizeHint().height())
+            else:
+                ctrl.setFixedHeight(30)
+
+        myFont = QFont()
+        myFont.setBold(True)
+
+        signals = QVBoxLayout()
+        label = QLabel("Signals-Setup")
+        label.setFont(myFont)
+        signals.addWidget(label)
+
+        if "signals" not in component:
+            component["signals"] = {}
+        signals_setup = component["signals"]
+
+        for signal_name, signal_defaults in cinstance.SIGNALS.items():
+            # signal_table.setRowCount(row_n + 1)
+            if signal_name not in signals_setup:
+                signals_setup[signal_name] = {}
+            help_text = f"{signal_name} config"
+
+            signal_setup = signal_defaults.get("setup", {})
+            signal_direction = signal_defaults["direction"]
+            signal_multiplexed = signal_defaults.get("multiplexed", False)
+            is_bool = signal_defaults.get("bool", False)
+
+            options_net = []
+            for halpin, halpin_info in halpins.LINUXCNC_SIGNALS[signal_direction].items():
+                if is_bool:
+                    if halpin_info.get("type") is bool:
+                        options_net.append(halpin)
+                elif halpin_info.get("type") is not bool:
+                    options_net.append(halpin)
+
+            options_func = []
+            for halpin, halpin_info in halpins.RIO_FUNCTIONS[signal_direction].items():
+                if is_bool:
+                    if halpin_info.get("type") is bool:
+                        options_func.append(halpin)
+                elif halpin_info.get("type") is not bool:
+                    options_func.append(halpin)
+
+            frame = QGroupBox(self)
+            frame.setTitle(signal_name)
+            frame.setToolTip(help_text)
+
+            signal_cols = QHBoxLayout()
+            signal_rows = QVBoxLayout()
+            signal_rows.addLayout(signal_cols)
+            frame.setLayout(signal_rows)
+            signals.addWidget(frame)
+
+            signal_cols = QHBoxLayout()
+            signal_rows.addLayout(signal_cols)
+            signal_cols.addWidget(QLabel("Net:"), stretch=1)
+            signal_setup["net"] = {"type": "select", "options": options_net}
+            signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "net", signal_setup["net"], cb=update), stretch=5)
+
+            if signal_direction == "output":
+                signal_cols.addWidget(QLabel("setp:"), stretch=1)
+                signal_setup["setp"] = {"type": str, "default": ""}
+                signal_cols.addWidget(self.edit_item(signals_setup[signal_name], "setp", signal_setup["setp"], cb=update), stretch=1)
+
+            signal_cols = QHBoxLayout()
+            signal_rows.addLayout(signal_cols)
+
+            display_frame = QGroupBox(self)
+            display_frame.setTitle("Display")
+            display_frame.setToolTip(help_text)
+            display_frame.setCheckable(True)
+            display_frame.setChecked(False)
+            toggleGroup(display_frame)
+            display_frame.toggled.connect(partial(toggleGroup, display_frame))
+            display_rows = QVBoxLayout()
+            display_frame.setLayout(display_rows)
+            signal_rows.addWidget(display_frame)
+
+            if "display" not in signals_setup[signal_name]:
+                signals_setup[signal_name]["display"] = {}
+
+            expand = False
+            if signals_setup[signal_name]["display"]:
+                expand = True
+
+            direction = signal_defaults["direction"]
+            virtual = signal_defaults.get("virtual", False)
+            if virtual:
+                # swap direction vor virt signals in component
+                if direction == "input":
+                    direction = "output"
+                else:
+                    direction = "input"
+
+            if direction == "input" or signals_setup[signal_name].get("net"):
+                if signal_defaults.get("bool"):
+                    type_options = ["none", "led", "rectled"]
+                else:
+                    type_options = ["none", "number", "bar", "meter"]
+            else:
+                if signal_defaults.get("bool"):
+                    type_options = ["none", "checkbutton", "button"]
+                else:
+                    type_options = ["none", "scale", "spinbox", "dial", "jogwheel"]
+            display_setup = {
+                "title": {"type": str},
+                "section": {"type": str},
+                "type": {"type": "select", "options": type_options},
+            }
+            if not signal_defaults.get("bool", False):
+                display_setup["min"] = {"type": float, "default": None}
+                display_setup["max"] = {"type": float, "default": None}
+                display_setup["initval"] = {"type": float, "default": 0.0}
+            for option, option_setup in display_setup.items():
+                display_cols = QHBoxLayout()
+                display_rows.addLayout(display_cols)
+                display_cols.addWidget(QLabel(option.title()), stretch=1)
+                display_cols.addWidget(self.edit_item(signals_setup[signal_name]["display"], option, option_setup, cb=None), stretch=5)
+
+            if expand is True:
+                display_frame.setChecked(True)
+                toggleGroup(display_frame)
+
+        signals_widget = QWidget()
+        signals.addStretch()
+        signals_widget.setLayout(signals)
+
+        signals_tab = QScrollArea()
+        signals_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        signals_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        signals_tab.setWidgetResizable(True)
+        signals_tab.setWidget(signals_widget)
+        return signals_tab
+
     def edit_plugin_options(self, plugin_instance, plugin_config):
         def update(arg):
             plugin_instance.update_title()
@@ -3096,16 +3238,10 @@ class WinForm(QWidget):
             joint_tab = self.edit_component_joints(cinstance, component)
             tab_widget.addTab(joint_tab, "Joint")
 
-        """
-
-
-
-        elif component.TYPE != "interface":
-            if component.SIGNALS:
-                signals_tab = self.edit_component_signals(component, component)
+        else:
+            if cinstance.SIGNALS:
+                signals_tab = self.edit_component_signals(cinstance, component)
                 tab_widget.addTab(signals_tab, "Signals")
-
-        """
 
         right_layout = QVBoxLayout()
         """
