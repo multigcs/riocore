@@ -79,7 +79,7 @@ LED example:
     },
 ]
 ```
-*slots: connector / button-group / led-group
+* slots: connector / button-group / led-group
 * pins/pin: the FPGA pinname ()
 * pins/direction: optional, is used by the plugin filter (output / input / all)
 * pins/pos: optional, with this info, you can see the pin in rio-setup on the right location and click it to setup ([X, Y] position on the boardimage)
