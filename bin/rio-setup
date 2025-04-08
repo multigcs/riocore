@@ -1553,7 +1553,7 @@ class WinForm(QWidget):
             if slot_name:
                 self.slotnames.append(slot_name)
 
-        # self.tabs["GPIOs"].update()
+        self.tabs["GPIOs"].update()
 
         if self.board:
             self.tabs["Board"].update()

@@ -205,19 +205,23 @@ class TabGpios:
         for pixmap in pixmaps:
             width += pixmap.width()
             height = max(height, pixmap.height())
-        pinlayout_pixmap = QPixmap(width, height)
-        self.painter = QPainter(pinlayout_pixmap)
+
+        self.pinlayout_pixmap = QPixmap(width, height)
+        painter = QPainter(self.pinlayout_pixmap)
+
         x_offset = 0
         for pixmap in pixmaps:
             rect = QRect(x_offset, 0, pixmap.width(), pixmap.height())
-            self.painter.drawPixmap(rect, pixmap)
+            painter.drawPixmap(rect, pixmap)
             x_offset += pixmap.width()
 
-        self.boardimg.setFixedSize(pinlayout_pixmap.size())
+        self.boardimg.setFixedSize(self.pinlayout_pixmap.size())
         pinlayout_image = ImageMap(self)
         pinlayout_image.setAlignment(Qt.AlignRight | Qt.AlignTop)
-        pinlayout_image.setFixedSize(pinlayout_pixmap.size())
-        pinlayout_image.setPixmap(pinlayout_pixmap)
+        pinlayout_image.setFixedSize(self.pinlayout_pixmap.size())
+
+        pinlayout_image.setPixmap(self.pinlayout_pixmap)
+
         self.img_layout.addWidget(self.boardimg)
         layout_box = QVBoxLayout(self.boardimg)
         layout_box.setContentsMargins(0, 0, 0, 0)
