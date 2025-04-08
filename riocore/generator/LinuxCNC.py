@@ -7,6 +7,7 @@ import stat
 
 from riocore import halpins
 from riocore import components
+from riocore import gpios
 from riocore.generator.hal import hal_generator
 from riocore.generator.component import component
 from riocore.generator.rosbridge import rosbridge
@@ -171,7 +172,7 @@ class LinuxCNC:
         self.configuration_path = f"{self.base_path}"
         self.create_axis_config()
         self.addons = {}
-        self.gpionames = {}
+        self.gpionames = []
         for addon_path in glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "linuxcnc.py")):
             addon_name = addon_path.split(os.sep)[-2]
             self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
@@ -1340,19 +1341,8 @@ class LinuxCNC:
                     }
 
         # loading gpio drivers (parport / rpi)
-        rpigpios = []
-        parports = []
-        for gpio in gpio_config:
-            if gpio.get("type") == "rpi":
-                rpi_pins = gpio.get("pins", [])
-                rpigpios.append(rpi_pins)
-                self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
-
-            elif gpio.get("type") == "parport":
-                pp_addr = gpio.get("address", "0x378")
-                pp_mode = gpio.get("mode", "0 out")
-                parports.append(f"{pp_addr} {pp_mode}")
-                self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
+        if gpio_config:
+            self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
 
         self.halg = hal_generator(halpin_info)
 
@@ -1480,84 +1470,21 @@ class LinuxCNC:
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
-        if rpigpios and False:
-            self.halg.fmt_add_top("# rpi gpio component")
-            inputs = rpigpios[0].get("inputs", [])
-            outputs = rpigpios[0].get("outputs", [])
-            resets = rpigpios[0].get("reset", [])
-            args = []
-            if inputs:
-                args.append(f"inputs={','.join(inputs)}")
-                for pin in inputs:
-                    self.gpionames[f"hal_gpio.{pin}-in"] = "rpigpio"
-                    self.gpionames[f"hal_gpio.{pin}-in-not"] = "rpigpio"
-            if outputs:
-                args.append(f"outputs={','.join(outputs)}")
-                for pin in outputs:
-                    self.gpionames[f"hal_gpio.{pin}-out"] = "rpigpio"
-                    self.gpionames[f"hal_gpio.{pin}-out-invert"] = "rpigpio"
-                    self.gpionames[f"hal_gpio.{pin}-out-reset"] = "rpigpio"
-            if resets:
-                for pin in resets:
-                    if pin not in outputs:
-                        print(f"ERROR: gpio pin {pin} must be an output")
-                args.append(f"resets={','.join(resets)}")
-            self.halg.fmt_add_top(f"loadrt hal_gpio {' '.join(args)}")
-            self.halg.fmt_add_top("addf hal_gpio.read base-thread")
-            self.halg.fmt_add_top("addf hal_gpio.write base-thread")
-            self.halg.fmt_add_top("")
+        for gclass in dir(gpios):
+            if gclass.startswith("gpio_"):
+                ret = getattr(gpios, gclass).loader(gclass, gpio_config)
+                if ret:
+                    self.halg.fmt_add_top(ret)
 
-        elif rpigpios:
-            self.halg.fmt_add_top("# hal_pi_gpio component")
-            inputs = rpigpios[0].get("inputs", [])
-            outputs = rpigpios[0].get("outputs", [])
-            resets = rpigpios[0].get("reset", [])
-            mask_dir = 0
-            mask_exclude = 0
-            for bit_num, pin_num in enumerate(range(2, 28)):
-                pname = f"GPIO{pin_num}"
-                if pname in outputs:
-                    mask_dir |= 1 << bit_num
-                    self.gpionames[f"hal_pi_gpio.pin-{pin_num:02d}-out"] = "rpigpio"
-                elif pname in inputs:
-                    self.gpionames[f"hal_pi_gpio.pin-{pin_num:02d}-in"] = "rpigpio"
-                else:
-                    mask_exclude |= 1 << bit_num
-
-            args = []
-            args.append(f"dir={mask_dir}")
-            args.append(f"exclude={mask_exclude}")
-            self.halg.fmt_add_top(f"loadrt hal_pi_gpio {' '.join(args)}")
-            self.halg.fmt_add_top("addf hal_pi_gpio.read base-thread")
-            self.halg.fmt_add_top("addf hal_pi_gpio.write base-thread")
-            self.halg.fmt_add_top("")
-
-        if parports:
-            self.halg.fmt_add_top(f"# parport component for {len(parports)} port(s)")
-            self.halg.fmt_add_top(f'loadrt hal_parport cfg="{" ".join(parports)}"')
-            for pn, pmode in enumerate(parports):
-                self.halg.setp_add(f"parport.{pn}.reset-time", "5000")
-                self.halg.fmt_add_top(f"addf parport.{pn}.read base-thread")
-                self.halg.fmt_add_top(f"addf parport.{pn}.write base-thread")
-                self.halg.fmt_add_top(f"addf parport.{pn}.reset base-thread")
-
-                mode_outputs = {
-                    "in": [1, 14, 16, 17],
-                    "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "epp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "x": [2, 3, 4, 5, 6, 7, 8, 9],
-                }
-                outpins = mode_outputs.get(pmode.split()[-1])
-                for pin in range(1, 18):
-                    if pin in outpins:
-                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-out"] = "parport"
-                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-invert"] = "parport"
-                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-reset"] = "parport"
-                    else:
-                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-in"] = "parport"
-                        self.gpionames[f"parport.{pn}.pin-{pin:02d}-in-not"] = "parport"
-
-            self.halg.fmt_add_top("")
+        gpio_ids = {}
+        for gpio in gpio_config:
+            gtype = gpio.get("type")
+            if gtype not in gpio_ids:
+                gpio_ids[gtype] = 0
+            if hasattr(gpios, f"gpio_{gtype}"):
+                ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
+                self.gpionames += ginstance.inputs
+                self.gpionames += ginstance.outputs
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
@@ -1677,7 +1604,7 @@ class LinuxCNC:
                             self.halg.net_add(f"joint.{joint}.amp-enable-out", f"stepgen.{snum}.enable", f"j{joint}senable")
                             comp_pins = joint_setup["plugin_instance"].component["pins"]
                             for name, pin in comp_pins.items():
-                                if not self.gpionames.get(pin):
+                                if pin not in self.gpionames:
                                     print(f"ERROR: {name} pin not found: {pin}")
                                 if not pin.endswith("-out"):
                                     print(f"ERROR: {name} pin in not an output: {pin}")

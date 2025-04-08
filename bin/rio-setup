@@ -25,6 +25,7 @@ import riocore
 from riocore import VERSION
 from riocore import halpins
 from riocore import components
+from riocore import gpios
 
 from riocore import vcp
 
@@ -1404,82 +1405,16 @@ class WinForm(QWidget):
                 if pin_id not in self.pinlist:
                     self.pinlist.append(pin_id)
 
-        rpi_pinout = (
-            "3V3",
-            "5V",
-            "GPIO2",
-            "5V",
-            "GPIO3",
-            "GND",
-            "GPIO4",
-            "GPIO14",
-            "GND",
-            "GPIO15",
-            "GPIO17",
-            "GPIO18",
-            "GPIO27",
-            "GND",
-            "GPIO22",
-            "GPIO23",
-            "3V3",
-            "GPIO24",
-            "GPIO10",
-            "GND",
-            "GPIO9",
-            "GPIO25",
-            "GPIO11",
-            "GPIO8",
-            "GND",
-            "GPIO7",
-            "GPIO0",
-            "GPIO1",
-            "GPIO5",
-            "GND",
-            "GPIO6",
-            "GPIO12",
-            "GPIO19",
-            "GND",
-            "GPIO19",
-            "GPIO16",
-            "GPIO26",
-            "GPIO20",
-            "GND",
-            "GPIO21",
-        )
+        gpio_ids = {}
         gpio_config = self.config.get("gpios", [])
-        parport_n = 0
         for gpio in gpio_config:
-            if gpio.get("type") == "parport":
-                pp_mode = gpio.get("mode", "0 out")
-                mode_outputs = {
-                    "in": [1, 14, 16, 17],
-                    "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "epp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "x": [2, 3, 4, 5, 6, 7, 8, 9],
-                }
-                outpins = mode_outputs.get(pp_mode.split()[-1])
-
-                for pin_num in range(1, 18):
-                    title = f"P{parport_n}.{pin_num}"
-                    if pin_num in outpins:
-                        direction = "output"
-                    else:
-                        direction = "input"
-                    pin_name = f"parport.{parport_n}.pin-{pin_num:02d}-{direction.replace('put', '')}"
-                    if pin_name not in self.gpiolist:
-                        self.gpiolist.append(pin_name)
-                parport_n += 1
-
-            elif gpio.get("type") == "rpi":
-                rpi_pins = gpio.get("pins", [])
-                self.inputs = rpi_pins.get("inputs", [])
-                self.outputs = rpi_pins.get("outputs", [])
-                rpi_pins.get("reset", [])
-                direction = "all"
-                for pin_num in range(0, 40):
-                    pin_name = rpi_pinout[pin_num]
-                    if pin_name not in self.gpiolist:
-                        self.gpiolist.append(pin_name)
+            gtype = gpio.get("type")
+            if gtype not in gpio_ids:
+                gpio_ids[gtype] = 0
+            if hasattr(gpios, f"gpio_{gtype}"):
+                ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
+                self.gpiolist += ginstance.inputs
+                self.gpiolist += ginstance.outputs
 
         for component in self.config["linuxcnc"].get("components", []):
             for pin_name, net in component.get("pins", {}).items():
@@ -1553,21 +1488,34 @@ class WinForm(QWidget):
             if slot_name:
                 self.slotnames.append(slot_name)
 
-        self.tabs["GPIOs"].update()
+        if self.config.get("gpios", []):
+            self.tabs["GPIOs"].update()
 
         if self.board:
             self.tabs["Board"].update()
             self.tabs["Pins"].update()
             self.tabs["Signals"].update()
-        else:
-            for tab_idx in range(15):
-                if self.tabwidget.tabText(tab_idx) in {"Board", "Pins", "Signals", "Gateware"}:
-                    self.tabwidget.setTabEnabled(tab_idx, False)
 
         self.load_tree()
         self.display()
 
     def display(self):
+        disable = []
+        if not self.config.get("gpios"):
+            disable.append("GPIOs")
+
+        if not self.board:
+            disable.append("Board")
+            disable.append("Pins")
+            disable.append("Signals")
+            disable.append("Gateware")
+
+        for tab_idx in range(15):
+            if self.tabwidget.tabText(tab_idx) in disable:
+                self.tabwidget.setTabEnabled(tab_idx, False)
+            else:
+                self.tabwidget.setTabEnabled(tab_idx, True)
+
         try:
             self.request_generate = 2
             self.request_pin_table_load = 2

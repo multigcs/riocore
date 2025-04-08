@@ -8,6 +8,8 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 import riocore
 
+from riocore import gpios
+
 from riocore.widgets import (
     ImageMap,
     PinButton,
@@ -67,49 +69,6 @@ class TabGpios:
         self.img_layout.removeWidget(self.boardimg)
         self.boardimg = QWidget()
         self.pinlabels = {}
-        rpi_pinout = (
-            "3V3",
-            "5V",
-            "GPIO2",
-            "5V",
-            "GPIO3",
-            "GND",
-            "GPIO4",
-            "GPIO14",
-            "GND",
-            "GPIO15",
-            "GPIO17",
-            "GPIO18",
-            "GPIO27",
-            "GND",
-            "GPIO22",
-            "GPIO23",
-            "3V3",
-            "GPIO24",
-            "GPIO10",
-            "GND",
-            "GPIO9",
-            "GPIO25",
-            "GPIO11",
-            "GPIO8",
-            "GND",
-            "GPIO7",
-            "GPIO0",
-            "GPIO1",
-            "GPIO5",
-            "GND",
-            "GPIO6",
-            "GPIO12",
-            "GPIO19",
-            "GND",
-            "GPIO19",
-            "GPIO16",
-            "GPIO26",
-            "GPIO20",
-            "GND",
-            "GPIO21",
-        )
-
         self.networks = {}
         linuxcnc_config = self.parent.config.get("linuxcnc", {})
         for net in linuxcnc_config.get("net", []):
@@ -128,74 +87,24 @@ class TabGpios:
         pins = {}
         self.inputs = []
         self.outputs = []
-        parport_n = 0
+        gpio_ids = {}
         gpio_config = self.parent.config.get("gpios", [])
         for gpio in gpio_config:
-            if gpio.get("type") == "parport":
-                pp_mode = gpio.get("mode", "0 out")
-                pinimage_path = riocore_path + "/files/db25.png"
-                pixmap = QPixmap(pinimage_path)
+            gtype = gpio.get("type")
+            if gtype not in gpio_ids:
+                gpio_ids[gtype] = 0
+            if hasattr(gpios, f"gpio_{gtype}"):
+                ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
+
+                self.inputs += ginstance.inputs
+                self.outputs += ginstance.outputs
+                pins.update(ginstance.slotpins(x_offset, self.networks))
+
+                pixmap = QPixmap(ginstance.IMAGE)
                 pixmaps.append(pixmap)
-
-                mode_outputs = {
-                    "in": [1, 14, 16, 17],
-                    "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "epp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
-                    "x": [2, 3, 4, 5, 6, 7, 8, 9],
-                }
-                outpins = mode_outputs.get(pp_mode.split()[-1])
-
-                for pin_num in range(1, 18):
-                    title = f"P{parport_n}.{pin_num}"
-                    if pin_num in outpins:
-                        direction = "output"
-                    else:
-                        direction = "input"
-                    pin_name = f"parport.{parport_n}.pin-{pin_num:02d}-{direction.replace('put', '')}"
-                    if pin_num in outpins:
-                        self.outputs.append(pin_name)
-                    else:
-                        self.inputs.append(pin_name)
-                    if pin_num < 14:
-                        x_pos = x_offset + 20
-                        y_pos = 97 + (pin_num - 1) * 32.4
-                    else:
-                        x_pos = x_offset + 110
-                        y_pos = 97 + 15 + (pin_num - 14) * 32.4
-                    pins[title] = {
-                        "title": title,
-                        "pin": pin_name,
-                        "pos": [int(x_pos), int(y_pos)],
-                        "direction": direction,
-                        "slotname": f"parport.{parport_n}",
-                        "net": self.networks.get(pin_name, ""),
-                    }
                 x_offset += pixmap.width()
-                parport_n += 1
 
-            elif gpio.get("type") == "rpi":
-                pinimage_path = riocore_path + "/files/rpi-gpio.png"
-                pixmap = QPixmap(pinimage_path)
-                pixmaps.append(pixmap)
-                rpi_pins = gpio.get("pins", [])
-                self.inputs = rpi_pins.get("inputs", [])
-                self.outputs = rpi_pins.get("outputs", [])
-                rpi_pins.get("reset", [])
-                direction = "all"
-                for pin_num in range(0, 40):
-                    pin_name = rpi_pinout[pin_num]
-                    if pin_name.startswith("GPIO"):
-                        x_pos = x_offset + 40 + (pin_num % 2) * 110
-                        y_pos = x_offset + 60 + (pin_num // 2) * 20.5
-                        pins[pin_name] = {
-                            "title": pin_name,
-                            "pin": pin_name,
-                            "pos": [int(x_pos), int(y_pos)],
-                            "direction": direction,
-                            "slotname": "rpi_gpio",
-                            "net": self.networks.get(pin_name, ""),
-                        }
-                x_offset += pixmap.width()
+            gpio_ids[gtype] += 1
 
         if not pixmaps:
             return
