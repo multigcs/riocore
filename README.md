@@ -27,20 +27,30 @@
 
 ## About <a name = "about"></a>
 
-LinuxCNC-RIO is a code generator for using FPGA boards as Realtime-IO for LinuxCNC.
+LinuxCNC-RIO is a cost-effective and flexible alternative to traditional hardware setups like Mesa boards,
+it's a code generator for using FPGA boards as Realtime-IO for LinuxCNC.
 
 Furthermore, the complete configuration and hal is generated.
 a json configuration file serves as the basis
 
 * no Soft-Core / logic only
-* no jitter
+* operates without a soft-core processor, relying solely on FPGA logic, which eliminates jitter and ensures fast, reliable performance
 * fast and small
-* communication via SPI (with Raspberry PI 4) or Ethernet
-* generated verilog-code / setup via json files (free pin-selection)
+* It supports communication via SPI (e.g., with Raspberry Pi 4) or Ethernet, providing flexibility for different hardware setups
+* Configuration is managed via JSON files, enabling easy customization of pin selection and other parameters. The tool automatically generates LinuxCNC configuration files (HAL/INI), saving significant setup time
 * using free FPGA-Toolchain or commercial (depends on the FPGA)
-* runs on many FPGA's (like ICE40, ECP5, MAX10, Artix7, Gowin, CycloneIV, ...)
-* supports Open and Closed-Loop
-* multiple and mixed joint types (like Stepper, DC-Servo, RC-Servo)
+* Compatible with a wide range of FPGA boards, including ICE40, ECP5, MAX10, Artix7, Gowin, CycloneIV, and TangNano9K, allowing users to choose hardware that fits their needs and budget
+* Supports open and closed-loop control for multiple motor types (e.g., stepper motors, DC servos), as well as mixed joint configurations
+
+It is particularly suited for those who:
+
+* Use LinuxCNC for CNC control: LinuxCNC-RIO serves as a Realtime-IO interface for LinuxCNC, leveraging FPGA boards for fast, jitter-free communication with CNC hardware
+* Prefer FPGA-based solutions: Users who work with FPGAs such as ICE40, ECP5, MAX10, and others benefit from its ability to generate Verilog code and configurations via JSON files. This approach supports open and closed-loop control for various motor types (e.g., stepper, DC servo)
+* Value open-source tools: It supports free FPGA toolchains like YosysHQ's OSS CAD Suite, making it accessible to developers who prefer open-source ecosystems.
+* Avoid proprietary hardware costs: LinuxCNC-RIO provides an alternative to Mesa boards, which can be expensive due to shipping or availability constraints. It supports communication via SPI or Ethernet, making it compatible with devices like Raspberry Pi 4
+
+These features make LinuxCNC-RIO an attractive solution for hobbyists and professionals seeking a customizable, cost-effective Realtime-IO interface for CNC systems
+
 
 
 ## DISCLAIMER <a name = "disclaimer"></a>
