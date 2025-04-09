@@ -1728,16 +1728,27 @@ class WinForm(QWidget):
         bitem = MyStandardItem()
         tree_lcnc.appendRow(
             [
-                MyStandardItem("Component's", help_text="LinuxCNC components for host gpio's"),
+                MyStandardItem("Components"),
                 bitem,
             ]
         )
-        tree_lcnccomps = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        self.tree_comps = tree_lcnc.child(tree_lcnc.rowCount() - 1)
 
-        for comp in dir(components):
-            if comp.startswith("comp_"):
-                comp_class = getattr(components, comp)
-                # TODO: setup dialog like in the modules tree
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_widget = QWidget()
+        buttons_widget.setLayout(buttons_layout)
+
+        button = QPushButton("add comp")
+        # button.clicked.connect(self.add_component)
+        button.setMaximumSize(button.sizeHint())
+        buttons_layout.addWidget(button)
+
+        buttons_layout.addStretch()
+        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
+
+        for component in self.config.get("linuxcnc", {}).get("components", []):
+            self.tree_add_component(self.tree_comps, component)
 
         # rio-functions
         bitem = MyStandardItem()
@@ -1963,31 +1974,6 @@ class WinForm(QWidget):
 
             for plugin_instance in self.plugins.plugin_instances:
                 self.tree_add_plugin(self.tree_plugins, plugin_instance)
-
-        bitem = MyStandardItem()
-        self.model.appendRow(
-            [
-                MyStandardItem("Components"),
-                bitem,
-            ]
-        )
-        self.tree_comps = self.model.item(self.model.rowCount() - 1)
-
-        buttons_layout = QHBoxLayout()
-        buttons_layout.setContentsMargins(0, 0, 0, 0)
-        buttons_widget = QWidget()
-        buttons_widget.setLayout(buttons_layout)
-
-        button = QPushButton("add comp")
-        # button.clicked.connect(self.add_component)
-        button.setMaximumSize(button.sizeHint())
-        buttons_layout.addWidget(button)
-
-        buttons_layout.addStretch()
-        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
-
-        for component in self.config.get("linuxcnc", {}).get("components", []):
-            self.tree_add_component(self.tree_comps, component)
 
         self.treeview.header().resizeSection(0, 300)
         self.treeview.header().resizeSection(1, 200)
