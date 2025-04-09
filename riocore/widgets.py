@@ -390,7 +390,12 @@ class edit_combobox(QComboBox):
         self.key = key
         self.default = default
         options = options.copy()
-        options_clean = [opt.split("|")[0] for opt in options]
+        options_clean = []
+        for opt in options:
+            if opt:
+                options_clean.append(opt.split("|")[0])
+            else:
+                options_clean.append(opt)
         if help_text:
             self.setToolTip(help_text)
         if key in obj:

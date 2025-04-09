@@ -197,6 +197,7 @@ class WinForm(QWidget):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("LinuxCNC-RIO - Setup-GUI")
         self.setStyleSheet(STYLESHEET)
+        self.args = args
 
         self.listFile = QListWidget()
         layout = QVBoxLayout()
@@ -205,17 +206,17 @@ class WinForm(QWidget):
         splitter = QSplitter(Qt.Horizontal)
         layout.addWidget(splitter, stretch=1)
 
-        if not args.config:
+        if not self.args.config:
             if not self.main_dialog():
                 exit(1)
 
-        elif args.config:
-            if os.path.isfile(args.config):
-                self.config_file = args.config
-            elif os.path.isfile(os.path.join(riocore_path, "configs", args.config)):
-                self.config_file = os.path.join(riocore_path, "configs", args.config)
+        elif self.args.config:
+            if os.path.isfile(self.args.config):
+                self.config_file = self.args.config
+            elif os.path.isfile(os.path.join(riocore_path, "configs", self.args.config)):
+                self.config_file = os.path.join(riocore_path, "configs", self.args.config)
             else:
-                print(f"can not load: {args.config}")
+                print(f"can not load: {self.args.config}")
 
         try:
             self.vcp = vcp.MyVCP()
@@ -235,19 +236,29 @@ class WinForm(QWidget):
         self.flash_sub = None
         self.flash_start = 0
 
-        self.tabs = {
-            "Plugins": TabPlugins(self),
-            "Board": TabBoard(self),
-            "GPIOs": TabGpios(self),
-            "Overview": TabOverview(self),
-            "Hal": TabHal(self),
-            "Axis": TabAxis(self),
-            "Pins": TabPins(self),
-            "Signals": TabSignals(self),
-            "Json": TabJson(self),
-            "LinuxCNC": TabLinuxCNC(self),
-            "Gateware": TabGateware(self),
-        }
+        if self.args.nographs:
+            self.tabs = {
+                "Plugins": TabPlugins(self),
+                "Board": TabBoard(self),
+                "GPIOs": TabGpios(self),
+                "Json": TabJson(self),
+                "LinuxCNC": TabLinuxCNC(self),
+                "Gateware": TabGateware(self),
+            }
+        else:
+            self.tabs = {
+                "Plugins": TabPlugins(self),
+                "Board": TabBoard(self),
+                "GPIOs": TabGpios(self),
+                "Overview": TabOverview(self),
+                "Hal": TabHal(self),
+                "Axis": TabAxis(self),
+                "Pins": TabPins(self),
+                "Signals": TabSignals(self),
+                "Json": TabJson(self),
+                "LinuxCNC": TabLinuxCNC(self),
+                "Gateware": TabGateware(self),
+            }
 
         self.treeview = self.tabs["Plugins"].widget()
         self.model = self.tabs["Plugins"].model
@@ -367,13 +378,14 @@ class WinForm(QWidget):
         self.show()
 
         self.generate_cb(preview=True)
-        self.tabs["Overview"].update()
+        if not self.args.nographs:
+            self.tabs["Overview"].update()
         self.check_status()
 
         self.startup_dialog_timer = 0
 
-        if args.expand:
-            self.load_tree(args.expand)
+        if self.args.expand:
+            self.load_tree(self.args.expand)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
@@ -740,7 +752,8 @@ class WinForm(QWidget):
             self.request_generate -= 1
         elif self.request_generate == 1:
             self.generate_cb(preview=True)
-            self.tabs["Overview"].update()
+            if not self.args.nographs:
+                self.tabs["Overview"].update()
             self.request_generate = 0
 
         if self.request_load_tree > 1:
@@ -753,7 +766,8 @@ class WinForm(QWidget):
             self.request_pin_table_load -= 1
         elif self.request_pin_table_load == 1:
             if self.board:
-                self.tabs["Pins"].update()
+                if not self.args.nographs:
+                    self.tabs["Pins"].update()
                 self.tabs["Board"].update()
             self.tabs["GPIOs"].update()
             self.request_pin_table_load = 0
@@ -761,8 +775,9 @@ class WinForm(QWidget):
         if self.request_sig_table_load > 1:
             self.request_sig_table_load -= 1
         elif self.request_sig_table_load == 1:
-            self.tabs["Signals"].update()
-            self.request_sig_table_load = 0
+            if not self.args.nographs:
+                self.tabs["Signals"].update()
+                self.request_sig_table_load = 0
 
         if self.config_checked != self.clean_config(self.config):
             self.check_status()
@@ -1416,7 +1431,7 @@ class WinForm(QWidget):
                 self.gpiolist += ginstance.inputs
                 self.gpiolist += ginstance.outputs
 
-        for component in self.config["linuxcnc"].get("components", []):
+        for component in self.config.get("linuxcnc", {}).get("components", []):
             for pin_name, net in component.get("pins", {}).items():
                 if net not in self.gpiolist:
                     self.gpiolist.append(net)
@@ -1493,8 +1508,9 @@ class WinForm(QWidget):
 
         if self.board:
             self.tabs["Board"].update()
-            self.tabs["Pins"].update()
-            self.tabs["Signals"].update()
+            if not self.args.nographs:
+                self.tabs["Pins"].update()
+                self.tabs["Signals"].update()
 
         self.load_tree()
         self.display()
@@ -1971,7 +1987,7 @@ class WinForm(QWidget):
         buttons_layout.addStretch()
         self.treeview.setIndexWidget(bitem.index(), buttons_widget)
 
-        for component in self.config["linuxcnc"].get("components", []):
+        for component in self.config.get("linuxcnc", {}).get("components", []):
             self.tree_add_component(self.tree_comps, component)
 
         self.treeview.header().resizeSection(0, 300)
@@ -3490,11 +3506,13 @@ class WinForm(QWidget):
         except Exception as error:
             print(f"ERROR loading linuxcnc files: {error}")
         try:
-            self.tabs["Hal"].update()
+            if not self.args.nographs:
+                self.tabs["Hal"].update()
         except Exception as error:
             print(f"ERROR loading hal files: {error}")
         try:
-            self.tabs["Axis"].update()
+            if not self.args.nographs:
+                self.tabs["Axis"].update()
         except Exception as error:
             print(f"ERROR loading axis files: {error}")
 
@@ -3665,8 +3683,9 @@ class WinForm(QWidget):
         print("pin_edit_cb")
         self.generate_cb(preview=True)
         # self.request_load_tree = 3
-        self.tabs["Overview"].update()
-        self.tabs["Pins"].update()
+        if not self.args.nographs:
+            self.tabs["Overview"].update()
+            self.tabs["Pins"].update()
         self.tabs["Json"].update()
 
 
@@ -3680,6 +3699,7 @@ if __name__ == "__main__":
         parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=True, action="store_true")
     else:
         parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
+    parser.add_argument("--nographs", "-N", help="no graphs", default=False, action="store_true")
     args = parser.parse_args()
 
     if args.nostyle:

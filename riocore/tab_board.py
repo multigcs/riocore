@@ -189,11 +189,12 @@ class TabBoard:
                         break
             del self.parent.modules[slot_name]
             self.parent.load_tree()
-            if self.board:
+            if self.parent.board:
                 self.parent.tabs["Board"].update()
-                self.parent.tabs["Pins"].update()
-                self.parent.tabs["Signals"].update()
-            self.tabs["GPIOs"].update()
+                if not self.parent.args.nographs:
+                    self.parent.tabs["Pins"].update()
+                    self.parent.tabs["Signals"].update()
+            self.parent.tabs["GPIOs"].update()
             self.parent.display()
 
     def pinlayout_mark(self, pkey):
