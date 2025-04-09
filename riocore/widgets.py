@@ -1,5 +1,5 @@
-import json
 import riocore
+# import json
 
 from PyQt5 import QtGui, QtSvg
 from PyQt5.QtCore import QRect, Qt, QSize
@@ -661,7 +661,7 @@ class ImageMap(QLabel):
                 else:
                     self.parent.parent.slots[slot_n]["pins"][name] = pin_cfg
 
-                print(json.dumps(self.parent.parent.slots, indent=4))
+                # print(json.dumps(self.parent.parent.slots, indent=4))
                 self.parent.parent.request_pin_table_load = 1
             else:
                 print("ERROR: missing informations")

@@ -1158,7 +1158,6 @@ class WinForm(QWidget):
 
             uid_prefix = plugin_config["type"]
             unum = 0
-            print(self.plugin_uids)
             while f"{uid_prefix}{unum}" in self.plugin_uids:
                 unum += 1
             self.plugin_uids.append(f"{uid_prefix}{unum}")
@@ -3173,8 +3172,6 @@ class WinForm(QWidget):
         else:
             return
 
-        print(comp_type, cinstance, component)
-
         component_backup = copy.deepcopy(component)
 
         dialog = QDialog()
@@ -3680,7 +3677,6 @@ class WinForm(QWidget):
         parent.setText(f"{value} ({plugin_instance.NAME})")
 
     def pin_edit_cb(self, widget):
-        print("pin_edit_cb")
         self.generate_cb(preview=True)
         # self.request_load_tree = 3
         if not self.args.nographs:
