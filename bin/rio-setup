@@ -366,7 +366,11 @@ class WinForm(QWidget):
         self.treeview.resizeColumnToContents(0)
         self.treeview.resizeColumnToContents(1)
         self.treeview.collapseAll()
-        self.tree_expand("/Plugins/")
+
+        if self.board:
+            self.tree_expand("/Plugins/")
+        else:
+            self.tree_expand("/LinuxCNC/Components/")
 
         tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(1)
         img_width = max(self.tabs["Board"].widget().width(), 400)
@@ -1740,64 +1744,48 @@ class WinForm(QWidget):
         buttons_widget.setLayout(buttons_layout)
 
         button = QPushButton("add comp")
-        # button.clicked.connect(self.add_component)
+        button.clicked.connect(self.add_component)
         button.setMaximumSize(button.sizeHint())
         buttons_layout.addWidget(button)
 
         buttons_layout.addStretch()
         self.treeview.setIndexWidget(bitem.index(), buttons_widget)
 
+        component_nums = {}
         for component in self.config.get("linuxcnc", {}).get("components", []):
+            comp_type = component.get("type")
+            if comp_type not in component_nums:
+                component_nums[comp_type] = 0
+            component["num"] = component_nums[comp_type]
             self.tree_add_component(self.tree_comps, component)
+            component_nums[comp_type] += 1
 
-        # rio-functions
+        # linuxcnc-net
         bitem = MyStandardItem()
         tree_lcnc.appendRow(
             [
-                MyStandardItem("RIO-Functions", help_text="default values for the RIO-Functions"),
+                MyStandardItem("Net", help_text="LinuxCNC Networks"),
                 bitem,
             ]
         )
-        tree_lcncriof = tree_lcnc.child(tree_lcnc.rowCount() - 1)
-        if "rio_functions" not in self.config["linuxcnc"]:
-            self.config["linuxcnc"]["rio_functions"] = {}
-        riof_config = self.config["linuxcnc"]["rio_functions"]
+        tree_lcncnet = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        if "net" not in self.config["linuxcnc"]:
+            self.config["linuxcnc"]["net"] = []
+        net_config = self.config["linuxcnc"]["net"]
+        net_config.append({"source": "", "target": ""})
 
-        riof_data = halpins.RIO_FUNCTION_DEFAULTS
-        for function, function_data in riof_data.items():
-            if function not in riof_config:
-                riof_config[function] = {}
-
-            aitem = MyStandardItem()
-            tree_lcncriof.appendRow(
+        for net_num, net_data in enumerate(net_config):
+            aitem_source = MyStandardItem()
+            aitem_target = MyStandardItem()
+            tree_lcncnet.appendRow(
                 [
-                    MyStandardItem(function.title()),
-                    MyStandardItem(""),
+                    aitem_source,
+                    aitem_target,
                 ]
             )
-            lcncfunc_view = tree_lcncriof.child(tree_lcncriof.rowCount() - 1)
-            for section, section_data in function_data.items():
-                if section not in riof_config[function]:
-                    riof_config[function][section] = {}
-                section_config = riof_config[function][section]
-                aitem = MyStandardItem()
-                lcncfunc_view.appendRow(
-                    [
-                        MyStandardItem(section.title()),
-                        MyStandardItem(""),
-                    ]
-                )
-                lcncsec_view = lcncfunc_view.child(lcncfunc_view.rowCount() - 1)
-                for key, var_setup in section_data.items():
-                    key_title = key.title()
-                    aitem = MyStandardItem()
-                    lcncsec_view.appendRow(
-                        [
-                            MyStandardItem(key_title, help_text=var_setup.get("help", key)),
-                            aitem,
-                        ]
-                    )
-                    self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
+
+            self.treeview.setIndexWidget(aitem_source.index(), self.edit_item(net_config[net_num], "source", {"type": str, "value": net_data.get("source"), "default": ""}))
+            self.treeview.setIndexWidget(aitem_target.index(), self.edit_item(net_config[net_num], "target", {"type": str, "value": net_data.get("target"), "default": ""}))
 
         # linuxcnc-ini
         bitem = MyStandardItem()
@@ -1852,6 +1840,55 @@ class WinForm(QWidget):
                     lcncsec_view.appendRow(
                         [
                             MyStandardItem(key_title, help_text=var_setup.get("tooltip")),
+                            aitem,
+                        ]
+                    )
+                    self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
+
+        # rio-functions
+        bitem = MyStandardItem()
+        tree_lcnc.appendRow(
+            [
+                MyStandardItem("RIO-Functions", help_text="default values for the RIO-Functions"),
+                bitem,
+            ]
+        )
+        tree_lcncriof = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        if "rio_functions" not in self.config["linuxcnc"]:
+            self.config["linuxcnc"]["rio_functions"] = {}
+        riof_config = self.config["linuxcnc"]["rio_functions"]
+
+        riof_data = halpins.RIO_FUNCTION_DEFAULTS
+        for function, function_data in riof_data.items():
+            if function not in riof_config:
+                riof_config[function] = {}
+
+            aitem = MyStandardItem()
+            tree_lcncriof.appendRow(
+                [
+                    MyStandardItem(function.title()),
+                    MyStandardItem(""),
+                ]
+            )
+            lcncfunc_view = tree_lcncriof.child(tree_lcncriof.rowCount() - 1)
+            for section, section_data in function_data.items():
+                if section not in riof_config[function]:
+                    riof_config[function][section] = {}
+                section_config = riof_config[function][section]
+                aitem = MyStandardItem()
+                lcncfunc_view.appendRow(
+                    [
+                        MyStandardItem(section.title()),
+                        MyStandardItem(""),
+                    ]
+                )
+                lcncsec_view = lcncfunc_view.child(lcncfunc_view.rowCount() - 1)
+                for key, var_setup in section_data.items():
+                    key_title = key.title()
+                    aitem = MyStandardItem()
+                    lcncsec_view.appendRow(
+                        [
+                            MyStandardItem(key_title, help_text=var_setup.get("help", key)),
                             aitem,
                         ]
                     )
@@ -1983,8 +2020,7 @@ class WinForm(QWidget):
         elif self.board:
             self.tree_expand("/Plugins/")
         else:
-            # TODO:
-            self.tree_expand("/LinuxCNC/")
+            self.tree_expand("/LinuxCNC/Components/")
 
     def tree_expand(self, tpath):
         def iter_childs(entry, prefix=""):
@@ -2098,6 +2134,176 @@ class WinForm(QWidget):
 
         self.config_load()
         self.tree_expand("/Modules/")
+
+    def edit_gpio(self, widget=None, pin_select=None):
+        dialog = QDialog()
+        dialog.setWindowTitle(f"edit gpio mode ({pin_select})")
+
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog.setLayout(dialog.layout)
+
+        combo = QComboBox(self)
+        combo.addItem("Input")
+        combo.addItem("Output")
+        combo.addItem("Output+Reset")
+        dialog.layout.addWidget(combo)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        if dialog.exec():
+            gpio_config = self.config.get("gpios", [])
+            for gpio in gpio_config:
+                gtype = gpio.get("type")
+                if gtype == "rpi":
+                    for pmode in ("inputs", "outputs", "reset"):
+                        if pmode not in gpio["pins"]:
+                            gpio["pins"][pmode] = []
+                        if pin_select in gpio["pins"][pmode]:
+                            gpio["pins"][pmode].remove(pin_select)
+                    if combo.currentText() == "Input":
+                        gpio["pins"]["inputs"].append(pin_select)
+                    elif combo.currentText() == "Output":
+                        gpio["pins"]["inputs"].append(pin_select)
+                    elif combo.currentText() == "Output+Reset":
+                        gpio["pins"]["outputs"].append(pin_select)
+                        gpio["pins"]["reset"].append(pin_select)
+
+            if not self.args.nographs:
+                self.tabs["Overview"].update()
+            self.tabs["GPIOs"].update()
+            self.tabs["Json"].update()
+
+    def add_component_or_net(self, widget=None, pin_select=None):
+        dialog = QDialog()
+        dialog.setWindowTitle("select component or set net")
+
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog.setLayout(dialog.layout)
+
+        combo = QComboBox(self)
+        combo.addItem("Component")
+        combo.addItem("Net")
+        dialog.layout.addWidget(combo)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        if dialog.exec():
+            if combo.currentText() == "Component":
+                self.add_component(pin_select=pin_select)
+            else:
+                if "net" not in self.config["linuxcnc"]:
+                    self.config["linuxcnc"]["net"] = []
+                net_config = self.config["linuxcnc"]["net"]
+                for num, net in enumerate(net_config):
+                    if not net.get("source") or not net.get("target"):
+                        net_config.pop(num)
+                if pin_select.endswith("-out"):
+                    net_config.append({"source": "", "target": pin_select})
+                else:
+                    net_config.append({"source": pin_select, "target": ""})
+                self.load_tree("/LinuxCNC/Net/")
+                self.tabwidget.setCurrentWidget(self.tabs["Plugins"].widget())
+
+    def add_component(self, widget=None, pin_select=None):
+        dialog = QDialog()
+        dialog.setWindowTitle("select component")
+        dialog.setStyleSheet(STYLESHEET)
+
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog.setLayout(dialog.layout)
+
+        dialog.component_names = []
+
+        def show_component_info(idx):
+            component_name = dialog.component_names[idx]
+            info = getattr(components, f"comp_{component_name}").INFO
+            description = getattr(components, f"comp_{component_name}").DESCRIPTION
+            name_label.setText(info)
+            description_label.setText(description)
+            dialog.selected = component_name
+
+        component_table = QTableWidget()
+        component_table.setColumnCount(1)
+        component_table.setHorizontalHeaderItem(0, QTableWidgetItem("components"))
+
+        row_n = 0
+        for comp in dir(components):
+            if comp.startswith("comp_"):
+                component_name = comp.replace("comp_", "")
+                info = getattr(components, comp).INFO
+                description = getattr(components, comp).DESCRIPTION
+                component_table.setRowCount(row_n + 1)
+                pitem = QTableWidgetItem(component_name)
+                component_table.setItem(row_n, 0, pitem)
+                dialog.component_names.append(component_name)
+                row_n += 1
+
+        mid_layout = QVBoxLayout()
+        mid_widget = QWidget()
+        mid_widget.setFixedWidth(400)
+        mid_widget.setLayout(mid_layout)
+        name_label = QLabel("Name:")
+        name_label_font = QFont()
+        name_label_font.setBold(True)
+        name_label.setFont(name_label_font)
+
+        mid_layout.addWidget(name_label)
+        info_label = QLabel("info")
+        mid_layout.addWidget(info_label)
+        description_label = QLabel("description")
+        mid_layout.addWidget(description_label)
+        mid_layout.addStretch()
+
+        right_layout = QVBoxLayout()
+        right_widget = QWidget()
+        right_widget.setLayout(right_layout)
+        image_label = QLabel(self)
+        right_layout.addWidget(image_label)
+        right_layout.addStretch()
+
+        header = component_table.horizontalHeader()
+        header.setStretchLastSection(True)
+        # component_table.setFixedWidth(200)
+        component_table.cellClicked.connect(show_component_info)
+        component_table.currentCellChanged.connect(show_component_info)
+
+        left_layout = QVBoxLayout()
+        left_widget = QWidget()
+        # left_widget.setFixedWidth(400)
+        left_widget.setLayout(left_layout)
+        left_layout.addWidget(component_table)
+
+        infos = QHBoxLayout()
+        infos.addWidget(left_widget, stretch=0)
+        infos.addWidget(mid_widget, stretch=3)
+        infos.addWidget(right_widget, stretch=1)
+
+        dialog.layout.addLayout(infos)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        show_component_info(0)
+        if dialog.exec():
+            if "linuxcnc" not in self.config:
+                self.config["linuxcnc"] = {}
+            if "components" not in self.config["linuxcnc"]:
+                self.config["linuxcnc"] = []
+
+            pins = {}
+            self.config["linuxcnc"]["components"].append(
+                {
+                    "type": dialog.selected,
+                    "pins": pins,
+                }
+            )
+            self.load_tree()
+            self.edit_component(self.config["linuxcnc"]["components"][-1], is_new=True)
 
     def del_plugin(self, plugin_instance, widget, dialog=None):
         plugin_id = plugin_instance.plugin_id
@@ -3151,7 +3357,7 @@ class WinForm(QWidget):
         options_tab.setWidget(options_widget)
         return options_tab
 
-    def edit_component(self, component, widget, is_new=False):
+    def edit_component(self, component, widget=None, pin_select=None, is_new=False):
         comp_type = component.get("type")
         if hasattr(components, f"comp_{comp_type}"):
             cinstance = getattr(components, f"comp_{comp_type}")(component)
@@ -3180,6 +3386,8 @@ class WinForm(QWidget):
 
         pins_tab = self.edit_component_pins(cinstance, component)
         tab_widget.addTab(pins_tab, "Pins")
+        if is_new:
+            tab_widget.setCurrentWidget(pins_tab)
 
         if comp_type == "stepgen":
             joint_tab = self.edit_component_joints(cinstance, component)
@@ -3191,16 +3399,6 @@ class WinForm(QWidget):
                 tab_widget.addTab(signals_tab, "Signals")
 
         right_layout = QVBoxLayout()
-        """
-        comp_path = os.path.join(riocore_path, "comps", component.NAME)
-        image_path = os.path.join(comp_path, "image.png")
-        if os.path.isfile(image_path):
-            ilabel = QLabel(self)
-            pixmap = QPixmap(image_path)
-            ilabel.setPixmap(pixmap)
-            right_layout.addWidget(ilabel)
-            right_layout.addStretch()
-        """
         hlayout = QHBoxLayout()
         hlayout.addWidget(tab_widget)
         hlayout.addLayout(right_layout)

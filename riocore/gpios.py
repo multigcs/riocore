@@ -74,13 +74,20 @@ class gpio_rpi:
             if pin_name.startswith("GPIO"):
                 x_pos = x_offset + 40 + (pin_num % 2) * 110
                 y_pos = x_offset + 60 + (pin_num // 2) * 20.5
+                halname = ""
+                pn = int(pin_name.replace("GPIO", ""))
+                if f"hal_pi_gpio.pin-{pn:02d}-in" in self.inputs:
+                    halname = f"hal_pi_gpio.pin-{pn:02d}-in"
+                elif f"hal_pi_gpio.pin-{pn:02d}-out" in self.outputs:
+                    halname = f"hal_pi_gpio.pin-{pn:02d}-out"
+
                 pins[pin_name] = {
                     "title": pin_name,
-                    "pin": pin_name,
+                    "pin": halname,
                     "pos": [int(x_pos), int(y_pos)],
                     "direction": direction,
                     "slotname": "rpi_gpio",
-                    "net": networks.get(pin_name, ""),
+                    "net": networks.get(halname, ""),
                 }
 
         return pins

@@ -1,5 +1,6 @@
 import os
 import sys
+from functools import partial
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
     sys.path.insert(0, os.getcwd())
@@ -77,10 +78,19 @@ class TabGpios:
             self.networks[net_source] = net_target
             self.networks[net_target] = net_source
 
+        componentMapping = {}
+        component_nums = {}
         for component in linuxcnc_config.get("components", []):
+            comp_type = component.get("type")
+            if comp_type not in component_nums:
+                component_nums[comp_type] = 0
+            component["num"] = component_nums[comp_type]
             for pin, halname in component.get("pins", {}).items():
                 ctype = component["type"]
-                self.networks[halname] = f"{ctype}->{pin}"
+                cpin = f"{ctype}{component['num']}.{pin}"
+                componentMapping[halname] = component
+                self.networks[halname] = cpin
+            component_nums[comp_type] += 1
 
         x_offset = 0
         pixmaps = []
@@ -95,11 +105,9 @@ class TabGpios:
                 gpio_ids[gtype] = 0
             if hasattr(gpios, f"gpio_{gtype}"):
                 ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
-
                 self.inputs += ginstance.inputs
                 self.outputs += ginstance.outputs
                 pins.update(ginstance.slotpins(x_offset, self.networks))
-
                 pixmap = QPixmap(ginstance.IMAGE)
                 pixmaps.append(pixmap)
                 x_offset += pixmap.width()
@@ -170,7 +178,12 @@ class TabGpios:
                 self.pinlabels[pkey].move(QPoint(int(pin["pos"][0]), int(pin["pos"][1])))
                 self.pinlabels[pkey].setToolTip(tooltip)
 
-                # self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
+                if halname in componentMapping:
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_component, componentMapping.get(halname)))
+                elif halname:
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.add_component_or_net, pin_select=halname))
+                else:
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_gpio, pin_select=pin_id))
 
     def pinlayout_mark(self, pkey):
         slot_name = pkey.split(":")[0]
