@@ -115,7 +115,9 @@ class TabGpios:
             gpio_ids[gtype] += 1
 
         if not pixmaps:
-            return
+            pixmap = QPixmap(100, 600)
+            pixmaps.append(pixmap)
+            x_offset += pixmap.width()
 
         width = 0
         height = 0
@@ -185,6 +187,15 @@ class TabGpios:
                 else:
                     self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_gpio, pin_select=pin_id))
 
+        pkey = "newgpio"
+        self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor="red")
+        self.pinlabels[pkey].setFixedWidth(100)
+        self.pinlabels[pkey].setFixedHeight(15)
+        self.pinlabels[pkey].setText("add gpio")
+        self.pinlabels[pkey].move(QPoint(10, 10))
+        self.pinlabels[pkey].setToolTip("adding a new gpio port")
+        self.pinlabels[pkey].clicked.connect(self.parent.add_gpio)
+
     def pinlayout_mark(self, pkey):
         slot_name = pkey.split(":")[0]
         infotext = [f"Slot: {slot_name}"]
@@ -193,6 +204,8 @@ class TabGpios:
         infoline = 0
         ln = 0
         for key, label in self.pinlabels.items():
+            if key == "newgpio":
+                continue
             splitted = key.split(":")
             if splitted[0] == slot_name:
                 color = "darkCyan"

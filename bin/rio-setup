@@ -238,7 +238,7 @@ class WinForm(QWidget):
 
         if self.args.nographs:
             self.tabs = {
-                "Plugins": TabPlugins(self),
+                "Config": TabPlugins(self),
                 "Board": TabBoard(self),
                 "GPIOs": TabGpios(self),
                 "Json": TabJson(self),
@@ -247,7 +247,7 @@ class WinForm(QWidget):
             }
         else:
             self.tabs = {
-                "Plugins": TabPlugins(self),
+                "Config": TabPlugins(self),
                 "Board": TabBoard(self),
                 "GPIOs": TabGpios(self),
                 "Overview": TabOverview(self),
@@ -260,8 +260,8 @@ class WinForm(QWidget):
                 "Gateware": TabGateware(self),
             }
 
-        self.treeview = self.tabs["Plugins"].widget()
-        self.model = self.tabs["Plugins"].model
+        self.treeview = self.tabs["Config"].widget()
+        self.model = self.tabs["Config"].model
 
         for title, tab in self.tabs.items():
             self.tabwidget.addTab(tab.widget(), title)
@@ -1506,8 +1506,8 @@ class WinForm(QWidget):
             if slot_name:
                 self.slotnames.append(slot_name)
 
-        if self.config.get("gpios", []):
-            self.tabs["GPIOs"].update()
+        # if self.config.get("gpios", []):
+        self.tabs["GPIOs"].update()
 
         if self.board:
             self.tabs["Board"].update()
@@ -1520,8 +1520,8 @@ class WinForm(QWidget):
 
     def display(self):
         disable = []
-        if not self.config.get("gpios"):
-            disable.append("GPIOs")
+        # if not self.config.get("gpios"):
+        #    disable.append("GPIOs")
 
         if not self.board:
             disable.append("Board")
@@ -2155,6 +2155,8 @@ class WinForm(QWidget):
         if dialog.exec():
             gpio_config = self.config.get("gpios", [])
             for gpio in gpio_config:
+                if "pins" not in gpio:
+                    gpio["pins"] = {}
                 gtype = gpio.get("type")
                 if gtype == "rpi":
                     for pmode in ("inputs", "outputs", "reset"):
@@ -2174,6 +2176,71 @@ class WinForm(QWidget):
                 self.tabs["Overview"].update()
             self.tabs["GPIOs"].update()
             self.tabs["Json"].update()
+
+    def add_gpio_parport(self):
+        dialog = QDialog()
+        dialog.setWindowTitle("add parport")
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog.setLayout(dialog.layout)
+
+        combo_mode = QComboBox(self)
+        for pmode in ("in", "out", "epp", "x"):
+            combo_mode.addItem(pmode)
+        dialog.layout.addWidget(combo_mode)
+
+        combo = QComboBox(self)
+        for addr in ("0x378", "0x278"):
+            combo.addItem(addr)
+        dialog.layout.addWidget(combo)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        if dialog.exec():
+            address = combo.currentText()
+            pmode = combo_mode.currentText()
+            if "gpios" not in self.config:
+                self.config["gpios"] = []
+            self.config["gpios"].append(
+                {
+                    "type": "parport",
+                    "address": address,
+                    "mode": pmode,
+                }
+            )
+            self.tabs["GPIOs"].update()
+
+    def add_gpio(self, widget=None):
+        dialog = QDialog()
+        dialog.setWindowTitle("select component or set net")
+
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog.setLayout(dialog.layout)
+
+        combo = QComboBox(self)
+        for gclass in dir(gpios):
+            if gclass.startswith("gpio_"):
+                gtype = gclass.replace("gpio_", "")
+                combo.addItem(gtype)
+        dialog.layout.addWidget(combo)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        if dialog.exec():
+            if combo.currentText() == "parport":
+                self.add_gpio_parport()
+            else:
+                if "gpios" not in self.config:
+                    self.config["gpios"] = []
+                self.config["gpios"].append(
+                    {
+                        "type": "rpi",
+                    }
+                )
+                self.tabs["GPIOs"].update()
 
     def add_component_or_net(self, widget=None, pin_select=None):
         dialog = QDialog()
@@ -2206,7 +2273,7 @@ class WinForm(QWidget):
                 else:
                     net_config.append({"source": pin_select, "target": ""})
                 self.load_tree("/LinuxCNC/Net/")
-                self.tabwidget.setCurrentWidget(self.tabs["Plugins"].widget())
+                self.tabwidget.setCurrentWidget(self.tabs["Config"].widget())
 
     def add_component(self, widget=None, pin_select=None):
         dialog = QDialog()

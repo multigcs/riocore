@@ -56,7 +56,7 @@ class gpio_rpi:
         self.gid = gid
         self.gpio = gpio
         self.mode = gpio.get("mode", "out")
-        rpi_pins = gpio.get("pins", [])
+        rpi_pins = gpio.get("pins", {})
         inputs = rpi_pins.get("inputs", [])
         outputs = rpi_pins.get("outputs", [])
         for pin in inputs:
@@ -97,7 +97,7 @@ class gpio_rpi:
         rpigpios = []
         for gpio in gpio_config:
             if gpio.get("type") == "rpi":
-                rpi_pins = gpio.get("pins", [])
+                rpi_pins = gpio.get("pins", {})
                 rpigpios.append(rpi_pins)
 
         if rpigpios and False:
@@ -202,7 +202,7 @@ class gpio_parport:
         for gpio in gpio_config:
             if gpio.get("type") == "parport":
                 pp_addr = gpio.get("address", "0x378")
-                pp_mode = gpio.get("mode", "0 out")
+                pp_mode = gpio.get("mode", "out")
                 parports.append(f"{pp_addr} {pp_mode}")
 
         if parports:
