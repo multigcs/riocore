@@ -1200,81 +1200,16 @@ class WinForm(QWidget):
 
         return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
 
-    def load_tree(self, expand=None):
-        toolchain = self.board.get("toolchain")
-        toolchains = self.board.get("toolchains", [toolchain])
-
-        while self.model.rowCount() > 0:
-            self.model.removeRow(0)
-
-        options = {
-            "name": {"type": str},
-            "description": {"type": str},
-            "boardcfg": {"type": "select", "options": self.boards},
-        }
-        if self.board:
-            options.update(
-                {
-                    "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
-                    "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
-                }
-            )
-
-        for key, var_setup in options.items():
-            aitem = MyStandardItem()
-            self.model.appendRow(
-                [
-                    MyStandardItem(key.title()),
-                    aitem,
-                ]
-            )
-            self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config, key, var_setup))
-
-        # LinuxCNC
-        bitem = MyStandardItem()
-        self.model.appendRow(
-            [
-                MyStandardItem("LinuxCNC", help_text="LinuxCNC specific configurations"),
-                bitem,
-            ]
-        )
-        tree_lcnc = self.model.item(self.model.rowCount() - 1)
-        if "linuxcnc" not in self.config:
-            self.config["linuxcnc"] = {}
-
-        for key, var_setup in {
-            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
-            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the mashine"},
-            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
-            "gui": {
-                "type": "select",
-                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy", "gscreen"],
-                "default": "axis",
-                "help_text": "linuxcnc gui to use",
-            },
-            "vcp_mode": {"type": "select", "options": ["ALL", "CONFIGURED", "NONE"], "default": "ALL", "help_text": "pyvcp gui generate mode"},
-            "vcp_pos": {"type": "select", "options": ["RIGHT", "BOTTOM", "TAB"], "default": "RIGHT", "help_text": "position of the vcp gui for extra controls"},
-            "vcp_type": {"type": "select", "options": ["auto", "pyvcp", "qtvcp", "gladevcp"], "default": "auto", "help_text": "vcp type, depends on the gui"},
-            "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
-        }.items():
-            aitem = MyStandardItem()
-            tree_lcnc.appendRow(
-                [
-                    MyStandardItem(key.title().replace("_", "-")),
-                    aitem,
-                ]
-            )
-            self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config["linuxcnc"], key, var_setup))
-
+    def load_tree_linuxcnc_components(self, parent_tree, expand=None):
         # linuxcnc components's (for host gpio's)
         bitem = MyStandardItem()
-        tree_lcnc.appendRow(
+        parent_tree.appendRow(
             [
                 MyStandardItem("Components"),
                 bitem,
             ]
         )
-        self.tree_comps = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        self.tree_comps = parent_tree.child(parent_tree.rowCount() - 1)
 
         buttons_layout = QHBoxLayout()
         buttons_layout.setContentsMargins(0, 0, 0, 0)
@@ -1298,15 +1233,16 @@ class WinForm(QWidget):
             self.gui_components.tree_add_component(self.tree_comps, component)
             component_nums[comp_type] += 1
 
+    def load_tree_linuxcnc_networks(self, parent_tree, expand=None):
         # linuxcnc-net
         bitem = MyStandardItem()
-        tree_lcnc.appendRow(
+        parent_tree.appendRow(
             [
                 MyStandardItem("Net", help_text="LinuxCNC Networks"),
                 bitem,
             ]
         )
-        tree_lcncnet = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        tree_lcncnet = parent_tree.child(parent_tree.rowCount() - 1)
         if "net" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["net"] = []
         net_config = self.config["linuxcnc"]["net"]
@@ -1325,15 +1261,16 @@ class WinForm(QWidget):
             self.treeview.setIndexWidget(aitem_source.index(), self.edit_item(net_config[net_num], "source", {"type": str, "value": net_data.get("source"), "default": ""}))
             self.treeview.setIndexWidget(aitem_target.index(), self.edit_item(net_config[net_num], "target", {"type": str, "value": net_data.get("target"), "default": ""}))
 
+    def load_tree_linuxcnc_ini(self, parent_tree, expand=None):
         # linuxcnc-ini
         bitem = MyStandardItem()
-        tree_lcnc.appendRow(
+        parent_tree.appendRow(
             [
                 MyStandardItem("INI-Defaults", help_text="LinuxCNC INI-Defaults"),
                 bitem,
             ]
         )
-        tree_lcncini = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        tree_lcncini = parent_tree.child(parent_tree.rowCount() - 1)
         if "ini" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["ini"] = {}
         ini_config = self.config["linuxcnc"]["ini"]
@@ -1383,15 +1320,16 @@ class WinForm(QWidget):
                     )
                     self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
 
+    def load_tree_linuxcnc_riof(self, parent_tree, expand=None):
         # rio-functions
         bitem = MyStandardItem()
-        tree_lcnc.appendRow(
+        parent_tree.appendRow(
             [
                 MyStandardItem("RIO-Functions", help_text="default values for the RIO-Functions"),
                 bitem,
             ]
         )
-        tree_lcncriof = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        tree_lcncriof = parent_tree.child(parent_tree.rowCount() - 1)
         if "rio_functions" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["rio_functions"] = {}
         riof_config = self.config["linuxcnc"]["rio_functions"]
@@ -1432,123 +1370,203 @@ class WinForm(QWidget):
                     )
                     self.treeview.setIndexWidget(aitem.index(), self.edit_item(section_config, key, var_setup))
 
+    def load_tree_linuxcnc_addons(self, parent_tree, expand=None):
         # linuxcnc addon's
         bitem = MyStandardItem()
-        tree_lcnc.appendRow(
+        parent_tree.appendRow(
             [
                 MyStandardItem("AddOn's", help_text="LinuxCNC generator addons"),
                 bitem,
             ]
         )
-        tree_lcncaddons = tree_lcnc.child(tree_lcnc.rowCount() - 1)
+        tree_lcncaddons = parent_tree.child(parent_tree.rowCount() - 1)
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "load_tree"):
                 addon.load_tree(self, tree_lcncaddons)
 
-        if self.board:
-            # modules
-            free_slots = False
-            for slot in self.slots:
-                slot_name = slot["name"]
-                if slot_name not in self.modules:
-                    free_slots = True
-                    break
+    def load_tree_linuxcnc(self, parent_tree, expand=None):
+        bitem = MyStandardItem()
+        parent_tree.appendRow(
+            [
+                MyStandardItem("LinuxCNC", help_text="LinuxCNC specific configurations"),
+                bitem,
+            ]
+        )
+        tree_lcnc = parent_tree.item(parent_tree.rowCount() - 1)
+        if "linuxcnc" not in self.config:
+            self.config["linuxcnc"] = {}
 
-            bitem = MyStandardItem()
-            self.model.appendRow(
+        for key, var_setup in {
+            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
+            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the mashine"},
+            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
+            "gui": {
+                "type": "select",
+                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy", "gscreen"],
+                "default": "axis",
+                "help_text": "linuxcnc gui to use",
+            },
+            "vcp_mode": {"type": "select", "options": ["ALL", "CONFIGURED", "NONE"], "default": "ALL", "help_text": "pyvcp gui generate mode"},
+            "vcp_pos": {"type": "select", "options": ["RIGHT", "BOTTOM", "TAB"], "default": "RIGHT", "help_text": "position of the vcp gui for extra controls"},
+            "vcp_type": {"type": "select", "options": ["auto", "pyvcp", "qtvcp", "gladevcp"], "default": "auto", "help_text": "vcp type, depends on the gui"},
+            "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
+        }.items():
+            aitem = MyStandardItem()
+            tree_lcnc.appendRow(
                 [
-                    MyStandardItem("Modules", help_text="Module-Configuration"),
-                    bitem,
+                    MyStandardItem(key.title().replace("_", "-")),
+                    aitem,
                 ]
             )
-            tree_modules = self.model.item(self.model.rowCount() - 1)
+            self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config["linuxcnc"], key, var_setup))
 
-            if free_slots:
-                button = QPushButton("add module")
-                button.clicked.connect(self.gui_modules.add_module)
-                button.setMaximumSize(button.sizeHint())
-                self.treeview.setIndexWidget(bitem.index(), button)
+        self.load_tree_linuxcnc_components(tree_lcnc, expand=expand)
+        self.load_tree_linuxcnc_networks(tree_lcnc, expand=expand)
+        self.load_tree_linuxcnc_ini(tree_lcnc, expand=expand)
+        self.load_tree_linuxcnc_riof(tree_lcnc, expand=expand)
+        self.load_tree_linuxcnc_addons(tree_lcnc, expand=expand)
 
-            for module_data in self.config.get("modules", []):
-                slot_name = module_data.get("slot")
-                module_name = module_data.get("module")
-                title = slot_name
-                if module_name:
-                    title = f"{module_name} ({title})"
-                aitem = MyStandardItem()
-                tree_modules.appendRow(
-                    [
-                        MyStandardItem(title),
-                        aitem,
-                    ]
-                )
-                module_view = tree_modules.child(tree_modules.rowCount() - 1)
+    def load_tree_modules(self, parent_tree, expand=None):
+        # modules
+        free_slots = False
+        for slot in self.slots:
+            slot_name = slot["name"]
+            if slot_name not in self.modules:
+                free_slots = True
+                break
 
-                buttons_layout = QHBoxLayout()
-                buttons_layout.setContentsMargins(0, 0, 0, 0)
-                buttons_widget = QWidget()
-                buttons_widget.setLayout(buttons_layout)
-                self.treeview.setIndexWidget(aitem.index(), buttons_widget)
+        bitem = MyStandardItem()
+        parent_tree.appendRow(
+            [
+                MyStandardItem("Modules", help_text="Module-Configuration"),
+                bitem,
+            ]
+        )
+        tree_modules = parent_tree.item(parent_tree.rowCount() - 1)
 
-                button_delete = QPushButton("delete")
-                cb = partial(self.gui_modules.del_module, slot_name)
-                button_delete.clicked.connect(cb)
-                button_delete.setToolTip("delete module")
-                button_delete.setMaximumSize(button_delete.sizeHint())
-                buttons_layout.addWidget(button_delete)
+        if free_slots:
+            button = QPushButton("add module")
+            button.clicked.connect(self.gui_modules.add_module)
+            button.setMaximumSize(button.sizeHint())
+            self.treeview.setIndexWidget(bitem.index(), button)
 
-                button_split = QPushButton("split")
-                cb = partial(self.gui_modules.split_module, slot_name)
-                button_split.setToolTip("split module into single plugins")
-                button_split.clicked.connect(cb)
-                button_split.setMaximumSize(button_split.sizeHint())
-                buttons_layout.addWidget(button_split)
-
-                buttons_layout.addStretch()
-
-                for key, var_setup in {
-                    "module": {"type": "select", "options": self.module_names},
-                    "slot": {"type": "select", "options": self.slotnames},
-                }.items():
-                    aitem = MyStandardItem()
-                    module_view.appendRow(
-                        [
-                            MyStandardItem(key.title()),
-                            aitem,
-                        ]
-                    )
-                    self.treeview.setIndexWidget(aitem.index(), self.edit_item(module_data, key, var_setup, cb=self.slot_change))
-
-                module_plugins_view = MyStandardItem("Plugins")
-                module_view.appendRow(module_plugins_view)
-
-                for plugin_instance in self.modules[slot_name]["instances"]:
-                    self.gui_plugins.tree_add_plugin(module_plugins_view, plugin_instance, nopins=True, expand=False)
-
-            bitem = MyStandardItem()
-            self.model.appendRow(
+        for module_data in self.config.get("modules", []):
+            slot_name = module_data.get("slot")
+            module_name = module_data.get("module")
+            title = slot_name
+            if module_name:
+                title = f"{module_name} ({title})"
+            aitem = MyStandardItem()
+            tree_modules.appendRow(
                 [
-                    MyStandardItem("Plugins"),
-                    bitem,
+                    MyStandardItem(title),
+                    aitem,
                 ]
             )
-            self.tree_plugins = self.model.item(self.model.rowCount() - 1)
+            module_view = tree_modules.child(tree_modules.rowCount() - 1)
 
             buttons_layout = QHBoxLayout()
             buttons_layout.setContentsMargins(0, 0, 0, 0)
             buttons_widget = QWidget()
             buttons_widget.setLayout(buttons_layout)
+            self.treeview.setIndexWidget(aitem.index(), buttons_widget)
 
-            button = QPushButton("add plugin")
-            button.clicked.connect(self.gui_plugins.add_plugin)
-            button.setMaximumSize(button.sizeHint())
-            buttons_layout.addWidget(button)
+            button_delete = QPushButton("delete")
+            cb = partial(self.gui_modules.del_module, slot_name)
+            button_delete.clicked.connect(cb)
+            button_delete.setToolTip("delete module")
+            button_delete.setMaximumSize(button_delete.sizeHint())
+            buttons_layout.addWidget(button_delete)
+
+            button_split = QPushButton("split")
+            cb = partial(self.gui_modules.split_module, slot_name)
+            button_split.setToolTip("split module into single plugins")
+            button_split.clicked.connect(cb)
+            button_split.setMaximumSize(button_split.sizeHint())
+            buttons_layout.addWidget(button_split)
 
             buttons_layout.addStretch()
-            self.treeview.setIndexWidget(bitem.index(), buttons_widget)
 
-            for plugin_instance in self.plugins.plugin_instances:
-                self.gui_plugins.tree_add_plugin(self.tree_plugins, plugin_instance)
+            for key, var_setup in {
+                "module": {"type": "select", "options": self.module_names},
+                "slot": {"type": "select", "options": self.slotnames},
+            }.items():
+                aitem = MyStandardItem()
+                module_view.appendRow(
+                    [
+                        MyStandardItem(key.title()),
+                        aitem,
+                    ]
+                )
+                self.treeview.setIndexWidget(aitem.index(), self.edit_item(module_data, key, var_setup, cb=self.slot_change))
+
+            module_plugins_view = MyStandardItem("Plugins")
+            module_view.appendRow(module_plugins_view)
+
+            for plugin_instance in self.modules[slot_name]["instances"]:
+                self.gui_plugins.tree_add_plugin(module_plugins_view, plugin_instance, nopins=True, expand=False)
+
+    def load_tree_plugins(self, parent_tree, expand=None):
+        bitem = MyStandardItem()
+        parent_tree.appendRow(
+            [
+                MyStandardItem("Plugins"),
+                bitem,
+            ]
+        )
+        self.tree_plugins = parent_tree.item(parent_tree.rowCount() - 1)
+
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_widget = QWidget()
+        buttons_widget.setLayout(buttons_layout)
+
+        button = QPushButton("add plugin")
+        button.clicked.connect(self.gui_plugins.add_plugin)
+        button.setMaximumSize(button.sizeHint())
+        buttons_layout.addWidget(button)
+
+        buttons_layout.addStretch()
+        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
+
+        for plugin_instance in self.plugins.plugin_instances:
+            self.gui_plugins.tree_add_plugin(self.tree_plugins, plugin_instance)
+
+    def load_tree(self, expand=None):
+        toolchain = self.board.get("toolchain")
+        toolchains = self.board.get("toolchains", [toolchain])
+
+        while self.model.rowCount() > 0:
+            self.model.removeRow(0)
+
+        options = {
+            "name": {"type": str},
+            "description": {"type": str},
+            "boardcfg": {"type": "select", "options": self.boards},
+        }
+        if self.board:
+            options.update(
+                {
+                    "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
+                    "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
+                }
+            )
+
+        for key, var_setup in options.items():
+            aitem = MyStandardItem()
+            self.model.appendRow(
+                [
+                    MyStandardItem(key.title()),
+                    aitem,
+                ]
+            )
+            self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config, key, var_setup))
+
+        self.load_tree_linuxcnc(self.model, expand=expand)
+
+        if self.board:
+            self.load_tree_modules(self.model, expand=expand)
+            self.load_tree_plugins(self.model, expand=expand)
 
         self.treeview.header().resizeSection(0, 300)
         self.treeview.header().resizeSection(1, 200)
