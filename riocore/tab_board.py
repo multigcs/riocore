@@ -18,7 +18,6 @@ from riocore.widgets import (
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
-    QMessageBox,
     QHBoxLayout,
     QLabel,
     QScrollArea,

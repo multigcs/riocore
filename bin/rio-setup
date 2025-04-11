@@ -26,6 +26,7 @@ from riocore import VERSION
 from riocore import halpins
 from riocore import components
 from riocore import gpios
+from riocore import vcp
 
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.components import GuiComponents
