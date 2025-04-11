@@ -476,7 +476,7 @@ class GuiComponents:
                 else:
                     net_config.append({"source": pin_select, "target": ""})
                 self.parent.load_tree("/LinuxCNC/Net/")
-                self.self.parent.tabwidget.setCurrentWidget(self.parent.tabs["Config"].widget())
+                self.parent.tabwidget.setCurrentWidget(self.parent.tabs["Config"].widget())
 
     def add_component(self, widget=None, pin_select=None):
         dialog = QDialog()

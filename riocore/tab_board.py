@@ -111,9 +111,9 @@ class TabBoard:
                 self.pinlabels[pkey].move(QPoint(int(slot["rect"][0]), int(slot["rect"][1])))
                 self.pinlabels[pkey].setToolTip(tooltip)
                 if module_name:
-                    self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_modules.remove_module, slot_name))
                 else:
-                    self.pinlabels[pkey].clicked.connect(partial(self.parent.add_module, slot_name=slot_name, slot_select=False))
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_modules.add_module, slot_name=slot_name, slot_select=False))
 
             for pin_id, pin in slot["pins"].items():
                 if isinstance(pin, dict):
@@ -156,7 +156,7 @@ class TabBoard:
                         self.pinlabels[pkey].setToolTip(tooltip)
 
                         if module_name:
-                            self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
+                            self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_modules.remove_module, slot_name))
                         elif plugin_instance:
                             self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_plugins.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
                         else:
@@ -171,31 +171,11 @@ class TabBoard:
                         self.pinlabels[pkey].setToolTip(tooltip)
 
                         if module_name:
-                            self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
+                            self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_modules.remove_module, slot_name))
                         elif plugin_instance:
                             self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_plugins.edit_plugin, plugin_instance))
                         else:
                             self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_plugins.add_plugin, pin_id, slot_name=slot_name))
-
-    def remove_module(self, slot_name):
-        module_name = self.parent.get_module_by_slot(slot_name)
-        qm = QMessageBox
-        ret = qm.question(self.parent, "remove module", f"Are you sure to remove module '{module_name}' from slot '{slot_name}' ?", qm.Yes | qm.No)
-        if ret == qm.Yes:
-            if "modules" in self.parent.config:
-                for mn, module in enumerate(self.parent.config["modules"]):
-                    if module["slot"] == slot_name:
-                        self.parent.config["modules"].pop(mn)
-                        break
-            del self.parent.modules[slot_name]
-            self.parent.load_tree()
-            if self.parent.board:
-                self.parent.tabs["Board"].update()
-                if not self.parent.args.nographs:
-                    self.parent.tabs["Pins"].update()
-                    self.parent.tabs["Signals"].update()
-            self.parent.tabs["GPIOs"].update()
-            self.parent.display()
 
     def pinlayout_mark(self, pkey):
         slot_name = pkey.split(":")[0]

@@ -186,7 +186,7 @@ class TabGpios:
                 elif halname:
                     self.pinlabels[pkey].clicked.connect(partial(self.gui_components.add_component_or_net, pin_select=halname))
                 else:
-                    self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_gpio, pin_select=pin_id))
+                    self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_gpios.edit_gpio, pin_select=pin_id))
 
         pkey = "newgpio"
         self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor="red")
@@ -195,7 +195,7 @@ class TabGpios:
         self.pinlabels[pkey].setText("add gpio")
         self.pinlabels[pkey].move(QPoint(10, 10))
         self.pinlabels[pkey].setToolTip("adding a new gpio port")
-        self.pinlabels[pkey].clicked.connect(self.parent.add_gpio)
+        self.pinlabels[pkey].clicked.connect(self.parent.gui_gpios.add_gpio)
 
     def pinlayout_mark(self, pkey):
         slot_name = pkey.split(":")[0]
