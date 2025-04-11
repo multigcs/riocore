@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.9.3
+
+### Gui and Generator
+* adding experimental parport / rpi gpio support
+* adding experimental gpio component support (pwmgen/stepgen/encoder)
+* display diffs in Json Tab
+
+
 ## v0.9.2
 
 ### Gui and Generator
