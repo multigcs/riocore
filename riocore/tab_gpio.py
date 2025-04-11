@@ -35,6 +35,7 @@ class TabGpios:
 
     def __init__(self, parent=None):
         self.parent = parent
+        self.gui_components = parent.gui_components
         self.img_container = QWidget()
         self.img_layout = QVBoxLayout(self.img_container)
         self.boardimg = QWidget()
@@ -181,9 +182,9 @@ class TabGpios:
                 self.pinlabels[pkey].setToolTip(tooltip)
 
                 if halname in componentMapping:
-                    self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_component, componentMapping.get(halname)))
+                    self.pinlabels[pkey].clicked.connect(partial(self.gui_components.edit_component, componentMapping.get(halname)))
                 elif halname:
-                    self.pinlabels[pkey].clicked.connect(partial(self.parent.add_component_or_net, pin_select=halname))
+                    self.pinlabels[pkey].clicked.connect(partial(self.gui_components.add_component_or_net, pin_select=halname))
                 else:
                     self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_gpio, pin_select=pin_id))
 

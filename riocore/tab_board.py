@@ -158,9 +158,9 @@ class TabBoard:
                         if module_name:
                             self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
                         elif plugin_instance:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
+                            self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_plugins.edit_plugin, plugin_instance, plugin_instance.plugin_id, None))
                         else:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.add_plugin, pin_id, slot_name=slot_name))
+                            self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_plugins.add_plugin, pin_id, slot_name=slot_name))
 
                     elif "pos" in slot:
                         self.pinlabels[pkey] = PinButton(self.boardimg, parent=self, pkey=pkey, bgcolor=bgcolor, pin=pin)
@@ -173,9 +173,9 @@ class TabBoard:
                         if module_name:
                             self.pinlabels[pkey].clicked.connect(partial(self.remove_module, slot_name))
                         elif plugin_instance:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.edit_plugin, plugin_instance))
+                            self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_plugins.edit_plugin, plugin_instance))
                         else:
-                            self.pinlabels[pkey].clicked.connect(partial(self.parent.add_plugin, pin_id, slot_name=slot_name))
+                            self.pinlabels[pkey].clicked.connect(partial(self.parent.gui_plugins.add_plugin, pin_id, slot_name=slot_name))
 
     def remove_module(self, slot_name):
         module_name = self.parent.get_module_by_slot(slot_name)
