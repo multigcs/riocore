@@ -1188,7 +1188,6 @@ class WinForm(QWidget):
         for nnum, net in enumerate(config.get("linuxcnc", {}).get("net", [])):
             if not net.get("source") or not net.get("target"):
                 config["linuxcnc"]["net"].pop(nnum)
-
         self.struct_clean(config)
         return config
 

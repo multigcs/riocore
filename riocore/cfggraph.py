@@ -1,5 +1,6 @@
 import graphviz
 
+from riocore import gpios
 from riocore import components
 
 
@@ -24,77 +25,36 @@ class ConfigGraph:
 
             lcports = []
             sports = []
-
-            parport_n = 0
             gpio_config = self.parent.config.get("gpios", [])
+            gpio_map = {}
+            gpio_ids = {}
             for gpio in gpio_config:
-                if gpio.get("type") == "rpi":
-                    rpi_pins = gpio.get("pins", [])
+                gtype = gpio.get("type")
+                if gtype not in gpio_ids:
+                    gpio_ids[gtype] = 0
+                if hasattr(gpios, f"gpio_{gtype}"):
+                    ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
+                    inputs = ginstance.inputs
+                    outputs = ginstance.outputs
                     mportsr = []
-                    for pin in rpi_pins.get("inputs", []):
-                        mportsr.append(f"<{pin}-in>{pin}")
-                    for pin in rpi_pins.get("outputs", []):
-                        mportsr.append(f"<{pin}-out>{pin}")
-                    label = f"{{ {{ RPI\\nGPIO-Pins | {' | '.join(mportsr)}}} }}"
-                    gAll.node("hal_gpio", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-
-                elif gpio.get("type") == "parport":
-                    pp_addr = gpio.get("address", "0")
-                    gpio.get("mode", "out")
-                    mportsr = []
-                    for pn in range(0, 18):
-                        mportsr.append(f"<{pn}>P{pn}")
-                    label = f"{{ {{ Parport-{parport_n}\\n{pp_addr} | {' | '.join(mportsr)}}} }}"
-                    gAll.node(f"parport.{parport_n}", shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-                    parport_n += 1
-
+                    for key, pin in ginstance.slotpins().items():
+                        if pin["pin"]:
+                            pinname = pin["pin"].replace(f"{ginstance.NAME}.", "")
+                            gpio_map[pin["pin"]] = f"{ginstance.NAME}:{pinname}"
+                            mportsr.append(f"<{pinname}>{pinname}")
+                    label = f"{{ {{ {ginstance.NAME}\\nGPIO-Pins | {' | '.join(mportsr)}}} }}"
+                    gAll.node(ginstance.NAME, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
             linuxcnc_config = self.parent.config.get("linuxcnc", {})
             for net in linuxcnc_config.get("net", []):
                 net_source = net.get("source")
                 net_target = net.get("target")
-                net.get("name") or None
                 if net_source and net_target:
-                    if net_source.startswith("parport."):
-                        hal_pin = net_target
-                        port = int(net_source.split(".")[1])
-                        ppin = int(net_source.split("-")[1])
-                        gAll.edge(f"parport.{port}:{ppin}", f"hal:{hal_pin}", dir="forward", color="green")
+                    if net_source in gpio_map:
+                        gAll.edge(f"{gpio_map[net_source]}", f"hal:{hal_pin}", dir="forward", color="green")
                         lcports.append(f"<{hal_pin}>{hal_pin}")
-                    elif net_target.startswith("parport."):
-                        hal_pin = net_source
-                        port = int(net_target.split(".")[1])
-                        ppin = int(net_target.split("-")[1])
-                        gAll.edge(f"parport.{port}:{ppin}", f"hal:{hal_pin}", dir="back", color="red")
+                    elif net_target in gpio_map:
+                        gAll.edge(f"{gpio_map[net_target]}", f"hal:{hal_pin}", dir="back", color="red")
                         lcports.append(f"<{hal_pin}>{hal_pin}")
-
-                    elif net_source.startswith("hal_gpio."):
-                        hal_pin = net_target
-                        gAll.edge(net_source.replace(".", ":"), f"hal:{hal_pin}", dir="forward", color="green")
-                        lcports.append(f"<{hal_pin}>{hal_pin}")
-
-                    elif net_target.startswith("hal_gpio."):
-                        hal_pin = net_source
-                        gAll.edge(net_target.replace(".", ":"), f"hal:{hal_pin}", dir="back", color="red")
-                        lcports.append(f"<{hal_pin}>{hal_pin}")
-
-            def gpio_con(pin, target, direction="output"):
-                if direction == "input":
-                    arrow = "forward"
-                    color = "green"
-                else:
-                    arrow = "back"
-                    color = "red"
-
-                if pin.startswith("parport."):
-                    port = int(pin.split(".")[1])
-                    ppin = int(pin.split("-")[1])
-                    gAll.edge(f"parport.{port}:{ppin}", target, dir=arrow, color=color)
-
-                elif pin.startswith("hal_pi_gpio."):
-                    gAll.edge(pin.replace("_pi_", "_").replace(".pin-0", ".GPIO").replace(".pin-", ".GPIO").replace(".", ":"), target, dir=arrow, color=color)
-
-                elif pin.startswith("hal_gpio."):
-                    gAll.edge(pin.replace(".", ":"), target, dir=arrow, color=color)
 
             component_nums = {}
             for component in linuxcnc_config.get("components", []):
@@ -110,8 +70,11 @@ class ConfigGraph:
                     label = f"{{ {{ {'|'.join(ports)} }} | {{ {cinstance.TITLE} }} | {{ {'|'.join(cinstance.SIGNALS)} }} }}"
                     gAll.node(cinstance.PREFIX, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
                     for pin_name, pin_data in cinstance.PINDEFAULTS.items():
-                        if pin_name in comp_pins:
-                            gpio_con(comp_pins[pin_name], f"{cinstance.PREFIX}:{pin_name}", pin_data["direction"])
+                        if pin_name in comp_pins and comp_pins[pin_name] in gpio_map:
+                            if pin_data["direction"] == "output":
+                                gAll.edge(gpio_map[comp_pins[pin_name]], f"{cinstance.PREFIX}:{pin_name}", dir="back", color="green")
+                            else:
+                                gAll.edge(gpio_map[comp_pins[pin_name]], f"{cinstance.PREFIX}:{pin_name}", dir="forward", color="red")
 
             # show slots
             for slot in self.parent.slots:

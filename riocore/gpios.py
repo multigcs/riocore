@@ -51,6 +51,7 @@ class gpio_rpi:
     )
 
     def __init__(self, gid, gpio):
+        self.NAME = f"hal_pi_gpio"
         self.inputs = []
         self.outputs = []
         self.gid = gid
@@ -67,7 +68,7 @@ class gpio_rpi:
             elif pin_name in outputs:
                 self.outputs.append(f"hal_pi_gpio.pin-{pin_num + 1:02d}-out")
 
-    def slotpins(self, x_offset, networks={}):
+    def slotpins(self, x_offset=0, networks={}):
         pins = {}
         direction = "all"
         for pin_num in range(0, 40):
@@ -152,6 +153,7 @@ class gpio_parport:
     }
 
     def __init__(self, gid, gpio):
+        self.NAME = f"parport.{gid}"
         self.inputs = []
         self.outputs = []
         self.gid = gid
@@ -170,7 +172,7 @@ class gpio_parport:
             else:
                 self.inputs.append(pin_name)
 
-    def slotpins(self, x_offset, networks={}):
+    def slotpins(self, x_offset=0, networks={}):
         pins = {}
         for pin_num in range(1, 18):
             title = f"P{self.gid}.{pin_num}"
