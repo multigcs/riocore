@@ -18,7 +18,7 @@ from riocore.widgets import (
 
 
 from PyQt5.QtCore import QPoint, Qt, QRect
-from PyQt5.QtGui import QPixmap, QPainter
+from PyQt5.QtGui import QPixmap, QPainter, QColor
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -116,7 +116,8 @@ class TabGpios:
             gpio_ids[gtype] += 1
 
         if not pixmaps:
-            pixmap = QPixmap(100, 600)
+            pixmap = QPixmap(130, 600)
+            pixmap.fill(QColor(255, 255, 255))
             pixmaps.append(pixmap)
             x_offset += pixmap.width()
 
@@ -127,6 +128,7 @@ class TabGpios:
             height = max(height, pixmap.height())
 
         self.pinlayout_pixmap = QPixmap(width, height)
+        self.pinlayout_pixmap.fill(QColor(255, 255, 255))
         painter = QPainter(self.pinlayout_pixmap)
 
         x_offset = 0

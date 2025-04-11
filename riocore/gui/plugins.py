@@ -947,7 +947,7 @@ class GuiPlugins:
                                     break
                             self.parent.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
 
-                self.parent.tree_add_plugin(self.parent.tree_plugins, plugin_instance, expand=True)
+                self.tree_add_plugin(self.parent.tree_plugins, plugin_instance, expand=True)
                 self.parent.display()
 
                 self.edit_plugin(plugin_instance, None, is_new=True)
