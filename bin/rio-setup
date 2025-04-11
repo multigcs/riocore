@@ -2381,15 +2381,6 @@ class WinForm(QWidget):
         self.config_load()
         # self.display()
 
-    def del_component(self, component, widget, dialog=None):
-        plugin_id = plugin_instance.plugin_id
-        if dialog is not None:
-            dialog.is_removed = True
-            dialog.close()
-        self.config["plugins"].pop(plugin_id)
-        self.config_load()
-        # self.display()
-
     def edit_modifier(self, modifier_list, modifier_id, parent_layout=None):
         def update():
             mods = []
@@ -3423,6 +3414,15 @@ class WinForm(QWidget):
         options_tab.setWidgetResizable(True)
         options_tab.setWidget(options_widget)
         return options_tab
+
+    def del_component(self, component, widget, dialog=None):
+        if dialog is not None:
+            dialog.is_removed = True
+            dialog.close()
+        for cnum, comp in enumerate(self.config["linuxcnc"]["components"]):
+            if comp == component:
+                self.config["linuxcnc"]["components"].pop(cnum)
+        self.config_load()
 
     def edit_component(self, component, widget=None, pin_select=None, is_new=False):
         comp_type = component.get("type")
