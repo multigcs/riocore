@@ -1494,9 +1494,9 @@ class WinForm(QWidget):
             self.interfaces.append(path.split(os.sep)[-1])
         self.boards = []
         for path in sorted(glob.glob(os.path.join(boards_path, "*", "board.json"))):
-            self.boards.append(path.split(os.sep)[-2].split(".")[0])
+            self.boards.append(path.split(os.sep)[-2].replace(".json", ""))
         for path in sorted(glob.glob(os.path.join(boards_path, "*.json"))):
-            self.boards.append(path.split(os.sep)[-1].split(".")[0])
+            self.boards.append(path.split(os.sep)[-1].replace(".json", ""))
         self.module_names = []
         for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
             self.module_names.append(path.split(os.sep)[-2])
