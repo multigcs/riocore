@@ -4,6 +4,7 @@
 
 import argparse
 import copy
+import difflib
 import glob
 import hashlib
 import importlib
@@ -64,7 +65,7 @@ from riocore.widgets import (
 
 from PyQt5 import QtSvg
 from PyQt5.QtCore import QTimer, QPoint, Qt, QSize, QRect
-from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon, QPainter
+from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon, QPainter, QColor
 from PyQt5.QtWidgets import (
     QStyle,
     QSplitter,
@@ -98,21 +99,36 @@ riocore_path = os.path.dirname(riocore.__file__)
 class TabJson:
     def __init__(self, parent=None):
         self.parent = parent
-        self.jsonpreview = QPlainTextEdit()
-        self.jsonpreview.clear()
-        self.jsonpreview.insertPlainText("...")
-        # self.jsonpreview.verticalScrollBar().setValue(0)
+        self.jsondiff = QPlainTextEdit()
+        self.jsondiff.clear()
+        self.jsondiff.insertPlainText("...")
 
     def widget(self):
-        return self.jsonpreview
+        return self.jsondiff
 
     def timer(self):
         pass
 
     def update(self):
-        config = self.parent.clean_config(self.parent.config)
-        self.jsonpreview.clear()
-        self.jsonpreview.insertPlainText(json.dumps(config, indent=4))
+        config = json.dumps(self.parent.clean_config(self.parent.config), indent=4)
+        config_original = json.dumps(self.parent.clean_config(self.parent.config_original), indent=4)
+        self.jsondiff.clear()
+        differ = difflib.Differ()
+        color_format = self.jsondiff.currentCharFormat()
+        default_color = color_format.foreground()
+        for line in differ.compare(config_original.split("\n"), config.split("\n")):
+            marker = line[0]
+            if marker == "-":
+                color = QColor(255, 0, 0)
+            elif marker == "+":
+                color = QColor(0, 255, 0)
+            elif marker == "?":
+                continue
+            else:
+                color = default_color
+            color_format.setForeground(color)
+            self.jsondiff.setCurrentCharFormat(color_format)
+            self.jsondiff.insertPlainText(f"{line}\n")
 
 
 class TabPlugins:
@@ -303,7 +319,6 @@ class WinForm(QWidget):
                 print(f"ERROR: loading {addon_name}: {err}")
 
         self.json_load()
-        self.config_original = self.clean_config(self.config)
         self.config_checked = {}
 
         self.request_load_tree = 0
@@ -819,6 +834,8 @@ class WinForm(QWidget):
         else:
             self.board = {}
 
+        self.config_original = self.clean_config(self.config)
+
         self.config_load()
 
     def closeEvent(self, event):
@@ -1167,6 +1184,11 @@ class WinForm(QWidget):
             for name, plugin_config in plugin.get("config", {}).items():
                 if "instance" in plugin_config:
                     del plugin_config["instance"]
+
+        for nnum, net in enumerate(config.get("linuxcnc", {}).get("net", [])):
+            if not net.get("source") or not net.get("target"):
+                config["linuxcnc"]["net"].pop(nnum)
+
         self.struct_clean(config)
         return config
 

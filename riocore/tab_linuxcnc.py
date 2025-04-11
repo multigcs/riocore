@@ -32,18 +32,18 @@ class TabLinuxCNC:
             "rio-gui.xml": QPlainTextEdit(),
             "riocomp.c": QPlainTextEdit(),
         }
-        self.linuxcnc_tabwidget = QTabWidget()
-        self.linuxcnc_tabwidget.setStyleSheet(STYLESHEET_TABBAR)
+        self.tabwidget = QTabWidget()
+        self.tabwidget.setStyleSheet(STYLESHEET_TABBAR)
         for filename, widget in self.linuxcnc.items():
             widget.clear()
             widget.insertPlainText("")
-            self.linuxcnc_tabwidget.addTab(widget, filename)
+            self.tabwidget.addTab(widget, filename)
 
     def setTab(self, name):
-        self.linuxcnc_tabwidget.setCurrentWidget(self.linuxcnc[name])
+        self.tabwidget.setCurrentWidget(self.linuxcnc[name])
 
     def widget(self):
-        return self.linuxcnc_tabwidget
+        return self.tabwidget
 
     def timer(self):
         pass
