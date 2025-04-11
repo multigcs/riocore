@@ -59,12 +59,13 @@ class gpio_rpi:
         rpi_pins = gpio.get("pins", {})
         inputs = rpi_pins.get("inputs", [])
         outputs = rpi_pins.get("outputs", [])
-        for pin in inputs:
-            pn = int(pin.replace("GPIO", ""))
-            self.inputs.append(f"hal_pi_gpio.pin-{pn:02d}-in")
-        for pin in outputs:
-            pn = int(pin.replace("GPIO", ""))
-            self.outputs.append(f"hal_pi_gpio.pin-{pn:02d}-out")
+
+        for pin_num in range(0, 40):
+            pin_name = self.pinout[pin_num]
+            if pin_name in inputs:
+                self.inputs.append(f"hal_pi_gpio.pin-{pin_num + 1:02d}-in")
+            elif pin_name in outputs:
+                self.outputs.append(f"hal_pi_gpio.pin-{pin_num + 1:02d}-out")
 
     def slotpins(self, x_offset, networks={}):
         pins = {}
@@ -73,13 +74,13 @@ class gpio_rpi:
             pin_name = self.pinout[pin_num]
             if pin_name.startswith("GPIO"):
                 x_pos = x_offset + 40 + (pin_num % 2) * 110
-                y_pos = x_offset + 60 + (pin_num // 2) * 20.5
+                y_pos = 60 + (pin_num // 2) * 20.5
                 halname = ""
                 pn = int(pin_name.replace("GPIO", ""))
-                if f"hal_pi_gpio.pin-{pn:02d}-in" in self.inputs:
-                    halname = f"hal_pi_gpio.pin-{pn:02d}-in"
-                elif f"hal_pi_gpio.pin-{pn:02d}-out" in self.outputs:
-                    halname = f"hal_pi_gpio.pin-{pn:02d}-out"
+                if f"hal_pi_gpio.pin-{pin_num + 1:02d}-in" in self.inputs:
+                    halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-in"
+                elif f"hal_pi_gpio.pin-{pin_num + 1:02d}-out" in self.outputs:
+                    halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-out"
 
                 pins[pin_name] = {
                     "title": pin_name,
