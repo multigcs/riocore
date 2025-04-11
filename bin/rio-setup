@@ -1268,8 +1268,6 @@ class WinForm(QWidget):
         if "net" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["net"] = []
         net_config = self.config["linuxcnc"]["net"]
-        net_config.append({"source": "", "target": ""})
-
         for net_num, net_data in enumerate(net_config):
             aitem_source = MyStandardItem()
             aitem_target = MyStandardItem()

@@ -36,13 +36,15 @@ class ConfigGraph:
                     ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
                     inputs = ginstance.inputs
                     outputs = ginstance.outputs
+                    mportsl = []
                     mportsr = []
                     for key, pin in ginstance.slotpins().items():
                         if pin["pin"]:
                             pinname = pin["pin"].replace(f"{ginstance.NAME}.", "")
                             gpio_map[pin["pin"]] = f"{ginstance.NAME}:{pinname}"
+                            mportsl.append(key)
                             mportsr.append(f"<{pinname}>{pinname}")
-                    label = f"{{ {{ {ginstance.NAME}\\nGPIO-Pins | {' | '.join(mportsr)}}} }}"
+                    label = f"{{ {{ {ginstance.NAME}\\nGPIO-Pins |   {{ {{ {' | '.join(mportsl)} }} | {{ {' | '.join(mportsr)} }} }} }} }}"
                     gAll.node(ginstance.NAME, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
             linuxcnc_config = self.parent.config.get("linuxcnc", {})
             for net in linuxcnc_config.get("net", []):
