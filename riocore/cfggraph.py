@@ -72,9 +72,9 @@ class ConfigGraph:
                     for pin_name, pin_data in cinstance.PINDEFAULTS.items():
                         if pin_name in comp_pins and comp_pins[pin_name] in gpio_map:
                             if pin_data["direction"] == "output":
-                                gAll.edge(gpio_map[comp_pins[pin_name]], f"{cinstance.PREFIX}:{pin_name}", dir="back", color="green")
+                                gAll.edge(gpio_map[comp_pins[pin_name]], f"{cinstance.PREFIX}:{pin_name}", dir="back", color="red")
                             else:
-                                gAll.edge(gpio_map[comp_pins[pin_name]], f"{cinstance.PREFIX}:{pin_name}", dir="forward", color="red")
+                                gAll.edge(gpio_map[comp_pins[pin_name]], f"{cinstance.PREFIX}:{pin_name}", dir="forward", color="green")
 
             # show slots
             for slot in self.parent.slots:
