@@ -110,11 +110,11 @@ class GuiPlugins:
             pin_cols.addLayout(mod_cols)
             add_button = QPushButton("+")
             add_button.setToolTip("add an pin-modifiers")
-            add_button.clicked.connect(partial(self.parent.modifier_list_add, mod_cols, modifier_list))
+            add_button.clicked.connect(partial(self.parent.gui_modifiers.modifier_list_add, mod_cols, modifier_list))
             add_button.setFixedWidth(20)
             pin_cols.addWidget(add_button)
             pin_cols.addStretch()
-            self.parent.modifier_list_update(mod_cols, modifier_list)
+            self.parent.gui_modifiers.modifier_list_update(mod_cols, modifier_list)
 
             # IO-Standart
             pin_cols = QHBoxLayout()
