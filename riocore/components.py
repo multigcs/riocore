@@ -340,7 +340,10 @@ Some hardware-based systems can count at MHz rates."""
             for key in setup:
                 if key in self.plugin_setup:
                     setup[key] = self.plugin_setup[key]
-            signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
+            signal_prefix = self.PREFIX
+            
+            print(signal_prefix)
+            
             halname = f"{signal_prefix}.{name}"
             direction_short = setup["direction"].upper().replace("PUT", "")
             signals[name]["signal_prefix"] = signal_prefix

@@ -1328,7 +1328,6 @@ class LinuxCNC:
                 if hasattr(components, f"comp_{comp_type}"):
                     cinstance = getattr(components, f"comp_{comp_type}")(comp)
                     if comp_type != "stepgen":
-
                         for signal_name, signal_config in cinstance.signals().items():
                             print(signal_name, signal_config)
                             vcp_add(tab, signal_config)
