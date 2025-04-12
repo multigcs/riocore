@@ -1541,6 +1541,23 @@ class LinuxCNC:
                             net_target = self.gpio_pinmapping.get(comp_pins[pin_name], comp_pins[pin_name])
                             self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", net_target)
 
+
+                    for signal_name, signal_config in cinstance.signals().items():
+                        userconfig = signal_config.get("userconfig", {})
+                        net = userconfig.get("net")
+                        setp = userconfig.get("setp")
+                        direction = signal_config["direction"]
+                        halname = signal_config["halname"]
+                        if net:
+                            if direction == "output":
+                                self.halg.net_add(net, halname)
+                            else:
+                                self.halg.net_add(halname, net)
+                            print(signal_name, net, direction, halname)
+
+
+
+
         for comp in dir(components):
             if comp.startswith("comp_"):
                 ret = getattr(components, comp).loader(None, linuxcnc_config.get("components", []))
