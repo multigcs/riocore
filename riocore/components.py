@@ -1,5 +1,4 @@
-class basecomp():
-
+class basecomp:
     def signals(self):
         signals = {}
         for name, setup in self.SIGNALS.items():
@@ -24,7 +23,8 @@ class basecomp():
                 netname = f"{net}.{name}"
             signals[name]["netname"] = signals[name]["userconfig"].get("net", netname)
         return signals
-    
+
+
 class comp_stepgen(basecomp):
     INFO = "software step pulse generation"
     DESCRIPTION = """stepgen is used to control stepper motors.
@@ -97,7 +97,7 @@ If higher rates are needed, a hardware step generator is a better choice."""
         }
 
         self.SIGNALS = {
-            "cmd": {
+            "position-cmd": {
                 "direction": "output",
                 "min": -100000,
                 "max": 100000,
@@ -105,11 +105,19 @@ If higher rates are needed, a hardware step generator is a better choice."""
                 "absolute": False,
                 "description": "speed in steps per second",
             },
-            "fb": {
+            "position-fb": {
                 "direction": "input",
                 "unit": "steps",
                 "absolute": False,
                 "description": "position feedback",
+            },
+            "position-scale": {
+                "direction": "output",
+                "min": -100000,
+                "max": 100000,
+                "unit": "Hz",
+                "absolute": False,
+                "description": "speed in steps per second",
             },
         }
 
@@ -343,4 +351,3 @@ Some hardware-based systems can count at MHz rates."""
             output.append("")
 
         return "\n".join(output)
-

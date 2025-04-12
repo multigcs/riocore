@@ -1179,7 +1179,6 @@ class LinuxCNC:
                 gui_gen.draw_vbox_end()
                 gui_gen.draw_frame_end()
 
-
             def vcp_add(tab, signal_config, prefix=""):
                 halname = signal_config["halname"]
                 netname = signal_config["netname"]
@@ -1541,7 +1540,6 @@ class LinuxCNC:
                             net_target = self.gpio_pinmapping.get(comp_pins[pin_name], comp_pins[pin_name])
                             self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", net_target)
 
-
                     for signal_name, signal_config in cinstance.signals().items():
                         userconfig = signal_config.get("userconfig", {})
                         net = userconfig.get("net")
@@ -1554,9 +1552,6 @@ class LinuxCNC:
                             else:
                                 self.halg.net_add(halname, net)
                             print(signal_name, net, direction, halname)
-
-
-
 
         for comp in dir(components):
             if comp.startswith("comp_"):
@@ -1620,6 +1615,8 @@ class LinuxCNC:
                 feedback_halname = joint_setup["feedback_halname"]
                 enable_halname = joint_setup["enable_halname"]
                 pin_num = joint_setup["pin_num"]
+                print("####", joint_setup["type"], position_mode)
+
                 if position_mode == "absolute":
                     self.halg.setp_add(f"{position_scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
                     if machinetype == "corexy" and axis_name in {"X", "Y"}:
@@ -1822,7 +1819,7 @@ class LinuxCNC:
                 joint_signals = joint_setup["plugin_instance"].signals()
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
-                position_scaler = joint_signals.get("position-scale")
+                positioncmd = joint_signals.get("position-cmd")
 
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
@@ -1833,8 +1830,9 @@ class LinuxCNC:
                 if velocity:
                     position_halname = f"{prefix}{velocity['halname']}"
                     position_mode = "relative"
-                elif position_scaler:
-                    position_scale_halname = f"{position_scaler['halname']}"
+                elif positioncmd:
+                    position_scale_halname = f"{positioncmd['halname'].replace('-cmd', '-scale')}"
+                    position_halname = f"{positioncmd}['halname']"
                     position_mode = "absolute"
                 elif position:
                     position_halname = f"{prefix}{position['halname']}"
