@@ -1030,6 +1030,7 @@ class WinForm(QWidget):
                 ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
                 self.gpiolist += ginstance.inputs
                 self.gpiolist += ginstance.outputs
+                self.gpiolist += list(ginstance.pinmapping())
 
         for component in self.config.get("linuxcnc", {}).get("components", []):
             for pin_name, net in component.get("pins", {}).items():

@@ -1476,6 +1476,7 @@ class LinuxCNC:
                 if ret:
                     self.halg.fmt_add_top(ret)
 
+        self.gpio_pinmapping = {}
         gpio_ids = {}
         for gpio in gpio_config:
             gtype = gpio.get("type")
@@ -1485,6 +1486,7 @@ class LinuxCNC:
                 ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
                 self.gpionames += ginstance.inputs
                 self.gpionames += ginstance.outputs
+                self.gpio_pinmapping.update(ginstance.pinmapping())
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
@@ -1494,6 +1496,8 @@ class LinuxCNC:
             net_source = net.get("source")
             net_target = net.get("target")
             net_name = net.get("name") or None
+            net_source = self.gpio_pinmapping.get(net_source, net_source)
+            net_target = self.gpio_pinmapping.get(net_target, net_target)
             if net_source and net_target:
                 self.halg.net_add(net_source, net_target, net_name)
 
@@ -1517,7 +1521,8 @@ class LinuxCNC:
                     for pin_name, pin_data in cinstance.PINDEFAULTS.items():
                         pin_data["direction"]
                         if pin_name in comp_pins:
-                            self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", comp_pins[pin_name])
+                            net_target = self.gpio_pinmapping.get(comp_pins[pin_name], comp_pins[pin_name])
+                            self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", net_target)
 
         for comp in dir(components):
             if comp.startswith("comp_"):
@@ -1604,6 +1609,8 @@ class LinuxCNC:
                             self.halg.net_add(f"joint.{joint}.amp-enable-out", f"stepgen.{snum}.enable", f"j{joint}senable")
                             comp_pins = joint_setup["plugin_instance"].component["pins"]
                             for name, pin in comp_pins.items():
+                                pin = self.gpio_pinmapping.get(pin, pin)
+
                                 if pin not in self.gpionames:
                                     print(f"ERROR: {name} pin not found: {pin}")
                                 if not pin.endswith("-out"):

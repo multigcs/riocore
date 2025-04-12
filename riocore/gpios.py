@@ -51,7 +51,7 @@ class gpio_rpi:
     )
 
     def __init__(self, gid, gpio):
-        self.NAME = f"hal_pi_gpio"
+        self.NAME = "hal_pi_gpio"
         self.inputs = []
         self.outputs = []
         self.gid = gid
@@ -68,6 +68,19 @@ class gpio_rpi:
             elif pin_name in outputs:
                 self.outputs.append(f"hal_pi_gpio.pin-{pin_num + 1:02d}-out")
 
+    def pinmapping(self):
+        mapping = {}
+        for pin_num in range(0, 40):
+            pin_name = self.pinout[pin_num]
+            if pin_name.startswith("GPIO"):
+                if f"hal_pi_gpio.pin-{pin_num + 1:02d}-in" in self.inputs:
+                    halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-in"
+                    mapping[pin_name] = halname
+                elif f"hal_pi_gpio.pin-{pin_num + 1:02d}-out" in self.outputs:
+                    halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-out"
+                    mapping[pin_name] = halname
+        return mapping
+
     def slotpins(self, x_offset=0, networks={}):
         pins = {}
         direction = "all"
@@ -77,19 +90,17 @@ class gpio_rpi:
                 x_pos = x_offset + 40 + (pin_num % 2) * 110
                 y_pos = 60 + (pin_num // 2) * 20.5
                 halname = ""
-                pn = int(pin_name.replace("GPIO", ""))
                 if f"hal_pi_gpio.pin-{pin_num + 1:02d}-in" in self.inputs:
                     halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-in"
                 elif f"hal_pi_gpio.pin-{pin_num + 1:02d}-out" in self.outputs:
                     halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-out"
-
                 pins[pin_name] = {
                     "title": pin_name,
                     "pin": halname,
                     "pos": [int(x_pos), int(y_pos)],
                     "direction": direction,
                     "slotname": "rpi_gpio",
-                    "net": networks.get(halname, ""),
+                    "net": networks.get(halname, networks.get(pin_name, "")),
                 }
 
         return pins
@@ -193,6 +204,10 @@ class gpio_parport:
             }
 
         return pins
+
+    def pinmapping(self):
+        mapping = {}
+        return mapping
 
     def loader(cls, gpio_config):
         output = []
