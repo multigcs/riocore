@@ -330,7 +330,38 @@ Some hardware-based systems can count at MHz rates."""
 
         return "\n".join(output)
 
+
     def signals(self):
+        signals = {}
+        for name, setup in self.SIGNALS.items():
+            if "value" not in setup:
+                setup["value"] = 0
+            signals[name] = setup
+            for key in setup:
+                if key in self.plugin_setup:
+                    setup[key] = self.plugin_setup[key]
+            signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
+            halname = f"{signal_prefix}.{name}"
+            direction_short = setup["direction"].upper().replace("PUT", "")
+            signals[name]["signal_prefix"] = signal_prefix
+            signals[name]["var_prefix"] = signal_prefix.replace(".", "_").replace("-", "_").upper()
+            signals[name]["plugin_instance"] = self
+            signals[name]["halname"] = halname
+            signals[name]["varname"] = f"SIG{direction_short}_{halname.replace('.', '_').replace('-', '_').upper()}"
+            signals[name]["userconfig"] = self.plugin_setup.get("signals", {}).get(name, {})
+            net = self.plugin_setup.get("net")
+            netname = net
+            if len(self.SIGNALS) > 1 and net:
+                netname = f"{net}.{name}"
+            signals[name]["netname"] = signals[name]["userconfig"].get("net", netname)
+        return signals
+
+
+    def _signals(self):
+
+#bit {'direction': 'input', 'bool': True, 'value': 0, 'signal_prefix': 'home-z', 'var_prefix': 'HOME_Z', 'plugin_instance': <riocore.plugins.bitin.plugin.Plugin object at 0x7f81cdecbc90>, 'halname': 'home-z.bit', 'varname': 'SIGIN_HOME_Z_BIT', 'userconfig': {'net': 'joint.2.home-sw-in'}, 'netname': 'joint.2.home-sw-in'}
+
+
         return {
             "position-scale": {
                 "halname": f"{self.PREFIX}.position-scale",

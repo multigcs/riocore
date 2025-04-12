@@ -1179,136 +1179,159 @@ class LinuxCNC:
                 gui_gen.draw_vbox_end()
                 gui_gen.draw_frame_end()
 
+
+            def vcp_add(tab, signal_config):
+                halname = signal_config["halname"]
+                netname = signal_config["netname"]
+                direction = signal_config["direction"]
+                userconfig = signal_config.get("userconfig", {})
+                boolean = signal_config.get("bool")
+                virtual = signal_config.get("virtual")
+                setp = userconfig.get("setp")
+                function = userconfig.get("function", "")
+                displayconfig = userconfig.get("display", signal_config.get("display", {}))
+
+                if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
+                    return
+                if function and not virtual:
+                    return
+                if signal_config.get("helper", False) and not displayconfig:
+                    return
+                if setp:
+                    return
+                if halname in self.feedbacks:
+                    return
+
+                vmin = signal_config.get("min", -1000)
+                vmax = signal_config.get("max", 1000)
+                vformat = signal_config.get("format")
+                vunit = signal_config.get("unit")
+                if "min" not in displayconfig:
+                    displayconfig["min"] = vmin
+                if "max" not in displayconfig:
+                    displayconfig["max"] = vmax
+                if vformat and "format" not in displayconfig:
+                    displayconfig["format"] = vformat
+                if vunit and "unit" not in displayconfig:
+                    displayconfig["unit"] = vunit
+
+                dtype = None
+                if (netname and not virtual) or setp:
+                    if direction == "input":
+                        section = displayconfig.get("section", "inputs").lower()
+                    elif direction == "output":
+                        section = displayconfig.get("section", "outputs").lower()
+                    if not boolean:
+                        dtype = displayconfig.get("type", "number")
+                    else:
+                        dtype = displayconfig.get("type", "led")
+                elif virtual:
+                    section = displayconfig.get("section", "virtual").lower()
+                    if direction == "output":
+                        if not boolean:
+                            dtype = displayconfig.get("type", "number")
+                        else:
+                            dtype = displayconfig.get("type", "led")
+                    elif direction == "input":
+                        if not boolean:
+                            dtype = displayconfig.get("type", "scale")
+                        else:
+                            dtype = displayconfig.get("type", "checkbutton")
+                elif direction == "input":
+                    section = displayconfig.get("section", "inputs").lower()
+                    if not boolean:
+                        dtype = displayconfig.get("type", "number")
+                    else:
+                        dtype = displayconfig.get("type", "led")
+                elif direction == "output":
+                    section = displayconfig.get("section", "outputs").lower()
+                    if not boolean:
+                        dtype = displayconfig.get("type", "scale")
+                    else:
+                        dtype = displayconfig.get("type", "checkbutton")
+
+                if section != tab:
+                    return
+
+                if hasattr(gui_gen, f"draw_{dtype}"):
+                    title = haltitles.get(halname, halname)
+                    gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
+
+                    # fselect handling
+                    if dtype == "fselect":
+                        values = displayconfig.get("values", {"v0": 0, "v1": 1})
+                        n_values = len(values)
+                        self.halextras.append(f"loadrt conv_s32_u32 names=conv_s32_u32_{halname}")
+                        self.halextras.append(f"addf conv_s32_u32_{halname} servo-thread")
+                        self.halg.net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
+                        self.halextras.append("")
+                        self.halextras.append(f"loadrt demux names=demux_{halname} personality={n_values}")
+                        self.halextras.append(f"addf demux_{halname} servo-thread")
+                        self.halg.net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
+                        for nv in range(n_values):
+                            self.halg.net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
+                        self.halextras.append("")
+                        self.halextras.append(f"loadrt bitslice names=bitslice_{halname} personality=3")
+                        self.halextras.append(f"addf bitslice_{halname} servo-thread")
+                        self.halg.net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
+                        self.halextras.append("")
+                        self.halextras.append(f"loadrt mux8 names=mux8_{halname}")
+                        self.halextras.append(f"addf mux8_{halname} servo-thread")
+                        self.halg.net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
+                        self.halg.net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
+                        self.halg.net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
+                        for vn, name in enumerate(values):
+                            self.halg.setp_add(f"mux8_{halname}.in{vn}", values[name])
+                        self.halextras.append("")
+                        gui_pinname = f"mux8_{halname}.out"
+
+                    if direction == "input":
+                        dfilter = displayconfig.get("filter", {})
+                        dfilter_type = dfilter.get("type")
+                        if dfilter_type == "LOWPASS":
+                            dfilter_gain = dfilter.get("gain", "0.001")
+                            self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
+                            self.halextras.append(f"addf lowpass_{halname} servo-thread")
+                            self.halg.setp_add(f"lowpass_{halname}.load", 0)
+                            self.halg.setp_add(f"lowpass_{halname}.gain", dfilter_gain)
+                            self.halg.net_add(gui_pinname, f"lowpass_{halname}.in")
+                            gui_pinname = f"lowpass_{halname}.out"
+
+                    if virtual and direction == "input":
+                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
+                    elif virtual and direction == "output":
+                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
+                    elif netname or setp or direction == "input":
+                        self.halg.net_add(f"rio.{halname}", gui_pinname)
+                    elif direction == "output":
+                        self.halg.net_add(gui_pinname, f"rio.{halname}")
+
+                elif dtype != "none":
+                    print(f"WARNING: 'draw_{dtype}' not found")
+
+
+
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
                     for signal_name, signal_config in plugin_instance.signals().items():
-                        halname = signal_config["halname"]
-                        netname = signal_config["netname"]
-                        direction = signal_config["direction"]
-                        userconfig = signal_config.get("userconfig", {})
-                        boolean = signal_config.get("bool")
-                        virtual = signal_config.get("virtual")
-                        setp = userconfig.get("setp")
-                        function = userconfig.get("function", "")
-                        displayconfig = userconfig.get("display", signal_config.get("display", {}))
+                        vcp_add(tab, signal_config)
 
-                        if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
-                            continue
-                        if function and not virtual:
-                            continue
-                        if signal_config.get("helper", False) and not displayconfig:
-                            continue
-                        if setp:
-                            continue
-                        if halname in self.feedbacks:
-                            continue
 
-                        vmin = signal_config.get("min", -1000)
-                        vmax = signal_config.get("max", 1000)
-                        vformat = signal_config.get("format")
-                        vunit = signal_config.get("unit")
-                        if "min" not in displayconfig:
-                            displayconfig["min"] = vmin
-                        if "max" not in displayconfig:
-                            displayconfig["max"] = vmax
-                        if vformat and "format" not in displayconfig:
-                            displayconfig["format"] = vformat
-                        if vunit and "unit" not in displayconfig:
-                            displayconfig["unit"] = vunit
+            component_nums = {}
+            for comp in linuxcnc_config.get("components", []):
+                comp_type = comp.get("type")
+                if comp_type not in component_nums:
+                    component_nums[comp_type] = 0
+                comp["num"] = component_nums[comp_type]
+                component_nums[comp_type] += 1
 
-                        dtype = None
-                        if (netname and not virtual) or setp:
-                            if direction == "input":
-                                section = displayconfig.get("section", "inputs").lower()
-                            elif direction == "output":
-                                section = displayconfig.get("section", "outputs").lower()
-                            if not boolean:
-                                dtype = displayconfig.get("type", "number")
-                            else:
-                                dtype = displayconfig.get("type", "led")
-                        elif virtual:
-                            section = displayconfig.get("section", "virtual").lower()
-                            if direction == "output":
-                                if not boolean:
-                                    dtype = displayconfig.get("type", "number")
-                                else:
-                                    dtype = displayconfig.get("type", "led")
-                            elif direction == "input":
-                                if not boolean:
-                                    dtype = displayconfig.get("type", "scale")
-                                else:
-                                    dtype = displayconfig.get("type", "checkbutton")
-                        elif direction == "input":
-                            section = displayconfig.get("section", "inputs").lower()
-                            if not boolean:
-                                dtype = displayconfig.get("type", "number")
-                            else:
-                                dtype = displayconfig.get("type", "led")
-                        elif direction == "output":
-                            section = displayconfig.get("section", "outputs").lower()
-                            if not boolean:
-                                dtype = displayconfig.get("type", "scale")
-                            else:
-                                dtype = displayconfig.get("type", "checkbutton")
+                if hasattr(components, f"comp_{comp_type}"):
+                    cinstance = getattr(components, f"comp_{comp_type}")(comp)
+                    if comp_type != "stepgen":
 
-                        if section != tab:
-                            continue
-
-                        if hasattr(gui_gen, f"draw_{dtype}"):
-                            title = haltitles.get(halname, halname)
-                            gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
-
-                            # fselect handling
-                            if dtype == "fselect":
-                                values = displayconfig.get("values", {"v0": 0, "v1": 1})
-                                n_values = len(values)
-                                self.halextras.append(f"loadrt conv_s32_u32 names=conv_s32_u32_{halname}")
-                                self.halextras.append(f"addf conv_s32_u32_{halname} servo-thread")
-                                self.halg.net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
-                                self.halextras.append("")
-                                self.halextras.append(f"loadrt demux names=demux_{halname} personality={n_values}")
-                                self.halextras.append(f"addf demux_{halname} servo-thread")
-                                self.halg.net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
-                                for nv in range(n_values):
-                                    self.halg.net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
-                                self.halextras.append("")
-                                self.halextras.append(f"loadrt bitslice names=bitslice_{halname} personality=3")
-                                self.halextras.append(f"addf bitslice_{halname} servo-thread")
-                                self.halg.net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
-                                self.halextras.append("")
-                                self.halextras.append(f"loadrt mux8 names=mux8_{halname}")
-                                self.halextras.append(f"addf mux8_{halname} servo-thread")
-                                self.halg.net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
-                                self.halg.net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
-                                self.halg.net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
-                                for vn, name in enumerate(values):
-                                    self.halg.setp_add(f"mux8_{halname}.in{vn}", values[name])
-                                self.halextras.append("")
-                                gui_pinname = f"mux8_{halname}.out"
-
-                            if direction == "input":
-                                dfilter = displayconfig.get("filter", {})
-                                dfilter_type = dfilter.get("type")
-                                if dfilter_type == "LOWPASS":
-                                    dfilter_gain = dfilter.get("gain", "0.001")
-                                    self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
-                                    self.halextras.append(f"addf lowpass_{halname} servo-thread")
-                                    self.halg.setp_add(f"lowpass_{halname}.load", 0)
-                                    self.halg.setp_add(f"lowpass_{halname}.gain", dfilter_gain)
-                                    self.halg.net_add(gui_pinname, f"lowpass_{halname}.in")
-                                    gui_pinname = f"lowpass_{halname}.out"
-
-                            if virtual and direction == "input":
-                                self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
-                            elif virtual and direction == "output":
-                                self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
-                            elif netname or setp or direction == "input":
-                                self.halg.net_add(f"rio.{halname}", gui_pinname)
-                            elif direction == "output":
-                                self.halg.net_add(gui_pinname, f"rio.{halname}")
-
-                        elif dtype != "none":
-                            print(f"WARNING: 'draw_{dtype}' not found")
+                        for signal_name, signal_config in cinstance.signals().items():
+                            print(signal_name, signal_config)
+                            vcp_add(tab, signal_config)
 
             gui_gen.draw_tab_end()
 
@@ -1517,7 +1540,6 @@ class LinuxCNC:
                     options = cinstance.OPTIONS
                     for option in options:
                         if option in comp:
-                            print("###")
                             self.halg.setp_add(f"{cinstance.PREFIX}.{option}", comp[option])
                     for pin_name, pin_data in cinstance.PINDEFAULTS.items():
                         pin_data["direction"]
