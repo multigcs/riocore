@@ -1180,7 +1180,7 @@ class LinuxCNC:
                 gui_gen.draw_frame_end()
 
 
-            def vcp_add(tab, signal_config):
+            def vcp_add(tab, signal_config, prefix="rio"):
                 halname = signal_config["halname"]
                 netname = signal_config["netname"]
                 direction = signal_config["direction"]
@@ -1302,9 +1302,9 @@ class LinuxCNC:
                     elif virtual and direction == "output":
                         self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
                     elif netname or setp or direction == "input":
-                        self.halg.net_add(f"rio.{halname}", gui_pinname)
+                        self.halg.net_add(f"{prefix}.{halname}", gui_pinname)
                     elif direction == "output":
-                        self.halg.net_add(gui_pinname, f"rio.{halname}")
+                        self.halg.net_add(gui_pinname, f"{prefix}.{halname}")
 
                 elif dtype != "none":
                     print(f"WARNING: 'draw_{dtype}' not found")
