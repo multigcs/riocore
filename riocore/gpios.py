@@ -58,8 +58,16 @@ class gpio_rpi:
         self.gpio = gpio
         self.mode = gpio.get("mode", "out")
         rpi_pins = gpio.get("pins", {})
-        inputs = rpi_pins.get("inputs", [])
-        outputs = rpi_pins.get("outputs", [])
+        inputs = []
+        outputs = []
+        for pin in rpi_pins.get("inputs", []):
+            if pin.startswith("PIN"):
+                pin = self.pinout[int(pin.replace("PIN", "")) - 1]
+            inputs.append(pin)
+        for pin in rpi_pins.get("outputs", []):
+            if pin.startswith("PIN"):
+                pin = self.pinout[int(pin.replace("PIN", "")) - 1]
+            outputs.append(pin)
 
         for pin_num in range(0, 40):
             pin_name = self.pinout[pin_num]
@@ -115,8 +123,17 @@ class gpio_rpi:
 
         if rpigpios:
             output.append("# hal_pi_gpio component")
-            inputs = rpigpios[0].get("inputs", [])
-            outputs = rpigpios[0].get("outputs", [])
+            inputs = []
+            outputs = []
+            for pin in rpigpios[0].get("inputs", []):
+                if pin.startswith("PIN"):
+                    pin = gpio_rpi.pinout[int(pin.replace("PIN", "")) - 1]
+                inputs.append(pin)
+            for pin in rpigpios[0].get("outputs", []):
+                if pin.startswith("PIN"):
+                    pin = gpio_rpi.pinout[int(pin.replace("PIN", "")) - 1]
+                outputs.append(pin)
+
             mask_dir = 0
             mask_exclude = 0
 
