@@ -113,18 +113,20 @@ class gpio_rpi:
                 pin_name = gpio_rpi.pinout[pin_num]
 
                 if pin_name.startswith("GPIO"):
-                    halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-out"
                     gpionum = int(pin_name.replace("GPIO", ""))
                     bitnum = gpionum - 2
 
                     if pin_name in outputs:
                         mask_dir |= 1 << bitnum
-                        output.append(f"# {pin_name:6s} {halname} out 0x{(1<<bitnum):07x}")
+                        halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-out"
+                        output.append(f"# {pin_name:6s} out 0x{(1<<bitnum):07x} {halname}")
                     elif pin_name in inputs:
-                        output.append(f"# {pin_name:6s} {halname} in  0x{(1<<bitnum):07x}")
+                        halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-in"
+                        output.append(f"# {pin_name:6s} in  0x{(1<<bitnum):07x} {halname}")
                     else:
                         mask_exclude |= 1 << bitnum
-                        output.append(f"# {pin_name:6s} {halname} --- 0x{(1<<bitnum):07x}")
+                        halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-xx"
+                        output.append(f"# {pin_name:6s} --- 0x{(1<<bitnum):07x}")
 
             args = []
             args.append(f"dir={mask_dir}")
