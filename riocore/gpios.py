@@ -34,13 +34,13 @@ class gpio_rpi:
         "GPIO8",
         "GND",
         "GPIO7",
-        "GPIO0",
-        "GPIO1",
+        "_GPIO0",
+        "_GPIO1",
         "GPIO5",
         "GND",
         "GPIO6",
         "GPIO12",
-        "GPIO19",
+        "GPIO13",
         "GND",
         "GPIO19",
         "GPIO16",
@@ -108,12 +108,23 @@ class gpio_rpi:
             outputs = rpigpios[0].get("outputs", [])
             mask_dir = 0
             mask_exclude = 0
-            for bit_num, pin_num in enumerate(range(2, 28)):
-                pname = f"GPIO{pin_num}"
-                if pname in outputs:
-                    mask_dir |= 1 << bit_num
-                elif pname not in inputs:
-                    mask_exclude |= 1 << bit_num
+
+            for pin_num in range(0, 40):
+                pin_name = gpio_rpi.pinout[pin_num]
+
+                if pin_name.startswith("GPIO"):
+                    halname = f"hal_pi_gpio.pin-{pin_num + 1:02d}-out"
+                    gpionum = int(pin_name.replace("GPIO", ""))
+                    bitnum = gpionum - 2
+
+                    if pin_name in outputs:
+                        mask_dir |= 1 << bitnum
+                        output.append(f"# {pin_name:6s} {halname} out 0x{(1<<bitnum):07x}")
+                    elif pin_name in outputs:
+                        output.append(f"# {pin_name:6s} {halname} in  0x{(1<<bitnum):07x}")
+                    else:
+                        mask_exclude |= 1 << bitnum
+                        output.append(f"# {pin_name:6s} {halname} --- 0x{(1<<bitnum):07x}")
 
             args = []
             args.append(f"dir={mask_dir}")

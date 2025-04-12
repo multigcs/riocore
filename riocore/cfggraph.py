@@ -39,6 +39,7 @@ class ConfigGraph:
                     mportsl = []
                     mportsr = []
                     for key, pin in ginstance.slotpins().items():
+                        print(pin)
                         if pin["pin"]:
                             pinname = pin["pin"].replace(f"{ginstance.NAME}.", "")
                             gpio_map[pin["pin"]] = f"{ginstance.NAME}:{pinname}"
@@ -47,14 +48,18 @@ class ConfigGraph:
                     label = f"{{ {{ {ginstance.NAME}\\nGPIO-Pins |   {{ {{ {' | '.join(mportsl)} }} | {{ {' | '.join(mportsr)} }} }} }} }}"
                     gAll.node(ginstance.NAME, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
             linuxcnc_config = self.parent.config.get("linuxcnc", {})
+            print(gpio_map)
             for net in linuxcnc_config.get("net", []):
                 net_source = net.get("source")
                 net_target = net.get("target")
+                print(net_source, net_target)
                 if net_source and net_target:
                     if net_source in gpio_map:
+                        hal_pin = net_target
                         gAll.edge(f"{gpio_map[net_source]}", f"hal:{hal_pin}", dir="forward", color="green")
                         lcports.append(f"<{hal_pin}>{hal_pin}")
                     elif net_target in gpio_map:
+                        hal_pin = net_source
                         gAll.edge(f"{gpio_map[net_target]}", f"hal:{hal_pin}", dir="back", color="red")
                         lcports.append(f"<{hal_pin}>{hal_pin}")
 
