@@ -1180,7 +1180,7 @@ class LinuxCNC:
                 gui_gen.draw_frame_end()
 
 
-            def vcp_add(tab, signal_config, prefix="rio"):
+            def vcp_add(tab, signal_config, prefix=""):
                 halname = signal_config["halname"]
                 netname = signal_config["netname"]
                 direction = signal_config["direction"]
@@ -1302,9 +1302,9 @@ class LinuxCNC:
                     elif virtual and direction == "output":
                         self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
                     elif netname or setp or direction == "input":
-                        self.halg.net_add(f"{prefix}.{halname}", gui_pinname)
+                        self.halg.net_add(f"{prefix}{halname}", gui_pinname)
                     elif direction == "output":
-                        self.halg.net_add(gui_pinname, f"{prefix}.{halname}")
+                        self.halg.net_add(gui_pinname, f"{prefix}{halname}")
 
                 elif dtype != "none":
                     print(f"WARNING: 'draw_{dtype}' not found")
@@ -1314,7 +1314,7 @@ class LinuxCNC:
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
                     for signal_name, signal_config in plugin_instance.signals().items():
-                        vcp_add(tab, signal_config)
+                        vcp_add(tab, signal_config, "rio.")
 
 
             component_nums = {}
