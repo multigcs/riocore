@@ -213,7 +213,6 @@ class TabGpios:
             if splitted[0] == slot_name:
                 color = "darkCyan"
                 label.mark(color)
-                label.pin.get("direction") or "all"
                 comment = label.pin.get("comment") or ""
                 if comment:
                     comment = f" - {comment}"
@@ -221,12 +220,14 @@ class TabGpios:
                 pinfo = ""
                 net = label.pin.get("net")
                 if net:
-                    pinfo += net
+                    if net.endswith("-out"):
+                        pinfo += f" <- {net}"
+                    else:
+                        pinfo += f" -> {net}"
                 if key == pkey:
                     pinfo += " <-"
                     infoline = ln
 
-                # infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} ({direction}{comment}) {pinfo}")
                 infotext.append(f" {splitted[1]}: {label.pin.get('pin', {})} {pinfo}")
                 ln += 1
             else:
