@@ -1309,13 +1309,10 @@ class LinuxCNC:
                 elif dtype != "none":
                     print(f"WARNING: 'draw_{dtype}' not found")
 
-
-
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.plugin_setup.get("is_joint", False) is False:
                     for signal_name, signal_config in plugin_instance.signals().items():
                         vcp_add(tab, signal_config, "rio.")
-
 
             component_nums = {}
             for comp in linuxcnc_config.get("components", []):
@@ -1324,12 +1321,10 @@ class LinuxCNC:
                     component_nums[comp_type] = 0
                 comp["num"] = component_nums[comp_type]
                 component_nums[comp_type] += 1
-
                 if hasattr(components, f"comp_{comp_type}"):
                     cinstance = getattr(components, f"comp_{comp_type}")(comp)
                     if comp_type != "stepgen":
                         for signal_name, signal_config in cinstance.signals().items():
-                            print(signal_name, signal_config)
                             vcp_add(tab, signal_config)
 
             gui_gen.draw_tab_end()
