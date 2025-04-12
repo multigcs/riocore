@@ -120,7 +120,7 @@ class gpio_rpi:
                     if pin_name in outputs:
                         mask_dir |= 1 << bitnum
                         output.append(f"# {pin_name:6s} {halname} out 0x{(1<<bitnum):07x}")
-                    elif pin_name in outputs:
+                    elif pin_name in inputs:
                         output.append(f"# {pin_name:6s} {halname} in  0x{(1<<bitnum):07x}")
                     else:
                         mask_exclude |= 1 << bitnum
