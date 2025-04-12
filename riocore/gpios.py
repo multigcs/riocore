@@ -102,28 +102,10 @@ class gpio_rpi:
                 rpi_pins = gpio.get("pins", {})
                 rpigpios.append(rpi_pins)
 
-        if rpigpios and False:
-            output.append("# rpi gpio component")
-            inputs = rpigpios[0].get("inputs", [])
-            outputs = rpigpios[0].get("outputs", [])
-            resets = rpigpios[0].get("reset", [])
-            args = []
-            if inputs:
-                args.append(f"inputs={','.join(inputs)}")
-            if outputs:
-                args.append(f"outputs={','.join(outputs)}")
-            if resets:
-                args.append(f"resets={','.join(resets)}")
-            output.append(f"loadrt hal_gpio {' '.join(args)}")
-            output.append("addf hal_gpio.read base-thread")
-            output.append("addf hal_gpio.write base-thread")
-            output.append("")
-
-        elif rpigpios:
+        if rpigpios:
             output.append("# hal_pi_gpio component")
             inputs = rpigpios[0].get("inputs", [])
             outputs = rpigpios[0].get("outputs", [])
-            resets = rpigpios[0].get("reset", [])
             mask_dir = 0
             mask_exclude = 0
             for bit_num, pin_num in enumerate(range(2, 28)):

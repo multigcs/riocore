@@ -25,7 +25,6 @@ class GuiGpios:
         combo = QComboBox()
         combo.addItem("Input")
         combo.addItem("Output")
-        combo.addItem("Output+Reset")
         dialog.layout.addWidget(combo)
         dialog.layout.addWidget(dialog_buttonBox)
 
@@ -36,7 +35,7 @@ class GuiGpios:
                     gpio["pins"] = {}
                 gtype = gpio.get("type")
                 if gtype == "rpi":
-                    for pmode in ("inputs", "outputs", "reset"):
+                    for pmode in ("inputs", "outputs"):
                         if pmode not in gpio["pins"]:
                             gpio["pins"][pmode] = []
                         if pin_select in gpio["pins"][pmode]:
@@ -45,9 +44,6 @@ class GuiGpios:
                         gpio["pins"]["inputs"].append(pin_select)
                     elif combo.currentText() == "Output":
                         gpio["pins"]["inputs"].append(pin_select)
-                    elif combo.currentText() == "Output+Reset":
-                        gpio["pins"]["outputs"].append(pin_select)
-                        gpio["pins"]["reset"].append(pin_select)
 
             if not self.parent.args.nographs:
                 self.parent.tabs["Overview"].update()
