@@ -1517,6 +1517,7 @@ class LinuxCNC:
                     options = cinstance.OPTIONS
                     for option in options:
                         if option in comp:
+                            print("###")
                             self.halg.setp_add(f"{cinstance.PREFIX}.{option}", comp[option])
                     for pin_name, pin_data in cinstance.PINDEFAULTS.items():
                         pin_data["direction"]

@@ -165,7 +165,7 @@ a hardware PWM generator is a better choice."""
             "scale": {
                 "default": 1.0,
                 "type": float,
-                "min": 0.0,
+                "min": -10000.0,
                 "max": 10000.0,
                 "unit": "",
                 "description": "scale",
@@ -265,7 +265,6 @@ Some hardware-based systems can count at MHz rates."""
             pin_dir = pin.split(":")[1]
             self.PINDEFAULTS[pin_name] = {"direction": pin_dir}
 
-        self.OPTIONS = ("counter-mode", "missing-teeth", "x4-mode")
         self.OPTIONS = {
             "counter-mode": {
                 "default": False,
@@ -286,6 +285,14 @@ Some hardware-based systems can count at MHz rates."""
                 "max": 10,
                 "unit": "",
                 "description": "missing-teeth",
+            },
+            "position-scale": {
+                "default": 1.0,
+                "type": float,
+                "min": -10000.0,
+                "max": 10000.0,
+                "unit": "",
+                "description": "scale",
             },
         }
 
@@ -324,4 +331,8 @@ Some hardware-based systems can count at MHz rates."""
         return "\n".join(output)
 
     def signals(self):
-        return {}
+        return {
+            "position-scale": {
+                "halname": f"{self.PREFIX}.position-scale",
+            },
+        }
