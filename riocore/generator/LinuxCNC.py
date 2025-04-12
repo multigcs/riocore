@@ -1551,7 +1551,6 @@ class LinuxCNC:
                                 self.halg.net_add(net, halname)
                             else:
                                 self.halg.net_add(halname, net)
-                            print(signal_name, net, direction, halname)
 
         for comp in dir(components):
             if comp.startswith("comp_"):
@@ -1615,8 +1614,6 @@ class LinuxCNC:
                 feedback_halname = joint_setup["feedback_halname"]
                 enable_halname = joint_setup["enable_halname"]
                 pin_num = joint_setup["pin_num"]
-                print("####", joint_setup["type"], position_mode)
-
                 if position_mode == "absolute":
                     self.halg.setp_add(f"{position_scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
                     if machinetype == "corexy" and axis_name in {"X", "Y"}:
