@@ -273,11 +273,10 @@ class LinuxCNC:
             rosbridge(self.project)
         self.hal()
         self.riof()
-        self.vcp_gui()
+        self.misc()
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "generator"):
                 addon.generator(self)
-        self.misc()
         self.ini()
         os.makedirs(self.configuration_path, exist_ok=True)
 
@@ -565,6 +564,8 @@ class LinuxCNC:
             print("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
 
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type)
+
+        self.vcp_gui()
 
         for section, section_options in linuxcnc_config.get("ini", {}).items():
             if section not in ini_setup:
@@ -1059,6 +1060,13 @@ class LinuxCNC:
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
                 ini_setup["DISPLAY"]["RESOURCES"] = "flexgui.py"
                 shutil.copy(pyfile, target_path)
+            for pyfile in glob.glob(os.path.join(json_path, "flexgui")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
+                ini_setup["DISPLAY"]["DISPLAY"] = "./flexgui"
+                shutil.copy(pyfile, target_path)
+            for pyfile in glob.glob(os.path.join(json_path, "libflexgui")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
+                shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
 
         gui_gen = None
         if vcp_mode != "NONE":
@@ -1429,7 +1437,7 @@ class LinuxCNC:
             self.halg.fmt_add_top("loadusr -W rotarydelta MIN_JOINT=-420")
             self.halg.fmt_add_top("")
         elif machinetype in {"melfa", "melfa_nogl"}:
-            if machinetype != "melfa_nogl":
+            if machinetype != "melfa_nogl" and not linuxcnc_config.get("flexbot"):
                 self.halg.fmt_add_top("# loading melfa gui")
                 self.halg.fmt_add_top("loadusr -W melfagui")
                 self.halg.fmt_add_top("")
@@ -1447,8 +1455,12 @@ class LinuxCNC:
                     shutil.copytree(source, target)
 
             if machinetype != "melfa_nogl":
-                for joint in range(6):
-                    self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
+                if linuxcnc_config.get("flexbot"):
+                    for joint in range(len(self.project.axis_dict)):
+                        self.halg.net_add(f"joint.{joint}.pos-fb", f"flexhal.joint{joint + 1}", f"j{joint}pos-fb")
+                else:
+                    for joint in range(6):
+                        self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
 
             linuxcnc_setp = {
                 "genserkins.A-0": 0,
