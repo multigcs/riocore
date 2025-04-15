@@ -1437,7 +1437,7 @@ class LinuxCNC:
             self.halg.fmt_add_top("loadusr -W rotarydelta MIN_JOINT=-420")
             self.halg.fmt_add_top("")
         elif machinetype in {"melfa", "melfa_nogl"}:
-            if machinetype != "melfa_nogl" and not linuxcnc_config.get("flexbot"):
+            if machinetype != "melfa_nogl":
                 self.halg.fmt_add_top("# loading melfa gui")
                 self.halg.fmt_add_top("loadusr -W melfagui")
                 self.halg.fmt_add_top("")
@@ -1455,12 +1455,12 @@ class LinuxCNC:
                     shutil.copytree(source, target)
 
             if machinetype != "melfa_nogl":
-                if linuxcnc_config.get("flexbot"):
-                    for joint in range(len(self.project.axis_dict)):
-                        self.halg.net_add(f"joint.{joint}.pos-fb", f"flexhal.joint{joint + 1}", f"j{joint}pos-fb")
-                else:
-                    for joint in range(6):
-                        self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
+                for joint in range(6):
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"melfagui.joint{joint + 1}", f"j{joint}pos-fb")
+
+            if linuxcnc_config.get("flexbot"):
+                for joint in range(len(self.project.axis_dict)):
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"flexhal.joint{joint + 1}", f"j{joint}pos-fb")
 
             linuxcnc_setp = {
                 "genserkins.A-0": 0,
