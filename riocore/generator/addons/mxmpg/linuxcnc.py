@@ -31,7 +31,7 @@ def hal(parent):
                     parent.halg.net_add(pinname, button_function)
 
         # homing status
-        for axis_name, axis_config in parent.axis_dict.items():
+        for axis_name, axis_config in parent.project.axis_dict.items():
             joints = axis_config["joints"]
             axis_low = axis_name.lower()
             for joint, joint_setup in joints.items():
@@ -39,7 +39,7 @@ def hal(parent):
 
         # zero axis -> mdi commands
         bn = 1
-        for axis_name, axis_config in parent.axis_dict.items():
+        for axis_name, axis_config in parent.project.axis_dict.items():
             joints = axis_config["joints"]
             halpin = parent.ini_mdi_command(f"G92 {axis_name}0")
             parent.halg.net_add(f"mpg.button.sel{bn:02d}-long", halpin)
@@ -47,7 +47,7 @@ def hal(parent):
 
         # axis selection
         bn = 1
-        for axis_name, axis_config in parent.axis_dict.items():
+        for axis_name, axis_config in parent.project.axis_dict.items():
             joints = axis_config["joints"]
             axis_low = axis_name.lower()
             parent.halg.net_add(f"mpg.button.sel{bn:02d}", f"halui.axis.{axis_low}.select")
@@ -56,7 +56,7 @@ def hal(parent):
             bn += 1
 
         # jog axis
-        for axis_name, axis_config in parent.axis_dict.items():
+        for axis_name, axis_config in parent.project.axis_dict.items():
             joints = axis_config["joints"]
             axis_low = axis_name.lower()
             parent.halg.setp_add(f"axis.{axis_low}.jog-vel-mode", 1)
@@ -70,7 +70,7 @@ def hal(parent):
                 parent.halg.net_add(f"mpg.axis.{axis_low}.jog-counts", f"joint.{joint}.jog-counts")
 
         # display axis positions
-        for axis_name, axis_config in parent.axis_dict.items():
+        for axis_name, axis_config in parent.project.axis_dict.items():
             joints = axis_config["joints"]
             axis_low = axis_name.lower()
             parent.halg.net_add(f"halui.axis.{axis_low}.pos-relative", f"mpg.axis.{axis_low}.pos")

@@ -31,7 +31,7 @@ def hal(parent):
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
         for axis in "xyzabc":
-            if axis.upper() in parent.axis_dict and spnav_scale[axis] != 0.0:
+            if axis.upper() in parent.project.axis_dict and spnav_scale[axis] != 0.0:
                 parent.halg.setp_add(f"spnav.axis.{axis}.scale", spnav_scale[axis])
                 parent.halg.net_add(f"spnav.axis.{axis}.jog-counts", f"axis.{axis}.jog-counts")
                 parent.halg.setp_add(f"axis.{axis}.jog-vel-mode", 1)
@@ -39,7 +39,7 @@ def hal(parent):
                 parent.halg.setp_add(f"axis.{axis}.jog-scale", 0.01)
                 if not spnav_jointjog:
                     continue
-                axis_config = parent.axis_dict.get(axis.upper())
+                axis_config = parent.project.axis_dict.get(axis.upper())
                 joints = axis_config["joints"]
                 for joint, joint_setup in joints.items():
                     parent.halg.setp_add(f"spnav.axis.{axis}.scale", spnav_scale[axis])

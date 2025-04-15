@@ -779,7 +779,7 @@
         },
         "vcp_type": "qtvcp",
         "simulation": true,
-        "embed_vismach": "fanuc_200f",
+        "_embed_vismach": "fanuc_200f",
         "robojog": {
             "enable": true
         }

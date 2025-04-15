@@ -51,7 +51,7 @@ def gui(parent):
                 offsets = camjog.get("offset", {})
                 if offset_num == 0:
                     mdi_command = ["G92"]
-                    for axis_name, axis_config in parent.axis_dict.items():
+                    for axis_name, axis_config in parent.project.axis_dict.items():
                         diff = 0
                         if axis_name in offsets:
                             diff = offsets[axis_name]
@@ -68,7 +68,7 @@ def hal(parent):
         if camjog and camjog.get("enable"):
             parent.postgui_components_add("camjog")
             # jog axis
-            for axis_name, axis_config in parent.axis_dict.items():
+            for axis_name, axis_config in parent.project.axis_dict.items():
                 if axis_name not in {"X", "Y"}:
                     continue
 
