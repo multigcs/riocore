@@ -84,11 +84,25 @@ class flexvcp:
         self.cfgxml_data.append("      </widget>")
 
     def draw_frame_begin(self, name=None):
-        if not name:
-            name = "frame"
+        print("frame", name)
+
+        self.cfgxml_data.append("     <item>")
+        self.cfgxml_data.append('   <widget class="QGroupBox" name="groupBox_7">')
+        if name:
+            self.cfgxml_data.append('    <property name="title">')
+            self.cfgxml_data.append(f"     <string>{name}</string>")
+            self.cfgxml_data.append("    </property>")
+
+        self.cfgxml_data.append('      <layout class="QVBoxLayout" name="verticalLayout_5">')
+        self.add_property("leftMargin", "2")
+        self.add_property("topMargin", "2")
+        self.add_property("rightMargin", "2")
+        self.add_property("bottomMargin", "2")
 
     def draw_frame_end(self):
-        pass
+        self.cfgxml_data.append("      </layout>")
+        self.cfgxml_data.append("   </widget>")
+        self.cfgxml_data.append("     </item>")
 
     def draw_vbox_begin(self):
         self.cfgxml_data.append("     <item>")

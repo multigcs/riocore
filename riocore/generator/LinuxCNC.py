@@ -258,8 +258,8 @@ class LinuxCNC:
                 self.gui_prefix = "rio-gui"
                 self.gui_tablocation = "notebook_main"
             elif gui in {"flexgui"}:
-               self.gui_type = "flexvcp"
-               self.gui_prefix = "flexhal.rio"
+                self.gui_type = "flexvcp"
+                self.gui_prefix = "flexhal.rio"
             # elif gui in {"woodpecker"}:
             #    self.gui_type = "qtvcp"
             #    self.gui_prefix = "qtvcp"
@@ -511,7 +511,7 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["DISPLAY"] = "flexgui"
             ini_setup["DISPLAY"]["TOOL_EDITOR"] = "tooledit"
             ini_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
-            #ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "halcmd loadusr -Wn qtvcp qtvcp -d -c qtvcp -x {XID} rio-gui"
+            # ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "halcmd loadusr -Wn qtvcp qtvcp -d -c qtvcp -x {XID} rio-gui"
 
         elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
