@@ -1,5 +1,11 @@
 import os
 
+try:
+    import portio
+except Exception:
+    portio = None
+
+
 import riocore
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -197,6 +203,30 @@ class gpio_parport:
 
     def slotpins(self, x_offset=0, networks={}):
         pins = {}
+
+        if portio is not None:
+            addr = self.gpio.get("address")
+            pinstats = {}
+            if addr:
+                base = int(addr, 0)
+                mapping = {
+                    0: None,
+                    1: None,
+                    2: None,
+                    3: 15,
+                    4: 13,
+                    5: 12,
+                    6: 10,
+                    7: 11,
+                }
+                if portio.ioperm(base, 3, 1) == 0:
+                    stat = portio.inb(base + 1)
+                    for bit in range(8):
+                        if stat & (1 << bit):
+                            pinstats[mapping[bit]] = 1
+                        else:
+                            pinstats[mapping[bit]] = 0
+
         for pin_num in range(1, 18):
             title = f"P{self.gid}.{pin_num}"
             if pin_num in self.outpins:
@@ -211,6 +241,8 @@ class gpio_parport:
                 x_pos = x_offset + 110
                 y_pos = 97 + 15 + (pin_num - 14) * 32.4
 
+            pinstat = pinstats.get(pin_num)
+
             pins[title] = {
                 "title": title,
                 "pin": pin_name,
@@ -218,6 +250,7 @@ class gpio_parport:
                 "direction": direction,
                 "slotname": f"parport.{self.gid}",
                 "net": networks.get(pin_name, ""),
+                "pinstat": pinstat,
             }
 
         return pins

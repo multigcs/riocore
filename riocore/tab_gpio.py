@@ -32,6 +32,7 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 class TabGpios:
     scale = 1.0
+    pinstat_update = False
 
     def __init__(self, parent=None):
         self.parent = parent
@@ -67,6 +68,26 @@ class TabGpios:
         elif self.pininfo_timer > 1:
             self.pininfo_timer -= 1
 
+        if self.pinstat_update:
+            gpio_config = self.parent.config.get("gpios", [])
+            gpio_ids = {}
+            for gpio in gpio_config:
+                gtype = gpio.get("type")
+                if gtype not in gpio_ids:
+                    gpio_ids[gtype] = 0
+                if hasattr(gpios, f"gpio_{gtype}"):
+                    ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
+                    for pin_id, pin in ginstance.slotpins(0, self.networks).items():
+                        halname = pin["pin"]
+                        if halname in self.inputs:
+                            slot_name = pin["slotname"]
+                            pinstat = pin["pinstat"]
+                            pkey = f"{slot_name}:{pin_id}"
+                            if pinstat:
+                                self.pinlabels[pkey].setStyleSheet(f"background-color: red; font-size:12px;")
+                            else:
+                                self.pinlabels[pkey].setStyleSheet(f"background-color: yellow; font-size:12px;")
+
     def update(self):
         self.img_layout.removeWidget(self.boardimg)
         self.boardimg = QWidget()
@@ -98,6 +119,7 @@ class TabGpios:
         pins = {}
         self.inputs = []
         self.outputs = []
+        self.pinstats = {}
         gpio_ids = {}
         gpio_config = self.parent.config.get("gpios", [])
         for gpio in gpio_config:
@@ -153,12 +175,18 @@ class TabGpios:
             slot_name = pin["slotname"]
             title = pin["title"]
             halname = pin["pin"]
+            pinstat = pin["pinstat"]
             pkey = f"{slot_name}:{pin_id}"
 
             bgcolor = "darkgray"
             tooltip = f"{slot_name}:{pin_id} {pin['pin']} ({pin.get('direction', 'all')})"
             if halname in self.inputs:
                 bgcolor = "blue"
+                if pinstat is not None:
+                    self.pinstat_update = True
+                    if pinstat:
+                        bgcolor = "red"
+
             elif halname in self.outputs:
                 bgcolor = "green"
 
