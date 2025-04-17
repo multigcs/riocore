@@ -84,9 +84,9 @@ class TabGpios:
                             pinstat = pin["pinstat"]
                             pkey = f"{slot_name}:{pin_id}"
                             if pinstat:
-                                self.pinlabels[pkey].setStyleSheet(f"background-color: red; font-size:12px;")
+                                self.pinlabels[pkey].setStyleSheet("background-color: red; font-size:12px;")
                             else:
-                                self.pinlabels[pkey].setStyleSheet(f"background-color: yellow; font-size:12px;")
+                                self.pinlabels[pkey].setStyleSheet("background-color: yellow; font-size:12px;")
 
     def update(self):
         self.img_layout.removeWidget(self.boardimg)
@@ -175,7 +175,7 @@ class TabGpios:
             slot_name = pin["slotname"]
             title = pin["title"]
             halname = pin["pin"]
-            pinstat = pin["pinstat"]
+            pinstat = pin.get("pinstat")
             pkey = f"{slot_name}:{pin_id}"
 
             bgcolor = "darkgray"

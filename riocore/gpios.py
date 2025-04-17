@@ -115,6 +115,7 @@ class gpio_rpi:
                     "direction": direction,
                     "slotname": "rpi_gpio",
                     "net": networks.get(halname, networks.get(pin_name, "")),
+                    "pinstat": None,
                 }
 
         return pins
@@ -203,10 +204,10 @@ class gpio_parport:
 
     def slotpins(self, x_offset=0, networks={}):
         pins = {}
+        pinstats = {}
 
         if portio is not None:
             addr = self.gpio.get("address")
-            pinstats = {}
             if addr:
                 base = int(addr, 0)
                 mapping = {
