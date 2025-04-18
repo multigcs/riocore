@@ -424,6 +424,7 @@ class cbase:
         output.append("void write_txbuffer(uint8_t *txBuffer) {")
         output.append(f"    // PC -> FPGA ({self.project.output_size} + {diff})")
         output.append("    int i = 0;")
+        output.append("    uint32_t sbuffer;")
         output.append("    for (i = 0; i < BUFFER_SIZE; i++) {")
         output.append("        txBuffer[i] = 0;")
         output.append("    }")
@@ -479,11 +480,19 @@ class cbase:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
+            is_float = data_config["is_float"]
             if data_config["direction"] == "output":
                 byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
                 byte_start = self.project.buffer_bytes - 1 - byte_start
                 if variable_size > 1:
-                    output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->{variable_name}, {byte_size}); // {output_pos}")
+                    if is_float:
+                        output.append(f"    memcpy(&sbuffer, &data->{variable_name}, {byte_size}); // {output_pos}")
+                        output.append("    sbuffer = ( sbuffer >> 24 ) | (( sbuffer << 8) & 0x00ff0000 )| ((sbuffer >> 8) & 0x0000ff00) | ( sbuffer << 24)  ; ")
+                        output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &sbuffer, {byte_size}); // {output_pos}")
+                    else:
+                        output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->{variable_name}, {byte_size}); // {output_pos}")
+
+
                 else:
                     output.append(f"    txBuffer[{byte_start}] |= (data->{variable_name}<<{bit_offset}); // {output_pos}")
                 output_pos -= variable_size
@@ -500,7 +509,8 @@ class cbase:
         diff = self.project.buffer_size - self.project.input_size
         output.append("void read_rxbuffer(uint8_t *rxBuffer) {")
         output.append(f"    // FPGA -> PC ({self.project.input_size} + {diff})")
-        output.append("    // rxBuffer to raw vars")
+        output.append(f"    // FPGA -> PC ({self.project.input_size} + {diff})")
+        output.append("    uint32_t sbuffer;")
         input_pos = self.project.buffer_size
 
         variable_size = 32
@@ -534,11 +544,17 @@ class cbase:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
+            is_float = data_config["is_float"]
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
                 byte_start = self.project.buffer_bytes - 1 - byte_start
                 if variable_size > 1:
-                    output.append(f"    memcpy(&data->{variable_name}, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
+                    if is_float:
+                        output.append(f"    memcpy(&sbuffer, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
+                        output.append("    sbuffer = ( sbuffer >> 24 ) | (( sbuffer << 8) & 0x00ff0000 )| ((sbuffer >> 8) & 0x0000ff00) | ( sbuffer << 24)  ; ")
+                        output.append(f"    memcpy(&data->{variable_name}, &sbuffer, {byte_size}); // {input_pos}")
+                    else:
+                        output.append(f"    memcpy(&data->{variable_name}, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
                 else:
                     output.append(f"    data->{variable_name} = (rxBuffer[{byte_start}] & (1<<{bit_offset})); // {input_pos}")
                 input_pos -= variable_size
@@ -630,6 +646,7 @@ class cbase:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
+            is_float = data_config["is_float"]
             variable_bytesize = variable_size // 8
             if plugin_instance.TYPE == "frameio":
                 output.append(f"    uint8_t {variable_name}[{variable_bytesize}];")
@@ -639,7 +656,10 @@ class cbase:
                     variable_size_align = isize
                     if isize >= variable_size:
                         break
-                output.append(f"    int{variable_size_align}_t {variable_name};")
+                if is_float:
+                    output.append(f"    float {variable_name};")
+                else:
+                    output.append(f"    int{variable_size_align}_t {variable_name};")
             else:
                 output.append(f"    bool {variable_name};")
         output.append("")

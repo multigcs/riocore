@@ -897,6 +897,7 @@ class Project:
             if multiplexed:
                 continue
             variable_size = data_config["size"]
+            is_float = data_config["is_float"]
             value = data_config["value"]
             if data_config["direction"] == "output" or data_config["direction"] == "inout":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
@@ -906,7 +907,10 @@ class Project:
                         value = [0] * byte_size
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
                 elif variable_size > 1:
-                    txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
+                    if is_float:
+                        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack(">f", int(value)))[0:byte_size]
+                    else:
+                        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
                 else:
                     if value == 1:
                         txdata[byte_start] |= 1 << bit_offset
@@ -970,6 +974,7 @@ class Project:
             if multiplexed:
                 continue
             variable_size = data_config["size"]
+            is_float = data_config["is_float"]
 
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
@@ -982,7 +987,10 @@ class Project:
                     byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
                     if len(byte_pack) < 4:
                         byte_pack += [0] * (4 - len(byte_pack))
-                    value = unpack("<i", bytes(byte_pack))[0]
+                    if is_float:
+                        value = unpack(">f", bytes(byte_pack))[0]
+                    else:
+                        value = unpack("<i", bytes(byte_pack))[0]
                 else:
                     value = 1 if rxdata[byte_start] & (1 << bit_offset) else 0
                 data_config["value"] = value

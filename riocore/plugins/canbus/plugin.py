@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "canbus odrive"
         self.ORIGIN = ""
         # self.LIMITATIONS = {}
+        self.TYPE = "joint"
 
         self.VERILOGS = ["canbus.v"]
 
@@ -34,24 +35,26 @@ class Plugin(PluginBase):
             },
         }
         self.INTERFACE = {
-            "din": {
+            "position": {
                 "size": 32,
+                "is_float": True,
                 "direction": "input",
                 "description": "",
             },
-            "dout": {
+            "velocity": {
                 "size": 32,
+                "is_float": True,
                 "direction": "output",
                 "description": "",
             },
         }
         self.SIGNALS = {
-            "din": {
+            "position": {
                 "direction": "input",
                 "format": "0.2f",
                 "unit": "",
             },
-            "dout": {
+            "velocity": {
                 "direction": "output",
                 "min": -10,
                 "max": 10,
@@ -68,10 +71,4 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = self.system_setup["speed"] // baud // 2 - 1
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name  == "din":
-            value = unpack(">f", bytes(list(pack("<i", value))))[0]
-        elif signal_name  == "dout":
-                value = unpack("<i", bytes(list(pack(">f", value))))[0]
-        return value
 

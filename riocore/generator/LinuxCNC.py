@@ -1791,7 +1791,7 @@ class LinuxCNC:
                 enable_halname = None
                 position_mode = None
                 joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
-                position_scale = float(joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"])))
+                position_scale = float(joint_config.get("scale_out", joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"]))))
                 if machinetype == "lathe":
                     home_sequence_default = 2
                     if axis_name == "X":
@@ -1849,13 +1849,12 @@ class LinuxCNC:
                 if not position_scale_halname:
                     position_scale_halname = f"{position_halname}-scale"
 
-                feedback_scale = position_scale
+                feedback_scale = float(joint_config.get("scale_in", position_scale))
                 feedback_halname = None
                 feedback = joint_config.get("feedback")
                 feedback = joint_setup.get("feedback")
                 if position_mode == "relative" and feedback is True:
                     feedback_halname = f"{prefix}{position['halname']}"
-                    feedback_scale = position_scale
                 elif position_mode == "relative":
                     if ":" in feedback:
                         fb_plugin_name, fb_signal_name = feedback.split(":")

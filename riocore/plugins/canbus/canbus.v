@@ -6,8 +6,8 @@ module canbus
         input rx,
         output wire tx,
         output wire oclk,
-        input wire [31:0] dout,
-        output wire [31:0] din
+        input wire [31:0] velocity,
+        output wire [31:0] position
     );
 
 
@@ -23,7 +23,7 @@ module canbus
         .oclk(oclk),
         .tx(tx1),
         .rx(rx),
-        .din(din)
+        .position(position)
     );
 
 
@@ -32,7 +32,7 @@ module canbus
     ) canbus_tx0 (
         .clk(clk),
         .tx(tx2),
-        .dout(dout)
+        .velocity(velocity)
     );
 
 
@@ -43,7 +43,7 @@ module canbus_tx
     (
         input clk,
         output reg tx = 1'b1,
-        input wire [31:0] dout
+        input wire [31:0] velocity
     );
 
 
@@ -151,9 +151,7 @@ module canbus_tx
                 if (bit_count == 11240) begin
                     bit_count <= 0;
                     state <= IDLE;
-
-                    //data <= data + 1;
-                    data <= dout;
+                    data <= velocity;
                 end
             end
 
@@ -171,7 +169,7 @@ module canbus_rx
         output reg oclk = 0,
         input rx,
         output reg tx = 1'b1,
-        output reg [31:0] din
+        output reg [31:0] position
     );
 
 
@@ -262,8 +260,8 @@ module canbus_rx
                     end else if (bit_count == 18 + (dlc*8) + 15) begin
                         if (crc == rx_frm[14:0] && arib == 'h009) begin
                             // crc and arib is ok
-                            //din <= data[31:0];
-                            din <= data[63:32];
+                            //position <= data[31:0];
+                            position <= data[63:32];
                             valid <= 1'd1;
                         end
                     end else if (bit_count == 18 + (dlc*8) + 15 + 1) begin
