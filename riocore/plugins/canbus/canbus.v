@@ -5,7 +5,7 @@ module canbus
         input clk,
         input rx,
         output wire tx,
-        output wire oclk,
+        input enable,
         input wire [31:0] velocity,
         output wire [31:0] position
     );
@@ -20,7 +20,6 @@ module canbus
         .DIVIDER(DIVIDER)
     ) canbus_rx0 (
         .clk(clk),
-        .oclk(oclk),
         .tx(tx1),
         .rx(rx),
         .position(position)
@@ -31,6 +30,7 @@ module canbus
         .DIVIDER(DIVIDER)
     ) canbus_tx0 (
         .clk(clk),
+        .enable(enable),
         .tx(tx2),
         .velocity(velocity)
     );
@@ -43,6 +43,7 @@ module canbus_tx
     (
         input clk,
         output reg tx = 1'b1,
+        input wire enable,
         input wire [31:0] velocity
     );
 
@@ -111,6 +112,11 @@ module canbus_tx
                 stuff_check <= {stuff_check[3:0], 1'b0};
                 state <= SEND;
                 bit_count <= 0;
+                if (enable) begin
+                    data <= velocity;
+                end else begin
+                    data <= 0;
+                end
             end
 
             SEND: begin
@@ -148,10 +154,9 @@ module canbus_tx
             END: begin
                 tx <= 1'b1;
                 bit_count <= bit_count + 1;
-                if (bit_count == 11240) begin
+                if (bit_count == 9000) begin
                     bit_count <= 0;
                     state <= IDLE;
-                    data <= velocity;
                 end
             end
 
@@ -166,7 +171,6 @@ module canbus_rx
     #(parameter DIVIDER=53)
     (
         input clk,
-        output reg oclk = 0,
         input rx,
         output reg tx = 1'b1,
         output reg [31:0] position
@@ -220,7 +224,6 @@ module canbus_rx
 
         case (state)
             IDLE: begin
-                oclk <= 0;
                 if (rx == 0) begin
                     state <= SYNC;
                     stuff_check <= 6'b000111;
@@ -234,7 +237,6 @@ module canbus_rx
             end
 
             SYNC: begin
-                oclk <= 1;
                 state <= RECV;
             end
 
@@ -254,7 +256,6 @@ module canbus_rx
                     end else if (bit_count == 18 && rx_frm[3:0] == 8) begin
                         dlc <= rx_frm[3:0];
                     end else if (bit_count == 18 + (dlc*8)) begin
-                        oclk <= 0;
                         data <= rx_frm[63:0];
                         crc <= rx_crc;
                     end else if (bit_count == 18 + (dlc*8) + 15) begin
@@ -266,7 +267,6 @@ module canbus_rx
                         end
                     end else if (bit_count == 18 + (dlc*8) + 15 + 1) begin
                         if (valid == 1'd1) begin
-                            oclk <= 1;
                             tx <= 1'b0;
                             valid <= 1'd0;
                         end

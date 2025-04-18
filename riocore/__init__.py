@@ -897,7 +897,7 @@ class Project:
             if multiplexed:
                 continue
             variable_size = data_config["size"]
-            is_float = data_config["is_float"]
+            is_float = data_config.get("is_float", False)
             value = data_config["value"]
             if data_config["direction"] == "output" or data_config["direction"] == "inout":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
@@ -974,7 +974,7 @@ class Project:
             if multiplexed:
                 continue
             variable_size = data_config["size"]
-            is_float = data_config["is_float"]
+            is_float = data_config.get("is_float", False)
 
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)

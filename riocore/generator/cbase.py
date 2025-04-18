@@ -480,7 +480,7 @@ class cbase:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
-            is_float = data_config["is_float"]
+            is_float = data_config.get("is_float", False)
             if data_config["direction"] == "output":
                 byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
                 byte_start = self.project.buffer_bytes - 1 - byte_start
@@ -544,7 +544,7 @@ class cbase:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
-            is_float = data_config["is_float"]
+            is_float = data_config.get("is_float", False)
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.project.get_bype_pos(input_pos, variable_size)
                 byte_start = self.project.buffer_bytes - 1 - byte_start
@@ -646,7 +646,7 @@ class cbase:
                 continue
             variable_name = data_config["variable"]
             variable_size = data_config["size"]
-            is_float = data_config["is_float"]
+            is_float = data_config.get("is_float", False)
             variable_bytesize = variable_size // 8
             if plugin_instance.TYPE == "frameio":
                 output.append(f"    uint8_t {variable_name}[{variable_bytesize}];")

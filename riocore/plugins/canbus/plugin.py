@@ -24,9 +24,6 @@ class Plugin(PluginBase):
             },
         }
         self.PINDEFAULTS = {
-            "oclk": {
-                "direction": "output",
-            },
             "tx": {
                 "direction": "output",
             },
@@ -47,6 +44,11 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "description": "",
             },
+            "enable": {
+                "size": 1,
+                "direction": "output",
+                "on_error": False,
+            },
         }
         self.SIGNALS = {
             "position": {
@@ -60,6 +62,10 @@ class Plugin(PluginBase):
                 "max": 10,
                 "format": "0.2f",
                 "unit": "",
+            },
+            "enable": {
+                "direction": "output",
+                "bool": True,
             },
         }
 
