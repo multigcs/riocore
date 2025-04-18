@@ -211,7 +211,7 @@ class Simulator:
             if plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
                 position_var = interface_data["position"]["variable"]
                 if "velocity" in interface_data:
-                    enable_var = interface_data["enable"]["variable"]
+                    enable_var = interface_data.get("enable", {}).get("variable", "1")
                     velocity_var = interface_data["velocity"]["variable"]
                     output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
                     output.append(f"        offset = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0;")
