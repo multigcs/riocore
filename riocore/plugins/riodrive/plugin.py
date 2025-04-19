@@ -4,7 +4,7 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "riodrive"
-        self.INFO = "controling riodrive via can-bus"
+        self.INFO = "to control a riodrive via can-bus"
         self.DESCRIPTION = "riodrive is a fork of odrive (3.6)"
         self.KEYWORDS = "canbus odrive"
         self.ORIGIN = ""

@@ -1,5 +1,5 @@
 # riodrive
-**controling riodrive via can-bus**
+**to control a riodrive via can-bus**
 
 riodrive is a fork of odrive (3.6)
 

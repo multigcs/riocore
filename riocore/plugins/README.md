@@ -11,7 +11,7 @@
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |
 |  | [pwmout](pwmout/README.md) | pwm output | <img src="pwmout/image.png" height="48"> |
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |
-|  | [riodrive](riodrive/README.md) | controling riodrive via can-bus |  |
+|  | [riodrive](riodrive/README.md) | to control a riodrive via can-bus |  |
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |
 | IO | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |
