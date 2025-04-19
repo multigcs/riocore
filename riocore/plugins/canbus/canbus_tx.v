@@ -1,6 +1,6 @@
 
 module canbus_tx
-    #(parameter DIVIDER=53)
+    #(parameter DIVIDER=54, parameter DATA_BYTES=4)
     (
         input clk,
         output reg tx = 1'b1,
@@ -14,7 +14,6 @@ module canbus_tx
 
     reg [31:0] clk_counter = 0;
 
-    localparam DATA_BYTES = 4;
     localparam DATA_BITS = (DATA_BYTES * 8);
     localparam FRAME_SIZE = (34 + DATA_BITS);
 
@@ -33,7 +32,7 @@ module canbus_tx
     reg ide = 1'b0;
     reg r0 = 1'b0;
 
-    reg [3:0] dlc = 4'd4;
+    reg [3:0] dlc = DATA_BYTES;
     reg [DATA_BITS-1:0] data = 'd0;
 
     reg [14:0] tx_crc = 15'd0;

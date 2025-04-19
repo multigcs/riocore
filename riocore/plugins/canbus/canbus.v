@@ -17,16 +17,21 @@ module canbus
         output reg ctrl
     );
 
+    localparam RX_DATA_BYTES = 8;
+    localparam RX_ARIB = 11'h01E;
+    localparam TX_DATA_BYTES = 4;
+    localparam TX_ARIB = 11'h00d;
+
     wire rx_ack;
-    wire tx2;
-    assign tx = (rx_ack && tx2);
+    wire tx_out;
+    assign tx = (rx_ack && tx_out);
 
     wire rx_valid;
     wire [3:0] rx_dlc;
     wire [10:0] rx_arib;
-    wire [63:0] rx_data;
+    wire [(RX_DATA_BYTES*8)-1:0] rx_data;
     always @(posedge clk) begin
-        if (rx_valid == 1 && rx_arib == 11'h01E && rx_dlc == 4'd8) begin
+        if (rx_valid == 1 && rx_arib == RX_ARIB && rx_dlc == RX_DATA_BYTES) begin
             position <= {rx_data[39:32], rx_data[47:40], rx_data[55:48], rx_data[63:56]};
             power <= {rx_data[23:16], rx_data[31:24]};
             temp <= rx_data[15:8];
@@ -38,25 +43,11 @@ module canbus
         end
     end
 
-    canbus_rx #(
-        .DIVIDER(DIVIDER)
-    ) canbus_rx0 (
-        .clk(clk),
-        .tx(rx_ack),
-        .rx(rx),
-        .rx_data(rx_data),
-        .arib(rx_arib),
-        .dlc(rx_dlc),
-        .valid(rx_valid)
-    );
-
-
     wire tx_busy;
     reg tx_start = 1'd0;
-    reg [3:0] tx_dlc = 4'd4;
-    reg [10:0] tx_arib = 11'h00d;
-    reg [31:0] tx_data = 31'd0;
-    reg [31:0] tx_counter = 32'd0;
+    reg [3:0] tx_dlc = TX_DATA_BYTES;
+    reg [(TX_DATA_BYTES*8)-1:0] tx_data = 'd0;
+    reg [31:0] tx_counter = 'd0;
 
     always @(posedge clk) begin
         tx_start <= 1'd0;
@@ -67,26 +58,37 @@ module canbus
             end else begin
                 tx_data <= 32'd0;
             end
-            tx_dlc <= 4'd4;
-            tx_arib <= 11'h00d;
+            tx_dlc <= TX_DATA_BYTES;
             tx_start <= 1'd1;
         end else begin
             tx_counter <= tx_counter - 1'd1;
         end
     end
 
+
+    canbus_rx #(
+        .DIVIDER(DIVIDER), .DATA_BYTES(RX_DATA_BYTES)
+    ) canbus_rx0 (
+        .clk(clk),
+        .tx(rx_ack),
+        .rx(rx),
+        .rx_data(rx_data),
+        .arib(rx_arib),
+        .dlc(rx_dlc),
+        .valid(rx_valid)
+    );
+
     canbus_tx #(
-        .DIVIDER(DIVIDER)
+        .DIVIDER(DIVIDER), .DATA_BYTES(TX_DATA_BYTES)
     ) canbus_tx0 (
         .clk(clk),
-        .tx(tx2),
+        .tx(tx_out),
         .tx_data(tx_data),
-        .tx_arib(tx_arib),
+        .tx_arib(TX_ARIB),
         .tx_dlc(tx_dlc),
         .start(tx_start),
         .busy(tx_busy)
     );
-
 
 endmodule
 

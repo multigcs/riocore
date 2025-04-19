@@ -317,7 +317,6 @@ class pyvcp:
             display_unit = name.split(".")[-1]
             name = ".".join(name.split(".")[:-1])
         title = setup.get("title", name)
-        print(setup)
         display_initval = setup.get("initval", 0)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
@@ -355,7 +354,6 @@ class pyvcp:
         e_param_pin.text = "1"
         e_meter.append(e_param_pin)
         for rnum, region in enumerate(display_region):
-            print("rnum, region", rnum, region)
             e_region = etree.Element(f"region{rnum + 1}")
             e_region.text = f'({region[0]},{region[1]},"{region[2]}")'
             e_meter.append(e_region)
@@ -374,7 +372,6 @@ class pyvcp:
 
         if display_unit and len(display_format) < 5:
             display_format = f"{display_format} {display_unit}"
-        print(display_format)
 
         display_fillcolor = setup.get("fillcolor", "red")
         display_bgcolor = setup.get("fillcolor", "grey")

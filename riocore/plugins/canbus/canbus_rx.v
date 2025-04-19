@@ -1,11 +1,11 @@
 
 module canbus_rx
-    #(parameter DIVIDER=53, parameter DATA_BYTES=8)
+    #(parameter DIVIDER=54, parameter DATA_BYTES=8)
     (
         input clk,
         input rx,
         output reg tx = 1'b1,
-        output reg [63:0] rx_data = 64'd0,
+        output reg [DATA_BITS-1:0] rx_data = 'd0,
         output reg [10:0] arib = 11'd0,
         output reg [3:0] dlc = 4'd0,
         output reg valid = 1'd0
@@ -23,12 +23,11 @@ module canbus_rx
     reg [5:0] stuff_check = 6'b100111;
     reg [3:0] state = IDLE;
     reg [7:0] bit_count = 0;
-    reg [63+15:0] rx_frm = 0;
+    reg [DATA_BITS-1+15:0] rx_frm = 0;
     reg [14:0] crc = 15'd0;
     reg [14:0] rx_crc = 15'd0;
     wire[14:0] rx_crc_next;
     assign rx_crc_next = {rx_crc[13:0], 1'b0} ^ (rx_crc[14] ^ rx ? 15'h4599 : 15'h0);
-
 
     reg [31:0] clk_counter = 0;
     always @(posedge clk) begin
@@ -73,19 +72,18 @@ module canbus_rx
                     end else if (stuff_check[4:0] == 5'b11111) begin
                         // stuff bit
                     end else begin
-                        rx_frm <= {rx_frm[63+15-1:0], rx};
+                        rx_frm <= {rx_frm[DATA_BITS-1+15-1:0], rx};
                         rx_crc <= rx_crc_next;
                         if (bit_count == 11) begin
                             arib <= rx_frm[10:0];
                         end else if (bit_count == 18 && rx_frm[3:0] == 8) begin
                             dlc <= rx_frm[3:0];
                         end else if (bit_count == 18 + (dlc*8)) begin
-                            //data <= rx_frm[63:0];
                             crc <= rx_crc;
                         end else if (bit_count == 18 + (dlc*8) + 15) begin
                             if (crc == rx_frm[14:0]) begin
                                 // crc is ok
-                                rx_data <= rx_frm[63+15:15];
+                                rx_data <= rx_frm[DATA_BITS-1+15:15];
                                 csumok <= 1'b1;
                             end
                         end else if (bit_count == 18 + (dlc*8) + 15 + 1) begin
