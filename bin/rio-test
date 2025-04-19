@@ -614,13 +614,14 @@ class WinForm(QWidget):
 
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
-                    value_format = signal.get("format", "0.2f")
+                    value_format = signal.get("format") or "0.2f"
+                    value_mapping = signal.get("mapping")
                     value_unit = signal.get("unit", "")
                     userconfig = signal.get("userconfig", {})
                     value_unit = userconfig.get("display", {}).get("unit", value_unit)
                     value_format = userconfig.get("display", {}).get("format", value_format)
                     value_offset = userconfig.get("offset", 0.0)
-                    value_scale = userconfig.get("scale", 1.0)
+                    value_scale = userconfig.get("scale", signal.get("scale", 1.0))
 
                     if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
                         pid_controller[plugin_instance.instances_name]["feedback"] = value
@@ -632,7 +633,10 @@ class WinForm(QWidget):
                     if value_scale != 1.0 or value_offset:
                         value = (value + value_offset) / value_scale
 
-                    value_str = f"%{value_format}" % (value,)
+                    if value_mapping:
+                        value_str = value_mapping.get(value, value)
+                    else:
+                        value_str = f"%{value_format}" % (value,)
                     virtual = signal.get("virtual", False)
                     direction = signal.get("direction")
                     if virtual:

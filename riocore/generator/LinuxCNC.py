@@ -1095,13 +1095,14 @@ class LinuxCNC:
             if section not in vcp_sections:
                 vcp_sections.append(section)
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    userconfig = signal_config.get("userconfig", {})
-                    displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                    section = displayconfig.get("section", "").lower()
-                    if section and section not in vcp_sections:
-                        vcp_sections.append(section)
+            for signal_name, signal_config in plugin_instance.signals().items():
+                if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable"}:
+                    continue
+                userconfig = signal_config.get("userconfig", {})
+                displayconfig = userconfig.get("display", signal_config.get("display", {}))
+                section = displayconfig.get("section", "").lower()
+                if section and section not in vcp_sections:
+                    vcp_sections.append(section)
 
         gui_gen.draw_tabs_begin([tab.title() for tab in vcp_sections])
 
@@ -1109,13 +1110,14 @@ class LinuxCNC:
         prefixes = {}
         haltitles = {}
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
-                    prefix = ".".join(halname.split(".")[:-1])
-                    if prefix not in prefixes:
-                        prefixes[prefix] = []
-                    prefixes[prefix].append(halname)
+            for signal_name, signal_config in plugin_instance.signals().items():
+                if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable"}:
+                    continue
+                halname = signal_config["halname"]
+                prefix = ".".join(halname.split(".")[:-1])
+                if prefix not in prefixes:
+                    prefixes[prefix] = []
+                prefixes[prefix].append(halname)
         for prefix, halnames in prefixes.items():
             if len(halnames) == 1:
                 for halname in halnames:
@@ -1191,6 +1193,7 @@ class LinuxCNC:
                 userconfig = signal_config.get("userconfig", {})
                 boolean = signal_config.get("bool")
                 virtual = signal_config.get("virtual")
+                mapping = signal_config.get("mapping")
                 setp = userconfig.get("setp")
                 function = userconfig.get("function", "")
                 displayconfig = userconfig.get("display", signal_config.get("display", {}))
@@ -1243,7 +1246,9 @@ class LinuxCNC:
                             dtype = displayconfig.get("type", "checkbutton")
                 elif direction == "input":
                     section = displayconfig.get("section", "inputs").lower()
-                    if not boolean:
+                    if mapping and hasattr(gui_gen, "draw_multilabel"):
+                        dtype = displayconfig.get("type", "multilabel")
+                    elif not boolean:
                         dtype = displayconfig.get("type", "number")
                     else:
                         dtype = displayconfig.get("type", "led")
@@ -1258,6 +1263,16 @@ class LinuxCNC:
                     return
 
                 if hasattr(gui_gen, f"draw_{dtype}"):
+                    if dtype == "multilabel" and not boolean:
+                        self.halextras.append(f"loadrt demux names=demux_{halname} personality=16")
+                        self.halextras.append(f"addf demux_{halname} servo-thread")
+                        displayconfig["legends"] = []
+                        #for num in range(16):
+                        for num in range(6):
+                            text = mapping.get(num, f"Num:{num}")
+                            displayconfig["legends"].append(text)
+                            self.halg.net_add(f"demux_{halname}.out-{num:02d}", f"pyvcp.{halname}.legend{num}")
+
                     title = haltitles.get(halname, halname)
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
 
@@ -1301,7 +1316,9 @@ class LinuxCNC:
                             self.halg.net_add(gui_pinname, f"lowpass_{halname}.in")
                             gui_pinname = f"lowpass_{halname}.out"
 
-                    if virtual and direction == "input":
+                    if dtype == "multilabel" and not boolean:
+                        self.halg.net_add(f"{prefix}{halname}-u32-abs", f"demux_{halname}.sel-u32")
+                    elif virtual and direction == "input":
                         self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
                     elif virtual and direction == "output":
                         self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
@@ -1314,9 +1331,10 @@ class LinuxCNC:
                     print(f"WARNING: 'draw_{dtype}' not found")
 
             for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                    for signal_name, signal_config in plugin_instance.signals().items():
-                        vcp_add(tab, signal_config, "rio.")
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable"}:
+                        continue
+                    vcp_add(tab, signal_config, "rio.")
 
             component_nums = {}
             for comp in linuxcnc_config.get("components", []):

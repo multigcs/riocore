@@ -7,7 +7,13 @@ module canbus
         output wire tx,
         input enable,
         input wire [31:0] velocity,
-        output wire [31:0] position
+        output wire [31:0] position,
+        output wire [15:0] power,
+        output wire [3:0] state,
+        output wire traj,
+        output wire mot,
+        output wire enc,
+        output wire ctrl
     );
 
 
@@ -15,6 +21,15 @@ module canbus
     wire tx2;
     assign tx = (tx1 && tx2);
 
+    wire [63:0] outdata;
+    assign position = {outdata[39:32], outdata[47:40], outdata[55:48], outdata[63:56]};
+    assign power = {outdata[23:16], outdata[31:24]};
+
+    assign traj = outdata[7];
+    assign mot = outdata[6];
+    assign enc = outdata[5];
+    assign ctrl = outdata[4];
+    assign state = outdata[3:0];
 
     canbus_rx #(
         .DIVIDER(DIVIDER)
@@ -22,7 +37,7 @@ module canbus
         .clk(clk),
         .tx(tx1),
         .rx(rx),
-        .position(position)
+        .outdata(outdata)
     );
 
 
@@ -113,7 +128,8 @@ module canbus_tx
                 state <= SEND;
                 bit_count <= 0;
                 if (enable) begin
-                    data <= velocity;
+                    //data <= velocity;
+                    data <= {velocity[7:0], velocity[15:8], velocity[23:16], velocity[31:24]};
                 end else begin
                     data <= 0;
                 end
@@ -154,7 +170,7 @@ module canbus_tx
             END: begin
                 tx <= 1'b1;
                 bit_count <= bit_count + 1;
-                if (bit_count == 9000) begin
+                if (bit_count == 3000) begin
                     bit_count <= 0;
                     state <= IDLE;
                 end
@@ -173,7 +189,7 @@ module canbus_rx
         input clk,
         input rx,
         output reg tx = 1'b1,
-        output reg [31:0] position
+        output reg [63:0] outdata
     );
 
 
@@ -259,14 +275,14 @@ module canbus_rx
                         data <= rx_frm[63:0];
                         crc <= rx_crc;
                     end else if (bit_count == 18 + (dlc*8) + 15) begin
-                        if (crc == rx_frm[14:0] && arib == 'h009) begin
+                        if (crc == rx_frm[14:0] && arib == 'h01E) begin
                             // crc and arib is ok
-                            //position <= data[31:0];
-                            position <= data[63:32];
+                            outdata <= data[63:0];
                             valid <= 1'd1;
                         end
                     end else if (bit_count == 18 + (dlc*8) + 15 + 1) begin
                         if (valid == 1'd1) begin
+                            // set ACK bit
                             tx <= 1'b0;
                             valid <= 1'd0;
                         end

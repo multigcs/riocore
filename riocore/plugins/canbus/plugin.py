@@ -32,9 +32,38 @@ class Plugin(PluginBase):
             },
         }
         self.INTERFACE = {
+            "power": {
+                "size": 16,
+                "direction": "input",
+                "description": "",
+            },
+            "state": {
+                "size": 4,
+                "direction": "input",
+                "description": "",
+            },
+            "traj": {
+                "size": 1,
+                "direction": "input",
+                "description": "",
+            },
+            "mot": {
+                "size": 1,
+                "direction": "input",
+                "description": "",
+            },
+            "enc": {
+                "size": 1,
+                "direction": "input",
+                "description": "",
+            },
+            "ctrl": {
+                "size": 1,
+                "direction": "input",
+                "description": "",
+            },
             "position": {
                 "size": 32,
-                "is_float": True,
                 "direction": "input",
                 "description": "",
             },
@@ -51,6 +80,57 @@ class Plugin(PluginBase):
             },
         }
         self.SIGNALS = {
+            "power": {
+                "direction": "input",
+                "format": "0.1f",
+                "scale": 10.0,
+                "unit": "W",
+            },
+            "state": {
+                "direction": "input",
+                "format": "",
+                "unit": "",
+                "mapping": {
+                    0: "UNDEFINED",
+                    1: "IDLE",
+                    2: "STARTUP_SEQUENCE",
+                    3: "FULL_CALIBRATION_SEQUENCE",
+                    4: "MOTOR_CALIBRATION",
+                    5: "???",
+                    6: "ENCODER_INDEX_SEARCH",
+                    7: "ENCODER_OFFSET_CALIBRATION",
+                    8: "CLOSED_LOOP_CONTROL",
+                    9: "LOCKIN_SPIN",
+                    10: "ENCODER_DIR_FIND",
+                    11: "HOMING",
+                    12: "ENCODER_HALL_POLARITY_CALIBRATION",
+                    13: "ENCODER_HALL_PHASE_CALIBRATION",
+                }
+            },
+            "traj": {
+                "direction": "input",
+                "format": "f",
+                "unit": "",
+                "bool": True,
+            },
+            "mot": {
+                "direction": "input",
+                "format": "f",
+                "unit": "",
+                "bool": True,
+            },
+            "enc": {
+                "direction": "input",
+                "format": "f",
+                "unit": "",
+                "bool": True,
+            },
+            "ctrl": {
+                "direction": "input",
+                "format": "f",
+                "unit": "",
+                "bool": True,
+            },
             "position": {
                 "direction": "input",
                 "format": "0.2f",

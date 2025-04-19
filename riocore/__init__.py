@@ -908,7 +908,7 @@ class Project:
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
                 elif variable_size > 1:
                     if is_float:
-                        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack(">f", int(value)))[0:byte_size]
+                        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<f", int(value)))[0:byte_size]
                     else:
                         txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
                 else:
@@ -988,9 +988,12 @@ class Project:
                     if len(byte_pack) < 4:
                         byte_pack += [0] * (4 - len(byte_pack))
                     if is_float:
-                        value = unpack(">f", bytes(byte_pack))[0]
+                        value = unpack("<f", bytes(byte_pack))[0]
                     else:
-                        value = unpack("<i", bytes(byte_pack))[0]
+                        if variable_size == 4:
+                            value = unpack("<B", bytes([byte_pack[0]>>4]))[0]
+                        else:
+                            value = unpack("<i", bytes(byte_pack))[0]
                 else:
                     value = 1 if rxdata[byte_start] & (1 << bit_offset) else 0
                 data_config["value"] = value
