@@ -1,6 +1,6 @@
 
 module canbus_rx
-    #(parameter DIVIDER=53)
+    #(parameter DIVIDER=53, parameter DATA_BYTES=8)
     (
         input clk,
         input rx,
@@ -11,7 +11,6 @@ module canbus_rx
         output reg valid = 1'd0
     );
 
-    localparam DATA_BYTES = 8;
     localparam DATA_BITS = (DATA_BYTES * 8);
     localparam FRAME_SIZE = (34 + DATA_BITS);
     localparam IDLE  = 4'd0,
