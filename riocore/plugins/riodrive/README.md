@@ -1,0 +1,328 @@
+# riodrive
+**controling riodrive via can-bus**
+
+riodrive is a fork of odrive (3.6)
+
+Keywords: canbus odrive
+
+## Pins:
+*FPGA-pins*
+### tx:
+
+ * direction: output
+
+### rx:
+
+ * direction: input
+
+
+## Options:
+*user-options*
+### baud:
+serial baud rate
+
+ * type: int
+ * min: 300
+ * max: 10000000
+ * default: 250000
+ * unit: bit/s
+
+### interval:
+update interval
+
+ * type: int
+ * min: 100
+ * max: 10000
+ * default: 500
+ * unit: Hz
+
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: False
+
+
+## Signals:
+*signals/pins in LinuxCNC*
+### power:
+
+ * type: float
+ * direction: input
+ * unit: W
+
+### temp:
+
+ * type: float
+ * direction: input
+ * unit: °C
+
+### state:
+
+ * type: float
+ * direction: input
+ * unit: 
+
+### traj:
+
+ * type: bit
+ * direction: input
+ * unit: 
+
+### mot:
+
+ * type: bit
+ * direction: input
+ * unit: 
+
+### enc:
+
+ * type: bit
+ * direction: input
+ * unit: 
+
+### ctrl:
+
+ * type: bit
+ * direction: input
+ * unit: 
+
+### position:
+
+ * type: float
+ * direction: input
+ * unit: 
+
+### velocity:
+
+ * type: float
+ * direction: output
+ * min: -10
+ * max: 10
+ * unit: 
+
+### enable:
+
+ * type: bit
+ * direction: output
+
+
+## Interfaces:
+*transport layer*
+### power:
+
+ * size: 16 bit
+ * direction: input
+
+### temp:
+
+ * size: 8 bit
+ * direction: input
+
+### state:
+
+ * size: 4 bit
+ * direction: input
+
+### traj:
+
+ * size: 1 bit
+ * direction: input
+
+### mot:
+
+ * size: 1 bit
+ * direction: input
+
+### enc:
+
+ * size: 1 bit
+ * direction: input
+
+### ctrl:
+
+ * size: 1 bit
+ * direction: input
+
+### position:
+
+ * size: 32 bit
+ * direction: input
+
+### velocity:
+
+ * size: 32 bit
+ * direction: output
+
+### enable:
+
+ * size: 1 bit
+ * direction: output
+
+
+## Basic-Example:
+```
+{
+    "type": "riodrive",
+    "pins": {
+        "tx": {
+            "pin": "0"
+        },
+        "rx": {
+            "pin": "1"
+        }
+    }
+}
+```
+
+## Full-Example:
+```
+{
+    "type": "riodrive",
+    "baud": 250000,
+    "interval": 500,
+    "name": "",
+    "axis": "",
+    "is_joint": false,
+    "pins": {
+        "tx": {
+            "pin": "0",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "rx": {
+            "pin": "1",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        }
+    },
+    "signals": {
+        "power": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "power",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "temp": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "temp",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "state": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "state",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "traj": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "traj",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "mot": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "mot",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "enc": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "enc",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "ctrl": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "ctrl",
+                "section": "inputs",
+                "type": "led"
+            }
+        },
+        "position": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "position",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "velocity": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "velocity",
+                "section": "outputs",
+                "type": "scale"
+            }
+        },
+        "enable": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "enable",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        }
+    }
+}
+```
+
+## Verilogs:
+ * [riodrive.v](riodrive.v)
+ * [canbus_tx.v](canbus_tx.v)
+ * [canbus_rx.v](canbus_rx.v)
