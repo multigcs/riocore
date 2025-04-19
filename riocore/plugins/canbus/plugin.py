@@ -22,6 +22,14 @@ class Plugin(PluginBase):
                 "unit": "bit/s",
                 "description": "serial baud rate",
             },
+            "interval": {
+                "default": 500,
+                "type": int,
+                "min": 100,
+                "max": 10000,
+                "unit": "Hz",
+                "description": "update interval",
+            },
         }
         self.PINDEFAULTS = {
             "tx": {
@@ -155,7 +163,9 @@ class Plugin(PluginBase):
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
-        instance_parameter["DIVIDER"] = self.system_setup["speed"] // baud - 2
+        instance_parameter["DIVIDER"] = self.system_setup["speed"] // baud - 1
+        interval = int(self.plugin_setup.get("interval", self.OPTIONS["interval"]["default"]))
+        instance_parameter["IDIVIDER"] = self.system_setup["speed"] // interval
         return instances
 
     def convert(self, signal_name, signal_setup, value):

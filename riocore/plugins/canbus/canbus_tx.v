@@ -4,7 +4,7 @@ module canbus_tx
     (
         input clk,
         output reg tx = 1'b1,
-        input wire [31:0] indata,
+        input wire [DATA_BITS-1:0] tx_data,
         input wire [10:0] tx_arib,
         input wire [3:0] tx_dlc,
         input wire start,
@@ -14,7 +14,6 @@ module canbus_tx
 
     reg [31:0] clk_counter = 0;
 
-    localparam ARIB = 11'h00d;
     localparam DATA_BYTES = 4;
     localparam DATA_BITS = (DATA_BYTES * 8);
     localparam FRAME_SIZE = (34 + DATA_BITS);
@@ -27,7 +26,7 @@ module canbus_tx
                DONE  = 4'd6;
 
     reg [3:0] state = IDLE;
-    reg [31:0] bit_count = 0;
+    reg [7:0] bit_count = 0;
 
     reg [10:0] arib = 11'd0;
     reg rtr = 1'b0;
@@ -54,13 +53,11 @@ module canbus_tx
 
         if (start == 1) begin
             busy <= 1'd1;
-
             arib <= tx_arib;
             dlc <= tx_dlc;
-            data <= indata;
+            data <= tx_data;
             state <= IDLE;
         end
-
 
         if (clk_counter == 0) begin
             clk_counter <= DIVIDER;

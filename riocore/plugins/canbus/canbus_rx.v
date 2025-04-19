@@ -23,9 +23,8 @@ module canbus_rx
     reg csumok = 1'b0;
     reg [5:0] stuff_check = 6'b100111;
     reg [3:0] state = IDLE;
-    reg [31:0] bit_count = 0;
-    reg [63:0] data = 0;
-    reg [127:0] rx_frm = 0;
+    reg [7:0] bit_count = 0;
+    reg [63+15:0] rx_frm = 0;
     reg [14:0] crc = 15'd0;
     reg [14:0] rx_crc = 15'd0;
     wire[14:0] rx_crc_next;
@@ -44,7 +43,7 @@ module canbus_rx
             if (state == IDLE) begin
                 clk_counter <= 1;
             end else if (state == SYNC) begin
-                clk_counter <= DIVIDER - 10;
+                clk_counter <= DIVIDER;
             end else begin
                 clk_counter <= DIVIDER;
             end
@@ -75,19 +74,19 @@ module canbus_rx
                     end else if (stuff_check[4:0] == 5'b11111) begin
                         // stuff bit
                     end else begin
-                        rx_frm <= {rx_frm[126:0], rx};
+                        rx_frm <= {rx_frm[63+15-1:0], rx};
                         rx_crc <= rx_crc_next;
                         if (bit_count == 11) begin
                             arib <= rx_frm[10:0];
                         end else if (bit_count == 18 && rx_frm[3:0] == 8) begin
                             dlc <= rx_frm[3:0];
                         end else if (bit_count == 18 + (dlc*8)) begin
-                            data <= rx_frm[63:0];
+                            //data <= rx_frm[63:0];
                             crc <= rx_crc;
                         end else if (bit_count == 18 + (dlc*8) + 15) begin
                             if (crc == rx_frm[14:0]) begin
                                 // crc is ok
-                                rx_data <= data[63:0];
+                                rx_data <= rx_frm[63+15:15];
                                 csumok <= 1'b1;
                             end
                         end else if (bit_count == 18 + (dlc*8) + 15 + 1) begin

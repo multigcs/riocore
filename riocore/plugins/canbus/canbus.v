@@ -1,6 +1,6 @@
 
 module canbus
-    #(parameter DIVIDER=53)
+    #(parameter DIVIDER=53, parameter IDIVIDER=53)
     (
         input clk,
         input rx,
@@ -55,13 +55,13 @@ module canbus
     reg tx_start = 1'd0;
     reg [3:0] tx_dlc = 4'd4;
     reg [10:0] tx_arib = 11'h00d;
-    reg [63:0] tx_data = 64'd0;
+    reg [31:0] tx_data = 31'd0;
     reg [31:0] tx_counter = 32'd0;
 
     always @(posedge clk) begin
         tx_start <= 1'd0;
         if (tx_counter == 0) begin
-            tx_counter <= 32'd1000000;
+            tx_counter <= IDIVIDER;
             if (enable == 1) begin
                 tx_data <= {velocity[7:0], velocity[15:8], velocity[23:16], velocity[31:24]};
             end else begin
@@ -70,20 +70,17 @@ module canbus
             tx_dlc <= 4'd4;
             tx_arib <= 11'h00d;
             tx_start <= 1'd1;
-
         end else begin
             tx_counter <= tx_counter - 1'd1;
         end
     end
-
-
 
     canbus_tx #(
         .DIVIDER(DIVIDER)
     ) canbus_tx0 (
         .clk(clk),
         .tx(tx2),
-        .indata(tx_data),
+        .tx_data(tx_data),
         .tx_arib(tx_arib),
         .tx_dlc(tx_dlc),
         .start(tx_start),
