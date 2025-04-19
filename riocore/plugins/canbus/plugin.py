@@ -11,7 +11,7 @@ class Plugin(PluginBase):
         # self.LIMITATIONS = {}
         self.TYPE = "joint"
 
-        self.VERILOGS = ["canbus.v"]
+        self.VERILOGS = ["canbus.v", "canbus_tx.v", "canbus_rx.v"]
 
         self.OPTIONS = {
             "baud": {
@@ -155,7 +155,7 @@ class Plugin(PluginBase):
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
-        instance_parameter["DIVIDER"] = self.system_setup["speed"] // baud // 2 - 1
+        instance_parameter["DIVIDER"] = self.system_setup["speed"] // baud - 2
         return instances
 
     def convert(self, signal_name, signal_setup, value):
