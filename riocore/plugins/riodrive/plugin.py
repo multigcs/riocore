@@ -3,15 +3,14 @@ from riocore.plugins import PluginBase
 
 class Plugin(PluginBase):
     def setup(self):
-        self.NAME = "canbus"
-        self.INFO = "odrive canbus test"
-        self.DESCRIPTION = ""
+        self.NAME = "riodrive"
+        self.INFO = "controling riodrive via can-bus"
+        self.DESCRIPTION = "riodrive is a fork of odrive (3.6)"
         self.KEYWORDS = "canbus odrive"
         self.ORIGIN = ""
-        # self.LIMITATIONS = {}
         self.TYPE = "joint"
 
-        self.VERILOGS = ["canbus.v", "canbus_tx.v", "canbus_rx.v"]
+        self.VERILOGS = ["riodrive.v", "canbus_tx.v", "canbus_rx.v"]
 
         self.OPTIONS = {
             "baud": {

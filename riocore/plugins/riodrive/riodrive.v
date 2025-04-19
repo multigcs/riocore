@@ -1,5 +1,5 @@
 
-module canbus
+module riodrive
     #(parameter DIVIDER=53, parameter IDIVIDER=53)
     (
         input clk,
