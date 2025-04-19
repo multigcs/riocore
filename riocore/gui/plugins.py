@@ -541,7 +541,7 @@ class GuiPlugins:
         if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
             joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
             tab_widget.addTab(joint_tab, "Joint")
-        elif plugin_instance.TYPE != "interface":
+        if plugin_instance.TYPE != "interface":
             if plugin_instance.SIGNALS:
                 signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config)
                 tab_widget.addTab(signals_tab, "Signals")

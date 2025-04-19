@@ -991,7 +991,7 @@ class Project:
                         value = unpack("<f", bytes(byte_pack))[0]
                     else:
                         if variable_size == 4:
-                            value = unpack("<B", bytes([byte_pack[0]>>4]))[0]
+                            value = unpack("<B", bytes([byte_pack[0] >> 4]))[0]
                         else:
                             value = unpack("<i", bytes(byte_pack))[0]
                 else:

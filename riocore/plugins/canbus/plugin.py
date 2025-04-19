@@ -1,5 +1,5 @@
 from riocore.plugins import PluginBase
-from struct import pack, unpack
+
 
 class Plugin(PluginBase):
     def setup(self):
@@ -34,6 +34,11 @@ class Plugin(PluginBase):
         self.INTERFACE = {
             "power": {
                 "size": 16,
+                "direction": "input",
+                "description": "",
+            },
+            "temp": {
+                "size": 8,
                 "direction": "input",
                 "description": "",
             },
@@ -83,8 +88,12 @@ class Plugin(PluginBase):
             "power": {
                 "direction": "input",
                 "format": "0.1f",
-                "scale": 10.0,
                 "unit": "W",
+            },
+            "temp": {
+                "direction": "input",
+                "format": "0.1f",
+                "unit": "°C",
             },
             "state": {
                 "direction": "input",
@@ -94,18 +103,10 @@ class Plugin(PluginBase):
                     0: "UNDEFINED",
                     1: "IDLE",
                     2: "STARTUP_SEQUENCE",
-                    3: "FULL_CALIBRATION_SEQUENCE",
-                    4: "MOTOR_CALIBRATION",
-                    5: "???",
-                    6: "ENCODER_INDEX_SEARCH",
-                    7: "ENCODER_OFFSET_CALIBRATION",
                     8: "CLOSED_LOOP_CONTROL",
                     9: "LOCKIN_SPIN",
-                    10: "ENCODER_DIR_FIND",
                     11: "HOMING",
-                    12: "ENCODER_HALL_POLARITY_CALIBRATION",
-                    13: "ENCODER_HALL_PHASE_CALIBRATION",
-                }
+                },
             },
             "traj": {
                 "direction": "input",
@@ -157,4 +158,16 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = self.system_setup["speed"] // baud // 2 - 1
         return instances
 
+    def convert(self, signal_name, signal_setup, value):
+        if signal_name == "power":
+            value = value / 10.0
+        elif signal_name == "temp":
+            value = value / 2.0
+        return value
 
+    def convert_c(self, signal_name, signal_setup):
+        if signal_name == "power":
+            return "value = value / 10.0;"
+        elif signal_name == "temp":
+            return "value = value / 2.0;"
+        return ""

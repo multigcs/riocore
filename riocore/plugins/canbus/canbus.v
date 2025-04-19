@@ -9,6 +9,7 @@ module canbus
         input wire [31:0] velocity,
         output wire [31:0] position,
         output wire [15:0] power,
+        output wire [7:0] temp,
         output wire [3:0] state,
         output wire traj,
         output wire mot,
@@ -24,6 +25,7 @@ module canbus
     wire [63:0] outdata;
     assign position = {outdata[39:32], outdata[47:40], outdata[55:48], outdata[63:56]};
     assign power = {outdata[23:16], outdata[31:24]};
+    assign temp = outdata[15:8];
 
     assign traj = outdata[7];
     assign mot = outdata[6];

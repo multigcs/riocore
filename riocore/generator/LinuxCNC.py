@@ -1264,14 +1264,17 @@ class LinuxCNC:
 
                 if hasattr(gui_gen, f"draw_{dtype}"):
                     if dtype == "multilabel" and not boolean:
-                        self.halextras.append(f"loadrt demux names=demux_{halname} personality=16")
+                        self.halextras.append(f"loadrt demux names=demux_{halname} personality={max(mapping.keys()) + 1}")
                         self.halextras.append(f"addf demux_{halname} servo-thread")
                         displayconfig["legends"] = []
-                        #for num in range(16):
-                        for num in range(6):
-                            text = mapping.get(num, f"Num:{num}")
+                        lnum = 0
+                        for value, text in mapping.items():
+                            if lnum > 5:
+                                break
                             displayconfig["legends"].append(text)
-                            self.halg.net_add(f"demux_{halname}.out-{num:02d}", f"pyvcp.{halname}.legend{num}")
+                            self.halg.net_add(f"demux_{halname}.out-{value:02d}", f"pyvcp.{halname}.legend{lnum}")
+
+                            lnum += 1
 
                     title = haltitles.get(halname, halname)
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
@@ -1809,7 +1812,9 @@ class LinuxCNC:
                 enable_halname = None
                 position_mode = None
                 joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
-                position_scale = float(joint_config.get("scale_out", joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"]))))
+                position_scale = float(
+                    joint_config.get("scale_out", joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"])))
+                )
                 if machinetype == "lathe":
                     home_sequence_default = 2
                     if axis_name == "X":
