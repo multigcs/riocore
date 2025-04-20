@@ -359,6 +359,10 @@ class MyVCP:
         label = QLabel("*")
         layout.addWidget(label)
 
+    def show_rectled(self, element, layout):
+        label = QLabel("*")
+        layout.addWidget(label)
+
     def show_labelframe(self, element, layout):
         gbox_layout = QVBoxLayout()
         gbox_widget = QGroupBox()
