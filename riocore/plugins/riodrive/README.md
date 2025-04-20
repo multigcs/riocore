@@ -1,4 +1,7 @@
 # riodrive
+
+<img align="right" width="320" src="image.png">
+
 **to control a riodrive via can-bus**
 
 riodrive is a fork of odrive (v3.6)
