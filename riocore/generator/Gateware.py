@@ -332,22 +332,33 @@ class Gateware:
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
 
+        output.append("    wire INTERFACE_SYNC;")
+        error_signals = ["INTERFACE_TIMEOUT"]
+
         estop_pin = None
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                if plugin_instance.NAME == "bitin" and plugin_instance.title.lower() == "estop":
-                    for data_name, data_config in plugin_instance.interface_data().items():
-                        estop_pin = data_config["variable"]
+            for data_name, interface_setup in plugin_instance.interface_data().items():
+                if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                    if plugin_instance.NAME == "bitin" and plugin_instance.title.lower() == "estop":
+                        estop_pin = interface_setup["variable"]
                         break
+
+                error_on = interface_setup.get("error_on")
+                if error_on is True:
+                    error_signals.append(interface_setup["variable"])
+                elif error_on is False:
+                    error_signals.append(f"~{interface_setup['variable']}")
+
         if estop_pin is not None:
             output.append("    wire ESTOP;")
             output.append(f"    assign ESTOP = {estop_pin};")
+            error_signals.append("ESTOP")
         else:
             output.append("    parameter ESTOP = 0;")
         output.append("    wire ERROR;")
-        output.append("    wire INTERFACE_SYNC;")
-        output.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
-        # output.append("    assign ERROR_OUT = ERROR;")
+
+        output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
+
         output.append("")
 
         osc_clock = self.project.config["osc_clock"]

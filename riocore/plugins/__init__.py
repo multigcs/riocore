@@ -22,6 +22,8 @@ class PluginBase:
         self.KEYWORDS = ""
         self.ORIGIN = ""
         self.GATEWARE_SUPPORT = True
+        self.SYNC = None
+        self.ERROR = None
         self.OPTIONS = {}
         self.PLUGIN_CONFIG = False
         self.LIMITATIONS = {}
@@ -358,6 +360,11 @@ class PluginBase:
                     instance_arguments[interface_name] = f"{interface_setup['variable']} | ERROR"
                 else:
                     instance_arguments[interface_name] = interface_setup["variable"]
+
+        if self.SYNC is True:
+            instance_arguments["sync"] = "INTERFACE_SYNC"
+        elif self.SYNC is False:
+            instance_arguments["sync"] = "0"
 
         if self.TYPE == "interface":
             instance_arguments["rx_data"] = "rx_data"

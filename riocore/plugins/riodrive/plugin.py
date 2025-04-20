@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "riodrive"
         self.INFO = "to control a riodrive via can-bus"
-        self.DESCRIPTION = "riodrive is a fork of odrive (3.6)"
+        self.DESCRIPTION = "riodrive is a fork of odrive (v3.6)"
         self.KEYWORDS = "canbus odrive"
         self.ORIGIN = ""
         self.TYPE = "joint"
@@ -22,12 +22,22 @@ class Plugin(PluginBase):
                 "description": "serial baud rate",
             },
             "interval": {
-                "default": 500,
+                "default": 900,
                 "type": int,
                 "min": 100,
                 "max": 10000,
                 "unit": "Hz",
                 "description": "update interval",
+            },
+            "sync": {
+                "default": True,
+                "type": bool,
+                "description": "in sync with interface (eg UDP)",
+            },
+            "error": {
+                "default": True,
+                "type": bool,
+                "description": "trigger error on connection/drive problems",
             },
         }
         self.PINDEFAULTS = {
@@ -90,6 +100,11 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "on_error": False,
             },
+            "error": {
+                "size": 1,
+                "direction": "input",
+                "error_on": True,
+            },
         }
         self.SIGNALS = {
             "power": {
@@ -141,13 +156,13 @@ class Plugin(PluginBase):
             },
             "position": {
                 "direction": "input",
-                "format": "0.2f",
+                "format": "d",
                 "unit": "",
             },
             "velocity": {
                 "direction": "output",
-                "min": -10,
-                "max": 10,
+                "min": -100,
+                "max": 100,
                 "format": "0.2f",
                 "unit": "",
             },
@@ -155,7 +170,13 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "bool": True,
             },
+            "error": {
+                "direction": "input",
+                "bool": True,
+            },
         }
+        self.SYNC = self.plugin_setup.get("sync", self.OPTIONS["sync"]["default"])
+        self.ERROR = self.plugin_setup.get("error", self.OPTIONS["error"]["default"])
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

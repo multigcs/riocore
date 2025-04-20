@@ -3,6 +3,8 @@ module riodrive
     #(parameter DIVIDER=53, parameter IDIVIDER=53)
     (
         input clk,
+        input sync,
+        output reg error = 1'd0,
         input rx,
         output wire tx,
         input enable,
@@ -30,6 +32,7 @@ module riodrive
     wire [3:0] rx_dlc;
     wire [10:0] rx_arib;
     wire [(RX_DATA_BYTES*8)-1:0] rx_data;
+    reg [31:0] rx_timeout = IDIVIDER * 3;
     always @(posedge clk) begin
         if (rx_valid == 1 && rx_arib == RX_ARIB && rx_dlc == RX_DATA_BYTES) begin
             position <= {rx_data[39:32], rx_data[47:40], rx_data[55:48], rx_data[63:56]};
@@ -40,6 +43,13 @@ module riodrive
             enc <= rx_data[5];
             ctrl <= rx_data[4];
             state <= rx_data[3:0];
+            rx_timeout <= IDIVIDER * 3;
+            error <= (mot | enc | ctrl);
+        end else if (rx_timeout == 0) begin
+            error <= 1'd1;
+            state <= 'd0;
+        end else begin
+            rx_timeout <= rx_timeout - 1;
         end
     end
 
@@ -51,7 +61,7 @@ module riodrive
 
     always @(posedge clk) begin
         tx_start <= 1'd0;
-        if (tx_counter == 0) begin
+        if (tx_counter == 0 || sync == 1) begin
             tx_counter <= IDIVIDER;
             if (enable == 1) begin
                 tx_data <= {velocity[7:0], velocity[15:8], velocity[23:16], velocity[31:24]};
