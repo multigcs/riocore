@@ -15,7 +15,7 @@ class Plugin(PluginBase):
 
         self.OPTIONS = {
             "baud": {
-                "default": 250000,
+                "default": 500000,
                 "type": int,
                 "min": 300,
                 "max": 10000000,

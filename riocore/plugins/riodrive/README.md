@@ -29,7 +29,7 @@ can-bus baud rate
  * type: int
  * min: 300
  * max: 10000000
- * default: 250000
+ * default: 500000
  * unit: bit/s
 
 ### interval:
@@ -218,7 +218,7 @@ configure as joint
 ```
 {
     "type": "riodrive",
-    "baud": 250000,
+    "baud": 500000,
     "interval": 400,
     "sync": true,
     "error": true,
