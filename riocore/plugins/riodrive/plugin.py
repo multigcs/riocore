@@ -6,7 +6,8 @@ class Plugin(PluginBase):
         self.NAME = "riodrive"
         self.INFO = "to control a riodrive via can-bus"
         self.DESCRIPTION = "riodrive is a fork of odrive (v3.6)"
-        self.KEYWORDS = "canbus odrive"
+        self.URL = "https://github.com/multigcs/riodrive"
+        self.KEYWORDS = "canbus odrive bldc brushless servo"
         self.ORIGIN = ""
         self.TYPE = "joint"
 

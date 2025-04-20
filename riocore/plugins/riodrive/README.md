@@ -1,9 +1,11 @@
 # riodrive
 **to control a riodrive via can-bus**
 
-riodrive is a fork of odrive (3.6)
+riodrive is a fork of odrive (v3.6)
 
-Keywords: canbus odrive
+Keywords: canbus odrive bldc brushless servo
+
+URL: https://github.com/multigcs/riodrive
 
 ## Pins:
 *FPGA-pins*
@@ -33,8 +35,20 @@ update interval
  * type: int
  * min: 100
  * max: 10000
- * default: 500
+ * default: 900
  * unit: Hz
+
+### sync:
+in sync with interface (eg UDP)
+
+ * type: bool
+ * default: True
+
+### error:
+trigger error on connection/drive problems
+
+ * type: bool
+ * default: True
 
 ### name:
 name of this plugin instance
@@ -109,14 +123,19 @@ configure as joint
 
  * type: float
  * direction: output
- * min: -10
- * max: 10
+ * min: -100
+ * max: 100
  * unit: 
 
 ### enable:
 
  * type: bit
  * direction: output
+
+### error:
+
+ * type: bit
+ * direction: input
 
 
 ## Interfaces:
@@ -171,6 +190,11 @@ configure as joint
  * size: 1 bit
  * direction: output
 
+### error:
+
+ * size: 1 bit
+ * direction: input
+
 
 ## Basic-Example:
 ```
@@ -192,7 +216,9 @@ configure as joint
 {
     "type": "riodrive",
     "baud": 250000,
-    "interval": 500,
+    "interval": 900,
+    "sync": true,
+    "error": true,
     "name": "",
     "axis": "",
     "is_joint": false,
@@ -316,6 +342,15 @@ configure as joint
                 "title": "enable",
                 "section": "outputs",
                 "type": "checkbox"
+            }
+        },
+        "error": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "error",
+                "section": "inputs",
+                "type": "led"
             }
         }
     }

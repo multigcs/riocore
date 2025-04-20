@@ -18,6 +18,7 @@ class PluginBase:
         self.TYPE = "io"
         self.INFO = ""
         self.DESCRIPTION = ""
+        self.URL = ""
         self.GRAPH = ""
         self.KEYWORDS = ""
         self.ORIGIN = ""

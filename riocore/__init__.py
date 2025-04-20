@@ -52,6 +52,9 @@ class Plugins:
         if plugin.KEYWORDS:
             output.append(f"Keywords: {plugin.KEYWORDS}")
             output.append("")
+        if plugin.URL:
+            output.append(f"URL: {plugin.URL.strip()}")
+            output.append("")
 
         if plugin.LIMITATIONS:
             output.append("## Limitations")

@@ -14,6 +14,7 @@ module canbus_tx
 
     reg [31:0] clk_counter = 0;
 
+    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     localparam DATA_BITS = (DATA_BYTES * 8);
     localparam FRAME_SIZE = (34 + DATA_BITS);
 

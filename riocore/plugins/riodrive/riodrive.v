@@ -19,6 +19,8 @@ module riodrive
         output reg ctrl
     );
 
+    localparam IDIVIDER_BITS = clog2(IDIVIDER + 1);
+    localparam ITDIVIDER_BITS = clog2(IDIVIDER * 3 + 1);
     localparam RX_DATA_BYTES = 8;
     localparam RX_ARIB = 11'h01E;
     localparam TX_DATA_BYTES = 4;
@@ -32,7 +34,7 @@ module riodrive
     wire [3:0] rx_dlc;
     wire [10:0] rx_arib;
     wire [(RX_DATA_BYTES*8)-1:0] rx_data;
-    reg [31:0] rx_timeout = IDIVIDER * 3;
+    reg [ITDIVIDER_BITS-1:0] rx_timeout = IDIVIDER * 3;
     always @(posedge clk) begin
         if (rx_valid == 1 && rx_arib == RX_ARIB && rx_dlc == RX_DATA_BYTES) begin
             position <= {rx_data[39:32], rx_data[47:40], rx_data[55:48], rx_data[63:56]};
@@ -57,7 +59,7 @@ module riodrive
     reg tx_start = 1'd0;
     reg [3:0] tx_dlc = TX_DATA_BYTES;
     reg [(TX_DATA_BYTES*8)-1:0] tx_data = 'd0;
-    reg [31:0] tx_counter = 'd0;
+    reg [IDIVIDER_BITS-1:0] tx_counter = 'd0;
 
     always @(posedge clk) begin
         tx_start <= 1'd0;
