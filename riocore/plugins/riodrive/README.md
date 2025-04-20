@@ -24,7 +24,7 @@ URL: https://github.com/multigcs/riodrive
 ## Options:
 *user-options*
 ### baud:
-serial baud rate
+can-bus baud rate
 
  * type: int
  * min: 300

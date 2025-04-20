@@ -20,7 +20,7 @@ class Plugin(PluginBase):
                 "min": 300,
                 "max": 10000000,
                 "unit": "bit/s",
-                "description": "serial baud rate",
+                "description": "can-bus baud rate",
             },
             "interval": {
                 "default": 900,
