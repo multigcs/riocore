@@ -23,12 +23,12 @@ class Plugin(PluginBase):
                 "description": "can-bus baud rate",
             },
             "interval": {
-                "default": 900,
+                "default": 400,
                 "type": int,
                 "min": 100,
                 "max": 10000,
                 "unit": "Hz",
-                "description": "update interval",
+                "description": "update interval / normaly it should be 1khz, but with sync=true, this is a good default",
             },
             "sync": {
                 "default": True,

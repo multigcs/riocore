@@ -33,12 +33,12 @@ can-bus baud rate
  * unit: bit/s
 
 ### interval:
-update interval
+update interval / normaly it should be 1khz, but with sync=true, this is a good default
 
  * type: int
  * min: 100
  * max: 10000
- * default: 900
+ * default: 400
  * unit: Hz
 
 ### sync:
@@ -219,7 +219,7 @@ configure as joint
 {
     "type": "riodrive",
     "baud": 250000,
-    "interval": 900,
+    "interval": 400,
     "sync": true,
     "error": true,
     "name": "",
