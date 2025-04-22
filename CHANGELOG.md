@@ -6,6 +6,10 @@
 * adding experimental parport / rpi gpio support
 * adding experimental gpio component support (pwmgen/stepgen/encoder)
 * display diffs in Json Tab
+* adding Simulator via UDP with simple 3D-View
+
+### Plugins
+* adding riodrive can-bus plugin (experimental)
 
 
 ## v0.9.2
