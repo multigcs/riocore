@@ -2,11 +2,6 @@ import os
 import sys
 from functools import partial
 
-if os.path.isfile(os.path.join("riocore", "__init__.py")):
-    sys.path.insert(0, os.getcwd())
-elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
-    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-
 import riocore
 
 from riocore.widgets import (
@@ -24,8 +19,6 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-
-riocore_path = os.path.dirname(riocore.__file__)
 
 
 class TabBoard:

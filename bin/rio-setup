@@ -27,23 +27,23 @@ from riocore import VERSION
 from riocore import halpins
 from riocore import components
 from riocore import gpios
-from riocore import vcp
 
+from riocore.gui import vcp
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.components import GuiComponents
 from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.modules import GuiModules
 from riocore.gui.gpios import GuiGpios
 
-from riocore.tab_axis import TabAxis
-from riocore.tab_board import TabBoard
-from riocore.tab_gateware import TabGateware
-from riocore.tab_gpio import TabGpios
-from riocore.tab_hal import TabHal
-from riocore.tab_linuxcnc import TabLinuxCNC
-from riocore.tab_overview import TabOverview
-from riocore.tab_pins import TabPins
-from riocore.tab_signals import TabSignals
+from riocore.gui.tab_axis import TabAxis
+from riocore.gui.tab_board import TabBoard
+from riocore.gui.tab_gateware import TabGateware
+from riocore.gui.tab_gpio import TabGpios
+from riocore.gui.tab_hal import TabHal
+from riocore.gui.tab_linuxcnc import TabLinuxCNC
+from riocore.gui.tab_overview import TabOverview
+from riocore.gui.tab_pins import TabPins
+from riocore.gui.tab_signals import TabSignals
 
 from riocore.modifiers import Modifiers
 from riocore.widgets import (

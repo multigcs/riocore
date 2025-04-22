@@ -1,15 +1,10 @@
 import os
 import sys
 
-if os.path.isfile(os.path.join("riocore", "__init__.py")):
-    sys.path.insert(0, os.getcwd())
-elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
-    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-
 import riocore
 
 
-from riocore import halgraph
+from riocore import axisgraph
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -21,10 +16,7 @@ from riocore.widgets import (
 )
 
 
-riocore_path = os.path.dirname(riocore.__file__)
-
-
-class TabHal:
+class TabAxis:
     last_x = -1
     last_y = -1
     last_action = 0
@@ -38,7 +30,7 @@ class TabHal:
         self.scroll_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_widget.setWidgetResizable(True)
         self.scroll_widget.setWidget(self.overview_img)
-        self.graph = halgraph.HalGraph()
+        self.graph = axisgraph.AxisGraph()
 
     def widget(self):
         return self.scroll_widget
@@ -48,7 +40,8 @@ class TabHal:
 
     def update(self):
         config_name = self.parent.config.get("name")
-        png_data = self.graph.png(os.path.join(self.parent.output_path, config_name, "LinuxCNC", "rio.ini"))
+        config_folder = os.path.join(self.parent.output_path, config_name, "LinuxCNC")
+        png_data = self.graph.png(os.path.join(config_folder, "rio.hal"), os.path.join(config_folder, "rio.ini"))
         if png_data:
             self.overview_img.load(png_data)
 

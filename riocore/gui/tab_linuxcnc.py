@@ -1,11 +1,6 @@
 import os
 import sys
 
-if os.path.isfile(os.path.join("riocore", "__init__.py")):
-    sys.path.insert(0, os.getcwd())
-elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
-    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-
 import riocore
 
 
@@ -17,9 +12,6 @@ from PyQt5.QtWidgets import (
 from riocore.widgets import (
     STYLESHEET_TABBAR,
 )
-
-
-riocore_path = os.path.dirname(riocore.__file__)
 
 
 class TabLinuxCNC:
