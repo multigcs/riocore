@@ -6,7 +6,8 @@
 * adding experimental parport / rpi gpio support
 * adding experimental gpio component support (pwmgen/stepgen/encoder)
 * display diffs in Json Tab
-* adding Simulator via UDP with simple 3D-View
+* adding [Simulator](doc/SIMULATION.md) via UDP with simple 3D-View
+* adding [ros](doc/ROS.md) support (ros-bridge - Robot Operating System)
 
 ### Plugins
 * adding riodrive can-bus plugin (experimental)
