@@ -15,7 +15,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import riocore
-from riocore import halgraph
+from riocore.gui import halgraph
 
 riocore_path = os.path.dirname(riocore.__file__)
 

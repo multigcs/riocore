@@ -1,8 +1,5 @@
-import os
-import sys
 from functools import partial
 
-import riocore
 
 from riocore import gpios
 

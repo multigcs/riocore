@@ -1,8 +1,6 @@
 import os
 import hashlib
-import sys
 
-import riocore
 
 
 from PyQt5.QtWidgets import (

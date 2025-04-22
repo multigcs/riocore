@@ -1,10 +1,8 @@
 import os
-import sys
-
-import riocore
 
 
-from riocore import axisgraph
+
+from riocore.gui import axisgraph
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (

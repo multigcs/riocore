@@ -1,8 +1,5 @@
-import os
 import re
-import sys
 
-import riocore
 
 from riocore import halpins
 

@@ -1,7 +1,5 @@
 import os
-import sys
 
-import riocore
 
 
 from PyQt5.QtWidgets import (

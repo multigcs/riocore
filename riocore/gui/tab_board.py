@@ -1,8 +1,6 @@
 import os
-import sys
 from functools import partial
 
-import riocore
 
 from riocore.widgets import (
     ImageMap,

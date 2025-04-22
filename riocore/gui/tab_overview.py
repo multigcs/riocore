@@ -1,9 +1,6 @@
-import os
-import sys
 
-import riocore
 
-from riocore import cfggraph
+from riocore.gui import cfggraph
 
 
 from PyQt5.QtCore import Qt
