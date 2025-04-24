@@ -108,6 +108,13 @@ class LinuxCNC:
             "DEFAULT_ANGULAR_VELOCITY": 2.5,
             "MAX_ANGULAR_VELOCITY": 5.0,
         },
+        "MQTT": {
+            # "DRYRUN": "--dryrun",
+            "DRYRUN": "",
+            "BROKER": "localhost",
+            "USERNAME": "",
+            "PASSWORD": "",
+        },
         "KINS": {
             "JOINTS": None,
             "KINEMATICS": None,
@@ -167,6 +174,7 @@ class LinuxCNC:
         self.pregui_call_list = []
         self.feedbacks = []
         self.halextras = []
+        self.mqtt_publisher = []
         self.project = project
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
@@ -680,6 +688,9 @@ class LinuxCNC:
             print("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
 
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type)
+
+        if not self.mqtt_publisher:
+            del ini_setup["MQTT"]
 
         self.vcp_gui()
 
@@ -1302,6 +1313,12 @@ class LinuxCNC:
                 gui_gen.draw_vbox_end()
                 gui_gen.draw_frame_end()
 
+                # if self.mqtt_publisher:
+                # pname = gui_gen.draw_scale("mqtt-period", "mqtt-period")
+                # self.halg.net_add("mqtt-publisher.period", pname.replace("-f", "-u"))
+                # pname = gui_gen.draw_checkbutton("mqtt-enable", "mqtt-enable")
+                # self.halg.net_add("mqtt-publisher.enable", pname)
+
             def vcp_add(tab, signal_config, prefix=""):
                 halname = signal_config["halname"]
                 netname = signal_config["netname"]
@@ -1557,6 +1574,22 @@ class LinuxCNC:
             else:
                 self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
+
+        self.mqtt_publisher = []
+        for plugin_instance in self.project.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                halname = signal_config["halname"]
+                userconfig = signal_config.get("userconfig", {})
+                mqtt = userconfig.get("mqtt")
+                direction = signal_config["direction"]
+                if mqtt:
+                    self.mqtt_publisher.append(f"rio.{halname}")
+        if self.mqtt_publisher:
+            self.halg.fmt_add_top("# mqtt-publisher")
+            self.halg.fmt_add_top("loadusr -W mqtt-publisher [MQTT]DRYRUN --mqtt-broker=[MQTT]BROKER \\")
+            self.halg.fmt_add_top("--mqtt-user=[MQTT]USERNAME --mqtt-password=[MQTT]PASSWORD keys=\\")
+            self.halg.fmt_add_top(",".join(self.mqtt_publisher))
+            self.halg.fmt_add_top("")
 
         linuxcnc_setp = {}
 

@@ -365,6 +365,12 @@ class GuiPlugins:
 
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
+            signal_cols.addWidget(QLabel("MQTT:"), stretch=1)
+            signal_setup["mqtt"] = {"type": bool, "default": False, "help_text": "add this signal to the mqtt-publisher"}
+            signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "mqtt", signal_setup["mqtt"], cb=update), stretch=5)
+
+            signal_cols = QHBoxLayout()
+            signal_rows.addLayout(signal_cols)
 
             if "source" not in signal_defaults and not signal_defaults.get("bool"):
                 signal_cols.addWidget(QLabel("Scale"), stretch=1)
