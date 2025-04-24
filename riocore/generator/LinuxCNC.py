@@ -11,6 +11,7 @@ from riocore import gpios
 from riocore.generator.hal import hal_generator
 from riocore.generator.component import component
 from riocore.generator.rosbridge import rosbridge
+from riocore.generator.mqttbridge import mqttbridge
 from riocore.generator.pyvcp import pyvcp
 from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
@@ -271,6 +272,7 @@ class LinuxCNC:
         if self.project.config["toolchain"]:
             component(self.project)
             rosbridge(self.project)
+            mqttbridge(self.project)
         self.hal()
         self.riof()
         self.misc()

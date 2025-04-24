@@ -2,7 +2,6 @@ import os
 import hashlib
 
 
-
 from PyQt5.QtWidgets import (
     QPlainTextEdit,
     QTabWidget,

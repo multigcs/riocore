@@ -1,7 +1,6 @@
 import re
 
 
-
 from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,

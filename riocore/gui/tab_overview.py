@@ -1,5 +1,3 @@
-
-
 from riocore.gui import cfggraph
 
 

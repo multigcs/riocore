@@ -1,7 +1,6 @@
 import os
 
 
-
 from riocore.gui import halgraph
 
 from PyQt5.QtCore import Qt
