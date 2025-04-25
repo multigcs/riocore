@@ -12,7 +12,7 @@
 
 ---
 
-<p align="center"> Realtime-IO for LinuxCNC<br></p>
+<p align="center"> Realtime-IO for Motion-Control <br></p>
 
 ## Table of Contents
 - [About](#about)
@@ -27,8 +27,8 @@
 
 ## About <a name = "about"></a>
 
-LinuxCNC-RIO is a cost-effective and flexible alternative to traditional hardware setups like Mesa boards,
-it's a code generator for using FPGA boards as Realtime-IO for LinuxCNC.
+RIO is a cost-effective and flexible alternative to traditional hardware setups like Mesa boards,
+it's a code generator for using FPGA boards as Realtime-IO for LinuxCNC and more.
 
 Furthermore, the complete configuration and hal is generated.
 a json configuration file serves as the basis
@@ -39,8 +39,9 @@ a json configuration file serves as the basis
 * using free FPGA-Toolchain or commercial (depends on the FPGA)
 * Compatible with a wide range of FPGA boards, including ICE40, ECP5, MAX10, Artix7, Gowin, CycloneIV, and TangNano9K, allowing users to choose hardware that fits their needs and budget
 * Supports open and closed-loop control for multiple motor types (e.g., stepper motors, DC servos), as well as mixed joint configurations
+* Also usable for other systems like ROS (Robot Operating System)
 
-These features make LinuxCNC-RIO an attractive solution for hobbyists and professionals seeking a customizable, cost-effective Realtime-IO interface for CNC systems
+These features make RIO an attractive solution for hobbyists and professionals seeking a customizable, cost-effective Realtime-IO interface for Motion-Control systems
 
 
 
