@@ -39,7 +39,7 @@ a json configuration file serves as the basis
 * using free FPGA-Toolchain or commercial (depends on the FPGA)
 * Compatible with a wide range of FPGA boards, including ICE40, ECP5, MAX10, Artix7, Gowin, CycloneIV, and TangNano9K, allowing users to choose hardware that fits their needs and budget
 * Supports open and closed-loop control for multiple motor types (e.g., stepper motors, DC servos), as well as mixed joint configurations
-* Also usable for other systems like ROS (Robot Operating System)
+* Primarily intended for LinuxCNC but also suitable for other systems such as ROS (Robot Operating System)
 
 These features make RIO an attractive solution for hobbyists and professionals seeking a customizable, cost-effective Realtime-IO interface for Motion-Control systems
 
