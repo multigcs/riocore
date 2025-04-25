@@ -205,6 +205,9 @@ graph LR;
     /LinuxCNC-->rio.ini
     /LinuxCNC-->rio-gui.xml
     /LinuxCNC-->*.hal;
+    /Output-->/ROS;
+    /Output-->/MQTT;
+    /Output-->/Simulator;
 ```
 
 
