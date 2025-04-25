@@ -28,7 +28,7 @@
 ## About <a name = "about"></a>
 
 RIO is a cost-effective and flexible alternative to traditional hardware setups like Mesa boards,
-it's a code generator for using FPGA boards as Realtime-IO for LinuxCNC and more.
+it's a code generator for using FPGA boards as Realtime-IO for LinuxCNC and other Motion-Control systems.
 
 Furthermore, the complete configuration and hal is generated.
 a json configuration file serves as the basis
