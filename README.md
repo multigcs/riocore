@@ -222,6 +222,7 @@ riocore
 |├── boards ············ board configurations
 |├── chipdata ·········· pin-information about the different FPGAs
 |├── configs ··········· some demo configurations
+|├── gui ··············· widgets and functions for the gui tools
 |├── files ············· helper scripts and files
 |├┬── generator ········ the generators for the GateWare and LinuxCNC configuration
 ||├── addons ··········· generator addons for LinuxCNC (like joystick/mpg/...)
