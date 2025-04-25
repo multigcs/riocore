@@ -1,6 +1,6 @@
 [LinuxCNC-RIO](https://github.com/multigcs/LinuxCNC-RIO) - rewrite
 
-<h3 align="center">LinuxCNC-RIO</h3>
+<h3 align="center">RIO</h3>
 
 <div align="center">
 
