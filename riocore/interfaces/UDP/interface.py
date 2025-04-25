@@ -22,7 +22,8 @@ class Interface:
             self.socket.settimeout(0.2)
             self.socket.recvfrom(100000)
         except Exception as err:
-            print(f"WARNING: can not set timeouts: {err}")
+            #print(f"WARNING: can not set timeouts: {err}")
+            pass
 
     def transfare(self, data):
         self.socket.sendto(bytes(data), (self.NET_IP, int(self.NET_PORT)))

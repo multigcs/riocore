@@ -2,11 +2,19 @@
 
 riocore includes a simple bridge between RIO and ROS [https://www.ros.org/](https://www.ros.org/)
 
+there are two bridges, one is written in python3 and the other is generated C++
+
+
 ## Example
-you can start a ros bridge with a command like this:
+you can start the python ros bridge with a command like this:
 ```
 $ bin/rio-rosbridge -p /tangbob riocore/configs/Tangbob/config.json 192.168.10.194:2390
 ```
+or the C++ bridge with:
+```
+sh Output/Tangbob/ROS/start.sh
+```
+
 
 and check the bridge with rostopic:
 ```
