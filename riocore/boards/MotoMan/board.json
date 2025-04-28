@@ -1,0 +1,404 @@
+{
+    "name": "MotoMan",
+    "description": "RIO-MotoMan board",
+    "url": "https://github.com/multigcs/rio-motoman",
+    "pinimage": "board.png",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "hx8k",
+    "package": "cb132",
+    "flashcmd": "iceFUNprog rio.bin",
+    "clock": {
+        "osc": "12000000",
+        "speed": "60000000",
+        "pin": "P7"
+    },
+    "slots": [
+
+    {
+        "name": "ENC0",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "A": {
+                "pin": "A10",
+                "pos": [
+                    95,
+                    79
+                ],
+                "direction": "output"
+            },
+            "B": {
+                "pin": "D10",
+                "pos": [
+                    95,
+                    98
+                ],
+                "direction": "output"
+            }
+        }
+    },
+    {
+        "name": "ENC1",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "A": {
+                "pin": "C10",
+                "pos": [
+                    150,
+                    79
+                ],
+                "direction": "output"
+            },
+            "B": {
+                "pin": "C11",
+                "pos": [
+                    150,
+                    98
+                ],
+                "direction": "output"
+            }
+        }
+    },
+
+
+
+    {
+        "name": "ENC2",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "A": {
+                "pin": "A11",
+                "pos": [
+                    210,
+                    79
+                ],
+                "direction": "output"
+            },
+            "B": {
+                "pin": "A12",
+                "pos": [
+                    210,
+                    98
+                ],
+                "direction": "output"
+            }
+        }
+    },
+    {
+        "name": "ENC3",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "A": {
+                "pin": "B14",
+                "pos": [
+                    265,
+                    79
+                ],
+                "direction": "output"
+            },
+            "B": {
+                "pin": "C14",
+                "pos": [
+                    265,
+                    98
+                ],
+                "direction": "output"
+            }
+        }
+    },
+    {
+        "name": "ENC4",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "A": {
+                "pin": "C12",
+                "pos": [
+                    320,
+                    79
+                ],
+                "direction": "output"
+            },
+            "B": {
+                "pin": "D14",
+                "pos": [
+                    320,
+                    98
+                ],
+                "direction": "output"
+            }
+        }
+    },
+    {
+        "name": "ENC5",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "A": {
+                "pin": "D12",
+                "pos": [
+                    375,
+                    79
+                ],
+                "direction": "output"
+            },
+            "B": {
+                "pin": "E14",
+                "pos": [
+                    375,
+                    98
+                ],
+                "direction": "output"
+            }
+        }
+    },
+
+
+    {
+        "name": "REF0",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "F14",
+                "pos": [
+                    465,
+                    117
+                ],
+                "direction": "input"
+            }
+        }
+    },
+    {
+        "name": "REF1",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "E12",
+                "pos": [
+                    465,
+                    49
+                ],
+                "direction": "input"
+            }
+        }
+    },
+
+
+    {
+        "name": "REF2",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "G14",
+                "pos": [
+                    520,
+                    117
+                ],
+                "direction": "input"
+            }
+        }
+    },
+    {
+        "name": "REF3",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "F12",
+                "pos": [
+                    520,
+                    49
+                ],
+                "direction": "input"
+            }
+        }
+    },
+
+    {
+        "name": "REF4",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "H12",
+                "pos": [
+                    575,
+                    117
+                ],
+                "direction": "input"
+            }
+        }
+    },
+    {
+        "name": "REF5",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "G12",
+                "pos": [
+                    575,
+                    49
+                ],
+                "direction": "input"
+            }
+        }
+    },
+
+
+
+
+
+    {
+        "name": "IN0",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "K14",
+                "pos": [
+                    635,
+                    117
+                ],
+                "direction": "input"
+            }
+        }
+    },
+    {
+        "name": "IN1",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "J12",
+                "pos": [
+                    635,
+                    49
+                ],
+                "direction": "input"
+            }
+        }
+    },
+    {
+        "name": "IN2",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "L14",
+                "pos": [
+                    690,
+                    117
+                ],
+                "direction": "input"
+            }
+        }
+    },
+    {
+        "name": "IN3",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "IN": {
+                "pin": "H11",
+                "pos": [
+                    690,
+                    49
+                ],
+                "direction": "input"
+            }
+        }
+    },
+
+
+
+
+        {
+            "name": "SPI",
+            "comment": "SPI - W5500",
+            "default": "spi",
+            "pins": {
+                "MOSI": {
+                    "pin": "P14",
+                    "pos": [
+                        250,
+                        585
+                    ]
+                },
+                "SCLK": {
+                    "pin": "M12",
+                    "pos": [
+                        250,
+                        606
+                    ]
+                },
+                "MISO": {
+                    "pin": "N14",
+                    "pos": [
+                        250,
+                        627
+                    ]
+                },
+                "SEL": {
+                    "pin": "P8",
+                    "pos": [
+                        250,
+                        648
+                    ]
+                }
+            }
+        },
+        {
+            "name": "ADC_UART",
+            "comment": "ADC_UART",
+            "default": "icewerxadc",
+            "pins": {
+                "TX": {
+                    "pin": "P4",
+                    "pos": [
+                        465,
+                        670
+                    ],
+                    "direction": "output"
+                },
+                "RX": {
+                    "pin": "P5",
+                    "pos": [
+                        495,
+                        670
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "G": {
+                    "pin": "M4",
+                    "pos": [
+                        495,
+                        515
+                    ],
+                    "direction": "output"
+                },
+                "R": {
+                    "pin": "A5",
+                    "pos": [
+                        465,
+                        515
+                    ],
+                    "direction": "output"
+                }
+            }
+        }
+    ]
+}
