@@ -1223,7 +1223,6 @@ class LinuxCNC:
                 vcp_sections.append(section)
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
-                direction = signal_config["direction"]
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
                     continue
                 userconfig = signal_config.get("userconfig", {})
@@ -1239,7 +1238,6 @@ class LinuxCNC:
         haltitles = {}
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
-                direction = signal_config["direction"]
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
                     continue
                 halname = signal_config["halname"]
@@ -1470,7 +1468,6 @@ class LinuxCNC:
 
             for plugin_instance in self.project.plugin_instances:
                 for signal_name, signal_config in plugin_instance.signals().items():
-                    direction = signal_config["direction"]
                     if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
                         continue
                     vcp_add(tab, signal_config, "rio.")
