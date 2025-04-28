@@ -2,7 +2,7 @@ from functools import partial
 
 from riocore.modifiers import Modifiers
 
-from riocore.widgets import (
+from riocore.gui.widgets import (
     STYLESHEET,
 )
 

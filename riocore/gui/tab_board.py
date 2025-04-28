@@ -2,7 +2,7 @@ import os
 from functools import partial
 
 
-from riocore.widgets import (
+from riocore.gui.widgets import (
     ImageMap,
     PinButton,
 )

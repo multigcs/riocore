@@ -46,7 +46,7 @@ from riocore.gui.tab_pins import TabPins
 from riocore.gui.tab_signals import TabSignals
 
 from riocore.modifiers import Modifiers
-from riocore.widgets import (
+from riocore.gui.widgets import (
     MyQSvgWidget,
     MyQLabel,
     MyStandardItem,

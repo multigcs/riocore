@@ -5,7 +5,7 @@ import os
 import riocore
 
 
-from riocore.widgets import (
+from riocore.gui.widgets import (
     STYLESHEET,
 )
 

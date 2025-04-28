@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
 )
 
-from riocore.widgets import MyStandardItem
+from riocore.gui.widgets import MyStandardItem
 
 
 def info():

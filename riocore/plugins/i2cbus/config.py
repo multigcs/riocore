@@ -24,7 +24,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from riocore.widgets import MyQSvgWidget, STYLESHEET_CHECKBOX
+from riocore.gui.widgets import MyQSvgWidget, STYLESHEET_CHECKBOX
 
 plugin_path = os.path.dirname(__file__)
 

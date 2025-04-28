@@ -3,7 +3,7 @@ from functools import partial
 
 from riocore import gpios
 
-from riocore.widgets import (
+from riocore.gui.widgets import (
     ImageMap,
     PinButton,
 )

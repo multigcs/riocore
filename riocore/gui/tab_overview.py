@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QScrollArea,
 )
 
-from riocore.widgets import (
+from riocore.gui.widgets import (
     MyQLabel,
 )
 

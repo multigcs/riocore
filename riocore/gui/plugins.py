@@ -6,7 +6,7 @@ from functools import partial
 import riocore
 from riocore import halpins
 
-from riocore.widgets import (
+from riocore.gui.widgets import (
     MyStandardItem,
     STYLESHEET,
     STYLESHEET_TABBAR,

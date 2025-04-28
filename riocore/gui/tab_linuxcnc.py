@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QTabWidget,
 )
 
-from riocore.widgets import (
+from riocore.gui.widgets import (
     STYLESHEET_TABBAR,
 )
 
