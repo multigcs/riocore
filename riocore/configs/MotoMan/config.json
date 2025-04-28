@@ -1,4 +1,289 @@
 {
     "name": "MotoMan",
-    "boardcfg": "MotoMan"
+    "boardcfg": "MotoMan",
+    "plugins": [
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "JOINT0:PWM"
+                },
+                "dir": {
+                    "pin": "JOINT0:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "pwmout0",
+            "joint": {
+                "feedback": "quadencoder0:position"
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "JOINT1:PWM"
+                },
+                "dir": {
+                    "pin": "JOINT1:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "pwmout1",
+            "joint": {
+                "feedback": "quadencoder1:position"
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "JOINT2:PWM"
+                },
+                "dir": {
+                    "pin": "JOINT2:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "pwmout2",
+            "joint": {
+                "feedback": "quadencoder2:position"
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "JOINT3:PWM"
+                },
+                "dir": {
+                    "pin": "JOINT3:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "pwmout3",
+            "joint": {
+                "feedback": "quadencoder3:position"
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "JOINT4:PWM"
+                },
+                "dir": {
+                    "pin": "JOINT4:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "pwmout4",
+            "joint": {
+                "feedback": "quadencoder4:position"
+            }
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "JOINT5:PWM"
+                },
+                "dir": {
+                    "pin": "JOINT5:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "pwmout5",
+            "joint": {
+                "feedback": "quadencoder5:position"
+            }
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "ENC0:A"
+                },
+                "b": {
+                    "pin": "ENC0:B"
+                }
+            },
+            "uid": "quadencoder0"
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "ENC1:A"
+                },
+                "b": {
+                    "pin": "ENC1:B"
+                }
+            },
+            "uid": "quadencoder1"
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "ENC2:A"
+                },
+                "b": {
+                    "pin": "ENC2:B"
+                }
+            },
+            "uid": "quadencoder2"
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "ENC3:A"
+                },
+                "b": {
+                    "pin": "ENC3:B"
+                }
+            },
+            "uid": "quadencoder3"
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "ENC4:A"
+                },
+                "b": {
+                    "pin": "ENC4:B"
+                }
+            },
+            "uid": "quadencoder4"
+        },
+        {
+            "type": "quadencoder",
+            "pins": {
+                "a": {
+                    "pin": "ENC5:A"
+                },
+                "b": {
+                    "pin": "ENC5:B"
+                }
+            },
+            "uid": "quadencoder5"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "REF0:IN"
+                }
+            },
+            "uid": "bitin0",
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "REF1:IN"
+                }
+            },
+            "uid": "bitin1",
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "REF2:IN"
+                }
+            },
+            "uid": "bitin2",
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "REF3:IN"
+                }
+            },
+            "uid": "bitin3",
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "REF4:IN"
+                }
+            },
+            "uid": "bitin4",
+            "signals": {
+                "bit": {
+                    "net": "joint.4.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "REF5:IN"
+                }
+            },
+            "uid": "bitin5",
+            "signals": {
+                "bit": {
+                    "net": "joint.5.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                }
+            },
+            "uid": "w55000"
+        },
+        {
+            "type": "wled",
+            "pins": {
+                "data": {
+                    "pin": "WLED:DAT"
+                }
+            },
+            "uid": "wled0"
+        }
+    ],
+    "linuxcnc": {
+        "num_axis": 6,
+        "machinetype": "melfa"
+    }
 }

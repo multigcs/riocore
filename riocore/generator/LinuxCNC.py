@@ -2026,7 +2026,11 @@ class LinuxCNC:
                 feedback = joint_config.get("feedback")
                 feedback = joint_setup.get("feedback")
                 if position_mode == "relative" and feedback is True:
-                    feedback_halname = f"{prefix}{position['halname']}"
+                    if position is not None:
+                        feedback_halname = f"{prefix}{position['halname']}"
+                    else:
+                        print("ERROR: missing feedback:", axis_name, joint)
+                        continue
                 elif position_mode == "relative":
                     if ":" in feedback:
                         fb_plugin_name, fb_signal_name = feedback.split(":")

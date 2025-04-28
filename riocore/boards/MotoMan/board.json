@@ -18,7 +18,7 @@
     {
         "name": "ENC0",
         "comment": "",
-        "default": "",
+        "default": "quadencoder",
         "pins": {
             "A": {
                 "pin": "A10",
@@ -26,7 +26,7 @@
                     95,
                     79
                 ],
-                "direction": "output"
+                "direction": "input"
             },
             "B": {
                 "pin": "D10",
@@ -34,14 +34,14 @@
                     95,
                     98
                 ],
-                "direction": "output"
+                "direction": "input"
             }
         }
     },
     {
         "name": "ENC1",
         "comment": "",
-        "default": "",
+        "default": "quadencoder",
         "pins": {
             "A": {
                 "pin": "C10",
@@ -49,7 +49,7 @@
                     150,
                     79
                 ],
-                "direction": "output"
+                "direction": "input"
             },
             "B": {
                 "pin": "C11",
@@ -57,7 +57,7 @@
                     150,
                     98
                 ],
-                "direction": "output"
+                "direction": "input"
             }
         }
     },
@@ -67,7 +67,7 @@
     {
         "name": "ENC2",
         "comment": "",
-        "default": "",
+        "default": "quadencoder",
         "pins": {
             "A": {
                 "pin": "A11",
@@ -75,7 +75,7 @@
                     210,
                     79
                 ],
-                "direction": "output"
+                "direction": "input"
             },
             "B": {
                 "pin": "A12",
@@ -83,14 +83,14 @@
                     210,
                     98
                 ],
-                "direction": "output"
+                "direction": "input"
             }
         }
     },
     {
         "name": "ENC3",
         "comment": "",
-        "default": "",
+        "default": "quadencoder",
         "pins": {
             "A": {
                 "pin": "B14",
@@ -98,7 +98,7 @@
                     265,
                     79
                 ],
-                "direction": "output"
+                "direction": "input"
             },
             "B": {
                 "pin": "C14",
@@ -106,14 +106,14 @@
                     265,
                     98
                 ],
-                "direction": "output"
+                "direction": "input"
             }
         }
     },
     {
         "name": "ENC4",
         "comment": "",
-        "default": "",
+        "default": "quadencoder",
         "pins": {
             "A": {
                 "pin": "C12",
@@ -121,7 +121,7 @@
                     320,
                     79
                 ],
-                "direction": "output"
+                "direction": "input"
             },
             "B": {
                 "pin": "D14",
@@ -129,14 +129,14 @@
                     320,
                     98
                 ],
-                "direction": "output"
+                "direction": "input"
             }
         }
     },
     {
         "name": "ENC5",
         "comment": "",
-        "default": "",
+        "default": "quadencoder",
         "pins": {
             "A": {
                 "pin": "D12",
@@ -144,7 +144,7 @@
                     375,
                     79
                 ],
-                "direction": "output"
+                "direction": "input"
             },
             "B": {
                 "pin": "E14",
@@ -152,7 +152,7 @@
                     375,
                     98
                 ],
-                "direction": "output"
+                "direction": "input"
             }
         }
     },
@@ -161,7 +161,7 @@
     {
         "name": "REF0",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "F14",
@@ -176,7 +176,7 @@
     {
         "name": "REF1",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "E12",
@@ -193,7 +193,7 @@
     {
         "name": "REF2",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "G14",
@@ -208,7 +208,7 @@
     {
         "name": "REF3",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "F12",
@@ -224,7 +224,7 @@
     {
         "name": "REF4",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "H12",
@@ -239,7 +239,7 @@
     {
         "name": "REF5",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "G12",
@@ -259,7 +259,7 @@
     {
         "name": "IN0",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "K14",
@@ -274,7 +274,7 @@
     {
         "name": "IN1",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "J12",
@@ -289,7 +289,7 @@
     {
         "name": "IN2",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "L14",
@@ -304,7 +304,7 @@
     {
         "name": "IN3",
         "comment": "",
-        "default": "",
+        "default": "bitin",
         "pins": {
             "IN": {
                 "pin": "H11",
@@ -321,41 +321,6 @@
 
 
         {
-            "name": "SPI",
-            "comment": "SPI - W5500",
-            "default": "spi",
-            "pins": {
-                "MOSI": {
-                    "pin": "P14",
-                    "pos": [
-                        250,
-                        585
-                    ]
-                },
-                "SCLK": {
-                    "pin": "M12",
-                    "pos": [
-                        250,
-                        606
-                    ]
-                },
-                "MISO": {
-                    "pin": "N14",
-                    "pos": [
-                        250,
-                        627
-                    ]
-                },
-                "SEL": {
-                    "pin": "P8",
-                    "pos": [
-                        250,
-                        648
-                    ]
-                }
-            }
-        },
-        {
             "name": "ADC_UART",
             "comment": "ADC_UART",
             "default": "icewerxadc",
@@ -363,16 +328,16 @@
                 "TX": {
                     "pin": "P4",
                     "pos": [
-                        465,
-                        670
+                        490,
+                        280
                     ],
                     "direction": "output"
                 },
                 "RX": {
                     "pin": "P5",
                     "pos": [
-                        495,
-                        670
+                        490,
+                        300
                     ],
                     "direction": "input"
                 }
@@ -385,20 +350,364 @@
                 "G": {
                     "pin": "M4",
                     "pos": [
-                        495,
-                        515
+                        550,
+                        280
                     ],
                     "direction": "output"
                 },
                 "R": {
                     "pin": "A5",
                     "pos": [
-                        465,
-                        515
+                        550,
+                        300
                     ],
                     "direction": "output"
                 }
             }
+        },
+
+
+    {
+        "name": "JOINT0",
+        "comment": "",
+        "default": "pwmout",
+        "pins": {
+            "DIR": {
+                "pin": "E1",
+                "pos": [
+                    70,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            },
+            "PWM": {
+                "pin": "D1",
+                "pos": [
+                    84,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
         }
+    },
+    {
+        "name": "JOINT1",
+        "comment": "",
+        "default": "pwmout",
+        "pins": {
+            "DIR": {
+                "pin": "C1",
+                "pos": [
+                    140,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            },
+            "PWM": {
+                "pin": "D3",
+                "pos": [
+                    154,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+    {
+        "name": "JOINT2",
+        "comment": "",
+        "default": "pwmout",
+        "pins": {
+            "DIR": {
+                "pin": "C3",
+                "pos": [
+                    210,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            },
+            "PWM": {
+                "pin": "B1",
+                "pos": [
+                    224,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+    {
+        "name": "JOINT3",
+        "comment": "",
+        "default": "pwmout",
+        "pins": {
+            "DIR": {
+                "pin": "A1",
+                "pos": [
+                    280,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            },
+            "PWM": {
+                "pin": "A2",
+                "pos": [
+                    294,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+    {
+        "name": "JOINT4",
+        "comment": "",
+        "default": "pwmout",
+        "pins": {
+            "DIR": {
+                "pin": "A3",
+                "pos": [
+                    350,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            },
+            "PWM": {
+                "pin": "C4",
+                "pos": [
+                    364,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+    {
+        "name": "JOINT5",
+        "comment": "",
+        "default": "pwmout",
+        "pins": {
+            "DIR": {
+                "pin": "A4",
+                "pos": [
+                    420,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            },
+            "PWM": {
+                "pin": "C5",
+                "pos": [
+                    434,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+
+
+
+    {
+        "name": "OUT0",
+        "comment": "",
+        "default": "bitout",
+        "pins": {
+            "OUT": {
+                "pin": "G3",
+                "pos": [
+                    484,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+    {
+        "name": "OUT1",
+        "comment": "",
+        "default": "bitout",
+        "pins": {
+            "OUT": {
+                "pin": "G3",
+                "pos": [
+                    544,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+    {
+        "name": "OUT2",
+        "comment": "",
+        "default": "bitout",
+        "pins": {
+            "OUT": {
+                "pin": "G3",
+                "pos": [
+                    604,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+    },
+    {
+        "name": "OUT3",
+        "comment": "",
+        "default": "bitout",
+        "pins": {
+            "OUT": {
+                "pin": "G3",
+                "pos": [
+                    664,
+                    481
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
+        }
+
+
+    },
+    {
+        "name": "OUT3",
+        "comment": "",
+        "default": "i2cbus",
+        "pins": {
+            "SCL": {
+                "pin": "M1",
+                "pos": [
+                    710,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            },
+            "SDA": {
+                "pin": "M3",
+                "pos": [
+                    730,
+                    481
+                ],
+                "rotate": true,
+                "direction": "output"
+            }
+        }
+    },
+    {
+        "name": "WLED",
+        "comment": "",
+        "default": "wled",
+        "pins": {
+            "DAT": {
+                "pin": "L12",
+                "pos": [
+                    755,
+                    311
+                ],
+                "direction": "output"
+            }
+        }
+    },
+
+
+
+
+        {
+            "name": "SPI",
+            "comment": "SPI - W5500",
+            "default": "w5500",
+            "pins": {
+                "SEL": {
+                    "pin": "P8",
+                    "pos": [
+                        710,
+                        245
+                    ],
+                    "rotate": true,
+                    "direction": "output"
+                },
+                "SCLK": {
+                    "pin": "M12",
+                    "pos": [
+                        730,
+                        245
+                    ],
+                    "rotate": true,
+                    "direction": "output"
+                },
+                "MOSI": {
+                    "pin": "P14",
+                    "pos": [
+                        750,
+                        245
+                    ],
+                    "rotate": true,
+                    "direction": "output"
+                },
+                "MISO": {
+                    "pin": "N14",
+                    "pos": [
+                        710,
+                        350
+                    ],
+                    "rotate": true,
+                    "direction": "input"
+                }
+            }
+        },
+
+
+    {
+        "name": "MODBUS",
+        "comment": "",
+        "default": "modbus",
+        "pins": {
+            "RX": {
+                "pin": "M6",
+                "pos": [
+                    764,
+                    390
+                ],
+                "direction": "input"
+            },
+            "TX": {
+                "pin": "P2",
+                "pos": [
+                    764,
+                    410
+                ],
+                "direction": "output"
+            },
+            "RW": {
+                "pin": "P3",
+                "pos": [
+                    764,
+                    430
+                ],
+                "direction": "output"
+            }
+        }
+    }
+
+
+
     ]
 }
