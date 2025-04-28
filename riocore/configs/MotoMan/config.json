@@ -285,5 +285,6 @@
     "linuxcnc": {
         "num_axis": 6,
         "machinetype": "melfa"
-    }
+    },
+    "protocol": "UDP"
 }
