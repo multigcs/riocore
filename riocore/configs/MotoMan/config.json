@@ -15,7 +15,8 @@
             "is_joint": true,
             "uid": "pwmout0",
             "joint": {
-                "feedback": "quadencoder0:position"
+                "feedback": "quadencoder0:position",
+                "scale": 1.0
             }
         },
         {
@@ -31,7 +32,8 @@
             "is_joint": true,
             "uid": "pwmout1",
             "joint": {
-                "feedback": "quadencoder1:position"
+                "feedback": "quadencoder1:position",
+                "scale": 1.0
             }
         },
         {
@@ -47,7 +49,8 @@
             "is_joint": true,
             "uid": "pwmout2",
             "joint": {
-                "feedback": "quadencoder2:position"
+                "feedback": "quadencoder2:position",
+                "scale": 1.0
             }
         },
         {
@@ -63,7 +66,8 @@
             "is_joint": true,
             "uid": "pwmout3",
             "joint": {
-                "feedback": "quadencoder3:position"
+                "feedback": "quadencoder3:position",
+                "scale": 1.0
             }
         },
         {
@@ -79,7 +83,8 @@
             "is_joint": true,
             "uid": "pwmout4",
             "joint": {
-                "feedback": "quadencoder4:position"
+                "feedback": "quadencoder4:position",
+                "scale": 1.0
             }
         },
         {
@@ -95,7 +100,8 @@
             "is_joint": true,
             "uid": "pwmout5",
             "joint": {
-                "feedback": "quadencoder5:position"
+                "feedback": "quadencoder5:position",
+                "scale": 1.0
             }
         },
         {
@@ -108,7 +114,12 @@
                     "pin": "ENC0:B"
                 }
             },
-            "uid": "quadencoder0"
+            "uid": "quadencoder0",
+            "signals": {
+                "position": {
+                    "scale": 360.0
+                }
+            }
         },
         {
             "type": "quadencoder",
@@ -120,7 +131,12 @@
                     "pin": "ENC1:B"
                 }
             },
-            "uid": "quadencoder1"
+            "uid": "quadencoder1",
+            "signals": {
+                "position": {
+                    "scale": 360.0
+                }
+            }
         },
         {
             "type": "quadencoder",
@@ -132,7 +148,12 @@
                     "pin": "ENC2:B"
                 }
             },
-            "uid": "quadencoder2"
+            "uid": "quadencoder2",
+            "signals": {
+                "position": {
+                    "scale": 360.0
+                }
+            }
         },
         {
             "type": "quadencoder",
@@ -144,7 +165,12 @@
                     "pin": "ENC3:B"
                 }
             },
-            "uid": "quadencoder3"
+            "uid": "quadencoder3",
+            "signals": {
+                "position": {
+                    "scale": 360.0
+                }
+            }
         },
         {
             "type": "quadencoder",
@@ -156,7 +182,12 @@
                     "pin": "ENC4:B"
                 }
             },
-            "uid": "quadencoder4"
+            "uid": "quadencoder4",
+            "signals": {
+                "position": {
+                    "scale": 360.0
+                }
+            }
         },
         {
             "type": "quadencoder",
@@ -168,7 +199,12 @@
                     "pin": "ENC5:B"
                 }
             },
-            "uid": "quadencoder5"
+            "uid": "quadencoder5",
+            "signals": {
+                "position": {
+                    "scale": 360.0
+                }
+            }
         },
         {
             "type": "bitin",

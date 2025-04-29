@@ -12,7 +12,7 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 class Simulator:
     def __init__(self, project):
         self.project = project
-        self.webots_home = "/usr/local/webots"
+        self.webots_home = os.path.join("usr", "local", "webots")
         self.webots = False
         self.glsim = False
         self.simulator_path = os.path.join(project.config["output_path"], "Simulator")
@@ -25,14 +25,17 @@ class Simulator:
         linuxcnc_config = jdata.get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype", "mill")
 
-        if machinetype in {"melfa"}:
+        if machinetype in {"melfa"} and os.path.isdir(self.webots_home):
             self.webots = True
             self.glsim = True
             source = os.path.join(riocore_path, "", "generator", "glsim", f"webots-{machinetype}.c")
             target = os.path.join(self.simulator_path, "glsim.c")
             shutil.copy(source, target)
         elif machinetype in {"mill", "corexy", "melfa"}:
-            self.glsim = True
+            if machinetype in {"melfa"}:
+                self.glsim = False
+            else:
+                self.glsim = True
             source = os.path.join(riocore_path, "", "generator", "glsim", f"{machinetype}.c")
             target = os.path.join(self.simulator_path, "glsim.c")
             shutil.copy(source, target)
@@ -113,6 +116,10 @@ class Simulator:
                     open(os.path.join(self.simulator_path, "interface.c"), "w").write(idata)
 
     def simulation_h(self):
+        self.joints = 0
+        for axis_name, axis_config in self.project.axis_dict.items():
+            self.joints += len(axis_config["joints"])
+
         output = []
         output.append("#include <stdint.h>")
         output.append("")
@@ -198,35 +205,37 @@ class Simulator:
         output.append("}")
         output.append("")
 
-        joint_n = 0
-        output.append("void simulation(void) {")
-        output.append("    float offset = 0.0;")
+        hal2instances = {}
+        hal2varnames = {}
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
-            multiplexed = data_config.get("multiplexed", False)
-            expansion = data_config.get("expansion", False)
-            if multiplexed or expansion:
-                continue
-            interface_data = plugin_instance.interface_data()
-            signal_config = plugin_instance.signals().get(data_name, {})
-            if plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
-                position_var = interface_data["position"]["variable"]
-                if "velocity" in interface_data:
-                    enable_var = interface_data.get("enable", {}).get("variable", "1")
-                    velocity_var = interface_data["velocity"]["variable"]
-                    output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
-                    output.append(f"        offset = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0;")
-                    output.append("        // for testing")
-                    output.append("        if ((int32_t)offset == 0 && offset > 0.0) {")
-                    output.append("            offset = 1.0;")
-                    output.append("        } else if ((int32_t)offset == 0 && offset < 0.0) {")
-                    output.append("            offset = -1.0;")
-                    output.append("        }")
-                    output.append(f"        {position_var} += (int32_t)offset;")
-                    output.append("    }")
-                output.append(f"    joint_position[{joint_n}] = {position_var};")
-                joint_n += 1
+            hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
+            hal2varnames[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = data_config["variable"]
 
-        self.joints = joint_n
+        output.append("void simulation(void) {")
+        output.append("    float newpos = 0.0;")
+        for axis_name, axis_config in self.project.axis_dict.items():
+            joints = axis_config["joints"]
+            for joint, joint_setup in joints.items():
+                position_mode = joint_setup["position_mode"]
+                if position_mode != "absolute":
+                    feedback_halname = joint_setup["feedback_halname"]
+                    position_halname = joint_setup["position_halname"]
+                    velocity_var = hal2varnames[position_halname]
+                    feedback_var = hal2varnames[feedback_halname]
+                    plugin_instance = joint_setup["plugin_instance"]
+                    interface_data = plugin_instance.interface_data()
+                    enable_var = interface_data.get("enable", {}).get("variable", "1")
+                    output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
+                    output.append(f"        newpos = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0 * {joint_setup['SCALE_OUT']} / {joint_setup['SCALE_IN']};")
+                    output.append("        if ((int32_t)newpos == 0 && newpos > 0.0) {")
+                    output.append("            newpos = 1.0;")
+                    output.append("        } else if ((int32_t)newpos == 0 && newpos < 0.0) {")
+                    output.append("            newpos = -1.0;")
+                    output.append("        }")
+                    output.append('        printf(" # %f \\n", newpos);')
+                    output.append(f"        {feedback_var} += (int32_t)newpos;")
+                    output.append("    }")
+                output.append(f"    joint_position[{joint}] = {feedback_var};")
 
         home_n = 0
         bitout_n = 0

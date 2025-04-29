@@ -76,6 +76,8 @@ class PluginBase:
 
         self.update_title()
 
+        self.signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
+
         if self.TYPE == "expansion":
             expansion_id = len(self.expansions)
             ename = (self.plugin_setup.get("name") or f"EXPANSION{expansion_id}").replace(" ", "_")
