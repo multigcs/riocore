@@ -1266,9 +1266,36 @@ class WinForm(QWidget):
             ]
         )
         tree_lcncnet = parent_tree.child(parent_tree.rowCount() - 1)
+
         if "net" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["net"] = []
         net_config = self.config["linuxcnc"]["net"]
+
+        def add_net():
+            net_config.append({"source": "", "target": ""})
+            self.load_tree("/LinuxCNC/Net/")
+
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_widget = QWidget()
+        buttons_widget.setLayout(buttons_layout)
+
+        button = QPushButton("add net")
+        button.clicked.connect(add_net)
+        button.setMaximumSize(button.sizeHint())
+        buttons_layout.addWidget(button)
+
+        buttons_layout.addStretch()
+        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
+
+        options_soure = []
+        for halpin, halpin_info in halpins.LINUXCNC_SIGNALS["input"].items():
+            options_soure.append(halpin)
+
+        options_target = []
+        for halpin, halpin_info in halpins.LINUXCNC_SIGNALS["output"].items():
+            options_target.append(halpin)
+
         for net_num, net_data in enumerate(net_config):
             aitem_source = MyStandardItem()
             aitem_target = MyStandardItem()
@@ -1278,9 +1305,12 @@ class WinForm(QWidget):
                     aitem_target,
                 ]
             )
-
-            self.treeview.setIndexWidget(aitem_source.index(), self.edit_item(net_config[net_num], "source", {"type": str, "value": net_data.get("source"), "default": ""}))
-            self.treeview.setIndexWidget(aitem_target.index(), self.edit_item(net_config[net_num], "target", {"type": str, "value": net_data.get("target"), "default": ""}))
+            self.treeview.setIndexWidget(
+                aitem_source.index(), self.edit_item(net_config[net_num], "source", {"type": "select", "value": net_data.get("source"), "options": options_soure, "default": ""})
+            )
+            self.treeview.setIndexWidget(
+                aitem_target.index(), self.edit_item(net_config[net_num], "target", {"type": "select", "value": net_data.get("target"), "options": options_target, "default": ""})
+            )
 
     def load_tree_linuxcnc_ini(self, parent_tree, expand=None):
         # linuxcnc-ini
