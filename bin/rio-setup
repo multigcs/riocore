@@ -1256,6 +1256,53 @@ class WinForm(QWidget):
             self.gui_components.tree_add_component(self.tree_comps, component)
             component_nums[comp_type] += 1
 
+    def load_tree_linuxcnc_setp(self, parent_tree, expand=None):
+        # linuxcnc-net
+        bitem = MyStandardItem()
+        parent_tree.appendRow(
+            [
+                MyStandardItem("Setp", help_text="LinuxCNC Networks"),
+                bitem,
+            ]
+        )
+        tree_lcncsetp = parent_tree.child(parent_tree.rowCount() - 1)
+
+        if "setp" not in self.config["linuxcnc"]:
+            self.config["linuxcnc"]["setp"] = []
+        setp_config = self.config["linuxcnc"]["setp"]
+
+        def add_setp():
+            setp_config["new"] = "111"
+            self.load_tree("/LinuxCNC/Setp/")
+
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_widget = QWidget()
+        buttons_widget.setLayout(buttons_layout)
+
+        button = QPushButton("add setp")
+        button.clicked.connect(add_setp)
+        button.setMaximumSize(button.sizeHint())
+        buttons_layout.addWidget(button)
+
+        buttons_layout.addStretch()
+        # self.treeview.setIndexWidget(bitem.index(), buttons_widget)
+
+        options_target = []
+        for halpin, halpin_info in halpins.LINUXCNC_SIGNALS["output"].items():
+            options_target.append(halpin)
+
+        for setp_name, setp_value in setp_config.items():
+            aitem_target = MyStandardItem()
+            aitem_value = MyStandardItem()
+            tree_lcncsetp.appendRow(
+                [
+                    MyStandardItem(setp_name, help_text="Signalname"),
+                    aitem_value,
+                ]
+            )
+            self.treeview.setIndexWidget(aitem_value.index(), self.edit_item(setp_config, setp_name, {"type": str, "value": setp_value, "default": ""}))
+
     def load_tree_linuxcnc_networks(self, parent_tree, expand=None):
         # linuxcnc-net
         bitem = MyStandardItem()
@@ -1473,6 +1520,7 @@ class WinForm(QWidget):
 
         self.load_tree_linuxcnc_components(tree_lcnc, expand=expand)
         self.load_tree_linuxcnc_networks(tree_lcnc, expand=expand)
+        self.load_tree_linuxcnc_setp(tree_lcnc, expand=expand)
         self.load_tree_linuxcnc_ini(tree_lcnc, expand=expand)
         self.load_tree_linuxcnc_riof(tree_lcnc, expand=expand)
         self.load_tree_linuxcnc_addons(tree_lcnc, expand=expand)
