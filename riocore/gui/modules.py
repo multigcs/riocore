@@ -74,7 +74,7 @@ class GuiModules:
     def add_module(self, widget, slot_name=None, module_name=None, slot_select=True):
         last_error = None
         while True:
-            ret = self.parent.select_module(last_error=last_error, set_slot=slot_name, set_module=module_name, slot_select=slot_select)
+            ret = self.select_module(last_error=last_error, set_slot=slot_name, set_module=module_name, slot_select=slot_select)
             if not ret:
                 return
             slot_name, module_name = ret
