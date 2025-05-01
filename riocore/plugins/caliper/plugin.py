@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "caliper"
         self.INFO = "reading position from cheap calipers"
-        self.DESCRIPTION = "warning, there are different protocols and also some without output, rate: ~8Hz (123ms) - too slow for joint feedback"
+        self.DESCRIPTION = "warning, there are different protocols and also some without output,\n rate: ~8Hz (123ms) - too slow for joint feedback"
         self.KEYWORDS = ""
         self.ORIGIN = ""
         self.VERILOGS = ["caliper.v"]
