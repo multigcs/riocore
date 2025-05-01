@@ -1,4 +1,7 @@
 # caliper
+
+<img align="right" width="320" src="image.png">
+
 **reading position from cheap calipers**
 
 warning, there are different protocols and also some without output, rate: ~8Hz (123ms) - too slow for joint feedback
