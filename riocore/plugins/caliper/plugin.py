@@ -6,9 +6,12 @@ class Plugin(PluginBase):
         self.NAME = "caliper"
         self.INFO = "reading position from cheap calipers"
         self.DESCRIPTION = """warning, there are different protocols
+
 and also some without output
+
 * rate: ~8Hz (123ms)
 * too slow for joint feedback
+
 both on the image are working
 """
         self.KEYWORDS = ""
