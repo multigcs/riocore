@@ -1268,7 +1268,7 @@ class WinForm(QWidget):
         tree_lcncsetp = parent_tree.child(parent_tree.rowCount() - 1)
 
         if "setp" not in self.config["linuxcnc"]:
-            self.config["linuxcnc"]["setp"] = []
+            self.config["linuxcnc"]["setp"] = {}
         setp_config = self.config["linuxcnc"]["setp"]
 
         def add_setp():
