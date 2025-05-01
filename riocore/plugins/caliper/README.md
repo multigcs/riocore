@@ -1,7 +1,7 @@
 # caliper
 **reading position from cheap calipers**
 
-rate: ~8Hz (123ms) - too slow for joint feedback
+warning, there are different protocols and also some without output, rate: ~8Hz (123ms) - too slow for joint feedback
 
 ## Pins:
 *FPGA-pins*
