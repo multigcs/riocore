@@ -83,12 +83,6 @@ class Plugin(PluginBase):
 
         self.last_pos = 0
 
-    def gateware_instances(self):
-        instances = self.gateware_instances_base()
-        instance = instances[self.instances_name]
-        instance_parameter = instance["parameter"]
-        return instances
-
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "position":
             scale = self.plugin_setup.get("signals", {}).get(signal_name, {}).get("scale", 1.0)

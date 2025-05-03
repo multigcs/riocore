@@ -775,6 +775,13 @@ class Project:
                         interface_data.append([size, plugin_instance, data_name, data_config])
         return interface_data
 
+    def get_signal_data(self):
+        signal_data = []
+        for plugin_instance in self.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                signal_data.append([plugin_instance, signal_name, signal_config])
+        return signal_data
+
     def connect(self, cstr):
         connection = None
         for ppath in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "interfaces", "*", "*.py"))):

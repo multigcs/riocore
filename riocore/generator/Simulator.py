@@ -211,6 +211,12 @@ class Simulator:
             hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
             hal2varnames[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = data_config["variable"]
 
+        for plugin_instance, data_name, data_config in self.project.get_signal_data():
+            hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
+            key = f"rio.{plugin_instance.signal_prefix}.{data_name}"
+            if key not in hal2varnames:
+                hal2varnames[key] = data_config["varname"]
+
         output.append("void simulation(void) {")
         output.append("    float newpos = 0.0;")
         for axis_name, axis_config in self.project.axis_dict.items():

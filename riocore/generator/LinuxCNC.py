@@ -1742,6 +1742,15 @@ class LinuxCNC:
                 addon.hal(self)
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is True:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    halname = signal_config["halname"]
+                    userconfig = signal_config.get("userconfig", {})
+                    setp = userconfig.get("setp")
+                    rprefix = "rio"
+                    if setp:
+                        self.halg.setp_add(f"{rprefix}.{halname}", setp)
+
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]

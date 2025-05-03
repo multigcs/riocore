@@ -315,19 +315,22 @@ class cbase:
                                     output.append("        }")
                                     output.append("    }")
 
-                                convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
-                                if convert_c:
-                                    output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
-
                                 if not boolean and direction == "input" and hal_type == "float":
                                     output.append(f"    float offset = *data->{varname}_OFFSET;")
                                     output.append(f"    float scale = *data->{varname}_SCALE;")
                                     output.append(f"    float last_value = *data->{varname};")
                                     output.append("    static float last_raw_value = 0.0;")
                                     output.append("    float raw_value = value;")
+
+                                convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
+                                if convert_c:
+                                    output.append("    // -- calc --")
+                                    output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+                                    output.append("    // ----------")
+
+                                if not boolean and direction == "input" and hal_type == "float":
                                     output.append("    value = value + offset;")
                                     output.append("    value = value / scale;")
-
                                     compensations = plugin_instance.plugin_setup.get("joint", {}).get("compensation", {})
                                     if compensations:
                                         for name, cscale in compensations.items():
