@@ -7,7 +7,8 @@
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |
 |  | [uart](uart/README.md) | uart interface for host cominucation | <img src="uart/image.png" height="48"> |
 |  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |
-| Joints | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |
+| Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> |
+|  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |
 |  | [pwmout](pwmout/README.md) | pwm output | <img src="pwmout/image.png" height="48"> |
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |
