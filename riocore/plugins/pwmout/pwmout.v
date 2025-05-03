@@ -34,7 +34,7 @@ module pwmout
                     pulse <= 1;
                 end
                 counter <= 0;
-            end else if (counter == dtyAbs) begin
+            end else if (counter => dtyAbs) begin
                 pulse <= 0;
             end
         end else begin
