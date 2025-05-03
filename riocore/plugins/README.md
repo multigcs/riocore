@@ -29,6 +29,7 @@
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |
+|  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |
 |  | [hx710](hx710/README.md) | 24bit adc | <img src="hx710/image.png" height="48"> |
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |
 |  | [i2cbus](i2cbus/README.md) | I2C-Bus | <img src="i2cbus/image.png" height="48"> |
