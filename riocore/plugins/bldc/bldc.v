@@ -23,6 +23,10 @@ module bldc
 
     reg direction = 0;
     reg [7:0] velocity_abs = 0;
+    reg [5:0] tpos_u = 0;
+    reg [5:0] tpos_v = 0;
+    reg [5:0] tpos_w = 0;
+
     reg [31:0] clk_cnt = 0;
     reg [31:0] dty_u = 0;
     reg [31:0] dty_v = 0;
@@ -39,25 +43,69 @@ module bldc
         end
     end
 
-    reg [5:0] tpos_u = 0;
-    reg [5:0] tpos_v = 0;
-    reg [5:0] tpos_w = 0;
 
-    always@ (posedge(clk))
-    begin
+    reg [7:0] calc_stat = 0;
+    reg [7:0] in_a = 0;
+    reg [7:0] in_b = 0;
+    reg load = 0;
+    wire out_valid;
+    wire [15:0] out_prod;
+    multiplier multiplier0 (
+      .clk (clk),
+      .in_a (in_a),
+      .in_b (in_b),
+      .load (load),
+      .out_valid (out_valid),
+      .out_prod (out_prod)
+    );
+    always@ (posedge(clk)) begin
+        // do serial calculation to not use DSP blocks
+        // dty_u <= sine_tbl[tpos_u] * velocity_abs / 100;
+        // dty_v <= sine_tbl[tpos_v] * velocity_abs / 100;
+        // dty_w <= sine_tbl[tpos_w] * velocity_abs / 100;
+        if (load == 0) begin
+            if (calc_stat == 0) begin
+                in_a <= sine_tbl[tpos_u];
+                in_b <= velocity_abs;
+                load <= 1;
+            end else if (calc_stat == 1) begin
+                in_a <= sine_tbl[tpos_v];
+                in_b <= velocity_abs;
+                load <= 1;
+            end else if (calc_stat == 2) begin
+                in_a <= sine_tbl[tpos_w];
+                in_b <= velocity_abs;
+                load <= 1;
+            end
+        end else if (out_valid == 1) begin
+            load <= 0;
+            if (calc_stat == 0) begin
+                calc_stat <= 1;
+                dty_u <= out_prod / 100;
+            end else if (calc_stat == 1) begin
+                calc_stat <= 2;
+                dty_v <= out_prod / 100;
+            end else if (calc_stat == 2) begin
+                calc_stat <= 0;
+                dty_w <= out_prod / 100;
+            end
+        end
+    end
+
+    always@ (posedge(clk)) begin
         if (testmode) begin
-                tpos_u <= offset;
-                tpos_v <= offset + TOFF_V;
-                tpos_w <= offset + TOFF_W;
+            tpos_u <= offset;
+            tpos_v <= offset + TOFF_V;
+            tpos_w <= offset + TOFF_W;
         end else begin
             if (direction) begin
-                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset - torque;
-                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_V;
-                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_W;
-            end else begin
                 tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset + torque;
                 tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + torque + TOFF_V;
                 tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + torque + TOFF_W;
+            end else begin
+                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset - torque;
+                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_V;
+                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_W;
             end
         end
         if (velocity < 0) begin
@@ -67,10 +115,6 @@ module bldc
             velocity_abs <= velocity;
             direction <= 0;
         end
-    
-        dty_u <= sine_tbl[tpos_u] * velocity_abs / 100;
-        dty_v <= sine_tbl[tpos_v] * velocity_abs / 100;
-        dty_w <= sine_tbl[tpos_w] * velocity_abs / 100;
     end
 
     reg [7:0] sine_tbl [0:TLEN-1];
@@ -187,3 +231,97 @@ module sine_pwm
     end
 endmodule
 
+`ifdef DSP_CALC
+
+module multiplier
+    (
+        input [7:0] in_a,
+        input [7:0] in_b,
+        input clk,
+        input load,
+        output reg out_valid,
+        output reg [15:0] out_prod
+    );
+
+    always @ (posedge clk) begin
+        out_valid <= 1'b0;
+        if (load) begin
+            out_prod <= in_a * in_b;
+            out_valid <= 1'b1;
+        end
+    end
+endmodule
+
+`else
+
+module multiplier
+    (
+        input [7:0] in_a,
+        input [7:0] in_b,
+        input clk,
+        input load,
+        output reg out_valid,
+        output reg [15:0] out_prod
+    );
+
+    reg [15:0] p1 = 0;
+    reg [15:0] p2 = 0;
+    reg [15:0] p3 = 0;
+    reg [15:0] p4 = 0;
+    reg [15:0] p5 = 0;
+    reg [15:0] p6 = 0;
+    reg [15:0] p7 = 0;
+    reg [15:0] p8 = 0;
+    wire [15:0] temp_prod;
+    assign temp_prod = {8'b0, in_b};
+
+    always @ (posedge clk) begin
+        out_valid <= 1'b0;
+        if (load) begin
+              if (in_a[0]) begin
+                 p1 <= temp_prod;
+              end else begin
+                 p1 <= 8'b0;
+              end
+              if (in_a[1]) begin
+                 p2 <= temp_prod << 1;
+              end else begin
+                 p2 <= 8'b0;
+              end
+              if (in_a[2]) begin
+                 p3 <= temp_prod << 2;
+              end else begin
+                 p3 <= 8'b0;
+              end
+              if (in_a[3]) begin
+                 p4 <= temp_prod << 3;
+              end else begin
+                 p4 <= 8'b0;
+              end
+              if (in_a[4]) begin
+                 p5 <= temp_prod << 4;
+              end else begin
+                 p5 <= 8'b0;
+              end
+              if (in_a[5]) begin
+                 p6 <= temp_prod << 5;
+              end else begin
+                 p6 <= 8'b0;
+              end
+              if (in_a[6]) begin
+                 p7 <= temp_prod << 6;
+              end else begin
+                 p7 <= 8'b0;
+              end
+              if (in_a[7]) begin
+                 p8 <= temp_prod << 7;
+              end else begin
+                 p8 <= 8'b0;
+              end
+              out_prod <= p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8;
+              out_valid <= 1'b1;
+        end
+    end
+endmodule
+
+`endif

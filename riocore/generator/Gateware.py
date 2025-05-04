@@ -17,7 +17,12 @@ class Gateware:
     def globals(self):
         # create globals.v for compatibility functions
         globals_data = []
+        globals_data.append(f'localparam FPGA_FAMILY = "{self.config.get("family", "UNKNOWN")}";')
+        globals_data.append(f'localparam FPGA_TYPE = "{self.config.get("type", "UNKNOWN")}";')
         globals_data.append(f'localparam TOOLCHAIN = "{self.toolchain}";')
+        globals_data.append("")
+        if self.config.get("family", "UNKNOWN") in {"ice40"}:
+            globals_data.append("`define DSP_CALC")
         globals_data.append("")
         globals_data.append("// replacement for $clog2")
         globals_data.append("function integer clog2;")
