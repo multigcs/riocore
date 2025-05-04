@@ -115,7 +115,7 @@ class Plugin(PluginBase):
 
         poles = int(self.plugin_setup.get("poles", self.OPTIONS["poles"]["default"]))
         feedback_res = int(self.plugin_setup.get("feedback_res", self.OPTIONS["feedback_res"]["default"]))
-        table_len = 64 # sinus table
+        table_len = 64  # sinus table
         feedback_divider = feedback_res / poles / table_len
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
