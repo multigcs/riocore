@@ -209,7 +209,7 @@ module sine_pwm
     #(parameter DIVIDER = 255)
      (
          input clk,
-         input signed [31:0] dty,
+         input [31:0] dty,
          output pwm
      );
 
