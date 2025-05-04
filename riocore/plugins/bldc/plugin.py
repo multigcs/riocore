@@ -2,10 +2,35 @@ from riocore.plugins import PluginBase
 
 
 class Plugin(PluginBase):
+    table_len = 64  # sinus table
+
     def setup(self):
         self.NAME = "bldc"
         self.INFO = "BLDC FOC"
-        self.DESCRIPTION = "to control BLDC Motors - experimental"
+        self.DESCRIPTION = """to control BLDC Motors - experimental
+
+Motor-Setup:
+* set motor poles and encoder resolution in the options
+* start rio-test gui
+* set enable
+* leave torque at zero
+* set velocity to ~30% (warning: motor will start to spin !)
+* adjust the offset until the motor stop's (should between -15<->15)
+* add the offset value to your json config and set a torque value (0-16)
+```
+    "signals": {
+        "offset": {
+            "setp": "-11"
+        },
+        "torque": {
+            "setp": "16"
+        }
+    }
+```
+
+
+
+        """
         self.KEYWORDS = "joint brushless"
         self.ORIGIN = ""
         self.VERILOGS = ["bldc.v"]
@@ -88,14 +113,14 @@ class Plugin(PluginBase):
             },
             "offset": {
                 "direction": "output",
-                "min": -63,
-                "max": 63,
-                "unit": "%",
+                "min": -self.table_len,
+                "max": self.table_len,
+                "unit": "",
             },
             "torque": {
                 "direction": "output",
                 "min": 0,
-                "max": 15,
+                "max": self.table_len / 4,
                 "unit": "",
             },
             "enable": {
@@ -115,8 +140,7 @@ class Plugin(PluginBase):
 
         poles = int(self.plugin_setup.get("poles", self.OPTIONS["poles"]["default"]))
         feedback_res = int(self.plugin_setup.get("feedback_res", self.OPTIONS["feedback_res"]["default"]))
-        table_len = 64  # sinus table
-        feedback_divider = feedback_res / poles / table_len
+        feedback_divider = feedback_res / poles / self.table_len
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // frequency // 512

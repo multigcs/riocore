@@ -6,6 +6,25 @@
 
 to control BLDC Motors - experimental
 
+Motor-Setup:
+* set motor poles and encoder resolution in the options
+* start rio-test gui
+* set enable
+* leave torque at zero
+* set velocity to ~30% (warning: motor will start to spin !)
+* adjust the offset until the motor stop's (should between -15<->15)
+* add the offset value to your json config and set a torque value (0-16)
+```
+    "signals": {
+        "offset": {
+            "setp": "-11"
+        },
+        "torque": {
+            "setp": "16"
+        }
+    }
+```
+
 Keywords: joint brushless
 
 ## Pins:
@@ -45,6 +64,24 @@ encoder instance
  * default: 
  * unit: 
 
+### poles:
+motor poles
+
+ * type: int
+ * min: 2
+ * max: 100
+ * default: 4
+ * unit: 
+
+### feedback_res:
+encoder resolution
+
+ * type: int
+ * min: 10
+ * max: 100000
+ * default: 4096
+ * unit: 
+
 ### name:
 name of this plugin instance
 
@@ -78,19 +115,24 @@ configure as joint
 
  * type: float
  * direction: output
- * min: -15
- * max: 15
- * unit: %
+ * min: -64
+ * max: 64
+ * unit: 
 
 ### torque:
 
  * type: float
  * direction: output
  * min: 0
- * max: 15
+ * max: 16.0
  * unit: 
 
 ### enable:
+
+ * type: bit
+ * direction: output
+
+### testmode:
 
  * type: bit
  * direction: output
@@ -114,6 +156,11 @@ configure as joint
  * direction: output
 
 ### enable:
+
+ * size: 1 bit
+ * direction: output
+
+### testmode:
 
  * size: 1 bit
  * direction: output
@@ -146,6 +193,8 @@ configure as joint
     "type": "bldc",
     "frequency": 10000,
     "halsensor": "",
+    "poles": 4,
+    "feedback_res": 4096,
     "name": "",
     "axis": "",
     "is_joint": false,
@@ -222,6 +271,15 @@ configure as joint
             "function": "rio.xxx",
             "display": {
                 "title": "enable",
+                "section": "outputs",
+                "type": "checkbox"
+            }
+        },
+        "testmode": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "testmode",
                 "section": "outputs",
                 "type": "checkbox"
             }
