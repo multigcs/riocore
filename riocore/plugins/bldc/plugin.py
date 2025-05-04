@@ -72,7 +72,7 @@ class Plugin(PluginBase):
             "enable": {
                 "size": 1,
                 "direction": "output",
-                "_on_error": False,
+                "on_error": False,
             },
             "testmode": {
                 "size": 1,
