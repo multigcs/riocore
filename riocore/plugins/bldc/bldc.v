@@ -1,9 +1,10 @@
 
 module bldc
-    #(parameter START = 0, parameter DIVIDER = 1000)
+    #(parameter START = 0, parameter DIVIDER = 1000, parameter FEEDBACK_DIVIDER = 16)
      (
          input clk,
          input enable,
+         input testmode,
          input signed [15:0] velocity,
          input signed [7:0] offset,
          input [7:0] torque,
@@ -41,17 +42,23 @@ module bldc
     reg [5:0] tpos_u = 0;
     reg [5:0] tpos_v = 0;
     reg [5:0] tpos_w = 0;
-    
+
     always@ (posedge(clk))
     begin
-        if (direction) begin
-            tpos_u <= (feedback>>4) + offset - torque;
-            tpos_v <= (feedback>>4) + offset - torque + TOFF_V;
-            tpos_w <= (feedback>>4) + offset - torque + TOFF_W;
+        if (testmode) begin
+                tpos_u <= offset;
+                tpos_v <= offset + TOFF_V;
+                tpos_w <= offset + TOFF_W;
         end else begin
-            tpos_u <= (feedback>>4) + offset + torque;
-            tpos_v <= (feedback>>4) + offset + torque + TOFF_V;
-            tpos_w <= (feedback>>4) + offset + torque + TOFF_W;
+            if (direction) begin
+                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset - torque;
+                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_V;
+                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_W;
+            end else begin
+                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset + torque;
+                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + torque + TOFF_V;
+                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + torque + TOFF_W;
+            end
         end
         if (velocity < 0) begin
             velocity_abs <= velocity * -1;

@@ -39,6 +39,22 @@ class Plugin(PluginBase):
                 "unit": "",
                 "description": "encoder instance",
             },
+            "poles": {
+                "default": 4,
+                "type": int,
+                "min": 2,
+                "max": 100,
+                "unit": "",
+                "description": "motor poles",
+            },
+            "feedback_res": {
+                "default": 4096,
+                "type": int,
+                "min": 10,
+                "max": 100000,
+                "unit": "",
+                "description": "encoder resolution",
+            },
         }
         self.INTERFACE = {
             "velocity": {
@@ -56,7 +72,11 @@ class Plugin(PluginBase):
             "enable": {
                 "size": 1,
                 "direction": "output",
-                "on_error": False,
+                "_on_error": False,
+            },
+            "testmode": {
+                "size": 1,
+                "direction": "output",
             },
         }
         self.SIGNALS = {
@@ -68,8 +88,8 @@ class Plugin(PluginBase):
             },
             "offset": {
                 "direction": "output",
-                "min": -15,
-                "max": 15,
+                "min": -63,
+                "max": 63,
                 "unit": "%",
             },
             "torque": {
@@ -82,15 +102,25 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "bool": True,
             },
+            "testmode": {
+                "direction": "output",
+                "bool": True,
+            },
         }
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
+
+        poles = int(self.plugin_setup.get("poles", self.OPTIONS["poles"]["default"]))
+        feedback_res = int(self.plugin_setup.get("feedback_res", self.OPTIONS["feedback_res"]["default"]))
+        table_len = 64 # sinus table
+        feedback_divider = feedback_res / poles / table_len
+        instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // frequency // 512
-        instance_parameter["DIVIDER"] = divider
+        instance_parameter["DIVIDER"] = int(divider)
 
         # internal feedback
         instance["arguments"]["feedback"] = self.plugin_setup.get("halsensor", self.OPTIONS["halsensor"]["default"])
