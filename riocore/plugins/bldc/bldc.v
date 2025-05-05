@@ -5,10 +5,8 @@ module bldc
          input clk,
          input enable,
          input [1:0] mode,
-         output [7:0] mode_back,
          input signed [15:0] velocity,
          input signed [7:0] offset,
-         input [7:0] torque,
          input [15:0] feedback,
          output en,
          output u,
@@ -17,9 +15,9 @@ module bldc
      );
 
     assign en = enable;
-    assign mode_back = mode;
 
     localparam TLEN = 64;
+    localparam TMAX = TLEN / 4;
     localparam TOFF_V = TLEN / 3;
     localparam TOFF_W = TLEN / 3 * 2;
 
@@ -95,19 +93,27 @@ module bldc
     end
 
     always@ (posedge(clk)) begin
-        if (0 == 1) begin
+        if (mode == 2) begin
+            // test mode
             tpos_u <= offset;
             tpos_v <= offset + TOFF_V;
             tpos_w <= offset + TOFF_W;
+        end else if (mode == 1) begin
+            // calibration mode (to set offset)
+            tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset;
+            tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + TOFF_V;
+            tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + TOFF_W;
+
         end else begin
+            // normal running mode (voltage control)
             if (direction) begin
-                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset + torque;
-                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + torque + TOFF_V;
-                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + torque + TOFF_W;
+                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset + TMAX;
+                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + TMAX + TOFF_V;
+                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + TMAX + TOFF_W;
             end else begin
-                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset - torque;
-                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_V;
-                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset - torque + TOFF_W;
+                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset - TMAX;
+                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset - TMAX + TOFF_V;
+                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset - TMAX + TOFF_W;
             end
         end
         if (velocity < 0) begin

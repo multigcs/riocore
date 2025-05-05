@@ -12,18 +12,15 @@ class Plugin(PluginBase):
 Motor-Setup:
 * set motor poles and encoder resolution in the options
 * start rio-test gui
+* set mode to calibration (1)
 * set enable
-* leave torque at zero
 * set velocity to ~30% (warning: motor will start to spin !)
 * adjust the offset until the motor stop's (should between -15<->15)
-* add the offset value to your json config and set a torque value (0-16)
+* add the offset value to your json config
 ```
     "signals": {
         "offset": {
             "setp": "-11"
-        },
-        "torque": {
-            "setp": "16"
         }
     }
 ```
@@ -89,10 +86,7 @@ Motor-Setup:
             "offset": {
                 "size": 8,
                 "direction": "output",
-            },
-            "torque": {
-                "size": 8,
-                "direction": "output",
+                "multiplexed": True,
             },
             "enable": {
                 "size": 1,
@@ -100,12 +94,9 @@ Motor-Setup:
                 "on_error": False,
             },
             "mode": {
-                "size": 2,
-                "direction": "output",
-            },
-            "mode_back": {
                 "size": 8,
-                "direction": "input",
+                "direction": "output",
+                "multiplexed": True,
             },
         }
         self.SIGNALS = {
@@ -121,12 +112,6 @@ Motor-Setup:
                 "max": self.table_len,
                 "unit": "",
             },
-            "torque": {
-                "direction": "output",
-                "min": 0,
-                "max": self.table_len / 4,
-                "unit": "",
-            },
             "enable": {
                 "direction": "output",
                 "bool": True,
@@ -135,9 +120,6 @@ Motor-Setup:
                 "direction": "output",
                 "min": 0,
                 "max": 3,
-            },
-            "mode_back": {
-                "direction": "input",
             },
         }
 
