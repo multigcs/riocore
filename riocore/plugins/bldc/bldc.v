@@ -4,7 +4,7 @@ module bldc
      (
          input clk,
          input enable,
-         input [1:0] mode,
+         input [7:0] mode,
          input signed [15:0] velocity,
          input signed [7:0] offset,
          input [15:0] feedback,
@@ -22,10 +22,11 @@ module bldc
     localparam TOFF_W = TLEN / 3 * 2;
 
     reg direction = 0;
-    reg [7:0] velocity_abs = 0;
+    reg [7:0] voltage = 0;
     reg [5:0] tpos_u = 0;
     reg [5:0] tpos_v = 0;
     reg [5:0] tpos_w = 0;
+    reg signed [7:0] tangle = 0;
 
     reg [31:0] clk_cnt = 0;
     reg [31:0] dty_u = 0;
@@ -43,6 +44,35 @@ module bldc
         end
     end
 
+    always@ (posedge(clk)) begin
+        if (mode == 2) begin
+            // test mode
+            tpos_u <= offset;
+            tpos_v <= offset + TOFF_V;
+            tpos_w <= offset + TOFF_W;
+        end else begin
+            if (mode == 1) begin
+                // calibration mode (to find offset)
+                tangle <= 0;
+            end else if (velocity > 0) begin
+                tangle <= TMAX;
+            end else if (velocity < 0) begin
+                tangle <= -TMAX;
+            end else begin
+                tangle <= 0;
+            end
+            tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset + tangle;
+            tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + tangle + TOFF_V;
+            tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + tangle + TOFF_W;
+        end
+        if (velocity > 0) begin
+            voltage <= velocity;
+        end else if (velocity < 0) begin
+            voltage <= -velocity;
+        end else begin
+            voltage <= 0;
+        end
+    end
 
     reg [7:0] calc_stat = 0;
     reg [7:0] in_a = 0;
@@ -60,21 +90,21 @@ module bldc
     );
     always@ (posedge(clk)) begin
         // do serial calculation to not use DSP blocks
-        // dty_u <= sine_tbl[tpos_u] * velocity_abs / 100;
-        // dty_v <= sine_tbl[tpos_v] * velocity_abs / 100;
-        // dty_w <= sine_tbl[tpos_w] * velocity_abs / 100;
+        // dty_u <= sine_tbl[tpos_u] * voltage / 100;
+        // dty_v <= sine_tbl[tpos_v] * voltage / 100;
+        // dty_w <= sine_tbl[tpos_w] * voltage / 100;
         if (load == 0) begin
             if (calc_stat == 0) begin
                 in_a <= sine_tbl[tpos_u];
-                in_b <= velocity_abs;
+                in_b <= voltage;
                 load <= 1;
             end else if (calc_stat == 1) begin
                 in_a <= sine_tbl[tpos_v];
-                in_b <= velocity_abs;
+                in_b <= voltage;
                 load <= 1;
             end else if (calc_stat == 2) begin
                 in_a <= sine_tbl[tpos_w];
-                in_b <= velocity_abs;
+                in_b <= voltage;
                 load <= 1;
             end
         end else if (out_valid == 1) begin
@@ -89,39 +119,6 @@ module bldc
                 calc_stat <= 0;
                 dty_w <= out_prod / 100;
             end
-        end
-    end
-
-    always@ (posedge(clk)) begin
-        if (mode == 2) begin
-            // test mode
-            tpos_u <= offset;
-            tpos_v <= offset + TOFF_V;
-            tpos_w <= offset + TOFF_W;
-        end else if (mode == 1) begin
-            // calibration mode (to set offset)
-            tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset;
-            tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + TOFF_V;
-            tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + TOFF_W;
-
-        end else begin
-            // normal running mode (voltage control)
-            if (direction) begin
-                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset + TMAX;
-                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset + TMAX + TOFF_V;
-                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset + TMAX + TOFF_W;
-            end else begin
-                tpos_u <= (feedback / FEEDBACK_DIVIDER) + offset - TMAX;
-                tpos_v <= (feedback / FEEDBACK_DIVIDER) + offset - TMAX + TOFF_V;
-                tpos_w <= (feedback / FEEDBACK_DIVIDER) + offset - TMAX + TOFF_W;
-            end
-        end
-        if (velocity < 0) begin
-            velocity_abs <= velocity * -1;
-            direction <= 1;
-        end else begin
-            velocity_abs <= velocity;
-            direction <= 0;
         end
     end
 
