@@ -4,7 +4,8 @@ module bldc
      (
          input clk,
          input enable,
-         input testmode,
+         input [1:0] mode,
+         output [7:0] mode_back,
          input signed [15:0] velocity,
          input signed [7:0] offset,
          input [7:0] torque,
@@ -16,6 +17,7 @@ module bldc
      );
 
     assign en = enable;
+    assign mode_back = mode;
 
     localparam TLEN = 64;
     localparam TOFF_V = TLEN / 3;
@@ -93,7 +95,7 @@ module bldc
     end
 
     always@ (posedge(clk)) begin
-        if (testmode) begin
+        if (0 == 1) begin
             tpos_u <= offset;
             tpos_v <= offset + TOFF_V;
             tpos_w <= offset + TOFF_W;

@@ -485,8 +485,13 @@ class cbase:
             if data_config["direction"] == "output":
                 byte_start, byte_size, bit_offset = self.project.get_bype_pos(output_pos, variable_size)
                 byte_start = self.project.buffer_bytes - 1 - byte_start
-                if variable_size > 1:
+                if variable_size >= 8:
                     output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->{variable_name}, {byte_size}); // {output_pos}")
+                elif variable_size > 1:
+                    for bit in range(variable_size - 1, -1, -1):
+                        output.append(f"    if (data->{variable_name} & (1<<{bit})) {{")
+                        output.append(f"         txBuffer[{byte_start}] |= (1<<{bit_offset + bit}); // {output_pos}")
+                        output.append("    }")
                 else:
                     output.append(f"    txBuffer[{byte_start}] |= (data->{variable_name}<<{bit_offset}); // {output_pos}")
                 output_pos -= variable_size

@@ -99,9 +99,13 @@ Motor-Setup:
                 "direction": "output",
                 "on_error": False,
             },
-            "testmode": {
-                "size": 1,
+            "mode": {
+                "size": 2,
                 "direction": "output",
+            },
+            "mode_back": {
+                "size": 8,
+                "direction": "input",
             },
         }
         self.SIGNALS = {
@@ -127,9 +131,13 @@ Motor-Setup:
                 "direction": "output",
                 "bool": True,
             },
-            "testmode": {
+            "mode": {
                 "direction": "output",
-                "bool": True,
+                "min": 0,
+                "max": 3,
+            },
+            "mode_back": {
+                "direction": "input",
             },
         }
 

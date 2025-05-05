@@ -273,6 +273,9 @@ class Gateware:
                         for bit_num in range(0, size, 8):
                             pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                             output_pos -= 8
+                    elif size > 1:
+                        pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - size}]")
+                        output_pos -= size
                     else:
                         pack_list.append(f"rx_data[{output_pos - 1}]")
                         output_pos -= 1

@@ -916,11 +916,15 @@ class Project:
                     if not value:
                         value = [0] * byte_size
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
-                elif variable_size > 1:
+                elif variable_size >= 8:
                     if is_float:
                         txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<f", int(value)))[0:byte_size]
                     else:
                         txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
+                elif variable_size > 1:
+                    for bit in range(variable_size - 1, -1, -1):
+                        if value & (1 << bit):
+                            txdata[byte_start] |= 1 << (bit_offset + bit)
                 else:
                     if value == 1:
                         txdata[byte_start] |= 1 << bit_offset
