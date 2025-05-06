@@ -17,6 +17,7 @@ class PluginBase:
         self.NAME = ""
         self.TYPE = "io"
         self.INFO = ""
+        self.EXPERIMENTAL = False
         self.DESCRIPTION = ""
         self.URL = ""
         self.GRAPH = ""
@@ -196,7 +197,7 @@ class PluginBase:
             elif pin_config.get("optional") is not True:
                 print(f"ERROR: MISSING PIN CONFIGURATION for '{pin_name}' ({self.NAME})")
                 # exit(1)
-            else:
+            elif pin_config["direction"] != "output":
                 pins[pin_name] = pin_config.copy()
                 pins[pin_name]["varname"] = f"UNUSED_PIN_{self.instances_name}_{pin_name}".upper()
         return pins
