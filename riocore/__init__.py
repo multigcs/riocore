@@ -43,6 +43,12 @@ class Plugins:
             output.append('<img align="right" width="320" src="image.png">')
             output.append("")
 
+        if plugin.EXPERIMENTAL:
+            output.append("")
+            output.append("| :warning: EXPERIMENTAL |")
+            output.append("|:-----------------------|")
+            output.append("")
+
         if plugin.INFO:
             output.append(f"**{plugin.INFO}**")
             output.append("")

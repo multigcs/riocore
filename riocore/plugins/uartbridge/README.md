@@ -2,7 +2,11 @@
 
 <img align="right" width="320" src="image.png">
 
-**uart bridge - experimental - python only**
+
+| :warning: EXPERIMENTAL |
+|:-----------------------|
+
+**uart bridge - python only**
 
 uart bridge to send and receive custom frames via uart port
 

@@ -7,7 +7,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "bldc"
         self.INFO = "BLDC FOC"
-        self.DESCRIPTION = """to control BLDC Motors - experimental
+        self.DESCRIPTION = """to control BLDC Motors
 
 Motor-Setup:
 * set motor poles and encoder resolution in the options

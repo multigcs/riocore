@@ -4,7 +4,7 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rmii"
-        self.INFO = "rmii udp interface (experimental)"
+        self.INFO = "rmii udp interface"
         self.DESCRIPTION = "rmii ethernet - udp interface - only for tangprimer20k with gowin toolchain - problems with yosys (bram)"
         self.KEYWORDS = "interface network ethernet udp"
         self.ORIGIN = "https://github.com/sipeed/TangPrimer-20K-example/tree/main/Ethernet/verilog_UDP"

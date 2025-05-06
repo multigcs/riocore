@@ -68,8 +68,8 @@ elif args.generate:
 
     text.append("# PLUGINS")
     text.append("")
-    text.append("| Type | Name | Info | Image |")
-    text.append("| --- | :---: | --- | :---: |")
+    text.append("| Type | Name | Info | Image | Experimental |")
+    text.append("| --- | :---: | --- | :---: | :---: |")
 
     for title, ptype in {
         "Interfaces": "interface",
@@ -89,7 +89,11 @@ elif args.generate:
                 if os.path.isfile(image_path):
                     image = f'<img src="{plugin_instance.NAME}/image.png" height="48">'
 
-                text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} |")
+                experimental = ""
+                if plugin_instance.EXPERIMENTAL:
+                    experimental = ":warning"
+
+                text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} | {experimental} |")
 
                 title = ""
 

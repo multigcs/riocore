@@ -466,6 +466,8 @@ class GuiPlugins:
         options = QVBoxLayout()
 
         infotext = plugin_instance.INFO
+        if plugin_instance.EXPERIMENTAL:
+            infotext += "\n --- EXPERIMENTAL ---"
         label = QLabel(f"{infotext}\n")
         label.setFont(myFont)
         options.addWidget(label)
@@ -628,9 +630,12 @@ class GuiPlugins:
                 if pin_defaults.get("optional", False):
                     key = f"opt_{key}"
                 plugin_needs[plugin["name"]][key] += 1
+            infotext = plugins.plugin_instances[0].INFO
+            if plugins.plugin_instances[0].EXPERIMENTAL:
+                infotext += "\n --- EXPERIMENTAL ---"
             plugin_infos[plugin["name"]] = {
                 "description": plugins.plugin_instances[0].DESCRIPTION,
-                "info": plugins.plugin_instances[0].INFO,
+                "info": infotext,
                 "keywords": plugins.plugin_instances[0].KEYWORDS,
                 "pins": plugins.plugin_instances[0].PINDEFAULTS,
                 "signals": plugins.plugin_instances[0].SIGNALS,

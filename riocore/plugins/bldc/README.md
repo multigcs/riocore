@@ -2,25 +2,26 @@
 
 <img align="right" width="320" src="image.png">
 
+
+| :warning: EXPERIMENTAL |
+|:-----------------------|
+
 **BLDC FOC**
 
-to control BLDC Motors - experimental
+to control BLDC Motors
 
 Motor-Setup:
 * set motor poles and encoder resolution in the options
 * start rio-test gui
+* set mode to calibration (1)
 * set enable
-* leave torque at zero
 * set velocity to ~30% (warning: motor will start to spin !)
 * adjust the offset until the motor stop's (should between -15<->15)
-* add the offset value to your json config and set a torque value (0-16)
+* add the offset value to your json config
 ```
     "signals": {
         "offset": {
             "setp": "-11"
-        },
-        "torque": {
-            "setp": "16"
         }
     }
 ```
@@ -119,23 +120,17 @@ configure as joint
  * max: 64
  * unit: 
 
-### torque:
-
- * type: float
- * direction: output
- * min: 0
- * max: 16.0
- * unit: 
-
 ### enable:
 
  * type: bit
  * direction: output
 
-### testmode:
+### mode:
 
- * type: bit
+ * type: float
  * direction: output
+ * min: 0
+ * max: 3
 
 
 ## Interfaces:
@@ -149,21 +144,18 @@ configure as joint
 
  * size: 8 bit
  * direction: output
-
-### torque:
-
- * size: 8 bit
- * direction: output
+ * multiplexed: True
 
 ### enable:
 
  * size: 1 bit
  * direction: output
 
-### testmode:
+### mode:
 
- * size: 1 bit
+ * size: 8 bit
  * direction: output
+ * multiplexed: True
 
 
 ## Basic-Example:
@@ -255,17 +247,6 @@ configure as joint
                 "type": "scale"
             }
         },
-        "torque": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "torque",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
         "enable": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
@@ -275,13 +256,15 @@ configure as joint
                 "type": "checkbox"
             }
         },
-        "testmode": {
+        "mode": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
             "display": {
-                "title": "testmode",
+                "title": "mode",
                 "section": "outputs",
-                "type": "checkbox"
+                "type": "scale"
             }
         }
     }
