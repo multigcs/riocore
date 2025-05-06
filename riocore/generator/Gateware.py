@@ -137,6 +137,12 @@ class Gateware:
                     continue
                 self.verilogs.append(verilog)
                 ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, verilog)
+                if not os.path.isfile(ipv_path):
+                    # fallback to shared files
+                    ipv_path = os.path.join(riocore_path, "files", verilog)
+                if not os.path.isfile(ipv_path):
+                    print(f"ERROR: can not found verilog file: {verilog}")
+                    exit(1)
                 target = os.path.join(self.gateware_path, verilog)
                 shutil.copy(ipv_path, target)
 
