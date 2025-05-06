@@ -11,6 +11,7 @@
 
 ### Plugins
 * adding riodrive can-bus plugin (experimental)
+* adding bldc foc plugin (experimental)
 
 
 ## v0.9.2
