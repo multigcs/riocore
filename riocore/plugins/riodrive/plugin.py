@@ -9,10 +9,9 @@ class Plugin(PluginBase):
         self.URL = "https://github.com/multigcs/riodrive"
         self.KEYWORDS = "canbus odrive bldc brushless servo"
         self.ORIGIN = ""
+        self.EXPERIMENTAL = True
         self.TYPE = "joint"
-
         self.VERILOGS = ["riodrive.v", "canbus_tx.v", "canbus_rx.v"]
-
         self.OPTIONS = {
             "baud": {
                 "default": 500000,

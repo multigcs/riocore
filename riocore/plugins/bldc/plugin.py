@@ -30,8 +30,9 @@ Motor-Setup:
         """
         self.KEYWORDS = "joint brushless"
         self.ORIGIN = ""
-        self.VERILOGS = ["bldc.v"]
+        self.EXPERIMENTAL = True
         self.TYPE = "joint"
+        self.VERILOGS = ["bldc.v"]
         self.PINDEFAULTS = {
             "u": {
                 "direction": "output",
