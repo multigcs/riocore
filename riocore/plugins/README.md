@@ -2,17 +2,17 @@
 
 | Type | Name | Info | Image | Experimental |
 | --- | :---: | --- | :---: | :---: |
-| Interfaces | [arty_mii](arty_mii/README.md) | udp interface for host comunication - Arty7-35t only | <img src="arty_mii/image.png" height="48"> | :warning |
-|  | [rmii](rmii/README.md) | rmii udp interface | <img src="rmii/image.png" height="48"> | :warning |
+| Interfaces | [arty_mii](arty_mii/README.md) | udp interface for host comunication - Arty7-35t only | <img src="arty_mii/image.png" height="48"> | X |
+|  | [rmii](rmii/README.md) | rmii udp interface | <img src="rmii/image.png" height="48"> | X |
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |  |
 |  | [uart](uart/README.md) | uart interface for host cominucation | <img src="uart/image.png" height="48"> |  |
 |  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |  |
-| Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | :warning |
+| Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | X |
 |  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |  |
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |  |
 |  | [pwmout](pwmout/README.md) | pwm output | <img src="pwmout/image.png" height="48"> |  |
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |  |
-|  | [riodrive](riodrive/README.md) | to control a riodrive via can-bus | <img src="riodrive/image.png" height="48"> | :warning |
+|  | [riodrive](riodrive/README.md) | to control a riodrive via can-bus | <img src="riodrive/image.png" height="48"> | X |
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |  |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |  |
 | IO | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |  |
@@ -54,6 +54,6 @@
 |  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [wled_bar](wled_bar/README.md) | ws2812b interface for bar-displays | <img src="wled_bar/image.png" height="48"> |  |
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
-|  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | :warning |
+|  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | X |
 | Expansions | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |

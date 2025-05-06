@@ -91,7 +91,7 @@ elif args.generate:
 
                 experimental = ""
                 if plugin_instance.EXPERIMENTAL:
-                    experimental = ":warning"
+                    experimental = "X"
 
                 text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} | {experimental} |")
 
