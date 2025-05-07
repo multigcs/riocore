@@ -542,7 +542,7 @@
         "default": "bitout",
         "pins": {
             "OUT": {
-                "pin": "G3",
+                "pin": "H1",
                 "pos": [
                     544,
                     481
@@ -558,7 +558,7 @@
         "default": "bitout",
         "pins": {
             "OUT": {
-                "pin": "G3",
+                "pin": "F3",
                 "pos": [
                     604,
                     481
@@ -574,7 +574,7 @@
         "default": "bitout",
         "pins": {
             "OUT": {
-                "pin": "G3",
+                "pin": "G1",
                 "pos": [
                     664,
                     481
@@ -587,7 +587,7 @@
 
     },
     {
-        "name": "OUT3",
+        "name": "I2C",
         "comment": "",
         "default": "i2cbus",
         "pins": {
