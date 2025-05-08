@@ -15,6 +15,13 @@ class i2c_device:
                 "description": "number of channels",
                 "default": 4,
             },
+            "reference": {
+                "type": float,
+                "min": 0.1,
+                "max": 5.5,
+                "description": "reference voltage",
+                "default": 3.3,
+            },
             "sensor0": {
                 "type": "combo",
                 "options": sensor_options,
@@ -52,6 +59,7 @@ class i2c_device:
         self.addr = setup["address"]
         self.setup = setup
         self.channels = setup.get("channels", self.options["config"]["channels"]["default"])
+        self.reference = setup.get("reference", self.options["config"]["reference"]["default"])
 
         self.INTERFACE = {}
         self.SIGNALS = {}
@@ -144,7 +152,7 @@ class i2c_device:
         value /= 1000.0
 
         if sensor == "ntc":
-            Rt = 10.0 * value / (3.3 - value)
+            Rt = 10.0 * value / (self.reference - value)
             if Rt == 0.0:
                 value = -999.0
             else:
@@ -168,7 +176,7 @@ class i2c_device:
             return """
                 value = (int16_t)value>>3;
                 value /= 1000.0;
-                float Rt = 10.0 * value / (3.3 - value);
+                float Rt = 10.0 * value / (self.reference - value);
                 float tempK = 1.0 / (log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0));
                 float tempC = tempK - 273.15;
                 value = tempC;
