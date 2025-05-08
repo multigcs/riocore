@@ -166,14 +166,14 @@ class i2c_device:
             value -= 0.56
             value *= 2.57
         elif sensor == "5A":
-            value -= 0.0
-            value *= (5.0 / 2.5)
+            value -= (self.reference / 2.0)
+            value *= (5.0 / (self.reference / 2.0))
         elif sensor == "20A":
-            value -= 0.0
-            value *= (20.0 / 2.5)
+            value -= (self.reference / 2.0)
+            value *= (20.0 / (self.reference / 2.0))
         elif sensor == "30A":
-            value -= 2.5
-            value *= (30.0 / 2.5)
+            value -= (self.reference / 2.0)
+            value *= (30.0 / (self.reference / 2.0))
 
         return value
 
@@ -201,25 +201,25 @@ class i2c_device:
             value *= 2.57;
             """
         elif sensor == "5A":
-            return """
+            return f"""
             value = (int16_t)value>>3;
             value /= 1000.0;
-            value -= 0.0;
-            value *= (5.0 / 2.5);
+            value -= {(self.reference / 2.0)};
+            value *= (5.0 / {(self.reference / 2.0)});
             """
         elif sensor == "20A":
-            return """
+            return f"""
             value = (int16_t)value>>3;
             value /= 1000.0;
-            value -= 0.0;
-            value *= (20.0 / 2.5);
+            value -= {(self.reference / 2.0)};
+            value *= (20.0 / {(self.reference / 2.0)});
             """
         elif sensor == "30A":
-            return """
+            return f"""
             value = (int16_t)value>>3;
             value /= 1000.0;
-            value -= 2.5;
-            value *= (30.0 / 2.5);
+            value -= {(self.reference / 2.0)};
+            value *= (30.0 / {(self.reference / 2.0)});
             """
         else:
             return """
