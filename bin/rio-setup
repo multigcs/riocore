@@ -1272,8 +1272,29 @@ class WinForm(QWidget):
         setp_config = self.config["linuxcnc"]["setp"]
 
         def add_setp():
-            setp_config["new"] = "111"
-            self.load_tree("/LinuxCNC/Setp/")
+            dialog = QDialog()
+            dialog.setWindowTitle("add setp")
+            dialog.setStyleSheet(STYLESHEET)
+            dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+            dialog_buttonBox.accepted.connect(dialog.accept)
+            dialog_buttonBox.rejected.connect(dialog.reject)
+            dialog.layout = QVBoxLayout()
+
+            message = QLabel("Halpin-Name:")
+            dialog.layout.addWidget(message)
+            pin_name = QComboBox()
+            pin_name.setEditable(True)
+            for halpin, halpin_info in halpins.LINUXCNC_SIGNALS["input"].items():
+                pin_name.addItem(halpin)
+            dialog.layout.addWidget(pin_name)
+
+            dialog.layout.addWidget(dialog_buttonBox)
+            dialog.setLayout(dialog.layout)
+
+            if dialog.exec():
+                setp_pin = pin_name.currentText()
+                setp_config[setp_pin] = ""
+                self.load_tree("/LinuxCNC/Setp/")
 
         buttons_layout = QHBoxLayout()
         buttons_layout.setContentsMargins(0, 0, 0, 0)
@@ -1286,7 +1307,7 @@ class WinForm(QWidget):
         buttons_layout.addWidget(button)
 
         buttons_layout.addStretch()
-        # self.treeview.setIndexWidget(bitem.index(), buttons_widget)
+        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
 
         options_target = []
         for halpin, halpin_info in halpins.LINUXCNC_SIGNALS["output"].items():
