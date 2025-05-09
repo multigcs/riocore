@@ -6,7 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "as5600pwm"
         self.INFO = "as5600 pwm input"
         self.DESCRIPTION = "scale: 4096"
-        self.KEYWORDS = "pulse digital"
+        self.KEYWORDS = "absolute encoder with pwm output"
         self.ORIGIN = ""
         self.VERILOGS = ["as5600pwm.v"]
         self.PINDEFAULTS = {

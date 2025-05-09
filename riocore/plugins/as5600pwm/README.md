@@ -6,7 +6,7 @@
 
 scale: 4096
 
-Keywords: pulse digital
+Keywords: absolute encoder with pwm output
 
 ## Pins:
 *FPGA-pins*
