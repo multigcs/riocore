@@ -37,6 +37,24 @@ class i2c_device:
         }
         self.PARAMS = {}
         self.INITS = []
+        """
+        self.INITS = [
+            {
+                "mode": "writereg",
+                "values": [
+                    (0x01, 0),
+                    (0x02, 0),
+
+                    (0x08, 0b11100000), # PWM out 920Hz
+                    (0xff, 0x40), # save permanent
+
+                    #(0x03, 0b00000000),
+                    #(0x04, 0b00001111),
+                    #(0xff, 0x80),
+                ],
+            },
+        ]
+        """
         self.STEPS = [
             {
                 "mode": "write",

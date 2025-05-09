@@ -606,6 +606,13 @@ class Gateware:
                     mpid += 1
             output.append("    end")
 
+        varmapping = {}
+        for plugin_instance in self.project.plugin_instances:
+            for signal, signal_config in plugin_instance.SIGNALS.items():
+                if signal in plugin_instance.INTERFACE:
+                    iface = plugin_instance.INTERFACE[signal]
+                    varmapping[f"{signal_config['signal_prefix']}:{signal}"] = iface["variable"]
+
         # gateware instances
         for plugin_instance in self.project.plugin_instances:
             if not plugin_instance.gateware_instances():
@@ -635,7 +642,13 @@ class Gateware:
                             output.append(f"    {instance_module} {instance_name} (")
                         arguments_list = []
                         for argument_name, argument_value in instance_arguments.items():
+                            if ":" in argument_value:
+                                if argument_value in varmapping:
+                                    argument_value = varmapping[argument_value]
+                                else:
+                                    print(f"ERROR: no mapping found: {argument_value}")
                             arguments_list.append(f".{argument_name}({argument_value})")
+
                         arguments_string = ",\n        ".join(arguments_list)
                         output.append(f"        {arguments_string}")
                         output.append("    );")

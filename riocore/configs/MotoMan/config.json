@@ -405,7 +405,15 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "OUT0:OUT"
+                    "pin": "OUT0:OUT",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             },
             "uid": "bitout0"
@@ -414,7 +422,15 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "OUT1:OUT"
+                    "pin": "OUT1:OUT",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             },
             "uid": "bitout1"
@@ -423,7 +439,15 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "OUT2:OUT"
+                    "pin": "OUT2:OUT",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             },
             "uid": "bitout2"
@@ -432,7 +456,15 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "OUT3:OUT"
+                    "pin": "OUT3:OUT",
+                    "modifier": [
+                        {
+                            "type": "onerror"
+                        },
+                        {
+                            "type": "invert"
+                        }
+                    ]
                 }
             },
             "uid": "bitout3"
@@ -450,11 +482,62 @@
             "uid": "i2cbus0",
             "config": {
                 "devices": {
-                    "lm75_0": {
-                        "type": "lm75",
+                    "ads1115_0": {
+                        "type": "ads1115",
                         "address": "0x48",
-                        "subbus": "none"
+                        "subbus": "none",
+                        "channels": 4,
+                        "sensor0": "30A",
+                        "sensor1": "30A",
+                        "sensor2": "30A",
+                        "sensor3": "30A"
                     }
+                }
+            },
+            "signals": {
+                "ads1115_0_adc0": {
+                    "display": {
+                        "title": "M1+2",
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 10.0
+                    },
+                    "offset": 0.1,
+                    "scale": 1.1
+                },
+                "ads1115_0_adc1": {
+                    "display": {
+                        "title": "M3+4",
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 10.0
+                    },
+                    "offset": 0.1,
+                    "scale": 1.1
+                },
+                "ads1115_0_adc2": {
+                    "display": {
+                        "title": "M5+6",
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 10.0
+                    },
+                    "scale": 1.1,
+                    "offset": 0.1
+                },
+                "ads1115_0_adc3": {
+                    "display": {
+                        "title": "Misc",
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 10.0
+                    },
+                    "scale": 1.1,
+                    "offset": 0.1
                 }
             }
         },

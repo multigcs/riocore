@@ -15,7 +15,8 @@
 |  | [riodrive](riodrive/README.md) | to control a riodrive via can-bus | <img src="riodrive/image.png" height="48"> | X |
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |  |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |  |
-| IO | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |  |
+| IO | [as5600pwm](as5600pwm/README.md) | as5600 pwm input | <img src="as5600pwm/image.png" height="48"> |  |
+|  | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |  |
 |  | [binout](binout/README.md) | decimal to binary output | <img src="binout/image.png" height="48"> |  |
 |  | [bitcopy](bitcopy/README.md) | copy a bit/pin to an other output pin | <img src="bitcopy/image.png" height="48"> |  |
 |  | [bitin](bitin/README.md) | single input pin | <img src="bitin/image.png" height="48"> |  |
