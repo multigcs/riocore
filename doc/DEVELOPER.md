@@ -25,7 +25,7 @@ mv riocore/plugins/myplugin/pwmout.v riocore/plugins/myplugin/myplugin.v
 
 and edit plugin.py and the verilog file
 
-thats all, rio fill find it and the rio-setup can read all infos from the plugin.py
+thats all, rio will find it and the rio-setup can read all infos from the plugin.py
 
 if you are done, run:
 ```
