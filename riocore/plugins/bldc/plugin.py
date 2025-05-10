@@ -49,10 +49,10 @@ Motor-Setup:
         }
         self.OPTIONS = {
             "frequency": {
-                "default": 10000,
+                "default": 50000,
                 "type": int,
                 "min": 10,
-                "max": 1000000,
+                "max": 200000,
                 "unit": "Hz",
                 "description": "PWM frequency",
             },
