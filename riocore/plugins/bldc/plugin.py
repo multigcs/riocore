@@ -66,13 +66,13 @@ Motor-Setup:
             },
         }
         self.PINDEFAULTS = {
-            "u": {
+            "u_p": {
                 "direction": "output",
             },
-            "v": {
+            "v_p": {
                 "direction": "output",
             },
-            "w": {
+            "w_p": {
                 "direction": "output",
             },
             "u_n": {

@@ -9,18 +9,18 @@ module bldc
          input signed [7:0] offset,
          input [15:0] feedback,
          output en,
-         output u,
-         output v,
-         output w,
+         output u_p,
+         output v_p,
+         output w_p,
          output u_n,
          output v_n,
          output w_n
      );
 
     assign en = enable;
-    assign u_n = ~u;
-    assign v_n = ~v;
-    assign w_n = ~w;
+    assign u_n = ~u_p;
+    assign v_n = ~v_p;
+    assign w_n = ~w_p;
 
     localparam TLEN = 64;
     localparam TMAX = TLEN / 4;
@@ -195,6 +195,13 @@ module bldc
         sine_tbl[62] = 102;
         sine_tbl[63] = 114;
     end
+
+    wire u;
+    wire v;
+    wire w;
+    assign u_p = u & enable;
+    assign v_p = v & enable;
+    assign w_p = w & enable;
 
     sine_pwm sine_pwm_u (
       .clk (pwmclk),
