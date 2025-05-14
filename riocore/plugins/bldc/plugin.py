@@ -33,20 +33,6 @@ Motor-Setup:
         self.EXPERIMENTAL = True
         self.TYPE = "joint"
         self.VERILOGS = ["bldc.v"]
-        self.PINDEFAULTS = {
-            "u": {
-                "direction": "output",
-            },
-            "v": {
-                "direction": "output",
-            },
-            "w": {
-                "direction": "output",
-            },
-            "en": {
-                "direction": "output",
-            },
-        }
         self.OPTIONS = {
             "frequency": {
                 "default": 50000,
@@ -77,6 +63,33 @@ Motor-Setup:
                 "max": 100000,
                 "unit": "",
                 "description": "encoder resolution",
+            },
+        }
+        self.PINDEFAULTS = {
+            "u": {
+                "direction": "output",
+            },
+            "v": {
+                "direction": "output",
+            },
+            "w": {
+                "direction": "output",
+            },
+            "u_n": {
+                "direction": "output",
+                "optional": True,
+            },
+            "v_n": {
+                "direction": "output",
+                "optional": True,
+            },
+            "w_n": {
+                "direction": "output",
+                "optional": True,
+            },
+            "en": {
+                "direction": "output",
+                "optional": True,
             },
         }
         self.INTERFACE = {

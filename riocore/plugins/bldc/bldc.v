@@ -11,10 +11,16 @@ module bldc
          output en,
          output u,
          output v,
-         output w
+         output w,
+         output u_n,
+         output v_n,
+         output w_n
      );
 
     assign en = enable;
+    assign u_n = ~u;
+    assign v_n = ~v;
+    assign w_n = ~w;
 
     localparam TLEN = 64;
     localparam TMAX = TLEN / 4;
