@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Wed May 14 18:41:48 2025
+[*] Wed May 14 19:31:29 2025
 [*]
 [dumpfile] "/mnt/data2/src/riocore/riocore/plugins/bldc/testb.vcd"
-[dumpfile_mtime] "Wed May 14 18:41:30 2025"
-[dumpfile_size] 3503918
+[dumpfile_mtime] "Wed May 14 19:31:23 2025"
+[dumpfile_size] 1123225
 [savefile] "/mnt/data2/src/riocore/riocore/plugins/bldc/testb.gtkw"
 [timestart] 0
 [size] 3840 2058
 [pos] -1 -1
-*-24.138908 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-22.553946 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [sst_width] 380
 [signals_width] 184
 [sst_expanded] 1
@@ -54,10 +54,9 @@ testb.pwm_w[7:0]
 -
 @24
 testb.velocity[15:0]
-@8038
-[color] 7
-testb.offset[7:0]
 @20000
 -
+@8023
+testb.feedback[15:0]
 [pattern_trace] 1
 [pattern_trace] 0
