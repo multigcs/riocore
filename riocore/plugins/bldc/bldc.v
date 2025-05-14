@@ -18,9 +18,6 @@ module bldc
      );
 
     assign en = enable;
-    assign u_n = ~u_p;
-    assign v_n = ~v_p;
-    assign w_n = ~w_p;
 
     localparam TLEN = 64;
     localparam TMAX = TLEN / 4;
@@ -202,6 +199,9 @@ module bldc
     assign u_p = u & enable;
     assign v_p = v & enable;
     assign w_p = w & enable;
+    assign u_n = ~u_p;
+    assign v_n = ~v_p;
+    assign w_n = ~w_p;
 
     sine_pwm sine_pwm_u (
       .clk (pwmclk),
