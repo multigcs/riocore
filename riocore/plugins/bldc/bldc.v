@@ -1,6 +1,8 @@
 
+`define DSP_CALC
+
 module bldc
-    #(parameter START = 0, parameter DIVIDER = 1000, parameter FEEDBACK_DIVIDER = 16)
+    #(parameter START = 0, parameter DIVIDER = 1000, parameter FEEDBACK_DIVIDER = 16, parameter PWMMODE = 0)
      (
          input clk,
          input enable,
@@ -8,6 +10,9 @@ module bldc
          input signed [15:0] velocity,
          input signed [7:0] offset,
          input [15:0] feedback,
+         output [7:0] pwm_u, // debug
+         output [7:0] pwm_v, // debug
+         output [7:0] pwm_w, // debug
          output en,
          output u_p,
          output v_p,
@@ -32,9 +37,9 @@ module bldc
     reg signed [7:0] tangle = 0;
 
     reg [31:0] clk_cnt = 0;
-    reg [31:0] dty_u = 0;
-    reg [31:0] dty_v = 0;
-    reg [31:0] dty_w = 0;
+    reg [7:0] dty_u = 0;
+    reg [7:0] dty_v = 0;
+    reg [7:0] dty_w = 0;
 
     reg [31:0] counter = 0;
     reg pwmclk = 0;
@@ -75,6 +80,75 @@ module bldc
         end else begin
             voltage <= 0;
         end
+    end
+
+
+    reg [7:0] sine_tbl [0:TLEN-1];
+    initial begin
+        sine_tbl[0] = 127;
+        sine_tbl[1] = 139;
+        sine_tbl[2] = 151;
+        sine_tbl[3] = 163;
+        sine_tbl[4] = 175;
+        sine_tbl[5] = 186;
+        sine_tbl[6] = 197;
+        sine_tbl[7] = 207;
+        sine_tbl[8] = 216;
+        sine_tbl[9] = 225;
+        sine_tbl[10] = 232;
+        sine_tbl[11] = 239;
+        sine_tbl[12] = 244;
+        sine_tbl[13] = 248;
+        sine_tbl[14] = 251;
+        sine_tbl[15] = 253;
+        sine_tbl[16] = 255;
+        sine_tbl[17] = 253;
+        sine_tbl[18] = 251;
+        sine_tbl[19] = 248;
+        sine_tbl[20] = 244;
+        sine_tbl[21] = 239;
+        sine_tbl[22] = 232;
+        sine_tbl[23] = 225;
+        sine_tbl[24] = 216;
+        sine_tbl[25] = 207;
+        sine_tbl[26] = 197;
+        sine_tbl[27] = 186;
+        sine_tbl[28] = 175;
+        sine_tbl[29] = 163;
+        sine_tbl[30] = 151;
+        sine_tbl[31] = 139;
+        sine_tbl[32] = 127;
+        sine_tbl[33] = 114;
+        sine_tbl[34] = 102;
+        sine_tbl[35] = 90;
+        sine_tbl[36] = 78;
+        sine_tbl[37] = 67;
+        sine_tbl[38] = 56;
+        sine_tbl[39] = 46;
+        sine_tbl[40] = 37;
+        sine_tbl[41] = 28;
+        sine_tbl[42] = 21;
+        sine_tbl[43] = 14;
+        sine_tbl[44] = 9;
+        sine_tbl[45] = 5;
+        sine_tbl[46] = 2;
+        sine_tbl[47] = 0;
+        sine_tbl[48] = 0;
+        sine_tbl[49] = 0;
+        sine_tbl[50] = 2;
+        sine_tbl[51] = 5;
+        sine_tbl[52] = 9;
+        sine_tbl[53] = 14;
+        sine_tbl[54] = 21;
+        sine_tbl[55] = 28;
+        sine_tbl[56] = 37;
+        sine_tbl[57] = 46;
+        sine_tbl[58] = 56;
+        sine_tbl[59] = 67;
+        sine_tbl[60] = 78;
+        sine_tbl[61] = 90;
+        sine_tbl[62] = 102;
+        sine_tbl[63] = 114;
     end
 
     reg [7:0] calc_stat = 0;
@@ -125,83 +199,46 @@ module bldc
         end
     end
 
-    reg [7:0] sine_tbl [0:TLEN-1];
-    initial begin
-        sine_tbl[0] = 127;
-        sine_tbl[1] = 139;
-        sine_tbl[2] = 151;
-        sine_tbl[3] = 163;
-        sine_tbl[4] = 175;
-        sine_tbl[5] = 186;
-        sine_tbl[6] = 197;
-        sine_tbl[7] = 207;
-        sine_tbl[8] = 216;
-        sine_tbl[9] = 225;
-        sine_tbl[10] = 232;
-        sine_tbl[11] = 239;
-        sine_tbl[12] = 244;
-        sine_tbl[13] = 248;
-        sine_tbl[14] = 251;
-        sine_tbl[15] = 253;
-        sine_tbl[16] = 254;
-        sine_tbl[17] = 253;
-        sine_tbl[18] = 251;
-        sine_tbl[19] = 248;
-        sine_tbl[20] = 244;
-        sine_tbl[21] = 239;
-        sine_tbl[22] = 232;
-        sine_tbl[23] = 225;
-        sine_tbl[24] = 216;
-        sine_tbl[25] = 207;
-        sine_tbl[26] = 197;
-        sine_tbl[27] = 186;
-        sine_tbl[28] = 175;
-        sine_tbl[29] = 163;
-        sine_tbl[30] = 151;
-        sine_tbl[31] = 139;
-        sine_tbl[32] = 127;
-        sine_tbl[33] = 114;
-        sine_tbl[34] = 102;
-        sine_tbl[35] = 90;
-        sine_tbl[36] = 78;
-        sine_tbl[37] = 67;
-        sine_tbl[38] = 56;
-        sine_tbl[39] = 46;
-        sine_tbl[40] = 37;
-        sine_tbl[41] = 28;
-        sine_tbl[42] = 21;
-        sine_tbl[43] = 14;
-        sine_tbl[44] = 9;
-        sine_tbl[45] = 5;
-        sine_tbl[46] = 2;
-        sine_tbl[47] = 0;
-        sine_tbl[48] = 0;
-        sine_tbl[49] = 0;
-        sine_tbl[50] = 2;
-        sine_tbl[51] = 5;
-        sine_tbl[52] = 9;
-        sine_tbl[53] = 14;
-        sine_tbl[54] = 21;
-        sine_tbl[55] = 28;
-        sine_tbl[56] = 37;
-        sine_tbl[57] = 46;
-        sine_tbl[58] = 56;
-        sine_tbl[59] = 67;
-        sine_tbl[60] = 78;
-        sine_tbl[61] = 90;
-        sine_tbl[62] = 102;
-        sine_tbl[63] = 114;
-    end
-
     wire u;
     wire v;
     wire w;
-    assign u_p = u & enable;
-    assign v_p = v & enable;
-    assign w_p = w & enable;
-    assign u_n = ~u_p;
-    assign v_n = ~v_p;
-    assign w_n = ~w_p;
+
+    if (PWMMODE == 1) begin
+        assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
+        assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
+        assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
+        assign u_n = enable & (sine_tbl[tpos_u] < 65);
+        assign v_n = enable & (sine_tbl[tpos_v] < 65);
+        assign w_n = enable & (sine_tbl[tpos_w] < 65);
+    end else if (PWMMODE == 2) begin
+        assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
+        assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
+        assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
+        assign u_n = ~u & enable & (sine_tbl[tpos_u] < 65);
+        assign v_n = ~v & enable & (sine_tbl[tpos_v] < 65);
+        assign w_n = ~w & enable & (sine_tbl[tpos_w] < 65);
+    end else if (PWMMODE == 3) begin
+        assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
+        assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
+        assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
+        assign u_n = enable & ((sine_tbl[tpos_u] < 65) | ~u_p & (sine_tbl[tpos_u] > 195));
+        assign v_n = enable & ((sine_tbl[tpos_v] < 65) | ~v_p & (sine_tbl[tpos_v] > 195));
+        assign w_n = enable & ((sine_tbl[tpos_w] < 65) | ~w_p & (sine_tbl[tpos_w] > 195));
+    end else begin
+        assign u_p = u & enable;
+        assign v_p = v & enable;
+        assign w_p = w & enable;
+        assign u_n = ~u & enable;
+        assign v_n = ~v & enable;
+        assign w_n = ~w & enable;
+    end
+
+
+
+
+    assign pwm_u = dty_u;
+    assign pwm_v = dty_v;
+    assign pwm_w = dty_w;
 
     sine_pwm sine_pwm_u (
       .clk (pwmclk),
@@ -227,13 +264,13 @@ module sine_pwm
     #(parameter DIVIDER = 255)
      (
          input clk,
-         input [31:0] dty,
+         input [7:0] dty,
          output pwm
      );
 
     reg pulse = 0;
-    assign pwm = ~pulse;
-    reg [31:0] counter = 32'd0;
+    assign pwm = pulse;
+    reg [8:0] counter = 8'd0;
     always @ (posedge clk) begin
         if (dty != 0) begin
             counter <= counter + 1;
