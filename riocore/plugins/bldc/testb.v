@@ -50,7 +50,7 @@ module testb;
     end
 
     bldc #(
-        .PWMMODE(3),
+        .PWMMODE(0),
         .FEEDBACK_DIVIDER(16),
         .DIVIDER(1)
     ) bldcbldc (

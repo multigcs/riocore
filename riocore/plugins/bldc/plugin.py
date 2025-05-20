@@ -42,6 +42,14 @@ Motor-Setup:
                 "unit": "Hz",
                 "description": "PWM frequency",
             },
+            "pwmmode": {
+                "default": 0,
+                "type": int,
+                "min": 0,
+                "max": 3,
+                "unit": "Hz",
+                "description": "PWM mode",
+            },
             "halsensor": {
                 "default": "",
                 "type": str,
@@ -149,6 +157,8 @@ Motor-Setup:
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // frequency // 512
         instance_parameter["DIVIDER"] = int(divider)
+        pwmmode = int(self.plugin_setup.get("pwmmode", self.OPTIONS["pwmmode"]["default"]))
+        instance_parameter["PWMMODE"] = pwmmode
 
         # internal feedback
         instance["arguments"]["feedback"] = self.plugin_setup.get("halsensor", self.OPTIONS["halsensor"]["default"])
