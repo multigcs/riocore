@@ -1,6 +1,6 @@
 # MQTT-Bridge
 
-riocore includes a simple bridge between RIO and MQTT
+riocore includes a simple bridge between RIO and MQTT (Message Queueing Telemetry Transport)
 
 ## Example
 you can start a mqtt bridge with a command like this:

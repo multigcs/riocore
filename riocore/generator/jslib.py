@@ -1,9 +1,4 @@
 import os
-import json
-import stat
-from riocore.generator.cbase import cbase
-
-riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 
 class jslib:
@@ -24,8 +19,8 @@ class jslib:
         self.iface_in.append(["TX_HEADER", size])
         self.iface_in.append(["TITMESTAMP", size])
 
-        rx_dict = {}
-        tx_dict = {}
+        self.rx_dict = {}
+        self.tx_dict = {}
 
         if self.project.multiplexed_input:
             variable_name = "MULTIPLEXED_INPUT_VALUE"
@@ -57,9 +52,9 @@ class jslib:
                 if not data_config.get("expansion"):
                     self.iface_in.append([variable_name, size])
 
-                    if plugin_instance.instances_name not in rx_dict:
-                        rx_dict[plugin_instance.instances_name] = {}
-                    rx_dict[plugin_instance.instances_name][data_name] = variable_name
+                    if plugin_instance.instances_name not in self.rx_dict:
+                        self.rx_dict[plugin_instance.instances_name] = {}
+                    self.rx_dict[plugin_instance.instances_name][data_name] = variable_name
 
             elif data_config["direction"] == "output":
                 if not data_config.get("expansion"):
@@ -72,28 +67,56 @@ class jslib:
                         output_pos -= 1
                     self.iface_out.append([variable_name, size])
 
-                    if plugin_instance.instances_name not in tx_dict:
-                        tx_dict[plugin_instance.instances_name] = {}
-                    tx_dict[plugin_instance.instances_name][data_name] = variable_name
+                    if plugin_instance.instances_name not in self.tx_dict:
+                        self.tx_dict[plugin_instance.instances_name] = {}
+                    self.tx_dict[plugin_instance.instances_name][data_name] = variable_name
 
-        output = ["#!/usr/bin/env node"]
+        self.byte_size = self.project.buffer_size // 8
 
-        output.append("const dgram = require('node:dgram');")
-        output.append("const { Buffer } = require('node:buffer');")
-        output.append("const server = dgram.createSocket('udp4');")
-        output.append("")
-        output.append("server.on('error', (err) => {")
-        output.append("    console.error(`server error:\n${err.stack}`);")
-        output.append("    server.close();")
-        output.append("});")
-        output.append("")
-        output.append("server.on('listening', () => {")
-        output.append("    const address = server.address();")
-        output.append("    console.log(`server listening ${address.address}:${address.port}`);")
-        output.append("});")
+        self.rio_js()
+        self.client_js()
+
+    def rio_js(self):
+        output = [""]
+        output.append("module.exports = {")
+        output.append("  output: {")
+        for plugin, values in self.tx_dict.items():
+            output.append(f'    "{plugin}": {{')
+            for key, value in values.items():
+                output.append(f'      "{key}": 0,')
+            output.append("    },")
+        output.append("  },")
         output.append("")
 
-        output.append("function get_rx(data) {")
+        output.append("  set_tx: function (rio_tx) {")
+        output.append(f"    data = Buffer.alloc({self.byte_size}, 0);")
+        output.append('    RX_HEADER = Buffer.from("74697277", "hex").readInt32LE(0);')
+        for plugin, values in self.tx_dict.items():
+            for key, value in values.items():
+                output.append(f'    {value} = rio_tx["{plugin}"]["{key}"];')
+        output.append("")
+        pos = 0
+        for data in self.iface_out:
+            name = data[0]
+            size = data[1]
+            byte_pos = pos // 8
+            bit_offset = pos - (byte_pos * 8)
+            if size in {8}:
+                func = "writeUInt8"
+                output.append(f"    data.{func}({name}, {byte_pos});")
+            elif size in {16, 32, 64}:
+                func = f"writeInt{size}LE"
+                output.append(f"    data.{func}({name}, {byte_pos});")
+            else:
+                output.append(f"    if ({name}) {{")
+                output.append(f"        data[{byte_pos}] |= (1<<{7 - bit_offset});")
+                output.append("    }")
+            pos += size
+        output.append("    return data;")
+        output.append("  },")
+        output.append("")
+
+        output.append("  get_rx: function (data) {")
         output.append("    // read buffer")
         pos = 0
         for data in self.iface_in:
@@ -116,33 +139,78 @@ class jslib:
             pos += size
         output.append("")
 
-        output.append("    // build dict")
-        output.append("    rio_rx = {};")
-        for plugin, values in rx_dict.items():
-            output.append(f'    rio_rx["{plugin}"] = {{}};')
-        for plugin, values in rx_dict.items():
+        output.append("    input = {")
+        for plugin, values in self.rx_dict.items():
+            output.append(f'      "{plugin}": {{')
             for key, value in values.items():
-                output.append(f'    rio_rx["{plugin}"]["{key}"] = {value};')
-        output.append("    return rio_rx;")
-        output.append("}")
+                output.append(f'        "{key}": {value},')
+            output.append("      },")
+        output.append("    };")
+        output.append("")
+
+        output.append("    return input;")
+        output.append("  }")
+        output.append("};")
+        output.append("")
+
+        open(os.path.join(self.mqtt_path, "rio.js"), "w").write("\n".join(output))
+
+    def client_js(self):
+        output = ["#!/usr/bin/env node"]
+        output.append("")
+        output.append("")
+        output.append("const rio = require('./rio');")
+        output.append("const dgram = require('node:dgram');")
+        output.append("const { Buffer } = require('node:buffer');")
+        output.append("")
+        output.append("SOURCE_PORT = 2391;")
+        output.append("TARGET_PORT = 2390;")
+        output.append("TARGET_IP = '127.0.0.1';")
+        output.append("")
+        output.append("const server = dgram.createSocket('udp4');")
+        output.append("")
+        output.append("server.on('error', (err) => {")
+        output.append("    console.error(`server error:\n${err.stack}`);")
+        output.append("    server.close();")
+        output.append("});")
+        output.append("")
+        output.append("server.on('listening', () => {")
+        output.append("    const address = server.address();")
+        output.append("    console.log(`server listening ${address.address}:${address.port}`);")
+        output.append("});")
         output.append("")
 
         output.append("server.on('message', (msg, rinfo) => {")
         output.append("    console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);")
         output.append("    data = msg.slice()")
         output.append("    console.log(data);")
-        output.append("    rio_rx = get_rx(data);")
-        for plugin, values in rx_dict.items():
+        output.append("    rio_rx = rio.get_rx(data);")
+        for plugin, values in self.rx_dict.items():
             for key, value in values.items():
                 output.append(f'    console.log("{plugin}.{key} = ", rio_rx["{plugin}"]["{key}"]);')
         output.append("});")
         output.append("")
-
-        output.append("server.bind(2391);")
-        output.append('const message = Buffer.from("7469727700000000000000000000000000000000000000000000000000000", "hex")')
-        output.append("server.send(message, 2390, '127.0.0.1', (err) => {")
-        output.append("    //server.close();")
-        output.append("});")
+        output.append("function send() {")
+        for plugin, values in self.tx_dict.items():
+            for key, value in values.items():
+                output.append(f'    rio.output["{plugin}"]["{key}"] = 0;')
+        output.append("")
+        output.append("    message = rio.set_tx(rio.output);")
+        output.append("    console.log(message);")
+        output.append("    server.send(message, TARGET_PORT, TARGET_IP, (err) => {")
+        output.append('        console.log("send ok");')
+        output.append("    });")
+        output.append("}")
         output.append("")
 
-        open(os.path.join(self.mqtt_path, "rio.js"), "w").write("\n".join(output))
+        output.append("server.bind(SOURCE_PORT);")
+        output.append("")
+
+        output.append("var timer = setInterval(function () {")
+        output.append("    send();")
+        output.append("}, 10);")
+        output.append("")
+
+        output.append("")
+
+        open(os.path.join(self.mqtt_path, "client.js"), "w").write("\n".join(output))

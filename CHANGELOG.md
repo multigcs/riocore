@@ -8,6 +8,8 @@
 * display diffs in Json Tab
 * adding [Simulator](doc/SIMULATION.md) via UDP with simple 3D-View
 * adding [ros](doc/ROS.md) support (ros-bridge - Robot Operating System)
+* adding [mqtt](doc/MQTT.md) support (mqtt-bridge - Message Queueing Telemetry Transport)
+* adding [jslib](doc/JSLIB.md) generator (Javascript library)
 
 ### Plugins
 * adding riodrive can-bus plugin (experimental)
