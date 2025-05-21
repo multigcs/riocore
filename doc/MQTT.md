@@ -2,6 +2,11 @@
 
 riocore includes a simple bridge between RIO and MQTT (Message Queueing Telemetry Transport)
 
+## depends
+```
+sudo apt-get install mosquitto mosquitto-clients libpaho-mqtt-dev
+```
+
 ## Example
 you can start a mqtt bridge with a command like this:
 ```
