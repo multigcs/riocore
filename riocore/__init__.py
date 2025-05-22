@@ -17,6 +17,7 @@ from .generator.LinuxCNC import LinuxCNC
 from riocore.generator.rosbridge import rosbridge
 from riocore.generator.mqttbridge import mqttbridge
 from riocore.generator.jslib import jslib
+from riocore.generator.documentation import documentation
 
 riocore_path = os.path.dirname(__file__)
 
@@ -1050,6 +1051,7 @@ class Project:
             rosbridge(self)
             mqttbridge(self)
             jslib(self)
+            documentation(self)
 
         target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)

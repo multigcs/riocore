@@ -89,40 +89,6 @@ class Gateware:
         self.globals()
         self.top()
         self.makefile()
-        self.interface_html()
-
-    def interface_html(self):
-        output = []
-        output.append("<h1>Interface</h1>")
-        output.append("<table width='100%'>")
-        output.append("<tr><td valign='top'>")
-        output.append("<h3>FPGA to Host</h3>")
-        output.append("<table width='100%'>")
-        pos = 0
-        for data in self.iface_in:
-            name = data[0]
-            size = data[1]
-            output.append(
-                f"<tr><td style='padding: 1px; border: 1px solid black;' align='left'>{pos}</td><td style='padding: 3px; border: 1px solid black;'>{size}{'bits' if size > 1 else 'bit'}</td><td style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
-            )
-            pos += size
-        output.append("</table>")
-        output.append("</td><td valign='top'>")
-        output.append("<h3>Host to FPGA</h3>")
-        output.append("<table width='100%'>")
-        pos = 0
-        for data in self.iface_out:
-            name = data[0]
-            size = data[1]
-            output.append(
-                f"<tr><td style='padding: 1px; border: 1px solid black;' align='left'>{pos}</td><td style='padding: 3px; border: 1px solid black;'>{size}{'bits' if size > 1 else 'bit'}</td><td style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
-            )
-            pos += size
-        output.append("</table>")
-        output.append("</td></tr>")
-        output.append("</table>")
-
-        open(os.path.join(self.gateware_path, "interface.html"), "w").write("\n".join(output))
 
     def makefile(self):
         flashcmd = self.config.get("flashcmd")
