@@ -14,6 +14,10 @@ from .generator.Simulator import Simulator
 from .generator.Firmware import Firmware
 from .generator.LinuxCNC import LinuxCNC
 
+from riocore.generator.rosbridge import rosbridge
+from riocore.generator.mqttbridge import mqttbridge
+from riocore.generator.jslib import jslib
+
 riocore_path = os.path.dirname(__file__)
 
 
@@ -1041,5 +1045,11 @@ class Project:
         if protocol == "UDP":
             self.generator_simulator.generator()
         self.generator_linuxcnc.generator(preview=preview)
+
+        if toolchain:
+            rosbridge(self)
+            mqttbridge(self)
+            jslib(self)
+
         target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)
