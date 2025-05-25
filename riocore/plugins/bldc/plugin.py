@@ -4,8 +4,6 @@ from riocore.plugins import PluginBase
 
 
 class Plugin(PluginBase):
-    table_len = 64  # sinus table
-
     def setup(self):
         self.NAME = "bldc"
         self.INFO = "BLDC FOC"
@@ -14,7 +12,7 @@ class Plugin(PluginBase):
 Motor-Setup:
 * set motor poles and encoder resolution in the options
 * start rio-test gui
-* set mode to calibration (1)
+* set mode to calibration (2)
 * set enable
 * set velocity to ~30% (warning: motor will start to spin !)
 * adjust the offset until the motor stop's (should between -15<->15)
@@ -26,8 +24,6 @@ Motor-Setup:
         }
     }
 ```
-
-
 
         """
         self.KEYWORDS = "joint brushless"
@@ -46,10 +42,9 @@ Motor-Setup:
             },
             "pwmmode": {
                 "default": 0,
-                "type": int,
-                "min": 0,
-                "max": 3,
-                "unit": "Hz",
+                "type": "select",
+                "options": ["SINUS", "TEST1", "TEST2", "TEST3"],
+                "unit": "",
                 "description": "PWM mode",
             },
             "halsensor": {
@@ -66,6 +61,14 @@ Motor-Setup:
                 "unit": "",
                 "description": "motor poles",
             },
+            "table_len": {
+                "default": 6,
+                "type": int,
+                "min": 4,
+                "max": 12,
+                "unit": "bits",
+                "description": "sinus table lenght in bits",
+            },
             "feedback_res": {
                 "default": 4096,
                 "type": int,
@@ -75,6 +78,24 @@ Motor-Setup:
                 "description": "encoder resolution",
             },
         }
+
+        self.SINE_TBL = f"sine_{self.instances_name}.mem"
+        self.TLEN_BITS = int(self.plugin_setup.get("table_len", self.OPTIONS["table_len"]["default"]))
+        self.TDEPTH_BITS = 8
+
+        # builing sinus table
+        self.table_len = 1 << (self.TLEN_BITS)
+        tabel_res = 1 << (self.TDEPTH_BITS)
+        half_res = (tabel_res // 2) - 1
+        mem_data = []
+        for n in range(self.table_len):
+            val = half_res * math.sin(2 * n * math.pi / self.table_len) + half_res
+            mem_data.append(f"{int(val):x}")
+        mem_data.append("")
+        self.VERILOGS_DATA = {
+            self.SINE_TBL: "\n".join(mem_data),
+        }
+
         self.PINDEFAULTS = {
             "u_p": {
                 "direction": "output",
@@ -108,7 +129,7 @@ Motor-Setup:
                 "direction": "output",
             },
             "offset": {
-                "size": 8,
+                "size": 16,
                 "direction": "output",
                 "multiplexed": True,
             },
@@ -142,24 +163,10 @@ Motor-Setup:
             },
             "mode": {
                 "direction": "output",
+                "titles": ["VELOCITY", "POSITION", "CALIBRATION"],
                 "min": 0,
-                "max": 3,
+                "max": 2,
             },
-        }
-        # builing sinus table
-        self.SINE_TBL = f"sine_{self.instances_name}.mem"
-        self.TLEN_BITS = 6
-        self.TDEPTH_BITS = 8
-        table_len = 1 << (self.TLEN_BITS)
-        tabel_res = 1 << (self.TDEPTH_BITS)
-        half_res = (tabel_res // 2) - 1
-        mem_data = []
-        for n in range(table_len):
-            val = half_res * math.sin(2 * n * math.pi / table_len) + half_res
-            mem_data.append(f"{int(val):x}")
-        mem_data.append("")
-        self.VERILOGS_DATA = {
-            self.SINE_TBL: "\n".join(mem_data),
         }
 
     def gateware_instances(self):

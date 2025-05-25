@@ -8,11 +8,8 @@ module bldc
          input enable,
          input [7:0] mode,
          input signed [15:0] velocity,
-         input signed [7:0] offset,
+         input signed [15:0] offset,
          input [15:0] feedback,
-         output [7:0] pwm_u, // debug
-         output [7:0] pwm_v, // debug
-         output [7:0] pwm_w, // debug
          output en,
          output u_p,
          output v_p,
@@ -52,14 +49,15 @@ module bldc
         end
     end
 
+
     always@ (posedge(clk)) begin
-        if (mode == 2) begin
-            // test mode
+        if (mode == 1) begin
+            // position mode (no feedback)
             tpos_u <= offset;
             tpos_v <= offset + TOFF_V;
             tpos_w <= offset + TOFF_W;
         end else begin
-            if (mode == 1) begin
+            if (mode == 2) begin
                 // calibration mode (to find offset)
                 tangle <= 0;
             end else if (velocity > 0) begin
@@ -169,13 +167,6 @@ module bldc
         assign v_n = ~v & enable;
         assign w_n = ~w & enable;
     end
-
-
-
-
-    assign pwm_u = dty_u;
-    assign pwm_v = dty_v;
-    assign pwm_w = dty_w;
 
     sine_pwm sine_pwm_u (
       .clk (pwmclk),

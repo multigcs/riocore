@@ -340,24 +340,35 @@ class WinForm(QWidget):
                     vmin = int(signal.get("userconfig", {}).get("display", {}).get("min", signal.get("min", 0)))
                     vmax = int(signal.get("userconfig", {}).get("display", {}).get("max", signal.get("max", 1000)))
                     steps = int(vmax / 100)
-                    signal[wid] = QSlider(Qt.Horizontal)
-                    if args.touch:
-                        style = SliderProxyStyle(signal[wid].style())
-                        signal[wid].setStyle(style)
-                    signal[wid].setMinimum(int(vmin))
-                    signal[wid].setMaximum(int(vmax))
-                    # signal[wid].setSingleStep(steps)
-                    signal[wid].setSingleStep(1)
-                    signal[wid].setPageStep(steps * 10)
-                    # signal[wid].setTickPosition(QSlider.TicksBelow)
-                    signal[wid].setMinimumWidth(200)
-                    signal[wid].setValue(value)
-                    signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
-                    row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
-                    button = QPushButton("0")
-                    button.clicked.connect(partial(self.slider_reset, signal[wid]))
-                    row_layout.addWidget(signal[wid], stretch=6)
-                    row_layout.addWidget(button, stretch=1)
+                    titles = signal.get("titles")
+                    if titles:
+                        signal[wid] = QComboBox()
+                        for text in titles:
+                            signal[wid].addItem(text)
+                        signal[wid].setMinimumWidth(200)
+                        signal[wid].setCurrentIndex(value)
+                        signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
+                        row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
+                        row_layout.addWidget(signal[wid], stretch=6)
+                    else:
+                        signal[wid] = QSlider(Qt.Horizontal)
+                        if args.touch:
+                            style = SliderProxyStyle(signal[wid].style())
+                            signal[wid].setStyle(style)
+                        signal[wid].setMinimum(int(vmin))
+                        signal[wid].setMaximum(int(vmax))
+                        signal[wid].setSingleStep(1)
+                        signal[wid].setPageStep(steps)
+                        # signal[wid].setTickPosition(QSlider.TicksBelow)
+                        signal[wid].setMinimumWidth(200)
+                        signal[wid].setValue(value)
+                        signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
+                        row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
+                        row_layout.addWidget(signal[wid], stretch=6)
+
+                        button = QPushButton("0")
+                        button.clicked.connect(partial(self.slider_reset, signal[wid]))
+                        row_layout.addWidget(button, stretch=1)
 
                     if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
                         if plugin_instance.instances_name not in pid_controller:
@@ -514,7 +525,12 @@ class WinForm(QWidget):
                         else:
                             self.project.signal_value_set(halname, 0)
                     else:
-                        value = signal[f"widget_{plugin_instance.title}"].value()
+                        titles = signal.get("titles")
+                        if titles:
+                            value = signal[f"widget_{plugin_instance.title}"].currentIndex()
+                        else:
+                            value = signal[f"widget_{plugin_instance.title}"].value()
+
                         userconfig = signal.get("userconfig", {})
                         value_unit = userconfig.get("display", {}).get("unit", signal.get("unit", ""))
                         scale = signal.get("userconfig", {}).get("scale", 1.0)
