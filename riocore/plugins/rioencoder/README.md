@@ -3,7 +3,7 @@
 
 abs-encoder over rs485 (rx-only)
 
-Keywords: absolute ancoder angle bldc
+Keywords: absolute angle bldc
 
 ## Pins:
 *FPGA-pins*

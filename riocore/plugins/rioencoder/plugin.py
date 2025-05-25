@@ -6,7 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "rioencoder"
         self.INFO = "serial abs-encoder"
         self.DESCRIPTION = "abs-encoder over rs485 (rx-only)"
-        self.KEYWORDS = "absolute ancoder angle bldc"
+        self.KEYWORDS = "absolute angle bldc"
         self.ORIGIN = ""
         self.VERILOGS = ["rioencoder.v", "uart_baud.v", "uart_rx.v"]
         self.PINDEFAULTS = {
