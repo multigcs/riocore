@@ -249,7 +249,7 @@ class PluginBase:
     def expansion_outputs(self):
         expansion_pins = []
         if self.TYPE == "expansion":
-            bits = self.plugin_setup.get("bits", 8)
+            bits = self.BITS_OUT
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
         else:
@@ -268,7 +268,7 @@ class PluginBase:
     def expansion_inputs(self):
         expansion_pins = []
         if self.TYPE == "expansion":
-            bits = self.plugin_setup.get("bits", 8)
+            bits = self.BITS_IN
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
         else:
@@ -287,10 +287,13 @@ class PluginBase:
     def gateware_defines(self, direct=False):
         defines = []
         if self.TYPE == "expansion":
-            bits = self.plugin_setup.get("bits", 8)
-            default = self.plugin_setup.get("default", 0)
-            defines.append(f"wire [{bits - 1}:0] {self.expansion_prefix}_INPUT;")
-            defines.append(f"reg [{bits - 1}:0] {self.expansion_prefix}_OUTPUT = {default};")
+            bits_in = self.BITS_IN
+            if bits_in:
+                defines.append(f"wire [{bits_in - 1}:0] {self.expansion_prefix}_INPUT;")
+            bits_out = self.BITS_OUT
+            if bits_out:
+                default = self.plugin_setup.get("default", 0)
+                defines.append(f"reg [{bits_out - 1}:0] {self.expansion_prefix}_OUTPUT = {default};")
 
         for data_name, data_config in self.interface_data().items():
             if data_config.get("expansion"):

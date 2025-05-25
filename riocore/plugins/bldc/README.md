@@ -13,7 +13,7 @@ to control BLDC Motors
 Motor-Setup:
 * set motor poles and encoder resolution in the options
 * start rio-test gui
-* set mode to calibration (1)
+* set mode to calibration (2)
 * set enable
 * set velocity to ~30% (warning: motor will start to spin !)
 * adjust the offset until the motor stop's (should between -15<->15)
@@ -30,21 +30,37 @@ Keywords: joint brushless
 
 ## Pins:
 *FPGA-pins*
-### u:
+### u_p:
 
  * direction: output
 
-### v:
+### v_p:
 
  * direction: output
 
-### w:
+### w_p:
 
  * direction: output
+
+### u_n:
+
+ * direction: output
+ * optional: True
+
+### v_n:
+
+ * direction: output
+ * optional: True
+
+### w_n:
+
+ * direction: output
+ * optional: True
 
 ### en:
 
  * direction: output
+ * optional: True
 
 
 ## Options:
@@ -54,9 +70,16 @@ PWM frequency
 
  * type: int
  * min: 10
- * max: 1000000
- * default: 10000
+ * max: 200000
+ * default: 50000
  * unit: Hz
+
+### pwmmode:
+PWM mode
+
+ * type: select
+ * default: 0
+ * unit: 
 
 ### halsensor:
 encoder instance
@@ -73,6 +96,15 @@ motor poles
  * max: 100
  * default: 4
  * unit: 
+
+### table_len:
+sinus table lenght in bits
+
+ * type: int
+ * min: 4
+ * max: 12
+ * default: 6
+ * unit: bits
 
 ### feedback_res:
 encoder resolution
@@ -130,7 +162,7 @@ configure as joint
  * type: float
  * direction: output
  * min: 0
- * max: 3
+ * max: 2
 
 
 ## Interfaces:
@@ -142,7 +174,7 @@ configure as joint
 
 ### offset:
 
- * size: 8 bit
+ * size: 16 bit
  * direction: output
  * multiplexed: True
 
@@ -163,17 +195,26 @@ configure as joint
 {
     "type": "bldc",
     "pins": {
-        "u": {
+        "u_p": {
             "pin": "0"
         },
-        "v": {
+        "v_p": {
             "pin": "1"
         },
-        "w": {
+        "w_p": {
             "pin": "2"
         },
-        "en": {
+        "u_n": {
             "pin": "3"
+        },
+        "v_n": {
+            "pin": "4"
+        },
+        "w_n": {
+            "pin": "5"
+        },
+        "en": {
+            "pin": "6"
         }
     }
 }
@@ -183,15 +224,17 @@ configure as joint
 ```
 {
     "type": "bldc",
-    "frequency": 10000,
+    "frequency": 50000,
+    "pwmmode": 0,
     "halsensor": "",
     "poles": 4,
+    "table_len": 6,
     "feedback_res": 4096,
     "name": "",
     "axis": "",
     "is_joint": false,
     "pins": {
-        "u": {
+        "u_p": {
             "pin": "0",
             "modifiers": [
                 {
@@ -199,7 +242,7 @@ configure as joint
                 }
             ]
         },
-        "v": {
+        "v_p": {
             "pin": "1",
             "modifiers": [
                 {
@@ -207,7 +250,7 @@ configure as joint
                 }
             ]
         },
-        "w": {
+        "w_p": {
             "pin": "2",
             "modifiers": [
                 {
@@ -215,8 +258,32 @@ configure as joint
                 }
             ]
         },
-        "en": {
+        "u_n": {
             "pin": "3",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "v_n": {
+            "pin": "4",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "w_n": {
+            "pin": "5",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "en": {
+            "pin": "6",
             "modifiers": [
                 {
                     "type": "invert"

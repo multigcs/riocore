@@ -31,6 +31,9 @@ class Plugin(PluginBase):
                 "description": "LED brighness",
             },
         }
+        num_leds = self.plugin_setup.get("leds", 1)
+        self.BITS_OUT = num_leds * 3
+        self.BITS_IN = 0
 
     def gateware_defines(self, direct=False):
         defines = []

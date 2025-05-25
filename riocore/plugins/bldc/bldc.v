@@ -49,7 +49,6 @@ module bldc
         end
     end
 
-
     always@ (posedge(clk)) begin
         if (mode == 1) begin
             // position mode (no feedback)
