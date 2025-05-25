@@ -40,6 +40,7 @@ class LinuxCNC:
         "FF2": 0.0,
         "DEADBAND": 0.01,
         "MAXOUTPUT": 300,
+        "MAXSATURATED": 0,
     }
     JOINT_DEFAULTS = {
         "TYPE": "LINEAR",
@@ -1549,9 +1550,27 @@ class LinuxCNC:
         if self.project.config["toolchain"]:
             self.halg.net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
             self.halg.net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
-            self.halg.net_add("rio.sys-status", "iocontrol.0.emc-enable-in")
+            self.halg.net_add("&rio.sys-status", "iocontrol.0.emc-enable-in")
         else:
-            self.halg.net_add("iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
+            self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
+
+        wcomps = {}
+        for axis_name, axis_config in self.project.axis_dict.items():
+            for joint, joint_setup in axis_config["joints"].items():
+                maxsat = joint_setup.get("PID_MAXSATURATED")
+                if maxsat:
+                    wcomps[f"j{joint}maxsat"] = f"[JOINT_{joint}]MAXSATURATED"
+                    self.halg.net_add(f"pid.{joint}.saturated-s", f"j{joint}maxsat.in", f"j{joint}sat")
+                    self.halg.net_add(f"&j{joint}maxsat.out", "iocontrol.0.emc-enable-in")
+
+        if wcomps:
+            self.halg.fmt_add_top("# wcomp for saturated pid check")
+            self.halg.fmt_add_top(f"loadrt wcomp names={''.join(list(wcomps))}")
+            for name, wcomp in wcomps.items():
+                self.halg.fmt_add_top(f"addf {name} servo-thread")
+                self.halg.setp_add(f"{name}.min", -1.0)
+                self.halg.setp_add(f"{name}.max", wcomp)
+            self.halg.fmt_add_top("")
 
         if gui not in {"qtdragon", "qtdragon_hd"}:
             if toolchange == "manual":
