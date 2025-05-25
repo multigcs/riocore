@@ -162,7 +162,7 @@ class documentation:
             output.append("<br />")
 
         if "url" in data:
-            output.append(f"* URL: <a href=\"{data['url']}\">{data['url']}</a><br />")
+            output.append(f'* URL: <a href="{data["url"]}">{data["url"]}</a><br />')
 
         for key in ("toolchain", "family", "type", "package", "flashcmd"):
             if key in data:
@@ -174,7 +174,7 @@ class documentation:
                                 continue
                             toolchains.append(f'<a href="https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{toolchain}/README.md">{toolchain}</a>')
                         output.append(
-                            f"* {key.title()}: <a href=\"https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{data[key]}/README.md\">{data[key]}</a> ({', '.join(toolchains)})<br />"
+                            f'* {key.title()}: <a href="https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{data[key]}/README.md">{data[key]}</a> ({", ".join(toolchains)})<br />'
                         )
                     else:
                         output.append(f"* {key.title()}: [{data[key]}]()")

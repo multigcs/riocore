@@ -1,3 +1,5 @@
+import math
+
 from riocore.plugins import PluginBase
 
 
@@ -144,6 +146,21 @@ Motor-Setup:
                 "max": 3,
             },
         }
+        # builing sinus table
+        self.SINE_TBL = f"sine_{self.instances_name}.mem"
+        self.TLEN_BITS = 6
+        self.TDEPTH_BITS = 8
+        table_len = 1 << (self.TLEN_BITS)
+        tabel_res = 1 << (self.TDEPTH_BITS)
+        half_res = (tabel_res // 2) - 1
+        mem_data = []
+        for n in range(table_len):
+            val = half_res * math.sin(2 * n * math.pi / table_len) + half_res
+            mem_data.append(f"{int(val):x}")
+        mem_data.append("")
+        self.VERILOGS_DATA = {
+            self.SINE_TBL: "\n".join(mem_data),
+        }
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -159,6 +176,9 @@ Motor-Setup:
         instance_parameter["DIVIDER"] = int(divider)
         pwmmode = int(self.plugin_setup.get("pwmmode", self.OPTIONS["pwmmode"]["default"]))
         instance_parameter["PWMMODE"] = pwmmode
+        instance_parameter["SINE_TBL"] = f'"{self.SINE_TBL}"'
+        instance_parameter["TLEN_BITS"] = self.TLEN_BITS
+        instance_parameter["TDEPTH_BITS"] = self.TDEPTH_BITS
 
         # internal feedback
         instance["arguments"]["feedback"] = self.plugin_setup.get("halsensor", self.OPTIONS["halsensor"]["default"])
