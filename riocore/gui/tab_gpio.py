@@ -30,6 +30,7 @@ class TabGpios:
         self.img_container = QWidget()
         self.img_layout = QVBoxLayout(self.img_container)
         self.boardimg = QWidget()
+        self.img_layout.setAlignment(Qt.AlignRight | Qt.AlignTop)
         self.img_layout.addWidget(self.boardimg)
 
         self.pininfo = QLabel("")
