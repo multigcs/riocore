@@ -23,19 +23,26 @@ class Plugin(PluginBase):
                 "size": 16,
                 "direction": "input",
             },
+            "revs": {
+                "size": 32,
+                "direction": "input",
+            },
         }
         self.SIGNALS = {
             "angle": {
                 "direction": "input",
+                "format": "0.1f",
+            },
+            "revs": {
+                "direction": "input",
+                "format": "d",
             },
             "position": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.3f",
             },
         }
-        self.last = 0
-        self.revs = 0
-        self.scale = 4096
+        self._scale = 4096
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -46,40 +53,21 @@ class Plugin(PluginBase):
 
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "angle":
-            new = value
-            diff = new - self.last
-            if diff < -2048:
-                self.revs += 1
-            elif diff > 2048:
-                self.revs -= 1
-            self.SIGNALS["position"]["value"] = (self.revs * self.scale) + new
-            self.last = new
-
-            return value * 360 / self.scale
+            self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] + (value / self._scale)
+            return value * 360 / self._scale
 
         return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "angle":
-            varname = self.SIGNALS["position"]["varname"]
+            varname_pos = self.SIGNALS["position"]["varname"]
+            varname_revs = self.SIGNALS["revs"]["varname"]
             return f"""
+    float position_value = *data->{varname_revs}  + raw_value / {self._scale};
+    position_value = position_value + *data->{varname_pos}_OFFSET;
+    position_value = position_value / *data->{varname_pos}_SCALE;
+    *data->{varname_pos} = position_value;
 
-    static float revs = 0;
-    float diff = 0;
-
-    diff = raw_value - last_raw_value;
-
-    if (diff < -2048) {{
-        revs++;
-    }} else if (diff > 2048) {{
-        revs--;
-    }}
-
-    float position_value = (revs * {self.scale}) + raw_value;
-    position_value = position_value + *data->{varname}_OFFSET;
-    position_value = position_value / *data->{varname}_SCALE;
-    *data->{varname} = position_value;
-
-    value = value * 360 / {self.scale};
+    value = value * 360 / {self._scale};
             """
         return ""

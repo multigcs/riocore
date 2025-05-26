@@ -33,6 +33,11 @@ name of this plugin instance
  * type: float
  * direction: input
 
+### position:
+
+ * type: float
+ * direction: input
+
 
 ## Interfaces:
 *transport layer*
@@ -88,6 +93,17 @@ name of this plugin instance
             "offset": 0.0,
             "display": {
                 "title": "angle",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "position": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "position",
                 "section": "inputs",
                 "type": "meter"
             }
