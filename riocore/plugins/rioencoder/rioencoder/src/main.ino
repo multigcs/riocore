@@ -32,6 +32,10 @@ void setup() {
     Wire.begin(8, 9);
     Wire.setClock(1000000UL);
 
+    // rw pin
+    pinMode(10, OUTPUT);
+    digitalWrite(10, HIGH);
+
     // init values
     package.values.revs = 0;
     package.values.angle = 0;

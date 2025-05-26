@@ -9,17 +9,16 @@ module rioencoder
         output reg signed [31:0] revs
     );
 
-//    reg [23:0] rxbuffer = 0;
     reg [63:0] rxbuffer = 0;
     reg [31:0] counter = 0;
     reg [7:0] rxlen = 0;
 
     wire [7:0] RxD_data;
+    wire [15:0] csum;
+    wire [15:0] csum_calc;
     wire RxD_data_ready;
     wire RxD_idle;
     wire RxD_endofpacket;
-    wire [15:0] csum;
-    wire [15:0] csum_calc;
     
     parameter PKG_SIZZE = 64;
     
@@ -50,9 +49,7 @@ module rioencoder
                 rxlen <= rxlen + 1;
             end
         end
-
     end
-
 
 endmodule
 
