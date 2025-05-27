@@ -189,7 +189,9 @@ linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 you need the toolchain for your FPGA or in some cases the https://github.com/YosysHQ/oss-cad-suite-build
 
 
-## Generator-Flow <a name = "flow"></a>
+## Flow <a name = "flow"></a>
+
+### Generator
 ```mermaid
 graph LR;
     BOARD.JSON--rio-setup-->CONFIG.JSON;
@@ -210,7 +212,7 @@ graph LR;
     /Output-->/Simulator;
 ```
 
-## LinuxCNC-Flow <a name = "flow_lcnc"></a>
+### LinuxCNC
 ```mermaid
 graph LR;
     LinuxCNC<-->rio.c;
@@ -218,7 +220,7 @@ graph LR;
     riocomp.c<--UDP/SPI-->FPGA;
 ```
 
-## ROS-Flow <a name = "flow_ros"></a>
+### ROS
 ```mermaid
 graph LR;
     ROS-Plugin-1<--TCP-->ROS-core
@@ -228,7 +230,7 @@ graph LR;
     rosbridge<--UDP/SPI-->FPGA;
 ```
 
-## MQTT-Flow <a name = "mqtt_ros"></a>
+### MQTT
 ```mermaid
 graph LR;
     HTML+JS<--Websockets-->MQTT-Broker
@@ -239,7 +241,7 @@ graph LR;
     mqttbridge<--UDP/SPI-->FPGA;
 ```
 
-## JSLIB-Flow <a name = "jslib_ros"></a>
+### JSLIB
 ```mermaid
 graph LR;
     nodejs<-->JSLIB
@@ -248,6 +250,8 @@ graph LR;
 
 
 ## Directory Structure
+
+### Source
 
 ```
 riocore
@@ -268,3 +272,15 @@ riocore
 |├── plugins ··········· location of the plugins
 ├── tests ·············· unit tests
 ```
+
+### Generated Output
+Output
+├┬─ BOARD_NAME ········· for each board
+|├── Gateware ·········· Gateware-Files for the FPGA
+|├── LinuxCNC ·········· LinuxCNC configuration (hal/ini/component)
+|├── MQTT ·············· MQTT-Bridge
+|├── ROS ··············· ROS-Bridge
+|├── Simulator ········· Simulator-Sources
+|├── JSLIB ············· Javascrit lib
+|├── DOC ··············· some Documentation files
+
