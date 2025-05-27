@@ -252,7 +252,6 @@ graph LR;
 ## Directory Structure
 
 ### Source
-
 ```
 riocore
 ├── bin ················ user tools / gui's
@@ -274,6 +273,7 @@ riocore
 ```
 
 ### Generated Output
+```
 Output
 ├┬─ BOARD_NAME ········· for each board
 |├── Gateware ·········· Gateware-Files for the FPGA
@@ -283,4 +283,4 @@ Output
 |├── Simulator ········· Simulator-Sources
 |├── JSLIB ············· Javascrit lib
 |├── DOC ··············· some Documentation files
-
+```
