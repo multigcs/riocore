@@ -1,7 +1,9 @@
 
+#include <WiFi.h>
 #include <HardwareSerial.h>
 #include <Wire.h>
 #include "AS5600.h"
+#include "esp_wifi.h"
 
 AS5600 as5600;
 uint16_t angle_last = 0;
@@ -22,8 +24,10 @@ union package_t{
 volatile package_t package;
 
 
-
 void setup() {
+    // force disable wifi
+    esp_err_t results = esp_wifi_stop();
+
     // init serial 2Mbit
     Serial.begin(2000000);
     while (!Serial);
@@ -40,30 +44,36 @@ void setup() {
     package.values.revs = 0;
     package.values.angle = 0;
     package.values.csum = 0;
-    angle_last = as5600.readAngle();
+    angle_last = as5600.readAngle(0);
 }
 
 void loop() {
-    // get angle from sensor
-    package.values.angle = as5600.readAngle();
+    
+    // own loop to prevent delays (5ms each 2s)
+    while(1) {
 
-    // count revolutions
-    angle_diff = package.values.angle - angle_last;
-    if (angle_diff < -2048) {{
-        package.values.revs++;
-    }} else if (angle_diff > 2048) {{
-        package.values.revs--;
-    }}
-    angle_last = package.values.angle;
+        // get angle from sensor
+        package.values.angle = as5600.readAngle(1);
 
-    // calc checksum
-    package.values.csum = 0;
-    for (i = 0; i < 6; i++) {
-        package.values.csum ^= package.data[i];
+        // count revolutions
+        angle_diff = package.values.angle - angle_last;
+        if (angle_diff < -2048) {{
+            package.values.revs++;
+        }} else if (angle_diff > 2048) {{
+            package.values.revs--;
+        }}
+        angle_last = package.values.angle;
+
+        // calc checksum
+        package.values.csum = 0;
+        for (i = 0; i < 6; i++) {
+            package.values.csum ^= package.data[i];
+        }
+
+        // send package
+        Serial.write((byte *)package.data, package_t_size);
+
     }
-
-    // send package
-    Serial.write((byte *)package.data, package_t_size);
 
 }
 

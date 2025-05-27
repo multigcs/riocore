@@ -187,7 +187,7 @@ public:
 
   //  READ OUTPUT REGISTERS
   uint16_t rawAngle();
-  uint16_t readAngle();
+  uint16_t readAngle(uint8_t reread);
 
   //  software based offset.
   //  degrees = -359.99 .. 359.99 (preferred)
@@ -242,6 +242,7 @@ protected:
   //  made virtual, see #66
   virtual uint8_t  readReg(uint8_t reg);
   virtual uint16_t readReg2(uint8_t reg);
+  virtual uint16_t read2();
   virtual uint8_t  writeReg(uint8_t reg, uint8_t value);
   virtual uint8_t  writeReg2(uint8_t reg, uint16_t value);
 

@@ -316,9 +316,14 @@ uint16_t AS5600::rawAngle()
 }
 
 
-uint16_t AS5600::readAngle()
+uint16_t AS5600::readAngle(uint8_t reread)
 {
-  uint16_t value = readReg2(AS5600_ANGLE);
+  uint16_t value;
+  if (reread == 1) {
+    value = read2();
+  } else {
+    value = readReg2(AS5600_ANGLE);
+  }
   if (_error != AS5600_OK)
   {
     return _lastReadAngle;
@@ -326,12 +331,6 @@ uint16_t AS5600::readAngle()
   if (_offset > 0) value += _offset;
   value &= 0x0FFF;
 
-  if ((_directionPin == AS5600_SW_DIRECTION_PIN) &&
-      (_direction == AS5600_COUNTERCLOCK_WISE))
-  {
-    //  mask needed for value == 0.
-    value = (4096 - value) & 0x0FFF;
-  }
   _lastReadAngle = value;
   return value;
 }
@@ -436,7 +435,7 @@ float AS5600::getAngularSpeed(uint8_t mode, bool update)
 {
   if (update)
   {
-    _lastReadAngle = readAngle();
+    _lastReadAngle = readAngle(0);
     if (_error != AS5600_OK)
     {
       return NAN;
@@ -481,7 +480,7 @@ int32_t AS5600::getCumulativePosition(bool update)
 {
   if (update)
   {
-    _lastReadAngle = readAngle();
+    _lastReadAngle = readAngle(0);
     if (_error != AS5600_OK)
     {
       return _position;  //  last known position.
@@ -529,7 +528,7 @@ int32_t AS5600::resetPosition(int32_t position)
 
 int32_t AS5600::resetCumulativePosition(int32_t position)
 {
-  _lastPosition = readAngle();
+  _lastPosition = readAngle(0);
   int32_t old = _position;
   _position = position;
   return old;
@@ -579,6 +578,22 @@ uint16_t AS5600::readReg2(uint8_t reg)
     _error = AS5600_ERROR_I2C_READ_2;
     return 0;
   }
+  uint8_t n = _wire->requestFrom(_address, (uint8_t)2);
+  if (n != 2)
+  {
+    _error = AS5600_ERROR_I2C_READ_3;
+    return 0;
+  }
+  uint16_t _data = _wire->read();
+  _data <<= 8;
+  _data += _wire->read();
+  return _data;
+}
+
+
+uint16_t AS5600::read2()
+{
+  _error = AS5600_OK;
   uint8_t n = _wire->requestFrom(_address, (uint8_t)2);
   if (n != 2)
   {
