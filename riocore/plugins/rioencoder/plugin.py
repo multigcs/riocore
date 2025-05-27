@@ -54,7 +54,7 @@ class Plugin(PluginBase):
 
     def convert(self, signal_name, signal_setup, value):
         if signal_name == "angle":
-            self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] + (value / self._scale)
+            self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] * self._scale + value
             return value * 360 / self._scale
 
         return value
@@ -64,7 +64,7 @@ class Plugin(PluginBase):
             varname_pos = self.SIGNALS["position"]["varname"]
             varname_revs = self.SIGNALS["revs"]["varname"]
             return f"""
-    float position_value = *data->{varname_revs}  + raw_value / {self._scale};
+    float position_value = *data->{varname_revs} * {self._scale} + raw_value;
     position_value = position_value + *data->{varname_pos}_OFFSET;
     position_value = position_value / *data->{varname_pos}_SCALE;
     *data->{varname_pos} = position_value;
