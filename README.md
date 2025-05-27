@@ -189,7 +189,7 @@ linuxcnc Output/BOARD_NAME/LinuxCNC/rio.ini
 you need the toolchain for your FPGA or in some cases the https://github.com/YosysHQ/oss-cad-suite-build
 
 
-## Flow <a name = "flow"></a>
+## Generator-Flow <a name = "flow"></a>
 ```mermaid
 graph LR;
     BOARD.JSON--rio-setup-->CONFIG.JSON;
@@ -208,6 +208,42 @@ graph LR;
     /Output-->/ROS;
     /Output-->/MQTT;
     /Output-->/Simulator;
+```
+
+## LinuxCNC-Flow <a name = "flow_lcnc"></a>
+```mermaid
+graph LR;
+    LinuxCNC<-->rio.c;
+    rio.c<-->riocomp.c;
+    riocomp.c<--UDP/SPI-->FPGA;
+```
+
+## ROS-Flow <a name = "flow_ros"></a>
+```mermaid
+graph LR;
+    ROS-Plugin-1<--TCP-->ROS-core
+    ROS-Plugin-2<--TCP-->ROS-core
+    ROS-Plugin-N<--TCP-->ROS-core
+    ROS-core<--TCP-->rosbridge;
+    rosbridge<--UDP/SPI-->FPGA;
+```
+
+## MQTT-Flow <a name = "mqtt_ros"></a>
+```mermaid
+graph LR;
+    HTML+JS<--Websockets-->MQTT-Broker
+    MQTT-Client-1<--MQTT-->MQTT-Broker
+    MQTT-Client-2<--MQTT-->MQTT-Broker
+    MQTT-Client-N<--MQTT-->MQTT-Broker
+    MQTT-Broker<--MQTT-->mqttbridge;
+    mqttbridge<--UDP/SPI-->FPGA;
+```
+
+## JSLIB-Flow <a name = "jslib_ros"></a>
+```mermaid
+graph LR;
+    nodejs<-->JSLIB
+    JSLIB<--UDP-->FPGA;
 ```
 
 
