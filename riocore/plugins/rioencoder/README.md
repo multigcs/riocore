@@ -1,4 +1,8 @@
 # rioencoder
+
+| :warning: EXPERIMENTAL |
+|:-----------------------|
+
 **serial abs-encoder**
 
 abs-encoder over rs485 (rx-only)
@@ -33,6 +37,11 @@ name of this plugin instance
  * type: float
  * direction: input
 
+### revs:
+
+ * type: float
+ * direction: input
+
 ### position:
 
  * type: float
@@ -44,6 +53,11 @@ name of this plugin instance
 ### angle:
 
  * size: 16 bit
+ * direction: input
+
+### revs:
+
+ * size: 32 bit
  * direction: input
 
 
@@ -93,6 +107,17 @@ name of this plugin instance
             "offset": 0.0,
             "display": {
                 "title": "angle",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "revs": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "revs",
                 "section": "inputs",
                 "type": "meter"
             }
