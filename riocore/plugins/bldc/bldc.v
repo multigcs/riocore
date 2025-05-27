@@ -23,8 +23,8 @@ module bldc
 
     localparam TLEN = (1<<(TLEN_BITS));
     localparam TMAX = TLEN / 4;
-    localparam TOFF_V = TLEN / 3;
-    localparam TOFF_W = TLEN / 3 * 2;
+    localparam TOFF_V = TLEN / 3 - 1;
+    localparam TOFF_W = TLEN / 3 * 2 - 1;
 
     reg direction = 0;
     reg [7:0] voltage = 0;

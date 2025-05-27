@@ -42,8 +42,9 @@ Motor-Setup:
             },
             "pwmmode": {
                 "default": 0,
-                "type": "select",
-                "options": ["SINUS", "TEST1", "TEST2", "TEST3"],
+                "type": int,
+                "min": 0,
+                "max": 2,
                 "unit": "",
                 "description": "PWM mode",
             },

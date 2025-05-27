@@ -1,62 +1,29 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Wed May 14 19:31:29 2025
+[*] Tue May 27 14:22:07 2025
 [*]
 [dumpfile] "/mnt/data2/src/riocore/riocore/plugins/bldc/testb.vcd"
-[dumpfile_mtime] "Wed May 14 19:31:23 2025"
-[dumpfile_size] 1123225
+[dumpfile_mtime] "Tue May 27 14:22:03 2025"
+[dumpfile_size] 5980881
 [savefile] "/mnt/data2/src/riocore/riocore/plugins/bldc/testb.gtkw"
 [timestart] 0
 [size] 3840 2058
 [pos] -1 -1
-*-22.553946 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-24.917328 40010000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [sst_width] 380
-[signals_width] 184
+[signals_width] 276
 [sst_expanded] 1
 [sst_vpaned_height] 664
+@28
+testb.clk
 @30
 testb.u_p
-@32
-testb.u_n
-@c10024
-[color] 1
-testb.pwm_u[7:0]
 @28
-(0)testb.pwm_u[7:0]
-(1)testb.pwm_u[7:0]
-(2)testb.pwm_u[7:0]
-(3)testb.pwm_u[7:0]
-(4)testb.pwm_u[7:0]
-(5)testb.pwm_u[7:0]
-(6)testb.pwm_u[7:0]
-(7)testb.pwm_u[7:0]
-@1401200
--group_end
-@20000
--
-@32
 testb.v_p
-@34
-testb.v_n
-@10022
-[color] 1
-testb.pwm_v[7:0]
-@20000
--
-@34
 testb.w_p
-@36
-testb.w_n
-@10022
-[color] 1
-testb.pwm_w[7:0]
-@20000
--
-@24
+@8022
 testb.velocity[15:0]
-@20000
--
-@8023
-testb.feedback[15:0]
+@10023
+testb.feedback[11:0]
 [pattern_trace] 1
 [pattern_trace] 0

@@ -6,9 +6,6 @@ module testb;
     always #1 clk = !clk;
 
     // pins
-    wire [7:0] pwm_u;
-    wire [7:0] pwm_v;
-    wire [7:0] pwm_w;
     wire u_p;
     wire v_p;
     wire w_p;
@@ -17,13 +14,13 @@ module testb;
     wire w_n;
     wire en;
     // interface
-    reg signed [15:0] feedback = 16'd100;
+    reg signed [11:0] feedback = 16'd100;
     reg signed [15:0] velocity = 16'd100;
     reg signed [7:0] offset = 8'd0;
     reg enable = 1;
     reg [7:0] mode = 8'd0;
 
-    always #50 feedback = feedback + 1;
+    always #100 feedback = feedback + 2;
 
     initial begin
         $dumpfile("testb.vcd");
@@ -42,17 +39,13 @@ module testb;
         $dumpvars(10, enable);
         $dumpvars(11, mode);
 
-        $dumpvars(12, pwm_u);
-        $dumpvars(13, pwm_v);
-        $dumpvars(14, pwm_w);
-        
-        #100000 $finish;
+        #500000 $finish;
     end
 
     bldc #(
         .PWMMODE(0),
         .FEEDBACK_DIVIDER(16),
-        .DIVIDER(1)
+        .DIVIDER(0)
     ) bldcbldc (
         .clk(clk),
         .velocity(velocity),
@@ -60,9 +53,6 @@ module testb;
         .enable(enable),
         .mode(mode),
         .feedback(feedback),
-        .pwm_u(pwm_u),
-        .pwm_v(pwm_v),
-        .pwm_w(pwm_w),
         .u_p(u_p),
         .v_p(v_p),
         .w_p(w_p),
