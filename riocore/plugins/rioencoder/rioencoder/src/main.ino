@@ -1,9 +1,11 @@
 
-#include <WiFi.h>
+#include <esp_wifi.h>
 #include <HardwareSerial.h>
 #include <Wire.h>
-#include "AS5600.h"
-#include "esp_wifi.h"
+#include <AS5600.h>
+#include <driver/adc.h>
+
+#define VREF 4424 // ADC-Calibration
 
 AS5600 as5600;
 uint16_t angle_last = 0;
@@ -13,6 +15,7 @@ uint16_t i = 0;
 struct s_package_t {
     int32_t revs;
     uint16_t angle;
+    uint16_t temperature;
     uint16_t csum;
 };
 const int package_t_size = sizeof(s_package_t);
@@ -25,6 +28,9 @@ volatile package_t package;
 
 
 void setup() {
+    // set CPU Clock
+    // setCpuFrequencyMhz(160);
+
     // force disable wifi
     esp_err_t results = esp_wifi_stop();
 
@@ -43,14 +49,24 @@ void setup() {
     // init values
     package.values.revs = 0;
     package.values.angle = 0;
+    package.values.temperature = 0;
     package.values.csum = 0;
     angle_last = as5600.readAngle(0);
+
+    adc1_config_channel_atten((adc1_channel_t)0, (adc_atten_t)ADC_11db);
 }
 
 void loop() {
     
     // own loop to prevent delays (5ms each 2s)
     while(1) {
+
+        // read temerature
+        int adcVal = VREF - adc1_get_raw((adc1_channel_t)0);
+        float Rt = 10.0 * adcVal / (VREF - adcVal);
+        float tempK = 1 / (log(Rt / 10) / 3950 + 1 / (273.15 + 25));
+        float tempC = tempK - 273.15;
+        package.values.temperature = (int16_t)(tempC * 10);
 
         // get angle from sensor
         package.values.angle = as5600.readAngle(1);
@@ -66,12 +82,12 @@ void loop() {
 
         // calc checksum
         package.values.csum = 0;
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 8; i++) {
             package.values.csum ^= package.data[i];
         }
 
         // send package
-        Serial.write((byte *)package.data, package_t_size);
+        Serial.write((byte *)package.data, 10);
 
     }
 

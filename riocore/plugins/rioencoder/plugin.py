@@ -28,6 +28,10 @@ class Plugin(PluginBase):
                 "size": 32,
                 "direction": "input",
             },
+            "temperature": {
+                "size": 16,
+                "direction": "input",
+            },
         }
         self.SIGNALS = {
             "angle": {
@@ -37,6 +41,11 @@ class Plugin(PluginBase):
             "revs": {
                 "direction": "input",
                 "format": "d",
+            },
+            "temperature": {
+                "direction": "input",
+                "unit": "°C",
+                "format": "0.1f",
             },
             "position": {
                 "direction": "input",
@@ -53,14 +62,18 @@ class Plugin(PluginBase):
         return instances
 
     def convert(self, signal_name, signal_setup, value):
-        if signal_name == "angle":
+        if signal_name == "temperature":
+            return value / 10
+        elif signal_name == "angle":
             self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] * self._scale + value
             return value * 360 / self._scale
 
         return value
 
     def convert_c(self, signal_name, signal_setup):
-        if signal_name == "angle":
+        if signal_name == "temperature":
+            return "value = value / 10;"
+        elif signal_name == "angle":
             varname_pos = self.SIGNALS["position"]["varname"]
             varname_revs = self.SIGNALS["revs"]["varname"]
             return f"""
