@@ -1,10 +1,10 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Tue May 27 14:22:07 2025
+[*] Thu May 29 08:57:24 2025
 [*]
 [dumpfile] "/mnt/data2/src/riocore/riocore/plugins/bldc/testb.vcd"
-[dumpfile_mtime] "Tue May 27 14:22:03 2025"
-[dumpfile_size] 5980881
+[dumpfile_mtime] "Thu May 29 08:56:41 2025"
+[dumpfile_size] 5980893
 [savefile] "/mnt/data2/src/riocore/riocore/plugins/bldc/testb.gtkw"
 [timestart] 0
 [size] 3840 2058

@@ -43,9 +43,9 @@ module testb;
     end
 
     bldc #(
-        .PWMMODE(0),
+        .PWM_MODE(0),
         .FEEDBACK_DIVIDER(16),
-        .DIVIDER(0)
+        .PWM_DIVIDER(0)
     ) bldcbldc (
         .clk(clk),
         .velocity(velocity),
