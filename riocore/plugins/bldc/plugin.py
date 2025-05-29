@@ -62,7 +62,7 @@ Motor-Setup:
                 "unit": "",
                 "description": "motor poles",
             },
-            "table_len": {
+            "sine_len": {
                 "default": 6,
                 "type": int,
                 "min": 4,
@@ -81,17 +81,17 @@ Motor-Setup:
         }
 
         self.SINE_TBL = f"sine_{self.instances_name}.mem"
-        self.TLEN_BITS = int(self.plugin_setup.get("table_len", self.OPTIONS["table_len"]["default"]))
+        self.SINE_BITS = int(self.plugin_setup.get("sine_len", self.OPTIONS["sine_len"]["default"]))
         self.TDEPTH_BITS = 10
 
         # builing sinus table
-        self.table_len = 1 << (self.TLEN_BITS)
+        self.sine_len = 1 << (self.SINE_BITS)
+        self.table_len = 1 << (self.SINE_BITS-1)
         tabel_res = 1 << (self.TDEPTH_BITS)
         half_res = (tabel_res // 2) - 1
         mem_data = []
         for n in range(self.table_len):
-#               val = half_res * math.sin(2 * n * math.pi / self.table_len) + half_res
-            val = half_res * math.sin(2 * n * math.pi / self.table_len)
+            val = half_res * math.sin(2 * n * math.pi / self.sine_len)
             val1 = val
             if val < 0:
                 val *= -1
@@ -161,8 +161,8 @@ Motor-Setup:
             },
             "offset": {
                 "direction": "output",
-                "min": -self.table_len,
-                "max": self.table_len,
+                "min": -self.sine_len,
+                "max": self.sine_len,
                 "unit": "",
             },
             "enable": {
@@ -184,7 +184,7 @@ Motor-Setup:
 
         poles = int(self.plugin_setup.get("poles", self.OPTIONS["poles"]["default"]))
         feedback_res = int(self.plugin_setup.get("feedback_res", self.OPTIONS["feedback_res"]["default"]))
-        feedback_divider = feedback_res / poles / self.table_len
+        feedback_divider = feedback_res / poles / self.sine_len
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
 
         # pwm values 0->(PWM_RANGE-1)
@@ -201,7 +201,7 @@ Motor-Setup:
         pwmmode = int(self.plugin_setup.get("pwmmode", self.OPTIONS["pwmmode"]["default"]))
         instance_parameter["PWM_MODE"] = pwmmode
         instance_parameter["SINE_TBL"] = f'"{self.SINE_TBL}"'
-        instance_parameter["TLEN_BITS"] = self.TLEN_BITS
+        instance_parameter["SINE_BITS"] = self.SINE_BITS
         instance_parameter["TDEPTH_BITS"] = self.TDEPTH_BITS
 
         # internal feedback

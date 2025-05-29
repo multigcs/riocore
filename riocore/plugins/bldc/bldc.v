@@ -6,7 +6,7 @@ module bldc
          parameter PWM_RANGE = 256,
          parameter PWM_DIVIDER = 1000,
          parameter FEEDBACK_DIVIDER = 16,
-         parameter TLEN_BITS = 6,
+         parameter SINE_BITS = 6,
          parameter TDEPTH_BITS = 8,
          parameter PWM_MODE = 0,
          parameter SINE_TBL = "sine.mem"
@@ -30,16 +30,17 @@ module bldc
     assign en = enable;
 
     localparam PWM_RANGE_BITS = clog2(PWM_RANGE + 1);
-    localparam TLEN = (1<<(TLEN_BITS));
-    localparam TMAX = TLEN / 4 - 1;
-    localparam TOFF_V = TLEN / 3 - 1;
-    localparam TOFF_W = TLEN / 3 * 2 - 1;
+    localparam SINE_LEN = (1<<(SINE_BITS));
+    localparam TABLE_LEN = (1<<(SINE_BITS-1));
+    localparam TMAX = SINE_LEN / 4 - 1;
+    localparam TOFF_V = SINE_LEN / 3 - 1;
+    localparam TOFF_W = SINE_LEN / 3 * 2 - 1;
 
     reg direction = 0;
     reg [PWM_RANGE_BITS-1:0] voltage = 0;
-    reg [TLEN_BITS-1:0] tpos_u = 0;
-    reg [TLEN_BITS-1:0] tpos_v = 0;
-    reg [TLEN_BITS-1:0] tpos_w = 0;
+    reg [SINE_BITS-1:0] tpos_u = 0;
+    reg [SINE_BITS-1:0] tpos_v = 0;
+    reg [SINE_BITS-1:0] tpos_w = 0;
     reg signed [7:0] tangle = 0;
 
     reg [31:0] clk_cnt = 0;
@@ -89,7 +90,7 @@ module bldc
     end
 
 
-    reg [TDEPTH_BITS-1:0] sine_tbl [0:TLEN-1];
+    reg [TDEPTH_BITS-1:0] sine_tbl [0:TABLE_LEN-1];
     initial begin
         $readmemh(SINE_TBL, sine_tbl);
     end
