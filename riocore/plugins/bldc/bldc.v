@@ -1,8 +1,16 @@
 
-`define DSP_CALC
-
 module bldc
-    #(parameter START = 0, parameter PWM_RANGE = 256, parameter PWM_DIVIDER = 1000, parameter FEEDBACK_DIVIDER = 16, parameter TLEN_BITS = 6, parameter TDEPTH_BITS = 8, parameter PWM_MODE = 0, parameter SINE_TBL = "sine.mem")
+    #(
+         parameter START = 0,
+         parameter VEL_RANGE = 256,
+         parameter PWM_RANGE = 256,
+         parameter PWM_DIVIDER = 1000,
+         parameter FEEDBACK_DIVIDER = 16,
+         parameter TLEN_BITS = 6,
+         parameter TDEPTH_BITS = 8,
+         parameter PWM_MODE = 0,
+         parameter SINE_TBL = "sine.mem"
+     )
      (
          input clk,
          input enable,
@@ -28,16 +36,16 @@ module bldc
     localparam TOFF_W = TLEN / 3 * 2 - 1;
 
     reg direction = 0;
-    reg [7:0] voltage = 0;
+    reg [PWM_RANGE_BITS-1:0] voltage = 0;
     reg [TLEN_BITS-1:0] tpos_u = 0;
     reg [TLEN_BITS-1:0] tpos_v = 0;
     reg [TLEN_BITS-1:0] tpos_w = 0;
     reg signed [7:0] tangle = 0;
 
     reg [31:0] clk_cnt = 0;
-    reg [7:0] dty_u = 0;
-    reg [7:0] dty_v = 0;
-    reg [7:0] dty_w = 0;
+    reg [PWM_RANGE_BITS-1:0] dty_u = 0;
+    reg [PWM_RANGE_BITS-1:0] dty_v = 0;
+    reg [PWM_RANGE_BITS-1:0] dty_w = 0;
 
     reg [31:0] counter = 0;
     reg pwmclk = 0;
@@ -87,11 +95,11 @@ module bldc
     end
 
     reg [7:0] calc_stat = 0;
-    reg [7:0] in_a = 0;
-    reg [7:0] in_b = 0;
+    reg [15:0] in_a = 0;
+    reg [15:0] in_b = 0;
     reg load = 0;
     wire out_valid;
-    wire [15:0] out_prod;
+    wire [31:0] out_prod;
     multiplier multiplier0 (
       .clk (clk),
       .in_a (in_a),
@@ -102,9 +110,9 @@ module bldc
     );
     always@ (posedge(clk)) begin
         // do serial calculation to not use DSP blocks
-        // dty_u <= sine_tbl[tpos_u] * voltage / 100;
-        // dty_v <= sine_tbl[tpos_v] * voltage / 100;
-        // dty_w <= sine_tbl[tpos_w] * voltage / 100;
+        // dty_u <= sine_tbl[tpos_u] * voltage / VEL_RANGE;
+        // dty_v <= sine_tbl[tpos_v] * voltage / VEL_RANGE;
+        // dty_w <= sine_tbl[tpos_w] * voltage / VEL_RANGE;
         if (load == 0) begin
             if (calc_stat == 0) begin
                 in_a <= sine_tbl[tpos_u];
@@ -123,13 +131,13 @@ module bldc
             load <= 0;
             if (calc_stat == 0) begin
                 calc_stat <= 1;
-                dty_u <= out_prod / 100;
+                dty_u <= out_prod / VEL_RANGE;
             end else if (calc_stat == 1) begin
                 calc_stat <= 2;
-                dty_v <= out_prod / 100;
+                dty_v <= out_prod / VEL_RANGE;
             end else if (calc_stat == 2) begin
                 calc_stat <= 0;
-                dty_w <= out_prod / 100;
+                dty_w <= out_prod / VEL_RANGE;
             end
         end
     end
@@ -192,7 +200,7 @@ module sine_pwm
     #(
         parameter PWM_RANGE = 256,
         parameter PWM_RANGE_BITS = 8
-    )
+     )
      (
          input clk,
          input [PWM_RANGE_BITS-1:0] dty,
@@ -217,16 +225,14 @@ module sine_pwm
     end
 endmodule
 
-`ifdef DSP_CALC
-
 module multiplier
     (
-        input [7:0] in_a,
-        input [7:0] in_b,
+        input [15:0] in_a,
+        input [15:0] in_b,
         input clk,
         input load,
         output reg out_valid,
-        output reg [15:0] out_prod
+        output reg [31:0] out_prod
     );
 
     always @ (posedge clk) begin
@@ -237,77 +243,3 @@ module multiplier
         end
     end
 endmodule
-
-`else
-
-module multiplier
-    (
-        input [7:0] in_a,
-        input [7:0] in_b,
-        input clk,
-        input load,
-        output reg out_valid,
-        output reg [15:0] out_prod
-    );
-
-    reg [15:0] p1 = 0;
-    reg [15:0] p2 = 0;
-    reg [15:0] p3 = 0;
-    reg [15:0] p4 = 0;
-    reg [15:0] p5 = 0;
-    reg [15:0] p6 = 0;
-    reg [15:0] p7 = 0;
-    reg [15:0] p8 = 0;
-    wire [15:0] temp_prod;
-    assign temp_prod = {8'b0, in_b};
-
-    always @ (posedge clk) begin
-        out_valid <= 1'b0;
-        if (load) begin
-              if (in_a[0]) begin
-                 p1 <= temp_prod;
-              end else begin
-                 p1 <= 8'b0;
-              end
-              if (in_a[1]) begin
-                 p2 <= temp_prod << 1;
-              end else begin
-                 p2 <= 8'b0;
-              end
-              if (in_a[2]) begin
-                 p3 <= temp_prod << 2;
-              end else begin
-                 p3 <= 8'b0;
-              end
-              if (in_a[3]) begin
-                 p4 <= temp_prod << 3;
-              end else begin
-                 p4 <= 8'b0;
-              end
-              if (in_a[4]) begin
-                 p5 <= temp_prod << 4;
-              end else begin
-                 p5 <= 8'b0;
-              end
-              if (in_a[5]) begin
-                 p6 <= temp_prod << 5;
-              end else begin
-                 p6 <= 8'b0;
-              end
-              if (in_a[6]) begin
-                 p7 <= temp_prod << 6;
-              end else begin
-                 p7 <= 8'b0;
-              end
-              if (in_a[7]) begin
-                 p8 <= temp_prod << 7;
-              end else begin
-                 p8 <= 8'b0;
-              end
-              out_prod <= p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8;
-              out_valid <= 1'b1;
-        end
-    end
-endmodule
-
-`endif

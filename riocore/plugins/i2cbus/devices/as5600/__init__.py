@@ -36,7 +36,13 @@ class i2c_device:
             },
         }
         self.PARAMS = {}
-        self.INITS = []
+        self.INITS = [
+            {
+                "mode": "write",
+                "value": "8'd14",
+                "bytes": 1,
+            },
+        ]
         """
         self.INITS = [
             {
@@ -56,11 +62,6 @@ class i2c_device:
         ]
         """
         self.STEPS = [
-            {
-                "mode": "write",
-                "value": "8'd14",
-                "bytes": 1,
-            },
             {
                 "mode": "read",
                 "var": f"{self.name}_angle",
