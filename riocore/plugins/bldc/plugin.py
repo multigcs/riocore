@@ -82,7 +82,7 @@ Motor-Setup:
 
         self.SINE_TBL = f"sine_{self.instances_name}.mem"
         self.TLEN_BITS = int(self.plugin_setup.get("table_len", self.OPTIONS["table_len"]["default"]))
-        self.TDEPTH_BITS = 12
+        self.TDEPTH_BITS = 10
 
         # builing sinus table
         self.table_len = 1 << (self.TLEN_BITS)
@@ -90,8 +90,14 @@ Motor-Setup:
         half_res = (tabel_res // 2) - 1
         mem_data = []
         for n in range(self.table_len):
-            val = half_res * math.sin(2 * n * math.pi / self.table_len) + half_res
+#               val = half_res * math.sin(2 * n * math.pi / self.table_len) + half_res
+            val = half_res * math.sin(2 * n * math.pi / self.table_len)
+            val1 = val
+            if val < 0:
+                val *= -1
+            print(n, int(val), int(val1))
             mem_data.append(f"{int(val):x}")
+
         mem_data.append("")
         self.VERILOGS_DATA = {
             self.SINE_TBL: "\n".join(mem_data),
@@ -145,11 +151,12 @@ Motor-Setup:
                 "multiplexed": True,
             },
         }
+        self.vel_range = 256
         self.SIGNALS = {
             "velocity": {
                 "direction": "output",
-                "min": -255,
-                "max": 255,
+                "min": -self.vel_range + 1,
+                "max": self.vel_range - 1,
                 "unit": "%",
             },
             "offset": {
@@ -184,7 +191,7 @@ Motor-Setup:
         instance_parameter["PWM_RANGE"] = 2**self.TDEPTH_BITS
 
         # velocity range 0->(VEL_RANGE-1)
-        instance_parameter["VEL_RANGE"] = 256
+        instance_parameter["VEL_RANGE"] = self.vel_range
 
         # pwm frequency divider (clock / freq / (2*range))
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))

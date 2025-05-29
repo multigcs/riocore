@@ -115,15 +115,34 @@ module bldc
         // dty_w <= sine_tbl[tpos_w] * voltage / VEL_RANGE;
         if (load == 0) begin
             if (calc_stat == 0) begin
-                in_a <= sine_tbl[tpos_u];
+
+                if (tpos_u > 31) begin
+                    in_a <= 511 - sine_tbl[tpos_u - 32];
+                end else begin
+                    in_a <= 511 + sine_tbl[tpos_u];
+                end
+
                 in_b <= voltage;
                 load <= 1;
             end else if (calc_stat == 1) begin
-                in_a <= sine_tbl[tpos_v];
+
+                if (tpos_v > 31) begin
+                    in_a <= 511 - sine_tbl[tpos_v - 32];
+                end else begin
+                    in_a <= 511 + sine_tbl[tpos_v];
+                end
+
+
                 in_b <= voltage;
                 load <= 1;
             end else if (calc_stat == 2) begin
-                in_a <= sine_tbl[tpos_w];
+                if (tpos_w > 31) begin
+                    in_a <= 511 - sine_tbl[tpos_w - 32];
+                end else begin
+                    in_a <= 511 + sine_tbl[tpos_w];
+                end
+
+
                 in_b <= voltage;
                 load <= 1;
             end
@@ -203,7 +222,7 @@ module sine_pwm
      )
      (
          input clk,
-         input [PWM_RANGE_BITS-1:0] dty,
+         input [PWM_RANGE_BITS:0] dty,
          output pwm
      );
 
