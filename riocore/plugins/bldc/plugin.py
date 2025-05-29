@@ -40,14 +40,6 @@ Motor-Setup:
                 "unit": "Hz",
                 "description": "PWM frequency",
             },
-            "pwmmode": {
-                "default": 0,
-                "type": int,
-                "min": 0,
-                "max": 2,
-                "unit": "",
-                "description": "PWM mode",
-            },
             "halsensor": {
                 "default": "",
                 "type": str,
@@ -71,12 +63,12 @@ Motor-Setup:
                 "description": "sinus table lenght in bits",
             },
             "sine_res": {
-                "default": 10,
+                "default": 0,
                 "type": int,
                 "min": 8,
                 "max": 16,
                 "unit": "bits",
-                "description": "sinus table lenght in bits",
+                "description": "sinus table lenght in bits (0 = auto)",
             },
             "feedback_res": {
                 "default": 4096,
@@ -88,22 +80,27 @@ Motor-Setup:
             },
         }
 
+        self.poles = int(self.plugin_setup.get("poles", self.OPTIONS["poles"]["default"]))
+        self.feedback_res = int(self.plugin_setup.get("feedback_res", self.OPTIONS["feedback_res"]["default"]))
+
         self.SINE_TBL = f"sine_{self.instances_name}.mem"
-        self.SINE_BITS = int(self.plugin_setup.get("sine_len", self.OPTIONS["sine_len"]["default"]))
+        self.SINE_LEN_BITS = int(self.plugin_setup.get("sine_len", self.OPTIONS["sine_len"]["default"]))
         self.SINE_RES_BITS = int(self.plugin_setup.get("sine_res", self.OPTIONS["sine_res"]["default"]))
 
+        if self.SINE_LEN_BITS == 0:
+            optimum_sine_len = self.feedback_res / self.poles
+            self.SINE_LEN_BITS = int(math.log(optimum_sine_len, 2))
+
         # building sinus table
-        self.sine_len = 1 << (self.SINE_BITS)
-        self.table_len = 1 << (self.SINE_BITS-1)
+        self.sine_len = 1 << (self.SINE_LEN_BITS)
+        self.table_len = 1 << (self.SINE_LEN_BITS - 1)
         tabel_res = 1 << (self.SINE_RES_BITS)
         half_res = (tabel_res // 2) - 1
         mem_data = []
         for n in range(self.table_len):
             val = half_res * math.sin(2 * n * math.pi / self.sine_len)
-            val1 = val
             if val < 0:
                 val *= -1
-            print(n, int(val), int(val1))
             mem_data.append(f"{int(val):x}")
 
         mem_data.append("")
@@ -190,9 +187,7 @@ Motor-Setup:
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
 
-        poles = int(self.plugin_setup.get("poles", self.OPTIONS["poles"]["default"]))
-        feedback_res = int(self.plugin_setup.get("feedback_res", self.OPTIONS["feedback_res"]["default"]))
-        feedback_divider = feedback_res / poles / self.sine_len
+        feedback_divider = self.feedback_res / self.poles / self.sine_len
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
 
         # velocity range 0->(VEL_RANGE-1)
@@ -200,13 +195,11 @@ Motor-Setup:
 
         # pwm frequency divider (clock / freq / (2*range))
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-        divider = self.system_setup["speed"] // frequency // ((1<<self.SINE_RES_BITS) * 2)
+        divider = self.system_setup["speed"] // frequency // ((1 << self.SINE_RES_BITS) * 2)
         instance_parameter["PWM_DIVIDER"] = int(divider)
 
-        pwmmode = int(self.plugin_setup.get("pwmmode", self.OPTIONS["pwmmode"]["default"]))
-        instance_parameter["PWM_MODE"] = pwmmode
         instance_parameter["SINE_TBL"] = f'"{self.SINE_TBL}"'
-        instance_parameter["SINE_BITS"] = self.SINE_BITS
+        instance_parameter["SINE_LEN_BITS"] = self.SINE_LEN_BITS
         instance_parameter["SINE_RES_BITS"] = self.SINE_RES_BITS
 
         # internal feedback

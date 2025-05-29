@@ -5,9 +5,8 @@ module bldc
          parameter VEL_RANGE = 256,
          parameter PWM_DIVIDER = 1000,
          parameter FEEDBACK_DIVIDER = 16,
-         parameter SINE_BITS = 6,
+         parameter SINE_LEN_BITS = 6,
          parameter SINE_RES_BITS = 8,
-         parameter PWM_MODE = 0,
          parameter SINE_TBL = "sine.mem"
      )
      (
@@ -28,9 +27,9 @@ module bldc
 
     assign en = enable;
 
-    localparam SINE_LEN = (1<<(SINE_BITS));
+    localparam SINE_LEN = (1<<(SINE_LEN_BITS));
     localparam SINE_CENTER = (1<<SINE_RES_BITS) / 2 - 1;
-    localparam TABLE_LEN = (1<<(SINE_BITS-1));
+    localparam TABLE_LEN = (1<<(SINE_LEN_BITS-1));
     localparam THALF = SINE_LEN / 2;
     localparam TMAX = SINE_LEN / 4 - 1;
     localparam TOFF_V = SINE_LEN / 3 - 1;
@@ -38,9 +37,9 @@ module bldc
 
     reg direction = 0;
     reg [SINE_RES_BITS:0] voltage = 0;
-    reg [SINE_BITS-1:0] tpos_u = 0;
-    reg [SINE_BITS-1:0] tpos_v = 0;
-    reg [SINE_BITS-1:0] tpos_w = 0;
+    reg [SINE_LEN_BITS-1:0] tpos_u = 0;
+    reg [SINE_LEN_BITS-1:0] tpos_v = 0;
+    reg [SINE_LEN_BITS-1:0] tpos_w = 0;
     reg signed [7:0] tangle = 0;
 
     reg [31:0] clk_cnt = 0;
@@ -159,35 +158,12 @@ module bldc
     wire v;
     wire w;
 
-    if (PWM_MODE == 1) begin
-        assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
-        assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
-        assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
-        assign u_n = enable & (sine_tbl[tpos_u] < 65);
-        assign v_n = enable & (sine_tbl[tpos_v] < 65);
-        assign w_n = enable & (sine_tbl[tpos_w] < 65);
-    end else if (PWM_MODE == 2) begin
-        assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
-        assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
-        assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
-        assign u_n = ~u & enable & (sine_tbl[tpos_u] < 65);
-        assign v_n = ~v & enable & (sine_tbl[tpos_v] < 65);
-        assign w_n = ~w & enable & (sine_tbl[tpos_w] < 65);
-    end else if (PWM_MODE == 3) begin
-        assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
-        assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
-        assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
-        assign u_n = enable & ((sine_tbl[tpos_u] < 65) | ~u_p & (sine_tbl[tpos_u] > 195));
-        assign v_n = enable & ((sine_tbl[tpos_v] < 65) | ~v_p & (sine_tbl[tpos_v] > 195));
-        assign w_n = enable & ((sine_tbl[tpos_w] < 65) | ~w_p & (sine_tbl[tpos_w] > 195));
-    end else begin
-        assign u_p = u & enable;
-        assign v_p = v & enable;
-        assign w_p = w & enable;
-        assign u_n = ~u & enable;
-        assign v_n = ~v & enable;
-        assign w_n = ~w & enable;
-    end
+    assign u_p = u & enable;
+    assign v_p = v & enable;
+    assign w_p = w & enable;
+    assign u_n = ~u & enable;
+    assign v_n = ~v & enable;
+    assign w_n = ~w & enable;
 
     sine_pwm #(.PWM_RES_BITS(SINE_RES_BITS)) sine_pwm_u (
       .clk (pwmclk),
