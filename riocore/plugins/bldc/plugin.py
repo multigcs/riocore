@@ -84,7 +84,7 @@ Motor-Setup:
         self.SINE_BITS = int(self.plugin_setup.get("sine_len", self.OPTIONS["sine_len"]["default"]))
         self.TDEPTH_BITS = 10
 
-        # builing sinus table
+        # building sinus table
         self.sine_len = 1 << (self.SINE_BITS)
         self.table_len = 1 << (self.SINE_BITS-1)
         tabel_res = 1 << (self.TDEPTH_BITS)
