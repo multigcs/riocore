@@ -3,7 +3,6 @@ module bldc
     #(
          parameter START = 0,
          parameter VEL_RANGE = 256,
-         parameter PWM_RANGE = 256,
          parameter PWM_DIVIDER = 1000,
          parameter FEEDBACK_DIVIDER = 16,
          parameter SINE_BITS = 6,
@@ -29,24 +28,25 @@ module bldc
 
     assign en = enable;
 
-    localparam PWM_RANGE_BITS = clog2(PWM_RANGE + 1);
     localparam SINE_LEN = (1<<(SINE_BITS));
+    localparam SINE_CENTER = (1<<SINE_RES_BITS) / 2 - 1;
     localparam TABLE_LEN = (1<<(SINE_BITS-1));
+    localparam THALF = SINE_LEN / 2;
     localparam TMAX = SINE_LEN / 4 - 1;
     localparam TOFF_V = SINE_LEN / 3 - 1;
     localparam TOFF_W = SINE_LEN / 3 * 2 - 1;
 
     reg direction = 0;
-    reg [PWM_RANGE_BITS-1:0] voltage = 0;
+    reg [SINE_RES_BITS:0] voltage = 0;
     reg [SINE_BITS-1:0] tpos_u = 0;
     reg [SINE_BITS-1:0] tpos_v = 0;
     reg [SINE_BITS-1:0] tpos_w = 0;
     reg signed [7:0] tangle = 0;
 
     reg [31:0] clk_cnt = 0;
-    reg [PWM_RANGE_BITS-1:0] dty_u = 0;
-    reg [PWM_RANGE_BITS-1:0] dty_v = 0;
-    reg [PWM_RANGE_BITS-1:0] dty_w = 0;
+    reg [SINE_RES_BITS:0] dty_u = 0;
+    reg [SINE_RES_BITS:0] dty_v = 0;
+    reg [SINE_RES_BITS:0] dty_w = 0;
 
     reg [31:0] counter = 0;
     reg pwmclk = 0;
@@ -116,34 +116,27 @@ module bldc
         // dty_w <= sine_tbl[tpos_w] * voltage / VEL_RANGE;
         if (load == 0) begin
             if (calc_stat == 0) begin
-
-                if (tpos_u > 31) begin
-                    in_a <= 511 - sine_tbl[tpos_u - 32];
+                if (tpos_u >= THALF) begin
+                    in_a <= SINE_CENTER - sine_tbl[tpos_u - THALF];
                 end else begin
-                    in_a <= 511 + sine_tbl[tpos_u];
+                    in_a <= SINE_CENTER + sine_tbl[tpos_u];
                 end
-
                 in_b <= voltage;
                 load <= 1;
             end else if (calc_stat == 1) begin
-
-                if (tpos_v > 31) begin
-                    in_a <= 511 - sine_tbl[tpos_v - 32];
+                if (tpos_v >= THALF) begin
+                    in_a <= SINE_CENTER - sine_tbl[tpos_v - THALF];
                 end else begin
-                    in_a <= 511 + sine_tbl[tpos_v];
+                    in_a <= SINE_CENTER + sine_tbl[tpos_v];
                 end
-
-
                 in_b <= voltage;
                 load <= 1;
             end else if (calc_stat == 2) begin
-                if (tpos_w > 31) begin
-                    in_a <= 511 - sine_tbl[tpos_w - 32];
+                if (tpos_w >= THALF) begin
+                    in_a <= SINE_CENTER - sine_tbl[tpos_w - THALF];
                 end else begin
-                    in_a <= 511 + sine_tbl[tpos_w];
+                    in_a <= SINE_CENTER + sine_tbl[tpos_w];
                 end
-
-
                 in_b <= voltage;
                 load <= 1;
             end
@@ -196,19 +189,19 @@ module bldc
         assign w_n = ~w & enable;
     end
 
-    sine_pwm #(.PWM_RANGE(PWM_RANGE), .PWM_RANGE_BITS(PWM_RANGE_BITS)) sine_pwm_u (
+    sine_pwm #(.PWM_RES_BITS(SINE_RES_BITS)) sine_pwm_u (
       .clk (pwmclk),
       .dty (dty_u),
       .pwm (u)
     );
 
-    sine_pwm  #(.PWM_RANGE(PWM_RANGE), .PWM_RANGE_BITS(PWM_RANGE_BITS)) sine_pwm_v (
+    sine_pwm  #(.PWM_RES_BITS(SINE_RES_BITS)) sine_pwm_v (
       .clk (pwmclk),
       .dty (dty_v),
       .pwm (v)
     );
 
-    sine_pwm  #(.PWM_RANGE(PWM_RANGE), .PWM_RANGE_BITS(PWM_RANGE_BITS)) sine_pwm_w (
+    sine_pwm  #(.PWM_RES_BITS(SINE_RES_BITS)) sine_pwm_w (
       .clk (pwmclk),
       .dty (dty_w),
       .pwm (w)
@@ -218,18 +211,19 @@ endmodule
 
 module sine_pwm
     #(
-        parameter PWM_RANGE = 256,
-        parameter PWM_RANGE_BITS = 8
+        parameter PWM_RES_BITS = 8
      )
      (
          input clk,
-         input [PWM_RANGE_BITS:0] dty,
+         input [PWM_RES_BITS-1:0] dty,
          output pwm
      );
 
+    localparam PWM_RANGE = (1<<(PWM_RES_BITS-1));
+
     reg pulse = 0;
     assign pwm = pulse;
-    reg [PWM_RANGE_BITS:0] counter = 0;
+    reg [PWM_RES_BITS-1:0] counter = 0;
     always @ (posedge clk) begin
         if (dty != 0) begin
             counter <= counter + 1;
