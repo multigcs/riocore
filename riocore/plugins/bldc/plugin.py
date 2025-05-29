@@ -181,7 +181,7 @@ Motor-Setup:
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
 
         # pwm values 0->(PWM_RANGE-1)
-        instance_parameter["PWM_RANGE"] = (2**self.TDEPTH_BITS)
+        instance_parameter["PWM_RANGE"] = 2**self.TDEPTH_BITS
 
         # velocity range 0->(VEL_RANGE-1)
         instance_parameter["VEL_RANGE"] = 256

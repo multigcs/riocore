@@ -1,5 +1,6 @@
 import time
 
+
 class i2c_device:
     options = {
         "info": "magnetic rotary position sensor",
