@@ -179,11 +179,17 @@ Motor-Setup:
         feedback_res = int(self.plugin_setup.get("feedback_res", self.OPTIONS["feedback_res"]["default"]))
         feedback_divider = feedback_res / poles / self.table_len
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
+
+        # pwm values 0->PWM_RANGE
+        instance_parameter["PWM_RANGE"] = (2**self.TDEPTH_BITS)
+
+        # pwm frequency divider (clock / freq / (2*range))
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-        divider = self.system_setup["speed"] // frequency // 512
-        instance_parameter["DIVIDER"] = int(divider)
+        divider = self.system_setup["speed"] // frequency // (instance_parameter["PWM_RANGE"] * 2)
+        instance_parameter["PWM_DIVIDER"] = int(divider)
+
         pwmmode = int(self.plugin_setup.get("pwmmode", self.OPTIONS["pwmmode"]["default"]))
-        instance_parameter["PWMMODE"] = pwmmode
+        instance_parameter["PWM_MODE"] = pwmmode
         instance_parameter["SINE_TBL"] = f'"{self.SINE_TBL}"'
         instance_parameter["TLEN_BITS"] = self.TLEN_BITS
         instance_parameter["TDEPTH_BITS"] = self.TDEPTH_BITS

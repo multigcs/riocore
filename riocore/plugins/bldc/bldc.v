@@ -2,7 +2,7 @@
 `define DSP_CALC
 
 module bldc
-    #(parameter START = 0, parameter DIVIDER = 1000, parameter FEEDBACK_DIVIDER = 16, parameter TLEN_BITS = 6, parameter TDEPTH_BITS = 8, parameter PWMMODE = 0, parameter SINE_TBL = "sine.mem")
+    #(parameter START = 0, parameter PWM_RANGE = 256, parameter PWM_DIVIDER = 1000, parameter FEEDBACK_DIVIDER = 16, parameter TLEN_BITS = 6, parameter TDEPTH_BITS = 8, parameter PWM_MODE = 0, parameter SINE_TBL = "sine.mem")
      (
          input clk,
          input enable,
@@ -21,10 +21,11 @@ module bldc
 
     assign en = enable;
 
+    localparam PWM_RANGE_BITS = clog2(PWM_RANGE + 1);
     localparam TLEN = (1<<(TLEN_BITS));
-    localparam TMAX = TLEN / 4;
-    localparam TOFF_V = TLEN / 3;
-    localparam TOFF_W = TLEN / 3 * 2;
+    localparam TMAX = TLEN / 4 - 1;
+    localparam TOFF_V = TLEN / 3 - 1;
+    localparam TOFF_W = TLEN / 3 * 2 - 1;
 
     reg direction = 0;
     reg [7:0] voltage = 0;
@@ -42,7 +43,7 @@ module bldc
     reg pwmclk = 0;
     always @(posedge clk) begin
         if (counter == 0) begin
-            counter <= DIVIDER;
+            counter <= PWM_DIVIDER;
             pwmclk <= ~pwmclk;
         end else begin
             counter <= counter - 1;
@@ -137,21 +138,21 @@ module bldc
     wire v;
     wire w;
 
-    if (PWMMODE == 1) begin
+    if (PWM_MODE == 1) begin
         assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
         assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
         assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
         assign u_n = enable & (sine_tbl[tpos_u] < 65);
         assign v_n = enable & (sine_tbl[tpos_v] < 65);
         assign w_n = enable & (sine_tbl[tpos_w] < 65);
-    end else if (PWMMODE == 2) begin
+    end else if (PWM_MODE == 2) begin
         assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
         assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
         assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
         assign u_n = ~u & enable & (sine_tbl[tpos_u] < 65);
         assign v_n = ~v & enable & (sine_tbl[tpos_v] < 65);
         assign w_n = ~w & enable & (sine_tbl[tpos_w] < 65);
-    end else if (PWMMODE == 3) begin
+    end else if (PWM_MODE == 3) begin
         assign u_p = u & enable & (sine_tbl[tpos_u] > 195);
         assign v_p = v & enable & (sine_tbl[tpos_v] > 195);
         assign w_p = w & enable & (sine_tbl[tpos_w] > 195);
@@ -167,19 +168,19 @@ module bldc
         assign w_n = ~w & enable;
     end
 
-    sine_pwm sine_pwm_u (
+    sine_pwm #(.PWM_RANGE(PWM_RANGE), .PWM_RANGE_BITS(PWM_RANGE_BITS)) sine_pwm_u (
       .clk (pwmclk),
       .dty (dty_u),
       .pwm (u)
     );
 
-    sine_pwm sine_pwm_v (
+    sine_pwm  #(.PWM_RANGE(PWM_RANGE), .PWM_RANGE_BITS(PWM_RANGE_BITS)) sine_pwm_v (
       .clk (pwmclk),
       .dty (dty_v),
       .pwm (v)
     );
 
-    sine_pwm sine_pwm_w (
+    sine_pwm  #(.PWM_RANGE(PWM_RANGE), .PWM_RANGE_BITS(PWM_RANGE_BITS)) sine_pwm_w (
       .clk (pwmclk),
       .dty (dty_w),
       .pwm (w)
@@ -188,22 +189,25 @@ module bldc
 endmodule
 
 module sine_pwm
-    #(parameter DIVIDER = 255)
+    #(
+        parameter PWM_RANGE = 256,
+        parameter PWM_RANGE_BITS = 8
+    )
      (
          input clk,
-         input [7:0] dty,
+         input [PWM_RANGE_BITS-1:0] dty,
          output pwm
      );
 
     reg pulse = 0;
     assign pwm = pulse;
-    reg [8:0] counter = 8'd0;
+    reg [PWM_RANGE_BITS:0] counter = 0;
     always @ (posedge clk) begin
         if (dty != 0) begin
             counter <= counter + 1;
-            if (counter == DIVIDER) begin
+            if (counter == (PWM_RANGE - 1)) begin
                 pulse <= 1'd1;
-                counter <= 32'd0;
+                counter <= 0;
             end else if (counter >= dty) begin
                 pulse <= 1'd0;
             end
