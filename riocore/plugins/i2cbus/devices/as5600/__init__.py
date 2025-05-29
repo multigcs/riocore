@@ -74,6 +74,11 @@ class i2c_device:
         """
         self.STEPS = [
             {
+                "mode": "write",
+                "value": "8'd14",
+                "bytes": 1,
+            },
+            {
                 "mode": "read",
                 "var": f"{self.name}_angle",
                 "var_set": "{3'd0, data_in[11:0]}",
