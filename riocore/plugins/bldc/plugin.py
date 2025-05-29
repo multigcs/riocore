@@ -70,6 +70,14 @@ Motor-Setup:
                 "unit": "bits",
                 "description": "sinus table lenght in bits",
             },
+            "sine_res": {
+                "default": 10,
+                "type": int,
+                "min": 8,
+                "max": 16,
+                "unit": "bits",
+                "description": "sinus table lenght in bits",
+            },
             "feedback_res": {
                 "default": 4096,
                 "type": int,
@@ -82,12 +90,12 @@ Motor-Setup:
 
         self.SINE_TBL = f"sine_{self.instances_name}.mem"
         self.SINE_BITS = int(self.plugin_setup.get("sine_len", self.OPTIONS["sine_len"]["default"]))
-        self.TDEPTH_BITS = 10
+        self.SINE_RES_BITS = int(self.plugin_setup.get("sine_res", self.OPTIONS["sine_res"]["default"]))
 
         # building sinus table
         self.sine_len = 1 << (self.SINE_BITS)
         self.table_len = 1 << (self.SINE_BITS-1)
-        tabel_res = 1 << (self.TDEPTH_BITS)
+        tabel_res = 1 << (self.SINE_RES_BITS)
         half_res = (tabel_res // 2) - 1
         mem_data = []
         for n in range(self.table_len):
@@ -188,7 +196,7 @@ Motor-Setup:
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
 
         # pwm values 0->(PWM_RANGE-1)
-        instance_parameter["PWM_RANGE"] = 2**self.TDEPTH_BITS
+        instance_parameter["PWM_RANGE"] = 2**self.SINE_RES_BITS
 
         # velocity range 0->(VEL_RANGE-1)
         instance_parameter["VEL_RANGE"] = self.vel_range
@@ -202,7 +210,7 @@ Motor-Setup:
         instance_parameter["PWM_MODE"] = pwmmode
         instance_parameter["SINE_TBL"] = f'"{self.SINE_TBL}"'
         instance_parameter["SINE_BITS"] = self.SINE_BITS
-        instance_parameter["TDEPTH_BITS"] = self.TDEPTH_BITS
+        instance_parameter["SINE_RES_BITS"] = self.SINE_RES_BITS
 
         # internal feedback
         instance["arguments"]["feedback"] = self.plugin_setup.get("halsensor", self.OPTIONS["halsensor"]["default"])

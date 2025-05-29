@@ -7,7 +7,7 @@ module bldc
          parameter PWM_DIVIDER = 1000,
          parameter FEEDBACK_DIVIDER = 16,
          parameter SINE_BITS = 6,
-         parameter TDEPTH_BITS = 8,
+         parameter SINE_RES_BITS = 8,
          parameter PWM_MODE = 0,
          parameter SINE_TBL = "sine.mem"
      )
@@ -90,7 +90,7 @@ module bldc
     end
 
 
-    reg [TDEPTH_BITS-1:0] sine_tbl [0:TABLE_LEN-1];
+    reg [SINE_RES_BITS-1:0] sine_tbl [0:TABLE_LEN-1];
     initial begin
         $readmemh(SINE_TBL, sine_tbl);
     end
