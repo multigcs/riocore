@@ -69,9 +69,9 @@ module bldc
                 // calibration mode (to find offset)
                 tangle <= 0;
             end else if (velocity > 0) begin
-                tangle <= TMAX;
-            end else if (velocity < 0) begin
                 tangle <= -TMAX;
+            end else if (velocity < 0) begin
+                tangle <= TMAX;
             end else begin
                 tangle <= 0;
             end

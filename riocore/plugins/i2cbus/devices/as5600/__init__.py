@@ -146,8 +146,8 @@ class i2c_device:
         duration_sum = 0;
         diff_sum = 0;
     }}
-    *data->{varname_rpm} = last_rpssum;
-    *data->{varname_rps} = last_rpssum * 60;
+    *data->{varname_rps} = last_rpssum;
+    *data->{varname_rpm} = last_rpssum * 60;
 
 
     // calc position
