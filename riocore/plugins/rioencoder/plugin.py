@@ -20,12 +20,12 @@ class Plugin(PluginBase):
             },
         }
         self.INTERFACE = {
-            "angle": {
-                "size": 16,
-                "direction": "input",
-            },
             "revs": {
                 "size": 32,
+                "direction": "input",
+            },
+            "angle": {
+                "size": 16,
                 "direction": "input",
             },
             "temperature": {
@@ -34,13 +34,13 @@ class Plugin(PluginBase):
             },
         }
         self.SIGNALS = {
-            "angle": {
-                "direction": "input",
-                "format": "0.1f",
-            },
             "revs": {
                 "direction": "input",
                 "format": "d",
+            },
+            "angle": {
+                "direction": "input",
+                "format": "0.1f",
             },
             "temperature": {
                 "direction": "input",
@@ -67,16 +67,16 @@ class Plugin(PluginBase):
         elif signal_name == "angle":
             self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] * self._scale + value
             return value * 360 / self._scale
-
         return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "temperature":
             return "value = value / 10;"
         elif signal_name == "angle":
-            varname_pos = self.SIGNALS["position"]["varname"]
             varname_revs = self.SIGNALS["revs"]["varname"]
+            varname_pos = self.SIGNALS["position"]["varname"]
             return f"""
+
     float position_value = *data->{varname_revs} * {self._scale} + raw_value;
     position_value = position_value + *data->{varname_pos}_OFFSET;
     position_value = position_value / *data->{varname_pos}_SCALE;
