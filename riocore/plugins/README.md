@@ -55,6 +55,7 @@
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [wled_bar](wled_bar/README.md) | ws2812b interface for bar-displays | <img src="wled_bar/image.png" height="48"> |  |
+|  | [yaskawa_abs](yaskawa_abs/README.md) | serial abs-encoder |  | X |
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | X |
 | Expansions | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
