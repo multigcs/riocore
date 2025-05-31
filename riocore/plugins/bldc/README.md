@@ -74,13 +74,6 @@ PWM frequency
  * default: 50000
  * unit: Hz
 
-### pwmmode:
-PWM mode
-
- * type: select
- * default: 0
- * unit: 
-
 ### halsensor:
 encoder instance
 
@@ -97,13 +90,22 @@ motor poles
  * default: 4
  * unit: 
 
-### table_len:
+### sine_len:
 sinus table lenght in bits
 
  * type: int
  * min: 4
  * max: 12
  * default: 6
+ * unit: bits
+
+### sine_res:
+sinus table lenght in bits (0 = auto)
+
+ * type: int
+ * min: 8
+ * max: 16
+ * default: 12
  * unit: bits
 
 ### feedback_res:
@@ -140,8 +142,8 @@ configure as joint
 
  * type: float
  * direction: output
- * min: -100
- * max: 100
+ * min: -255
+ * max: 255
  * unit: %
 
 ### offset:
@@ -225,10 +227,10 @@ configure as joint
 {
     "type": "bldc",
     "frequency": 50000,
-    "pwmmode": 0,
     "halsensor": "",
     "poles": 4,
-    "table_len": 6,
+    "sine_len": 6,
+    "sine_res": 12,
     "feedback_res": 4096,
     "name": "",
     "axis": "",

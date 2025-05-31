@@ -63,7 +63,7 @@ Motor-Setup:
                 "description": "sinus table lenght in bits",
             },
             "sine_res": {
-                "default": 0,
+                "default": 12,
                 "type": int,
                 "min": 8,
                 "max": 16,
