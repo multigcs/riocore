@@ -32,17 +32,33 @@ name of this plugin instance
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### angle:
-
- * type: float
- * direction: input
-
 ### revs:
 
  * type: float
  * direction: input
 
+### angle:
+
+ * type: float
+ * direction: input
+
+### temperature:
+
+ * type: float
+ * direction: input
+ * unit: °C
+
 ### position:
+
+ * type: float
+ * direction: input
+
+### rps:
+
+ * type: float
+ * direction: input
+
+### rpm:
 
  * type: float
  * direction: input
@@ -50,14 +66,19 @@ name of this plugin instance
 
 ## Interfaces:
 *transport layer*
+### revs:
+
+ * size: 32 bit
+ * direction: input
+
 ### angle:
 
  * size: 16 bit
  * direction: input
 
-### revs:
+### temperature:
 
- * size: 32 bit
+ * size: 16 bit
  * direction: input
 
 
@@ -100,17 +121,6 @@ name of this plugin instance
         }
     },
     "signals": {
-        "angle": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "angle",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
         "revs": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
@@ -122,6 +132,28 @@ name of this plugin instance
                 "type": "meter"
             }
         },
+        "angle": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "angle",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "temperature": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "temperature",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
         "position": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
@@ -129,6 +161,28 @@ name of this plugin instance
             "offset": 0.0,
             "display": {
                 "title": "position",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "rps": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "rps",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "rpm": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "rpm",
                 "section": "inputs",
                 "type": "meter"
             }
