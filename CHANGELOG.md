@@ -14,6 +14,7 @@
 ### Plugins
 * adding riodrive can-bus plugin (experimental)
 * adding bldc foc plugin (experimental)
+* adding yaskawa_abs plugin (experimental)
 
 
 ## v0.9.2
