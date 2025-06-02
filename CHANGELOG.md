@@ -12,9 +12,13 @@
 * adding [jslib](doc/JSLIB.md) generator (Javascript library)
 
 ### Plugins
+* adding as5600 over pwm plugin
+* adding caliper plugin
+* adding hallsensor plugin
+* adding yaskawa absulute encoder plugin (experimental)
 * adding riodrive can-bus plugin (experimental)
+* adding rioencoder plugin (experimental)
 * adding bldc foc plugin (experimental)
-* adding yaskawa_abs plugin (experimental)
 
 
 ## v0.9.2
