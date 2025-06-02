@@ -111,7 +111,7 @@ class Gateware:
                 ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, verilog)
                 if not os.path.isfile(ipv_path):
                     # fallback to shared files
-                    ipv_path = os.path.join(riocore_path, "files", verilog)
+                    ipv_path = os.path.join(riocore_path, "files", "verilog", verilog)
                 if not os.path.isfile(ipv_path):
                     print(f"ERROR: can not found verilog file: {verilog}")
                     exit(1)
@@ -127,7 +127,7 @@ class Gateware:
 
         for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v", "oneshot.v"):
             self.verilogs.append(extrafile)
-            source = os.path.join(riocore_path, "files", extrafile)
+            source = os.path.join(riocore_path, "files", "verilog", extrafile)
             target = os.path.join(self.gateware_path, extrafile)
             shutil.copy(source, target)
         self.verilogs.append("rio.v")
