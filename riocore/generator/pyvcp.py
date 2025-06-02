@@ -321,7 +321,7 @@ class pyvcp:
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_subtext = setup.get("subtext", display_unit)
-        display_region = setup.get("region", [])
+        display_region = setup.get("range", setup.get("region", []))
         display_size = setup.get("size", 150)
         self.draw_hbox_begin()
         e_meter = etree.Element("meter")
@@ -366,8 +366,13 @@ class pyvcp:
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0)
-        display_range = setup.get("range", [])
+        display_range = setup.get("range", setup.get("region", []))
+        display_unit = setup.get("unit")
         display_format = setup.get("format", "05d")
+
+        if display_unit and len(display_format) < 5:
+            display_format = f"{display_format} {display_unit}"
+
         display_fillcolor = setup.get("fillcolor", "red")
         display_bgcolor = setup.get("fillcolor", "grey")
         self.draw_hbox_begin()
@@ -510,16 +515,16 @@ class pyvcp:
         off_color = "red"
         if color:
             on_color = color
-            off_color = "black"
+            off_color = setup.get("off_color", "black")
         elif halpin.endswith(".R"):
             on_color = "red"
-            off_color = "black"
+            off_color = setup.get("off_color", "black")
         elif halpin.endswith(".G"):
             on_color = "green"
-            off_color = "black"
+            off_color = setup.get("off_color", "black")
         elif halpin.endswith(".B"):
             on_color = "blue"
-            off_color = "black"
+            off_color = setup.get("off_color", "black")
         e_led = etree.Element("led")
         self.parent.append(e_led)
         e_halpin = etree.Element("halpin")
@@ -549,20 +554,24 @@ class pyvcp:
         width = setup.get("width", 16)
         height = setup.get("height", 16)
         color = setup.get("color")
+        off_color = setup.get("off_color", "yellow")
         self.draw_hbox_begin()
         self.draw_title(title, size=30)
         on_color = "red"
         off_color = "yellow"
         if color:
             on_color = color
-            off_color = "black"
+            off_color = setup.get("off_color", "black")
         elif halpin.endswith(".R"):
             on_color = "red"
+            off_color = setup.get("off_color", "black")
         elif halpin.endswith(".G"):
             on_color = "green"
+            off_color = setup.get("off_color", "black")
         elif halpin.endswith(".B"):
             on_color = "blue"
-        e_led = etree.Element("led")
+            off_color = setup.get("off_color", "black")
+        e_led = etree.Element("rectled")
         self.parent.append(e_led)
         e_halpin = etree.Element("halpin")
         e_halpin.text = f'"{halpin}"'

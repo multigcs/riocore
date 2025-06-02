@@ -17,7 +17,12 @@ class Gateware:
     def globals(self):
         # create globals.v for compatibility functions
         globals_data = []
+        globals_data.append(f'localparam FPGA_FAMILY = "{self.config.get("family", "UNKNOWN")}";')
+        globals_data.append(f'localparam FPGA_TYPE = "{self.config.get("type", "UNKNOWN")}";')
         globals_data.append(f'localparam TOOLCHAIN = "{self.toolchain}";')
+        globals_data.append("")
+        if self.config.get("family", "UNKNOWN") in {"ice40"}:
+            globals_data.append("`define DSP_CALC")
         globals_data.append("")
         globals_data.append("// replacement for $clog2")
         globals_data.append("function integer clog2;")
@@ -84,34 +89,6 @@ class Gateware:
         self.globals()
         self.top()
         self.makefile()
-        self.interface_html()
-
-    def interface_html(self):
-        output = []
-        output.append("<h1>Interface</h1>")
-        output.append("<table width='100%'>")
-        output.append("<tr><td valign='top'>")
-        output.append("<h3>FPGA to Host</h3>")
-        output.append("<table width='100%'>")
-        for data in self.iface_in:
-            name = data[0]
-            output.append(
-                f"<tr><td style='padding: 3px; border: 1px solid black;'>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td><td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
-            )
-        output.append("</table>")
-        output.append("</td><td valign='top'>")
-        output.append("<h3>Host to FPGA</h3>")
-        output.append("<table width='100%'>")
-        for data in self.iface_out:
-            name = data[0]
-            output.append(
-                f"<tr><td style='padding: 3px; border: 1px solid black;'>{data[1]}{'bits' if data[1] > 1 else 'bit'}</td><td  style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
-            )
-        output.append("</table>")
-        output.append("</td></tr>")
-        output.append("</table>")
-
-        open(os.path.join(self.gateware_path, "interface.html"), "w").write("\n".join(output))
 
     def makefile(self):
         flashcmd = self.config.get("flashcmd")
@@ -132,6 +109,12 @@ class Gateware:
                     continue
                 self.verilogs.append(verilog)
                 ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, verilog)
+                if not os.path.isfile(ipv_path):
+                    # fallback to shared files
+                    ipv_path = os.path.join(riocore_path, "files", "verilog", verilog)
+                if not os.path.isfile(ipv_path):
+                    print(f"ERROR: can not found verilog file: {verilog}")
+                    exit(1)
                 target = os.path.join(self.gateware_path, verilog)
                 shutil.copy(ipv_path, target)
 
@@ -144,7 +127,7 @@ class Gateware:
 
         for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v", "oneshot.v"):
             self.verilogs.append(extrafile)
-            source = os.path.join(riocore_path, "files", extrafile)
+            source = os.path.join(riocore_path, "files", "verilog", extrafile)
             target = os.path.join(self.gateware_path, extrafile)
             shutil.copy(source, target)
         self.verilogs.append("rio.v")
@@ -204,7 +187,7 @@ class Gateware:
         size = 32
         pack_list = []
         for bit_num in range(0, size, 8):
-            pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
             output_pos -= 8
         output_variables_list.append(f"// PC -> FPGA ({self.project.output_size} + FILL)")
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
@@ -217,14 +200,14 @@ class Gateware:
             size = self.project.multiplexed_input_size
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
+                pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
             self.iface_in.append([variable_name, size])
             variable_name = "MULTIPLEXED_INPUT_ID"
             size = 8
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
+                pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
             self.iface_in.append([variable_name, size])
 
@@ -233,7 +216,7 @@ class Gateware:
             size = self.project.multiplexed_output_size
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+                pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
             self.iface_out.append([variable_name, size])
@@ -241,7 +224,7 @@ class Gateware:
             size = 8
             pack_list = []
             for bit_num in range(0, size, 8):
-                pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+                pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
             self.iface_out.append([variable_name, size])
@@ -256,7 +239,7 @@ class Gateware:
                     pack_list = []
                     if size >= 8:
                         for bit_num in range(0, size, 8):
-                            pack_list.append(f"{variable_name}[{bit_num+7}:{bit_num}]")
+                            pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
                     else:
                         pack_list.append(f"{variable_name}")
                     input_variables_list.append(f"{', '.join(pack_list)}")
@@ -266,10 +249,13 @@ class Gateware:
                     pack_list = []
                     if size >= 8:
                         for bit_num in range(0, size, 8):
-                            pack_list.append(f"rx_data[{output_pos-1}:{output_pos-8}]")
+                            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                             output_pos -= 8
+                    elif size > 1:
+                        pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - size}]")
+                        output_pos -= size
                     else:
-                        pack_list.append(f"rx_data[{output_pos-1}]")
+                        pack_list.append(f"rx_data[{output_pos - 1}]")
                         output_pos -= 1
                     output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
                     self.iface_out.append([variable_name, size])
@@ -280,7 +266,7 @@ class Gateware:
 
         diff = self.project.buffer_size - self.project.output_size
         if self.project.buffer_size > self.project.output_size:
-            output_variables_list.append(f"// assign FILL = rx_data[{diff-1}:0];")
+            output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
 
         if output_pos != diff:
             print("ERROR: wrong buffer sizes")
@@ -328,26 +314,37 @@ class Gateware:
         output.append(f"        {arguments_string}")
         output.append("    );")
         output.append("")
-        output.append(f"    parameter BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size//8} bytes")
+        output.append(f"    parameter BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size // 8} bytes")
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
 
+        output.append("    wire INTERFACE_SYNC;")
+        error_signals = ["INTERFACE_TIMEOUT"]
+
         estop_pin = None
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                if plugin_instance.NAME == "bitin" and plugin_instance.title.lower() == "estop":
-                    for data_name, data_config in plugin_instance.interface_data().items():
-                        estop_pin = data_config["variable"]
+            for data_name, interface_setup in plugin_instance.interface_data().items():
+                if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                    if plugin_instance.NAME == "bitin" and plugin_instance.title.lower() == "estop":
+                        estop_pin = interface_setup["variable"]
                         break
+
+                error_on = interface_setup.get("error_on")
+                if error_on is True:
+                    error_signals.append(interface_setup["variable"])
+                elif error_on is False:
+                    error_signals.append(f"~{interface_setup['variable']}")
+
         if estop_pin is not None:
             output.append("    wire ESTOP;")
             output.append(f"    assign ESTOP = {estop_pin};")
+            error_signals.append("ESTOP")
         else:
             output.append("    parameter ESTOP = 0;")
         output.append("    wire ERROR;")
-        output.append("    wire INTERFACE_SYNC;")
-        output.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
-        # output.append("    assign ERROR_OUT = ERROR;")
+
+        output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
+
         output.append("")
 
         osc_clock = self.project.config["osc_clock"]
@@ -405,8 +402,8 @@ class Gateware:
         output.append("    end")
         output.append("")
 
-        output.append(f"    wire[{self.project.buffer_size-1}:0] rx_data;")
-        output.append(f"    wire[{self.project.buffer_size-1}:0] tx_data;")
+        output.append(f"    wire[{self.project.buffer_size - 1}:0] rx_data;")
+        output.append(f"    wire[{self.project.buffer_size - 1}:0] tx_data;")
         output.append("")
         output.append("    reg [31:0] timestamp = 0;")
         output.append("    reg signed [31:0] header_tx = 0;")
@@ -448,10 +445,10 @@ class Gateware:
 
         # multiplexing
         if self.project.multiplexed_input:
-            output.append(f"    reg [{self.project.multiplexed_input_size-1}:0] MULTIPLEXED_INPUT_VALUE;")
+            output.append(f"    reg [{self.project.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE;")
             output.append("    reg [7:0] MULTIPLEXED_INPUT_ID;")
         if self.project.multiplexed_output:
-            output.append(f"    wire [{self.project.multiplexed_output_size-1}:0] MULTIPLEXED_OUTPUT_VALUE;")
+            output.append(f"    wire [{self.project.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
         for plugin_instance in self.project.plugin_instances:
@@ -463,9 +460,9 @@ class Gateware:
                     multiplexed = data_config.get("multiplexed", False)
                     if variable_size > 1:
                         if multiplexed and direction == "output":
-                            output.append(f"    reg [{variable_size-1}:0] {variable_name} = 0;")
+                            output.append(f"    reg [{variable_size - 1}:0] {variable_name} = 0;")
                         else:
-                            output.append(f"    wire [{variable_size-1}:0] {variable_name};")
+                            output.append(f"    wire [{variable_size - 1}:0] {variable_name};")
                     else:
                         if multiplexed and direction == "output":
                             output.append(f"    reg {variable_name};")
@@ -542,7 +539,7 @@ class Gateware:
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")
             output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
-            output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.project.multiplexed_input-1}) begin")
+            output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.project.multiplexed_input - 1}) begin")
             output.append("                MULTIPLEXED_INPUT_ID = MULTIPLEXED_INPUT_ID + 1'd1;")
             output.append("            end else begin")
             output.append("                MULTIPLEXED_INPUT_ID = 0;")
@@ -559,7 +556,7 @@ class Gateware:
                     if size == 1:
                         output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name};")
                     else:
-                        output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name}[{size-1}:0];")
+                        output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name}[{size - 1}:0];")
                     output.append("            end")
                     mpid += 1
             output.append("        end")
@@ -576,10 +573,17 @@ class Gateware:
                 direction = data_config["direction"]
                 if direction == "output":
                     output.append(f"        if (MULTIPLEXED_OUTPUT_ID == {mpid}) begin")
-                    output.append(f"            {variable_name} <= MULTIPLEXED_OUTPUT_VALUE[{size-1}:0];")
+                    output.append(f"            {variable_name} <= MULTIPLEXED_OUTPUT_VALUE[{size - 1}:0];")
                     output.append("        end")
                     mpid += 1
             output.append("    end")
+
+        varmapping = {}
+        for plugin_instance in self.project.plugin_instances:
+            for signal, signal_config in plugin_instance.SIGNALS.items():
+                if signal in plugin_instance.INTERFACE:
+                    iface = plugin_instance.INTERFACE[signal]
+                    varmapping[f"{signal_config['signal_prefix']}:{signal}"] = iface["variable"]
 
         # gateware instances
         for plugin_instance in self.project.plugin_instances:
@@ -610,7 +614,13 @@ class Gateware:
                             output.append(f"    {instance_module} {instance_name} (")
                         arguments_list = []
                         for argument_name, argument_value in instance_arguments.items():
+                            if ":" in argument_value:
+                                if argument_value in varmapping:
+                                    argument_value = varmapping[argument_value]
+                                else:
+                                    print(f"ERROR: no mapping found: {argument_value}")
                             arguments_list.append(f".{argument_name}({argument_value})")
+
                         arguments_string = ",\n        ".join(arguments_list)
                         output.append(f"        {arguments_string}")
                         output.append("    );")

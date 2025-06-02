@@ -18,7 +18,8 @@
                         }
                     ]
                 }
-            }
+            },
+            "uid": "blink0"
         },
         {
             "type": "spi",
@@ -35,7 +36,8 @@
                 "sel": {
                     "pin": "Y2"
                 }
-            }
+            },
+            "uid": "spi0"
         },
         {
             "type": "bitin",
@@ -44,7 +46,8 @@
                     "pin": "M1",
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin0"
         },
         {
             "type": "bitout",
@@ -52,7 +55,8 @@
                 "bit": {
                     "pin": "N2"
                 }
-            }
+            },
+            "uid": "bitout0"
         },
         {
             "type": "pwmout",
@@ -60,7 +64,8 @@
                 "pwm": {
                     "pin": "W1"
                 }
-            }
+            },
+            "uid": "pwmout0"
         }
     ]
 }

@@ -144,7 +144,7 @@ class i2c_device:
         self.INITS = [
             {
                 "mode": "write",
-                "value": f"{{ 8'd{0x0a}, 8'b00000000 }}",
+                "value": f"{{ 8'd{0x0A}, 8'b00000000 }}",
                 "bytes": 2,
             },
         ]
@@ -153,17 +153,17 @@ class i2c_device:
             self.INITS += [
                 {
                     "mode": "write",
-                    "value": f"{{ 8'd{self.IODIR_A+bank_n}, {', '.join(reversed(directions[bank]))} }}",
+                    "value": f"{{ 8'd{self.IODIR_A + bank_n}, {', '.join(reversed(directions[bank]))} }}",
                     "bytes": 2,
                 },
                 {
                     "mode": "write",
-                    "value": f"{{ 8'd{self.GPPU_A+bank_n}, {', '.join(reversed(pullups[bank]))} }}",
+                    "value": f"{{ 8'd{self.GPPU_A + bank_n}, {', '.join(reversed(pullups[bank]))} }}",
                     "bytes": 2,
                 },
                 {
                     "mode": "write",
-                    "value": f"{{ 8'd{self.IPOL_A+bank_n}, {', '.join(reversed(inverts[bank]))} }}",
+                    "value": f"{{ 8'd{self.IPOL_A + bank_n}, {', '.join(reversed(inverts[bank]))} }}",
                     "bytes": 2,
                 },
             ]
@@ -171,7 +171,7 @@ class i2c_device:
             self.STEPS += [
                 {
                     "mode": "write",
-                    "value": f"{{ 8'd{self.GPIO_A+bank_n}, {', '.join(reversed(bitlist_out[bank]))} }}",
+                    "value": f"{{ 8'd{self.GPIO_A + bank_n}, {', '.join(reversed(bitlist_out[bank]))} }}",
                     "bytes": 2,
                 },
             ]
@@ -186,7 +186,7 @@ class i2c_device:
                     self.STEPS.append(
                         {
                             "mode": "write",
-                            "value": f"{{ 8'd{self.GPIO_A+bank_n} }}",
+                            "value": f"{{ 8'd{self.GPIO_A + bank_n} }}",
                             "bytes": 1,
                         }
                     )

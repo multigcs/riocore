@@ -8,6 +8,7 @@ class flexvcp:
         self.vcp_pos = vcp_pos
 
     def draw_begin(self):
+        self.tmp = []
         self.cfgxml_data = []
         self.cfgxml_data.append("")
 
@@ -63,32 +64,54 @@ class flexvcp:
         self.cfgxml_data.append("    </rio_items>")
 
     def draw_tab_begin(self, name):
-        self.cfgxml_data.append(f'      <widget class="QWidget" name="tab_{name}">')
-        self.cfgxml_data.append('       <attribute name="title">')
-        self.cfgxml_data.append(f"        <string>{name}</string>")
-        self.cfgxml_data.append("       </attribute>")
-        self.cfgxml_data.append('       <layout class="QVBoxLayout" name="layout_stat">')
-        self.add_property("spacing", "0")
-        self.add_property("leftMargin", "0")
-        self.add_property("topMargin", "0")
-        self.add_property("rightMargin", "0")
-        self.add_property("bottomMargin", "0")
-        self.draw_vbox_begin()
+        self.tab_name = name
+        self.tmp = self.cfgxml_data
+        self.cfgxml_data = []
 
     def draw_tab_end(self):
-        self.cfgxml_data.append("           <item>")
-        self.cfgxml_data.append('            <widget class="QWidget" name="widget" native="true"/>')
-        self.cfgxml_data.append("           </item>")
-        self.draw_vbox_end()
-        self.cfgxml_data.append("        </layout>")
-        self.cfgxml_data.append("      </widget>")
+        # remove empty tabs
+        if self.cfgxml_data:
+            tabdata = self.cfgxml_data
+            self.cfgxml_data = []
+            self.cfgxml_data.append(f'      <widget class="QWidget" name="tab_{self.tab_name}">')
+            self.cfgxml_data.append('       <attribute name="title">')
+            self.cfgxml_data.append(f"        <string>{self.tab_name}</string>")
+            self.cfgxml_data.append("       </attribute>")
+            self.cfgxml_data.append('       <layout class="QVBoxLayout" name="layout_stat">')
+            self.add_property("spacing", "0")
+            self.add_property("leftMargin", "0")
+            self.add_property("topMargin", "0")
+            self.add_property("rightMargin", "0")
+            self.add_property("bottomMargin", "0")
+            self.draw_vbox_begin()
+            self.cfgxml_data += tabdata
+            self.cfgxml_data.append("           <item>")
+            self.cfgxml_data.append('            <widget class="QWidget" name="widget" native="true"/>')
+            self.cfgxml_data.append("           </item>")
+            self.draw_vbox_end()
+            self.cfgxml_data.append("        </layout>")
+            self.cfgxml_data.append("      </widget>")
+        self.cfgxml_data = self.tmp + self.cfgxml_data
+        self.tmp = []
 
     def draw_frame_begin(self, name=None):
-        if not name:
-            name = "frame"
+        self.cfgxml_data.append("     <item>")
+        self.cfgxml_data.append('   <widget class="QGroupBox" name="groupBox_7">')
+        if name:
+            self.cfgxml_data.append('    <property name="title">')
+            self.cfgxml_data.append(f"     <string>{name}</string>")
+            self.cfgxml_data.append("    </property>")
+
+        self.cfgxml_data.append('      <layout class="QVBoxLayout" name="verticalLayout_5">')
+        self.add_property("leftMargin", "2")
+        self.add_property("topMargin", "2")
+        self.add_property("rightMargin", "2")
+        self.add_property("bottomMargin", "2")
 
     def draw_frame_end(self):
-        pass
+        self.cfgxml_data.append("      </layout>")
+        self.cfgxml_data.append("   </widget>")
+        self.cfgxml_data.append("     </item>")
 
     def draw_vbox_begin(self):
         self.cfgxml_data.append("     <item>")

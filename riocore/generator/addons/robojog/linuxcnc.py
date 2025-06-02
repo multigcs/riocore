@@ -34,7 +34,7 @@ def hal(parent):
         parent.halg.postgui_components_add("robojog")
 
         # jog axis
-        for axis_name, axis_config in parent.axis_dict.items():
+        for axis_name, axis_config in parent.project.axis_dict.items():
             joints = axis_config["joints"]
             # axis_low = axis_name.lower()
             # parent.halg.setp_add(f"axis.{axis_low}.jog-vel-mode", 0)

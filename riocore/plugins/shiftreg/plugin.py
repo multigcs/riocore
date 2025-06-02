@@ -16,21 +16,21 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
 ## Output-Expansion with 74HC595:
 
-| EXP | 74HC595 | FUNC |
-| --- | --- | --- |
-| out | 14 | DS |
-| in |  | |
-| sclk | 11 | SH_CP / SRCLK |
-| load | 12 | ST_CP / RCLK |
+| Plugin | 74HC595 | FUNC | LABEL |
+| --- | --- | --- | --- |
+| out | 14 | DS | SER_IN |
+| in | | | |
+| sclk | 11 | SH_CP / SRCLK | Clock |
+| load | 12 | ST_CP / RCLK | L_Clock |
 
 ## Input-Expansion with 74HC165:
 
-| EXP | 74HC165 | FUNC |
-| --- | --- | --- |
-| out |  | |
-| in |  | SER |
-| sclk | 2 | CLK |
-| load |  | SH/LD |
+| Plugin | 74HC165 | FUNC | LABEL |
+| --- | --- | --- | --- |
+| out | | | |
+| in |  | SER | SER_OUT |
+| sclk | 2 | CLK | CLK |
+| load |  | SH/LD | SH/LD |
 
 ### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
 [![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
@@ -42,10 +42,12 @@ jitter measured with a EPM240 as 40bit Shiftreg:
             "out": {
                 "direction": "output",
                 "description": "output data (DS on 74HC595)",
+                "optional": True,
             },
             "in": {
                 "direction": "input",
                 "description": "input data (SER_OUT on 74HC165)",
+                "optional": True,
             },
             "sclk": {
                 "direction": "output",
@@ -73,19 +75,29 @@ jitter measured with a EPM240 as 40bit Shiftreg:
                 "description": "number of bits (IO's)",
             },
         }
+        self.BITS_IN = 0
+        self.BITS_OUT = 0
+        if "in" in self.plugin_setup.get("pins", {}):
+            self.BITS_IN = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))
+        if "out" in self.plugin_setup.get("pins", {}):
+            self.BITS_OUT = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
-
         instance = instances[self.instances_name]
-        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance["arguments"]
+        instance_arguments = instance["arguments"]
 
         speed = int(self.plugin_setup.get("speed", self.OPTIONS["speed"]["default"]))
         bits = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))
         divider = int(self.system_setup["speed"] / speed / 3.3)
         instance_parameter["DIVIDER"] = divider
         instance_parameter["WIDTH"] = bits
+
+        if "in" not in self.plugin_setup.get("pins", {}):
+            del instance_arguments["data_in"]
+        if "out" not in self.plugin_setup.get("pins", {}):
+            print("del out")
+            del instance_arguments["data_out"]
 
         return instances

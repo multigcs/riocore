@@ -2,7 +2,15 @@ import math
 
 
 class i2c_device:
-    sensor_options = ["volt", "ntc", "pressure"]
+    sensor_options = ["volt", "ntc", "pressure", "5A", "20A", "30A"]
+    sensor_setups = {
+        "volt": ("V", "0.3f"),
+        "ntc": ("°C", "0.1f"),
+        "pressure": ("bar", "0.1f"),
+        "5A": ("A", "0.2f"),
+        "20A": ("A", "0.1f"),
+        "30A": ("A", "0.1f"),
+    }
     options = {
         "info": "16bit / 4channel adc",
         "description": "",
@@ -14,6 +22,13 @@ class i2c_device:
                 "max": 4,
                 "description": "number of channels",
                 "default": 4,
+            },
+            "reference": {
+                "type": float,
+                "min": 0.1,
+                "max": 5.5,
+                "description": "reference voltage",
+                "default": 3.3,
             },
             "sensor0": {
                 "type": "combo",
@@ -52,15 +67,11 @@ class i2c_device:
         self.addr = setup["address"]
         self.setup = setup
         self.channels = setup.get("channels", self.options["config"]["channels"]["default"])
+        self.reference = setup.get("reference", self.options["config"]["reference"]["default"])
 
         self.INTERFACE = {}
         self.SIGNALS = {}
         for channel in range(self.channels):
-            sensor_setups = {
-                "volt": ("V", "0.3f"),
-                "ntc": ("°C", "0.1f"),
-                "pressure": ("bar", "0.1f"),
-            }
             sensor = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
             self.INTERFACE[f"{self.name}_adc{channel}"] = {
                 "size": 16,
@@ -68,8 +79,8 @@ class i2c_device:
             }
             self.SIGNALS[f"{self.name}_adc{channel}"] = {
                 "direction": "input",
-                "format": sensor_setups.get(sensor, ["", "0.3f"])[1],
-                "unit": sensor_setups.get(sensor, ["", ""])[0],
+                "format": self.sensor_setups.get(sensor, ["", "0.3f"])[1],
+                "unit": self.sensor_setups.get(sensor, ["", ""])[0],
             }
         self.INTERFACE[f"{self.name}_valid"] = {
             "size": 1,
@@ -144,7 +155,7 @@ class i2c_device:
         value /= 1000.0
 
         if sensor == "ntc":
-            Rt = 10.0 * value / (3.3 - value)
+            Rt = 10.0 * value / (self.reference - value)
             if Rt == 0.0:
                 value = -999.0
             else:
@@ -154,6 +165,15 @@ class i2c_device:
         elif sensor == "pressure":
             value -= 0.56
             value *= 2.57
+        elif sensor == "5A":
+            value -= self.reference / 2.0
+            value *= 5.0 / (self.reference / 2.0)
+        elif sensor == "20A":
+            value -= self.reference / 2.0
+            value *= 20.0 / (self.reference / 2.0)
+        elif sensor == "30A":
+            value -= self.reference / 2.0
+            value *= 30.0 / (self.reference / 2.0)
 
         return value
 
@@ -168,7 +188,7 @@ class i2c_device:
             return """
                 value = (int16_t)value>>3;
                 value /= 1000.0;
-                float Rt = 10.0 * value / (3.3 - value);
+                float Rt = 10.0 * value / (self.reference - value);
                 float tempK = 1.0 / (log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0));
                 float tempC = tempK - 273.15;
                 value = tempC;
@@ -179,6 +199,27 @@ class i2c_device:
             value /= 1000.0;
             value -= 0.56;
             value *= 2.57;
+            """
+        elif sensor == "5A":
+            return f"""
+            value = (int16_t)value>>3;
+            value /= 1000.0;
+            value -= {(self.reference / 2.0)};
+            value *= (5.0 / {(self.reference / 2.0)});
+            """
+        elif sensor == "20A":
+            return f"""
+            value = (int16_t)value>>3;
+            value /= 1000.0;
+            value -= {(self.reference / 2.0)};
+            value *= (20.0 / {(self.reference / 2.0)});
+            """
+        elif sensor == "30A":
+            return f"""
+            value = (int16_t)value>>3;
+            value /= 1000.0;
+            value -= {(self.reference / 2.0)};
+            value *= (30.0 / {(self.reference / 2.0)});
             """
         else:
             return """

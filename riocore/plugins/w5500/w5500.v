@@ -396,7 +396,7 @@ module wiznet5500
                 spi_clock_count <= 10'd0;
                 is_busy <= 1'b1;
                 current_instruction <= READ_SOCKET_0_STATE;
-         `ifdef WIZNET5500_READ_DATA         
+         `ifdef WIZNET5500_READ_DATA
                 data_read_valid <= 1'b0;
          `endif
             end

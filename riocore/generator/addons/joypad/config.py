@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (
 if sys.platform == "linux":
     import fcntl
 
-from riocore.widgets import MyStandardItem
+from riocore.gui.widgets import MyStandardItem
 
 
 def info():

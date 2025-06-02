@@ -69,7 +69,7 @@ class Toolchain:
         makefile_data.append('	@echo "" >> $(PROJECT).tcl')
         makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "read_verilog $$VAR" >> $(PROJECT).tcl; done')
         makefile_data.append('	@echo "read_xdc pins.xdc" >> $(PROJECT).tcl')
-        makefile_data.append("	@echo " " >> $(PROJECT).tcl")
+        makefile_data.append("	@echo  >> $(PROJECT).tcl")
         makefile_data.append('	@echo "synth_design -top $(TOP) -part $(PART)" >> $(PROJECT).tcl')
         makefile_data.append(r'	@echo "write_checkpoint -force \$$outputDir/post_synth.dcp" >> $(PROJECT).tcl')
         makefile_data.append(r'	@echo "report_timing_summary -file \$$outputDir/post_synth_timing_summary.rpt" >> $(PROJECT).tcl')

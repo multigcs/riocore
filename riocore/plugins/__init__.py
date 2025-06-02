@@ -17,11 +17,15 @@ class PluginBase:
         self.NAME = ""
         self.TYPE = "io"
         self.INFO = ""
+        self.EXPERIMENTAL = False
         self.DESCRIPTION = ""
+        self.URL = ""
         self.GRAPH = ""
         self.KEYWORDS = ""
         self.ORIGIN = ""
         self.GATEWARE_SUPPORT = True
+        self.SYNC = None
+        self.ERROR = None
         self.OPTIONS = {}
         self.PLUGIN_CONFIG = False
         self.LIMITATIONS = {}
@@ -72,6 +76,8 @@ class PluginBase:
                 }
 
         self.update_title()
+
+        self.signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
 
         if self.TYPE == "expansion":
             expansion_id = len(self.expansions)
@@ -191,7 +197,7 @@ class PluginBase:
             elif pin_config.get("optional") is not True:
                 print(f"ERROR: MISSING PIN CONFIGURATION for '{pin_name}' ({self.NAME})")
                 # exit(1)
-            else:
+            elif pin_config["direction"] != "output":
                 pins[pin_name] = pin_config.copy()
                 pins[pin_name]["varname"] = f"UNUSED_PIN_{self.instances_name}_{pin_name}".upper()
         return pins
@@ -243,7 +249,7 @@ class PluginBase:
     def expansion_outputs(self):
         expansion_pins = []
         if self.TYPE == "expansion":
-            bits = self.plugin_setup.get("bits", 8)
+            bits = self.BITS_OUT
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
         else:
@@ -262,7 +268,7 @@ class PluginBase:
     def expansion_inputs(self):
         expansion_pins = []
         if self.TYPE == "expansion":
-            bits = self.plugin_setup.get("bits", 8)
+            bits = self.BITS_IN
             for num in range(0, bits):
                 expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
         else:
@@ -281,10 +287,13 @@ class PluginBase:
     def gateware_defines(self, direct=False):
         defines = []
         if self.TYPE == "expansion":
-            bits = self.plugin_setup.get("bits", 8)
-            default = self.plugin_setup.get("default", 0)
-            defines.append(f"wire [{bits-1}:0] {self.expansion_prefix}_INPUT;")
-            defines.append(f"reg [{bits-1}:0] {self.expansion_prefix}_OUTPUT = {default};")
+            bits_in = self.BITS_IN
+            if bits_in:
+                defines.append(f"wire [{bits_in - 1}:0] {self.expansion_prefix}_INPUT;")
+            bits_out = self.BITS_OUT
+            if bits_out:
+                default = self.plugin_setup.get("default", 0)
+                defines.append(f"reg [{bits_out - 1}:0] {self.expansion_prefix}_OUTPUT = {default};")
 
         for data_name, data_config in self.interface_data().items():
             if data_config.get("expansion"):
@@ -296,13 +305,13 @@ class PluginBase:
                     default = data_config.get("default", 0)
                     if size == 1:
                         if default & (1 << bit_n):
-                            defines.append(f"reg [{size-1}:0] {variable} = 1'd1;")
+                            defines.append(f"reg [{size - 1}:0] {variable} = 1'd1;")
                         else:
-                            defines.append(f"reg [{size-1}:0] {variable} = 1'd0;")
+                            defines.append(f"reg [{size - 1}:0] {variable} = 1'd0;")
                     else:
-                        defines.append(f"reg [{size-1}:0] {variable} = {size}'d{default};")
+                        defines.append(f"reg [{size - 1}:0] {variable} = {size}'d{default};")
                 else:
-                    defines.append(f"wire [{size-1}:0] {variable};")
+                    defines.append(f"wire [{size - 1}:0] {variable};")
 
         return defines
 
@@ -358,6 +367,11 @@ class PluginBase:
                     instance_arguments[interface_name] = f"{interface_setup['variable']} | ERROR"
                 else:
                     instance_arguments[interface_name] = interface_setup["variable"]
+
+        if self.SYNC is True:
+            instance_arguments["sync"] = "INTERFACE_SYNC"
+        elif self.SYNC is False:
+            instance_arguments["sync"] = "0"
 
         if self.TYPE == "interface":
             instance_arguments["rx_data"] = "rx_data"

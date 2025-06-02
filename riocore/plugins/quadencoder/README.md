@@ -24,7 +24,7 @@ Keywords: feedback encoder rotary linear glassscale
 ## Options:
 *user-options*
 ### quad_type:
-encoder type
+The count from the encoder will be bitshifted by the value of QUAD_TYPE.  Use 0 for 4x mode.  The position-scale should match.  For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.
 
  * type: int
  * min: 0

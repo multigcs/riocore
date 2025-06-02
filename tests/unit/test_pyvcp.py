@@ -339,7 +339,7 @@ def test_pyvcp():
           <font>("Helvetica",9)</font>
           <width>30</width>
         </label>
-        <led>
+        <rectled>
           <halpin>"halpin13"</halpin>
           <width>16</width>
           <height>16</height>
@@ -347,7 +347,7 @@ def test_pyvcp():
           <off_color>"yellow"</off_color>
           <anchor>"e"</anchor>
           <width>16</width>
-        </led>
+        </rectled>
       </hbox>
       <button>
         <relief>GROOVE</relief>

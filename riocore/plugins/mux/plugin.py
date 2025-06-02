@@ -52,7 +52,7 @@ class Plugin(PluginBase):
                 for bit in range(bits):
                     pinname = instance["arguments"][f"bit{bit}"]
                     bitlist.append(pinname)
-                instance["predefines"] += [f"wire [{bits-1}:0] {decname};", f"assign {decname} = {{{', '.join(reversed(bitlist))}}};"]
+                instance["predefines"] += [f"wire [{bits - 1}:0] {decname};", f"assign {decname} = {{{', '.join(reversed(bitlist))}}};"]
 
                 for bit in range(2**bits):
                     bitname = instance["arguments"][f"pin{bit}"]

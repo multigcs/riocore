@@ -35,6 +35,7 @@ int udp_init(const char *dstAddress, int dstPort, int srcPort) {
     srcAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     srcAddr.sin_port = htons(srcPort);
 
+    rtapi_print("INFO: target is udp port: %s:%i\n", dstAddress, dstPort);
     rtapi_print("INFO: listening on udp port: %s:%i\n", "0.0.0.0", srcPort);
 
     // bind the local socket to SCR_PORT

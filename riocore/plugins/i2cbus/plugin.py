@@ -673,10 +673,10 @@ graph LR;
                     if big_endian:
                         byte_list = []
                         for byte_n in range(nbytes):
-                            byte_list.append(f"data_in[{byte_n*8+7}:{byte_n*8}]")
+                            byte_list.append(f"data_in[{byte_n * 8 + 7}:{byte_n * 8}]")
                         verilog_data.append(f"                                {data['var']} <= {{{', '.join(byte_list)}}};")
                     else:
-                        verilog_data.append(f"                                {data['var']} <= data_in[{size-1}:0];")
+                        verilog_data.append(f"                                {data['var']} <= data_in[{size - 1}:0];")
 
                 if until:
                     verilog_data.append("                            end else begin")

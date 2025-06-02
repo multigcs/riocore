@@ -10,7 +10,7 @@ def hal(parent):
     joypad_btn_fast = joypad.get("fast")
 
     muxes = []
-    for axis_name, axis_config in parent.axis_dict.items():
+    for axis_name, axis_config in parent.project.axis_dict.items():
         joints = axis_config["joints"]
         axis_lower = axis_name.lower()
         muxes.append(f"mux2_{axis_lower}")
@@ -53,7 +53,7 @@ def hal(parent):
     parent.halg.net_add("joy_mux4.out", "halui.axis.jog-speed")
     parent.halg.net_add("joy_mux4.out", "halui.joint.jog-speed")
 
-    for axis_name, axis_config in parent.axis_dict.items():
+    for axis_name, axis_config in parent.project.axis_dict.items():
         joints = axis_config["joints"]
         axis_lower = axis_name.lower()
         jaxis = joypad.get(axis_lower)

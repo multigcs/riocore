@@ -1,0 +1,115 @@
+{
+    "name": "RPI4GPIO",
+    "comment": "using Parallel Port Raspberry Pi Hat + 5axis china bob",
+    "url": "https://byte2bot.com/products/parallel-port-raspberry-pi-hat",
+    "gpios": [
+        {
+            "type": "rpi",
+            "pins": {
+                "inputs": [
+                    "GPIO25",
+                    "GPIO7",
+                    "GPIO8",
+                    "GPIO12",
+                    "GPIO13"
+                ],
+                "outputs": [
+                    "GPIO17",
+                    "GPIO18",
+                    "GPIO19",
+                    "GPIO23",
+                    "GPIO24",
+                    "GPIO26",
+                    "GPIO27",
+                    "GPIO5",
+                    "GPIO6",
+                    "GPIO9",
+                    "GPIO10",
+                    "GPIO11"
+                ]
+            }
+        }
+    ],
+    "linuxcnc": {
+        "components": [
+            {
+                "type": "stepgen",
+                "pins": {
+                    "step": "GPIO9",
+                    "dir": "GPIO10"
+                },
+                "num": 0
+            },
+            {
+                "type": "stepgen",
+                "pins": {
+                    "step": "GPIO11",
+                    "dir": "GPIO5"
+                },
+                "num": 1
+            },
+            {
+                "type": "stepgen",
+                "pins": {
+                    "step": "GPIO6",
+                    "dir": "GPIO19"
+                },
+                "num": 2
+            },
+            {
+                "type": "stepgen",
+                "pins": {
+                    "step": "GPIO17",
+                    "dir": "GPIO23"
+                },
+                "num": 3
+            },
+            {
+                "type": "stepgen",
+                "pins": {
+                    "step": "GPIO27",
+                    "dir": "GPIO24"
+                },
+                "num": 4
+            },
+            {
+                "type": "pwmgen",
+                "pins": {
+                    "pwm": "GPIO18"
+                },
+                "num": 0,
+                "scale": 1800.0
+            }
+        ],
+        "net": [
+            {
+                "source": "GPIO25",
+                "target": "joint.0.home-sw-in"
+            },
+            {
+                "source": "GPIO8",
+                "target": "joint.1.home-sw-in"
+            },
+            {
+                "source": "GPIO7",
+                "target": "joint.2.home-sw-in"
+            },
+            {
+                "source": "GPIO12",
+                "target": "joint.3.home-sw-in"
+            },
+            {
+                "source": "GPIO13",
+                "target": "joint.4.home-sw-in"
+            },
+            {
+                "source": "spindle.0.speed-out",
+                "target": "pwmgen.0.value"
+            },
+            {
+                "source": "spindle.0.on",
+                "target": "pwmgen.0.enable  "
+            }
+        ]
+    }
+}

@@ -13,21 +13,21 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
 ## Output-Expansion with 74HC595:
 
-| EXP | 74HC595 | FUNC |
-| --- | --- | --- |
-| out | 14 | DS |
-| in |  | |
-| sclk | 11 | SH_CP / SRCLK |
-| load | 12 | ST_CP / RCLK |
+| Plugin | 74HC595 | FUNC | LABEL |
+| --- | --- | --- | --- |
+| out | 14 | DS | SER_IN |
+| in | | | |
+| sclk | 11 | SH_CP / SRCLK | Clock |
+| load | 12 | ST_CP / RCLK | L_Clock |
 
 ## Input-Expansion with 74HC165:
 
-| EXP | 74HC165 | FUNC |
-| --- | --- | --- |
-| out |  | |
-| in |  | SER |
-| sclk | 2 | CLK |
-| load |  | SH/LD |
+| Plugin | 74HC165 | FUNC | LABEL |
+| --- | --- | --- | --- |
+| out | | | |
+| in |  | SER | SER_OUT |
+| sclk | 2 | CLK | CLK |
+| load |  | SH/LD | SH/LD |
 
 ### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
 [![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
@@ -40,11 +40,13 @@ Keywords: expansion digital io
 output data (DS on 74HC595)
 
  * direction: output
+ * optional: True
 
 ### in:
 input data (SER_OUT on 74HC165)
 
  * direction: input
+ * optional: True
 
 ### sclk:
 input data (CLK on 74HC165/ CH_CP/SRCLK on 74HC595)

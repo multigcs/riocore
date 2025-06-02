@@ -74,6 +74,7 @@ module i2c_master
             if (sdaIn == 0) begin
                 // wait for free bus / reset
                 scl <= ~scl;
+                busy <= 1;
             end else if (wakeup) begin
                 mystate <= STATE_WAKEUP;
                 busy <= 1;

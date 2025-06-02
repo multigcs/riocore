@@ -12,6 +12,8 @@ from functools import partial
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
     sys.path.insert(0, os.getcwd())
+elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import riocore
 from PyQt5.QtCore import Qt, QTimer
@@ -37,7 +39,7 @@ from PyQt5.QtWidgets import (
     QTabWidget,
 )
 
-from riocore.widgets import STYLESHEET, STYLESHEET_CHECKBOX, STYLESHEET_TABBAR, STYLESHEET_CHECKBOX_BIG
+from riocore.gui.widgets import STYLESHEET, STYLESHEET_CHECKBOX, STYLESHEET_TABBAR, STYLESHEET_CHECKBOX_BIG
 
 parser = argparse.ArgumentParser()
 if sys.platform.startswith("win"):
@@ -46,6 +48,7 @@ else:
     parser.add_argument("--nostyle", "-n", help="disable stylesheets", default=False, action="store_true")
 parser.add_argument("--touch", "-t", help="touchscreen optimization", default=False, action="store_true")
 parser.add_argument("--debug", "-d", help="debug output", default=False, action="store_true")
+parser.add_argument("--pid", "-p", help="using pid for joints", default=False, action="store_true")
 parser.add_argument("--noimage", "-N", help="do not display image", default=False, action="store_true")
 parser.add_argument("--interval", "-i", help="interval", type=int, default=50)
 parser.add_argument("--vertical", "-v", help="vertical tabs", default=False, action="store_true")
@@ -62,6 +65,48 @@ args = parser.parse_args()
 
 
 riocore_path = os.path.dirname(riocore.__file__)
+
+
+pid_controller = {}
+
+
+class PIDController:
+    def __init__(self, Kp, Ki, Kd, setpoint):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.setpoint = setpoint
+        self.previous_error = 0
+        self.integral = 0
+
+    def compute(self, process_variable, dt):
+        # Calculate error
+        error = self.setpoint - process_variable
+        # Proportional term
+        P_out = self.Kp * error
+        # Integral term
+        self.integral += error * dt
+        I_out = self.Ki * self.integral
+        # Derivative term
+        derivative = (error - self.previous_error) / dt
+        D_out = self.Kd * derivative
+        # Compute total output
+        output = P_out + I_out + D_out
+        # Update previous error
+        self.previous_error = error
+        return output
+
+
+def pidloop(data):
+    if "pid" not in data:
+        data["pid"] = PIDController(Kp=250.0, Ki=0.0, Kd=0.0, setpoint=0.0)
+
+    if data["time"]:
+        tdiff = time.time() - data["time"]
+        data["pid"].setpoint = data["input"]
+        data["output"] = data["pid"].compute(data["feedback"], tdiff)
+
+    data["time"] = time.time()
 
 
 class SliderProxyStyle(QProxyStyle):
@@ -282,27 +327,56 @@ class WinForm(QWidget):
                         )
                         row_layout.addWidget(plot_graph)
                     row_layout.addWidget(signal[wid], stretch=6)
+
+                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                        if plugin_instance.instances_name not in pid_controller:
+                            pid_controller[plugin_instance.instances_name] = {}
+                        pid_controller[plugin_instance.instances_name]["time"] = 0
+                        pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["input"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["output"] = 0.0
+
                 else:
                     vmin = int(signal.get("userconfig", {}).get("display", {}).get("min", signal.get("min", 0)))
                     vmax = int(signal.get("userconfig", {}).get("display", {}).get("max", signal.get("max", 1000)))
                     steps = int(vmax / 100)
-                    signal[wid] = QSlider(Qt.Horizontal)
-                    if args.touch:
-                        style = SliderProxyStyle(signal[wid].style())
-                        signal[wid].setStyle(style)
-                    signal[wid].setMinimum(int(vmin))
-                    signal[wid].setMaximum(int(vmax))
-                    signal[wid].setSingleStep(steps)
-                    signal[wid].setPageStep(steps * 10)
-                    # signal[wid].setTickPosition(QSlider.TicksBelow)
-                    signal[wid].setMinimumWidth(200)
-                    signal[wid].setValue(value)
-                    signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
-                    row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
-                    button = QPushButton("0")
-                    button.clicked.connect(partial(self.slider_reset, signal[wid]))
-                    row_layout.addWidget(signal[wid], stretch=6)
-                    row_layout.addWidget(button, stretch=1)
+                    titles = signal.get("titles")
+                    if titles:
+                        signal[wid] = QComboBox()
+                        for text in titles:
+                            signal[wid].addItem(text)
+                        signal[wid].setMinimumWidth(200)
+                        signal[wid].setCurrentIndex(value)
+                        signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
+                        row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
+                        row_layout.addWidget(signal[wid], stretch=6)
+                    else:
+                        signal[wid] = QSlider(Qt.Horizontal)
+                        if args.touch:
+                            style = SliderProxyStyle(signal[wid].style())
+                            signal[wid].setStyle(style)
+                        signal[wid].setMinimum(int(vmin))
+                        signal[wid].setMaximum(int(vmax))
+                        signal[wid].setSingleStep(1)
+                        signal[wid].setPageStep(steps)
+                        # signal[wid].setTickPosition(QSlider.TicksBelow)
+                        signal[wid].setMinimumWidth(200)
+                        signal[wid].setValue(value)
+                        signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
+                        row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
+                        row_layout.addWidget(signal[wid], stretch=6)
+
+                        button = QPushButton("0")
+                        button.clicked.connect(partial(self.slider_reset, signal[wid]))
+                        row_layout.addWidget(button, stretch=1)
+
+                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                        if plugin_instance.instances_name not in pid_controller:
+                            pid_controller[plugin_instance.instances_name] = {}
+                        pid_controller[plugin_instance.instances_name]["time"] = 0
+                        pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["input"] = 0.0
+                        pid_controller[plugin_instance.instances_name]["output"] = 0.0
 
         if args.debug and plugin_instance.TYPE == "frameio":
             row_layout = QHBoxLayout()
@@ -451,11 +525,22 @@ class WinForm(QWidget):
                         else:
                             self.project.signal_value_set(halname, 0)
                     else:
-                        value = signal[f"widget_{plugin_instance.title}"].value()
+                        titles = signal.get("titles")
+                        if titles:
+                            value = signal[f"widget_{plugin_instance.title}"].currentIndex()
+                        else:
+                            value = signal[f"widget_{plugin_instance.title}"].value()
+
                         userconfig = signal.get("userconfig", {})
                         value_unit = userconfig.get("display", {}).get("unit", signal.get("unit", ""))
                         scale = signal.get("userconfig", {}).get("scale", 1.0)
                         value_scaled = value / scale
+
+                        if args.pid and plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                            pid_controller[plugin_instance.instances_name]["input"] = value
+                            pidloop(pid_controller[plugin_instance.instances_name])
+                            value = pid_controller[plugin_instance.instances_name]["output"]
+
                         signal[f"widget_out_{plugin_instance.title}"].setText(f"{value_scaled:06.1f} {value_unit}")
                         self.project.signal_value_set(halname, value)
 
@@ -484,7 +569,7 @@ class WinForm(QWidget):
 
             txdata = self.project.txdata_get()
             if args.debug:
-                print(f"tx ({len(txdata*8)}): {txdata}")
+                print(f"tx ({len(txdata * 8)}): {txdata}")
 
             start = time.time()
             rxdata = self.project.transfare(txdata)
@@ -546,13 +631,17 @@ class WinForm(QWidget):
 
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
-                    value_format = signal.get("format", "0.2f")
+                    value_format = signal.get("format") or "0.2f"
+                    value_mapping = signal.get("mapping")
                     value_unit = signal.get("unit", "")
                     userconfig = signal.get("userconfig", {})
                     value_unit = userconfig.get("display", {}).get("unit", value_unit)
                     value_format = userconfig.get("display", {}).get("format", value_format)
                     value_offset = userconfig.get("offset", 0.0)
-                    value_scale = userconfig.get("scale", 1.0)
+                    value_scale = userconfig.get("scale", signal.get("scale", 1.0))
+
+                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                        pid_controller[plugin_instance.instances_name]["feedback"] = value
 
                     helper = signal.get("helper", False)
                     if helper and not args.helper:
@@ -561,7 +650,10 @@ class WinForm(QWidget):
                     if value_scale != 1.0 or value_offset:
                         value = (value + value_offset) / value_scale
 
-                    value_str = f"%{value_format}" % (value,)
+                    if value_mapping:
+                        value_str = value_mapping.get(value, value)
+                    else:
+                        value_str = f"%{value_format}" % (value,)
                     virtual = signal.get("virtual", False)
                     direction = signal.get("direction")
                     if virtual:

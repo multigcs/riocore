@@ -24,7 +24,7 @@ class Pins:
                     slew = pin_config.get("slew", "SLOW").lower()
                     options.append(f"SLEW={slew}")
 
-                data.append(f"Net \"{pin_config['varname']}\" Loc = \"{pin_config['pin']}\" {' '.join(options)};")
+                data.append(f'Net "{pin_config["varname"]}" Loc = "{pin_config["pin"]}" {" ".join(options)};')
 
             data.append("")
         data.append("")

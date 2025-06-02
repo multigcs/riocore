@@ -25,7 +25,7 @@ class Pins:
                 if pin_config["varname"] == "USRMCLK":
                     data.append(f"# this pin ({pin_config['pin']}) is not available in the lpf file, have to use the USRMCLK primitive in the verilog")
                     continue
-                data.append(f"LOCATE COMP \"{pin_config['varname']}\" SITE \"{pin_config['pin']}\";")
+                data.append(f'LOCATE COMP "{pin_config["varname"]}" SITE "{pin_config["pin"]}";')
 
                 options = []
 
@@ -44,7 +44,7 @@ class Pins:
                 iostandard = pin_config.get("iostandard", "LVCMOS33").upper()
                 options.append(f"IO_TYPE={iostandard}")
 
-                data.append(f"IOBUF PORT \"{pin_config['varname']}\" {' '.join(options)};")
+                data.append(f'IOBUF PORT "{pin_config["varname"]}" {" ".join(options)};')
 
             data.append("")
         data.append("")

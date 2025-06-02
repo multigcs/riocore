@@ -2,6 +2,7 @@ import glob
 import sys
 import os
 import stat
+import shutil
 
 from riocore.generator import cclient
 
@@ -11,12 +12,34 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 class Simulator:
     def __init__(self, project):
         self.project = project
+        self.webots_home = os.path.join("usr", "local", "webots")
+        self.webots = False
+        self.glsim = False
         self.simulator_path = os.path.join(project.config["output_path"], "Simulator")
         os.makedirs(self.simulator_path, exist_ok=True)
         project.config["riocore_path"] = riocore_path
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
+        jdata = self.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype", "mill")
+
+        if machinetype in {"melfa"} and os.path.isdir(self.webots_home):
+            self.webots = True
+            self.glsim = True
+            source = os.path.join(riocore_path, "", "generator", "glsim", f"webots-{machinetype}.c")
+            target = os.path.join(self.simulator_path, "glsim.c")
+            shutil.copy(source, target)
+        elif machinetype in {"mill", "corexy", "melfa"}:
+            if machinetype in {"melfa"}:
+                self.glsim = False
+            else:
+                self.glsim = True
+            source = os.path.join(riocore_path, "", "generator", "glsim", f"{machinetype}.c")
+            target = os.path.join(self.simulator_path, "glsim.c")
+            shutil.copy(source, target)
+
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
             for pin in plugin_instance.expansion_outputs():
@@ -36,6 +59,8 @@ class Simulator:
         cclient.riocore_c(self.project, self.simulator_path)
         self.interface_c()
         self.simulation_c()
+        self.simulation_h()
+        self.main_c()
         self.makefile()
         self.startscript()
 
@@ -47,6 +72,10 @@ class Simulator:
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
+        if self.webots:
+            # output.append(f"export WEBOTS_HOME={self.webots_home}")
+            # output.append(f"export LD_LIBRARY_PATH={self.webots_home}/lib/controller/")
+            output.append("")
         output.append("(")
         output.append('    cd "$DIRNAME/"')
         output.append("    make simulator_run")
@@ -86,13 +115,53 @@ class Simulator:
                     idata += rdata
                     open(os.path.join(self.simulator_path, "interface.c"), "w").write(idata)
 
+    def simulation_h(self):
+        self.joints = 0
+        for axis_name, axis_config in self.project.axis_dict.items():
+            self.joints += len(axis_config["joints"])
+
+        output = []
+        output.append("#include <stdint.h>")
+        output.append("")
+        output.append(f"#define NUM_JOINTS {self.joints}")
+        output.append(f"#define NUM_HOMESWS {self.homes}")
+        output.append(f"#define NUM_BITOUTS {self.bitouts}")
+        output.append("")
+        output.append("extern uint8_t sim_running;")
+        output.append("")
+        output.append("extern volatile int32_t joint_position[NUM_JOINTS];")
+        output.append("extern volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append("extern volatile int32_t bitout_stat[NUM_BITOUTS];")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            joints = list(data.get("joints", {}))
+            output.append(f"#define NUM_JOINTS_{axis} {len(joints)}")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            joints = list(data.get("joints", {}))
+            output.append(f"#define NUM_JOINTS_{axis} {len(joints)}")
+            output.append(f"extern int {axis.lower()}_joints[NUM_JOINTS_{axis}];")
+        output.append("")
+
+        output.append("void* simThread(void* vargp);")
+        open(os.path.join(self.simulator_path, "simulator.h"), "w").write("\n".join(output))
+
     def simulation_c(self):
+        jdata = self.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype", "mill")
+
         output = []
         output.append("#include <stdio.h>")
         output.append("#include <stdint.h>")
         output.append("#include <stdbool.h>")
         output.append("#include <string.h>")
+        output.append("#include <simulator.h>")
         output.append("#include <riocore.h>")
+        output.append("")
+        output.append("uint8_t sim_running = 1;")
         output.append("")
 
         protocol = self.project.config["jdata"].get("protocol", "SPI")
@@ -103,7 +172,14 @@ class Simulator:
         output.append("void udp_exit();")
         output.append("")
 
-        output.append("int32_t joint_position[12];")
+        output.append("volatile int32_t joint_position[NUM_JOINTS];")
+        output.append("volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append("volatile int32_t bitout_stat[NUM_BITOUTS];")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            joints = list(data.get("joints", {}))
+            output.append(f"int {axis.lower()}_joints[NUM_JOINTS_{axis}] = {{{', '.join([str(j) for j in joints])}}};")
         output.append("")
 
         output.append("int interface_init(void) {")
@@ -129,34 +205,46 @@ class Simulator:
         output.append("}")
         output.append("")
 
-        joint_n = 0
-        output.append("void simulation(void) {")
-        output.append("    float offset = 0.0;")
+        hal2instances = {}
+        hal2varnames = {}
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
-            multiplexed = data_config.get("multiplexed", False)
-            expansion = data_config.get("expansion", False)
-            if multiplexed or expansion:
-                continue
-            interface_data = plugin_instance.interface_data()
-            signal_config = plugin_instance.signals().get(data_name, {})
-            if plugin_instance.TYPE == "joint" and data_config["direction"] == "input" and data_name == "position":
-                position_var = interface_data["position"]["variable"]
-                if "velocity" in interface_data:
-                    enable_var = interface_data["enable"]["variable"]
-                    velocity_var = interface_data["velocity"]["variable"]
-                    output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
-                    output.append(f"        offset = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0;")
-                    output.append("        // for testing")
-                    output.append("        if ((int32_t)offset == 0 && offset > 0.0) {")
-                    output.append("            offset = 1.0;")
-                    output.append("        } else if ((int32_t)offset == 0 && offset < 0.0) {")
-                    output.append("            offset = -1.0;")
-                    output.append("        }")
-                    output.append(f"        {position_var} += (int32_t)offset;")
-                    output.append("    }")
-                output.append(f"    joint_position[{joint_n}] = {position_var};")
-                joint_n += 1
+            hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
+            hal2varnames[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = data_config["variable"]
 
+        for plugin_instance, data_name, data_config in self.project.get_signal_data():
+            hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
+            key = f"rio.{plugin_instance.signal_prefix}.{data_name}"
+            if key not in hal2varnames:
+                hal2varnames[key] = data_config["varname"]
+
+        output.append("void simulation(void) {")
+        output.append("    float newpos = 0.0;")
+        for axis_name, axis_config in self.project.axis_dict.items():
+            joints = axis_config["joints"]
+            for joint, joint_setup in joints.items():
+                position_mode = joint_setup["position_mode"]
+                if position_mode != "absolute":
+                    feedback_halname = joint_setup["feedback_halname"]
+                    position_halname = joint_setup["position_halname"]
+                    velocity_var = hal2varnames[position_halname]
+                    feedback_var = hal2varnames[feedback_halname]
+                    plugin_instance = joint_setup["plugin_instance"]
+                    interface_data = plugin_instance.interface_data()
+                    enable_var = interface_data.get("enable", {}).get("variable", "1")
+                    output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
+                    output.append(f"        newpos = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0 * {joint_setup['SCALE_OUT']} / {joint_setup['SCALE_IN']};")
+                    output.append("        if ((int32_t)newpos == 0 && newpos > 0.0) {")
+                    output.append("            newpos = 1.0;")
+                    output.append("        } else if ((int32_t)newpos == 0 && newpos < 0.0) {")
+                    output.append("            newpos = -1.0;")
+                    output.append("        }")
+                    output.append('        printf(" # %f \\n", newpos);')
+                    output.append(f"        {feedback_var} += (int32_t)newpos;")
+                    output.append("    }")
+                output.append(f"    joint_position[{joint}] = {feedback_var};")
+
+        home_n = 0
+        bitout_n = 0
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
@@ -170,15 +258,25 @@ class Simulator:
                 if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
                     jn = net.split(".")[1]
                     var = interface_data["bit"]["variable"]
-                    if jn == "2" and joint_n < 5:
+                    if self.project.axis_dict.get("Z", {}).get("joints", {}).get(int(jn)) and machinetype not in {"melfa", "melfa_nogl"}:
                         # Z-Axis
-                        output.append(f"    if (joint_position[{jn}] > 10000) {{")
+                        output.append(f"    if (joint_position[{jn}] > 2000.0) {{")
                     else:
-                        output.append(f"    if (joint_position[{jn}] < 0) {{")
+                        output.append(f"    if (joint_position[{jn}] < 0.0) {{")
                     output.append(f"        {var} = 1;")
                     output.append("    } else {")
                     output.append(f"        {var} = 0;")
                     output.append("    }")
+                    output.append(f"    home_switch[{home_n}] = {var};")
+                    home_n += 1
+            if data_config["direction"] == "output":
+                if data_name == "bit":
+                    var = interface_data["bit"]["variable"]
+                    output.append(f"    bitout_stat[{bitout_n}] = {var};")
+                    bitout_n += 1
+
+        self.homes = home_n
+        self.bitouts = bitout_n
 
         output.append("")
         output.append('    printf("\\n\\n");')
@@ -187,23 +285,25 @@ class Simulator:
             # expansion = data_config.get("expansion", False)
             variable_name = data_config["variable"]
             if data_config["direction"] == "output":
-                output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
+                if plugin_instance.TYPE != "frameio":
+                    output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
         output.append('    printf("\\n");')
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
             # multiplexed = data_config.get("multiplexed", False)
             # expansion = data_config.get("expansion", False)
             variable_name = data_config["variable"]
             if data_config["direction"] == "input":
-                output.append(f'    printf("< {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
+                if plugin_instance.TYPE != "frameio":
+                    output.append(f'    printf("< {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
         output.append("}")
         output.append("")
 
-        output.append("int main(void) {")
+        output.append("void* simThread(void* vargp) {")
         output.append("    uint16_t ret = 0;")
         output.append("")
         output.append("    interface_init();")
         output.append("")
-        output.append("    while (1) {")
+        output.append("    while (sim_running) {")
         output.append("        ret = udp_rx(rxBuffer, BUFFER_SIZE);")
         output.append("        if (ret == BUFFER_SIZE && rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {")
         output.append("            read_rxbuffer(rxBuffer);")
@@ -213,6 +313,29 @@ class Simulator:
         output.append("            simulation();")
         output.append("        }")
         output.append("    }")
+        output.append("    return NULL;")
+        output.append("}")
+        output.append("")
+        open(os.path.join(self.simulator_path, "simulator.c"), "w").write("\n".join(output))
+
+    def main_c(self):
+        output = []
+        output.append("#include <pthread.h>")
+        output.append("#include <simulator.h>")
+        output.append("")
+        output.append("int glsim_run(int argc, char** argv);")
+        output.append("")
+        output.append("int main(int argc, char** argv) {")
+        output.append("    pthread_t thread_id;")
+        output.append("    pthread_create(&thread_id, NULL, simThread, NULL);")
+        output.append("")
+        if self.glsim:
+            output.append("    glsim_run(argc, argv);")
+        else:
+            output.append("    while(1) {}")
+
+        output.append("    sim_running = 0;")
+        output.append("    pthread_join(thread_id, NULL);")
         output.append("    return 0;")
         output.append("}")
         output.append("")
@@ -220,16 +343,32 @@ class Simulator:
 
     def makefile(self):
         output = []
+        gcc_options = ""
+
+        if self.webots:
+            output.append("")
+            output.append(f"WEBOTS_HOME ?= {self.webots_home}")
+            output.append("LD_LIBRARY_PATH ?= $(WEBOTS_HOME)/lib/controller/")
+            output.append("")
+            gcc_options = "-I$(WEBOTS_HOME)/include/controller/c/ -L$(WEBOTS_HOME)/lib/controller/ -lController"
+
         output.append("")
         output.append("all: simulator")
         output.append("")
         output.append("clean:")
         output.append("	rm -f simulator")
         output.append("")
-        output.append("simulator: main.c riocore.c interface.c")
-        output.append("	gcc -o simulator -Os -I. main.c riocore.c interface.c")
+        if self.glsim:
+            output.append("simulator: main.c simulator.c glsim.c riocore.c interface.c")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c interface.c {gcc_options} -lm -lGL -lGLU -lglut")
+        else:
+            output.append("simulator: main.c simulator.c riocore.c interface.c")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c riocore.c interface.c {gcc_options} -lm")
         output.append("")
         output.append("simulator_run: simulator")
-        output.append("	./simulator")
+        if self.webots:
+            output.append("	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) WEBOTS_HOME=$(WEBOTS_HOME) ./simulator")
+        else:
+            output.append("	./simulator")
         output.append("")
         open(os.path.join(self.simulator_path, "Makefile"), "w").write("\n".join(output))

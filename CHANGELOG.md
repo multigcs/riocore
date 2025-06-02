@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.9.3
+
+### Gui and Generator
+* adding experimental parport / rpi gpio support
+* adding experimental gpio component support (pwmgen/stepgen/encoder)
+* display diffs in Json Tab
+* adding [Simulator](doc/SIMULATION.md) via UDP with simple 3D-View
+* adding [ros](doc/ROS.md) support (ros-bridge - Robot Operating System)
+* adding [mqtt](doc/MQTT.md) support (mqtt-bridge - Message Queueing Telemetry Transport)
+* adding [jslib](doc/JSLIB.md) generator (Javascript library)
+
+### Plugins
+* adding as5600 over pwm plugin
+* adding caliper plugin
+* adding hallsensor plugin
+* adding yaskawa absulute encoder plugin (experimental)
+* adding riodrive can-bus plugin (experimental)
+* adding rioencoder plugin (experimental)
+* adding bldc foc plugin (experimental)
+
+
 ## v0.9.2
 
 ### Gui and Generator

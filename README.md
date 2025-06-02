@@ -1,18 +1,18 @@
 [LinuxCNC-RIO](https://github.com/multigcs/LinuxCNC-RIO) - rewrite
 
-<h3 align="center">LinuxCNC-RIO</h3>
+<h3 align="center">RIO</h3>
 
 <div align="center">
 
-  ![rio-logo](./riocore/files/rio-logo-128x128.png)
+  ![rio-logo](./doc/images/rio-logo-128x128.png)
 
-  [![License](https://img.shields.io/badge/license-GPL2-blue.svg)](/LICENSE)
+  [![License](./doc/images/license-GPL2-blue.svg)](/LICENSE)
 
 </div>
 
 ---
 
-<p align="center"> Realtime-IO for LinuxCNC<br></p>
+<p align="center"> Realtime-IO for Motion-Control <br></p>
 
 ## Table of Contents
 - [About](#about)
@@ -27,20 +27,22 @@
 
 ## About <a name = "about"></a>
 
-LinuxCNC-RIO is a code generator for using FPGA boards as Realtime-IO for LinuxCNC.
+RIO is a cost-effective and flexible alternative to traditional hardware setups like Mesa boards,
+it's a code generator for using FPGA boards as Realtime-IO for LinuxCNC and other Motion-Control systems.
 
 Furthermore, the complete configuration and hal is generated.
 a json configuration file serves as the basis
 
-* no Soft-Core / logic only
-* no jitter
-* fast and small
-* communication via SPI (with Raspberry PI 4) or Ethernet
-* generated verilog-code / setup via json files (free pin-selection)
+* operates without a soft-core processor, relying solely on FPGA logic, which eliminates jitter and ensures fast, reliable performance
+* It supports communication via SPI (e.g., with Raspberry Pi 4) or Ethernet, providing flexibility for different hardware setups
+* Configuration is managed via JSON files, enabling easy customization of pin selection and other parameters. The tool automatically generates LinuxCNC configuration files (HAL/INI), saving significant setup time
 * using free FPGA-Toolchain or commercial (depends on the FPGA)
-* runs on many FPGA's (like ICE40, ECP5, MAX10, Artix7, Gowin, CycloneIV, ...)
-* supports Open and Closed-Loop
-* multiple and mixed joint types (like Stepper, DC-Servo, RC-Servo)
+* Compatible with a wide range of FPGA boards, including ICE40, ECP5, MAX10, Artix7, Gowin, CycloneIV, and TangNano9K, allowing users to choose hardware that fits their needs and budget
+* Supports open and closed-loop control for multiple motor types (e.g., stepper motors, DC servos), as well as mixed joint configurations
+* Primarily intended for LinuxCNC but also suitable for other systems such as ROS (Robot Operating System)
+
+These features make RIO an attractive solution for hobbyists and professionals seeking a customizable, cost-effective Realtime-IO interface for Motion-Control systems
+
 
 
 ## DISCLAIMER <a name = "disclaimer"></a>
@@ -92,7 +94,7 @@ cd riocore
 - installing dependencies via apt:
 ```
 apt-get update
-apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml
+apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil
 ```
 
 make sure that the toolchain matching your fpga is in the path:
@@ -188,6 +190,8 @@ you need the toolchain for your FPGA or in some cases the https://github.com/Yos
 
 
 ## Flow <a name = "flow"></a>
+
+### Generator
 ```mermaid
 graph LR;
     BOARD.JSON--rio-setup-->CONFIG.JSON;
@@ -203,11 +207,51 @@ graph LR;
     /LinuxCNC-->rio.ini
     /LinuxCNC-->rio-gui.xml
     /LinuxCNC-->*.hal;
+    /Output-->/ROS;
+    /Output-->/MQTT;
+    /Output-->/Simulator;
+```
+
+### LinuxCNC
+```mermaid
+graph LR;
+    LinuxCNC<-->rio.c;
+    rio.c<-->riocomp.c;
+    riocomp.c<--UDP/SPI-->FPGA;
+```
+
+### ROS
+```mermaid
+graph LR;
+    ROS-Plugin-1<--TCP-->ROS-core
+    ROS-Plugin-2<--TCP-->ROS-core
+    ROS-Plugin-N<--TCP-->ROS-core
+    ROS-core<--TCP-->rosbridge;
+    rosbridge<--UDP/SPI-->FPGA;
+```
+
+### MQTT
+```mermaid
+graph LR;
+    HTML+JS<--Websockets-->MQTT-Broker
+    MQTT-Client-1<--MQTT-->MQTT-Broker
+    MQTT-Client-2<--MQTT-->MQTT-Broker
+    MQTT-Client-N<--MQTT-->MQTT-Broker
+    MQTT-Broker<--MQTT-->mqttbridge;
+    mqttbridge<--UDP/SPI-->FPGA;
+```
+
+### JSLIB
+```mermaid
+graph LR;
+    nodejs<-->JSLIB
+    JSLIB<--UDP-->FPGA;
 ```
 
 
 ## Directory Structure
 
+### Source
 ```
 riocore
 ├── bin ················ user tools / gui's
@@ -217,6 +261,7 @@ riocore
 |├── boards ············ board configurations
 |├── chipdata ·········· pin-information about the different FPGAs
 |├── configs ··········· some demo configurations
+|├── gui ··············· widgets and functions for the gui tools
 |├── files ············· helper scripts and files
 |├┬── generator ········ the generators for the GateWare and LinuxCNC configuration
 ||├── addons ··········· generator addons for LinuxCNC (like joystick/mpg/...)
@@ -225,4 +270,17 @@ riocore
 |├── modules ··········· break out board and external modules configuration
 |├── plugins ··········· location of the plugins
 ├── tests ·············· unit tests
+```
+
+### Generated Output
+```
+Output
+├┬─ BOARD_NAME ········· for each board
+|├── Gateware ·········· Gateware-Files for the FPGA
+|├── LinuxCNC ·········· LinuxCNC configuration (hal/ini/component)
+|├── MQTT ·············· MQTT-Bridge
+|├── ROS ··············· ROS-Bridge
+|├── Simulator ········· Simulator-Sources
+|├── JSLIB ············· Javascrit lib
+|├── DOC ··············· some Documentation files
 ```

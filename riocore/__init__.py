@@ -14,6 +14,11 @@ from .generator.Simulator import Simulator
 from .generator.Firmware import Firmware
 from .generator.LinuxCNC import LinuxCNC
 
+from riocore.generator.rosbridge import rosbridge
+from riocore.generator.mqttbridge import mqttbridge
+from riocore.generator.jslib import jslib
+from riocore.generator.documentation import documentation
+
 riocore_path = os.path.dirname(__file__)
 
 
@@ -43,6 +48,12 @@ class Plugins:
             output.append('<img align="right" width="320" src="image.png">')
             output.append("")
 
+        if plugin.EXPERIMENTAL:
+            output.append("")
+            output.append("| :warning: EXPERIMENTAL |")
+            output.append("|:-----------------------|")
+            output.append("")
+
         if plugin.INFO:
             output.append(f"**{plugin.INFO}**")
             output.append("")
@@ -51,6 +62,9 @@ class Plugins:
             output.append("")
         if plugin.KEYWORDS:
             output.append(f"Keywords: {plugin.KEYWORDS}")
+            output.append("")
+        if plugin.URL:
+            output.append(f"URL: {plugin.URL.strip()}")
             output.append("")
 
         if plugin.LIMITATIONS:
@@ -138,7 +152,7 @@ class Plugins:
                 if not self.load_plugin(plugin_id, plugin_config, system_setup=system_setup):
                     exit(1)
             return self.plugin_instances
-        return None
+        return []
 
     def testbench_builder(self, plugin_type, plugin_instance):
         print(f"try to build testbench for {plugin_type}")
@@ -176,7 +190,7 @@ class Plugins:
                 size = data_config["size"]
                 if data_config["direction"] == "output":
                     if size > 1:
-                        tbfile.append(f"    reg signed [{size-1}:0] {data_name} = {size}'d0;")
+                        tbfile.append(f"    reg signed [{size - 1}:0] {data_name} = {size}'d0;")
                     else:
                         if data_name == "enable":
                             tbfile.append(f"    reg {data_name} = 1;")
@@ -184,7 +198,7 @@ class Plugins:
                             tbfile.append(f"    reg {data_name} = 0;")
                 else:
                     if size > 1:
-                        tbfile.append(f"    wire signed [{size-1}:0] {data_name};")
+                        tbfile.append(f"    wire signed [{size - 1}:0] {data_name};")
                     else:
                         tbfile.append(f"    wire {data_name};")
 
@@ -271,7 +285,7 @@ class Plugins:
                 size = data_config["size"]
                 gtkwfile.append(f"@{pn}")
                 if size > 1:
-                    gtkwfile.append(f"testb.{data_name}[{size-1}:0]")
+                    gtkwfile.append(f"testb.{data_name}[{size - 1}:0]")
                 else:
                     gtkwfile.append(f"testb.{data_name}")
                 pn += 1
@@ -398,7 +412,7 @@ class Plugins:
                 initfile.append("        self.PINDEFAULTS = {")
                 for pin_name, pin_setup in pindefaults.items():
                     initfile.append(f'            "{pin_name}": {{')
-                    initfile.append(f"                \"direction\": \"{pin_setup['direction']}\",")
+                    initfile.append(f'                "direction": "{pin_setup["direction"]}",')
                     initfile.append('                "invert": False,')
                     initfile.append('                "pull": None,')
                     initfile.append("            },")
@@ -407,15 +421,15 @@ class Plugins:
                     initfile.append("        self.INTERFACE = {")
                     for interface_name, interface_setup in interface.items():
                         initfile.append(f'            "{interface_name}": {{')
-                        initfile.append(f"                \"size\": {interface_setup['size']},")
-                        initfile.append(f"                \"direction\": \"{interface_setup['direction']}\",")
+                        initfile.append(f'                "size": {interface_setup["size"]},')
+                        initfile.append(f'                "direction": "{interface_setup["direction"]}",')
                         initfile.append("            },")
                     initfile.append("        }")
                 if signals:
                     initfile.append("        self.SIGNALS = {")
                     for signal_name, signal_setup in signals.items():
                         initfile.append(f'            "{signal_name}": {{')
-                        initfile.append(f"                \"direction\": \"{signal_setup['direction']}\",")
+                        initfile.append(f'                "direction": "{signal_setup["direction"]}",')
                         if signal_setup["size"] == 1:
                             initfile.append('                "bool": True,')
                         initfile.append("            },")
@@ -436,7 +450,7 @@ class Plugins:
                             initfile.append('        # frequency = int(self.plugin_setup.get("frequency", 100))')
                             initfile.append(f'        # {parameter_name.lower()} = self.system_setup["speed"] // frequency')
                             initfile.append(f'        # instance_parameter["{parameter_name}"] = {parameter_name.lower()}')
-                        initfile.append(f"        # instance_parameter[\"{parameter_name}\"] = self.plugin_setup.get(\"{parameter_name.lower()}\", \"{parameter_setup['default']}\")")
+                        initfile.append(f'        # instance_parameter["{parameter_name}"] = self.plugin_setup.get("{parameter_name.lower()}", "{parameter_setup["default"]}")')
                     initfile.append("        return instances")
                     initfile.append("")
                 if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py")):
@@ -478,9 +492,14 @@ class Project:
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
-        self.generator_gateware = Gateware(self)
-        self.generator_simulator = Simulator(self)
-        self.generator_firmware = Firmware(self)
+        if self.config["toolchain"]:
+            self.generator_gateware = Gateware(self)
+            self.generator_simulator = Simulator(self)
+            self.generator_firmware = Firmware(self)
+        else:
+            self.generator_gateware = None
+            self.generator_simulator = None
+            self.generator_firmware = None
 
         # check names
         varnames = {}
@@ -491,6 +510,55 @@ class Project:
                     varnames[varname] = plugin_instance.instances_name
                 else:
                     print(f"ERROR: varname allready exist: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
+
+    def info(self):
+        jdata = self.config["jdata"]
+        name = jdata.get("name")
+        output = [f"RIO - {name}"]
+        output.append("")
+        for name in ("description", "boardcfg", "gui", "protocol"):
+            value = jdata.get(name)
+            if value:
+                output.append(f"{name.title()}: {value}")
+        output.append(f"Configuration: {self.config['json_file']}")
+        output.append("")
+
+        protocol = jdata.get("protocol", "SPI")
+        if protocol == "UDP":
+            ip = "192.168.10.194"
+            port = 2390
+            for plugin_instance in self.plugin_instances:
+                if plugin_instance.TYPE == "interface":
+                    ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
+                    port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
+            ip = self.config["jdata"].get("ip", ip)
+            port = self.config["jdata"].get("port", port)
+            dst_port = self.config["jdata"].get("dst_port", port)
+            output.append("UDP-Configuration:")
+            output.append(f"  Target-IP: {ip}")
+            output.append(f"  Target-Port: {dst_port}")
+            output.append("")
+
+        output.append("FPGA:")
+        for name in ("toolchain", "family", "type"):
+            value = self.config.get(name)
+            if value:
+                output.append(f"  {name.title()}: {value}")
+        output.append("")
+
+        output.append("Plugins:")
+        plugins = {}
+        for plugin in self.config.get("plugins", []):
+            ptype = plugin["type"]
+            if ptype not in plugins:
+                plugins[ptype] = 0
+            plugins[ptype] += 1
+        for plugin, num in plugins.items():
+            output.append(f"  {plugin} ({num}x)")
+        output.append("")
+
+        output.append("")
+        return "\n".join(output)
 
     def get_path(self, path):
         if os.path.exists(path):
@@ -544,7 +612,7 @@ class Project:
             project["json_file"] = configuration
             project["json_path"] = os.path.dirname(configuration)
 
-        project["plugins"] = copy.deepcopy(project["jdata"].get("plugins"))
+        project["plugins"] = copy.deepcopy(project["jdata"].get("plugins", []))
         project["board_data"] = {}
 
         # loading board data
@@ -630,13 +698,13 @@ class Project:
                     exit(1)
 
         self.config = project
-        self.config["speed"] = int(project["jdata"]["clock"]["speed"])
-        self.config["osc_clock"] = int(project["jdata"]["clock"].get("osc", 0))
-        self.config["sysclk_pin"] = project["jdata"]["clock"]["pin"]
-        self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
-        self.config["toolchain"] = project["jdata"]["toolchain"]
+        self.config["speed"] = int(project["jdata"].get("clock", {}).get("speed", 1))
+        self.config["osc_clock"] = int(project["jdata"].get("clock", {}).get("osc", 0))
+        self.config["sysclk_pin"] = project["jdata"].get("clock", {}).get("pin")
+        self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
+        self.config["toolchain"] = project["jdata"].get("toolchain")
         self.config["family"] = project["jdata"].get("family", "UNKNOWN")
         self.config["type"] = project["jdata"].get("type", "UNKNOWN")
         self.config["package"] = project["jdata"].get("package", "UNKNOWN")
@@ -717,6 +785,13 @@ class Project:
                     if data_config["size"] == size:
                         interface_data.append([size, plugin_instance, data_name, data_config])
         return interface_data
+
+    def get_signal_data(self):
+        signal_data = []
+        for plugin_instance in self.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                signal_data.append([plugin_instance, signal_name, signal_config])
+        return signal_data
 
     def connect(self, cstr):
         connection = None
@@ -843,6 +918,7 @@ class Project:
             if multiplexed:
                 continue
             variable_size = data_config["size"]
+            is_float = data_config.get("is_float", False)
             value = data_config["value"]
             if data_config["direction"] == "output" or data_config["direction"] == "inout":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
@@ -851,8 +927,15 @@ class Project:
                     if not value:
                         value = [0] * byte_size
                     txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
+                elif variable_size >= 8:
+                    if is_float:
+                        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<f", int(value)))[0:byte_size]
+                    else:
+                        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
                 elif variable_size > 1:
-                    txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
+                    for bit in range(variable_size - 1, -1, -1):
+                        if value & (1 << bit):
+                            txdata[byte_start] |= 1 << (bit_offset + bit)
                 else:
                     if value == 1:
                         txdata[byte_start] |= 1 << bit_offset
@@ -916,6 +999,7 @@ class Project:
             if multiplexed:
                 continue
             variable_size = data_config["size"]
+            is_float = data_config.get("is_float", False)
 
             if data_config["direction"] == "input":
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
@@ -928,7 +1012,13 @@ class Project:
                     byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
                     if len(byte_pack) < 4:
                         byte_pack += [0] * (4 - len(byte_pack))
-                    value = unpack("<i", bytes(byte_pack))[0]
+                    if is_float:
+                        value = unpack("<f", bytes(byte_pack))[0]
+                    else:
+                        if variable_size == 4:
+                            value = unpack("<B", bytes([byte_pack[0] >> 4]))[0]
+                        else:
+                            value = unpack("<i", bytes(byte_pack))[0]
                 else:
                     value = 1 if rxdata[byte_start] & (1 << bit_offset) else 0
                 data_config["value"] = value
@@ -951,9 +1041,17 @@ class Project:
         else:
             if preview:
                 generate_pll = False
-            self.generator_gateware.generator(generate_pll=generate_pll)
+            if self.generator_gateware:
+                self.generator_gateware.generator(generate_pll=generate_pll)
         if protocol == "UDP":
             self.generator_simulator.generator()
-        self.generator_linuxcnc.generator()
+        self.generator_linuxcnc.generator(preview=preview)
+
+        if toolchain:
+            rosbridge(self)
+            mqttbridge(self)
+            jslib(self)
+            documentation(self)
+
         target = os.path.join(self.config["output_path"], ".config.json")
         shutil.copy(self.config["json_file"], target)

@@ -36,9 +36,9 @@ doexit() {
 
 cd $TARGETDIR || doexit 1
 
-echo "whiptail --checklist \"what do you want to install ?\\n Target-Directory: $TARGETDIR/riocore\" 20 60 12 \\" > ${TEMPFILE}2
+echo "whiptail --checklist \"what do you want to install ?\\n Target-Directory: $TARGETDIR/riocore\" 20 72 12 \\" > ${TEMPFILE}2
 echo "	apt \"install rio dependencies\" ON \\" >> ${TEMPFILE}2
-if ! test -d riocore
+if ! test -d riocore && ! test -e /usr/src/riocore
 then
 	echo "	rio \"git clone riocore\" ON \\" >> ${TEMPFILE}2
 else
@@ -46,14 +46,14 @@ else
 fi
 if ! which linuxcnc >/dev/null
 then
-	echo "	linuxcnc \"install rio component loader\" OFF \\" >> ${TEMPFILE}2
-	echo "	halcompile \"install rio component loader\" OFF \\" >> ${TEMPFILE}2
+	echo "	linuxcnc \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
+	echo "	halcompile \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
 else
 	if ! test -e /usr/lib/linuxcnc/modules/rio.so
 	then
-		echo "	halcompile \"install rio component loader\" ON \\" >> ${TEMPFILE}2
+		echo "	halcompile \"install rio component loader \" ON \\" >> ${TEMPFILE}2
 	else
-		echo "	halcompile \"install rio component loader\" OFF \\" >> ${TEMPFILE}2
+		echo "	halcompile \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
 	fi
 fi
 if ! test -d riocore/toolchains/oss-cad-suite && ! which nextpnr-himbaechel >/dev/null
@@ -71,6 +71,7 @@ then
 		echo "	gowin \"install Gowin Toolchain\" OFF \\" >> ${TEMPFILE}2
 	fi
 fi
+echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
 
@@ -90,7 +91,7 @@ then
 	fi
 	echo "installing dependencies"
 	sudo apt-get update || doexit 1
-	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml || doexit 1
+	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil openfpgaloader || doexit 1
 fi
 
 if grep -s -q '"rio"' in $TEMPFILE
@@ -170,6 +171,88 @@ then
 EOF
 fi
 
+if grep -s -q '"autologin"' in $TEMPFILE
+then
+
+	if dpkg -l | grep -s -q "ii  xscreensaver"
+	then
+		sudo apt-get remove -y xscreensaver
+		sudo apt-get remove -y xscreensaver-data
+	fi
+
+	if ! grep -s -q "autologin-user" /usr/share/lightdm/lightdm.conf.d/01_debian.conf
+	then
+		cat <<EOF | sudo tee -a /usr/share/lightdm/lightdm.conf.d/01_debian.conf
+
+[SeatDefaults]
+autologin-user=$USER
+autologin-user-timeout=0
+
+EOF
+	fi
+	if ! test -e /usr/local/bin/startup.sh
+	then
+		cat <<EOF | sudo tee /usr/local/bin/startup.sh
+#!/bin/bash
+#
+#
+
+xset -dpms
+xset s off
+xset s noblank
+
+EOF
+		sudo chmod 755 /usr/local/bin/startup.sh
+		xset -dpms
+		xset s off
+		xset s noblank
+
+		mkdir -p ~/.config/autostart/
+		cat <<EOF > ~/.config/autostart/startup.desktop
+[Desktop Entry]
+Name=startup.sh
+Exec=startup.sh
+EOF
+
+	fi
+
+	mkdir -p ~/.config/xfce4/xfconf/xfce-perchannel-xml/
+	cat <<EOF > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml 
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-power-manager" version="1.0">
+  <property name="xfce4-power-manager" type="empty">
+    <property name="power-button-action" type="empty"/>
+    <property name="show-tray-icon" type="bool" value="false"/>
+    <property name="dpms-enabled" type="bool" value="false"/>
+    <property name="dpms-on-ac-sleep" type="uint" value="22"/>
+    <property name="blank-on-ac" type="int" value="21"/>
+    <property name="dpms-on-ac-off" type="uint" value="29"/>
+    <property name="lock-screen-suspend-hibernate" type="bool" value="false"/>
+    <property name="logind-handle-lid-switch" type="bool" value="false"/>
+  </property>
+</channel>
+EOF
+
+	mkdir -p ~/.local/share/applications/
+	cat <<EOF > ~/.local/share/applications/rio-setup.desktop
+[Desktop Entry]
+Version=1.0
+Name=RIO-Setup
+Comment=RIO-Setup tool
+Type=Application
+Exec=xfce4-terminal -e "bash -c 'cd $TARGETDIR/riocore; ./bin/rio-setup'"
+Icon=linuxcncicon
+X-GNOME-DocPath=
+Terminal=false
+StartupNotify=false
+X-AppStream-Ignore=true
+Categories=Science;Utility;Engineering;X-CNC;
+Keywords=cnc;linuxcnc;cncprog;
+EOF
+
+fi
+
 if grep -s -q '"probe_basic"' in $TEMPFILE
 then
 	if whiptail --menu "installing ProbeBasic" 20 60 12 stable "Stable" develop "Develop" 2> ${TEMPFILE}2
@@ -203,6 +286,8 @@ then
 	fi
 fi
 
+
+cd $TARGETDIR/riocore/
 echo ""
 echo "####################################################################"
 echo ""
@@ -211,7 +296,7 @@ echo ""
 echo "  cd $TARGETDIR/riocore/"
 echo ""
 echo "  # create new setup:"
-echo "    bin/rio-setup"
+echo "    bin/rio-setup riocore/configs/Tangbob/config.json"
 echo ""
 echo "  # generate, build and flash the Tangbob config"
 echo "    bin/rio-generator -b -f riocore/configs/Tangbob/config.json"

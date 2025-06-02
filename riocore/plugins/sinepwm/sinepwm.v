@@ -134,7 +134,7 @@ module sine_pwm
             if (counter == DIVIDER) begin
                 pulse <= 1'd1;
                 counter <= 32'd0;
-            end else if (counter == dtyAbs) begin
+            end else if (counter >= dtyAbs) begin
                 pulse <= 1'd0;
             end
         end else begin

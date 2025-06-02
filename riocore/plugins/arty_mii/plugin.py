@@ -4,10 +4,11 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "arty_mii"
-        self.INFO = "udp interface for host comunication - experimental - Arty7-35t only"
+        self.INFO = "udp interface for host comunication - Arty7-35t only"
         self.DESCRIPTION = ""
         self.KEYWORDS = "network ethernet interface udp"
         self.ORIGIN = "https://github.com/alexforencich/verilog-ethernet"
+        self.EXPERIMENTAL = True
         self.LIMITATIONS = {
             "boards": ["Arty-a7-35t"],
             "toolchains": ["vivado"],

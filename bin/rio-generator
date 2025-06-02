@@ -5,12 +5,16 @@
 import argparse
 import os
 import sys
+import json
+import subprocess
+import psutil
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
     sys.path.insert(0, os.getcwd())
+elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import riocore
-from riocore import halgraph
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -24,7 +28,17 @@ parser.add_argument("--ram", "-r", help="flash gateware to sram", default=False,
 if sys.platform == "linux":
     parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
     parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
+    parser.add_argument("--simulator", "-S", help="start in simulator mode", default=False, action="store_true")
+    parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
 args = parser.parse_args()
+
+
+def kill(proc_pid):
+    process = psutil.Process(proc_pid)
+    for proc in process.children(recursive=True):
+        proc.kill()
+    process.kill()
+
 
 if args.config:
     if args.config[0].endswith(".json"):
@@ -36,22 +50,84 @@ if args.config:
             print(f"can not load: {args.config[0]}")
             exit(1)
         print(f"loading: {config_file}")
+
+        if args.udpsim or args.simulator:
+            # rewrite config for simulator
+            jdata = json.loads(open(config_file, "r").read())
+
+            if jdata.get("linuxcnc", {}).get("machinetype", "") in {"melfa"}:
+                for pm, module in enumerate(jdata.get("modules", [])):
+                    for name, plugin in module.get("setup").items():
+                        if plugin.get("signals", {}).get("bit", {}).get("net", "").endswith(".home-sw-in"):
+                            jdata["modules"][pm]["setup"][name]["signals"]["bit"]["net"] = ""
+
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("signals", {}).get("bit", {}).get("net", "").endswith(".home-sw-in"):
+                        jdata["plugins"][pn]["signals"]["bit"]["net"] = ""
+
+                for pm, module in enumerate(jdata.get("modules", [])):
+                    for name, plugin in module.get("setup").items():
+                        if plugin.get("is_joint", False):
+                            if "joint" not in plugin:
+                                jdata["modules"][pm]["setup"][name]["joint"] = {}
+                            jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_search_vel"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_latch_vel"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_final_vel"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_sequence"] = 0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home_offset"] = 0.0
+                            jdata["modules"][pm]["setup"][name]["joint"]["home"] = 0.001
+
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("is_joint", False):
+                        if "joint" not in plugin:
+                            jdata["plugins"][pn]["joint"] = {}
+                        jdata["plugins"][pn]["joint"]["scale"] = 100.0
+                        jdata["plugins"][pn]["joint"]["home_search_vel"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home_latch_vel"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home_final_vel"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home_sequence"] = 0
+                        jdata["plugins"][pn]["joint"]["home_offset"] = 0.0
+                        jdata["plugins"][pn]["joint"]["home"] = 0.001
+
+            if args.simulator:
+                if "linuxcnc" not in jdata:
+                    jdata["linuxcnc"] = {}
+                jdata["linuxcnc"]["simulation"] = True
+
+            elif args.udpsim:
+                if "linuxcnc" not in jdata:
+                    jdata["linuxcnc"] = {}
+                jdata["linuxcnc"]["simulation"] = False
+                jdata["protocol"] = "UDP"
+                jdata["ip"] = "127.0.0.1"
+                jdata["port"] = "2390"
+
+                for pm, module in enumerate(jdata.get("modules", [])):
+                    for name, plugin in module.get("setup").items():
+                        if plugin.get("is_joint", False):
+                            if "joint" not in plugin:
+                                jdata["modules"][pm]["setup"][name]["joint"] = {}
+                            jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
+
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("is_joint", False):
+                        if "joint" not in plugin:
+                            jdata["plugins"][pn]["joint"] = {}
+                        jdata["plugins"][pn]["joint"]["scale"] = 100.0
+
+            open("/tmp/tmp-config.json", "w").write(json.dumps(jdata, indent=4))
+            config_file = "/tmp/tmp-config.json"
+
         project = riocore.Project(config_file, args.output)
         project.generator(preview=args.preview)
-
         config_name = project.config.get("name")
-        gateware_path = os.path.join("Output", config_name, "Gateware")
-        startsh_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
-
-        try:
-            ini_path = os.path.join("Output", config_name, "LinuxCNC", "rio.ini")
-            svg_path = os.path.join("Output", config_name, "LinuxCNC", "halgraph.png")
-            graph = halgraph.HalGraph()
-            svg_data = graph.png(ini_path)
-            if svg_data:
-                open(svg_path, "wb").write(svg_data)
-        except Exception as error:
-            print(f"WARING: failed to write halgraph.png: {error}")
+        output_path = "Output"
+        if args.output:
+            output_path = args.output
+        gateware_path = os.path.join(output_path, config_name, "Gateware")
+        startsh_path = os.path.join(output_path, config_name, "LinuxCNC", "start.sh")
+        simulatorsh_path = os.path.join(output_path, config_name, "Simulator", "start.sh")
 
         if args.build:
             cmd = f"(cd {gateware_path} && make clean all)"
@@ -89,7 +165,15 @@ if args.config:
             if ret != 0:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
-        if sys.platform == "linux" and args.start:
+        if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
+            if args.udpsim:
+                cmd = f"sh {simulatorsh_path}"
+                print("")
+                print("running:")
+                print(f"  {cmd}")
+                print("")
+                proc_sim = subprocess.Popen(cmd, shell=True)
+
             if args.ngc:
                 ngc_realpath = os.path.realpath(args.ngc)
                 cmd = f"sh {startsh_path} {ngc_realpath}"
@@ -100,6 +184,11 @@ if args.config:
             print(f"  {cmd}")
             print("")
             ret = os.system(cmd)
+            if args.udpsim:
+                print(f"stopping {proc_sim.pid} and sub processes..")
+                kill(proc_sim.pid)
+                print("..done")
+
             if ret != 0:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
