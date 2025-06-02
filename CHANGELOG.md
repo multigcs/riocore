@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.9.4
+
+### Gui and Generator
+...
+
+### Plugins
+...
+
+
 ## v0.9.3
 
 ### Gui and Generator
