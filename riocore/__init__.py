@@ -10,6 +10,8 @@ import sys
 import traceback
 
 from .generator.Gateware import Gateware
+
+# from .generator.EtherCat import EtherCat
 from .generator.Simulator import Simulator
 from .generator.Firmware import Firmware
 from .generator.LinuxCNC import LinuxCNC
@@ -494,10 +496,12 @@ class Project:
         self.generator_linuxcnc = LinuxCNC(self)
         if self.config["toolchain"]:
             self.generator_gateware = Gateware(self)
+            # self.generator_ethercat = EtherCat(self)
             self.generator_simulator = Simulator(self)
             self.generator_firmware = Firmware(self)
         else:
             self.generator_gateware = None
+            # self.generator_ethercat = None
             self.generator_simulator = None
             self.generator_firmware = None
 
@@ -1043,6 +1047,8 @@ class Project:
                 generate_pll = False
             if self.generator_gateware:
                 self.generator_gateware.generator(generate_pll=generate_pll)
+            # if self.generator_ethercat:
+            #     self.generator_ethercat.generator()
         if protocol == "UDP":
             self.generator_simulator.generator()
         self.generator_linuxcnc.generator(preview=preview)
