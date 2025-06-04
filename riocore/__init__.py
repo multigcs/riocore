@@ -703,6 +703,7 @@ class Project:
 
         self.config = project
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
+        self.config["riocore_path"] = riocore_path
         self.config["name"] = project["jdata"]["name"]
         self.config["speed"] = int(project["jdata"].get("clock", {}).get("speed", 1))
         self.config["osc_clock"] = int(project["jdata"].get("clock", {}).get("osc", 0))
