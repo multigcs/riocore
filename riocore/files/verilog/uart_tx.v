@@ -14,6 +14,7 @@ module uart_tx(
 
     parameter ClkFrequency = 12000000;
     parameter Baud = 2000000;
+    parameter StopBit = 1;
 
     wire BitTick;
     uart_baud #(ClkFrequency, Baud) tickgen(.clk(clk), .enable(TxD_busy), .tick(BitTick));
@@ -40,7 +41,7 @@ module uart_tx(
             4'b1011: if(BitTick) TxD_state <= 4'b1100;  // bit 3
             4'b1100: if(BitTick) TxD_state <= 4'b1101;  // bit 4
             4'b1101: if(BitTick) TxD_state <= 4'b1110;  // bit 5
-            4'b1110: if(BitTick) TxD_state <= 4'b1111;  // bit 6
+            4'b1110: if(BitTick) begin if (StopBit) TxD_state <= 4'b1111; else TxD_state <= 4'b0000; end  // bit 6
             4'b1111: if(BitTick) TxD_state <= 4'b0010;  // bit 7
             4'b0010: if(BitTick) TxD_state <= 4'b0011;  // stop1
             4'b0011: if(BitTick) TxD_state <= 4'b0000;  // stop2

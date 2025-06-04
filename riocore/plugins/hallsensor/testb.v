@@ -10,6 +10,7 @@ module testb;
     reg b = 0;
     reg c = 0;
     // interface
+    wire signed [15:0] angle;
     wire signed [31:0] position;
 
     initial begin
@@ -21,6 +22,7 @@ module testb;
         $dumpvars(2, c);
         // interface
         $dumpvars(3, position);
+        $dumpvars(4, angle);
 
         #100
         a = 1;
@@ -161,6 +163,7 @@ module testb;
         .BITS(32)
     ) hallsensor (
         .clk(clk),
+        .angle(angle),
         .position(position),
         .a(a),
         .b(b),
