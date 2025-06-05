@@ -2,7 +2,11 @@ import shutil
 import json
 import os
 
+import riocore
 from riocore.gui import halgraph
+
+
+riocore_path = os.path.dirname(riocore.__file__)
 
 
 class documentation:
@@ -90,12 +94,30 @@ class documentation:
         output.append(f'* Protocol: {jdata.get("protocol", "")}')
         output.append("")
 
+        plugin_infos = {}
+        for plugin_instance in self.project.plugin_instances:
+            link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
+            info = plugin_instance.INFO
+            if plugin_instance.NAME not in plugin_infos:
+                image = "-"
+                img_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "image.png")
+                if os.path.exists(img_path):
+                    target  = os.path.join(self.doc_path, f"{plugin_instance.NAME}.png")
+                    shutil.copy(img_path, target)
+                    image = f'<img src="{plugin_instance.NAME}.png" height="48">'
+                plugin_infos[plugin_instance.NAME] = {
+                    "info": info,
+                    "instances": [],
+                    "link": link,
+                    "image": image,
+                }
+            plugin_infos[plugin_instance.NAME]["instances"].append(plugin_instance.instances_name)
+
         output.append("## Plugins")
-        output.append("| Name | Info |")
-        output.append("| --- | --- |")
-        for plugin in self.project.config.get("plugins", []):
-            output.append(f"| {plugin['uid']} | {plugin['type']} |")
-            print(plugin)
+        output.append("| Type | Info | Instance | Image |")
+        output.append("| --- | --- | --- | --- |")
+        for name, plugin in plugin_infos.items():
+            output.append(f"| {plugin['link']} | {plugin['info']} | {', '.join(plugin['instances'])} | {plugin['image']} |")
         output.append("")
 
         output.append("## JSON-Config")
