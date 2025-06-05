@@ -1,4 +1,5 @@
 import shutil
+import json
 import os
 
 from riocore.gui import halgraph
@@ -60,7 +61,8 @@ class documentation:
 
         self.halgraph_png()
         self.interface_md()
-        self.readme_md()
+        self.board_md()
+        self.config_md()
         self.pins_md()
         self.linuxcnc_md()
         self.index_html()
@@ -76,13 +78,39 @@ class documentation:
         except Exception as error:
             print(f"WARING: failed to write halgraph.png: {error}")
 
-    def readme_md(self):
-        output = [""]
+    def config_md(self):
+        output = [f'# {self.project.config["name"]}']
+        jdata = self.project.config["jdata"]
 
+        output.append(jdata.get("description", ""))
+        output.append("")
+        output.append(f'* Config-Path: {self.project.config["json_file"]}')
+        output.append(f'* Output-Path: {self.project.config["output_path"]}')
+        output.append(f'* Toolchain: {self.project.config["toolchain"]}')
+        output.append(f'* Protocol: {jdata.get("protocol", "")}')
+        output.append("")
+
+        output.append("## Plugins")
+        output.append("| Name | Info |")
+        output.append("| --- | --- |")
+        for plugin in self.project.config.get("plugins", []):
+            output.append(f"| {plugin['uid']} | {plugin['type']} |")
+            print(plugin)
+        output.append("")
+
+        output.append("## JSON-Config")
+        output.append("```")
+        output.append(json.dumps(jdata, indent=4))
+        output.append("```")
+        output.append("")
+        open(os.path.join(self.doc_path, "CONFIG.md"), "w").write("\n".join(output))
+
+    def board_md(self):
         data = self.project.config["board_data"]
         name = data["name"]
 
-        output.append(f"# {name}")
+        output = [f"# {name}"]
+
         description = ""
         if "description" in data:
             description = data["description"]
@@ -129,7 +157,7 @@ class documentation:
             shutil.copy(img_path, target)
 
         output.append("")
-        open(os.path.join(self.doc_path, "README.md"), "w").write("\n".join(output))
+        open(os.path.join(self.doc_path, "BOARD.md"), "w").write("\n".join(output))
 
     def pins_md(self):
         self.linked_pins = []
@@ -159,44 +187,41 @@ class documentation:
                 self.pinmapping[pin_id] = pin
                 self.pinmapping_rev[pin] = pin_id
 
-
         output = ["# Pins"]
         output.append("| Plugin | Name | FPGA | Alias |")
         output.append("| --- | --- | --- | --- |")
 
         last_plugin = ""
         for plugin_instance in self.project.plugin_instances:
-            #self.project.config["pinlists"][plugin_instance.instances_name] = {}
+            # self.project.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
+                row = []
+                if plugin_instance.instances_name != last_plugin:
+                    row.append(plugin_instance.instances_name)
+                else:
+                    row.append("")
+                row.append(pin_name)
+
                 if "pin" not in pin_config:
-                    print("NONE")
+                    row.append("-")
                 elif pin_config["pin"] in self.expansion_pins:
-                    print("EXP")
+                    row.append(f'EXP: {self.expansion_pins[pin_config["pin"]]}')
                 elif pin_config["pin"] in self.virtual_pins:
-                    print("VIRT")
+                    row.append(f'VIRT: {self.virtual_pins[pin_config["pin"]]}')
                 elif pin_config["varname"] in self.linked_pins:
-                    print("LINKED")
+                    row.append(f'LINKED:: {self.linked_pins[pin_config["pin"]]}')
                 else:
                     pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
-
-                    row = []
-                    if plugin_instance.instances_name != last_plugin:
-                        row.append(plugin_instance.instances_name)
-                    else:
-                        row.append("")
-                    row.append(pin_name)
                     row.append(pin_real)
-                    if pin_real != pin_config['pin']:
-                        row.append(pin_config['pin'])
-                    else:
-                        row.append("")
 
-                    output.append(f"| {' | '.join(row)} |")
-                    
-                    last_plugin = plugin_instance.instances_name
+                if "pin" in pin_config and pin_real != pin_config["pin"]:
+                    row.append(pin_config["pin"])
+                else:
+                    row.append("")
+                output.append(f"| {' | '.join(row)} |")
+                last_plugin = plugin_instance.instances_name
 
         open(os.path.join(self.doc_path, "PINS.md"), "w").write("\n".join(output))
-
 
     def interface_md(self):
         output = ["# Interface"]
@@ -222,26 +247,91 @@ class documentation:
         output.append("")
         open(os.path.join(self.doc_path, "INTERFACE.md"), "w").write("\n".join(output))
 
-
     def linuxcnc_md(self):
         output = ["# LinuxCNC"]
         output.append("## Hal-Graph")
         output.append("![halgraph](./halgraph.png)")
         open(os.path.join(self.doc_path, "LINUXCNC.md"), "w").write("\n".join(output))
 
-
     def index_html(self):
         output = [""]
         output.append("<html>")
         output.append("<header>")
         output.append('<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>')
+        output.append("""<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>""")
         output.append("</header>")
         output.append("<body>")
-        for md in ("README.md", "PINS.md", "INTERFACE.md", "LINUXCNC.md"):
+
+        sections = ("CONFIG", "BOARD", "PINS", "INTERFACE", "LINUXCNC")
+
+        output.append('<div class="tab">')
+        for section in sections:
+            output.append(f'  <button class="tablinks" onclick="openSection(event, \'{section}\')">{section}</button>')
+        output.append("</div>")
+
+        for section in sections:
+            output.append(f'<div id="{section}" class="tabcontent">')
             output.append("<github-md>")
-            output.append(open(os.path.join(self.doc_path, md), "r").read())
+            output.append(open(os.path.join(self.doc_path, f"{section}.md"), "r").read())
             output.append("</github-md>")
-            output.append("<HR/>")
+            output.append("</div>")
         output.append("</body>")
+
+        output.append("""<script>
+function openSection(evt, sectionName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sectionName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+openSection(event, \'CONFIG\');
+</script>""")
+
         output.append("</html>")
         open(os.path.join(self.doc_path, "index.html"), "w").write("\n".join(output))
