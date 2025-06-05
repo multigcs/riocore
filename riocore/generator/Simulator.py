@@ -257,6 +257,8 @@ class Simulator:
             if data_config["direction"] == "input":
                 if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
                     jn = net.split(".")[1]
+                    if "bit" not in interface_data:
+                        continue
                     var = interface_data["bit"]["variable"]
                     if self.project.axis_dict.get("Z", {}).get("joints", {}).get(int(jn)) and machinetype not in {"melfa", "melfa_nogl"}:
                         # Z-Axis

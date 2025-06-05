@@ -430,12 +430,12 @@ class ConfigGraph:
                     for plugin_instance in self.parent.plugins.plugin_instances:
                         name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
                         if name == instance:
-                            self.parent.edit_plugin(plugin_instance, None, is_new=False)
+                            self.parent.gui_plugins.edit_plugin(plugin_instance, None, is_new=False)
                             return
                     for module_data in self.parent.config.get("modules", []):
                         slot_name = module_data.get("slot")
                         for plugin_instance in self.parent.modules[slot_name]["instances"]:
                             name = plugin_instance.plugin_setup.get("name", plugin_instance.title)
                             if name == instance:
-                                self.parent.edit_plugin(plugin_instance, None, is_new=False)
+                                self.parent.gui_plugins.edit_plugin(plugin_instance, None, is_new=False)
                                 return
