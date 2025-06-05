@@ -65,7 +65,6 @@ class documentation:
 
         self.halgraph_png()
         self.interface_md()
-        self.board_md()
         self.config_md()
         self.pins_md()
         self.linuxcnc_md()
@@ -85,13 +84,37 @@ class documentation:
     def config_md(self):
         output = [f'# {self.project.config["name"]}']
         jdata = self.project.config["jdata"]
+        boardcfg = jdata.get("boardcfg", "")
+        board_link = f"[{boardcfg}](https://github.com/multigcs/riocore/blob/main/riocore/boards/{boardcfg}/README.md)"
+
+        img_path = os.path.join(riocore_path, "boards", boardcfg, "board.png")
+        if os.path.exists(img_path):
+            target = os.path.join(self.doc_path, "board.png")
+            shutil.copy(img_path, target)
+            image = '<img align="right" height="320" src="board.png">'
+            output.append(image)
 
         output.append(jdata.get("description", ""))
         output.append("")
+        output.append(f"* Board: {board_link}")
         output.append(f'* Config-Path: {self.project.config["json_file"]}')
         output.append(f'* Output-Path: {self.project.config["output_path"]}')
         output.append(f'* Toolchain: {self.project.config["toolchain"]}')
         output.append(f'* Protocol: {jdata.get("protocol", "")}')
+
+        output.append("")
+
+        output.append("## Axis/Joints")
+        output.append("| Axis | Joint | Plugin | Home-Seq. |")
+        output.append("| --- | --- | --- | --- |")
+        for axis_name, axis_config in self.project.axis_dict.items():
+            joints = axis_config["joints"]
+            for joint, joint_setup in joints.items():
+                plugin_instance = joint_setup["plugin_instance"]
+                link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
+                plugin = plugin_instance.instances_name
+                home_seq = joint_setup["HOME_SEQUENCE"]
+                output.append(f"| {axis_name} | {joint} | {plugin} ({link}) | {home_seq} | ")
         output.append("")
 
         plugin_infos = {}
@@ -102,7 +125,7 @@ class documentation:
                 image = "-"
                 img_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "image.png")
                 if os.path.exists(img_path):
-                    target  = os.path.join(self.doc_path, f"{plugin_instance.NAME}.png")
+                    target = os.path.join(self.doc_path, f"{plugin_instance.NAME}.png")
                     shutil.copy(img_path, target)
                     image = f'<img src="{plugin_instance.NAME}.png" height="48">'
                 plugin_infos[plugin_instance.NAME] = {
@@ -126,60 +149,6 @@ class documentation:
         output.append("```")
         output.append("")
         open(os.path.join(self.doc_path, "CONFIG.md"), "w").write("\n".join(output))
-
-    def board_md(self):
-        data = self.project.config["board_data"]
-        name = data["name"]
-
-        output = [f"# {name}"]
-
-        description = ""
-        if "description" in data:
-            description = data["description"]
-            output.append(f"**{description}**")
-        output.append("")
-
-        if "comment" in data:
-            comment = data["comment"]
-            output.append(comment)
-            output.append("")
-
-        if "url" in data:
-            output.append(f"* URL: [{data['url']}]({data['url']})")
-
-        for key in ("toolchain", "family", "type", "package", "flashcmd"):
-            if key in data:
-                if key == "toolchain":
-                    if "toolchains" in data:
-                        toolchains = []
-                        for toolchain in data["toolchains"]:
-                            if toolchain == data[key]:
-                                continue
-                            toolchains.append(f"[{toolchain}](https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{toolchain}/README.md)")
-                        output.append(f"* {key.title()}: [{data[key]}](https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{data[key]}/README.md) ({', '.join(toolchains)})")
-                    else:
-                        output.append(f"* {key.title()}: [{data[key]}](https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{data[key]}/README.md)")
-                else:
-                    output.append(f"* {key.title()}: {data[key]}")
-
-        if "clock" in data:
-            speed_mhz = float(data["clock"]["speed"]) / 1000000
-            if "osc" in data["clock"]:
-                osc_mhz = float(data["clock"]["osc"]) / 1000000
-                output.append(f"* Clock: {osc_mhz:0.3f}Mhz -> PLL -> {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
-            else:
-                output.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
-        output.append("")
-
-        img_path = os.path.join(self.project.config["riocore_path"], "boards", name, "board.png")
-        if os.path.isfile(img_path):
-            output.append("![board.png](board.png)")
-            output.append("")
-            target = os.path.join(self.doc_path, "board.png")
-            shutil.copy(img_path, target)
-
-        output.append("")
-        open(os.path.join(self.doc_path, "BOARD.md"), "w").write("\n".join(output))
 
     def pins_md(self):
         self.linked_pins = []
@@ -323,7 +292,7 @@ body {font-family: Arial;}
         output.append("</header>")
         output.append("<body>")
 
-        sections = ("CONFIG", "BOARD", "PINS", "INTERFACE", "LINUXCNC")
+        sections = ("CONFIG", "PINS", "INTERFACE", "LINUXCNC")
 
         output.append('<div class="tab">')
         for section in sections:
