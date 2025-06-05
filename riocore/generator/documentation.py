@@ -58,10 +58,11 @@ class documentation:
                         output_pos -= 1
                     self.iface_out.append([variable_name, size])
 
-        self.interface_html()
+        self.halgraph_png()
         self.interface_md()
         self.readme_md()
-        self.halgraph_png()
+        self.pins_md()
+        self.linuxcnc_md()
         self.index_html()
 
     def halgraph_png(self):
@@ -130,113 +131,85 @@ class documentation:
         output.append("")
         open(os.path.join(self.doc_path, "README.md"), "w").write("\n".join(output))
 
-    def index_html(self):
-        output = [""]
-        """
-        output.append(f"<h2>LinuxCNC</h2>")
-        output.append(f"<br />")
-        output.append(f'<a href="../LinuxCNC/rio.ini">rio.ini</a><br />')
-        output.append(f'<a href="../LinuxCNC/rio.hal">rio.hal</a><br />')
-        output.append(f"<br />")
-        output.append(f"<br />")
+    def pins_md(self):
+        self.linked_pins = []
+        self.virtual_pins = []
+        self.expansion_pins = []
+        self.pinmapping = {}
+        self.pinmapping_rev = {}
+        for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config and pin_config["pin"].startswith("VIRT:"):
+                    pinname = pin_config["pin"]
+                    if pinname not in self.virtual_pins:
+                        self.virtual_pins.append(pinname)
+            for pin in plugin_instance.expansion_outputs():
+                self.expansion_pins.append(pin)
+            for pin in plugin_instance.expansion_inputs():
+                self.expansion_pins.append(pin)
 
-        output.append(f"<h2>Gateware</h2>")
-        output.append(f"<br />")
-        output.append(f'<a href="../Gateware/rio.v">rio.v</a><br />')
-        output.append(f"<br />")
-        output.append(f"<br />")
-        """
+        self.slots = self.project.config["board_data"].get("slots", []) + self.project.config["jdata"].get("slots", [])
+        for slot in self.slots:
+            slot_name = slot.get("name")
+            slot_pins = slot.get("pins", {})
+            for pin_name, pin in slot_pins.items():
+                if isinstance(pin, dict):
+                    pin = pin["pin"]
+                pin_id = f"{slot_name}:{pin_name}"
+                self.pinmapping[pin_id] = pin
+                self.pinmapping_rev[pin] = pin_id
 
-        data = self.project.config["board_data"]
-        name = data["name"]
-        output.append(f"<h2>Board: {name}</h2>")
-        description = ""
-        if "description" in data:
-            description = data["description"]
-            output.append(f"<b>{description}</b><br />")
-        output.append("<br />")
 
-        if "comment" in data:
-            comment = data["comment"]
-            output.append(f"{comment}<br />")
-            output.append("<br />")
+        output = ["# Pins"]
+        output.append("| Plugin | Name | FPGA | Alias |")
+        output.append("| --- | --- | --- | --- |")
 
-        if "url" in data:
-            output.append(f'* URL: <a href="{data["url"]}">{data["url"]}</a><br />')
-
-        for key in ("toolchain", "family", "type", "package", "flashcmd"):
-            if key in data:
-                if key == "toolchain":
-                    if "toolchains" in data:
-                        toolchains = []
-                        for toolchain in data["toolchains"]:
-                            if toolchain == data[key]:
-                                continue
-                            toolchains.append(f'<a href="https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{toolchain}/README.md">{toolchain}</a>')
-                        output.append(
-                            f'* {key.title()}: <a href="https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{data[key]}/README.md">{data[key]}</a> ({", ".join(toolchains)})<br />'
-                        )
-                    else:
-                        output.append(f"* {key.title()}: [{data[key]}]()")
-                        output.append(f'* {key.title()}: <a href="https://github.com/multigcs/riocore/blob/main/riocore/generator/toolchains/{data[key]}/README.md">{data[key]}</a><br />')
+        last_plugin = ""
+        for plugin_instance in self.project.plugin_instances:
+            #self.project.config["pinlists"][plugin_instance.instances_name] = {}
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" not in pin_config:
+                    print("NONE")
+                elif pin_config["pin"] in self.expansion_pins:
+                    print("EXP")
+                elif pin_config["pin"] in self.virtual_pins:
+                    print("VIRT")
+                elif pin_config["varname"] in self.linked_pins:
+                    print("LINKED")
                 else:
-                    output.append(f"* {key.title()}: {data[key]}<br />")
+                    pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
 
-        if "clock" in data:
-            speed_mhz = float(data["clock"]["speed"]) / 1000000
-            if "osc" in data["clock"]:
-                osc_mhz = float(data["clock"]["osc"]) / 1000000
-                output.append(f"* Clock: {osc_mhz:0.3f}Mhz -> PLL -> {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})<br />")
-            else:
-                output.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})<br />")
-        output.append("<br />")
+                    row = []
+                    if plugin_instance.instances_name != last_plugin:
+                        row.append(plugin_instance.instances_name)
+                    else:
+                        row.append("")
+                    row.append(pin_name)
+                    row.append(pin_real)
+                    if pin_real != pin_config['pin']:
+                        row.append(pin_config['pin'])
+                    else:
+                        row.append("")
 
-        img_path = os.path.join(self.project.config["riocore_path"], "boards", name, "board.png")
-        if os.path.isfile(img_path):
-            output.append('<img src="board.png" /><br />')
-            output.append("<br />")
-            target = os.path.join(self.doc_path, "board.png")
-            shutil.copy(img_path, target)
+                    output.append(f"| {' | '.join(row)} |")
+                    
+                    last_plugin = plugin_instance.instances_name
 
-        output.append("<br />")
-        open(os.path.join(self.doc_path, "index.html"), "w").write("\n".join(output))
+        open(os.path.join(self.doc_path, "PINS.md"), "w").write("\n".join(output))
 
-    def interface_html(self):
-        output = []
-        output.append("<h1>Interface</h1>")
-        output.append("<table width='100%'>")
-        output.append("<tr><td valign='top'>")
-        output.append("<h3>FPGA to Host</h3>")
-        output.append("<table width='100%'>")
-        pos = 0
-        for data in self.iface_in:
-            name = data[0]
-            size = data[1]
-            output.append(
-                f"<tr><td style='padding: 1px; border: 1px solid black;' align='left'>{pos}</td><td style='padding: 3px; border: 1px solid black;'>{size}{'bits' if size > 1 else 'bit'}</td><td style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
-            )
-            pos += size
-        output.append("</table>")
-        output.append("</td><td valign='top'>")
-        output.append("<h3>Host to FPGA</h3>")
-        output.append("<table width='100%'>")
-        pos = 0
-        for data in self.iface_out:
-            name = data[0]
-            size = data[1]
-            output.append(
-                f"<tr><td style='padding: 1px; border: 1px solid black;' align='left'>{pos}</td><td style='padding: 3px; border: 1px solid black;'>{size}{'bits' if size > 1 else 'bit'}</td><td style='padding: 3px; border: 1px solid black;' align='center'>{name}</td></tr>"
-            )
-            pos += size
-        output.append("</table>")
-        output.append("</td></tr>")
-        output.append("</table>")
-
-        open(os.path.join(self.doc_path, "interface.html"), "w").write("\n".join(output))
 
     def interface_md(self):
-        output = []
-        output.append("# Interface")
+        output = ["# Interface"]
+        output.append("## Host to FPGA")
+        output.append("| POS | SIZE | NAME |")
+        output.append("| --- | --- | --- |")
+        pos = 0
+        for data in self.iface_out:
+            name = data[0]
+            size = data[1]
+            output.append(f"| {pos} | {size}{'bits' if size > 1 else 'bit'} | {name} |")
+            pos += size
+        output.append("")
         output.append("## FPGA to Host")
         output.append("| POS | SIZE | NAME |")
         output.append("| --- | --- | --- |")
@@ -247,15 +220,28 @@ class documentation:
             output.append(f"| {pos} | {size}{'bits' if size > 1 else 'bit'} | {name} |")
             pos += size
         output.append("")
-        output.append("## FPGA to Host")
-        output.append("| POS | SIZE | NAME |")
-        output.append("| --- | --- | --- |")
-        pos = 0
-        for data in self.iface_out:
-            name = data[0]
-            size = data[1]
-            output.append(f"| {pos} | {size}{'bits' if size > 1 else 'bit'} | {name} |")
-            pos += size
-        output.append("")
-
         open(os.path.join(self.doc_path, "INTERFACE.md"), "w").write("\n".join(output))
+
+
+    def linuxcnc_md(self):
+        output = ["# LinuxCNC"]
+        output.append("## Hal-Graph")
+        output.append("![halgraph](./halgraph.png)")
+        open(os.path.join(self.doc_path, "LINUXCNC.md"), "w").write("\n".join(output))
+
+
+    def index_html(self):
+        output = [""]
+        output.append("<html>")
+        output.append("<header>")
+        output.append('<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>')
+        output.append("</header>")
+        output.append("<body>")
+        for md in ("README.md", "PINS.md", "INTERFACE.md", "LINUXCNC.md"):
+            output.append("<github-md>")
+            output.append(open(os.path.join(self.doc_path, md), "r").read())
+            output.append("</github-md>")
+            output.append("<HR/>")
+        output.append("</body>")
+        output.append("</html>")
+        open(os.path.join(self.doc_path, "index.html"), "w").write("\n".join(output))
