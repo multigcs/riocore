@@ -380,11 +380,11 @@ graph LR;
                     subs.append(subid)
 
         if subs:
-            gAll.edge(f"{title}:bus", f"{sub_title}:conn", dir="normal", color="white", fontcolor="white")
+            gAll.edge(f"{title}:bus", f"{sub_title}:conn", dir="both", color="white", fontcolor="white")
             gAll.node(
                 sub_title,
                 shape="record",
-                label=f"{{ <conn>Multiplexer | {{ {'|'.join(subs)} }} }}",
+                label=f"{{ {{ {'|'.join(subs)} }} | <conn>Multiplexer }}",
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",
@@ -405,9 +405,9 @@ graph LR;
                 sub = signal_defaults.get("subbus")
                 break
             if sub and sub != "none":
-                gAll.edge(f"{sub_title}:sub{sub}", f"{title}_device_{device}:conn", dir="normal", color="white", fontcolor="white")
+                gAll.edge(f"{sub_title}:sub{sub}", f"{title}_device_{device}:conn", dir="both", color="white", fontcolor="white")
             else:
-                gAll.edge(f"{title}:bus", f"{title}_device_{device}:conn", dir="normal", color="white", fontcolor="white")
+                gAll.edge(f"{title}:bus", f"{title}_device_{device}:conn", dir="both", color="white", fontcolor="white")
             dev_title = f"{title}_device_{device}"
             devports = []
             for signal_name, signal_defaults in self.SIGNALS.items():
@@ -433,7 +433,7 @@ graph LR;
             gAll.node(
                 dev_title,
                 shape="record",
-                label=f"{{ <conn>{device} | {{ {'|'.join(devports)} }} }}",
+                label=f"{{ {{ {'|'.join(devports)} }} | <conn>{device} }}",
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",

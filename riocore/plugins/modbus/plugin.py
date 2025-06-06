@@ -232,7 +232,7 @@ class Plugin(PluginBase):
 
         for address in addresses:
             signalports.append(f"<device_{address}>DEVICE{address}")
-            gAll.edge(f"{title}:device_{address}", f"{title}_device_{address}:conn", dir="normal", color="white", fontcolor="white")
+            gAll.edge(f"{title}:device_{address}", f"{title}_device_{address}:conn", dir="both", color="white", fontcolor="white")
             dev_title = f"{title}_device_{address}"
             devports = []
             for signal_name, signal_defaults in self.SIGNALS.items():
@@ -258,7 +258,7 @@ class Plugin(PluginBase):
             gAll.node(
                 dev_title,
                 shape="record",
-                label=f"{{ <conn>DEVICE{address} | {{ {'|'.join(devports)} }} }}",
+                label=f"{{ {{ {'|'.join(devports)} }} | <conn>DEVICE{address} }}",
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",

@@ -11,16 +11,13 @@ class ConfigGraph:
 
     def png(self):
         try:
-            self.gAll = graphviz.Digraph("G", format="svg")
-            self.gAll.attr(rankdir="LR")
-            self.gAll.attr(bgcolor="black")
             self.map = None
 
             num = 0
             fpga_name = f"{self.parent.config.get('boardcfg')}"
 
             gAll = graphviz.Digraph("G", format="png")
-            gAll.attr(rankdir="LR")
+            gAll.attr(rankdir="RL")
             gAll.attr(bgcolor="black")
 
             lcports = []
@@ -98,6 +95,7 @@ class ConfigGraph:
                     mportsr.append(f"<{pin_id}>{pin_name}")
 
                 label = f"{{ {{{' | '.join(mportsl)}}} | {slot_name} | {{{' | '.join(mportsr)}}} }}"
+                label = f"{{ {{{' | '.join(mportsr)}}} | {slot_name} | {{{' | '.join(mportsl)}}} }}"
                 sports.append(label)
 
             virtual_cons = {}
@@ -190,7 +188,7 @@ class ConfigGraph:
                         for modifier_num, modifier in enumerate(modifiers):
                             modifier_type = modifier["type"]
                             modifier_chain.append(modifier_type)
-                        modifier_label = f"{{ <l> | {' | '.join(modifier_chain)} | <r> }}"
+                        modifier_label = f"{{ <r> | {' | '.join(modifier_chain)} | <l> }}"
                         gAll.edge(f"{con_dev}:{con_pin}", f"{name}_{pin_name}_{modifier_type}_{modifier_num}:l", dir=arrow_dir, color=color)
                         con_dev = f"{name}_{pin_name}_{modifier_type}_{modifier_num}"
                         con_pin = "r"
@@ -265,11 +263,11 @@ class ConfigGraph:
                     eports.append(f"<{cpname}>{pname}")
 
                 if eports:
-                    label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(eports)}}} }}"
+                    label = f"{{ {{{' | '.join(eports)}}} | {title} | {{{' | '.join(pports)}}} }}"
                 elif signalports:
-                    label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(signalports)}}} }}"
+                    label = f"{{ {{{' | '.join(signalports)}}} | {title} | {{{' | '.join(pports)}}} }}"
                 else:
-                    label = f"{{ {{{' | '.join(pports)}}} | {title} }}"
+                    label = f"{{ {title} | {{{' | '.join(pports)}}} }}"
 
                 gAll.node(
                     title,
@@ -326,7 +324,7 @@ class ConfigGraph:
                             for modifier_num, modifier in enumerate(modifiers):
                                 modifier_type = modifier["type"]
                                 modifier_chain.append(modifier_type)
-                            modifier_label = f"{{ <l> | {' | '.join(modifier_chain)} | <r> }}"
+                            modifier_label = f"{{ <r> | {' | '.join(modifier_chain)} | <l> }}"
                             gAll.edge(f"{con_dev}:{con_pin}", f"{name}_{pin_name}_{modifier_type}_{modifier_num}:l", dir=arrow_dir, color=color)
                             con_dev = f"{name}_{pin_name}_{modifier_type}_{modifier_num}"
                             con_pin = "r"
@@ -374,7 +372,7 @@ class ConfigGraph:
                                 lcports.append(f"<{net}>{net}")
 
                     if signalports:
-                        label = f"{{ {{{' | '.join(pports)}}} | {title} | {{{' | '.join(signalports)}}} }}"
+                        label = f"{{ {{{' | '.join(signalports)}}} | {title} | {{{' | '.join(pports)}}} }}"
                     else:
                         label = f"{{ {{{' | '.join(pports)}}} | {title} }}"
                     gAll.node(
