@@ -41,12 +41,12 @@
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |  |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
-|  | [panasonic_abs](panasonic_abs/README.md) | serial abs-encoder |  | X |
+|  | [panasonic_abs](panasonic_abs/README.md) | serial abs-encoder | <img src="panasonic_abs/image.png" height="48"> | X |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
-|  | [rioencoder](rioencoder/README.md) | serial abs-encoder |  | X |
+|  | [rioencoder](rioencoder/README.md) | serial abs-encoder | <img src="rioencoder/image.png" height="48"> | X |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
@@ -56,7 +56,7 @@
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [wled_bar](wled_bar/README.md) | ws2812b interface for bar-displays | <img src="wled_bar/image.png" height="48"> |  |
-|  | [yaskawa_abs](yaskawa_abs/README.md) | serial abs-encoder |  | X |
+|  | [yaskawa_abs](yaskawa_abs/README.md) | serial abs-encoder | <img src="yaskawa_abs/image.png" height="48"> | X |
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | X |
 | Expansions | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
