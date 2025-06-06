@@ -82,7 +82,7 @@ class documentation:
             print(f"WARING: failed to write halgraph.png: {error}")
 
     def config_md(self):
-        output = [f'# {self.project.config["name"]}']
+        output = [f"# {self.project.config['name']}"]
         jdata = self.project.config["jdata"]
         boardcfg = jdata.get("boardcfg", "")
         board_link = f"[{boardcfg}](https://github.com/multigcs/riocore/blob/main/riocore/boards/{boardcfg}/README.md)"
@@ -97,10 +97,10 @@ class documentation:
         output.append(jdata.get("description", ""))
         output.append("")
         output.append(f"* Board: {board_link}")
-        output.append(f'* Config-Path: {self.project.config["json_file"]}')
-        output.append(f'* Output-Path: {self.project.config["output_path"]}')
-        output.append(f'* Toolchain: {self.project.config["toolchain"]}')
-        output.append(f'* Protocol: {jdata.get("protocol", "")}')
+        output.append(f"* Config-Path: {self.project.config['json_file']}")
+        output.append(f"* Output-Path: {self.project.config['output_path']}")
+        output.append(f"* Toolchain: {self.project.config['toolchain']}")
+        output.append(f"* Protocol: {jdata.get('protocol', '')}")
 
         output.append("")
 
@@ -196,11 +196,11 @@ class documentation:
                 if "pin" not in pin_config:
                     row.append("-")
                 elif pin_config["pin"] in self.expansion_pins:
-                    row.append(f'EXP: {self.expansion_pins[pin_config["pin"]]}')
+                    row.append(f"EXP: {self.expansion_pins[pin_config['pin']]}")
                 elif pin_config["pin"] in self.virtual_pins:
-                    row.append(f'VIRT: {self.virtual_pins[pin_config["pin"]]}')
+                    row.append(f"VIRT: {self.virtual_pins[pin_config['pin']]}")
                 elif pin_config["varname"] in self.linked_pins:
-                    row.append(f'LINKED:: {self.linked_pins[pin_config["pin"]]}')
+                    row.append(f"LINKED:: {self.linked_pins[pin_config['pin']]}")
                 else:
                     pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
                     row.append(pin_real)

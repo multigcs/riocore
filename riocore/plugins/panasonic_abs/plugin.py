@@ -131,10 +131,10 @@ B+  SD-  FG
         return instances
 
     def convert(self, signal_name, signal_setup, value):
-        #if signal_name == "csum":
+        # if signal_name == "csum":
         #    print(f"#### {value:032b} {value:d}")
 
-        #if signal_name == "position":
+        # if signal_name == "position":
         #    print(f"{value:032b} {(value & 0xFF000000) >> 24} {(value & 0xFF0000) >> 16} {((value & 0xFF00) >> 8)} {(value & 0xFF)}")
         if signal_name == "angle":
             return value * 360.0 / 65536
