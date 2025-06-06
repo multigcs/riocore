@@ -37,11 +37,7 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance["arguments"]
-
         instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"
-
         return instances

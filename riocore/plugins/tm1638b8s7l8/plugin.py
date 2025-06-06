@@ -215,9 +215,7 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance["arguments"]
 
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         divider = self.system_setup["speed"] // speed // 5
