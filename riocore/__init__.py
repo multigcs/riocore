@@ -1050,11 +1050,11 @@ class Project:
                 self.generator_gateware.generator(generate_pll=generate_pll)
             # if self.generator_ethercat:
             #     self.generator_ethercat.generator()
-        if protocol == "UDP":
-            self.generator_simulator.generator()
         self.generator_linuxcnc.generator(preview=preview)
 
-        if toolchain:
+        if toolchain and not preview:
+            if protocol == "UDP":
+                self.generator_simulator.generator()
             rosbridge(self)
             mqttbridge(self)
             jslib(self)
