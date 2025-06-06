@@ -821,8 +821,6 @@ class WinForm(QWidget):
         if "plugins" not in self.config:
             self.config["plugins"] = []
 
-        self.config["riocore_path"] = riocore_path
-
         # loading board config
         boardcfg = self.config.get("boardcfg")
         self.boardcfg_path = ""
