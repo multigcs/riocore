@@ -17,6 +17,16 @@ to combine multible RIO boards via RS422
 * some plugins will not work
 * only for testing
 
+```mermaid
+graph LR;
+    Host<--udp/spi-->FPGA1;
+    FPGA1-->plugin1;
+    FPGA1-->plugin2;
+    FPGA1<--RS422-->FPGA2;
+    FPGA2-->plugin3;
+    FPGA2-->plugin4;
+```
+
 ## Pins:
 *FPGA-pins*
 ### tx:

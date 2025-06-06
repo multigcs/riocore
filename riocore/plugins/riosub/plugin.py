@@ -24,6 +24,15 @@ class Plugin(PluginBase):
 * only for testing
 
         """
+        self.GRAPH = """
+graph LR;
+    Host<--udp/spi-->FPGA1;
+    FPGA1-->plugin1;
+    FPGA1-->plugin2;
+    FPGA1<--RS422-->FPGA2;
+    FPGA2-->plugin3;
+    FPGA2-->plugin4;
+        """
         self.KEYWORDS = ""
         self.ORIGIN = ""
         self.EXPERIMENTAL = True
