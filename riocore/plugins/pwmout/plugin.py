@@ -115,7 +115,6 @@ class Plugin(PluginBase):
 
     # optional calculation for the signals (self.SIGNALS) (the c part / for riocomp.c)
     def convert_c(self, signal_name, signal_setup):
-        print("##")
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
             vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
