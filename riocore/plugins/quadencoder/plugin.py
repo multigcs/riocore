@@ -9,7 +9,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = "feedback encoder rotary linear glassscale"
         self.ORIGIN = "https://www.fpga4fun.com/QuadratureDecoder.html"
         self.VERILOGS = ["quadencoder.v"]
-
         self.PINDEFAULTS = {
             "a": {
                 "direction": "input",
@@ -45,40 +44,24 @@ class Plugin(PluginBase):
             },
         }
 
-        rps_sum = self.plugin_setup.get("rps_sum", self.OPTIONS["rps_sum"]["default"])
-        rps_calculation = f"""
-    static uint8_t pcnt = 0;
-    static float last_rpssum = 0;
-    static float diff_sum = 0;
-    static float duration_sum = 0.0;
-    diff_sum += (raw_value - last_raw_value);
-    duration_sum += *data->duration;
-    pcnt++;
-    if (pcnt == {rps_sum}) {{
-        last_rpssum = diff_sum / duration_sum / scale;
-        pcnt = 0;
-        duration_sum = 0;
-        diff_sum = 0;
-    }}
-    value_rps = last_rpssum;
-        """
+        self.rps_sum = self.plugin_setup.get("rps_sum", self.OPTIONS["rps_sum"]["default"])
         self.SIGNALS = {
             "position": {
                 "direction": "input",
-                "targets": {
-                    "rps": rps_calculation,
-                    "rpm": "value_rpm = value_rps * 60.0;",
-                },
+                # "targets": {
+                #    "rps": rps_calculation,
+                #    "rpm": "value_rpm = value_rps * 60.0;",
+                # },
                 "description": "position feedback in steps",
             },
             "rps": {
                 "direction": "input",
-                "source": "position",
+                # "source": "position",
                 "description": "calculates revolutions per second",
             },
             "rpm": {
                 "direction": "input",
-                "source": "position",
+                # "source": "position",
                 "description": "calculates revolutions per minute",
             },
         }
@@ -87,10 +70,8 @@ class Plugin(PluginBase):
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
-
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-
         quad_type = self.plugin_setup.get("quad_type", 2)
         instance_parameter["QUAD_TYPE"] = quad_type
 
@@ -119,12 +100,36 @@ class Plugin(PluginBase):
         return value
 
     def convert_c(self, signal_name, signal_setup):
+        calc = ""
+        varname_rps = self.SIGNALS["rps"]["varname"]
+        varname_rpm = self.SIGNALS["rpm"]["varname"]
         if signal_name == "position":
             vmin = self.plugin_setup.get("min")
             vmax = self.plugin_setup.get("max")
             scale = self.plugin_setup.get("scale", 1.0)
+
+            calc = f"""
+    static uint8_t pcnt = 0;
+    static float last_rpssum = 0;
+    static float diff_sum = 0;
+    static float duration_sum = 0.0;
+    diff_sum += (raw_value - last_raw_value);
+    duration_sum += *data->duration;
+    pcnt++;
+    if (pcnt == {self.rps_sum}) {{
+        last_rpssum = diff_sum / duration_sum / scale;
+        pcnt = 0;
+        duration_sum = 0;
+        diff_sum = 0;
+    }}
+
+    *data->{varname_rps} = last_rpssum;
+    *data->{varname_rpm} = last_rpssum * 60.0;
+
+"""
+
             if vmin is not None and vmax is not None:
-                return f"""
+                calc += f"""
                 value *= {scale};
                 if (value < {vmin}) {{
                     value = {vmin};
@@ -132,6 +137,4 @@ class Plugin(PluginBase):
                     value = {vmax};
                 }}
                 """
-            else:
-                return f"value *= {scale};"
-        return ""
+        return calc

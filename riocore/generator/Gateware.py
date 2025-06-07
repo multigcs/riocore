@@ -445,8 +445,8 @@ class Gateware:
 
         # multiplexing
         if self.project.multiplexed_input:
-            output.append(f"    reg [{self.project.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE;")
-            output.append("    reg [7:0] MULTIPLEXED_INPUT_ID;")
+            output.append(f"    reg [{self.project.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE = 0;")
+            output.append("    reg [7:0] MULTIPLEXED_INPUT_ID = 0;")
         if self.project.multiplexed_output:
             output.append(f"    wire [{self.project.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
@@ -554,9 +554,9 @@ class Gateware:
                 if direction == "input":
                     output.append(f"            if (MULTIPLEXED_INPUT_ID == {mpid}) begin")
                     if size == 1:
-                        output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name};")
+                        output.append(f"                MULTIPLEXED_INPUT_VALUE <= {variable_name};")
                     else:
-                        output.append(f"                MULTIPLEXED_INPUT_VALUE = {variable_name}[{size - 1}:0];")
+                        output.append(f"                MULTIPLEXED_INPUT_VALUE <= {variable_name}[{size - 1}:0];")
                     output.append("            end")
                     mpid += 1
             output.append("        end")

@@ -6,7 +6,7 @@ from riocore.modifiers import Modifiers
 class PluginBase:
     expansions = []
 
-    def __init__(self, plugin_id, plugin_setup, system_setup=None):
+    def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.SIGNALS = {}
@@ -20,6 +20,10 @@ class PluginBase:
         self.EXPERIMENTAL = False
         self.DESCRIPTION = ""
         self.URL = ""
+        if subfix:
+            self.SUBFIX = subfix
+        else:
+            self.SUBFIX = ""
         self.GRAPH = ""
         self.KEYWORDS = ""
         self.ORIGIN = ""
@@ -243,7 +247,7 @@ class PluginBase:
             if multiplexed is not None:
                 data[name]["multiplexed"] = multiplexed
 
-            data[name]["variable"] = f"VAR{direction}{size}_{self.instances_name}_{name}".upper()
+            data[name]["variable"] = f"VAR{direction}{size}_{self.SUBFIX}{self.instances_name}_{name}".upper()
         return data
 
     def expansion_outputs(self):

@@ -114,7 +114,7 @@ class Plugins:
             output.append("")
         return "\n".join(output)
 
-    def load_plugin(self, plugin_id, plugin_config, system_setup=None):
+    def load_plugin(self, plugin_id, plugin_config, system_setup=None, subfix=None):
         try:
             plugin_type = plugin_config["type"]
             if plugin_type not in self.plugin_modules:
@@ -124,10 +124,10 @@ class Plugins:
                     if self.plugin_builder(plugin_type, os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v"), plugin_config):
                         self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
                 elif not plugin_type or plugin_type[0] != "_":
-                    print(f"WARNING: plugin not found: {plugin_type}")
+                    print(f"WARNING: plugin not found: {plugin_type}", os.path.join(riocore_path, "plugins", plugin_type, "plugin.py"))
 
             if plugin_type in self.plugin_modules:
-                plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
+                plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup, subfix=subfix)
                 plugin_instance.setup_object = plugin_config
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
@@ -135,9 +135,6 @@ class Plugins:
                             print(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
                             del pin_config["pin"]
                 self.plugin_instances.append(plugin_instance)
-
-                # if not os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/testb.v") and os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v"):
-                #    self.testbench_builder(plugin_type, plugin_instance)
 
                 return plugin_instance
         except Exception:
