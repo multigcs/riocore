@@ -239,6 +239,8 @@ graph LR;
         verilog_data.append("        output tx")
         verilog_data.append("    );")
         verilog_data.append("")
+        verilog_data.append(f"    parameter TX_DELAY = {self.system_setup['speed'] // 1000};")
+        verilog_data.append("")
         verilog_data.append("    reg [(BUFFER_SIZE*8)-1:0] rx_frame = 0;")
         verilog_data.append("    wire [(BUFFER_SIZE*8)-1:0] tx_frame;")
         verilog_data.append("    assign tx_frame = {")
@@ -347,7 +349,7 @@ graph LR;
             end
 
         end else if (state == 3) begin
-            if (counter < 10000) begin
+            if (counter < TX_DELAY) begin
                 counter <= counter + 1;
             end else begin
                 counter <= 0;
@@ -360,6 +362,7 @@ graph LR;
             rx_frame <= rx_data;
             rx_data <= 0;
             rx_byte_counter <= 0;
+            counter <= TX_DELAY;
         end else if (RxD_data_ready == 1) begin
             if (rx_byte_counter < BUFFER_SIZE) begin
                 rx_data <= {rx_data[(BUFFER_SIZE*8)-8-1:0], RxD_data};
