@@ -1,11 +1,12 @@
 
 module uart
-    #(parameter BUFFER_SIZE=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000)
+    #(parameter BUFFER_SIZE=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter CSUM=0)
      (
          input clk,
          output reg [BUFFER_SIZE-1:0] rx_data,
          input [BUFFER_SIZE-1:0] tx_data,
          output reg sync = 0,
+         output reg tx_enable = 0,
          output tx,
          input rx
      );
@@ -43,6 +44,9 @@ module uart
     reg [7:0] rx_counter = 0;
     reg [7:0] tx_counter = 0;
 
+    reg [15:0] tx_csum = 0;
+    reg [15:0] rx_csum = 0;
+
     always @(posedge clk) begin
         sync <= 0;
         if (RxD_endofpacket == 1) begin
@@ -56,9 +60,20 @@ module uart
                 if (tx_counter < BUFFER_SIZE/8-1) begin
                     tx_counter <= tx_counter + 1'd1;
                     tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-1-8:0], 8'd0};
+                    tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE-1-8:BUFFER_SIZE-1-7-8];
+                end else if (CSUM && tx_counter < BUFFER_SIZE/8-1 + 1) begin
+                    tx_counter <= tx_counter + 1'd1;
+                    tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-1-7] <= tx_csum[15:8];
+                end else if (CSUM && tx_counter < BUFFER_SIZE/8-1 + 2) begin
+                    tx_counter <= tx_counter + 1'd1;
+                    tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-1-7] <= tx_csum[7:0];
                 end else begin
                     tx_state <= 0;
                 end
+            end
+        end else if (tx_enable) begin
+            if (TxD_busy == 0) begin
+                tx_enable <= 0;
             end
         end else if (RxD_data_ready == 1) begin
             if (rx_counter < BUFFER_SIZE/8-1) begin
@@ -67,9 +82,10 @@ module uart
             end else begin
                 // TODO: check MSGID
                 rx_data <= {rx_data_buffer[BUFFER_SIZE-1-8:0], RxD_data};
-                rx_counter <= 0;
+                tx_enable <= 1;
                 tx_counter <= 0;
                 tx_data_buffer <= tx_data;
+                tx_csum <= tx_data[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
                 tx_state <= 1;
                 sync <= 1;
             end

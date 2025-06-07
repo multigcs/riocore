@@ -44,8 +44,18 @@ graph LR;
                 "direction": "input",
             },
         }
-        self.INTERFACE = {}
-        self.SIGNALS = {}
+        self.INTERFACE = {
+            "valid": {
+                "size": 1,
+                "direction": "input",
+            },
+        }
+        self.SIGNALS = {
+            "valid": {
+                "direction": "input",
+                "bool": True,
+            },
+        }
         self.OPTIONS = {
             "subconfig": {
                 "default": "",
@@ -70,6 +80,8 @@ graph LR;
 
         self.buffersize_tx = 4 * 8  # Header
         self.buffersize_rx = 4 * 8 + 4 * 8  # Header + timestamp
+        # csum
+        self.buffersize_rx += 16
 
         subconfig = self.plugin_setup.get("subconfig", self.OPTIONS["subconfig"]["default"])
         if not subconfig:
@@ -131,14 +143,13 @@ graph LR;
 
             self.buffersize = max(self.buffersize_tx, self.buffersize_rx)
             self.buffersize_bytes = (self.buffersize + 7) // 8
-            self.tx_fill = self.buffersize_bytes * 8 - self.buffersize_tx
+            self.tx_fill = max(0, self.buffersize_bytes * 8 - self.buffersize_tx)
 
             output_pos = self.buffersize - 32 - 32
             self.tx_frame = ["32'h74697277"]
             self.rx_frame = []
 
             # building rx/tx frames
-
             if self.multiplexed_input:
                 variable_name = "MULTIPLEXED_INPUT_VALUE"
                 size = self.multiplexed_input_size
@@ -235,11 +246,13 @@ graph LR;
                         else:
                             verilog_data.append(f"        {rev_direction} {varname},")
 
+        verilog_data.append("        output reg valid = 0,")
         verilog_data.append("        input rx,")
         verilog_data.append("        output tx")
         verilog_data.append("    );")
         verilog_data.append("")
         verilog_data.append("")
+        verilog_data.append("    reg [15:0] csum_calc = 0;")
         verilog_data.append("    reg [(BUFFER_SIZE*8)-1:0] rx_frame = 0;")
         verilog_data.append("    wire [(BUFFER_SIZE*8)-1:0] tx_frame;")
         verilog_data.append("    assign tx_frame = {")
@@ -358,13 +371,23 @@ graph LR;
         end
 
         if (RxD_endofpacket == 1) begin
-            rx_frame <= rx_data;
+            if (rx_data[15:0] == csum_calc) begin
+                valid <= 1;
+                rx_frame <= rx_data;
+            end else begin
+                valid <= 0;
+            end
             rx_data <= 0;
             rx_byte_counter <= 0;
+            csum_calc <= 0;
             counter <= TX_DELAY;
         end else if (RxD_data_ready == 1) begin
             if (rx_byte_counter < BUFFER_SIZE) begin
                 rx_data <= {rx_data[(BUFFER_SIZE*8)-8-1:0], RxD_data};
+                if (rx_byte_counter < BUFFER_SIZE - 2) begin
+                    csum_calc <= csum_calc + RxD_data;
+                end
+
                 rx_byte_counter <= rx_byte_counter + 1;
             end
         end
@@ -409,10 +432,12 @@ endmodule
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["Baud"] = baud
-        instance_parameter["TX_DELAY"] = self.system_setup['speed'] // 1000
+        instance_parameter["TX_DELAY"] = self.system_setup["speed"] // 1000
         return instances
 
     def convert(self, signal_name, signal_setup, value):
+        if signal_name in {"valid"}:
+            return value
         sub_plugin = self.sub_signals[signal_name][0]
         sub_signal_name = self.sub_signals[signal_name][1]
         instance = sub_plugin["instance"]
@@ -422,6 +447,8 @@ endmodule
         return value
 
     def convert_c(self, signal_name, signal_setup):
+        if signal_name in {"valid"}:
+            return ""
         sub_plugin = self.sub_signals[signal_name][0]
         sub_signal_name = self.sub_signals[signal_name][1]
         instance = sub_plugin["instance"]

@@ -16,6 +16,11 @@ class Plugin(PluginBase):
             "tx": {
                 "direction": "output",
             },
+            "tx_enable": {
+                "direction": "output",
+                "optional": True,
+                "descruption": "for RS485 mode",
+            },
         }
         self.OPTIONS = {
             "baud": {
@@ -26,6 +31,12 @@ class Plugin(PluginBase):
                 "unit": "bit/s",
                 "description": "serial baud rate",
             },
+            "csum": {
+                "default": False,
+                "type": bool,
+                "unit": "",
+                "description": "activate checksums",
+            },
         }
         self.TYPE = "interface"
 
@@ -33,9 +44,11 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
+        csum = self.plugin_setup.get("csum", self.OPTIONS["csum"]["default"])
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["BUFFER_SIZE"] = self.system_setup["buffer_size"]
         instance_parameter["MSGID"] = "32'h74697277"
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
+        instance_parameter["CSUM"] = int(csum)
         return instances
