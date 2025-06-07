@@ -49,7 +49,7 @@ graph LR;
         self.OPTIONS = {
             "subconfig": {
                 "default": "",
-                "type": str,
+                "type": "file",
                 "unit": "",
                 "description": "sub json-config file",
             },
@@ -206,7 +206,7 @@ graph LR;
         verilog_data = []
         verilog_data.append("")
         verilog_data.append(f"module riosub_{self.instances_name}")
-        verilog_data.append(f"    #(parameter BUFFER_SIZE={self.buffersize_bytes}, parameter ClkFrequency=12000000, parameter Baud=9600)")
+        verilog_data.append(f"    #(parameter BUFFER_SIZE={self.buffersize_bytes}, parameter ClkFrequency=12000000, parameter Baud=9600, parameter TX_DELAY=10000)")
         verilog_data.append("    (")
         verilog_data.append("        input clk,")
         if subconfig:
@@ -239,7 +239,6 @@ graph LR;
         verilog_data.append("        output tx")
         verilog_data.append("    );")
         verilog_data.append("")
-        verilog_data.append(f"    parameter TX_DELAY = {self.system_setup['speed'] // 1000};")
         verilog_data.append("")
         verilog_data.append("    reg [(BUFFER_SIZE*8)-1:0] rx_frame = 0;")
         verilog_data.append("    wire [(BUFFER_SIZE*8)-1:0] tx_frame;")
@@ -410,6 +409,7 @@ endmodule
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
         instance_parameter["Baud"] = baud
+        instance_parameter["TX_DELAY"] = self.system_setup['speed'] // 1000
         return instances
 
     def convert(self, signal_name, signal_setup, value):

@@ -50,6 +50,7 @@ from riocore.gui.widgets import (
     MyQSvgWidget,
     MyQLabel,
     MyStandardItem,
+    edit_file,
     edit_float,
     edit_int,
     edit_text,
@@ -1205,6 +1206,8 @@ class WinForm(QWidget):
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
         elif var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "file":
+            return edit_file(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] == "avgfilter":
             return edit_avgfilter(self, obj, key, vmin=0, vmax=10000, cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] == "vpins":

@@ -1,11 +1,13 @@
-import riocore
+import os
 import json
+import riocore
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, Qt, QSize
+from PyQt5.QtCore import QRect, Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QStandardItem, QPixmap
 from PyQt5.QtWidgets import (
     QVBoxLayout,
+    QFileDialog,
     QDialogButtonBox,
     QDialog,
     QPushButton,
@@ -16,6 +18,8 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QSpinBox,
 )
+
+riocore_path = os.path.dirname(riocore.__file__)
 
 STYLESHEET = """
     background-color: #444444;
@@ -341,6 +345,58 @@ class edit_text(QLineEdit):
         elif default is not None:
             self.setText(str(default))
         self.textChanged.connect(self.change)
+
+    def mousePressEvent(self,QMouseEvent):
+        print("###")
+        self.clicked.emit()
+
+    def change(self):
+        if self.text() != self.default:
+            self.obj[self.key] = self.text()
+        elif self.key in self.obj:
+            del self.obj[self.key]
+        if self.cb:
+            self.cb(self.text())
+        else:
+            self.win.display()
+
+
+class edit_file(QLineEdit):
+    clicked = pyqtSignal()
+
+    def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
+        super().__init__()
+        self.setMaxLength(150)
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        if help_text:
+            self.setToolTip(help_text)
+        if key in obj:
+            self.setText(str(obj[key]))
+        elif default is not None:
+            self.setText(str(default))
+        self.textChanged.connect(self.change)
+
+    def mousePressEvent(self, event):
+        self.clicked.emit()
+        file_dialog = QFileDialog(self)
+        suffix_list = ["*.json"]
+        folder = os.path.join(riocore_path, "configs")
+        text = self.text()
+        if text:
+            folder = os.path.dirname(text)
+        name = file_dialog.getOpenFileName(
+            self,
+            "Load File",
+            folder,
+            f"json ( {' '.join(suffix_list)} )Load File",
+            "",
+        )
+        if name[0]:
+            self.setText(name[0])
 
     def change(self):
         if self.text() != self.default:
