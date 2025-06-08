@@ -12,7 +12,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "riosub"
         self.INFO = "rio sub board"
-        self.DESCRIPTION = """to combine multible RIO boards via RS422
+        self.DESCRIPTION = """to combine multible RIO boards via RS422 and/or RS485
 
 * the sub config must setup 'uart' as interface with checksum activated
 
