@@ -11,7 +11,7 @@ module uart
          input rx
      );
 
-    localparam BUFFER_SIZE2 = BUFFER_SIZE + 16;
+    localparam BUFFER_SIZE2 = BUFFER_SIZE + (CSUM * 16);
 
     reg [BUFFER_SIZE2-1:0] tx_data_buffer;
     reg [BUFFER_SIZE2-1:0] rx_data_buffer;
