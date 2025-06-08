@@ -38,6 +38,11 @@ graph LR;
             "rx": {
                 "direction": "input",
             },
+            "tx_enable": {
+                "direction": "output",
+                "optional": True,
+                "descruption": "for RS485 mode",
+            },
         }
         self.INTERFACE = {
             "valid": {
@@ -242,6 +247,7 @@ graph LR;
                         else:
                             verilog_data.append(f"        {rev_direction} {varname},")
 
+        verilog_data.append("        output reg tx_enable = 0,")
         verilog_data.append("        output reg valid = 0,")
         verilog_data.append("        input rx,")
         verilog_data.append("        output tx")
@@ -263,7 +269,7 @@ graph LR;
         verilog_data.append("")
         verilog_data.append("    reg isync = 0;")
         verilog_data.append("    reg [7:0] state = 0;")
-        verilog_data.append("    reg [31:0] counter = 0;")
+        verilog_data.append("    reg [31:0] delay_counter = 0;")
         verilog_data.append("    reg [31:0] rx_byte_counter = 0;")
         verilog_data.append("    reg [31:0] tx_byte_counter = 0;")
         verilog_data.append("    reg [(BUFFER_SIZE_BITS)-1:0] tx_data = 0;")
@@ -346,11 +352,13 @@ graph LR;
                 TxD_start <= 1;
                 state <= 2;
             end
-
         end else if (state == 2) begin
             if (TxD_busy == 0) begin
+                state <= 3;
+            end
+        end else if (state == 3) begin
+            if (TxD_busy == 0) begin
                 if (tx_byte_counter < BUFFER_SIZE - 1) begin
-
                     if (tx_byte_counter < BUFFER_SIZE - 1 - 2) begin
                         tx_csum <= tx_csum + TxD_data;
                         tx_data <= {tx_data[(BUFFER_SIZE_BITS)-8-1:0], 8'd0};
@@ -363,18 +371,20 @@ graph LR;
                     state <= 1;
                     tx_byte_counter <= tx_byte_counter + 1;
                 end else begin
-                    state <= 3;
+                    state <= 4;
                     tx_byte_counter <= 0;
+                    tx_enable <= 0;
                 end
             end
 
-        end else if (state == 3) begin
-            if (counter < TX_DELAY) begin
-                counter <= counter + 1;
+        end else if (state == 4) begin
+            if (delay_counter < TX_DELAY) begin
+                delay_counter <= delay_counter + 1;
             end else begin
-                counter <= 0;
+                delay_counter <= 0;
                 state <= 0;
                 isync <= 1;
+                tx_enable <= 1;
             end
         end
 
@@ -388,7 +398,7 @@ graph LR;
             rx_data <= 0;
             rx_byte_counter <= 0;
             rx_csum <= 0;
-            counter <= TX_DELAY;
+            delay_counter <= TX_DELAY;
         end else if (RxD_data_ready == 1) begin
             if (rx_byte_counter < BUFFER_SIZE) begin
                 rx_data <= {rx_data[(BUFFER_SIZE_BITS)-8-1:0], RxD_data};
