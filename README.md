@@ -218,6 +218,7 @@ graph LR;
     LinuxCNC<-->rio.c;
     rio.c<-->riocomp.c;
     riocomp.c<--UDP/SPI-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 ### ROS
@@ -228,6 +229,7 @@ graph LR;
     ROS-Plugin-N<--TCP-->ROS-core
     ROS-core<--TCP-->rosbridge;
     rosbridge<--UDP/SPI-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 ### MQTT
@@ -239,6 +241,7 @@ graph LR;
     MQTT-Client-N<--MQTT-->MQTT-Broker
     MQTT-Broker<--MQTT-->mqttbridge;
     mqttbridge<--UDP/SPI-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 ### JSLIB
@@ -246,6 +249,7 @@ graph LR;
 graph LR;
     nodejs<-->JSLIB
     JSLIB<--UDP-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 

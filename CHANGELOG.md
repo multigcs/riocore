@@ -6,6 +6,7 @@
 ...
 
 ### Plugins
+* adding experimental riosub plugin, to chain multiple FPGA's
 ...
 
 
