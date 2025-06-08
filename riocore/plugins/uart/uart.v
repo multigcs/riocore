@@ -56,8 +56,12 @@ module uart
                 rx_data <= rx_data_buffer;
                 tx_enable <= 1;
                 tx_counter <= 0;
-                tx_data_buffer <= {tx_data, 16'd0};
-                tx_csum <= tx_data[BUFFER_SIZE-1:BUFFER_SIZE-8];
+                if (CSUM == 1) begin
+                    tx_data_buffer <= {tx_data, 16'd0};
+                    tx_csum <= tx_data[BUFFER_SIZE-1:BUFFER_SIZE-8];
+                end else begin
+                    tx_data_buffer <= tx_data;
+                end
                 tx_state <= 1;
                 sync <= 1;
             end
