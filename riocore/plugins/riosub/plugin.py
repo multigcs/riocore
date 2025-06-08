@@ -418,7 +418,7 @@ graph LR;
         end
 
         if (RxD_endofpacket == 1) begin
-            if (rx_data[15:0] == rx_csum) begin
+            if (rx_data[BUFFER_SIZE_BITS-1:BUFFER_SIZE_BITS-32] == 32'h61746164 && rx_data[15:0] == rx_csum) begin
                 valid <= 1;
                 rx_frame <= rx_data;
             end else begin
