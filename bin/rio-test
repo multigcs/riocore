@@ -220,6 +220,7 @@ class WinForm(QWidget):
                     self.draw_instance(plugin_instance, haldata, tab_layout, pg, tab_num=tab_num)
                 tab_layout.addStretch()
 
+        self.errors = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(args.interval)
@@ -630,13 +631,18 @@ class WinForm(QWidget):
 
             if not args.debug or True:
                 if len(rxdata) != self.project.buffer_bytes:
-                    print(f"ERROR: reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
+                    print(f"ERROR({self.errors}): reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
+                    self.errors += 1
                     # return
                 if not rxdata:
-                    print("ERROR: no data reveived")
+                    print("ERROR({self.errors}): no data reveived")
+                    self.errors += 1
                 elif rxdata[0] != 0x61 or rxdata[1] != 0x74 or rxdata[2] != 0x61 and rxdata[3] != 0x64:
-                    print(f"ERROR: reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
+                    print(f"ERROR({self.errors}): reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
+                    self.errors += 1
                     # return
+                else:
+                    self.errors = 0
 
             self.project.rxdata_set(rxdata)
             if args.debug:

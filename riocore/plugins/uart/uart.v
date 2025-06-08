@@ -11,7 +11,7 @@ module uart
          input rx
      );
 
-    localparam BUFFER_SIZE2 = BUFFER_SIZE + (CSUM * 16);
+    localparam BUFFER_SIZE2 = BUFFER_SIZE + 16;
 
     reg [BUFFER_SIZE2-1:0] tx_data_buffer;
     reg [BUFFER_SIZE2-1:0] rx_data_buffer;
@@ -52,8 +52,8 @@ module uart
     always @(posedge clk) begin
         sync <= 0;
         if (RxD_endofpacket == 1) begin
-            if (rx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == 32'h74697277 && (CSUM == 0 || rx_csum == rx_data_buffer[15:0])) begin
-                rx_data <= rx_data_buffer;
+            if (rx_data_buffer[BUFFER_SIZE2-1:BUFFER_SIZE2-32] == 32'h74697277 && (CSUM == 0 || rx_csum == rx_data_buffer[15:0])) begin
+                rx_data <= rx_data_buffer[BUFFER_SIZE2-1:16];
                 tx_enable <= 1;
                 tx_counter <= 0;
                 if (CSUM == 1) begin

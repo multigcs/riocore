@@ -78,11 +78,8 @@ graph LR;
         self.sub_plugins = {}
         self.sub_signals = {}
 
-        self.buffersize_tx = 4 * 8  # Header
-        self.buffersize_rx = 4 * 8 + 4 * 8  # Header + timestamp
-        # csum
-        self.buffersize_rx += 16
-        self.buffersize_tx += 16
+        self.buffersize_tx = 32  # Header
+        self.buffersize_rx = 32 + 32  # Header + timestamp
 
         subconfig = self.plugin_setup.get("subconfig", self.OPTIONS["subconfig"]["default"])
         if not subconfig:
@@ -96,6 +93,14 @@ graph LR;
                 sub_plugin["name"] = f"{sub_plugin['type']}{self.sub_plugins_id}"
                 self.sub_plugins[sub_plugin["name"]] = sub_plugin
                 self.sub_plugins_id += 1
+
+            for sub_plugin in subdata["plugins"]:
+                for signal_name, signal_defaults in sub_plugin["instance"].SIGNALS.items():
+                    self.SIGNALS[f"{sub_plugin['name']}_{signal_name}"] = signal_defaults
+                    self.sub_signals[f"{sub_plugin['name']}_{signal_name}"] = (sub_plugin, signal_name)
+
+                for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
+                    self.INTERFACE[f"{sub_plugin['name']}_{interface_name}"] = interface_defaults
 
             # checking multiplexed values
             self.multiplexed_input = 0
@@ -125,13 +130,8 @@ graph LR;
 
             # check frame size
             for sub_plugin in subdata["plugins"]:
-                for signal_name, signal_defaults in sub_plugin["instance"].SIGNALS.items():
-                    self.SIGNALS[f"{sub_plugin['name']}_{signal_name}"] = signal_defaults
-                    self.sub_signals[f"{sub_plugin['name']}_{signal_name}"] = (sub_plugin, signal_name)
-
                 for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
                     multiplexed = interface_defaults.get("multiplexed", False)
-                    self.INTERFACE[f"{sub_plugin['name']}_{interface_name}"] = interface_defaults
                     size = interface_defaults["size"]
                     direction = interface_defaults["direction"]
                     if multiplexed:
@@ -144,11 +144,26 @@ graph LR;
 
             self.buffersize = max(self.buffersize_tx, self.buffersize_rx)
             self.buffersize_bytes = (self.buffersize + 7) // 8
+            self.buffersize = self.buffersize_bytes * 8
             self.tx_fill = max(0, self.buffersize_bytes * 8 - self.buffersize_tx)
+            self.rx_fill = max(0, self.buffersize_bytes * 8 - self.buffersize_rx)
 
-            output_pos = self.buffersize - 32 - 32
+            # csum
+            self.buffersize_bytes += 2
+
+            print(self.buffersize)
+
+            input_pos = self.buffersize
             self.tx_frame = ["32'h74697277"]
             self.rx_frame = []
+
+            input_pos -= 32
+            self.rx_frame.append(f"// HEADER / input_pos={input_pos} -> {input_pos + 32}")
+            input_pos -= 32
+            self.rx_frame.append(f"// TIMESTAMP / input_pos={input_pos} -> {input_pos + 32}")
+
+            # csum
+            input_pos += 16
 
             # building rx/tx frames
             if self.multiplexed_input:
@@ -156,16 +171,16 @@ graph LR;
                 size = self.multiplexed_input_size
                 pack_list = []
                 for bit_num in range(0, size, 8):
-                    pack_list.append(f"rx_frame[{output_pos - 1}:{output_pos - 8}]")
-                    output_pos -= 8
-                self.rx_frame.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}}; // output_pos={output_pos}")
+                    pack_list.append(f"rx_frame[{input_pos - 1}:{input_pos - 8}]")
+                    input_pos -= 8
+                self.rx_frame.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}}; // input_pos={input_pos}")
                 variable_name = "MULTIPLEXED_INPUT_ID"
                 size = 8
                 pack_list = []
                 for bit_num in range(0, size, 8):
-                    pack_list.append(f"rx_frame[{output_pos - 1}:{output_pos - 8}]")
-                    output_pos -= 8
-                self.rx_frame.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}}; // output_pos={output_pos}")
+                    pack_list.append(f"rx_frame[{input_pos - 1}:{input_pos - 8}]")
+                    input_pos -= 8
+                self.rx_frame.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}}; // input_pos={input_pos}")
 
             if self.multiplexed_output:
                 variable_name = "MULTIPLEXED_OUTPUT_VALUE"
@@ -181,38 +196,50 @@ graph LR;
                     pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
                 self.tx_frame.append(", ".join(pack_list))
 
-            for sub_plugin in subdata["plugins"]:
-                for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
-                    multiplexed = interface_defaults.get("multiplexed", False)
-                    if multiplexed:
-                        continue
-                    size = interface_defaults["size"]
-                    direction = interface_defaults["direction"]
-                    variable_name = f"{sub_plugin['name']}_{interface_name}"
-                    if direction == "output":
-                        pack_list = []
-                        if size >= 8:
-                            for bit_num in range(0, size, 8):
-                                pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
+            for check_size in range(128, 0, -1):
+                for sub_plugin in subdata["plugins"]:
+                    for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
+                        multiplexed = interface_defaults.get("multiplexed", False)
+                        if multiplexed:
+                            continue
+                        size = interface_defaults["size"]
+                        if check_size != size:
+                            continue
+                        direction = interface_defaults["direction"]
+                        variable_name = f"{sub_plugin['name']}_{interface_name}"
+                        if direction == "output":
+                            pack_list = []
+                            if size >= 8:
+                                for bit_num in range(0, size, 8):
+                                    pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
+                            else:
+                                pack_list.append(f"{variable_name}")
+                            self.tx_frame.append(", ".join(pack_list))
                         else:
-                            pack_list.append(f"{variable_name}")
-                        self.tx_frame.append(", ".join(pack_list))
-                    else:
-                        pack_list = []
-                        if size >= 8:
-                            for bit_num in range(0, size, 8):
-                                pack_list.append(f"rx_frame[{output_pos - 1}:{output_pos - 8}]")
-                                output_pos -= 8
-                        elif size > 1:
-                            pack_list.append(f"rx_frame[{output_pos - 1}:{output_pos - size}]")
-                            output_pos -= size
-                        else:
-                            pack_list.append(f"rx_frame[{output_pos - 1}]")
-                            output_pos -= 1
-                        self.rx_frame.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}}; // output_pos={output_pos}")
+                            pack_list = []
+                            if size >= 8:
+                                for bit_num in range(0, size, 8):
+                                    pack_list.append(f"rx_frame[{input_pos - 1}:{input_pos - 8}]")
+                                    input_pos -= 8
+                            elif size > 1:
+                                pack_list.append(f"rx_frame[{input_pos - 1}:{input_pos - size}]")
+                                input_pos -= size
+                            else:
+                                pack_list.append(f"rx_frame[{input_pos - 1}]")
+                                input_pos -= 1
+                            self.rx_frame.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}}; // input_pos={input_pos}")
+
+            # RX
+            input_pos -= self.rx_fill
+            self.rx_frame.append(f"// {self.rx_fill}bit FILL / input_pos={input_pos}")
+            input_pos -= 16
+            self.rx_frame.append(f"// CSUM / input_pos={input_pos}")
 
         if self.tx_fill:
-            self.tx_frame.append(f"{self.tx_fill}'d0")
+            self.tx_frame.append(f"{self.tx_fill}'d0, // FILL")
+
+        self.tx_frame.append("16'd0 // CSUM")
+
         self.tx_frame_fmt = ",\n        ".join(self.tx_frame)
 
         verilog_data = []
@@ -221,31 +248,31 @@ graph LR;
         verilog_data.append(f"    #(parameter BUFFER_SIZE={self.buffersize_bytes}, parameter ClkFrequency=12000000, parameter Baud=9600, parameter TX_DELAY=10000)")
         verilog_data.append("    (")
         verilog_data.append("        input clk,")
-        if subconfig:
-            for sub_plugin in subdata["plugins"]:
-                for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
-                    multiplexed = interface_defaults.get("multiplexed", False)
-                    size = interface_defaults["size"]
-                    direction = interface_defaults["direction"]
-                    varname = f"{sub_plugin['name']}_{interface_name}"
-                    if direction == "input":
-                        rev_direction = "output"
-                        if multiplexed:
-                            if size > 1:
-                                verilog_data.append(f"        {rev_direction} reg [{size - 1}:0] {varname} = 0,")
-                            else:
-                                verilog_data.append(f"        {rev_direction} reg {varname} = 0,")
+
+        for sub_plugin in subdata["plugins"]:
+            for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
+                multiplexed = interface_defaults.get("multiplexed", False)
+                size = interface_defaults["size"]
+                direction = interface_defaults["direction"]
+                varname = f"{sub_plugin['name']}_{interface_name}"
+                if direction == "input":
+                    rev_direction = "output"
+                    if multiplexed:
+                        if size > 1:
+                            verilog_data.append(f"        {rev_direction} reg [{size - 1}:0] {varname} = 0,")
                         else:
-                            if size > 1:
-                                verilog_data.append(f"        {rev_direction} [{size - 1}:0] {varname},")
-                            else:
-                                verilog_data.append(f"        {rev_direction} {varname},")
+                            verilog_data.append(f"        {rev_direction} reg {varname} = 0,")
                     else:
-                        rev_direction = "input"
                         if size > 1:
                             verilog_data.append(f"        {rev_direction} [{size - 1}:0] {varname},")
                         else:
                             verilog_data.append(f"        {rev_direction} {varname},")
+                else:
+                    rev_direction = "input"
+                    if size > 1:
+                        verilog_data.append(f"        {rev_direction} [{size - 1}:0] {varname},")
+                    else:
+                        verilog_data.append(f"        {rev_direction} {varname},")
 
         verilog_data.append("        output reg tx_enable = 0,")
         verilog_data.append("        output reg valid = 0,")
@@ -294,23 +321,24 @@ graph LR;
             mpid = 0
             # sort by size
             for check_size in range(self.multiplexed_output_size, 0, -1):
-                for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
-                    multiplexed = interface_defaults.get("multiplexed", False)
-                    if not multiplexed:
-                        continue
-                    size = interface_defaults["size"]
-                    if size != check_size:
-                        continue
-                    variable_name = f"{sub_plugin['name']}_{interface_name}"
-                    direction = interface_defaults["direction"]
-                    if direction == "output":
-                        verilog_data.append(f"            if (MULTIPLEXED_OUTPUT_ID == {mpid}) begin")
-                        if size == 1:
-                            verilog_data.append(f"                MULTIPLEXED_OUTPUT_VALUE <= {variable_name};")
-                        else:
-                            verilog_data.append(f"                MULTIPLEXED_OUTPUT_VALUE <= {variable_name}[{size - 1}:0];")
-                        verilog_data.append("            end")
-                        mpid += 1
+                for sub_plugin in subdata["plugins"]:
+                    for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
+                        multiplexed = interface_defaults.get("multiplexed", False)
+                        if not multiplexed:
+                            continue
+                        size = interface_defaults["size"]
+                        if size != check_size:
+                            continue
+                        variable_name = f"{sub_plugin['name']}_{interface_name}"
+                        direction = interface_defaults["direction"]
+                        if direction == "output":
+                            verilog_data.append(f"            if (MULTIPLEXED_OUTPUT_ID == {mpid}) begin")
+                            if size == 1:
+                                verilog_data.append(f"                MULTIPLEXED_OUTPUT_VALUE <= {variable_name};")
+                            else:
+                                verilog_data.append(f"                MULTIPLEXED_OUTPUT_VALUE <= {variable_name}[{size - 1}:0];")
+                            verilog_data.append("            end")
+                            mpid += 1
 
             verilog_data.append("        end")
             verilog_data.append("    end")
@@ -319,20 +347,21 @@ graph LR;
             verilog_data.append("    always @(posedge clk) begin")
             mpid = 0
             for check_size in range(self.multiplexed_output_size, 0, -1):
-                for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
-                    multiplexed = interface_defaults.get("multiplexed", False)
-                    if not multiplexed:
-                        continue
-                    size = interface_defaults["size"]
-                    if size != check_size:
-                        continue
-                    variable_name = f"{sub_plugin['name']}_{interface_name}"
-                    direction = interface_defaults["direction"]
-                    if direction == "input":
-                        verilog_data.append(f"        if (MULTIPLEXED_INPUT_ID == {mpid}) begin")
-                        verilog_data.append(f"            {variable_name} <= MULTIPLEXED_INPUT_VALUE[{size - 1}:0];")
-                        verilog_data.append("        end")
-                        mpid += 1
+                for sub_plugin in subdata["plugins"]:
+                    for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
+                        multiplexed = interface_defaults.get("multiplexed", False)
+                        if not multiplexed:
+                            continue
+                        size = interface_defaults["size"]
+                        if size != check_size:
+                            continue
+                        variable_name = f"{sub_plugin['name']}_{interface_name}"
+                        direction = interface_defaults["direction"]
+                        if direction == "input":
+                            verilog_data.append(f"        if (MULTIPLEXED_INPUT_ID == {mpid}) begin")
+                            verilog_data.append(f"            {variable_name} <= MULTIPLEXED_INPUT_VALUE[{size - 1}:0];")
+                            verilog_data.append("        end")
+                            mpid += 1
             verilog_data.append("    end")
 
         verilog_data.append("""
