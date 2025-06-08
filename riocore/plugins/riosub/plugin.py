@@ -82,6 +82,7 @@ graph LR;
         self.buffersize_rx = 4 * 8 + 4 * 8  # Header + timestamp
         # csum
         self.buffersize_rx += 16
+        self.buffersize_tx += 16
 
         subconfig = self.plugin_setup.get("subconfig", self.OPTIONS["subconfig"]["default"])
         if not subconfig:
@@ -251,10 +252,12 @@ graph LR;
         verilog_data.append("        output tx")
         verilog_data.append("    );")
         verilog_data.append("")
+        verilog_data.append("    localparam BUFFER_SIZE_BITS = BUFFER_SIZE * 8;")
         verilog_data.append("")
-        verilog_data.append("    reg [15:0] csum_calc = 0;")
-        verilog_data.append("    reg [(BUFFER_SIZE*8)-1:0] rx_frame = 0;")
-        verilog_data.append("    wire [(BUFFER_SIZE*8)-1:0] tx_frame;")
+        verilog_data.append("    reg [15:0] rx_csum = 0;")
+        verilog_data.append("    reg [15:0] tx_csum = 0;")
+        verilog_data.append("    reg [(BUFFER_SIZE_BITS)-1:0] rx_frame = 0;")
+        verilog_data.append("    wire [(BUFFER_SIZE_BITS)-1:0] tx_frame;")
         verilog_data.append("    assign tx_frame = {")
         verilog_data.append(f"        {self.tx_frame_fmt}")
         verilog_data.append("    };")
@@ -268,8 +271,8 @@ graph LR;
         verilog_data.append("    reg [31:0] counter = 0;")
         verilog_data.append("    reg [31:0] rx_byte_counter = 0;")
         verilog_data.append("    reg [31:0] tx_byte_counter = 0;")
-        verilog_data.append("    reg [(BUFFER_SIZE*8)-1:0] tx_data = 0;")
-        verilog_data.append("    reg [(BUFFER_SIZE*8)-1:0] rx_data = 0;")
+        verilog_data.append("    reg [(BUFFER_SIZE_BITS)-1:0] tx_data = 0;")
+        verilog_data.append("    reg [(BUFFER_SIZE_BITS)-1:0] rx_data = 0;")
         verilog_data.append("")
 
         if self.multiplexed_input:
@@ -338,20 +341,30 @@ graph LR;
 
         if (state == 0) begin
             tx_data <= tx_frame;
+            tx_csum <= 0;
             state <= 1;
 
         end else if (state == 1) begin
             // tx next bytes
             if (TxD_busy == 0 && TxD_start == 0) begin
-                TxD_data <= tx_data[(BUFFER_SIZE*8)-1:(BUFFER_SIZE*8)-8];
+                TxD_data <= tx_data[(BUFFER_SIZE_BITS)-1:(BUFFER_SIZE_BITS)-8];
                 TxD_start <= 1;
                 state <= 2;
-                tx_data <= {tx_data[(BUFFER_SIZE*8)-8:0], 8'd0};
             end
 
         end else if (state == 2) begin
             if (TxD_busy == 0) begin
-                if (tx_byte_counter < BUFFER_SIZE-1) begin
+                if (tx_byte_counter < BUFFER_SIZE - 1) begin
+
+                    if (tx_byte_counter < BUFFER_SIZE - 1 - 2) begin
+                        tx_csum <= tx_csum + TxD_data;
+                        tx_data <= {tx_data[(BUFFER_SIZE_BITS)-8-1:0], 8'd0};
+                    end else if (tx_byte_counter < BUFFER_SIZE - 1 - 1) begin
+                        tx_data[(BUFFER_SIZE_BITS)-1:(BUFFER_SIZE_BITS)-8] <= tx_csum[15:8];
+                    end else if (tx_byte_counter < BUFFER_SIZE - 1) begin
+                        tx_data[(BUFFER_SIZE_BITS)-1:(BUFFER_SIZE_BITS)-8] <= tx_csum[7:0];
+                    end
+
                     state <= 1;
                     tx_byte_counter <= tx_byte_counter + 1;
                 end else begin
@@ -371,7 +384,7 @@ graph LR;
         end
 
         if (RxD_endofpacket == 1) begin
-            if (rx_data[15:0] == csum_calc) begin
+            if (rx_data[15:0] == rx_csum) begin
                 valid <= 1;
                 rx_frame <= rx_data;
             end else begin
@@ -379,13 +392,13 @@ graph LR;
             end
             rx_data <= 0;
             rx_byte_counter <= 0;
-            csum_calc <= 0;
+            rx_csum <= 0;
             counter <= TX_DELAY;
         end else if (RxD_data_ready == 1) begin
             if (rx_byte_counter < BUFFER_SIZE) begin
-                rx_data <= {rx_data[(BUFFER_SIZE*8)-8-1:0], RxD_data};
+                rx_data <= {rx_data[(BUFFER_SIZE_BITS)-8-1:0], RxD_data};
                 if (rx_byte_counter < BUFFER_SIZE - 2) begin
-                    csum_calc <= csum_calc + RxD_data;
+                    rx_csum <= rx_csum + RxD_data;
                 end
 
                 rx_byte_counter <= rx_byte_counter + 1;

@@ -625,6 +625,7 @@ class WinForm(QWidget):
             stop = time.time()
             if args.debug:
                 print("rx:", rxdata)
+                # print("rx:", [f"{val:3d}" for val in rxdata])
                 print((stop - start) * 1000)
 
             if not args.debug or True:
