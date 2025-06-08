@@ -34,7 +34,6 @@ class Plugin(PluginBase):
             "csum": {
                 "default": False,
                 "type": bool,
-                "unit": "",
                 "description": "activate checksums",
             },
         }

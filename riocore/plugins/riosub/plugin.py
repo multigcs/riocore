@@ -14,12 +14,7 @@ class Plugin(PluginBase):
         self.INFO = "rio sub board"
         self.DESCRIPTION = """to combine multible RIO boards via RS422
 
-* the sub config must setup 'uart' as interface
-* very limited !!!
-* very buggy !!!
-* some calculations will not work
-* some plugins will not work
-* only for testing
+* the sub config must setup 'uart' as interface with checksum activated
 
         """
         self.GRAPH = """

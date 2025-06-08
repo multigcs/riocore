@@ -10,12 +10,7 @@
 
 to combine multible RIO boards via RS422
 
-* the sub config must setup 'uart' as interface
-* very limited !!!
-* very buggy !!!
-* some calculations will not work
-* some plugins will not work
-* only for testing
+* the sub config must setup 'uart' as interface with checksum activated
 
 ```mermaid
 graph LR;
@@ -43,7 +38,7 @@ graph LR;
 ### subconfig:
 sub json-config file
 
- * type: str
+ * type: file
  * default: 
  * unit: 
 
@@ -65,10 +60,18 @@ name of this plugin instance
 
 ## Signals:
 *signals/pins in LinuxCNC*
+### valid:
+
+ * type: bit
+ * direction: input
 
 
 ## Interfaces:
 *transport layer*
+### valid:
+
+ * size: 1 bit
+ * direction: input
 
 
 ## Basic-Example:
@@ -114,7 +117,17 @@ name of this plugin instance
             ]
         }
     },
-    "signals": {}
+    "signals": {
+        "valid": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "valid",
+                "section": "inputs",
+                "type": "led"
+            }
+        }
+    }
 }
 ```
 
