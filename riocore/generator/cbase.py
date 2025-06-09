@@ -122,7 +122,6 @@ class cbase:
                                 check = varname.split("_")[-2].strip() + "_" + varname.split("_")[-1].strip()
                             """
                             check = "_".join(varname.split("_")[2:])
-
                             if data_name.upper() == check:
                                 source = varname.split()[-1].strip("*")
                                 if variable_size > 1:
@@ -297,8 +296,12 @@ class cbase:
                             var_prefix = signal_config["var_prefix"]
                             varname = signal_config["varname"]
 
-                            if variable_name.endswith(signal_name.upper()):
+                            check1 = "_".join(variable_name.split("_")[1:])
+                            check2 = "_".join(varname.split("_")[1:])
+
+                            if check1 == check2:
                                 source = variable_name.split()[-1].strip("*")
+
                                 if not boolean:
                                     output.append(f"    float value = data->{source};")
                                 else:
