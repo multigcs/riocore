@@ -10,6 +10,8 @@
 
 abs-encoder over rs485
 
+TODO: csum, pos/revs, cleanup
+
 for Panasonic and some Bosch/Rexroth Servos with
 mfe0017 encoder
 
@@ -93,6 +95,11 @@ name of this plugin instance
  * direction: input
 
 ### position:
+
+ * type: float
+ * direction: input
+
+### revs:
 
  * type: float
  * direction: input
@@ -254,6 +261,17 @@ name of this plugin instance
             "offset": 0.0,
             "display": {
                 "title": "position",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "revs": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "revs",
                 "section": "inputs",
                 "type": "meter"
             }

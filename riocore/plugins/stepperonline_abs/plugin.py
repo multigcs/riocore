@@ -8,6 +8,8 @@ class Plugin(PluginBase):
         self.DESCRIPTION = """
 abs-encoder over rs485
 
+TODO: csum, pos/revs, cleanup
+
 17bit Absolute
 
 Firewire-Connector:
@@ -103,6 +105,10 @@ Firewire-Connector:
                 "direction": "input",
                 "format": "d",
             },
+            "revs": {
+                "direction": "input",
+                "format": "d",
+            },
             "csum": {
                 "direction": "input",
                 "format": "0.3f",
@@ -116,6 +122,7 @@ Firewire-Connector:
                 "format": "d",
             },
         }
+        self.angle_last = None
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -125,11 +132,12 @@ Firewire-Connector:
         return instances
 
     def convert(self, signal_name, signal_setup, value):
-        # if signal_name == "csum":
-        #    print(f"#### {value:032b} {value:d}")
-
-        # if signal_name == "position":
-        #    print(f"{value:032b} {(value & 0xFF000000) >> 24} {(value & 0xFF0000) >> 16} {((value & 0xFF00) >> 8)} {(value & 0xFF)}")
         if signal_name == "angle":
+            if self.angle_last is not None:
+                if value - self.angle_last > 30000:
+                    self.SIGNALS["revs"]["value"] -= 1
+                elif value - self.angle_last < -30000:
+                    self.SIGNALS["revs"]["value"] += 1
+            self.angle_last = value
             return value * 360.0 / 65536
         return value
