@@ -52,6 +52,7 @@
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
 |  | [spipoti](spipoti/README.md) | spi digital poti | <img src="spipoti/image.png" height="48"> |  |
+|  | [stepperonline_abs](stepperonline_abs/README.md) | serial abs-encoder stepperonline A6 | <img src="stepperonline_abs/image.png" height="48"> | X |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |  |
 |  | [tm1638b8s7l8](tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="tm1638b8s7l8/image.png" height="48"> |  |
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |

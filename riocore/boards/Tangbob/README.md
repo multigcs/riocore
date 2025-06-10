@@ -6,7 +6,7 @@
 * Family: GW1N-9C
 * Type: GW1NR-LV9QN88PC6/I5
 * Package: 
-* Clock: 27.000Mhz -> PLL -> 32.400Mhz (Pin:52)
+* Clock: 27.000Mhz (Pin:52)
 * Example-Configs: [Tangbob](../../configs/Tangbob)
 
 ![board.png](board.png)

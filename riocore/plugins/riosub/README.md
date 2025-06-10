@@ -8,7 +8,7 @@
 
 **rio sub board**
 
-to combine multible RIO boards via RS422
+to combine multible RIO boards via RS422 and/or RS485
 
 * the sub config must setup 'uart' as interface with checksum activated
 
@@ -31,6 +31,11 @@ graph LR;
 ### rx:
 
  * direction: input
+
+### tx_enable:
+
+ * direction: output
+ * optional: True
 
 
 ## Options:
@@ -84,6 +89,9 @@ name of this plugin instance
         },
         "rx": {
             "pin": "1"
+        },
+        "tx_enable": {
+            "pin": "2"
         }
     }
 }
@@ -111,6 +119,14 @@ name of this plugin instance
                 {
                     "type": "debounce"
                 },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "tx_enable": {
+            "pin": "2",
+            "modifiers": [
                 {
                     "type": "invert"
                 }
