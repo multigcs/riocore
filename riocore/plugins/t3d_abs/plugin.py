@@ -10,10 +10,14 @@ abs-encoder over rs485
 
 17bit Absolute
 
-red   5V
-black GND
-blue  PS+ ?
-green PS- ?
+Firewire-Connector:
+* 1 PS+
+* 2 PS-
+* 3 NC
+* 4 NC
+* 5 5V
+* 6 GND
+
 
 """
         self.KEYWORDS = "absolute angle bldc hltnc_t3d A6"

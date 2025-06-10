@@ -12,12 +12,13 @@ abs-encoder over rs485
 
 17bit Absolute
 
-1 5V
-2 GND
-3
-4
-5 PS+
-6 PS1
+Firewire-Connector:
+* 1 5V
+* 2 GND
+* 3 NC
+* 4 NC
+* 5 PS+
+* 6 PS-
 
 Keywords: absolute angle bldc stepperonline A6
 
