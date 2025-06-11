@@ -48,7 +48,7 @@ class Modifiers:
         delay_divider = int(system_setup["speed"] * delay / 1000)
         instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "debouncer",
-            "parameter": {"WIDTH": delay_divider},
+            "parameter": {"DELAY": delay_divider},
             "arguments": {
                 "clk": "sysclk",
                 "din": pin_varname,

@@ -1,15 +1,14 @@
 
 module debouncer
-    #(parameter WIDTH = 16)
+    #(parameter DELAY = 16)
     (
         input clk,
         input din,
         output reg dout = 0
     );
 
-    localparam WIDTH_BITS = clog2(WIDTH + 1);
-
-    reg [WIDTH_BITS:0] din_cnt = 0;
+    localparam DELAY_BITS = clog2(DELAY + 1);
+    reg [DELAY_BITS:0] din_cnt = 0;
 
     always @(posedge clk) begin
         if (dout == 1) begin
@@ -20,11 +19,11 @@ module debouncer
                     dout <= 0;
                 end
             end else begin
-                din_cnt <= WIDTH;
+                din_cnt <= DELAY;
             end
         end else begin
             if (din == 1) begin
-                if (din_cnt > WIDTH) begin
+                if (din_cnt > DELAY) begin
                     dout <= 1;
                 end else begin
                     din_cnt <= din_cnt + 1;
