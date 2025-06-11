@@ -15,6 +15,15 @@ class Modifiers:
                     "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
                 },
             },
+            "delay": {
+                "title": "Delay",
+                "info": "to filter noisy signals",
+                "options": {
+                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
+                    "rising_edge": {"title": "Rising-Edge", "type": bool, "default": True, "help_text": "do delay on rising edge"},
+                    "falling_edge": {"title": "Falling-Edge", "type": bool, "default": False, "help_text": "do delay on falling edge"},
+                },
+            },
             "pwm": {
                 "title": "PWM",
                 "info": "pwm generator",
@@ -57,6 +66,24 @@ class Modifiers:
             "predefines": [f"wire {pin_varname}_DEBOUNCED;"],
         }
         pin_varname = f"{pin_varname}_DEBOUNCED"
+        return pin_varname
+
+    def pin_modifier_delay(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
+        delay = modifier.get("delay", 2.5)
+        delay_divider = int(system_setup["speed"] * delay / 1000)
+        rising = int(modifier.get("rising", True))
+        falling = int(modifier.get("falling", False))
+        instances[f"delay{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "delay",
+            "parameter": {"DELAY": delay_divider, "RISING": rising, "FALLING": falling},
+            "arguments": {
+                "clk": "sysclk",
+                "din": pin_varname,
+                "dout": f"{pin_varname}_DELAYED",
+            },
+            "predefines": [f"wire {pin_varname}_DELAYED;"],
+        }
+        pin_varname = f"{pin_varname}_DELAYED"
         return pin_varname
 
     def pin_modifier_toggle(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):

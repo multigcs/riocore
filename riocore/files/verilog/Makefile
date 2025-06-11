@@ -16,5 +16,10 @@ testb_debouncer:
 	vvp testb_debouncer.out
 	test -e testb_debouncer.gtkw && gtkwave testb_debouncer.gtkw || gtkwave testb_debouncer.vcd
 
+testb_delay:
+	iverilog -Wall -o testb_delay.out testb_delay.v delay.v
+	vvp testb_delay.out
+	test -e testb_delay.gtkw && gtkwave testb_delay.gtkw || gtkwave testb_delay.vcd
+
 clean:
 	rm -rf *.out *.vcd
