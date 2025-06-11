@@ -7,7 +7,9 @@
 
 ### Plugins
 * adding experimental riosub plugin, to chain multiple FPGA's
-...
+* adding panasonic absulute encoder plugin (experimental)
+* adding t3d absulute encoder plugin (experimental)
+* adding stepperonline absulute encoder plugin (experimental)
 
 
 ## v0.9.3
