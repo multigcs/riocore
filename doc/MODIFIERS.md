@@ -25,6 +25,16 @@ to filter noisy signals
 | --- | --- | --- | --- |
 | Delay | float | 2.5 | Delay in ms |
 
+## Delay
+to delay signal edges
+
+**Options:**
+| Name | Type | Default | Info |
+| --- | --- | --- | --- |
+| Delay | float | 2.5 | Delay in ms |
+| Rising-Edge | bool | True | do delay on rising edge |
+| Falling-Edge | bool | False | do delay on falling edge |
+
 ## PWM
 pwm generator
 
