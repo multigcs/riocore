@@ -17,7 +17,7 @@ class Modifiers:
             },
             "delay": {
                 "title": "Delay",
-                "info": "to filter noisy signals",
+                "info": "to delay signal edges",
                 "options": {
                     "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
                     "rising_edge": {"title": "Rising-Edge", "type": bool, "default": True, "help_text": "do delay on rising edge"},
