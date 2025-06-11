@@ -125,7 +125,7 @@ class Gateware:
                 target = os.path.join(self.gateware_path, verilog)
                 open(target, "w").write(data)
 
-        for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v", "oneshot.v"):
+        for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v", "oneshot.v", "delay.v"):
             self.verilogs.append(extrafile)
             source = os.path.join(riocore_path, "files", "verilog", extrafile)
             target = os.path.join(self.gateware_path, extrafile)
