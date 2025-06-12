@@ -43,7 +43,6 @@ module t3d_abs
     
     wire [7:0] csum_calc;
     assign csum_calc = (rxbuffer[47:40] ^ rxbuffer[39:32] ^ rxbuffer[31:24] ^ rxbuffer[23:16] ^ rxbuffer[15:8]);
-    
 
     always @(posedge clk) begin
         TxD_start <= 0;
