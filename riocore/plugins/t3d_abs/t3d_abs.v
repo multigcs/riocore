@@ -7,8 +7,7 @@ module t3d_abs
         output tx,
         output reg tx_enable = 1,
         output reg [31:0] position,
-        output reg [15:0] angle,
-        output reg [7:0] csum
+        output reg [15:0] angle
     );
 
     reg [47:0] rxbuffer = 0;
@@ -41,6 +40,10 @@ module t3d_abs
 
     reg [2:0] state = 0;
     reg [31:0] counter = 0;
+    
+    wire [7:0] csum_calc;
+    assign csum_calc = (rxbuffer[47:40] ^ rxbuffer[39:32] ^ rxbuffer[31:24] ^ rxbuffer[23:16] ^ rxbuffer[15:8]);
+    
 
     always @(posedge clk) begin
         TxD_start <= 0;
@@ -70,9 +73,7 @@ module t3d_abs
         end
 
         if (RxD_endofpacket == 1) begin
-            // TODO: csum calc and check
-            if (rxbuffer[47:40] == 2) begin
-                csum <= rxbuffer[7:0];
+            if (rxbuffer[47:40] == 2 && rxbuffer[7:0] == csum_calc) begin
                 // rxbuffer[39:32]; // always 0
                 // rxbuffer[47:40]; // always 2
                 angle <= {rxbuffer[8], rxbuffer[23:16], rxbuffer[31:25]}; // 17bit -> 16bit

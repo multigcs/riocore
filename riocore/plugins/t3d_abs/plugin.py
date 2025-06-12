@@ -8,8 +8,6 @@ class Plugin(PluginBase):
         self.DESCRIPTION = """
 abs-encoder over rs485
 
-TODO: csum, pos/revs, cleanup
-
 17bit Absolute
 
 Firewire-Connector:
@@ -68,10 +66,6 @@ Firewire-Connector:
                 "size": 32,
                 "direction": "input",
             },
-            "csum": {
-                "size": 8,
-                "direction": "input",
-            },
         }
         self.SIGNALS = {
             "angle": {
@@ -85,10 +79,6 @@ Firewire-Connector:
             "revs": {
                 "direction": "input",
                 "format": "d",
-            },
-            "csum": {
-                "direction": "input",
-                "format": "0.3f",
             },
         }
         self.angle_last = None
