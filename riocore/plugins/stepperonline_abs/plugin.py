@@ -8,8 +8,6 @@ class Plugin(PluginBase):
         self.DESCRIPTION = """
 abs-encoder over rs485
 
-TODO: csum, pos/revs, cleanup
-
 17bit Absolute
 
 Firewire-Connector:
@@ -25,24 +23,7 @@ Firewire-Connector:
         self.ORIGIN = ""
         self.EXPERIMENTAL = True
         self.VERILOGS = ["stepperonline_abs.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
-        self.OPTIONS = {
-            "delay": {
-                "default": 3,
-                "type": int,
-                "min": 1,
-                "max": 100,
-                "unit": "clocks",
-                "description": "clock delay for next manchester bit",
-            },
-            "delay_next": {
-                "default": 4,
-                "type": int,
-                "min": 1,
-                "max": 100,
-                "unit": "clocks",
-                "description": "clock delay for center of the next manchester bit",
-            },
-        }
+        self.OPTIONS = {}
         self.PINDEFAULTS = {
             "rx": {
                 "direction": "input",
@@ -52,10 +33,6 @@ Firewire-Connector:
             },
             "tx_enable": {
                 "direction": "output",
-            },
-            "debug_bit": {
-                "direction": "output",
-                "optional": True,
             },
         }
         self.INTERFACE = {
@@ -67,25 +44,17 @@ Firewire-Connector:
                 "size": 8,
                 "direction": "input",
             },
-            "angle": {
+            "revs": {
+                "size": 32,
+                "direction": "input",
+            },
+            "angle16": {
                 "size": 16,
                 "direction": "input",
             },
-            "position": {
+            "angle": {
                 "size": 32,
                 "direction": "input",
-            },
-            "csum": {
-                "size": 8,
-                "direction": "input",
-            },
-            "debug_data": {
-                "size": 32,
-                "direction": "input",
-            },
-            "cmd": {
-                "size": 8,
-                "direction": "output",
             },
         }
         self.SIGNALS = {
@@ -97,6 +66,14 @@ Firewire-Connector:
                 "direction": "input",
                 "format": "d",
             },
+            "revs": {
+                "direction": "input",
+                "format": "d",
+            },
+            "angle16": {
+                "direction": "input",
+                "format": "d",
+            },
             "angle": {
                 "direction": "input",
                 "format": "d",
@@ -105,24 +82,7 @@ Firewire-Connector:
                 "direction": "input",
                 "format": "d",
             },
-            "revs": {
-                "direction": "input",
-                "format": "d",
-            },
-            "csum": {
-                "direction": "input",
-                "format": "0.3f",
-            },
-            "debug_data": {
-                "direction": "input",
-                "format": "d",
-            },
-            "cmd": {
-                "direction": "output",
-                "format": "d",
-            },
         }
-        self.angle_last = None
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -132,12 +92,8 @@ Firewire-Connector:
         return instances
 
     def convert(self, signal_name, signal_setup, value):
-        if signal_name == "angle":
-            if self.angle_last is not None:
-                if value - self.angle_last > 30000:
-                    self.SIGNALS["revs"]["value"] -= 1
-                elif value - self.angle_last < -30000:
-                    self.SIGNALS["revs"]["value"] += 1
-            self.angle_last = value
-            return value * 360.0 / 65536
+        if signal_name == "angle16":
+            value = value * 360.0 / 65536
+        elif signal_name == "angle":
+            self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] * 131072 + value
         return value

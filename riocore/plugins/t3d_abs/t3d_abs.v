@@ -6,9 +6,12 @@ module t3d_abs
         input rx,
         output tx,
         output reg tx_enable = 1,
-        output reg [31:0] position,
-        output reg [15:0] angle
+        output reg [31:0] angle = 0,
+        output reg [31:0] revs = 0,
+        output wire [15:0] angle16
     );
+
+    assign angle16 = angle[16:1];
 
     reg [47:0] rxbuffer = 0;
     reg [3:0] rxlen = 0;
@@ -40,9 +43,13 @@ module t3d_abs
 
     reg [2:0] state = 0;
     reg [31:0] counter = 0;
+    reg startup = 1;
     
     wire [7:0] csum_calc;
     assign csum_calc = (rxbuffer[47:40] ^ rxbuffer[39:32] ^ rxbuffer[31:24] ^ rxbuffer[23:16] ^ rxbuffer[15:8]);
+
+    wire [31:0] angle_new;
+    assign angle_new = {8'd0, rxbuffer[15:8], rxbuffer[23:16], rxbuffer[31:24]};
 
     always @(posedge clk) begin
         TxD_start <= 0;
@@ -75,8 +82,15 @@ module t3d_abs
             if (rxbuffer[47:40] == 2 && rxbuffer[7:0] == csum_calc) begin
                 // rxbuffer[39:32]; // always 0
                 // rxbuffer[47:40]; // always 2
-                angle <= {rxbuffer[8], rxbuffer[23:16], rxbuffer[31:25]}; // 17bit -> 16bit
-                position <= {8'd0, rxbuffer[15:8], rxbuffer[23:16], rxbuffer[31:24]}; // 17bit -> 32bit
+                if (startup == 0) begin
+                    if (angle_new > angle && (angle_new - angle) > 60000) begin
+                        revs <= revs - 1;
+                    end else if (angle > angle_new && (angle - angle_new) > 60000) begin
+                        revs <= revs + 1;
+                    end
+                end
+                startup <= 0;
+                angle <= angle_new;
             end
             // next request in 0.01ms
             counter <= ClkFrequency / 100000;
