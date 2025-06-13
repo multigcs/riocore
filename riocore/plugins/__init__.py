@@ -45,6 +45,13 @@ class PluginBase:
 
         self.setup()
 
+        # update INTERFACE by user-signal-config
+        for interface_name, interface_data in self.INTERFACE.items():
+            signals = plugin_setup.get("signals", {})
+            if interface_name in signals:
+                if "multiplexed" in signals[interface_name]:
+                    interface_data["multiplexed"] = signals[interface_name]["multiplexed"]
+
         if self.TYPE == "frameio":
             self.timeout = self.TIMEOUT
             self.delay = self.DELAY

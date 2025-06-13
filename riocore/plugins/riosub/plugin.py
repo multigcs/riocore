@@ -330,7 +330,6 @@ graph LR;
                             mpid += 1
             verilog_data.append("    end")
 
-
         if self.multiplexed_output:
             verilog_data.append(f"    reg [{self.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE = 0;")
             verilog_data.append("    reg [7:0] MULTIPLEXED_OUTPUT_ID = 0;")
@@ -365,7 +364,6 @@ graph LR;
 
             verilog_data.append("        end")
             verilog_data.append("    end")
-
 
         verilog_data.append("""
     always @(posedge clk) begin
