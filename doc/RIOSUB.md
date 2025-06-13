@@ -84,62 +84,6 @@ First you need to configure your slave, because the master needs it's data to bu
             "uid": "pwmout1"
         },
         {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L3",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout2"
-        },
-        {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L4",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout3"
-        },
-        {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L5",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout4"
-        },
-        {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L6",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout5"
-        },
-        {
             "type": "quadencoder",
             "pins": {
                 "a": {
@@ -251,69 +195,13 @@ First you need to configure your slave, because the master needs it's data to bu
             "uid": "pwmout1"
         },
         {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L3",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout2"
-        },
-        {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L4",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout3"
-        },
-        {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L5",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout4"
-        },
-        {
-            "type": "pwmout",
-            "pins": {
-                "pwm": {
-                    "pin": "LED:L6",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
-                }
-            },
-            "uid": "pwmout5"
-        },
-        {
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "RIGHT:P16"
+                    "pin": "LEFT:P1"
                 },
                 "dir": {
-                    "pin": "RIGHT:P17"
+                    "pin": "LEFT:P2"
                 }
             },
             "uid": "stepdir0",
