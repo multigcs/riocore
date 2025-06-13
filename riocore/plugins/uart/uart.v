@@ -53,13 +53,15 @@ module uart
         sync <= 0;
         if (RxD_endofpacket == 1) begin
             if (rx_data_buffer[BUFFER_SIZE2-1:BUFFER_SIZE2-32] == MSGID && (CSUM == 0 || rx_csum == rx_data_buffer[15:0])) begin
-                rx_data <= rx_data_buffer[BUFFER_SIZE2-1:16];
                 tx_enable <= 1;
                 tx_counter <= 0;
                 if (CSUM == 1) begin
+                    rx_data <= rx_data_buffer[BUFFER_SIZE2-1:16];
                     tx_data_buffer <= {tx_data, 16'd0};
-                    tx_csum <= tx_data[BUFFER_SIZE-1:BUFFER_SIZE-8];
+                    // first byte for csum
+                    tx_csum <= tx_data[BUFFER_SIZE-1:BUFFER_SIZE-8] + 1;
                 end else begin
+                    rx_data <= rx_data_buffer;
                     tx_data_buffer <= tx_data;
                 end
                 tx_state <= 1;
@@ -81,7 +83,7 @@ module uart
                         tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE2-8-1:0], 8'd0};
                     end else if (tx_counter < BUFFER_SIZE2/8-1 - 2) begin
                         tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE2-8-1:0], 8'd0};
-                        tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE2-8-1:BUFFER_SIZE2-8-8];
+                        tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE2-8-1:BUFFER_SIZE2-8-8] + 1;
                     end else if (tx_counter < BUFFER_SIZE2/8-1 - 1) begin
                         tx_data_buffer[BUFFER_SIZE2-1:BUFFER_SIZE2-8] <= tx_csum[15:8];
                     end else begin
@@ -99,7 +101,7 @@ module uart
             if (rx_counter < BUFFER_SIZE2/8) begin
                 rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE2-1-8:0], RxD_data};
                 if (rx_counter < BUFFER_SIZE2/8 - 2) begin
-                    rx_csum <= rx_csum + RxD_data;
+                    rx_csum <= rx_csum + RxD_data + 1;
                 end
                 rx_counter <= rx_counter + 1'd1;
             end

@@ -85,6 +85,10 @@ graph LR;
         if not subconfig:
             return
 
+        if not os.path.isfile(subconfig):
+            print(f"ERROR: can not load sub config: {subconfig}")
+            return
+
         if subconfig:
             subdata_json = open(subconfig, "r").read()
             subdata = json.loads(subdata_json)
@@ -306,11 +310,30 @@ graph LR;
         if self.multiplexed_input:
             verilog_data.append(f"    wire [{self.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE;")
             verilog_data.append("    wire [7:0] MULTIPLEXED_INPUT_ID;")
+            verilog_data.append("    always @(posedge clk) begin")
+            mpid = 0
+            for check_size in range(self.multiplexed_input_size, 0, -1):
+                for sub_plugin in subdata["plugins"]:
+                    for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
+                        multiplexed = interface_defaults.get("multiplexed", False)
+                        if not multiplexed:
+                            continue
+                        size = interface_defaults["size"]
+                        if size != check_size:
+                            continue
+                        variable_name = f"{sub_plugin['name']}_{interface_name}"
+                        direction = interface_defaults["direction"]
+                        if direction == "input":
+                            verilog_data.append(f"        if (MULTIPLEXED_INPUT_ID == {mpid}) begin")
+                            verilog_data.append(f"            {variable_name} <= MULTIPLEXED_INPUT_VALUE[{size - 1}:0];")
+                            verilog_data.append("        end")
+                            mpid += 1
+            verilog_data.append("    end")
+
+
         if self.multiplexed_output:
             verilog_data.append(f"    reg [{self.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE = 0;")
             verilog_data.append("    reg [7:0] MULTIPLEXED_OUTPUT_ID = 0;")
-
-        if self.multiplexed_input:
             verilog_data.append("    always @(posedge clk) begin")
             verilog_data.append("        if (isync == 1) begin")
             verilog_data.append(f"            if (MULTIPLEXED_OUTPUT_ID < {self.multiplexed_output - 1}) begin")
@@ -343,26 +366,6 @@ graph LR;
             verilog_data.append("        end")
             verilog_data.append("    end")
 
-        if self.multiplexed_output:
-            verilog_data.append("    always @(posedge clk) begin")
-            mpid = 0
-            for check_size in range(self.multiplexed_output_size, 0, -1):
-                for sub_plugin in subdata["plugins"]:
-                    for interface_name, interface_defaults in sub_plugin["instance"].INTERFACE.items():
-                        multiplexed = interface_defaults.get("multiplexed", False)
-                        if not multiplexed:
-                            continue
-                        size = interface_defaults["size"]
-                        if size != check_size:
-                            continue
-                        variable_name = f"{sub_plugin['name']}_{interface_name}"
-                        direction = interface_defaults["direction"]
-                        if direction == "input":
-                            verilog_data.append(f"        if (MULTIPLEXED_INPUT_ID == {mpid}) begin")
-                            verilog_data.append(f"            {variable_name} <= MULTIPLEXED_INPUT_VALUE[{size - 1}:0];")
-                            verilog_data.append("        end")
-                            mpid += 1
-            verilog_data.append("    end")
 
         verilog_data.append("""
     always @(posedge clk) begin
@@ -378,6 +381,9 @@ graph LR;
             // tx next bytes
             if (TxD_busy == 0 && TxD_start == 0) begin
                 TxD_data <= tx_data[(BUFFER_SIZE_BITS)-1:(BUFFER_SIZE_BITS)-8];
+                if (tx_byte_counter < BUFFER_SIZE - 2) begin
+                    tx_csum <= tx_csum + tx_data[(BUFFER_SIZE_BITS)-1:(BUFFER_SIZE_BITS)-8] + 1;
+                end
                 TxD_start <= 1;
                 state <= 2;
             end
@@ -389,7 +395,6 @@ graph LR;
             if (TxD_busy == 0) begin
                 if (tx_byte_counter < BUFFER_SIZE - 1) begin
                     if (tx_byte_counter < BUFFER_SIZE - 1 - 2) begin
-                        tx_csum <= tx_csum + TxD_data;
                         tx_data <= {tx_data[(BUFFER_SIZE_BITS)-8-1:0], 8'd0};
                     end else if (tx_byte_counter < BUFFER_SIZE - 1 - 1) begin
                         tx_data[(BUFFER_SIZE_BITS)-1:(BUFFER_SIZE_BITS)-8] <= tx_csum[15:8];
@@ -419,6 +424,7 @@ graph LR;
 
         if (RxD_endofpacket == 1) begin
             if (rx_data[BUFFER_SIZE_BITS-1:BUFFER_SIZE_BITS-32] == 32'h61746164 && rx_data[15:0] == rx_csum) begin
+            //if (rx_data[BUFFER_SIZE_BITS-1:BUFFER_SIZE_BITS-32] == 32'h61746164) begin
                 valid <= 1;
                 rx_frame <= rx_data;
             end else begin
@@ -432,7 +438,7 @@ graph LR;
             if (rx_byte_counter < BUFFER_SIZE) begin
                 rx_data <= {rx_data[(BUFFER_SIZE_BITS)-8-1:0], RxD_data};
                 if (rx_byte_counter < BUFFER_SIZE - 2) begin
-                    rx_csum <= rx_csum + RxD_data;
+                    rx_csum <= rx_csum + RxD_data + 1;
                 end
 
                 rx_byte_counter <= rx_byte_counter + 1;
