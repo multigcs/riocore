@@ -1,4 +1,4 @@
-#RIOSUB
+# RIOSUB
 
 to combine multiple FPGA boards to one rio device
 
