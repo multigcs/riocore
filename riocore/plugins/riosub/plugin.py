@@ -155,8 +155,6 @@ graph LR;
             # csum
             self.buffersize_bytes += 2
 
-            print(self.buffersize)
-
             input_pos = self.buffersize
             self.tx_frame = ["32'h74697277"]
             self.rx_frame = []
