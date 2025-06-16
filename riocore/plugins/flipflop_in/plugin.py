@@ -10,7 +10,7 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.VERILOGS = ["flipflop_in.v"]
         self.PINDEFAULTS = {
-            "set": {
+            "setbit": {
                 "direction": "input",
             },
             "reset": {
@@ -18,13 +18,13 @@ class Plugin(PluginBase):
             },
         }
         self.INTERFACE = {
-            "bit": {
+            "outbit": {
                 "size": 1,
                 "direction": "input",
             },
         }
         self.SIGNALS = {
-            "bit": {
+            "outbit": {
                 "direction": "input",
             },
         }

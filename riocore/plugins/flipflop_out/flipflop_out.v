@@ -3,16 +3,16 @@ module flipflop_out
     #(parameter DEFAULT = 0)
      (
          input  clk,
-         input  set,
+         input  setbit,
          input  reset,
-         output reg bit = DEFAULT
+         output reg outbit = DEFAULT
      );
 
     always @(posedge clk) begin
         if (reset) begin
-            bit <= 0;
-        end else if (set) begin
-            bit <= 1;
+            outbit <= 0;
+        end else if (setbit) begin
+            outbit <= 1;
         end
     end
 endmodule

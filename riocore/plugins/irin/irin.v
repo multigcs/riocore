@@ -121,7 +121,7 @@ module irin
 
 
     wire fault = cnt_h[15] | cnt_l[15];
-    reg [5:0]cnt_num;
+    reg [5:0] cnt_num;
     initial cnt_num = 6'b0;
 
     always @ (posedge clk_1us) begin
@@ -145,18 +145,13 @@ module irin
                     state <= ST_START_L;
             end
             ST_CODE_P: begin
-                if((IR_neg)&(IR_code == CODE_1))
-                begin
-                    cnt_num = cnt_num + 1'b1;
+                if((IR_neg)&(IR_code == CODE_1)) begin
+                    cnt_num <= cnt_num + 1'b1;
                     IR_Value <= {IR_Value[30:0],1'b1};
-                end
-                else	if((IR_neg)&(IR_code == CODE_0))
-                begin
-                    cnt_num = cnt_num + 1'b1;
+                end else if((IR_neg)&(IR_code == CODE_0)) begin
+                    cnt_num <= cnt_num + 1'b1;
                     IR_Value <= {IR_Value[30:0],1'b0};
-                end
-                else if(cnt_num==6'd32)
-                begin
+                end else if(cnt_num==6'd32) begin
                     cnt_num  <=  6'b0;
                     T_Value  <=  IR_Value;
                     state 	<=  ST_START_L;
