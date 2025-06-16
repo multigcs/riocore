@@ -121,7 +121,8 @@ class Gateware:
             for verilog, data in plugin_instance.gateware_virtual_files().items():
                 if verilog in self.verilogs:
                     continue
-                self.verilogs.append(verilog)
+                if not verilog.endswith(".mem"):
+                    self.verilogs.append(verilog)
                 target = os.path.join(self.gateware_path, verilog)
                 open(target, "w").write(data)
 
