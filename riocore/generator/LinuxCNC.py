@@ -1912,6 +1912,7 @@ class LinuxCNC:
                 if axis_name:
                     named_axis.append(axis_name)
 
+        # rio joints
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint"):
                 axis_name = plugin_instance.plugin_setup.get("axis")
@@ -1935,6 +1936,7 @@ class LinuxCNC:
                         self.feedbacks.append(feedback.replace(":", "."))
                     self.num_joints += 1
 
+        # soft-component joints (parport/gpio)
         stepgen_num = 0
         for comp in linuxcnc_config.get("components", []):
             comp_type = comp.get("type")
