@@ -1,0 +1,14 @@
+{
+    "name": "XC7Z010",
+    "description": "XC7Z010-1CLG400I template - not tested",
+    "url": "",
+    "toolchain": "vivado",
+    "family": "XC7",
+    "type": "xc7z010clg400-1",
+    "package": "csg324",
+    "clock": {
+        "speed": "25000000",
+        "pin": "U18"
+    },
+    "slots": []
+}

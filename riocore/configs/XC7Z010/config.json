@@ -1,0 +1,47 @@
+{
+    "name": "XC7Z010",
+    "description": "XC7Z010 - template - not tested",
+    "boardcfg": "XC7Z010",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "W13"
+                }
+            },
+            "frequency": 1.0,
+            "uid": "blink0"
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "W14"
+                }
+            },
+            "frequency": 10.0,
+            "uid": "blink1"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "A17"
+                }
+            },
+            "uid": "bitin0",
+            "name": "sw2"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "A14"
+                }
+            },
+            "uid": "bitin1",
+            "name": "sw3"
+        }
+    ]
+}
