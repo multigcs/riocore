@@ -10,7 +10,7 @@ Keywords: sr-flipflop
 
 ## Pins:
 *FPGA-pins*
-### bit:
+### outbit:
 
  * direction: output
 
@@ -33,7 +33,7 @@ name of this plugin instance
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### set:
+### setbit:
 
  * type: float
  * direction: output
@@ -46,7 +46,7 @@ name of this plugin instance
 
 ## Interfaces:
 *transport layer*
-### set:
+### setbit:
 
  * size: 1 bit
  * direction: output
@@ -62,7 +62,7 @@ name of this plugin instance
 {
     "type": "flipflop_out",
     "pins": {
-        "bit": {
+        "outbit": {
             "pin": "0"
         }
     }
@@ -76,7 +76,7 @@ name of this plugin instance
     "default": 0,
     "name": "",
     "pins": {
-        "bit": {
+        "outbit": {
             "pin": "0",
             "modifiers": [
                 {
@@ -86,13 +86,13 @@ name of this plugin instance
         }
     },
     "signals": {
-        "set": {
+        "setbit": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "set",
+                "title": "setbit",
                 "section": "outputs",
                 "type": "scale"
             }

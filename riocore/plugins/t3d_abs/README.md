@@ -10,8 +10,6 @@
 
 abs-encoder over rs485
 
-TODO: csum, pos/revs, cleanup
-
 17bit Absolute
 
 Firewire-Connector:
@@ -38,32 +36,9 @@ Keywords: absolute angle bldc hltnc_t3d A6
 
  * direction: output
 
-### debug_bit:
-
- * direction: output
- * optional: True
-
 
 ## Options:
 *user-options*
-### delay:
-clock delay for next manchester bit
-
- * type: int
- * min: 1
- * max: 100
- * default: 3
- * unit: clocks
-
-### delay_next:
-clock delay for center of the next manchester bit
-
- * type: int
- * min: 1
- * max: 100
- * default: 4
- * unit: clocks
-
 ### name:
 name of this plugin instance
 
@@ -73,22 +48,22 @@ name of this plugin instance
 
 ## Signals:
 *signals/pins in LinuxCNC*
+### revs:
+
+ * type: float
+ * direction: input
+
+### angle16:
+
+ * type: float
+ * direction: input
+
 ### angle:
 
  * type: float
  * direction: input
 
 ### position:
-
- * type: float
- * direction: input
-
-### revs:
-
- * type: float
- * direction: input
-
-### csum:
 
  * type: float
  * direction: input
@@ -98,17 +73,17 @@ name of this plugin instance
 *transport layer*
 ### angle:
 
- * size: 16 bit
+ * size: 32 bit
  * direction: input
 
-### position:
+### revs:
 
  * size: 32 bit
  * direction: input
 
-### csum:
+### angle16:
 
- * size: 8 bit
+ * size: 16 bit
  * direction: input
 
 
@@ -125,9 +100,6 @@ name of this plugin instance
         },
         "tx_enable": {
             "pin": "2"
-        },
-        "debug_bit": {
-            "pin": "3"
         }
     }
 }
@@ -137,8 +109,6 @@ name of this plugin instance
 ```
 {
     "type": "t3d_abs",
-    "delay": 3,
-    "delay_next": 4,
     "name": "",
     "pins": {
         "rx": {
@@ -164,17 +134,31 @@ name of this plugin instance
                     "type": "invert"
                 }
             ]
-        },
-        "debug_bit": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
         }
     },
     "signals": {
+        "revs": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "revs",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "angle16": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "angle16",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
         "angle": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
@@ -193,28 +177,6 @@ name of this plugin instance
             "offset": 0.0,
             "display": {
                 "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "revs": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "revs",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "csum": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "csum",
                 "section": "inputs",
                 "type": "meter"
             }
