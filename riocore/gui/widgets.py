@@ -346,9 +346,9 @@ class edit_text(QLineEdit):
             self.setText(str(default))
         self.textChanged.connect(self.change)
 
-    def mousePressEvent(self, QMouseEvent):
-        print("###")
-        self.clicked.emit()
+    # def mousePressEvent(self, QMouseEvent):
+    #    print("###")
+    #    self.clicked.emit()
 
     def change(self):
         if self.text() != self.default:
