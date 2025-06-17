@@ -296,7 +296,7 @@ class cbase:
                             var_prefix = signal_config["var_prefix"]
                             varname = signal_config["varname"]
 
-                            check1 = "_".join(variable_name.split("_")[1:])
+                            check1 = "_".join(variable_name.split("_")[1:]).replace(plugin_instance.instances_name.upper(), var_prefix)
                             check2 = "_".join(varname.split("_")[1:])
 
                             if check1 == check2:
