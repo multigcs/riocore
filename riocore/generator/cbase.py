@@ -115,13 +115,9 @@ class cbase:
                                 continue
 
                             comp_signals.append(varname)
-
-                            """
                             check = varname.split("_")[-1].strip()
                             if plugin_instance.NAME in {"wled", "i2cbus", "riosub"}:
                                 check = varname.split("_")[-2].strip() + "_" + varname.split("_")[-1].strip()
-                            """
-                            check = "_".join(varname.split("_")[2:])
                             if data_name.upper() == check:
                                 source = varname.split()[-1].strip("*")
                                 if variable_size > 1:
