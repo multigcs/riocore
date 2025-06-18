@@ -331,130 +331,6 @@ openSection(event, \'CONFIG\');
         output.append("</html>")
         open(os.path.join(self.doc_path, "index.html"), "w").write("\n".join(output))
 
-    def ethercat_esi_(self):
-        """Testing Ethercat ESI generation"""
-        EtherCATInfo = etree.Element(
-            "EtherCATInfo",
-            nsmap={"xsi": "http://www.w3.org/2001/XMLSchema-instance"},
-            attrib={"{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation": "EtherCATInfo.xsd", "Version": "1.6"},
-        )
-
-        vendor = etree.SubElement(EtherCATInfo, "Vendor")
-        etree.SubElement(vendor, "Id").text = "#x0000079A"
-        etree.SubElement(vendor, "Name").text = "AB&T"
-        etree.SubElement(vendor, "ImageData16x14").text = "..."  # truncated for brevity
-
-        desc = etree.SubElement(EtherCATInfo, "Descriptions")
-        groups = etree.SubElement(desc, "Groups")
-        group = etree.SubElement(groups, "Group", SortOrder="0")
-        etree.SubElement(group, "Type").text = "SSC_Device"
-        etree.SubElement(group, "Name", LcId="1033").text = "EasyCAT"
-        etree.SubElement(group, "ImageData16x14").text = "..."  # truncated for brevity
-
-        devices = etree.SubElement(desc, "Devices")
-        device = etree.SubElement(devices, "Device", Physics="YY")
-        etree.SubElement(device, "Type", ProductCode="#xABE00002", RevisionNo="#x00000001", CheckRevisionNo="EQ_OR_G").text = "DemoHMI_Custom"
-        etree.SubElement(device, "Name", LcId="1033").text = "DemoHMI_Custom"
-        etree.SubElement(device, "GroupType").text = "SSC_Device"
-        etree.SubElement(device, "Fmmu").text = "Outputs"
-        etree.SubElement(device, "Fmmu").text = "Inputs"
-        etree.SubElement(device, "Sm", StartAddress="#x1000", ControlByte="#x64", Enable="1").text = "Outputs"
-        etree.SubElement(device, "Sm", StartAddress="#x1200", ControlByte="#x20", Enable="1").text = "Inputs"
-
-        # Output PDO
-        output_idx = 0
-        for plugin_instance in self.project.plugin_instances:
-            enable = False
-            for data_name, data_config in plugin_instance.interface_data().items():
-                direction = data_config["direction"]
-                if direction == "output":
-                    enable = True
-                    break
-            if enable:
-                txpdo = etree.SubElement(device, "RxPdo", Fixed="1", Mandatory="1", Sm="0")
-                etree.SubElement(txpdo, "Index").text = f"#x1A{output_idx:02X}"
-                etree.SubElement(txpdo, "Name").text = plugin_instance.instances_name
-                sub_idx = 1
-                for data_name, data_config in plugin_instance.interface_data().items():
-                    direction = data_config["direction"]
-                    size = data_config["size"]
-                    if direction == "output":
-                        entry3 = etree.SubElement(txpdo, "Entry")
-                        etree.SubElement(entry3, "Index").text = "#x5"
-                        etree.SubElement(entry3, "SubIndex").text = f"{sub_idx:02X}"
-                        etree.SubElement(entry3, "BitLen").text = str(size)
-                        etree.SubElement(entry3, "Name").text = data_name
-                        if size == 1:
-                            etree.SubElement(entry3, "DataType").text = "BOOL"
-                        else:
-                            etree.SubElement(entry3, "DataType").text = "USINT"
-                        sub_idx += 1
-                output_idx += 1
-
-        # Input PDO
-        input_idx = 0
-        for plugin_instance in self.project.plugin_instances:
-            enable = False
-            for data_name, data_config in plugin_instance.interface_data().items():
-                direction = data_config["direction"]
-                if direction == "input":
-                    enable = True
-                    break
-            if enable:
-                txpdo = etree.SubElement(device, "TxPdo", Fixed="1", Mandatory="1", Sm="1")
-                etree.SubElement(txpdo, "Index").text = f"#x1A{input_idx:02X}"
-                etree.SubElement(txpdo, "Name").text = plugin_instance.instances_name
-                sub_idx = 1
-                for data_name, data_config in plugin_instance.interface_data().items():
-                    direction = data_config["direction"]
-                    size = data_config["size"]
-                    if direction == "input":
-                        entry3 = etree.SubElement(txpdo, "Entry")
-                        etree.SubElement(entry3, "Index").text = "#x6"
-                        etree.SubElement(entry3, "SubIndex").text = f"{sub_idx:02X}"
-                        etree.SubElement(entry3, "BitLen").text = str(size)
-                        etree.SubElement(entry3, "Name").text = data_name
-                        if size == 1:
-                            etree.SubElement(entry3, "DataType").text = "BOOL"
-                        else:
-                            etree.SubElement(entry3, "DataType").text = "USINT"
-                        sub_idx += 1
-                input_idx += 1
-
-        # DC
-        dc = etree.SubElement(device, "Dc")
-        opmode1 = etree.SubElement(dc, "OpMode")
-        etree.SubElement(opmode1, "Name").text = "SM_Sync or Async"
-        etree.SubElement(opmode1, "Desc").text = "SM_Sync or Async"
-        etree.SubElement(opmode1, "AssignActivate").text = "#x0000"
-        opmode2 = etree.SubElement(dc, "OpMode")
-        etree.SubElement(opmode2, "Name").text = "DC_Sync"
-        etree.SubElement(opmode2, "Desc").text = "DC_Sync"
-        etree.SubElement(opmode2, "AssignActivate").text = "#x300"
-        etree.SubElement(opmode2, "CycleTimeSync0", Factor="1").text = "0"
-        etree.SubElement(opmode2, "ShiftTimeSync0").text = "2000200000"
-
-        # EEPROM
-        eeprom = etree.SubElement(device, "Eeprom")
-        etree.SubElement(eeprom, "ByteSize").text = "4096"
-        etree.SubElement(eeprom, "ConfigData").text = "8003006EFF00FF000000"
-        """
-              <!-- 0x140   0x80 PDI type LAN9252 Spi -->
-              <!-- 0x141   0x03 device emulation     -->
-              <!--         enhanced link detection   -->
-              <!-- 0x150   0x00 not used for LAN9252 Spi  -->
-              <!-- 0x151   0x6E map Sync0 to AL event-->
-              <!--         Sync0/Latch0 assigned to Sync0 -->
-              <!--         Sync1/Latch1 assigned to Sync1 -->
-              <!--         Sync0/1 push/pull active high  -->
-              <!-- 0x982-3 0x00FF Sync0/1 lenght = 2.5uS  -->
-              <!-- 0x152   0xFF all GPIO set to out  -->
-              <!-- 0x153   0x00 reserved             -->
-              <!-- 0x12-13 0x0000 alias address      -->
-        """
-
-        open(os.path.join(self.doc_path, "ethercat.xml"), "w").write(etree.tostring(EtherCATInfo, pretty_print=True).decode())
-
     def ethercat_master(self):
         masters = etree.Element("masters")
         master = etree.SubElement(masters, "master", idx="0", appTimePeriod="1000000", refClockSyncCycles="5")
@@ -511,64 +387,43 @@ openSection(event, \'CONFIG\');
         )
 
         vendor = etree.SubElement(EtherCATInfo, "Vendor")
-        etree.SubElement(vendor, "Id").text = "#x0000079A"
-        etree.SubElement(vendor, "Name").text = "AB&T"
-        etree.SubElement(vendor, "ImageData16x14").text = "..."  # truncated for brevity
+        etree.SubElement(vendor, "Id").text = "#x1337"
+        etree.SubElement(vendor, "Name",  LcId="1033").text = "rt-labs AB"
 
         desc = etree.SubElement(EtherCATInfo, "Descriptions")
         groups = etree.SubElement(desc, "Groups")
-        group = etree.SubElement(groups, "Group", SortOrder="0")
-        etree.SubElement(group, "Type").text = "SSC_Device"
-        etree.SubElement(group, "Name", LcId="1033").text = "EasyCAT"
-        etree.SubElement(group, "ImageData16x14").text = "..."  # truncated for brevity
+        group = etree.SubElement(groups, "Group")
+        etree.SubElement(group, "Type").text = "lan9252_spi"
+        etree.SubElement(group, "Name", LcId="1033").text = "lan9252"
+
 
         devices = etree.SubElement(desc, "Devices")
         device = etree.SubElement(devices, "Device", Physics="YY")
-        etree.SubElement(device, "Type", ProductCode="#xABE00002", RevisionNo="#x00000001", CheckRevisionNo="EQ_OR_G").text = "DemoHMI_Custom"
-        etree.SubElement(device, "Name", LcId="1033").text = "DemoHMI_Custom"
-        etree.SubElement(device, "GroupType").text = "SSC_Device"
+        etree.SubElement(device, "Type", ProductCode="1234", RevisionNo="0").text = "evb9252_dig"
+        etree.SubElement(device, "Name", LcId="1033").text = "lan9252"
+        etree.SubElement(device, "GroupType").text = "lan9252_spi"
         etree.SubElement(device, "Fmmu").text = "Outputs"
         etree.SubElement(device, "Fmmu").text = "Inputs"
-        etree.SubElement(device, "Sm", StartAddress="#x1000", ControlByte="#x64", Enable="1").text = "Outputs"
-        etree.SubElement(device, "Sm", StartAddress="#x1200", ControlByte="#x20", Enable="1").text = "Inputs"
 
-        # Output PDO
-        output_idx = 0
-        txpdo = etree.SubElement(device, "RxPdo", Fixed="1", Mandatory="1", Sm="0")
-        etree.SubElement(txpdo, "Index").text = f"#x1A{output_idx:02X}"
-        etree.SubElement(txpdo, "Name").text = "Outputs"
-        pos = 0
-        sub_idx = 1
-        for data in self.iface_out:
-            name = data[0]
-            size = data[1]
-            if name not in ("RX_HEADER", "MULTIPLEXED_OUTPUT_VALUE", "MULTIPLEXED_OUTPUT_ID") and size <= 32:
-                entry3 = etree.SubElement(txpdo, "Entry")
-                etree.SubElement(entry3, "Index").text = "#x5"
-                etree.SubElement(entry3, "SubIndex").text = f"{sub_idx:02X}"
-                etree.SubElement(entry3, "BitLen").text = str(size)
-                etree.SubElement(entry3, "Name").text = name.split("_", 1)[1]
-                if size == 1:
-                    etree.SubElement(entry3, "DataType").text = "BOOL"
-                else:
-                    etree.SubElement(entry3, "DataType").text = "USINT"
-                sub_idx += 1
-        output_idx += 1
+        etree.SubElement(device, "Sm", ControlByte="#x26", DefaultSize="128", Enable="1", StartAddress="#x1000").text = "MBoxOut"
+        etree.SubElement(device, "Sm", ControlByte="#x22", DefaultSize="128", Enable="1", StartAddress="#x1080").text = "MBoxIn"
+        etree.SubElement(device, "Sm", ControlByte="#x24", Enable="1", StartAddress="#x1100").text = "Outputs"
+        etree.SubElement(device, "Sm", ControlByte="#x20", Enable="1", StartAddress="#x1180").text = "Inputs"
 
         # Input PDO
         input_idx = 0
-        txpdo = etree.SubElement(device, "RxPdo", Fixed="1", Mandatory="1", Sm="0")
-        etree.SubElement(txpdo, "Index").text = f"#x1A{output_idx:02X}"
+        txpdo = etree.SubElement(device, "RxPdo", Fixed="true", Mandatory="true", Sm="2")
+        etree.SubElement(txpdo, "Index").text = f"#x16{input_idx:02X}"
         etree.SubElement(txpdo, "Name").text = "Inputs"
         pos = 0
         sub_idx = 1
         for data in self.iface_out:
             name = data[0]
             size = data[1]
-            if name not in ("TX_HEADER", "TIMESTAMP", "MULTIPLEXED_INPUT_VALUE", "MULTIPLEXED_INPUT_ID") and size <= 32:
+            if name not in ("RX_HEADER", "TIMESTAMP", "MULTIPLEXED_INPUT_VALUE", "MULTIPLEXED_INPUT_ID") and size <= 32:
                 entry3 = etree.SubElement(txpdo, "Entry")
-                etree.SubElement(entry3, "Index").text = "#x5"
-                etree.SubElement(entry3, "SubIndex").text = f"{sub_idx:02X}"
+                etree.SubElement(entry3, "Index").text = "#x7000"
+                etree.SubElement(entry3, "SubIndex").text = f"#x{sub_idx:02X}"
                 etree.SubElement(entry3, "BitLen").text = str(size)
                 etree.SubElement(entry3, "Name").text = name.split("_", 1)[1]
                 if size == 1:
@@ -578,35 +433,37 @@ openSection(event, \'CONFIG\');
                 sub_idx += 1
         input_idx += 1
 
-        # DC
-        dc = etree.SubElement(device, "Dc")
-        opmode1 = etree.SubElement(dc, "OpMode")
-        etree.SubElement(opmode1, "Name").text = "SM_Sync or Async"
-        etree.SubElement(opmode1, "Desc").text = "SM_Sync or Async"
-        etree.SubElement(opmode1, "AssignActivate").text = "#x0000"
-        opmode2 = etree.SubElement(dc, "OpMode")
-        etree.SubElement(opmode2, "Name").text = "DC_Sync"
-        etree.SubElement(opmode2, "Desc").text = "DC_Sync"
-        etree.SubElement(opmode2, "AssignActivate").text = "#x300"
-        etree.SubElement(opmode2, "CycleTimeSync0", Factor="1").text = "0"
-        etree.SubElement(opmode2, "ShiftTimeSync0").text = "2000200000"
+        # Output PDO
+        output_idx = 0
+        txpdo = etree.SubElement(device, "TxPdo", Fixed="true", Mandatory="true", Sm="3")
+        etree.SubElement(txpdo, "Index").text = f"#x1A{output_idx:02X}"
+        etree.SubElement(txpdo, "Name").text = "Outputs"
+        pos = 0
+        sub_idx = 1
+        for data in self.iface_out:
+            name = data[0]
+            size = data[1]
+            if name not in ("RX_HEADER", "MULTIPLEXED_OUTPUT_VALUE", "MULTIPLEXED_OUTPUT_ID") and size <= 32:
+                entry3 = etree.SubElement(txpdo, "Entry")
+                etree.SubElement(entry3, "Index").text = "#x6000"
+                etree.SubElement(entry3, "SubIndex").text = f"#x{sub_idx:02X}"
+                etree.SubElement(entry3, "BitLen").text = str(size)
+                etree.SubElement(entry3, "Name").text = name.split("_", 1)[1]
+                if size == 1:
+                    etree.SubElement(entry3, "DataType").text = "BOOL"
+                else:
+                    etree.SubElement(entry3, "DataType").text = "USINT"
+                sub_idx += 1
+        output_idx += 1
+
+        # Mailbox
+        mailbox = etree.SubElement(device, "Mailbox", DataLinkLayer="true")
+        etree.SubElement(mailbox, "CoE", CompleteAccess="true", PdoUpload="false", SdoInfo="true")
+        etree.SubElement(mailbox, "FoE")
 
         # EEPROM
         eeprom = etree.SubElement(device, "Eeprom")
-        etree.SubElement(eeprom, "ByteSize").text = "4096"
-        etree.SubElement(eeprom, "ConfigData").text = "8003006EFF00FF000000"
-        """
-              <!-- 0x140   0x80 PDI type LAN9252 Spi -->
-              <!-- 0x141   0x03 device emulation     -->
-              <!--         enhanced link detection   -->
-              <!-- 0x150   0x00 not used for LAN9252 Spi  -->
-              <!-- 0x151   0x6E map Sync0 to AL event-->
-              <!--         Sync0/Latch0 assigned to Sync0 -->
-              <!--         Sync1/Latch1 assigned to Sync1 -->
-              <!--         Sync0/1 push/pull active high  -->
-              <!-- 0x982-3 0x00FF Sync0/1 lenght = 2.5uS  -->
-              <!-- 0x152   0xFF all GPIO set to out  -->
-              <!-- 0x153   0x00 reserved             -->
-              <!-- 0x12-13 0x0000 alias address      -->
-        """
+        etree.SubElement(eeprom, "ByteSize").text = "256"
+        etree.SubElement(eeprom, "ConfigData").text = "8002000000000000"
+        etree.SubElement(eeprom, "BootStrap").text = "0010800080108000"
         open(os.path.join(self.doc_path, "ethercat.xml"), "w").write(etree.tostring(EtherCATInfo, pretty_print=True).decode())
