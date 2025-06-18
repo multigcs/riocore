@@ -336,31 +336,12 @@ openSection(event, \'CONFIG\');
         master = etree.SubElement(masters, "master", idx="0", appTimePeriod="1000000", refClockSyncCycles="5")
 
         # Generic slave (idx=8)
-        slave8 = etree.SubElement(master, "slave", idx="8", type="generic", vid="00000002", pid="1a5f3052", configPdos="true")
-
-        # Output PDO
-        output_idx = 0
-        sm2 = etree.SubElement(slave8, "syncManager", idx="2", dir="out")
-        pdo1600 = etree.SubElement(sm2, "pdo", idx=f"#x16{output_idx:02X}")
-        pos = 0
-        sub_idx = 1
-        for data in self.iface_out:
-            name = data[0]
-            size = data[1]
-            if name not in ("RX_HEADER", "MULTIPLEXED_OUTPUT_VALUE", "MULTIPLEXED_OUTPUT_ID") and size <= 32:
-                halPin = data[2]
-                if size == 1:
-                    halType = "bool"
-                else:
-                    halType = "int32"
-                etree.SubElement(pdo1600, "pdoEntry", idx=f"#x16{output_idx:02X}", subIdx=f"{sub_idx:02X}", bitLen=str(size), halPin=halPin, halType=halType)
-                sub_idx += 1
-        output_idx += 1
+        slave8 = etree.SubElement(master, "slave", idx="0", type="generic", vid="#x1337", pid="1234", configPdos="true")
 
         # Input PDO
         input_idx = 0
-        sm2 = etree.SubElement(slave8, "syncManager", idx="3", dir="in")
-        pdo1600 = etree.SubElement(sm2, "pdo", idx=f"#x1A{input_idx:02X}")
+        sm2 = etree.SubElement(slave8, "syncManager", idx="2", dir="in")
+        pdo1600 = etree.SubElement(sm2, "pdo", idx=f"#x16{input_idx:02X}")
         pos = 0
         sub_idx = 1
         for data in self.iface_in:
@@ -372,9 +353,28 @@ openSection(event, \'CONFIG\');
                     halType = "bool"
                 else:
                     halType = "int32"
-                etree.SubElement(pdo1600, "pdoEntry", idx=f"#x1A{input_idx:02X}", subIdx=f"{sub_idx:02X}", bitLen=str(size), halPin=halPin, halType=halType)
+                etree.SubElement(pdo1600, "pdoEntry", idx=f"#x7000", subIdx=f"{sub_idx:02X}", bitLen=str(size), halPin=halPin, halType=halType)
                 sub_idx += 1
         input_idx += 1
+
+        # Output PDO
+        output_idx = 0
+        sm2 = etree.SubElement(slave8, "syncManager", idx="3", dir="out")
+        pdo1600 = etree.SubElement(sm2, "pdo", idx=f"#x1A{output_idx:02X}")
+        pos = 0
+        sub_idx = 1
+        for data in self.iface_out:
+            name = data[0]
+            size = data[1]
+            if name not in ("RX_HEADER", "MULTIPLEXED_OUTPUT_VALUE", "MULTIPLEXED_OUTPUT_ID") and size <= 32:
+                halPin = data[2]
+                if size == 1:
+                    halType = "bool"
+                else:
+                    halType = "int32"
+                etree.SubElement(pdo1600, "pdoEntry", idx=f"#x6000", subIdx=f"{sub_idx:02X}", bitLen=str(size), halPin=halPin, halType=halType)
+                sub_idx += 1
+        output_idx += 1
 
         open(os.path.join(self.doc_path, "ethercat-conf.xml"), "w").write(etree.tostring(masters, pretty_print=True).decode())
 
