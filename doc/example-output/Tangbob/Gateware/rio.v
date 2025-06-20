@@ -20,13 +20,13 @@
     PININOUT_I2CBUS0_SDA <> I2C:sda 
     PINOUT_I2CBUS0_SCL -> I2C:scl 
     PINOUT_BITOUT0_BIT -> 42 
-    PININ_BITIN0_BIT <- 37 PULL{pin_config.get('pull').upper()}
-    PININ_BITIN1_BIT <- 38 PULL{pin_config.get('pull').upper()}
-    PININ_BITIN2_BIT <- 35 PULL{pin_config.get('pull').upper()}
+    PININ_BITIN0_BIT <- 37 PULLUP
+    PININ_BITIN1_BIT <- 38 PULLUP
+    PININ_BITIN2_BIT <- 35 PULLUP
     PINOUT_BITOUT1_BIT -> 30 
     PINOUT_PWMOUT0_PWM -> 53 
-    PININ_BITIN3_BIT <- 39 PULL{pin_config.get('pull').upper()}
-    PININ_BITIN4_BIT <- 36 PULL{pin_config.get('pull').upper()}
+    PININ_BITIN3_BIT <- 39 PULLUP
+    PININ_BITIN4_BIT <- 36 PULLUP
     PINOUT_STEPDIR0_STEP -> 41 
     PINOUT_STEPDIR0_DIR -> 40 
     PINOUT_STEPDIR1_STEP -> 33 

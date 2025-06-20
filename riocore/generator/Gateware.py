@@ -298,7 +298,7 @@ class Gateware:
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
-                    pull = "PULL{pin_config.get('pull').upper()}" if pin_config.get("pull") else ""
+                    pull = f"PULL{pin_config.get('pull').upper()}" if pin_config.get("pull") else ""
                     if pin_config["direction"] == "input":
                         output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pull}")
                     elif pin_config["direction"] == "output":
