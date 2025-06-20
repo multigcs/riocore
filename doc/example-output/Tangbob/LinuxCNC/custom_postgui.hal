@@ -1,0 +1,28 @@
+#################################################################################
+# networks
+#################################################################################
+net sig_axisui_error               <= axisui.error
+net sig_pyvcp_halui_mdi-command-00 <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01 <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02 <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_halui_mdi-command-03 <= pyvcp.halui.mdi-command-03
+net sig_rio_modbus0_temperature    => pyvcp.modbus0.temperature
+net sig_rio_i2cbus0_lm75_0_temp    => pyvcp.i2cbus0.lm75_0_temp
+net sig_rio_i2cbus0_lm75_0_valid   => pyvcp.i2cbus0.lm75_0_valid
+net sig_rio_home-x_bit             => pyvcp.home-x.bit
+net sig_rio_home-y_bit             => pyvcp.home-y.bit
+net sig_rio_home-z_bit             => pyvcp.home-z.bit
+net sig_rio_e-stop_bit             => pyvcp.e-stop.bit
+net sig_rio_probe_bit              => pyvcp.probe.bit
+net func_or_0_4_or                 => pyvcp.wled0.0_green
+net sig_halui_mode_is-auto         => pyvcp.wled0.0_blue
+net sig_axisui_error               => pyvcp.wled0.0_red
+net sig_halui_machine_is-on        => pyvcp.enable.bit
+net sig_spindle_0_on               => pyvcp.spindle-enable.bit
+net sig_pyvcp_pwm_dty-f            <= pyvcp.pwm.dty-f
+net sig_pyvcp_pwm_enable           <= pyvcp.pwm.enable
+
+#################################################################################
+# setp
+#################################################################################
+

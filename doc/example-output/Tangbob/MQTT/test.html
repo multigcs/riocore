@@ -1,0 +1,388 @@
+<html>
+  <head>
+    <title>RIO MQTT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  </head>
+  <style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+
+.item {
+    background-color: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+  </style>
+  <body>
+    <div class="container">
+        <div class="item">
+    <B>wled0</B>
+    <table>
+      <tr>
+        <td>0_green</td>
+        <td><input type="checkbox" id="/rio/wled0/0_green" /></td>
+      </tr>
+      <tr>
+        <td>0_blue</td>
+        <td><input type="checkbox" id="/rio/wled0/0_blue" /></td>
+      </tr>
+      <tr>
+        <td>0_red</td>
+        <td><input type="checkbox" id="/rio/wled0/0_red" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>modbus0</B>
+    <table>
+      <tr>
+        <td>temperature</td>
+        <td><b id="/rio/modbus0/temperature">0</b></td>
+        <td>°C</td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>i2cbus0</B>
+    <table>
+      <tr>
+        <td>lm75_0_temp</td>
+        <td><b id="/rio/i2cbus0/lm75_0_temp">0</b></td>
+        <td>°C</td>
+      </tr>
+      <tr>
+        <td>lm75_0_valid</td>
+        <td><b id="/rio/i2cbus0/lm75_0_valid">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitout0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="/rio/enable/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/home_x/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/home_y/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin2</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/home_z/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitout1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="/rio/spindle_enable/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>pwmout0</B>
+    <table>
+      <tr>
+        <td>dty</td>
+        <td><b id="/rio/pwm/dty_fb">0</b></td>
+        <td>%</td>
+        <td><input type="range" min="0" max="100" id="/rio/pwm/dty" value="0" /></td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/pwm/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin3</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/e_stop/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin4</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/probe/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir0</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="/rio/joint_0/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="/rio/joint_0/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('/rio/joint_0/velocity').value = 0;" id="/rio/joint_0/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/joint_0/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/joint_0/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir1</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="/rio/joint_1/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="/rio/joint_1/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('/rio/joint_1/velocity').value = 0;" id="/rio/joint_1/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/joint_1/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/joint_1/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir2</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="/rio/joint_2/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="/rio/joint_2/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('/rio/joint_2/velocity').value = 0;" id="/rio/joint_2/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/joint_2/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/joint_2/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir3</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="/rio/joint_3/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="/rio/joint_3/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('/rio/joint_3/velocity').value = 0;" id="/rio/joint_3/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/joint_3/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/joint_3/enable" /></td>
+      </tr>
+    </table>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var clientID = "ID-" + Math.round(Math.random() * 1000);
+        var client = new Paho.MQTT.Client("127.0.0.1", 9001, clientID);
+
+        document.getElementById("/rio/wled0/0_green").addEventListener("change", publish, false);
+        document.getElementById("/rio/wled0/0_green").addEventListener("input", publish, false);
+        document.getElementById("/rio/wled0/0_blue").addEventListener("change", publish, false);
+        document.getElementById("/rio/wled0/0_blue").addEventListener("input", publish, false);
+        document.getElementById("/rio/wled0/0_red").addEventListener("change", publish, false);
+        document.getElementById("/rio/wled0/0_red").addEventListener("input", publish, false);
+        document.getElementById("/rio/enable/bit").addEventListener("change", publish, false);
+        document.getElementById("/rio/enable/bit").addEventListener("input", publish, false);
+        document.getElementById("/rio/spindle_enable/bit").addEventListener("change", publish, false);
+        document.getElementById("/rio/spindle_enable/bit").addEventListener("input", publish, false);
+        document.getElementById("/rio/pwm/dty").addEventListener("change", publish, false);
+        document.getElementById("/rio/pwm/dty").addEventListener("input", publish, false);
+        document.getElementById("/rio/pwm/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/pwm/enable").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_0/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_0/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_0/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("/rio/joint_0/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_0/enable").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_1/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_1/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_1/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("/rio/joint_1/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_1/enable").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_2/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_2/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_2/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("/rio/joint_2/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_2/enable").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_3/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_3/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/joint_3/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("/rio/joint_3/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/joint_3/enable").addEventListener("input", publish, false);
+        client.connect({onSuccess:onConnect});
+        client.onMessageArrived = onMessage;
+
+        function onConnect() {
+            console.log("connected");
+            client.subscribe("/rio/modbus0/temperature");
+            client.subscribe("/rio/i2cbus0/lm75_0_temp");
+            client.subscribe("/rio/i2cbus0/lm75_0_valid");
+            client.subscribe("/rio/home_x/bit");
+            client.subscribe("/rio/home_y/bit");
+            client.subscribe("/rio/home_z/bit");
+            client.subscribe("/rio/e_stop/bit");
+            client.subscribe("/rio/probe/bit");
+            client.subscribe("/rio/joint_0/position");
+            client.subscribe("/rio/joint_1/position");
+            client.subscribe("/rio/joint_2/position");
+            client.subscribe("/rio/joint_3/position");
+            console.log("connected");
+        }
+
+
+        function publish() {
+            var topic = this.attributes.id.value.replace("_zero", "");
+            element = document.getElementById(topic);
+            var value = "0";
+            if (element.attributes.type.value == "checkbox") {
+                if (element.checked) {
+                    value = "1";
+                }
+            } else {
+                value = element.value;
+            }
+            console.log("publish", topic, value);
+
+            fb_element = document.getElementById(topic + "_fb");
+            if (fb_element) {
+                fb_element.innerHTML = value;
+            }
+
+
+            var message = new Paho.MQTT.Message(value);
+            message.destinationName = topic;
+            client.send(message);
+        }
+
+        function onMessage(message) {
+            // console.log("msg", message.destinationName, message.payloadString);
+            if (message.destinationName == "/rio/modbus0/temperature") {
+                document.getElementById("/rio/modbus0/temperature").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/i2cbus0/lm75_0_temp") {
+                document.getElementById("/rio/i2cbus0/lm75_0_temp").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/i2cbus0/lm75_0_valid") {
+                document.getElementById("/rio/i2cbus0/lm75_0_valid").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/home_x/bit") {
+                document.getElementById("/rio/home_x/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/home_y/bit") {
+                document.getElementById("/rio/home_y/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/home_z/bit") {
+                document.getElementById("/rio/home_z/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/e_stop/bit") {
+                document.getElementById("/rio/e_stop/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/probe/bit") {
+                document.getElementById("/rio/probe/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/joint_0/position") {
+                document.getElementById("/rio/joint_0/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/joint_1/position") {
+                document.getElementById("/rio/joint_1/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/joint_2/position") {
+                document.getElementById("/rio/joint_2/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/joint_3/position") {
+                document.getElementById("/rio/joint_3/position").innerHTML = message.payloadString;
+            }
+        }
+
+    </script>
+  </body>
+</html>
