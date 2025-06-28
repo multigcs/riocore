@@ -1,0 +1,27 @@
+RIO - Tangbob
+
+Description: Tangbob with one 5x china BOB
+Boardcfg: Tangbob
+Protocol: UDP
+Configuration: riocore/configs/Tangbob/config.json
+
+UDP-Configuration:
+  Target-IP: 192.168.10.194
+  Target-Port: 2390
+
+FPGA:
+  Toolchain: gowin
+  Family: GW1N-9C
+  Type: GW1NR-LV9QN88PC6/I5
+
+Plugins:
+  w5500 (1x)
+  wled (1x)
+  modbus (1x)
+  blink (1x)
+  i2cbus (1x)
+  bitout (2x)
+  bitin (5x)
+  pwmout (1x)
+  stepdir (4x)
+

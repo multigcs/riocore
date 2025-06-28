@@ -70,6 +70,7 @@ class documentation:
         self.config_md()
         self.pins_md()
         self.linuxcnc_md()
+        self.readme_md()
         self.index_html()
 
     def halgraph_png(self):
@@ -329,3 +330,12 @@ openSection(event, \'CONFIG\');
         output.append("</html>")
         open(os.path.join(self.doc_path, "index.html"), "w").write("\n".join(output))
 
+    def readme_md(self):
+        output = [""]
+        output.append("## Table of Contents")
+        output.append("- [Config](./CONFIG.md)")
+        output.append("- [Pins](./PINS.md)")
+        output.append("- [Interface](./INTERFACE.md)")
+        output.append("- [LinuxCNC](./LINUXCNC.md)")
+        output.append("")
+        open(os.path.join(self.doc_path, "README.md"), "w").write("\n".join(output))
