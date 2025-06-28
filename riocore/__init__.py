@@ -18,6 +18,7 @@ from .generator.LinuxCNC import LinuxCNC
 
 from riocore.generator.rosbridge import rosbridge
 from riocore.generator.mqttbridge import mqttbridge
+from riocore.generator.easycat import easycat
 from riocore.generator.jslib import jslib
 from riocore.generator.documentation import documentation
 
@@ -1051,9 +1052,12 @@ class Project:
         if toolchain and not preview:
             if protocol == "UDP":
                 self.generator_simulator.generator()
-            rosbridge(self)
-            mqttbridge(self)
-            jslib(self)
+            if protocol == "ETHERCAT":
+                easycat(self)
+            else:
+                rosbridge(self)
+                mqttbridge(self)
+                jslib(self)
             documentation(self)
 
         target = os.path.join(self.config["output_path"], ".config.json")

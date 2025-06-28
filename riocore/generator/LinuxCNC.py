@@ -175,9 +175,14 @@ class LinuxCNC:
         self.halextras = []
         self.mqtt_publisher = []
         self.project = project
+        self.protocol = project.config["jdata"].get("protocol", "SPI")
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
+        if self.protocol == "ETHERCAT":
+            self.hal_prefix = "lcec.0.rio"
+        else:
+            self.hal_prefix = "rio"
         self.create_axis_config()
         self.addons = {}
         self.gpionames = []
@@ -277,7 +282,8 @@ class LinuxCNC:
         self.startscript()
         self.readme()
         if self.project.config["toolchain"]:
-            component(self.project)
+            if self.protocol != "ETHERCAT":
+                component(self.project)
         self.hal()
         self.riof()
         self.misc()
@@ -843,9 +849,9 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     if not netname and setp is not None:
                         if scale:
-                            self.halg.setp_add(f"rio.{halname}-scale", scale)
+                            self.halg.setp_add(f"{self.hal_prefix}.{halname}-scale", scale)
                         if offset:
-                            self.halg.setp_add(f"rio.{halname}-offset", offset)
+                            self.halg.setp_add(f"{self.hal_prefix}.{halname}-offset", offset)
 
         # rio-functions
         self.rio_functions = {}
@@ -890,7 +896,7 @@ class LinuxCNC:
                 if virtual:
                     self.halg.net_add(f"riov.{source}", f"riof.{source}.in")
                 else:
-                    self.halg.net_add(f"rio.{source}", f"riof.{source}.in")
+                    self.halg.net_add(f"{self.hal_prefix}.{source}", f"riof.{source}.in")
 
         if "jog" in self.rio_functions:
             self.halg.fmt_add("")
@@ -959,9 +965,9 @@ class LinuxCNC:
                     for function, halname in self.rio_functions["jog"].items():
                         if function in {"fast", "speed0", "speed1"}:
                             if speed_selector_mux == 2:
-                                self.halg.net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", "riof.jog.wheelscale_mux.sel")
                             else:
-                                self.halg.net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
                                 in_n += 1
 
                     # pname = gui_gen.draw_number("Jogscale", "jogscale")
@@ -971,7 +977,7 @@ class LinuxCNC:
                 halname_wheel = ""
                 for function, halname in self.rio_functions["jog"].items():
                     if function == "wheel":
-                        halname_wheel = f"rio.{halname}-s32"
+                        halname_wheel = f"{self.hal_prefix}.{halname}-s32"
                         break
 
                 wheelfilter = riof_jog_setup("wheel", "filter")
@@ -1026,7 +1032,7 @@ class LinuxCNC:
                         self.halg.setp_add(f"axis.{laxis}.jog-enable", 1)
                         for function, halname in self.rio_functions["jog"].items():
                             if function == fname:
-                                self.halg.net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
 
                         for joint, joint_setup in joints.items():
                             self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
@@ -1039,7 +1045,7 @@ class LinuxCNC:
                             self.halg.setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
-                                    self.halg.net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                                    self.halg.net_add(f"{self.hal_prefix}.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
             if speed_selector:
                 speed_selector_mux = 1
@@ -1075,9 +1081,9 @@ class LinuxCNC:
                     for function, halname in self.rio_functions["jog"].items():
                         if function in {"fast", "speed0", "speed1"}:
                             if speed_selector_mux == 2:
-                                self.halg.net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", "riof.jog.speed_mux.sel")
                             else:
-                                self.halg.net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", f"riof.jog.speed_mux.sel{in_n}")
                                 in_n += 1
 
                     # pname = gui_gen.draw_number("Jogspeed", "jogspeed")
@@ -1091,16 +1097,16 @@ class LinuxCNC:
             if axis_move:
                 for function, halname in self.rio_functions["jog"].items():
                     if function in {"plus", "minus"}:
-                        self.halg.net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
-                        self.halg.net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.joint.selected.{function}")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.axis.selected.{function}")
 
             if axis_selector:
                 joint_n = 0
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        self.halg.net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
-                        self.halg.net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.axis.{axis_name}.select")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.joint.{joint_n}.select")
                         # pname = gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         # self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
                         for axis_id, axis_config in self.project.axis_dict.items():
@@ -1150,13 +1156,13 @@ class LinuxCNC:
                         mux_select += 1
                         mux_input = mux_input * 2
                     elif function == "position":
-                        self.halg.net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
+                        self.halg.net_add("riof.jog.position_mux.out-f", f"{self.hal_prefix}.{halname}")
 
             if axis_leds:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("selected-"):
                         axis_name = function.split("-")[-1]
-                        self.halg.net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
+                        self.halg.net_add(f"halui.axis.{axis_name}.is-selected", f"{self.hal_prefix}.{halname}")
 
     def vcp_gui(self):
         os.makedirs(self.configuration_path, exist_ok=True)
@@ -1467,7 +1473,7 @@ class LinuxCNC:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
                         continue
-                    vcp_add(tab, signal_config, "rio.")
+                    vcp_add(tab, signal_config, f"{self.hal_prefix}.")
 
             component_nums = {}
             for comp in linuxcnc_config.get("components", []):
@@ -1507,7 +1513,7 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     userconfig = signal_config.get("userconfig", {})
                     boolean = signal_config.get("bool")
-                    halpin_info[f"rio.{halname}"] = {
+                    halpin_info[f"{self.hal_prefix}.{halname}"] = {
                         "direction": direction,
                         "boolean": boolean,
                     }
@@ -1525,13 +1531,17 @@ class LinuxCNC:
         )
 
         if self.project.config["toolchain"]:
-            self.halg.fmt_add_top("loadrt rio")
-            self.halg.fmt_add_top("")
-            self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
-            if simulation:
-                self.halg.fmt_add_top("setp rio.sys-simulation 1")
+            if self.protocol == "ETHERCAT":
+                self.halg.fmt_add_top("loadusr -W lcec_conf ethercat-conf.xml")
+                self.halg.fmt_add_top("loadrt lcec")
             else:
-                self.halg.fmt_add_top("setp rio.sys-simulation 0")
+                self.halg.fmt_add_top("loadrt rio")
+                self.halg.fmt_add_top("")
+                self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
+                if simulation:
+                    self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 1")
+                else:
+                    self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 0")
             self.halg.fmt_add_top("")
 
         num_pids = self.num_joints
@@ -1543,14 +1553,23 @@ class LinuxCNC:
         self.halg.fmt_add_top("# add the rio and motion functions to threads")
         self.halg.fmt_add_top("addf motion-command-handler servo-thread")
         self.halg.fmt_add_top("addf motion-controller servo-thread")
+
         if self.project.config["toolchain"]:
-            self.halg.fmt_add_top("addf rio.readwrite servo-thread")
+            if self.protocol == "ETHERCAT":
+                self.halg.fmt_add_top("addf	lcec.read-all			servo-thread")
+                self.halg.fmt_add_top("addf	lcec.write-all			servo-thread")
+            else:
+                self.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
+
         self.halg.fmt_add_top("")
 
         if self.project.config["toolchain"]:
-            self.halg.net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
-            self.halg.net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
-            self.halg.net_add("&rio.sys-status", "iocontrol.0.emc-enable-in")
+            if self.protocol == "ETHERCAT":
+                self.halg.fmt_add_top("setp iocontrol.0.emc-enable-in 1")
+            else:
+                self.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
+                self.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
+                self.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
         else:
             self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
 
@@ -1598,7 +1617,7 @@ class LinuxCNC:
                 mqtt = userconfig.get("mqtt")
                 direction = signal_config["direction"]
                 if mqtt:
-                    self.mqtt_publisher.append(f"rio.{halname}")
+                    self.mqtt_publisher.append(f"{self.hal_prefix}.{halname}")
         if self.mqtt_publisher:
             self.halg.fmt_add_top("# mqtt-publisher")
             self.halg.fmt_add_top("loadusr -W mqtt-publisher [MQTT]DRYRUN --mqtt-broker=[MQTT]BROKER \\")
@@ -1804,9 +1823,9 @@ class LinuxCNC:
                         self.halg.setp_add(f"{rprefix}.{halname}", setp)
                     elif virtual and comp:
                         if direction == "input":
-                            self.halg.net_add(f"{rprefix}.{halname}", f"rio.{halname}")
+                            self.halg.net_add(f"{rprefix}.{halname}", f"{self.hal_prefix}.{halname}")
                         else:
-                            self.halg.net_add(f"rio.{halname}", f"{rprefix}.{halname}")
+                            self.halg.net_add(f"{self.hal_prefix}.{halname}", f"{rprefix}.{halname}")
 
         for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
@@ -2028,7 +2047,7 @@ class LinuxCNC:
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
 
-                prefix = "rio."
+                prefix = f"{self.hal_prefix}."
                 if enable:
                     enable_halname = f"{prefix}{enable['halname']}"
                 if velocity:

@@ -664,6 +664,10 @@ class cbase:
         output.append("} data_t;")
         output.append("static data_t *data;")
         output.append("")
+        return output
+
+    def variables_register(self):
+        output = []
 
         output.append("void register_signals(void) {")
         output.append("    int retval = 0;")
@@ -820,7 +824,9 @@ class cbase:
         output.append("")
 
         output += self.variables()
+        output += self.variables_register()
 
+        iface_data = None
         generic_spi = self.project.config["jdata"].get("generic_spi", False)
         rpi5 = self.project.config["jdata"].get("rpi5", False)
         if protocol == "SPI" and generic_spi is True:
@@ -848,7 +854,8 @@ class cbase:
             iface_data = iface_data.replace("rtapi_print", "printf")
             iface_data = iface_data.replace("strerror(errno)", '"error"')
             iface_data = iface_data.replace("errno", "1")
-        output.append(iface_data)
+        if iface_data:
+            output.append(iface_data)
 
         output.append("int interface_init(void) {")
         if protocol == "UART":
@@ -878,8 +885,8 @@ class cbase:
         output.append("/*")
         output.append("    hal functions")
         output.append("*/")
-
-        output.append(open(os.path.join(riocore_path, "files", self.filename_functions), "r").read())
+        if self.filename_functions:
+            output.append(open(os.path.join(riocore_path, "files", self.filename_functions), "r").read())
 
         output.append("")
         output.append("/***********************************************************************")
