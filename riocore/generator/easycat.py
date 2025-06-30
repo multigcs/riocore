@@ -71,10 +71,8 @@ class easycat(cbase):
                 var_prefix = signal_config["var_prefix"]
                 boolean = signal_config.get("bool")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
-                vtype = self.typemap.get(hal_type, hal_type)
                 signal_source = signal_config.get("source")
                 virtual = signal_config.get("virtual")
-                component = signal_config.get("component")
                 if virtual:
                     continue
                 if not boolean:
@@ -205,8 +203,6 @@ void loop() {
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
                 halname = signal_config["halname"]
-                varname = signal_config["varname"]
-
                 if not boolean:
                     floats[direction].append(halname)
                     floats["output"].append(f"{halname}-scale")
@@ -287,8 +283,6 @@ void loop() {
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
                 halname = signal_config["halname"]
-                varname = signal_config["varname"]
-
                 if not boolean:
                     floats[direction].append(halname)
                 else:
@@ -397,7 +391,6 @@ void loop() {
         for is_bool in (False, True):
             for plugin_instance in self.project.plugin_instances:
                 for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
                     varname = signal_config["varname"]
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")
@@ -433,7 +426,6 @@ void loop() {
         for is_bool in (False, True):
             for plugin_instance in self.project.plugin_instances:
                 for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"]
                     varname = signal_config["varname"]
                     direction = signal_config["direction"]
                     boolean = signal_config.get("bool")

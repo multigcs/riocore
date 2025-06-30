@@ -1,7 +1,6 @@
 import shutil
 import json
 import os
-from lxml import etree
 
 import riocore
 from riocore.gui import halgraph

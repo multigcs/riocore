@@ -36,10 +36,6 @@ Firewire-Connector:
             },
         }
         self.INTERFACE = {
-            "angle": {
-                "size": 16,
-                "direction": "input",
-            },
             "revs": {
                 "size": 32,
                 "direction": "input",

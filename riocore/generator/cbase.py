@@ -598,7 +598,6 @@ class cbase:
 
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
-                halname = signal_config["halname"]
                 varname = signal_config["varname"]
                 var_prefix = signal_config["var_prefix"]
                 direction = signal_config["direction"]
@@ -701,10 +700,8 @@ class cbase:
                 var_prefix = signal_config["var_prefix"]
                 boolean = signal_config.get("bool")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
-                vtype = self.typemap.get(hal_type, hal_type)
                 signal_source = signal_config.get("source")
                 virtual = signal_config.get("virtual")
-                component = signal_config.get("component")
                 if virtual:
                     continue
                 if not boolean:
