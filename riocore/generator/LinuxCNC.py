@@ -1359,6 +1359,7 @@ class LinuxCNC:
                     displayconfig["unit"] = vunit
 
                 dtype = None
+                section = None
                 if (netname and not virtual) or setp:
                     if direction == "input":
                         section = displayconfig.get("section", "inputs").lower()
