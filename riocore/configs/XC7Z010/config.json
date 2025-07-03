@@ -2,6 +2,7 @@
     "name": "XC7Z010",
     "description": "XC7Z010 - template - not tested",
     "boardcfg": "XC7Z010",
+    "flashcmd": "openFPGALoader -c usb-blaster --index-chain 1 build/rio.bit",
     "plugins": [
         {
             "type": "blink",
@@ -14,34 +15,54 @@
             "uid": "blink0"
         },
         {
-            "type": "blink",
+            "type": "_uart",
             "pins": {
-                "led": {
+                "rx": {
+                    "pin": "F15"
+                },
+                "tx": {
+                    "pin": "A16"
+                }
+            },
+            "uid": "uart0"
+        },
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "R19"
+                },
+                "miso": {
+                    "pin": "T20"
+                },
+                "sclk": {
+                    "pin": "T19"
+                },
+                "sel": {
+                    "pin": "U19"
+                }
+            },
+            "uid": "w55000",
+            "gw": "192.168.11.1",
+            "ip": "192.168.11.194"
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
                     "pin": "W14"
                 }
             },
-            "frequency": 10.0,
-            "uid": "blink1"
+            "uid": "pwmout0"
         },
         {
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "A17"
+                    "pin": "V20"
                 }
             },
-            "uid": "bitin0",
-            "name": "sw2"
-        },
-        {
-            "type": "bitin",
-            "pins": {
-                "bit": {
-                    "pin": "A14"
-                }
-            },
-            "uid": "bitin1",
-            "name": "sw3"
+            "uid": "bitin0"
         }
     ]
 }
