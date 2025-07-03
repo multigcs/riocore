@@ -51,7 +51,6 @@
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
-|  | [spibus](spibus/README.md) | SPI-Bus |  |  |
 |  | [spipoti](spipoti/README.md) | spi digital poti | <img src="spipoti/image.png" height="48"> |  |
 |  | [stepperonline_abs](stepperonline_abs/README.md) | serial abs-encoder stepperonline A6 | <img src="stepperonline_abs/image.png" height="48"> | X |
 |  | [t3d_abs](t3d_abs/README.md) | serial abs-encoder hltnc t3d | <img src="t3d_abs/image.png" height="48"> | X |

@@ -71,11 +71,6 @@ name of this plugin instance
 
 ## Interfaces:
 *transport layer*
-### angle:
-
- * size: 32 bit
- * direction: input
-
 ### revs:
 
  * size: 32 bit
@@ -84,6 +79,11 @@ name of this plugin instance
 ### angle16:
 
  * size: 16 bit
+ * direction: input
+
+### angle:
+
+ * size: 32 bit
  * direction: input
 
 

@@ -1,6 +1,6 @@
 {
     "name": "XC7Z010",
-    "description": "XC7Z010 - template - not tested",
+    "description": "XC7Z010 - template - no PS - no Ethernet support",
     "boardcfg": "XC7Z010",
     "flashcmd": "openFPGALoader -c usb-blaster --index-chain 1 build/rio.bit",
     "plugins": [
