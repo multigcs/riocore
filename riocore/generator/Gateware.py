@@ -505,37 +505,41 @@ class Gateware:
                         elif pin_config["direction"] == "output":
                             used_expansion_outputs.append(pin_config["pin"])
 
-        output.append("    // update expansion output pins")
-        output.append("    always @(posedge sysclk) begin")
-        # update expansion output pins
-        for plugin_instance in self.project.plugin_instances:
-            for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config:
-                    if pin_config["pin"] in self.expansion_pins:
-                        if pin_config["direction"] == "output":
-                            output.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
-        # set expansion output pins without driver
-        for plugin_instance in self.project.plugin_instances:
-            for data_name, data_config in plugin_instance.interface_data().items():
-                if data_config.get("expansion"):
-                    direction = data_config["direction"]
-                    variable = data_config["variable"]
-                    size = data_config["size"]
-                    bit_n = data_config["bit"]
-                    if direction == "output":
-                        default = data_config.get("default", 0)
-                        if size == 1:
-                            if variable not in used_expansion_outputs:
-                                output.append(f"        {variable} <= {size}'d{default};")
-                        else:
-                            for bit_num in range(0, size):
-                                bitvar = f"{variable}[{bit_num}]"
-                                if bitvar not in used_expansion_outputs:
-                                    if default & (1 << bit_n):
-                                        output.append(f"        {bitvar} <= 1'd1;")
-                                    else:
-                                        output.append(f"        {bitvar} <= 1'd0;")
-        output.append("    end")
+        if self.expansion_pins:
+            output_exp = []
+            # update expansion output pins
+            for plugin_instance in self.project.plugin_instances:
+                for pin_name, pin_config in plugin_instance.pins().items():
+                    if "pin" in pin_config:
+                        if pin_config["pin"] in self.expansion_pins:
+                            if pin_config["direction"] == "output":
+                                output_exp.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
+            # set expansion output pins without driver
+            for plugin_instance in self.project.plugin_instances:
+                for data_name, data_config in plugin_instance.interface_data().items():
+                    if data_config.get("expansion"):
+                        direction = data_config["direction"]
+                        variable = data_config["variable"]
+                        size = data_config["size"]
+                        bit_n = data_config["bit"]
+                        if direction == "output":
+                            default = data_config.get("default", 0)
+                            if size == 1:
+                                if variable not in used_expansion_outputs:
+                                    output_exp.append(f"        {variable} <= {size}'d{default};")
+                            else:
+                                for bit_num in range(0, size):
+                                    bitvar = f"{variable}[{bit_num}]"
+                                    if bitvar not in used_expansion_outputs:
+                                        if default & (1 << bit_n):
+                                            output_exp.append(f"        {bitvar} <= 1'd1;")
+                                        else:
+                                            output_exp.append(f"        {bitvar} <= 1'd0;")
+            if output_exp:
+                output.append("    // update expansion output pins")
+                output.append("    always @(posedge sysclk) begin")
+                output += output_exp
+                output.append("    end")
 
         if self.project.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")
@@ -592,6 +596,9 @@ class Gateware:
                 continue
             output.append("")
             output.append(f"    // Name: {plugin_instance.plugin_setup.get('name', plugin_instance.instances_name)} ({plugin_instance.NAME})")
+
+            output_first = []
+            output_last = []
             for instance_name, instance_config in plugin_instance.gateware_instances().items():
                 instance_module = instance_config.get("module")
                 instance_parameter = instance_config.get("parameter")
@@ -599,20 +606,23 @@ class Gateware:
                 instance_predefines = instance_config.get("predefines")
                 instance_direct = instance_config.get("direct")
                 if instance_predefines:
-                    predefines = "\n    ".join(instance_predefines)
-                    output.append(f"    {predefines}")
+                    for part in instance_predefines:
+                        if "wire " in part:
+                            output_first.append(f"    {part}")
+                        else:
+                            output_last.append(f"    {part}")
                 if not instance_direct:
                     if instance_arguments:
                         if instance_parameter:
-                            output.append(f"    {instance_module} #(")
+                            output_last.append(f"    {instance_module} #(")
                             parameters_list = []
                             for parameter_name, parameter_value in instance_parameter.items():
                                 parameters_list.append(f".{parameter_name}({parameter_value})")
                             parameters_string = ",\n        ".join(parameters_list)
-                            output.append(f"        {parameters_string}")
-                            output.append(f"    ) {instance_name} (")
+                            output_last.append(f"        {parameters_string}")
+                            output_last.append(f"    ) {instance_name} (")
                         else:
-                            output.append(f"    {instance_module} {instance_name} (")
+                            output_last.append(f"    {instance_module} {instance_name} (")
                         arguments_list = []
                         for argument_name, argument_value in instance_arguments.items():
                             if ":" in argument_value:
@@ -623,8 +633,11 @@ class Gateware:
                             arguments_list.append(f".{argument_name}({argument_value})")
 
                         arguments_string = ",\n        ".join(arguments_list)
-                        output.append(f"        {arguments_string}")
-                        output.append("    );")
+                        output_last.append(f"        {arguments_string}")
+                        output_last.append("    );")
+            output += output_first
+            output += output_last
+
         output.append("")
         output.append("endmodule")
         output.append("")
