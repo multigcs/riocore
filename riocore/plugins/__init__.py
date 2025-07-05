@@ -211,6 +211,10 @@ class PluginBase:
             elif pin_config["direction"] != "output":
                 pins[pin_name] = pin_config.copy()
                 pins[pin_name]["varname"] = f"UNUSED_PIN_{self.instances_name}_{pin_name}".upper()
+            else:
+                pins[pin_name] = pin_config.copy()
+                pins[pin_name]["varname"] = f"UNUSED_PIN_{self.instances_name}_{pin_name}".upper()
+
         return pins
 
     def signals(self):

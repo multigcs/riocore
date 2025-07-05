@@ -1,14 +1,14 @@
 {
    "name": "XC7Z010",
-   "description": "XC7Z010-1CLG400I template - no PS - no Ethernet support",
+   "description": "xc7z010clg400-1 - no Ethernet support",
    "url": "",
    "toolchain": "vivado",
    "family": "XC7",
    "type": "xc7z010clg400-1",
    "package": "csg324",
+   "armcore": true,
    "clock": {
-      "speed": "25000000",
-      "pin": "U18"
+      "speed": "150000000"
    },
    "slots": [
       {

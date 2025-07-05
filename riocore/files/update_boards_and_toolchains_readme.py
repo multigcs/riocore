@@ -75,9 +75,9 @@ for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
         speed_mhz = float(data["clock"]["speed"]) / 1000000
         if "osc" in data["clock"]:
             osc_mhz = float(data["clock"]["osc"]) / 1000000
-            readme.append(f"* Clock: {osc_mhz:0.3f}Mhz -> PLL -> {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
+            readme.append(f"* Clock: {osc_mhz:0.3f}Mhz -> PLL -> {speed_mhz:0.3f}Mhz (Pin:{data['clock'].get('pin')})")
         else:
-            readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock']['pin']})")
+            readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock'].get('pin')})")
 
     example_links = []
     for example in examples.get(name, []):

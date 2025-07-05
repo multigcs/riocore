@@ -1,6 +1,6 @@
 {
     "name": "XC7Z010",
-    "description": "XC7Z010 - template - no PS - no Ethernet support",
+    "description": "xc7z010clg400-1 - no Ethernet support",
     "boardcfg": "XC7Z010",
     "flashcmd": "openFPGALoader -c usb-blaster --index-chain 1 build/rio.bit",
     "plugins": [
@@ -63,6 +63,22 @@
                 }
             },
             "uid": "bitin0"
+        },
+        {
+            "type": "tm1638b8s7l8",
+            "pins": {
+                "sel": {
+                    "pin": "DATA2:14"
+                },
+                "sclk": {
+                    "pin": "DATA2:16"
+                },
+                "data": {
+                    "pin": "DATA2:18"
+                }
+            },
+            "uid": "tm1638b8s7l80"
         }
-    ]
+    ],
+    "protocol": "UDP"
 }
