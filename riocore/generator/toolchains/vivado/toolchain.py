@@ -13,6 +13,7 @@ class Toolchain:
         self.toolchain_path = self.config.get("toolchains_json", {}).get("vivado", "")
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):
             self.toolchain_path = os.path.join(self.toolchain_path, "bin")
+        self.toolchain_source = os.path.join(self.riocore_path, "generator", "toolchains", "vivado")
         self.armcore = self.config["board_data"].get("armcore", False)
         self.clock = int(self.config["board_data"]["clock"]["speed"])
 
@@ -40,6 +41,9 @@ class Toolchain:
             self.config["speed"] = clock_in
 
     def generate(self, path):
+        for filename in ("ps7.xdc", "ps7.tcl"):
+            shutil.copy(os.path.join(self.toolchain_source, filename), os.path.join(path, filename))
+
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.xdc")
         pins_generator.Pins(self.config).generate(path)
 
@@ -69,6 +73,7 @@ class Toolchain:
             tcl_data.append("file mkdir $outputdir")
             tcl_data.append("create_project -part $part $projectname $outputdir")
             tcl_data.append("")
+            tcl_data.append("read_xdc ../ps7.xdc")
             tcl_data.append("read_xdc ../pins.xdc")
             for verilog in self.config["verilog_files"]:
                 if verilog == "globals.v":
@@ -78,24 +83,13 @@ class Toolchain:
             tcl_data.append("# block-design")
             tcl_data.append('create_bd_design "bd_rio"')
             tcl_data.append("")
-            tcl_data.append("# arm-core")
-            tcl_data.append("set processing_system [create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7]")
-            tcl_data.append("apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {")
-            tcl_data.append('    make_external "FIXED_IO, DDR"')
-            tcl_data.append('    Master "Disable"')
-            tcl_data.append('    Slave "Disable"')
-            tcl_data.append("} $processing_system")
-            tcl_data.append("set_property -dict [list \\")
-            tcl_data.append(f"    CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {{{(self.clock // 1000000):d}}} \\")
-            tcl_data.append("    CONFIG.PCW_USE_M_AXI_GP0 {0}")
-            tcl_data.append("] $processing_system")
-            tcl_data.append("set reset_system [create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset]")
-            tcl_data.append("connect_bd_net [get_bd_pins proc_sys_reset/slowest_sync_clk] [get_bd_pins processing_system7/FCLK_CLK0]")
-            tcl_data.append("connect_bd_net [get_bd_pins proc_sys_reset/ext_reset_in] [get_bd_pins processing_system7/FCLK_RESET0_N]")
+            tcl_data.append("########### arm-core ###########")
+            tcl_data.append("source ../ps7.tcl")
+            tcl_data.append("################################")
             tcl_data.append("")
             tcl_data.append("# rio-module")
             tcl_data.append("set module_rio [create_bd_cell -type module -reference rio rio_0]")
-            tcl_data.append("connect_bd_net [get_bd_pins processing_system7/FCLK_CLK0] [get_bd_pins rio_0/sysclk_in]")
+            tcl_data.append("connect_bd_net [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins rio_0/sysclk_in]")
             tcl_data.append("")
             for pname, pins in self.config["pinlists"].items():
                 for pin, pin_config in pins.items():
