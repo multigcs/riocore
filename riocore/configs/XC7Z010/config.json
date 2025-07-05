@@ -8,7 +8,7 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "W13"
+                    "pin": "M17"
                 }
             },
             "frequency": 1.0,
@@ -50,7 +50,7 @@
             "type": "pwmout",
             "pins": {
                 "pwm": {
-                    "pin": "W14"
+                    "pin": "N20"
                 }
             },
             "uid": "pwmout0"

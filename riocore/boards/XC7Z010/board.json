@@ -385,7 +385,7 @@
                "direction": "all"
             },
             "6": {
-               "pin": "N29",
+               "pin": "N20",
                "rotate": true,
                "pos": [
                   150,
