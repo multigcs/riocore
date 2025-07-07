@@ -73,18 +73,18 @@ class Toolchain:
             tcl_data.append("file mkdir $outputdir")
             tcl_data.append("create_project -part $part $projectname $outputdir")
             tcl_data.append("")
-            tcl_data.append("read_xdc ../ps7.xdc")
-            tcl_data.append("read_xdc ../pins.xdc")
+            tcl_data.append("read_xdc ps7.xdc")
+            tcl_data.append("read_xdc pins.xdc")
             for verilog in self.config["verilog_files"]:
                 if verilog == "globals.v":
                     continue
-                tcl_data.append(f"add_files -norecurse ../{verilog}")
+                tcl_data.append(f"add_files -norecurse {verilog}")
             tcl_data.append("")
             tcl_data.append("# block-design")
             tcl_data.append('create_bd_design "bd_rio"')
             tcl_data.append("")
             tcl_data.append("########### arm-core ###########")
-            tcl_data.append("source ../ps7.tcl")
+            tcl_data.append("source ps7.tcl")
             tcl_data.append("################################")
             tcl_data.append("")
             tcl_data.append("# rio-module")
@@ -125,18 +125,17 @@ class Toolchain:
             tcl_data.append("")
             open(os.path.join(path, "rio.tcl"), "w").write("\n".join(tcl_data))
 
-            bitfileName = "proj/rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit"
+            bitfileName = "rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit"
             makefile_data.append("")
-            makefile_data.append("all: clean proj/rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit")
+            makefile_data.append("all: clean rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit")
             makefile_data.append("")
             makefile_data.append("clean:")
-            makefile_data.append("	rm -rf proj")
+            makefile_data.append("	rm -rf rio-rtl")
             makefile_data.append("")
-            makefile_data.append("proj/rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit: rio.tcl")
-            makefile_data.append("	rm -rf proj")
-            makefile_data.append("	mkdir -p proj")
+            makefile_data.append("rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit: rio.tcl")
+            makefile_data.append("	rm -rf rio-rtl")
             makefile_data.append("	sed -i 's| clog2(| $$clog2(|g' *.v")
-            makefile_data.append("	(cd proj ; vivado -mode batch -source ../rio.tcl)")
+            makefile_data.append("	(cd proj ; vivado -mode batch -source rio.tcl)")
             makefile_data.append("")
 
         else:

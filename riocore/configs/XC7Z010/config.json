@@ -2,7 +2,7 @@
     "name": "XC7Z010",
     "description": "xc7z010clg400-1 - no Ethernet support",
     "boardcfg": "XC7Z010",
-    "flashcmd": "openFPGALoader -c usb-blaster --index-chain 1 build/rio.bit",
+    "flashcmd": "openFPGALoader -c usb-blaster --index-chain 1 rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit",
     "plugins": [
         {
             "type": "blink",
