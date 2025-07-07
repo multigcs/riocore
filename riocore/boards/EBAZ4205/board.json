@@ -1,7 +1,7 @@
 {
-   "name": "XC7Z010",
-   "description": "xc7z010clg400-1 - no Ethernet support",
-   "url": "",
+   "name": "EBAZ4205",
+   "description": "EBAZ4205 - WIP",
+   "url": "https://github.com/xjtuecho/EBAZ4205",
    "toolchain": "vivado",
    "family": "XC7",
    "type": "xc7z010clg400-1",
