@@ -11,7 +11,7 @@ class Pins:
         for pname, pins in self.config["pinlists"].items():
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
-                if not pin_config['pin']:
+                if not pin_config["pin"]:
                     continue
                 data.append(f"set_property LOC {pin_config['pin']} [get_ports {pin_config['varname']}]")
                 data.append(f"set_property IOSTANDARD LVCMOS33 [get_ports {pin_config['varname']}]")

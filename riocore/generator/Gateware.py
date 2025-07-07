@@ -424,6 +424,8 @@ class Gateware:
                 if varname.startswith("PININ_"):
                     output.append(f"    wire {varname};")
                     output.append(f"    assign {varname} = {existing_pins[pin]};")
+                    if not existing_pins[pin].startswith("PININ_"):
+                        print(f"ERROR: can not share input pin with output pin: {existing_pins[pin]} -> {pin} -> {varname}")
                     self.linked_pins.append(varname)
                 else:
                     print(f"ERROR: can not assign output pin to multiple plugins: {varname} / {existing_pins[pin]} -> {pin}")
