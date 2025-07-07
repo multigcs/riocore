@@ -1,3 +1,5 @@
+set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports FCLK_CLK3_0]
+
 set_property IOSTANDARD LVCMOS33 [get_ports UART_0_0_rxd]
 set_property IOSTANDARD LVCMOS33 [get_ports UART_0_0_txd]
 set_property PACKAGE_PIN F19 [get_ports UART_0_0_rxd]
