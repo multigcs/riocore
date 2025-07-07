@@ -12,6 +12,47 @@
    },
    "slots": [
       {
+         "name": "OPTO",
+         "pins": {
+            "1": {
+               "comment": "J3_SPEED",
+               "pin": "V13",
+               "pos": [
+                  513,
+                  100
+               ],
+               "direction": "input"
+            },
+            "2": {
+               "comment": "J3_PWM",
+               "pin": "U12",
+               "pos": [
+                  513,
+                  120
+               ],
+               "direction": "output"
+            },
+            "3": {
+               "comment": "J5_SPEED",
+               "pin": "V15",
+               "pos": [
+                  613,
+                  100
+               ],
+               "direction": "input"
+            },
+            "4": {
+               "comment": "J5_PWM",
+               "pin": "V12",
+               "pos": [
+                  613,
+                  120
+               ],
+               "direction": "output"
+            }
+         }
+      },
+      {
          "name": "DATA1",
          "pins": {
             "20": {
@@ -415,7 +456,7 @@
                     183,
                     26
                 ],
-                "direction": "out"
+                "direction": "output"
             },
             "R": {
                 "pin": "W14",
@@ -423,7 +464,7 @@
                     183,
                     46
                 ],
-                "direction": "out"
+                "direction": "output"
             }
         }
       }
