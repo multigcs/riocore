@@ -18,7 +18,8 @@ set ENET0_GMII_TX_EN_0 [ create_bd_port -dir O -from 0 -to 0 ENET0_GMII_TX_EN_0 
 set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0 ]
 set_property -dict [ list \
 CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {150} \
-CONFIG.PCW_USE_M_AXI_GP0 {0} \
+CONFIG.PCW_USE_M_AXI_GP0 {1} \
+CONFIG.PCW_USE_S_AXI_GP0 {1} \
 CONFIG.PCW_ACT_APU_PERIPHERAL_FREQMHZ {666.666687} \
 CONFIG.PCW_ACT_CAN_PERIPHERAL_FREQMHZ {10.000000} \
 CONFIG.PCW_ACT_DCI_PERIPHERAL_FREQMHZ {10.158730} \
@@ -420,6 +421,8 @@ connect_bd_net -net In0_0_1 [get_bd_ports ENET0_GMII_RXD_0] [get_bd_pins xlconca
 connect_bd_net -net processing_system7_0_ENET0_GMII_TXD [get_bd_pins processing_system7_0/ENET0_GMII_TXD] [get_bd_pins xlslice_0/Din]
 connect_bd_net -net processing_system7_0_ENET0_GMII_TX_EN [get_bd_ports ENET0_GMII_TX_EN_0] [get_bd_pins processing_system7_0/ENET0_GMII_TX_EN]
 connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK]
+connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins processing_system7_0/S_AXI_GP0_ACLK]
+
 connect_bd_net -net xlconcat_1_dout [get_bd_pins processing_system7_0/ENET0_GMII_RXD] [get_bd_pins xlconcat_1/dout]
 connect_bd_net -net xlconstant_0_dout [get_bd_pins xlconcat_1/In1] [get_bd_pins xlconstant_0/dout]
 connect_bd_net -net xlslice_0_Dout [get_bd_ports ENET0_GMII_TXD_0] [get_bd_pins xlslice_0/Dout]
