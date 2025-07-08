@@ -39,6 +39,7 @@ class Gateware:
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
+        self.armcore = self.config["board_data"].get("armcore", False)
 
         os.makedirs(self.gateware_path, exist_ok=True)
 
@@ -311,15 +312,44 @@ class Gateware:
         output.append("/* verilator lint_off UNUSEDSIGNAL */")
         output.append("")
         output.append("module rio (")
+        if self.armcore:
+            output.append("        // AXI")
+            output.append("        input wire S_AXI_ACLK,")
+            output.append("        input wire S_AXI_ARESETN,")
+            output.append("        input wire [6:0] S_AXI_AWADDR,")
+            output.append("        input wire [2:0] S_AXI_AWPROT,")
+            output.append("        input wire S_AXI_AWVALID,")
+            output.append("        output wire S_AXI_AWREADY,")
+            output.append("        input wire [31:0] S_AXI_WDATA,")
+            output.append("        input wire [3:0] S_AXI_WSTRB,")
+            output.append("        input wire S_AXI_WVALID,")
+            output.append("        output wire S_AXI_WREADY,")
+            output.append("        output wire [1:0] S_AXI_BRESP,")
+            output.append("        output wire S_AXI_BVALID,")
+            output.append("        input wire S_AXI_BREADY,")
+            output.append("        input wire [6:0] S_AXI_ARADDR,")
+            output.append("        input wire [2:0] S_AXI_ARPROT,")
+            output.append("        input wire S_AXI_ARVALID,")
+            output.append("        output wire S_AXI_ARREADY,")
+            output.append("        output wire [31:0] S_AXI_RDATA,")
+            output.append("        output wire [1:0] S_AXI_RRESP,")
+            output.append("        output wire S_AXI_RVALID,")
+            output.append("        input wire S_AXI_RREADY,")
+            output.append("        // RIO")
         arguments_string = ",\n        ".join(arguments_list)
         output.append(f"        {arguments_string}")
         output.append("    );")
         output.append("")
-        output.append(f"    parameter BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size // 8} bytes")
+        output.append(f"    localparam BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size // 8} bytes")
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
 
-        output.append("    wire INTERFACE_SYNC;")
+
+        if self.armcore:
+            output.append("    reg INTERFACE_SYNC = 0;")
+        else:
+            output.append("    wire INTERFACE_SYNC;")
+
         error_signals = ["INTERFACE_TIMEOUT"]
 
         estop_pin = None
@@ -403,8 +433,15 @@ class Gateware:
         output.append("    end")
         output.append("")
 
-        output.append(f"    wire[{self.project.buffer_size - 1}:0] rx_data;")
-        output.append(f"    wire[{self.project.buffer_size - 1}:0] tx_data;")
+        if self.armcore:
+            output.append(f"    reg [BUFFER_SIZE-1:0] rx_data = 0;")
+            output.append(f"    wire [BUFFER_SIZE-1:0] tx_data;")
+            output.append(f"    reg [BUFFER_SIZE-1:0] rx_data_buffer = 0;")
+            output.append(f"    reg [BUFFER_SIZE-1:0] tx_data_buffer = 0;")
+        else:
+            output.append(f"    wire [BUFFER_SIZE-1:0] rx_data;")
+            output.append(f"    wire [BUFFER_SIZE-1:0] tx_data;")
+
         output.append("")
         output.append("    reg [31:0] timestamp = 0;")
         output.append("    reg signed [31:0] header_tx = 0;")
@@ -641,6 +678,199 @@ class Gateware:
                         output_last.append("    );")
             output += output_first
             output += output_last
+
+        if self.armcore:
+            # adding AXI interface to rio module
+
+
+
+
+            output += ["""
+
+    // AXI4LITE signals
+    reg [6:0] axi_awaddr;
+    reg axi_awready;
+    reg axi_wready;
+    reg [1:0] axi_bresp;
+    reg axi_bvalid;
+    reg [6:0] axi_araddr;
+    reg axi_arready;
+    reg [31:0] axi_rdata;
+    reg [1:0] axi_rresp;
+    reg axi_rvalid;
+
+    localparam integer ADDR_LSB = 2;
+    localparam integer OPT_MEM_ADDR_BITS = 4;
+    reg [31:0] slv_reg0;
+    wire slv_reg_rden;
+    wire slv_reg_wren;
+    reg [31:0] reg_data_out;
+    integer byte_index;
+    reg aw_en;
+
+    assign S_AXI_AWREADY = axi_awready;
+    assign S_AXI_WREADY  = axi_wready;
+    assign S_AXI_BRESP   = axi_bresp;
+    assign S_AXI_BVALID  = axi_bvalid;
+    assign S_AXI_ARREADY = axi_arready;
+    assign S_AXI_RDATA   = axi_rdata;
+    assign S_AXI_RRESP   = axi_rresp;
+    assign S_AXI_RVALID  = axi_rvalid;
+
+    assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
+    assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
+
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_awready <= 1'b0;
+            aw_en <= 1'b1;
+        end  else begin    
+            if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en) begin
+                axi_awready <= 1'b1;
+                aw_en <= 1'b0;
+            end else if (S_AXI_BREADY && axi_bvalid) begin
+                aw_en <= 1'b1;
+                axi_awready <= 1'b0;
+            end else begin
+                axi_awready <= 1'b0;
+            end
+        end 
+    end       
+
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_awaddr <= 0;
+        end else begin    
+            if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en) begin
+                axi_awaddr <= S_AXI_AWADDR;
+            end
+        end 
+    end       
+
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_wready <= 1'b0;
+        end else begin    
+            if (~axi_wready && S_AXI_WVALID && S_AXI_AWVALID && aw_en ) begin
+                axi_wready <= 1'b1;
+            end else begin
+                axi_wready <= 1'b0;
+            end
+        end 
+    end       
+
+    always @( posedge S_AXI_ACLK ) begin
+        INTERFACE_SYNC <= 0;
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            slv_reg0 <= 0;
+        end else begin
+            if (slv_reg_wren) begin
+                case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""]
+
+
+            flen = self.project.buffer_size // 8 // 4
+            flen32 = (flen * 8 + 31) // 32 * 4
+            pos = self.project.buffer_size
+            for n in range(0, flen32):
+                output.append(f"                    5'h{n:02x}:")
+                end = pos - 32
+                size = 32
+                if end < 0:
+                    size += end
+                    end = 0
+                output.append(f"                        rx_data_buffer[{pos-1}:{end}] <= S_AXI_WDATA[31:{32 - size}];")
+                pos -= 32
+
+            output.append(f"                    5'h{flen32:02x}: begin")
+            output.append(f"                        rx_data <= rx_data_buffer;")
+            output.append(f"                        tx_data_buffer <= tx_data;")
+            output.append(f"                        INTERFACE_SYNC <= 1;")
+            output.append(f"                    end")
+
+            output += ["""                    default : begin
+                        slv_reg0 <= slv_reg0;
+                    end
+                endcase
+            end
+        end
+    end    
+
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_bvalid  <= 0;
+            axi_bresp   <= 2'b0;
+        end else begin    
+            if (axi_awready && S_AXI_AWVALID && ~axi_bvalid && axi_wready && S_AXI_WVALID) begin
+                axi_bvalid <= 1'b1;
+                axi_bresp  <= 2'b0;
+            end else begin
+                if (S_AXI_BREADY && axi_bvalid) begin
+                    axi_bvalid <= 1'b0; 
+                end  
+            end
+        end
+    end   
+
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_arready <= 1'b0;
+            axi_araddr  <= 32'b0;
+        end else begin    
+            if (~axi_arready && S_AXI_ARVALID) begin
+                axi_arready <= 1'b1;
+                axi_araddr  <= S_AXI_ARADDR;
+            end else begin
+                axi_arready <= 1'b0;
+            end
+        end 
+    end       
+
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_rvalid <= 0;
+            axi_rresp  <= 0;
+        end else begin    
+            if (axi_arready && S_AXI_ARVALID && ~axi_rvalid) begin
+                axi_rvalid <= 1'b1;
+                axi_rresp  <= 2'b0;
+            end else if (axi_rvalid && S_AXI_RREADY) begin
+                axi_rvalid <= 1'b0;
+            end                
+        end
+    end    
+
+    always @(*) begin
+        case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""]
+            flen = self.project.buffer_size // 8 // 4
+            flen32 = (flen * 8 + 31) // 32 * 4
+            pos = self.project.buffer_size
+            for n in range(0, flen32):
+                end = pos - 32
+                size = 32
+                if end < 0:
+                    size += end
+                    end = 0
+                    output.append(f"            5'h{n:02x}: reg_data_out <= {{tx_data_buffer[{pos-1}:{end}], {32 - size}'h00}};")
+                else:
+                    output.append(f"            5'h{n:02x}: reg_data_out <= tx_data_buffer[{pos-1}:{end}];")
+                pos -= 32
+
+            output += ["""            default : reg_data_out <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+        endcase
+    end
+
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_rdata  <= 0;
+        end else begin    
+            if (slv_reg_rden) begin
+                axi_rdata <= reg_data_out;
+            end   
+        end
+    end    
+
+"""]
+
 
         output.append("")
         output.append("endmodule")
