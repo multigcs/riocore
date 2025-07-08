@@ -140,7 +140,7 @@ class Toolchain:
             makefile_data.append("rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit: rio.tcl")
             makefile_data.append("	rm -rf rio-rtl")
             makefile_data.append("	sed -i 's| clog2(| $$clog2(|g' *.v")
-            makefile_data.append("	(cd proj ; vivado -mode batch -source rio.tcl)")
+            makefile_data.append("	vivado -mode batch -source rio.tcl")
             makefile_data.append("")
 
         else:
