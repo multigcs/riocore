@@ -343,12 +343,7 @@ class Gateware:
         output.append(f"    localparam BUFFER_SIZE = 16'd{self.project.buffer_size}; // {self.project.buffer_size // 8} bytes")
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
-
-
-        if self.armcore:
-            output.append("    reg INTERFACE_SYNC = 0;")
-        else:
-            output.append("    wire INTERFACE_SYNC;")
+        output.append("    wire INTERFACE_SYNC;")
 
         error_signals = ["INTERFACE_TIMEOUT"]
 
@@ -432,16 +427,8 @@ class Gateware:
         output.append("        end")
         output.append("    end")
         output.append("")
-
-        if self.armcore:
-            output.append(f"    reg [BUFFER_SIZE-1:0] rx_data = 0;")
-            output.append(f"    wire [BUFFER_SIZE-1:0] tx_data;")
-            output.append(f"    reg [BUFFER_SIZE-1:0] rx_data_buffer = 0;")
-            output.append(f"    reg [BUFFER_SIZE-1:0] tx_data_buffer = 0;")
-        else:
-            output.append(f"    wire [BUFFER_SIZE-1:0] rx_data;")
-            output.append(f"    wire [BUFFER_SIZE-1:0] tx_data;")
-
+        output.append(f"    wire [BUFFER_SIZE-1:0] rx_data;")
+        output.append(f"    wire [BUFFER_SIZE-1:0] tx_data;")
         output.append("")
         output.append("    reg [31:0] timestamp = 0;")
         output.append("    reg signed [31:0] header_tx = 0;")
@@ -682,10 +669,82 @@ class Gateware:
         if self.armcore:
             # adding AXI interface to rio module
 
+            output += [
+                """
+    axi #(
+        .BUFFER_SIZE(BUFFER_SIZE)
+    ) axi0 (
+        .S_AXI_ACLK(S_AXI_ACLK),
+        .S_AXI_ARESETN(S_AXI_ARESETN),
+        .S_AXI_AWADDR(S_AXI_AWADDR),
+        .S_AXI_AWPROT(S_AXI_AWPROT),
+        .S_AXI_AWVALID(S_AXI_AWVALID),
+        .S_AXI_AWREADY(S_AXI_AWREADY),
+        .S_AXI_WDATA(S_AXI_WDATA),
+        .S_AXI_WSTRB(S_AXI_WSTRB),
+        .S_AXI_WVALID(S_AXI_WVALID),
+        .S_AXI_WREADY(S_AXI_WREADY),
+        .S_AXI_BRESP(S_AXI_BRESP),
+        .S_AXI_BVALID(S_AXI_BVALID),
+        .S_AXI_BREADY(S_AXI_BREADY),
+        .S_AXI_ARADDR(S_AXI_ARADDR),
+        .S_AXI_ARPROT(S_AXI_ARPROT),
+        .S_AXI_ARVALID(S_AXI_ARVALID),
+        .S_AXI_ARREADY(S_AXI_ARREADY),
+        .S_AXI_RDATA(S_AXI_RDATA),
+        .S_AXI_RRESP(S_AXI_RRESP),
+        .S_AXI_RVALID(S_AXI_RVALID),
+        .S_AXI_RREADY(S_AXI_RREADY),
+        .rx_data(rx_data),
+        .tx_data(tx_data),
+        .sync(INTERFACE_SYNC)
+    );"""
+            ]
 
+        output.append("")
+        output.append("endmodule")
+        output.append("")
 
+        output.append("")
 
-            output += ["""
+        if self.armcore:
+            output += [
+                """module axi
+    #(
+         parameter BUFFER_SIZE=16'd64
+     )
+     (
+        // AXI
+        input wire S_AXI_ACLK,
+        input wire S_AXI_ARESETN,
+        input wire [6:0] S_AXI_AWADDR,
+        input wire [2:0] S_AXI_AWPROT,
+        input wire S_AXI_AWVALID,
+        output wire S_AXI_AWREADY,
+        input wire [31:0] S_AXI_WDATA,
+        input wire [3:0] S_AXI_WSTRB,
+        input wire S_AXI_WVALID,
+        output wire S_AXI_WREADY,
+        output wire [1:0] S_AXI_BRESP,
+        output wire S_AXI_BVALID,
+        input wire S_AXI_BREADY,
+        input wire [6:0] S_AXI_ARADDR,
+        input wire [2:0] S_AXI_ARPROT,
+        input wire S_AXI_ARVALID,
+        output wire S_AXI_ARREADY,
+        output wire [31:0] S_AXI_RDATA,
+        output wire [1:0] S_AXI_RRESP,
+        output wire S_AXI_RVALID,
+        input wire S_AXI_RREADY,
+
+        input wire [BUFFER_SIZE-1:0] tx_data,
+        output reg [BUFFER_SIZE-1:0] rx_data = 0,
+        output reg sync = 0
+    );
+
+    reg sync = 0;
+    reg [BUFFER_SIZE-1:0] rx_data_buffer = 0;
+    reg [BUFFER_SIZE-1:0] tx_data_buffer = 0;
 
     // AXI4LITE signals
     reg [6:0] axi_awaddr;
@@ -760,13 +819,13 @@ class Gateware:
     end       
 
     always @( posedge S_AXI_ACLK ) begin
-        INTERFACE_SYNC <= 0;
+        sync <= 0;
         if ( S_AXI_ARESETN == 1'b0 ) begin
             slv_reg0 <= 0;
         end else begin
             if (slv_reg_wren) begin
-                case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""]
-
+                case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
+            ]
 
             flen = self.project.buffer_size // 8 // 4
             flen32 = (flen * 8 + 31) // 32 * 4
@@ -782,12 +841,13 @@ class Gateware:
                 pos -= 32
 
             output.append(f"                    5'h{flen32:02x}: begin")
-            output.append(f"                        rx_data <= rx_data_buffer;")
-            output.append(f"                        tx_data_buffer <= tx_data;")
-            output.append(f"                        INTERFACE_SYNC <= 1;")
-            output.append(f"                    end")
+            output += [
+                """                        rx_data <= rx_data_buffer;
+                        tx_data_buffer <= tx_data;
+                        sync <= 1;
+                    end
 
-            output += ["""                    default : begin
+                    default : begin
                         slv_reg0 <= slv_reg0;
                     end
                 endcase
@@ -840,7 +900,8 @@ class Gateware:
     end    
 
     always @(*) begin
-        case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""]
+        case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
+            ]
             flen = self.project.buffer_size // 8 // 4
             flen32 = (flen * 8 + 31) // 32 * 4
             pos = self.project.buffer_size
@@ -855,7 +916,8 @@ class Gateware:
                     output.append(f"            5'h{n:02x}: reg_data_out <= tx_data_buffer[{pos-1}:{end}];")
                 pos -= 32
 
-            output += ["""            default : reg_data_out <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+            output += [
+                """            default : reg_data_out <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
         endcase
     end
 
@@ -869,11 +931,9 @@ class Gateware:
         end
     end    
 
-"""]
+endmodule"""
+            ]
 
-
-        output.append("")
-        output.append("endmodule")
         output.append("")
         print(f"writing gateware to: {self.gateware_path}")
         open(os.path.join(self.gateware_path, "rio.v"), "w").write("\n".join(output))

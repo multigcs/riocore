@@ -106,7 +106,9 @@ class Toolchain:
             tcl_data.append("")
 
             tcl_data.append("# axi connect")
-            tcl_data.append("apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} Master {/processing_system7_0/M_AXI_GP0} Slave {/rio_0/S_AXI} ddr_seg {Auto} intc_ip {New AXI SmartConnect} master_apm {0}}  [get_bd_intf_pins rio_0/S_AXI]")
+            tcl_data.append(
+                "apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config { Clk_master {Auto} Clk_slave {Auto} Clk_xbar {Auto} Master {/processing_system7_0/M_AXI_GP0} Slave {/rio_0/S_AXI} ddr_seg {Auto} intc_ip {New AXI SmartConnect} master_apm {0}}  [get_bd_intf_pins rio_0/S_AXI]"
+            )
             tcl_data.append("set_property offset 0x40000000 [get_bd_addr_segs {processing_system7_0/Data/SEG_rio_0_reg0}]")
             tcl_data.append("")
 
