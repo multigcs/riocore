@@ -58,6 +58,10 @@
                 }
             },
             "uid": "tm1638b8s7l80"
+        },
+        {
+            "type": "axi",
+            "uid": "axi0"
         }
     ],
     "protocol": "UDP"

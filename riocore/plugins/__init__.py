@@ -31,6 +31,7 @@ class PluginBase:
         self.SYNC = None
         self.ERROR = None
         self.OPTIONS = {}
+        self.PASSTHROUGH = {}
         self.PLUGIN_CONFIG = False
         self.LIMITATIONS = {}
         self.system_setup = system_setup
@@ -103,6 +104,9 @@ class PluginBase:
         self.title = self.plugin_setup.get("name") or self.instances_name
 
     def setup(self):
+        pass
+
+    def post_setup(self, project):
         pass
 
     def gateware_files(self):
@@ -387,6 +391,10 @@ class PluginBase:
             instance_arguments["sync"] = "INTERFACE_SYNC"
         elif self.SYNC is False:
             instance_arguments["sync"] = "0"
+
+        if self.PASSTHROUGH:
+            for name in self.PASSTHROUGH:
+                instance_arguments[name] = name
 
         if self.TYPE == "interface":
             instance_arguments["rx_data"] = "rx_data"

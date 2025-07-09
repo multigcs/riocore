@@ -3,6 +3,7 @@
 | Type | Name | Info | Image | Experimental |
 | --- | :---: | --- | :---: | :---: |
 | Interfaces | [arty_mii](arty_mii/README.md) | udp interface for host comunication - Arty7-35t only | <img src="arty_mii/image.png" height="48"> | X |
+|  | [axi](axi/README.md) | axi interface for armcore comunication | <img src="axi/image.png" height="48"> |  |
 |  | [rmii](rmii/README.md) | rmii udp interface | <img src="rmii/image.png" height="48"> | X |
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |  |
 |  | [uart](uart/README.md) | uart interface for host cominucation | <img src="uart/image.png" height="48"> |  |
