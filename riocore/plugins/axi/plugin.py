@@ -73,7 +73,6 @@ module axi
         output reg sync = 0
     );
 
-    reg sync = 0;
     reg [BUFFER_SIZE-1:0] rx_data_buffer = 0;
     reg [BUFFER_SIZE-1:0] tx_data_buffer = 0;
 
