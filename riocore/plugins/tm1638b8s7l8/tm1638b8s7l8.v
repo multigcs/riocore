@@ -11,7 +11,6 @@ module tm1638b8s7l8
         output sw5,
         output sw6,
         output sw7,
-
         input led0,
         input led1,
         input led2,
@@ -20,10 +19,8 @@ module tm1638b8s7l8
         input led5,
         input led6,
         input led7,
-
         input signed [23:0] number1,
         input [7:0] number2,
-
         output reg sel = 1,
         output reg sclk = 1,
         inout data
@@ -84,42 +81,29 @@ module tm1638b8s7l8
     assign sw1 = switches[23];
     assign sw0 = switches[31];
 
-
     reg [3:0] num = 3;
     wire [6:0] digit;
-
+    wire [23:0] bcd;
+    wire [23:0] bcd2;
     reg [7:0] digit_pos = 0;
 
     seven_segments sg0 (
-            .clk(clk),
-            .binary(num),
-            .display(digit)
+        .clk(clk),
+        .binary(num),
+        .display(digit)
     );
 
-    wire [23:0] bcd;
-    wire [23:0] bcd2;
-
     bin2bcd bin2bcd1 (
-                .bin (numberAbs[15:0]),
-                .bcd (bcd)
-            );
+        .bin (numberAbs[15:0]),
+        .bcd (bcd)
+    );
 
     bin2bcd bin2bcd2 (
-                .bin (number2),
-                .bcd (bcd2)
-            );
-
+        .bin (number2),
+        .bcd (bcd2)
+    );
 
     wire [3:0] nums [0:7];
-    assign nums[0] = int10b[3:0];
-    assign nums[1] = int1b[3:0];
-    assign nums[2] = prefix;
-    assign nums[3] = int10000[3:0];
-    assign nums[4] = int1000[3:0];
-    assign nums[5] = int100[3:0];
-    assign nums[6] = int10[3:0];
-    assign nums[7] = int1[3:0];
-
     wire [7:0] int1b;
     wire [7:0] int10b;
     wire [7:0] int1;
@@ -134,12 +118,16 @@ module tm1638b8s7l8
     assign int100 = 8'd48 + {4'd0, bcd[11:8]};
     assign int1000 = 8'd48 + {4'd0, bcd[15:12]};
     assign int10000 = 8'd48 + {4'd0, bcd[19:16]};
-
-
-
+    assign nums[0] = int10b[3:0];
+    assign nums[1] = int1b[3:0];
+    assign nums[2] = prefix;
+    assign nums[3] = int10000[3:0];
+    assign nums[4] = int1000[3:0];
+    assign nums[5] = int100[3:0];
+    assign nums[6] = int10[3:0];
+    assign nums[7] = int1[3:0];
 
     always @(posedge mclk) begin
-    
         if (number1 < 0) begin
             numberAbs <= -number1;
             prefix <= 4'ha;
@@ -147,62 +135,42 @@ module tm1638b8s7l8
             numberAbs <= number1;
             prefix <= 4'hb;
         end
-    
-        num <= nums[digit_pos];
+            num <= nums[digit_pos];
         if (state == 0) begin
             sclk <= 1;
             sel <= 0;
             dataOut <= 0;
             data_pos <= 0;
             state <= 1;
-
         end else if (state == 1) begin
-
             if (sclk == 1) begin
                 sclk <= 0;
-
                 if (isSending == 1) begin
                     dataOut <= cmd[data_pos];
                 end
                 if (isSending == 0) begin
                     data_read <= {data_read[30:0], dataIn};
                 end
-
-
             end else if (data_pos < cmd_size) begin
-
-                //if (isSending == 0) begin
-                //    data_read <= {data_read[30:0], dataIn};
-                //end
-
                 if (read_cmd == 1 && data_pos == 8) begin
                     isSending <= 0;
                 end
                 data_pos <= data_pos + 8'd1;
-
-
                 sclk <= 1;
             end else begin
-            
                 switches <= data_read;
-            
                 state <= state + 8'd1;
                 sclk <= 1;
             end
-
         end else if (state == 2) begin
             sel <= 1;
             sclk <= 0;
-
             dataOut <= 0;
             isSending <= 1;
-
             state <= state + 8'd1;
         end else if (state == 3) begin
             sclk <= 1;
             data_pos <= 0;
-
-
             case (cmd_cnt)
                 0: begin
                     cmd <= 8'h8F;
@@ -217,7 +185,6 @@ module tm1638b8s7l8
                     read_cmd <= 0;
                     digit_pos <= 0;
                 end
-
                 2: begin
                     if (digit_pos < 8) begin
                         cmd[16] <= leds[digit_pos];
@@ -231,25 +198,17 @@ module tm1638b8s7l8
                         cmd_cnt <= cmd_cnt + 8'd1;
                     end
                 end
-
                 3: begin
                     cmd <= 8'h42;
                     cmd_size <= 8'd40;
                     read_cmd <= 1;
                     cmd_cnt <= 0;
                 end
-
             endcase
-
             state <= 0;
         end
     end
-
-
-
 endmodule
-
-
 
 module seven_segments (
         input wire clk,
@@ -269,7 +228,6 @@ module seven_segments (
             4'h7: display = 7'b0000111;
             4'h8: display = 7'b1111111;
             4'h9: display = 7'b1101111;
-
             4'ha: display = 7'b1000000;
             4'hb: display = 7'b0000000;
             4'hc: display = 7'b0111001;
@@ -279,10 +237,7 @@ module seven_segments (
             default: display = 7'b1111001;
         endcase
     end
-
 endmodule
-
-
 
 module bin2bcd(
         input [15:0] bin,
@@ -298,9 +253,7 @@ module bin2bcd(
             if (bcd[15:12] >= 5) bcd[15:12] = bcd[15:12] + 4'd3;
             if (bcd[19:16] >= 5) bcd[19:16] = bcd[19:16] + 4'd3;
             if (bcd[23:20] >= 5) bcd[23:20] = bcd[23:20] + 4'd3;
-
             bcd = {bcd[22:0], bin[15 - i]};
         end
     end
 endmodule
-
