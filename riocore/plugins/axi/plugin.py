@@ -11,6 +11,7 @@ class Plugin(PluginBase):
         self.TYPE = "interface"
         self.VERILOGS = []
         self.PINDEFAULTS = {}
+        self.EXPERIMENTAL = True
         self.OPTIONS = {}
         self.PASSTHROUGH = {
             "S_AXI_ACLK": {"direction": "input", "size": 1},
