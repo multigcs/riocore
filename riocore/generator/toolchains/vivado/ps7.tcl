@@ -1,10 +1,14 @@
 
+# https://github.com/XyleMora/EBAZ4205/blob/main/Documents/Schematics/ebaz4205_schematic.pdf
+# https://www.codeembedded.com/blog/fpga_zero_to_hero_vol_5/
+# https://docs.amd.com/r/en-US/ug1165-zynq-embedded-design-tutorial/Booting-Linux-in-JTAG-Mode
+
 # Create interface ports
 set DDR [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 DDR ]
 set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
 set MDIO_ETHERNET_0_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:mdio_rtl:1.0 MDIO_ETHERNET_0_0 ]
 set GPIO_0_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:gpio_rtl:1.0 GPIO_0_0 ]
-set UART_0_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 UART_0_0 ]
+#set UART_0_0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:uart_rtl:1.0 UART_0_0 ]
 
 # Create ports
 set ENET0_GMII_RXD_0 [ create_bd_port -dir I -from 3 -to 0 ENET0_GMII_RXD_0 ]
@@ -73,12 +77,12 @@ CONFIG.PCW_ENET1_RESET_ENABLE {0} \
 CONFIG.PCW_ENET_RESET_ENABLE {0} \
 CONFIG.PCW_EN_EMIO_ENET0 {1} \
 CONFIG.PCW_EN_EMIO_GPIO {1} \
-CONFIG.PCW_EN_EMIO_UART0 {1} \
+CONFIG.PCW_EN_EMIO_UART0 {0} \
 CONFIG.PCW_EN_ENET0 {1} \
 CONFIG.PCW_EN_GPIO {1} \
 CONFIG.PCW_EN_SDIO0 {1} \
 CONFIG.PCW_EN_SMC {1} \
-CONFIG.PCW_EN_UART0 {1} \
+CONFIG.PCW_EN_UART0 {0} \
 CONFIG.PCW_EN_UART1 {1} \
 CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR0 {8} \
 CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR1 {4} \
@@ -353,7 +357,7 @@ CONFIG.PCW_SMC_PERIPHERAL_VALID {1} \
 CONFIG.PCW_SPI_PERIPHERAL_DIVISOR0 {1} \
 CONFIG.PCW_TPIU_PERIPHERAL_DIVISOR0 {1} \
 CONFIG.PCW_UART0_GRP_FULL_ENABLE {0} \
-CONFIG.PCW_UART0_PERIPHERAL_ENABLE {1} \
+CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} \
 CONFIG.PCW_UART0_UART0_IO {EMIO} \
 CONFIG.PCW_UART1_GRP_FULL_ENABLE {0} \
 CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} \
@@ -411,7 +415,7 @@ connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [
 connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
 connect_bd_intf_net -intf_net processing_system7_0_MDIO_ETHERNET_0 [get_bd_intf_ports MDIO_ETHERNET_0_0] [get_bd_intf_pins processing_system7_0/MDIO_ETHERNET_0]
 connect_bd_intf_net -intf_net processing_system7_0_GPIO_0 [get_bd_intf_ports GPIO_0_0] [get_bd_intf_pins processing_system7_0/GPIO_0]
-connect_bd_intf_net -intf_net processing_system7_0_UART_0 [get_bd_intf_ports UART_0_0] [get_bd_intf_pins processing_system7_0/UART_0]
+#connect_bd_intf_net -intf_net processing_system7_0_UART_0 [get_bd_intf_ports UART_0_0] [get_bd_intf_pins processing_system7_0/UART_0]
 
 # Create port connections
 connect_bd_net -net ENET0_GMII_RX_CLK_0_1 [get_bd_ports ENET0_GMII_RX_CLK_0] [get_bd_pins processing_system7_0/ENET0_GMII_RX_CLK]
