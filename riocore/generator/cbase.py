@@ -724,9 +724,9 @@ class cbase:
                         output.append(self.vinit(f"{varname}_not", "bool", f"{halname}-not", direction))
                         output.append(f"    *data->{varname}_not = 1 - *data->{varname};")
                     if signal_config.get("is_index_out"):
-                        output.append(self.vinit(f"{varname}_INDEX_RESET", "bool", f"{halname}-reset", direction))
+                        output.append(self.vinit(f"{var_prefix}_INDEX_RESET", "bool", f"{halname}-reset", direction))
                         output.append(f"    *data->{var_prefix}_INDEX_RESET = 0;")
-                        output.append(self.vinit(f"{varname}_INDEX_WAIT", "bool", f"{halname}-wait", direction))
+                        output.append(self.vinit(f"{var_prefix}_INDEX_WAIT", "bool", f"{halname}-wait", direction))
                         output.append(f"    *data->{var_prefix}_INDEX_WAIT = 0;")
 
         output.append("}")
