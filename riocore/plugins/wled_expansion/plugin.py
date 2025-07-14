@@ -38,10 +38,9 @@ class Plugin(PluginBase):
     def gateware_defines(self, direct=False):
         defines = []
         num_leds = self.plugin_setup.get("leds", 1)
-        defines.append(f"wire [{num_leds - 1}:0] {self.expansion_prefix}_GREEN;")
-        defines.append(f"wire [{num_leds - 1}:0] {self.expansion_prefix}_BLUE;")
-        defines.append(f"wire [{num_leds - 1}:0] {self.expansion_prefix}_RED;")
-
+        defines.append(f"reg [{num_leds - 1}:0] {self.expansion_prefix}_GREEN = {num_leds}'d0;")
+        defines.append(f"reg [{num_leds - 1}:0] {self.expansion_prefix}_BLUE = {num_leds}'d0;")
+        defines.append(f"reg [{num_leds - 1}:0] {self.expansion_prefix}_RED = {num_leds}'d0;")
         return defines
 
     def expansion_outputs(self):
