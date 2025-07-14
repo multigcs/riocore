@@ -198,7 +198,7 @@ class documentation:
                 if "pin" not in pin_config:
                     row.append("-")
                 elif pin_config["pin"] in self.expansion_pins:
-                    row.append(f"EXP: {self.expansion_pins[pin_config['pin']]}")
+                    row.append(pin_config["pin"])
                 elif pin_config["pin"] in self.virtual_pins:
                     row.append(f"VIRT: {self.virtual_pins[pin_config['pin']]}")
                 elif pin_config["varname"] in self.linked_pins:
