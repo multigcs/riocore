@@ -428,12 +428,13 @@ class GuiPlugins:
             display_setup = {
                 "title": {"type": str},
                 "section": {"type": str},
+                "initval": {"type": bool, "default": bool(signal_defaults.get("default", 0))},
                 "type": {"type": "select", "options": type_options},
             }
             if not signal_defaults.get("bool", False):
                 display_setup["min"] = {"type": float, "default": None}
                 display_setup["max"] = {"type": float, "default": None}
-                display_setup["initval"] = {"type": float, "default": 0.0}
+                display_setup["initval"] = {"type": float, "default": float(signal_defaults.get("default", 0))}
             for option, option_setup in display_setup.items():
                 display_cols = QHBoxLayout()
                 display_rows.addLayout(display_cols)
