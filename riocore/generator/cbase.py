@@ -509,7 +509,6 @@ class cbase:
         diff = self.project.buffer_size - self.project.input_size
         output.append("void read_rxbuffer(uint8_t *rxBuffer) {")
         output.append(f"    // FPGA -> PC ({self.project.input_size} + {diff})")
-        output.append(f"    // FPGA -> PC ({self.project.input_size} + {diff})")
         input_pos = self.project.buffer_size
 
         variable_size = 32

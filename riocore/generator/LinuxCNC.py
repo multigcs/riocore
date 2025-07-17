@@ -1333,6 +1333,9 @@ class LinuxCNC:
                 setp = userconfig.get("setp")
                 function = userconfig.get("function", "")
                 displayconfig = userconfig.get("display", signal_config.get("display", {}))
+                initval = signal_config.get("default", 0)
+                if not displayconfig and initval:
+                    displayconfig["initval"] = initval
 
                 if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
                     return
