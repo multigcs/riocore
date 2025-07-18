@@ -444,7 +444,50 @@
                     ]
                 }
             }
+        },
+    {
+        "name": "SPI",
+        "comment": "",
+        "default": "",
+        "pins": {
+            "CLK": {
+                "pin": "15",
+                "pos": [
+                    327,
+                    42
+                ],
+                "rotate": true,
+                "direction": "all"
+            },
+            "SEL": {
+                "pin": "32",
+                "pos": [
+                    327,
+                    19
+                ],
+                "rotate": true,
+                "direction": "all"
+            },
+            "MISO": {
+                "pin": "17",
+                "pos": [
+                    305,
+                    42
+                ],
+                "rotate": true,
+                "direction": "all"
+            },
+            "MOSI": {
+                "pin": "14",
+                "pos": [
+                    280,
+                    42
+                ],
+                "rotate": true,
+                "direction": "all"
+            }
         }
+    }
     ]
 }
 
