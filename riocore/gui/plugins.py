@@ -161,7 +161,8 @@ class GuiPlugins:
 
     def edit_plugin_joints(self, plugin_instance, plugin_config):
         def update(arg):
-            svgWidget.load(self.parent.draw_joint_home(joints_setup, joint_options))
+            if hasattr(self.parent, "draw_joint_home"):
+                svgWidget.load(self.parent.draw_joint_home(joints_setup, joint_options))
 
         myFont = QFont()
         myFont.setBold(True)
