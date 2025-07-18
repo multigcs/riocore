@@ -575,8 +575,9 @@ class GuiPlugins:
         dialog.setLayout(dialog_layout)
 
         if dialog.exec():
-            self.parent.config_load()
-            # self.parent.display()
+            if hasattr(self.parent, "config_load"):
+                self.parent.config_load()
+                # self.parent.display()
             return
         if not dialog.is_removed:
             for key in list(plugin_config.keys()):
@@ -590,9 +591,10 @@ class GuiPlugins:
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
             config_box = plugin_config.config(plugin_instance, styleSheet=STYLESHEET)
             config_box.run()
-        self.parent.config_load()
-        # self.parent.load_tree()
-        # self.parent.display()
+        if hasattr(self.parent, "config_load"):
+            self.parent.config_load()
+            # self.parent.load_tree()
+            # self.parent.display()
 
     def add_plugin(self, pin_id, slot_name=None):
         boardcfg = self.parent.config.get("boardcfg")
@@ -974,8 +976,9 @@ class GuiPlugins:
             dialog.is_removed = True
             dialog.close()
         self.parent.config["plugins"].pop(plugin_id)
-        self.parent.config_load()
-        # self.display()
+        if hasattr(self.parent, "config_load"):
+            self.parent.config_load()
+            # self.display()
 
     def tree_add_plugin(self, parent, plugin_instance, nopins=False, expand=False):
         name = plugin_instance.plugin_setup.get("name")
