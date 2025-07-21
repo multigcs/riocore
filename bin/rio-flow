@@ -11,7 +11,7 @@ import sys
 from functools import partial
 
 
-from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF
+from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
 from PyQt5.QtGui import QBrush, QPainter, QPen, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
 from PyQt5.QtWidgets import (
     QApplication,
@@ -26,6 +26,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QGraphicsPathItem,
+    QGraphicsLineItem,
     QGraphicsDropShadowEffect,
 )
 
@@ -79,6 +80,92 @@ from riocore.gui.widgets import (
 
 
 colors = [Qt.GlobalColor.green, Qt.GlobalColor.blue, Qt.GlobalColor.red, Qt.GlobalColor.white, Qt.GlobalColor.black, Qt.GlobalColor.yellow]
+
+
+class NodeEdgePath(QGraphicsPathItem):
+    def __init__(self, source_node, source_port, des_node, des_port, color=None):
+        super().__init__(None)
+        self._source_node = source_node
+        self._source_port = source_port
+        self._des_node = des_node
+        self._des_port = des_port
+        self.color = color
+        if self.color is None:
+            self.color = Qt.GlobalColor.green
+        self._pen_default = QPen(self.color)
+        self._pen_default.setWidthF(2)
+        self.setZValue(5)
+        self.setFlags(QGraphicsItem.ItemIsSelectable)
+        self.update_edge_path()
+
+    def paint(self, painter: QPainter, option, widget):
+        if self.isSelected():
+            self._pen_default = QPen(Qt.GlobalColor.yellow)
+            self._pen_default.setWidthF(7)
+        else:
+            self._pen_default = QPen(self.color)
+            self._pen_default.setWidthF(5)
+        painter.setPen(self._pen_default)
+        self.update_edge_path()
+        painter.setBrush(Qt.NoBrush)
+        painter.drawPath(self.path())
+
+    def update_edge_path(self):
+        source_pos = self._source_node.port_pos(self._source_port)
+        des_pos = self._des_node.port_pos(self._des_port)
+        path = QPainterPath(source_pos)
+        xwidth = source_pos.x() - des_pos.x()
+        xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
+        yheight = abs(source_pos.y() - des_pos.y())
+        tangent = float(yheight) / xwidth * 0.5
+        tangent *= xwidth
+        if xwidth > 0:
+            if xwidth > 150:
+                xwidth = 150
+            tangent += xwidth
+        else:
+            if tangent > 150:
+                tangent = 150
+        path.cubicTo(QPointF(source_pos.x() + tangent, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
+        self.setPath(path)
+
+
+class NodeEdgeLine(QGraphicsLineItem):
+    def __init__(self, source_node, source_port, des_node, des_port, color=None):
+        super().__init__(None)
+        self._source_node = source_node
+        self._source_port = source_port
+        self._des_node = des_node
+        self._des_port = des_port
+        self.color = color
+        if self.color is None:
+            self.color = Qt.GlobalColor.green
+        self._pen_default = QPen(self.color)
+        self._pen_default.setWidthF(2)
+        self.setZValue(5)
+        self.setFlags(QGraphicsItem.ItemIsSelectable)
+        self.update_edge_path()
+
+    def paint(self, painter: QPainter, option, widget):
+        self.update_edge_path()
+        super().paint(painter, option, widget)
+
+    def update_edge_path(self):
+        if self.isSelected():
+            self._pen_default = QPen(Qt.GlobalColor.yellow)
+            self._pen_default.setWidthF(7)
+        else:
+            self._pen_default = QPen(self.color)
+            self._pen_default.setWidthF(5)
+        self.setPen(self._pen_default)
+
+        self.prepareGeometryChange()
+        source_pos = self._source_node.port_pos(self._source_port)
+        des_pos = self._des_node.port_pos(self._des_port)
+        self.setLine(QLineF(source_pos, des_pos))
+
+
+NodeEdge = NodeEdgePath
 
 
 class BoardNode(QGraphicsItem):
@@ -341,54 +428,6 @@ class ModifierNode(QGraphicsItem):
     def mouseReleaseEvent(self, event):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
-
-
-class NodeEdge(QGraphicsPathItem):
-    def __init__(self, source_node, source_port, des_node, des_port, color=None):
-        super().__init__(None)
-        self._source_node = source_node
-        self._source_port = source_port
-        self._des_node = des_node
-        self._des_port = des_port
-        self.color = color
-        if self.color is None:
-            self.color = Qt.GlobalColor.green
-        self._pen_default = QPen(self.color)
-        self._pen_default.setWidthF(2)
-        self.setZValue(5)
-        self.setFlags(QGraphicsItem.ItemIsSelectable)
-        self.update_edge_path()
-
-    def paint(self, painter: QPainter, option, widget):
-        if self.isSelected():
-            self._pen_default = QPen(Qt.GlobalColor.yellow)
-            self._pen_default.setWidthF(7)
-        else:
-            self._pen_default = QPen(self.color)
-            self._pen_default.setWidthF(5)
-        painter.setPen(self._pen_default)
-        self.update_edge_path()
-        painter.setBrush(Qt.NoBrush)
-        painter.drawPath(self.path())
-
-    def update_edge_path(self):
-        source_pos = self._source_node.port_pos(self._source_port)
-        des_pos = self._des_node.port_pos(self._des_port)
-        path = QPainterPath(source_pos)
-        xwidth = source_pos.x() - des_pos.x()
-        xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
-        yheight = abs(source_pos.y() - des_pos.y())
-        tangent = float(yheight) / xwidth * 0.5
-        tangent *= xwidth
-        if xwidth > 0:
-            if xwidth > 150:
-                xwidth = 150
-            tangent += xwidth
-        else:
-            if tangent > 150:
-                tangent = 150
-        path.cubicTo(QPointF(source_pos.x() + tangent, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
-        self.setPath(path)
 
 
 class NodeViewer(QGraphicsView):
