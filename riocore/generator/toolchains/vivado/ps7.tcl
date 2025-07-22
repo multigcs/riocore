@@ -1,4 +1,5 @@
 
+# https://github.com/xjtuecho/EBAZ4205/blob/master/README.md
 # https://github.com/XyleMora/EBAZ4205/blob/main/Documents/Schematics/ebaz4205_schematic.pdf
 # https://www.codeembedded.com/blog/fpga_zero_to_hero_vol_5/
 # https://docs.amd.com/r/en-US/ug1165-zynq-embedded-design-tutorial/Booting-Linux-in-JTAG-Mode
