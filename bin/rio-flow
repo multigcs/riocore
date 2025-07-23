@@ -300,11 +300,6 @@ class PluginNode(QGraphicsItem):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
-        # grid
-        # pos_x = pos_x // 10 * 10
-        # pos_y = pos_y // 10 * 10
-        # self.setPos(pos_x, pos_y)
-
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
 
         if self.isSelected():
@@ -346,6 +341,10 @@ class PluginNode(QGraphicsItem):
 
     def mouseReleaseEvent(self, event):
         self.update()
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
         QGraphicsItem.mouseReleaseEvent(self, event)
 
 
@@ -438,9 +437,19 @@ class NodeViewer(QGraphicsView):
         self.setScene(self.scene)
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setTransformationAnchor(self.ViewportAnchor.AnchorUnderMouse)
-
         self.button_pressed = 0
         self.mouse_pos: QPoint = QPoint()
+
+    def getZoom(self):
+        transform = self.transform()
+        # print(transform.m11(), transform.m22())
+        return transform.m11()
+
+    def setZoom(self, zoomFactor):
+        transform = self.transform()
+        transform.reset()
+        transform.scale(zoomFactor, zoomFactor)
+        self.setTransform(transform)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.mouse_pos = event.pos()
@@ -471,6 +480,12 @@ class NodeViewer(QGraphicsView):
 
         self.mouse_pos = event.pos()
         self.button_pressed = 0
+
+        # update config
+        self.scene.parent.config["vpos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
+        self.scene.parent.config["vscale"] = self.getZoom()
+        self.scene.parent.snapshot()
+
         super().mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
@@ -576,6 +591,14 @@ class Window(QWidget):
         self.cfg_reload()
         self.snapshot()
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+        elif event.key() == Qt.Key_Delete:
+            self.delete_selection()
+        elif event.key() == Qt.Key_Backspace:
+            self.undo()
+
     def cfg_reload(self, widget=None, config=None):
         if config is None:
             jdata = open(self.filename, "r").read()
@@ -590,14 +613,16 @@ class Window(QWidget):
 
     def snapshot(self):
         self.cfg_save()
-        config = copy.deepcopy(self.config)
-        self.snapshots.append(config)
+        if not self.snapshots or self.config != self.snapshots[-1]:
+            self.snapshots.append(copy.deepcopy(self.config))
+        print(len(self.snapshots))
 
     def undo(self):
-        print(len(self.snapshots))
         if self.snapshots:
-            config = self.snapshots.pop()
-            self.cfg_reload(config=config)
+            if len(self.snapshots) > 1:
+                self.snapshots.pop()
+            self.cfg_reload(config=self.snapshots[-1])
+        print(len(self.snapshots))
 
     def json_save(self):
         self.cfg_save()
@@ -621,17 +646,13 @@ class Window(QWidget):
                         plugin_config["pins"][port]["pin"] = None
                         plugin_config["pins"][port]["modifier"] = []
 
-        self.config["vpos"] = (self.view.horizontalScrollBar().value(), self.view.verticalScrollBar().value())
 
     def redraw(self):
         # cleanup
         for item in self.scene.items():
             self.scene.removeItem(item)
-
         self.pinlist = []
-
         self.bnode = BoardNode(self.scene, self.config["boardcfg"])
-
         self.bnode.setPos(120, 220)
         self.scene.addItem(self.bnode)
 
@@ -653,16 +674,19 @@ class Window(QWidget):
                 plugin_config["uid"] = uid
             self.plugin_uids.append(uid)
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
-
             plugin_instance = self.plugins.plugin_instances[-1]
-
             py += self.insert_plugin(plugin_instance, py)
 
         ph = 1
         pv = 1
+        zoom = 1.0
         if "vpos" in self.config:
             ph = self.config["vpos"][0]
             pv = self.config["vpos"][1]
+        if "vscale" in self.config:
+            zoom = self.config["vscale"]
+
+        self.view.setZoom(zoom)
         self.view.horizontalScrollBar().setSliderPosition(ph)
         self.view.verticalScrollBar().setSliderPosition(pv)
 
@@ -675,6 +699,7 @@ class Window(QWidget):
                 px = px // grid * grid
                 py = py // grid * grid
                 item.setPos(px, py)
+        self.snapshot()
 
     def insert_plugin(self, plugin_instance, py=100):
         plugin_config = plugin_instance.plugin_setup
@@ -742,6 +767,7 @@ class Window(QWidget):
                 self.scene.addItem(edge)
                 edge = NodeEdge(modifier_node, "out", des_node, des_port, color)
                 self.scene.addItem(edge)
+        self.snapshot()
 
     def edit_item(self, obj, key, var_setup=None, cb=None, help_text=None, need_enter=False):
         if var_setup is None:
@@ -773,13 +799,15 @@ class Window(QWidget):
             if default not in options:
                 options.append(default)
             return edit_combobox(self, obj, key, options, cb=cb, help_text=help_text, default=default)
-
         return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
 
     def edit_selection(self):
         for item in self.scene.selectedItems():
             if isinstance(item, PluginNode):
                 self.gui_plugins.edit_plugin(item.plugin_instance, None)
+                self.redraw()
+                self.snapshot()
+                break
 
     def delete_selection(self):
         for item in self.scene.selectedItems():
@@ -804,6 +832,7 @@ class Window(QWidget):
                     if plugin == plugin_config:
                         self.config["plugins"].pop(pn)
             self.scene.removeItem(item)
+        self.snapshot()
 
     def get_next(self, node, port):
         for item in self.scene.items():
