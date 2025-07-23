@@ -561,10 +561,6 @@ class Window(QWidget):
         delete.clicked.connect(self.delete_selection)
         vbox.addWidget(delete)
 
-        save = QPushButton("Save")
-        save.clicked.connect(self.json_save)
-        vbox.addWidget(save)
-
         redraw = QPushButton("Redraw")
         redraw.clicked.connect(self.redraw)
         vbox.addWidget(redraw)
@@ -573,13 +569,15 @@ class Window(QWidget):
         cfg_reload.clicked.connect(self.cfg_reload)
         vbox.addWidget(cfg_reload)
 
-        snapshot = QPushButton("Snapshot")
-        snapshot.clicked.connect(self.snapshot)
-        vbox.addWidget(snapshot)
-
         undo = QPushButton("Undo")
         undo.clicked.connect(self.undo)
         vbox.addWidget(undo)
+
+        save = QPushButton("Save")
+        save.clicked.connect(self.json_save)
+        vbox.addWidget(save)
+
+        vbox.addStretch()
 
         self.view = NodeViewer(self.scene)
 
@@ -615,14 +613,12 @@ class Window(QWidget):
         self.cfg_save()
         if not self.snapshots or self.config != self.snapshots[-1]:
             self.snapshots.append(copy.deepcopy(self.config))
-        print(len(self.snapshots))
 
     def undo(self):
         if self.snapshots:
             if len(self.snapshots) > 1:
                 self.snapshots.pop()
             self.cfg_reload(config=self.snapshots[-1])
-        print(len(self.snapshots))
 
     def json_save(self):
         self.cfg_save()
