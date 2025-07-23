@@ -2,6 +2,7 @@
 #
 #
 
+import copy
 import os
 import json
 import uuid
@@ -518,43 +519,10 @@ class Window(QWidget):
         self.scene = NodeScene(0, 0, 1200, 1800, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.filename = sys.argv[1]
-        jdata = open(self.filename, "r").read()
-        self.config = json.loads(jdata)
-
-        self.pinlist = []
-
-        data = open(f"riocore/boards/{self.config['boardcfg']}/board.json", "r").read()
-        self.board = json.loads(data)
-        self.bnode = BoardNode(self.scene, self.config["boardcfg"])
-
-        self.bnode.setPos(120, 220)
-        self.scene.addItem(self.bnode)
-
-        py = 100
-        if "plugins" not in self.config:
-            self.config["plugins"] = []
+        self.snapshots = []
 
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
-
-        # loading plugins
-        self.plugin_uids = []
-        self.plugins = riocore.Plugins()
-        for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
-            uid = plugin_config.get("uid")
-            if not uid:
-                uid_prefix = plugin_config["type"]
-                unum = 0
-                while f"{uid_prefix}{unum}" in self.plugin_uids:
-                    unum += 1
-                uid = f"{uid_prefix}{unum}"
-                plugin_config["uid"] = uid
-            self.plugin_uids.append(uid)
-            self.plugins.load_plugin(plugin_id, plugin_config, self.config)
-
-            plugin_instance = self.plugins.plugin_instances[-1]
-
-            py += self.insert_plugin(plugin_instance, py)
 
         vbox = QVBoxLayout()
 
@@ -579,23 +547,124 @@ class Window(QWidget):
         vbox.addWidget(delete)
 
         save = QPushButton("Save")
-        save.clicked.connect(self.save)
+        save.clicked.connect(self.json_save)
         vbox.addWidget(save)
 
-        self.view = NodeViewer(self.scene)
-        ph = 1
-        pv = 1
-        if "vpos" in self.config:
-            ph = self.config["vpos"][0]
-            pv = self.config["vpos"][1]
+        redraw = QPushButton("Redraw")
+        redraw.clicked.connect(self.redraw)
+        vbox.addWidget(redraw)
 
-        self.view.horizontalScrollBar().setSliderPosition(ph)
-        self.view.verticalScrollBar().setSliderPosition(pv)
+        cfg_reload = QPushButton("Reload")
+        cfg_reload.clicked.connect(self.cfg_reload)
+        vbox.addWidget(cfg_reload)
+
+        snapshot = QPushButton("Snapshot")
+        snapshot.clicked.connect(self.snapshot)
+        vbox.addWidget(snapshot)
+
+        undo = QPushButton("Undo")
+        undo.clicked.connect(self.undo)
+        vbox.addWidget(undo)
+
+        self.view = NodeViewer(self.scene)
 
         hbox = QHBoxLayout(self)
         hbox.addLayout(vbox)
         hbox.addWidget(self.view)
         self.setLayout(hbox)
+
+        self.cfg_reload()
+        self.snapshot()
+
+    def cfg_reload(self, widget=None, config=None):
+        if config is None:
+            jdata = open(self.filename, "r").read()
+            self.config = json.loads(jdata)
+        else:
+            self.config = config
+
+        data = open(f"riocore/boards/{self.config['boardcfg']}/board.json", "r").read()
+        self.board = json.loads(data)
+
+        self.redraw()
+
+    def snapshot(self):
+        self.cfg_save()
+        config = copy.deepcopy(self.config)
+        self.snapshots.append(config)
+
+    def undo(self):
+        print(len(self.snapshots))
+        if self.snapshots:
+            config = self.snapshots.pop()
+            self.cfg_reload(config=config)
+
+    def json_save(self):
+        self.cfg_save()
+        jdata = json.dumps(self.config, indent=4)
+        open(self.filename, "w").write(jdata)
+
+    def cfg_save(self):
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                plugin_instance = item.plugin_instance
+                plugin_config = plugin_instance.plugin_setup
+                for port in plugin_config.get("pins", []):
+                    modifiers = []
+                    source = self.get_source(item, port, modifiers)
+                    if source:
+                        # print(port, source[1], modifiers)
+                        plugin_config["pins"][port]["pin"] = source[1]
+                        # if modifiers:
+                        #    print("###", plugin_config["pins"][port]["modifier"])
+                    else:
+                        plugin_config["pins"][port]["pin"] = None
+                        plugin_config["pins"][port]["modifier"] = []
+
+        self.config["vpos"] = (self.view.horizontalScrollBar().value(), self.view.verticalScrollBar().value())
+
+    def redraw(self):
+        # cleanup
+        for item in self.scene.items():
+            self.scene.removeItem(item)
+
+        self.pinlist = []
+
+        self.bnode = BoardNode(self.scene, self.config["boardcfg"])
+
+        self.bnode.setPos(120, 220)
+        self.scene.addItem(self.bnode)
+
+        py = 100
+        if "plugins" not in self.config:
+            self.config["plugins"] = []
+
+        # loading plugins
+        self.plugin_uids = []
+        self.plugins = riocore.Plugins()
+        for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
+            uid = plugin_config.get("uid")
+            if not uid:
+                uid_prefix = plugin_config["type"]
+                unum = 0
+                while f"{uid_prefix}{unum}" in self.plugin_uids:
+                    unum += 1
+                uid = f"{uid_prefix}{unum}"
+                plugin_config["uid"] = uid
+            self.plugin_uids.append(uid)
+            self.plugins.load_plugin(plugin_id, plugin_config, self.config)
+
+            plugin_instance = self.plugins.plugin_instances[-1]
+
+            py += self.insert_plugin(plugin_instance, py)
+
+        ph = 1
+        pv = 1
+        if "vpos" in self.config:
+            ph = self.config["vpos"][0]
+            pv = self.config["vpos"][1]
+        self.view.horizontalScrollBar().setSliderPosition(ph)
+        self.view.verticalScrollBar().setSliderPosition(pv)
 
     def grid_align(self):
         for item in self.scene.items():
@@ -754,28 +823,6 @@ class Window(QWidget):
                 else:
                     return (item._source_node, item._source_port)
         return None
-
-    def save(self):
-        for item in self.scene.items():
-            if isinstance(item, PluginNode):
-                plugin_instance = item.plugin_instance
-                plugin_config = plugin_instance.plugin_setup
-                for port in plugin_config.get("pins", []):
-                    modifiers = []
-                    source = self.get_source(item, port, modifiers)
-                    if source:
-                        # print(port, source[1], modifiers)
-                        plugin_config["pins"][port]["pin"] = source[1]
-                        # if modifiers:
-                        #    print("###", plugin_config["pins"][port]["modifier"])
-                    else:
-                        plugin_config["pins"][port]["pin"] = None
-                        plugin_config["pins"][port]["modifier"] = []
-
-        self.config["vpos"] = (self.view.horizontalScrollBar().value(), self.view.verticalScrollBar().value())
-        jdata = json.dumps(self.config, indent=4)
-        print(jdata)
-        open(self.filename, "w").write(jdata)
 
 
 print("######## WIP - only for testing ########")
