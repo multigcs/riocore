@@ -1,0 +1,15 @@
+{
+   "name": "AntminerS9",
+   "description": "AntminerS9 - WIP",
+   "url": "https://github.com/astranome/Astra_S9_FPGA",
+   "toolchain": "vivado",
+   "family": "XC7",
+   "type": "xc7z010clg400-1",
+   "package": "csg324",
+   "armcore": true,
+   "clock": {
+      "speed": "150000000"
+   },
+   "slots": [
+   ]
+}

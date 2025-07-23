@@ -2,6 +2,7 @@
 | Name | Info | FPGA | Toolchains | Image |
 | --- | --- | --- |  --- | :---: |
 | [Altera10M08Eval](Altera10M08Eval/README.md) | Altera10M08Eval - Evaluation Kit | MAX 10 / 10M08SAE144C8G | [quartus](../generator/toolchains/quartus/README.md) | <img src="Altera10M08Eval/board.png" height="48"> |
+| [AntminerS9](AntminerS9/README.md) | AntminerS9 - WIP | XC7 / xc7z010clg400-1 | [vivado](../generator/toolchains/vivado/README.md) | <img src="AntminerS9/board.png" height="48"> |
 | [Arty-a7-35t](Arty-a7-35t/README.md) | Digilent - Arty a7-35t | xc7 / xc7a35ticsg324-1l | [vivado](../generator/toolchains/vivado/README.md) | <img src="Arty-a7-35t/board.png" height="48"> |
 | [Basys2](Basys2/README.md) | Digilent - Basys2 | xc3 / xc3s100e-4-cp132 | [ise](../generator/toolchains/ise/README.md) | <img src="Basys2/board.png" height="48"> |
 | [CYC1000](CYC1000/README.md) | TEI0003 | Cyclone 10 LP / 10CL025YU256C8G | [quartus](../generator/toolchains/quartus/README.md) | <img src="CYC1000/board.png" height="48"> |
