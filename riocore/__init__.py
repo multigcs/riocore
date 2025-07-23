@@ -580,6 +580,8 @@ class Project:
 
     def load_config(self, configuration, output_path=None):
         project = {}
+        project["boardcfg_path"] = ""
+        project["json_path"] = ""
 
         if output_path is None:
             output_path = "Output"
@@ -623,6 +625,7 @@ class Project:
             print(f"loading board setup: {board}")
             board_file = self.get_boardpath(board)
             bdata = open(board_file, "r").read()
+            project["boardcfg_path"] = os.path.dirname(board_file)
             project["board_data"] = json.loads(bdata)
             if "name" in project["board_data"]:
                 project["board"] = project["board_data"]["name"]
@@ -700,6 +703,7 @@ class Project:
                     exit(1)
 
         self.config = project
+        self.config["board_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
         self.config["speed"] = int(project["jdata"].get("clock", {}).get("speed", 1))

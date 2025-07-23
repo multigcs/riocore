@@ -41,9 +41,6 @@ class Toolchain:
             self.config["speed"] = clock_in
 
     def generate(self, path):
-        for filename in ("ps7.xdc", "ps7.tcl"):
-            shutil.copy(os.path.join(self.toolchain_source, filename), os.path.join(path, filename))
-
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.xdc")
         pins_generator.Pins(self.config).generate(path)
 
@@ -64,6 +61,14 @@ class Toolchain:
             makefile_data.append("")
 
         if self.armcore:
+            for filename in ("ps7.xdc", "ps7.tcl"):
+                source = os.path.join(self.config["json_path"], filename)
+                if not os.path.exists(source):
+                    source = os.path.join(self.config["boardcfg_path"], filename)
+                if not os.path.exists(source):
+                    source = os.path.join(self.toolchain_source, filename)
+                shutil.copy(os.path.join(self.toolchain_source, filename), os.path.join(path, filename))
+
             tcl_data = []
             tcl_data.append("")
             tcl_data.append('set projectname "rio-rtl"')
