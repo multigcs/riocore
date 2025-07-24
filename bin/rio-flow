@@ -337,6 +337,8 @@ class PluginNode(QGraphicsItem):
     def mousePressEvent(self, event):
         if event.button() == Qt.MiddleButton:
             self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
+            self.scene.parent.redraw()
+            self.scene.parent.snapshot()
 
         elif event.button() == Qt.LeftButton:
             if self.scene.selection_target == (self, self.port_selected(event.pos())):
@@ -681,6 +683,9 @@ class Window(QWidget):
                     else:
                         plugin_config["pins"][port]["pin"] = None
                         plugin_config["pins"][port]["modifier"] = []
+
+    def display(self):
+        self.redraw()
 
     def redraw(self):
         # cleanup
