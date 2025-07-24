@@ -15,6 +15,7 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
 from PyQt5.QtGui import QBrush, QPainter, QPen, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
 from PyQt5.QtWidgets import (
+    QLabel,
     QApplication,
     QGraphicsEllipseItem,
     QGraphicsItem,
@@ -176,11 +177,13 @@ class BoardNode(QGraphicsItem):
         self.setZValue(1)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        image = f"riocore/boards/{board}/board.png"
+        self.setAcceptHoverEvents(True)
 
+        image = f"riocore/boards/{board}/board.png"
         pixmap = QPixmap.fromImage(QImage(image))
         pixmap_width = pixmap.width()
         pixmap_height = pixmap.height()
+        self.name = board
         self.width = pixmap_width // 2
         self.height = pixmap_height // 2
         self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -236,10 +239,11 @@ class BoardNode(QGraphicsItem):
             painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
 
     def mousePressEvent(self, event):
-        if self.scene.selection_source == (self, self.port_selected(event.pos())):
+        port = self.port_selected(event.pos())
+        if self.scene.selection_source == (self, port):
             self.scene.selection_source = None
         else:
-            self.scene.selection_source = (self, self.port_selected(event.pos()))
+            self.scene.selection_source = (self, port)
 
         self.update()
         QGraphicsItem.mousePressEvent(self, event)
@@ -247,6 +251,13 @@ class BoardNode(QGraphicsItem):
     def mouseReleaseEvent(self, event):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
+
+    def hoverEnterEvent(self, event):
+        self.scene.hover = self
+
+    def hoverLeaveEvent(self, event):
+        if self.scene.hover == self:
+            self.scene.hover = None
 
 
 class PluginNode(QGraphicsItem):
@@ -265,6 +276,7 @@ class PluginNode(QGraphicsItem):
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.setAcceptHoverEvents(True)
         self.pixmap = QPixmap.fromImage(QImage(image)).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.selected_port = None
 
@@ -346,6 +358,13 @@ class PluginNode(QGraphicsItem):
         pos_y = pos.y()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
         QGraphicsItem.mouseReleaseEvent(self, event)
+
+    def hoverEnterEvent(self, event):
+        self.scene.hover = self
+
+    def hoverLeaveEvent(self, event):
+        if self.scene.hover == self:
+            self.scene.hover = None
 
 
 class ModifierNode(QGraphicsItem):
@@ -496,6 +515,22 @@ class NodeViewer(QGraphicsView):
                 dx, dy = offset.x(), offset.y()
                 self.horizontalScrollBar().setValue(int(self.horizontalScrollBar().value() + dx))
                 self.verticalScrollBar().setValue(int(self.verticalScrollBar().value() + dy))
+
+        else:
+            if self.scene.hover:
+                position = QPoint(event.pos())
+                position = self.mapToScene(position.x(), position.y())
+                hovername = self.scene.hover.name
+                hoverpos = self.scene.hover.pos()
+                position = QPointF(position.x() - hoverpos.x(), position.y() - hoverpos.y())
+                port = self.scene.hover.port_selected(position)
+                if port:
+                    self.scene.parent.info.setText(f"{hovername} - {port}")
+                else:
+                    self.scene.parent.info.setText(hovername)
+            else:
+                self.scene.parent.info.setText("")
+
         super().mouseMoveEvent(event)
 
     def wheelEvent(self, event):
@@ -510,6 +545,7 @@ class NodeScene(QGraphicsScene):
         self.parent = parent
         self.selection_source = (None, None)
         self.selection_target = (None, None)
+        self.hover = None
 
     def disconnect_port(self, node, port):
         for item in self.items():
@@ -581,10 +617,16 @@ class Window(QWidget):
 
         self.view = NodeViewer(self.scene)
 
-        hbox = QHBoxLayout(self)
+        hbox = QHBoxLayout()
         hbox.addLayout(vbox)
         hbox.addWidget(self.view)
-        self.setLayout(hbox)
+
+        vboxMain = QVBoxLayout(self)
+        self.info = QLabel("---")
+        vboxMain.addLayout(hbox)
+        vboxMain.addWidget(self.info)
+
+        self.setLayout(vboxMain)
 
         self.cfg_reload()
         self.snapshot()
@@ -641,7 +683,6 @@ class Window(QWidget):
                     else:
                         plugin_config["pins"][port]["pin"] = None
                         plugin_config["pins"][port]["modifier"] = []
-
 
     def redraw(self):
         # cleanup
