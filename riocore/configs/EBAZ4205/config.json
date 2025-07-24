@@ -15,18 +15,6 @@
             "uid": "blink0"
         },
         {
-            "type": "_uart",
-            "pins": {
-                "rx": {
-                    "pin": "F15"
-                },
-                "tx": {
-                    "pin": "A16"
-                }
-            },
-            "uid": "uart0"
-        },
-        {
             "type": "pwmout",
             "pins": {
                 "pwm": {
