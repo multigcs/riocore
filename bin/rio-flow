@@ -676,10 +676,9 @@ class Window(QWidget):
                     modifiers = []
                     source = self.get_source(item, port, modifiers)
                     if source:
-                        # print(port, source[1], modifiers)
                         plugin_config["pins"][port]["pin"] = source[1]
-                        # if modifiers:
-                        #    print("###", plugin_config["pins"][port]["modifier"])
+                        if modifiers:
+                            plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
                     else:
                         plugin_config["pins"][port]["pin"] = None
                         plugin_config["pins"][port]["modifier"] = []
