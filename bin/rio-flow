@@ -409,7 +409,7 @@ class HalNode(QGraphicsItem):
         super().__init__()
         self.scene = scene
         self.name = name
-        self.width = 150
+        self.width = 450
         self.height = len(pins) * 10 + 5
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
@@ -452,8 +452,7 @@ class HalNode(QGraphicsItem):
             painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.white)
         else:
             painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.green)
-
-        painter.drawText(QRectF(0, 0, self.width, self.height), Qt.AlignmentFlag.AlignCenter, self.name)
+        #painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
 
         py = 5
         for pinname in self.pins:
@@ -688,6 +687,7 @@ class Window(QWidget):
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.filename = sys.argv[1]
         self.snapshots = []
+        self.halpins = []
 
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
@@ -748,9 +748,6 @@ class Window(QWidget):
         self.cfg_reload()
         self.snapshot()
 
-        hnode = HalNode(self.scene, "Hal", ["1", "2", "3"])
-        hnode.setPos(1200, 100)
-        self.scene.addItem(hnode)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
@@ -804,6 +801,7 @@ class Window(QWidget):
 
     def redraw(self):
         # cleanup
+        self.halpins = []
         for item in self.scene.items():
             self.scene.removeItem(item)
         self.pinlist = []
@@ -836,6 +834,13 @@ class Window(QWidget):
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
 
+
+        hnode = HalNode(self.scene, "hal", self.halpins)
+        hnode.setPos(1000, 100)
+        self.scene.addItem(hnode)
+
+
+
         ph = 1
         pv = 1
         zoom = 1.0
@@ -844,7 +849,6 @@ class Window(QWidget):
             pv = self.config["vpos"][1]
         if "vscale" in self.config:
             zoom = self.config["vscale"]
-
         self.view.setZoom(zoom)
         self.view.horizontalScrollBar().setSliderPosition(ph)
         self.view.verticalScrollBar().setSliderPosition(pv)
@@ -901,12 +905,12 @@ class Window(QWidget):
                 self.scene.addItem(edge)
                 color_n += 1
 
-        hsy = hy
-        if plugin_config.get("is_joint", False) is True:
-            hnode = HalNode(self.scene, "Joint", ["pos"])
-            hnode.setPos(hx + 200, hy)
-            self.scene.addItem(hnode)
-            hsy += 20
+        #hsy = hy
+        #if plugin_config.get("is_joint", False) is True:
+        #    hnode = HalNode(self.scene, "Joint", ["pos"])
+        #    hnode.setPos(hx + 200, hy)
+        #    self.scene.addItem(hnode)
+        #    hsy += 20
 
         signals = plugin_config.get("signals")
         if signals:
@@ -918,10 +922,9 @@ class Window(QWidget):
                 setp = signal.get("setp")
                 if setp:
                     slist.append(f"setp: {setp}")
-            hnode = HalNode(self.scene, "sig", slist)
-            hnode.setPos(hx + 200, hsy)
-            self.scene.addItem(hnode)
-            hsy += 20
+
+            self.halpins += slist
+
 
         ph = max(ph, pnode.height) + 5
         return ph
