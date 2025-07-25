@@ -261,6 +261,8 @@ class BoardNode(QGraphicsItem):
 
 
 class PluginNode(QGraphicsItem):
+    show_signals = False
+
     def __init__(self, scene, plugin_instance):
         super().__init__()
         plugin_config = plugin_instance.plugin_setup
@@ -270,9 +272,13 @@ class PluginNode(QGraphicsItem):
         self.plugin_instance = plugin_instance
         self.name = plugin_config["uid"]
         self.pins = plugin_instance.PINDEFAULTS
+        self.signals = plugin_instance.SIGNALS
         pinnames = list(self.pins)
+        signalnames = list(self.signals)
         self.width = 180
         self.height = max(len(pinnames) * 10 + 10, 40)
+        self.height = max(len(signalnames) * 10 + 10, self.height)
+
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -287,11 +293,20 @@ class PluginNode(QGraphicsItem):
         pinnames = list(self.pins)
         if port in pinnames:
             pos_y += pinnames.index(port) * 10 + 12
+        if self.show_signals:
+            signalnames = list(self.signals)
+            if port[1:] in signalnames:
+                pos_y += signalnames.index(port[1:]) * 10 + 12
         return QPointF(pos_x, pos_y)
 
     def port_index(self, port):
         pinnames = list(self.pins)
-        index = pinnames.index(port)
+        signalnames = list(self.signals)
+        if port in pinnames:
+            index = pinnames.index(port)
+        if self.show_signals:
+            if port[1:] in signalnames:
+                index = signalnames.index(port[1:])
         return index
 
     def port_selected(self, mouse_pos):
@@ -303,6 +318,12 @@ class PluginNode(QGraphicsItem):
                 return pinname
             py += 10
 
+        if self.show_signals:
+            py = 15
+            for signalname in self.signals:
+                if abs(mouse_x - (self.width - 3)) < 5 and abs(mouse_y - (py - 3)) < 5:
+                    return f"_{signalname}"
+                py += 10
         return None
 
     def boundingRect(self):
@@ -322,7 +343,8 @@ class PluginNode(QGraphicsItem):
         height = self.pixmap.height()
         xoff = (30 - width) // 2 + 5
         yoff = (30 - height) // 2 + 5
-        painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
+        if not self.show_signals:
+            painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
         painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
 
         py = 15
@@ -333,6 +355,16 @@ class PluginNode(QGraphicsItem):
                 painter.fillRect(QRectF(0, py - 6, 5, 5), Qt.GlobalColor.yellow)
             painter.drawText(QPointF(7, py), pinname)
             py += 10
+
+        if self.show_signals:
+            py = 15
+            for signalname in self.signals:
+                if (self, f"_{signalname}") == self.scene.selection_target:
+                    painter.fillRect(QRectF(self.width - 5, py - 6, 5, 5), Qt.GlobalColor.red)
+                else:
+                    painter.fillRect(QRectF(self.width - 5, py - 6, 5, 5), Qt.GlobalColor.yellow)
+                painter.drawText(QRectF(0, py-13, self.width - 8, 15), Qt.AlignmentFlag.AlignRight, signalname)
+                py += 10
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MiddleButton:
