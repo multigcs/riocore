@@ -198,6 +198,9 @@ class BoardNode(QGraphicsItem):
                 self.ports[pin_data.get("pin")] = {"pos": pos, "dir": ""}
         self.selected_port = None
 
+        self.setPos(120, 220)
+        self.scene.addItem(self)
+
     def port_pos(self, port):
         pos = self.pos()
         pos_x = pos.x()
@@ -363,7 +366,7 @@ class PluginNode(QGraphicsItem):
                     painter.fillRect(QRectF(self.width - 5, py - 6, 5, 5), Qt.GlobalColor.red)
                 else:
                     painter.fillRect(QRectF(self.width - 5, py - 6, 5, 5), Qt.GlobalColor.yellow)
-                painter.drawText(QRectF(0, py-13, self.width - 8, 15), Qt.AlignmentFlag.AlignRight, signalname)
+                painter.drawText(QRectF(0, py - 13, self.width - 8, 15), Qt.AlignmentFlag.AlignRight, signalname)
                 py += 10
 
     def mousePressEvent(self, event):
@@ -679,9 +682,6 @@ class Window(QWidget):
             self.config = json.loads(jdata)
         else:
             self.config = config
-
-        data = open(f"riocore/boards/{self.config['boardcfg']}/board.json", "r").read()
-        self.board = json.loads(data)
         self.redraw()
 
     def snapshot(self):
@@ -723,9 +723,13 @@ class Window(QWidget):
         for item in self.scene.items():
             self.scene.removeItem(item)
         self.pinlist = []
-        self.bnode = BoardNode(self.scene, self.config["boardcfg"])
-        self.bnode.setPos(120, 220)
-        self.scene.addItem(self.bnode)
+        boardcfg = self.config.get("boardcfg")
+        self.bnode = None
+        if os.path.exists(f"riocore/boards/{boardcfg}/board.json"):
+            self.bnode = BoardNode(self.scene, boardcfg)
+
+        if "gpios" in self.config:
+            pass
 
         py = 100
         if "plugins" not in self.config:
