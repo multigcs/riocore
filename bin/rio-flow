@@ -452,7 +452,7 @@ class HalNode(QGraphicsItem):
             painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.white)
         else:
             painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.green)
-        #painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
+        # painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
 
         py = 5
         for pinname in self.pins:
@@ -748,7 +748,6 @@ class Window(QWidget):
         self.cfg_reload()
         self.snapshot()
 
-
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.close()
@@ -834,12 +833,9 @@ class Window(QWidget):
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
 
-
         hnode = HalNode(self.scene, "hal", self.halpins)
         hnode.setPos(1000, 100)
         self.scene.addItem(hnode)
-
-
 
         ph = 1
         pv = 1
@@ -905,8 +901,8 @@ class Window(QWidget):
                 self.scene.addItem(edge)
                 color_n += 1
 
-        #hsy = hy
-        #if plugin_config.get("is_joint", False) is True:
+        # hsy = hy
+        # if plugin_config.get("is_joint", False) is True:
         #    hnode = HalNode(self.scene, "Joint", ["pos"])
         #    hnode.setPos(hx + 200, hy)
         #    self.scene.addItem(hnode)
@@ -916,15 +912,16 @@ class Window(QWidget):
         if signals:
             slist = []
             for signal_name, signal in signals.items():
+                halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                # print(f"rio.{plugin_instance.signal_prefix}.{signal_name}", signal)
                 net = signal.get("net")
                 if net:
-                    slist.append(f"net: {net}")
+                    slist.append(f"net: {halname} {net}")
                 setp = signal.get("setp")
                 if setp:
-                    slist.append(f"setp: {setp}")
+                    slist.append(f"setp: {halname} {setp}")
 
             self.halpins += slist
-
 
         ph = max(ph, pnode.height) + 5
         return ph
