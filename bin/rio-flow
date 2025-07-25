@@ -404,6 +404,86 @@ class PluginNode(QGraphicsItem):
             self.scene.hover = None
 
 
+class HalNode(QGraphicsItem):
+    def __init__(self, scene, name, pins=["in"]):
+        super().__init__()
+        self.scene = scene
+        self.name = name
+        self.width = 150
+        self.height = len(pins) * 10 + 5
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.pins = pins
+        self.selected_port = None
+
+    def port_pos(self, port):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        if port in self.pins:
+            idx = self.pins.index(port)
+            pos_y += idx * 10 + 15
+        return QPointF(pos_x, pos_y)
+
+    def port_index(self, port):
+        index = self.pins.index(port)
+        return index
+
+    def port_selected(self, mouse_pos):
+        mouse_x = mouse_pos.x()
+        mouse_y = mouse_pos.y()
+        py = 5
+        for pinname in self.pins:
+            if abs(mouse_x - 2) < 5 and abs(mouse_y - py - 2) < 5:
+                return pinname
+            py += 10
+        return None
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+
+        if self.isSelected():
+            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.white)
+        else:
+            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.green)
+
+        painter.drawText(QRectF(0, 0, self.width, self.height), Qt.AlignmentFlag.AlignCenter, self.name)
+
+        py = 5
+        for pinname in self.pins:
+            if (self, pinname) == self.scene.selection_source or (self, pinname) == self.scene.selection_target:
+                painter.fillRect(QRectF(0, py, 4, 4), Qt.GlobalColor.red)
+            else:
+                painter.fillRect(QRectF(0, py, 4, 4), Qt.GlobalColor.yellow)
+            painter.drawText(QPointF(7, py + 6), pinname)
+            py += 10
+
+    def mousePressEvent(self, event):
+        if self.port_selected(event.pos()) == "in":
+            if self.scene.selection_target == (self, self.port_selected(event.pos())):
+                self.scene.selection_target = None
+            else:
+                self.scene.selection_target = (self, self.port_selected(event.pos()))
+        else:
+            if self.scene.selection_source == (self, self.port_selected(event.pos())):
+                self.scene.selection_source = None
+            else:
+                self.scene.selection_source = (self, self.port_selected(event.pos()))
+
+        self.update()
+        QGraphicsItem.mousePressEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+
 class ModifierNode(QGraphicsItem):
     def __init__(self, scene, modifier):
         super().__init__()
@@ -604,7 +684,7 @@ class NodeScene(QGraphicsScene):
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-        self.scene = NodeScene(0, 0, 1200, 1800, self)
+        self.scene = NodeScene(0, 0, 1500, 1800, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.filename = sys.argv[1]
         self.snapshots = []
@@ -667,6 +747,10 @@ class Window(QWidget):
 
         self.cfg_reload()
         self.snapshot()
+
+        hnode = HalNode(self.scene, "Hal", ["1", "2", "3"])
+        hnode.setPos(1200, 100)
+        self.scene.addItem(hnode)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
@@ -781,9 +865,12 @@ class Window(QWidget):
         pnode = PluginNode(self.scene, plugin_instance)
 
         if "pos" in plugin_config:
-            pnode.setPos(plugin_config["pos"][0], plugin_config["pos"][1])
+            hx = plugin_config["pos"][0]
+            hy = plugin_config["pos"][1]
         else:
-            pnode.setPos(850, py)
+            hx = 850
+            hy = py
+        pnode.setPos(hx, hy)
         self.scene.addItem(pnode)
 
         ph = 0
@@ -813,6 +900,28 @@ class Window(QWidget):
                 edge = NodeEdge(last_con[0], last_con[1], pnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
+
+        hsy = hy
+        if plugin_config.get("is_joint", False) is True:
+            hnode = HalNode(self.scene, "Joint", ["pos"])
+            hnode.setPos(hx + 200, hy)
+            self.scene.addItem(hnode)
+            hsy += 20
+
+        signals = plugin_config.get("signals")
+        if signals:
+            slist = []
+            for signal_name, signal in signals.items():
+                net = signal.get("net")
+                if net:
+                    slist.append(f"net: {net}")
+                setp = signal.get("setp")
+                if setp:
+                    slist.append(f"setp: {setp}")
+            hnode = HalNode(self.scene, "sig", slist)
+            hnode.setPos(hx + 200, hsy)
+            self.scene.addItem(hnode)
+            hsy += 20
 
         ph = max(ph, pnode.height) + 5
         return ph
