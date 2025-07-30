@@ -932,10 +932,10 @@ class Window(QWidget):
                     }
                 net = signal.get("net")
                 if net:
-                    self.halpins[halname]["target"] = f"net: {halname} {net}"
+                    self.halpins[halname]["target"] = f"net: {net}"
                 setp = signal.get("setp")
                 if setp:
-                    self.halpins[halname]["target"] = f"setp: {halname} {setp}"
+                    self.halpins[halname]["target"] = f"setp: {setp}"
 
         ph = max(ph, pnode.height) + 5
         return ph
