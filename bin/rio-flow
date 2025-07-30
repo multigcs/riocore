@@ -912,13 +912,6 @@ class Window(QWidget):
                 self.scene.addItem(edge)
                 color_n += 1
 
-        # hsy = hy
-        # if plugin_config.get("is_joint", False) is True:
-        #    hnode = HalNode(self.scene, "Joint", ["pos"])
-        #    hnode.setPos(hx + 200, hy)
-        #    self.scene.addItem(hnode)
-        #    hsy += 20
-
         signals = plugin_config.get("signals")
         if signals:
             slist = []
