@@ -264,7 +264,7 @@ class BoardNode(QGraphicsItem):
 
 
 class PluginNode(QGraphicsItem):
-    show_signals = False
+    show_signals = True
 
     def __init__(self, scene, plugin_instance):
         super().__init__()
@@ -299,6 +299,7 @@ class PluginNode(QGraphicsItem):
         if self.show_signals:
             signalnames = list(self.signals)
             if port[1:] in signalnames:
+                pos_x = pos.x() + self.width
                 pos_y += signalnames.index(port[1:]) * 10 + 12
         return QPointF(pos_x, pos_y)
 
@@ -405,7 +406,7 @@ class PluginNode(QGraphicsItem):
 
 
 class HalNode(QGraphicsItem):
-    def __init__(self, scene, name, pins=["in"]):
+    def __init__(self, scene, name, pins={}):
         super().__init__()
         self.scene = scene
         self.name = name
@@ -422,11 +423,12 @@ class HalNode(QGraphicsItem):
         pos_x = pos.x()
         pos_y = pos.y()
         if port in self.pins:
-            idx = self.pins.index(port)
-            pos_y += idx * 10 + 15
+            idx = list(self.pins).index(port)
+            pos_y += idx * 10 + 7
         return QPointF(pos_x, pos_y)
 
     def port_index(self, port):
+        return 0
         index = self.pins.index(port)
         return index
 
@@ -455,12 +457,13 @@ class HalNode(QGraphicsItem):
         # painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
 
         py = 5
-        for pinname in self.pins:
-            if (self, pinname) == self.scene.selection_source or (self, pinname) == self.scene.selection_target:
+        for halname, pin_data in self.pins.items():
+            target = pin_data["target"]
+            if (self, target) == self.scene.selection_source or (self, target) == self.scene.selection_target:
                 painter.fillRect(QRectF(0, py, 4, 4), Qt.GlobalColor.red)
             else:
                 painter.fillRect(QRectF(0, py, 4, 4), Qt.GlobalColor.yellow)
-            painter.drawText(QPointF(7, py + 6), pinname)
+            painter.drawText(QPointF(7, py + 6), str(target))
             py += 10
 
     def mousePressEvent(self, event):
@@ -687,7 +690,7 @@ class Window(QWidget):
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.filename = sys.argv[1]
         self.snapshots = []
-        self.halpins = []
+        self.halpins = {}
 
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
@@ -800,7 +803,7 @@ class Window(QWidget):
 
     def redraw(self):
         # cleanup
-        self.halpins = []
+        self.halpins = {}
         for item in self.scene.items():
             self.scene.removeItem(item)
         self.pinlist = []
@@ -836,6 +839,14 @@ class Window(QWidget):
         hnode = HalNode(self.scene, "hal", self.halpins)
         hnode.setPos(1000, 100)
         self.scene.addItem(hnode)
+
+        for signal_name, signal in self.halpins.items():
+            target = signal["target"]
+            source = signal["source"]
+            spin = f"_{source[1]}"
+            print(signal_name, spin)
+            edge = NodeEdge(source[0], spin, hnode, signal_name, color=colors[0])
+            self.scene.addItem(edge)
 
         ph = 1
         pv = 1
@@ -914,14 +925,17 @@ class Window(QWidget):
             for signal_name, signal in signals.items():
                 halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
                 # print(f"rio.{plugin_instance.signal_prefix}.{signal_name}", signal)
+                if halname not in self.halpins:
+                    self.halpins[halname] = {
+                        "target": "",
+                        "source": (pnode, signal_name),
+                    }
                 net = signal.get("net")
                 if net:
-                    slist.append(f"net: {halname} {net}")
+                    self.halpins[halname]["target"] = f"net: {halname} {net}"
                 setp = signal.get("setp")
                 if setp:
-                    slist.append(f"setp: {halname} {setp}")
-
-            self.halpins += slist
+                    self.halpins[halname]["target"] = f"setp: {halname} {setp}"
 
         ph = max(ph, pnode.height) + 5
         return ph
