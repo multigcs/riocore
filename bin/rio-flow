@@ -173,9 +173,27 @@ NodeEdge = NodeEdgePath
 class MyNode(QGraphicsItem):
     radius = 5
     bordersize = 4
+    port_size = 6
+    port_tsize = 16
+    port_toff_x = 2
+    port_toff_y = 2
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
+
+    def paintPort(self, painter, side, y, name, color):
+        if side == "left":
+            painter.fillRect(QRectF(self.bordersize / 2, y - (self.port_size / 2), self.port_size, self.port_size), color)
+            if name:
+                painter.drawText(
+                    QRectF(self.bordersize / 2 + self.port_size + self.port_toff_x, y - (self.port_tsize / 2) - self.port_toff_y, self.width, self.port_tsize), Qt.AlignmentFlag.AlignLeft, name
+                )
+        else:
+            painter.fillRect(QRectF(self.width - self.bordersize / 2 - self.port_size, y - (self.port_size / 2), self.port_size, self.port_size), color)
+            if name:
+                painter.drawText(
+                    QRectF(0, y - (self.port_tsize / 2) - self.port_toff_y, self.width - self.bordersize / 2 - self.port_size - self.port_toff_x, self.port_tsize), Qt.AlignmentFlag.AlignRight, name
+                )
 
     def paintBg(self, painter, bgColor, frameColor, title):
         painter.setRenderHint(QPainter.Antialiasing)
@@ -199,7 +217,7 @@ class MyNode(QGraphicsItem):
 
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
         if title:
-            painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, title)
+            painter.drawText(QRectF(0, 0, self.width, 20), Qt.AlignmentFlag.AlignCenter, title)
 
 
 class BoardNode(MyNode):
@@ -364,9 +382,7 @@ class PluginNode(MyNode):
         pos_x = pos.x()
         pos_y = pos.y()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
-
         self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
-
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
         width = self.pixmap.width()
@@ -376,23 +392,21 @@ class PluginNode(MyNode):
         if not self.show_signals:
             painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
 
-        py = 15
+        py = 12
         for pinname in self.pins:
             if (self, pinname) == self.scene.selection_target:
-                painter.fillRect(QRectF(0, py - 6, 5, 5), Qt.GlobalColor.red)
+                self.paintPort(painter, "left", py, pinname, Qt.GlobalColor.red)
             else:
-                painter.fillRect(QRectF(0, py - 6, 5, 5), Qt.GlobalColor.yellow)
-            painter.drawText(QPointF(7, py), pinname)
+                self.paintPort(painter, "left", py, pinname, Qt.GlobalColor.yellow)
             py += 10
 
         if self.show_signals:
-            py = 15
+            py = 12
             for signalname in self.signals:
                 if (self, f"_{signalname}") == self.scene.selection_target:
-                    painter.fillRect(QRectF(self.width - 5, py - 6, 5, 5), Qt.GlobalColor.red)
+                    self.paintPort(painter, "right", py, pinname, Qt.GlobalColor.red)
                 else:
-                    painter.fillRect(QRectF(self.width - 5, py - 6, 5, 5), Qt.GlobalColor.yellow)
-                painter.drawText(QRectF(0, py - 13, self.width - 8, 15), Qt.AlignmentFlag.AlignRight, signalname)
+                    self.paintPort(painter, "right", py, pinname, Qt.GlobalColor.yellow)
                 py += 10
 
     def mousePressEvent(self, event):
@@ -473,16 +487,14 @@ class HalNode(MyNode):
 
     def paint(self, painter, option, widget):
         self.paintBg(painter, Qt.GlobalColor.cyan, Qt.GlobalColor.white, self.name)
-
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
-        py = 5
+        py = 7
         for halname, pin_data in self.pins.items():
             target = pin_data["target"]
             if (self, target) == self.scene.selection_source or (self, target) == self.scene.selection_target:
-                painter.fillRect(QRectF(0, py, 4, 4), Qt.GlobalColor.red)
+                self.paintPort(painter, "left", py, str(target), Qt.GlobalColor.red)
             else:
-                painter.fillRect(QRectF(0, py, 4, 4), Qt.GlobalColor.yellow)
-            painter.drawText(QPointF(7, py + 6), str(target))
+                self.paintPort(painter, "left", py, str(target), Qt.GlobalColor.yellow)
             py += 10
 
     def mousePressEvent(self, event):
@@ -512,7 +524,7 @@ class ModifierNode(MyNode):
         self.modifier = modifier
         self.name = modifier["type"]
         self.width = 100
-        self.height = 16
+        self.height = 20
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -553,13 +565,14 @@ class ModifierNode(MyNode):
         self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
-        px = 0
+        py = self.height / 2
+        side = "left"
         for pinname in self.pins:
             if (self, pinname) == self.scene.selection_source or (self, pinname) == self.scene.selection_target:
-                painter.fillRect(QRectF(px, self.height // 2 - 2, 4, 4), Qt.GlobalColor.red)
+                self.paintPort(painter, side, py, "", Qt.GlobalColor.red)
             else:
-                painter.fillRect(QRectF(px, self.height // 2 - 2, 4, 4), Qt.GlobalColor.yellow)
-            px += self.width - 4
+                self.paintPort(painter, side, py, "", Qt.GlobalColor.yellow)
+            side = "right"
 
     def mousePressEvent(self, event):
         if self.port_selected(event.pos()) == "in":
