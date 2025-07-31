@@ -686,7 +686,7 @@ class NodeScene(QGraphicsScene):
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-        self.scene = NodeScene(0, 0, 1500, 1800, self)
+        self.scene = NodeScene(0, 0, 2500, 2500, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.filename = sys.argv[1]
         self.snapshots = []
