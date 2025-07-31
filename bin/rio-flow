@@ -186,19 +186,29 @@ class MyNode(QGraphicsItem):
     def paintPort(self, painter, side, y, name, color):
         if side == "left":
             painter.fillRect(QRectF(self.bordersize / 2, y - (self.port_size / 2), self.port_size, self.port_size), color)
-            painter.fillRect(QRectF(self.bordersize / 2 + (self.port_boarder / 2), y - ((self.port_size - self.port_boarder) / 2), self.port_size - self.port_boarder, self.port_size - self.port_boarder), Qt.GlobalColor.black)
+            painter.fillRect(
+                QRectF(self.bordersize / 2 + (self.port_boarder / 2), y - ((self.port_size - self.port_boarder) / 2), self.port_size - self.port_boarder, self.port_size - self.port_boarder),
+                Qt.GlobalColor.black,
+            )
             if name:
                 painter.drawText(
                     QRectF(self.bordersize / 2 + self.port_size + self.port_toff_x, y - (self.port_tsize / 2) - self.port_toff_y, self.width, self.port_tsize), Qt.AlignmentFlag.AlignLeft, name
                 )
         else:
             painter.fillRect(QRectF(self.width - self.bordersize / 2 - self.port_size, y - (self.port_size / 2), self.port_size, self.port_size), color)
-            painter.fillRect(QRectF(self.width - self.bordersize / 2 - self.port_size + (self.port_boarder / 2), y - ((self.port_size - self.port_boarder) / 2), self.port_size - self.port_boarder, self.port_size - self.port_boarder), Qt.GlobalColor.black)
+            painter.fillRect(
+                QRectF(
+                    self.width - self.bordersize / 2 - self.port_size + (self.port_boarder / 2),
+                    y - ((self.port_size - self.port_boarder) / 2),
+                    self.port_size - self.port_boarder,
+                    self.port_size - self.port_boarder,
+                ),
+                Qt.GlobalColor.black,
+            )
             if name:
                 painter.drawText(
                     QRectF(0, y - (self.port_tsize / 2) - self.port_toff_y, self.width - self.bordersize / 2 - self.port_size - self.port_toff_x, self.port_tsize), Qt.AlignmentFlag.AlignRight, name
                 )
-
 
     def paintBg(self, painter, bgColor, frameColor, title):
         painter.setRenderHint(QPainter.Antialiasing)
