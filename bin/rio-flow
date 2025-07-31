@@ -453,7 +453,7 @@ class HalNode(QGraphicsItem):
         if self.isSelected():
             painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.white)
         else:
-            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.green)
+            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.cyan)
         # painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
 
         py = 5
@@ -691,6 +691,7 @@ class Window(QWidget):
         self.filename = sys.argv[1]
         self.snapshots = []
         self.halpins = {}
+        self.joints = 0
 
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
@@ -804,6 +805,7 @@ class Window(QWidget):
     def redraw(self):
         # cleanup
         self.halpins = {}
+        self.joints = 0
         for item in self.scene.items():
             self.scene.removeItem(item)
         self.pinlist = []
@@ -837,14 +839,13 @@ class Window(QWidget):
             py += self.insert_plugin(plugin_instance, py)
 
         hnode = HalNode(self.scene, "hal", self.halpins)
-        hnode.setPos(1000, 100)
+        hnode.setPos(1100, 100)
         self.scene.addItem(hnode)
 
         for signal_name, signal in self.halpins.items():
             target = signal["target"]
             source = signal["source"]
             spin = f"_{source[1]}"
-            print(signal_name, spin)
             edge = NodeEdge(source[0], spin, hnode, signal_name, color=colors[0])
             self.scene.addItem(edge)
 
@@ -914,7 +915,6 @@ class Window(QWidget):
 
         signals = plugin_config.get("signals")
         if signals:
-            slist = []
             for signal_name, signal in signals.items():
                 halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
                 # print(f"rio.{plugin_instance.signal_prefix}.{signal_name}", signal)
@@ -929,6 +929,19 @@ class Window(QWidget):
                 setp = signal.get("setp")
                 if setp:
                     self.halpins[halname]["target"] = f"setp: {setp}"
+
+        is_joint = plugin_config.get("is_joint")
+        if plugin_instance.SIGNALS and is_joint:
+            for signal_name, signal in plugin_instance.SIGNALS.items():
+                halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                if is_joint and signal_name in {"velocity", "position"}:
+                    if halname not in self.halpins:
+                        self.halpins[halname] = {
+                            "target": "",
+                            "source": (pnode, signal_name),
+                        }
+                    self.halpins[halname]["target"] = f"net: joint.{self.joints}.{signal_name}"
+            self.joints += 1
 
         ph = max(ph, pnode.height) + 5
         return ph
