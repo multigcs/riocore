@@ -170,7 +170,39 @@ class NodeEdgeLine(QGraphicsLineItem):
 NodeEdge = NodeEdgePath
 
 
-class BoardNode(QGraphicsItem):
+class MyNode(QGraphicsItem):
+    radius = 5
+    bordersize = 4
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def paintBg(self, painter, bgColor, frameColor, title):
+        painter.setRenderHint(QPainter.Antialiasing)
+        path = QPainterPath()
+        if self.isSelected():
+            pen = QPen(Qt.GlobalColor.white, self.bordersize)
+            brush = QBrush(Qt.GlobalColor.white)
+        else:
+            pen = QPen(frameColor, self.bordersize)
+            brush = QBrush(bgColor)
+
+        painter.setPen(pen)
+        painter.setBrush(brush)
+
+        rect = self.boundingRect()
+        rect.adjust(self.bordersize / 2, self.bordersize / 2, -self.bordersize / 2, -self.bordersize / 2)
+        path.addRoundedRect(rect, self.radius, self.radius)
+        painter.setClipPath(path)
+        painter.fillPath(path, painter.brush())
+        painter.strokePath(path, painter.pen())
+
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        if title:
+            painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, title)
+
+
+class BoardNode(MyNode):
     def __init__(self, scene, board):
         super().__init__()
         self.scene = scene
@@ -222,9 +254,6 @@ class BoardNode(QGraphicsItem):
                 return port
         return None
 
-    def boundingRect(self):
-        return QRectF(0, 0, self.width, self.height)
-
     def paint(self, painter, option, widget):
         painter.drawRect(self.boundingRect())
         painter.drawPixmap(0, 0, self.pixmap)
@@ -263,7 +292,7 @@ class BoardNode(QGraphicsItem):
             self.scene.hover = None
 
 
-class PluginNode(QGraphicsItem):
+class PluginNode(MyNode):
     show_signals = True
 
     def __init__(self, scene, plugin_instance):
@@ -330,26 +359,22 @@ class PluginNode(QGraphicsItem):
                 py += 10
         return None
 
-    def boundingRect(self):
-        return QRectF(0, 0, self.width, self.height)
-
     def paint(self, painter, option, widget):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
 
-        if self.isSelected():
-            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.white)
-        else:
-            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.gray)
+        self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
+
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+
         width = self.pixmap.width()
         height = self.pixmap.height()
         xoff = (30 - width) // 2 + 5
         yoff = (30 - height) // 2 + 5
         if not self.show_signals:
             painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
-        painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
 
         py = 15
         for pinname in self.pins:
@@ -405,7 +430,7 @@ class PluginNode(QGraphicsItem):
             self.scene.hover = None
 
 
-class HalNode(QGraphicsItem):
+class HalNode(MyNode):
     def __init__(self, scene, name, pins={}):
         super().__init__()
         self.scene = scene
@@ -446,20 +471,10 @@ class HalNode(QGraphicsItem):
             py += 10
         return None
 
-    def boundingRect(self):
-        return QRectF(0, 0, self.width, self.height)
-
     def paint(self, painter, option, widget):
-        pos = self.pos()
-        pos_x = pos.x()
-        pos_y = pos.y()
+        self.paintBg(painter, Qt.GlobalColor.cyan, Qt.GlobalColor.white, self.name)
 
-        if self.isSelected():
-            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.white)
-        else:
-            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.cyan)
-        # painter.drawText(QRectF(0, 0, self.width, 16), Qt.AlignmentFlag.AlignCenter, self.name)
-
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
         py = 5
         for halname, pin_data in self.pins.items():
             target = pin_data["target"]
@@ -490,14 +505,14 @@ class HalNode(QGraphicsItem):
         QGraphicsItem.mouseReleaseEvent(self, event)
 
 
-class ModifierNode(QGraphicsItem):
+class ModifierNode(MyNode):
     def __init__(self, scene, modifier):
         super().__init__()
         self.scene = scene
         self.modifier = modifier
         self.name = modifier["type"]
         self.width = 100
-        self.height = 20
+        self.height = 16
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -529,20 +544,14 @@ class ModifierNode(QGraphicsItem):
             px += self.width - 4
         return None
 
-    def boundingRect(self):
-        return QRectF(0, 0, self.width, self.height)
-
     def paint(self, painter, option, widget):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
         self.modifier["pos"] = (pos_x, pos_y)
-        if self.isSelected():
-            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.white)
-        else:
-            painter.fillRect(QRectF(0, 0, self.width, self.height), Qt.GlobalColor.gray)
 
-        painter.drawText(QRectF(0, 0, self.width, self.height), Qt.AlignmentFlag.AlignCenter, self.name)
+        self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
         px = 0
         for pinname in self.pins:
