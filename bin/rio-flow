@@ -179,9 +179,46 @@ class MyNode(QGraphicsItem):
     port_toff_y = 2
     port_boarder = 2
     port_top = 10
+    ports_left = {}
+    ports_right = {}
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
+
+    def port_selected(self, mouse_pos):
+        mouse_x = mouse_pos.x()
+        mouse_y = mouse_pos.y()
+
+        py = self.port_top
+        for port in self.ports_left:
+            if abs(mouse_x - (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+                return port
+            py += 10
+
+        py = self.port_top
+        for port in self.ports_right:
+            if abs(mouse_x - self.width + (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+                return f"_{port}"
+            py += 10
+
+        return None
+
+    def paintPorts(self, painter):
+        py = self.port_top
+        for port in self.ports_left:
+            if (self, port) == self.scene.selection_target:
+                self.paintPort(painter, "left", py, port, Qt.GlobalColor.red)
+            else:
+                self.paintPort(painter, "left", py, port, Qt.GlobalColor.yellow)
+            py += 10
+
+        py = self.port_top
+        for port in self.ports_right:
+            if (self, f"_{port}") == self.scene.selection_target:
+                self.paintPort(painter, "right", py, port, Qt.GlobalColor.red)
+            else:
+                self.paintPort(painter, "right", py, port, Qt.GlobalColor.yellow)
+            py += 10
 
     def paintPort(self, painter, side, y, name, color):
         if side == "left":
@@ -375,23 +412,6 @@ class PluginNode(MyNode):
                 index = signalnames.index(port[1:])
         return index
 
-    def port_selected(self, mouse_pos):
-        mouse_x = mouse_pos.x()
-        mouse_y = mouse_pos.y()
-        py = 15
-        for pinname in self.pins:
-            if abs(mouse_x - 3) < 5 and abs(mouse_y - (py - 3)) < 5:
-                return pinname
-            py += 10
-
-        if self.show_signals:
-            py = 15
-            for signalname in self.signals:
-                if abs(mouse_x - (self.width - 3)) < 5 and abs(mouse_y - (py - 3)) < 5:
-                    return f"_{signalname}"
-                py += 10
-        return None
-
     def paint(self, painter, option, widget):
         pos = self.pos()
         pos_x = pos.x()
@@ -407,22 +427,9 @@ class PluginNode(MyNode):
         if not self.show_signals:
             painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
 
-        py = self.port_top
-        for pinname in self.pins:
-            if (self, pinname) == self.scene.selection_target:
-                self.paintPort(painter, "left", py, pinname, Qt.GlobalColor.red)
-            else:
-                self.paintPort(painter, "left", py, pinname, Qt.GlobalColor.yellow)
-            py += 10
-
-        if self.show_signals:
-            py = self.port_top
-            for signalname in self.signals:
-                if (self, f"_{signalname}") == self.scene.selection_target:
-                    self.paintPort(painter, "right", py, pinname, Qt.GlobalColor.red)
-                else:
-                    self.paintPort(painter, "right", py, pinname, Qt.GlobalColor.yellow)
-                py += 10
+        self.ports_left = self.pins
+        self.ports_right = self.signals
+        self.paintPorts(painter)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MiddleButton:
