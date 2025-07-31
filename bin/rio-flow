@@ -179,11 +179,39 @@ class MyNode(QGraphicsItem):
     port_toff_y = 2
     port_boarder = 2
     port_top = 10
+    port_diff = 10
     ports_left = {}
     ports_right = {}
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
+
+    def port_pos(self, port):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+
+        ports = list(self.ports_left)
+        if port in ports:
+            pos_y += ports.index(port) * self.port_diff + self.port_top
+
+        ports = list(self.ports_right)
+        if port[1:] in ports:
+            pos_x = pos.x() + self.width
+            pos_y += ports.index(port[1:]) * self.port_diff + self.port_top
+
+        return QPointF(pos_x, pos_y)
+
+    def port_index(self, port):
+        ports = list(self.ports_left)
+        if port in ports:
+            index = ports.index(port)
+
+        ports = list(self.ports_right)
+        if port[1:] in ports:
+            index = ports.index(port[1:])
+
+        return index
 
     def port_selected(self, mouse_pos):
         mouse_x = mouse_pos.x()
@@ -388,30 +416,6 @@ class PluginNode(MyNode):
         self.pixmap = QPixmap.fromImage(QImage(image)).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.selected_port = None
 
-    def port_pos(self, port):
-        pos = self.pos()
-        pos_x = pos.x()
-        pos_y = pos.y()
-        pinnames = list(self.pins)
-        if port in pinnames:
-            pos_y += pinnames.index(port) * 10 + 12
-        if self.show_signals:
-            signalnames = list(self.signals)
-            if port[1:] in signalnames:
-                pos_x = pos.x() + self.width
-                pos_y += signalnames.index(port[1:]) * 10 + 12
-        return QPointF(pos_x, pos_y)
-
-    def port_index(self, port):
-        pinnames = list(self.pins)
-        signalnames = list(self.signals)
-        if port in pinnames:
-            index = pinnames.index(port)
-        if self.show_signals:
-            if port[1:] in signalnames:
-                index = signalnames.index(port[1:])
-        return index
-
     def paint(self, painter, option, widget):
         pos = self.pos()
         pos_x = pos.x()
@@ -483,41 +487,12 @@ class HalNode(MyNode):
         self.pins[pin] = signal
         self.height = len(self.pins) * 10 + 5
 
-    def port_pos(self, port):
-        pos = self.pos()
-        pos_x = pos.x()
-        pos_y = pos.y()
-        if port in self.pins:
-            idx = list(self.pins).index(port)
-            pos_y += idx * 10 + 7
-        return QPointF(pos_x, pos_y)
-
-    def port_index(self, port):
-        return 0
-        index = self.pins.index(port)
-        return index
-
-    def port_selected(self, mouse_pos):
-        mouse_x = mouse_pos.x()
-        mouse_y = mouse_pos.y()
-        py = 5
-        for pinname in self.pins:
-            if abs(mouse_x - 2) < 5 and abs(mouse_y - py - 2) < 5:
-                return pinname
-            py += 10
-        return None
-
     def paint(self, painter, option, widget):
         self.paintBg(painter, Qt.GlobalColor.cyan, Qt.GlobalColor.white, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
-        py = 7
-        for halname, pin_data in self.pins.items():
-            target = pin_data["target"]
-            if (self, target) == self.scene.selection_source or (self, target) == self.scene.selection_target:
-                self.paintPort(painter, "left", py, str(target), Qt.GlobalColor.red)
-            else:
-                self.paintPort(painter, "left", py, str(target), Qt.GlobalColor.yellow)
-            py += 10
+
+        self.ports_left = self.pins
+        self.paintPorts(painter)
 
     def mousePressEvent(self, event):
         if self.port_selected(event.pos()) == "in":
