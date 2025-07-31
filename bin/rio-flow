@@ -562,14 +562,9 @@ class ModifierNode(MyNode):
         self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
-        py = self.height / 2
-        side = "left"
-        for pinname in self.pins:
-            if (self, pinname) == self.scene.selection_source or (self, pinname) == self.scene.selection_target:
-                self.paintPort(painter, side, py, "", Qt.GlobalColor.red)
-            else:
-                self.paintPort(painter, side, py, "", Qt.GlobalColor.yellow)
-            side = "right"
+        self.ports_left = ["in"]
+        self.ports_right = ["out"]
+        self.paintPorts(painter)
 
     def mousePressEvent(self, event):
         if self.port_selected(event.pos()) == "in":
