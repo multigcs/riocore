@@ -178,12 +178,19 @@ class MyNode(QGraphicsItem):
     port_toff_x = 2
     port_toff_y = 2
     port_boarder = 2
-    port_top = 10
+    port_top = 15
+    port_bottom = 2
     port_diff = 10
-    ports_left = {}
-    ports_right = {}
+
+    def __init__(self):
+        super().__init__()
+        self.ports_left = {}
+        self.ports_right = {}
+        self.selected_port = None
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
 
     def boundingRect(self):
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
         return QRectF(0, 0, self.width, self.height)
 
     def port_pos(self, port):
@@ -232,6 +239,7 @@ class MyNode(QGraphicsItem):
         return None
 
     def paintPorts(self, painter):
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
         py = self.port_top
         for port in self.ports_left:
             if (self, port) == self.scene.selection_target:
@@ -471,27 +479,22 @@ class PluginNode(MyNode):
 
 
 class HalNode(MyNode):
-    def __init__(self, scene, name, pins={}):
+    def __init__(self, scene, name):
         super().__init__()
         self.scene = scene
         self.name = name
         self.width = 450
-        self.height = len(pins) * 10 + 5
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        self.pins = {}
-        self.selected_port = None
 
     def add_signal(self, pin, signal):
-        self.pins[pin] = signal
-        self.height = len(self.pins) * 10 + 5
+        self.ports_left[pin] = signal
+        self.height = self.port_top + len(self.ports_left) * self.port_diff + self.port_bottom
 
     def paint(self, painter, option, widget):
         self.paintBg(painter, Qt.GlobalColor.cyan, Qt.GlobalColor.white, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
-
-        self.ports_left = self.pins
         self.paintPorts(painter)
 
     def mousePressEvent(self, event):
@@ -871,7 +874,7 @@ class Window(QWidget):
                 group = "hal"
 
             if group not in hnodes:
-                hnodes[group] = HalNode(self.scene, "hal", self.halpins)
+                hnodes[group] = HalNode(self.scene, "hal")
                 self.scene.addItem(hnodes[group])
 
             hnodes[group].add_signal(signal_name, signal)
