@@ -373,7 +373,6 @@ class PluginNode(MyNode):
         super().__init__()
         plugin_config = plugin_instance.plugin_setup
         self.scene = scene
-        uid = plugin_config["uid"]
         image = f"riocore/plugins/{plugin_config['type']}/image.png"
         self.plugin_instance = plugin_instance
         self.name = plugin_config["uid"]
@@ -811,7 +810,6 @@ class Window(QWidget):
 
         hnodes = {}
         for signal_name, signal in self.halpins.items():
-            ttype = signal["type"]
             source = signal["source"]
             target = signal["target"]
             spin = f"sig_{source[1]}"
