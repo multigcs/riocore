@@ -151,7 +151,7 @@ NodeEdge = NodeEdgePath
 class MyNode(QGraphicsItem):
     radius = 5
     border_size = 4
-    border_color_selected = QColor(150, 250, 150)
+    border_color_selected = QColor(250, 250, 250)
     border_color = QColor(150, 150, 150)
     bg_color = QColor(100, 100, 100)
     title_size = 9
