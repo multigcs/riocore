@@ -9,7 +9,7 @@ import sys
 
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
-from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QColor, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
 from PyQt5.QtWidgets import (
     QLabel,
     QApplication,
@@ -48,10 +48,19 @@ from riocore.gui.widgets import (
 )
 
 
-colors = [Qt.GlobalColor.green, Qt.GlobalColor.blue, Qt.GlobalColor.red, Qt.GlobalColor.white, Qt.GlobalColor.black, Qt.GlobalColor.yellow]
+colors = [
+    QColor(150, 250, 150),
+    QColor(150, 150, 250),
+    QColor(250, 150, 150),
+    QColor(250, 250, 250),
+    QColor(250, 150, 250),
+]
 
 
 class NodeEdgePath(QGraphicsPathItem):
+    width = 2
+    width_selected = 4
+
     def __init__(self, source_node, source_port, des_node, des_port, color=None):
         super().__init__(None)
         self._source_node = source_node
@@ -70,10 +79,10 @@ class NodeEdgePath(QGraphicsPathItem):
     def paint(self, painter: QPainter, option, widget):
         if self.isSelected():
             self._pen_default = QPen(Qt.GlobalColor.yellow)
-            self._pen_default.setWidthF(7)
+            self._pen_default.setWidthF(self.width_selected)
         else:
             self._pen_default = QPen(self.color)
-            self._pen_default.setWidthF(5)
+            self._pen_default.setWidthF(self.width)
         painter.setPen(self._pen_default)
         self.update_edge_path()
         painter.setBrush(Qt.NoBrush)
@@ -139,11 +148,15 @@ NodeEdge = NodeEdgePath
 
 class MyNode(QGraphicsItem):
     radius = 5
-    bordersize = 4
-    tsize = 9
-    tscale = 1.6
-    tname = "Times"
-    port_size = 10
+    border_size = 4
+    border_color_selected = QColor(150, 250, 150)
+    border_color = QColor(150, 150, 150)
+    bg_color = QColor(100, 100, 100)
+    title_size = 9
+    text_scale = 1.6
+    text_font = "Times"
+    text_color = QColor(220, 220, 220)
+    port_size = 8
     port_tsize = 9
     port_toff_x = 2
     port_toff_y = 2
@@ -227,24 +240,25 @@ class MyNode(QGraphicsItem):
             py += self.port_diff
 
     def paintPort(self, painter, side, y, name, color):
-        painter.setFont(QFont(self.tname, self.port_tsize))
+        painter.setPen(QPen(self.text_color, 1))
+        painter.setFont(QFont(self.text_font, self.port_tsize))
         if side == "left":
-            painter.fillRect(QRectF(self.bordersize / 2, y - (self.port_size / 2), self.port_size, self.port_size), color)
+            painter.fillRect(QRectF(self.border_size / 2, y - (self.port_size / 2), self.port_size, self.port_size), color)
             painter.fillRect(
-                QRectF(self.bordersize / 2 + (self.port_boarder / 2), y - ((self.port_size - self.port_boarder) / 2), self.port_size - self.port_boarder, self.port_size - self.port_boarder),
+                QRectF(self.border_size / 2 + (self.port_boarder / 2), y - ((self.port_size - self.port_boarder) / 2), self.port_size - self.port_boarder, self.port_size - self.port_boarder),
                 Qt.GlobalColor.black,
             )
             if name:
                 painter.drawText(
-                    QRectF(self.bordersize / 2 + self.port_size + self.port_toff_x, y - (self.port_tsize * self.tscale / 2) - self.port_toff_y, self.width, self.port_tsize * self.tscale),
+                    QRectF(self.border_size / 2 + self.port_size + self.port_toff_x, y - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width, self.port_tsize * self.text_scale),
                     Qt.AlignmentFlag.AlignLeft,
                     name,
                 )
         else:
-            painter.fillRect(QRectF(self.width - self.bordersize / 2 - self.port_size, y - (self.port_size / 2), self.port_size, self.port_size), color)
+            painter.fillRect(QRectF(self.width - self.border_size / 2 - self.port_size, y - (self.port_size / 2), self.port_size, self.port_size), color)
             painter.fillRect(
                 QRectF(
-                    self.width - self.bordersize / 2 - self.port_size + (self.port_boarder / 2),
+                    self.width - self.border_size / 2 - self.port_size + (self.port_boarder / 2),
                     y - ((self.port_size - self.port_boarder) / 2),
                     self.port_size - self.port_boarder,
                     self.port_size - self.port_boarder,
@@ -253,35 +267,35 @@ class MyNode(QGraphicsItem):
             )
             if name:
                 painter.drawText(
-                    QRectF(0, y - (self.port_tsize * self.tscale / 2) - self.port_toff_y, self.width - self.bordersize / 2 - self.port_size - self.port_toff_x, self.port_tsize * self.tscale),
+                    QRectF(0, y - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width - self.border_size / 2 - self.port_size - self.port_toff_x, self.port_tsize * self.text_scale),
                     Qt.AlignmentFlag.AlignRight,
                     name,
                 )
 
-    def paintBg(self, painter, bgColor, frameColor, title):
+    def paintBg(self, painter, title):
         painter.setRenderHint(QPainter.Antialiasing)
         path = QPainterPath()
         if self.isSelected():
-            pen = QPen(Qt.GlobalColor.white, self.bordersize)
-            brush = QBrush(Qt.GlobalColor.white)
+            pen = QPen(self.border_color_selected, self.border_size)
+            brush = QBrush(self.bg_color)
         else:
-            pen = QPen(frameColor, self.bordersize)
-            brush = QBrush(bgColor)
+            pen = QPen(self.border_color, self.border_size)
+            brush = QBrush(self.bg_color)
 
         painter.setPen(pen)
         painter.setBrush(brush)
 
         rect = self.boundingRect()
-        rect.adjust(self.bordersize / 2, self.bordersize / 2, -self.bordersize / 2, -self.bordersize / 2)
+        rect.adjust(self.border_size / 2, self.border_size / 2, -self.border_size / 2, -self.border_size / 2)
         path.addRoundedRect(rect, self.radius, self.radius)
         painter.setClipPath(path)
         painter.fillPath(path, painter.brush())
         painter.strokePath(path, painter.pen())
 
-        painter.setPen(QPen(Qt.GlobalColor.black, 1))
         if title:
-            painter.setFont(QFont(self.tname, self.tsize))
-            painter.drawText(QRectF(0, self.bordersize / 2, self.width, self.tsize * self.tscale), Qt.AlignmentFlag.AlignCenter, title)
+            painter.setPen(QPen(self.text_color, 1))
+            painter.setFont(QFont(self.text_font, self.title_size))
+            painter.drawText(QRectF(0, self.border_size / 2, self.width, self.title_size * self.text_scale), Qt.AlignmentFlag.AlignCenter, title)
 
 
 class BoardNode(QGraphicsItem):
@@ -405,7 +419,7 @@ class PluginNode(MyNode):
         pos_x = pos.x()
         pos_y = pos.y()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
-        self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
+        self.paintBg(painter, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
         width = self.pixmap.width()
@@ -473,7 +487,7 @@ class HalNode(MyNode):
         self.height = self.port_top + len(self.ports_left) * self.port_diff + self.port_bottom
 
     def paint(self, painter, option, widget):
-        self.paintBg(painter, Qt.GlobalColor.cyan, Qt.GlobalColor.white, self.name)
+        self.paintBg(painter, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
         self.paintPorts(painter)
 
@@ -521,7 +535,7 @@ class ModifierNode(MyNode):
         pos_y = pos.y()
         self.modifier["pos"] = (pos_x, pos_y)
 
-        self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
+        self.paintBg(painter, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
         self.paintPorts(painter)
@@ -554,7 +568,7 @@ class NodeViewer(QGraphicsView):
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setTransformationAnchor(self.ViewportAnchor.AnchorUnderMouse)
         self.button_pressed = 0
-        self.mouse_pos: QPoint = QPoint()
+        self.mouse_pos = QPoint()
 
     def getZoom(self):
         transform = self.transform()
