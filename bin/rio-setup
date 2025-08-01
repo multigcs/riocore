@@ -540,7 +540,6 @@ class WinForm(QWidget):
         def show_config_info(idx):
             config_path = config_list[idx]
             config_name = config_path.split(os.sep)[-1]
-            config_folder = os.path.dirname(config_path)
             config_raw = open(config_path, "r").read()
             config_config = json.loads(config_raw)
 
@@ -1306,7 +1305,6 @@ class WinForm(QWidget):
             options_target.append(halpin)
 
         for setp_name, setp_value in setp_config.items():
-            aitem_target = MyStandardItem()
             aitem_value = MyStandardItem()
             tree_lcncsetp.appendRow(
                 [

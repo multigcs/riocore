@@ -5,7 +5,6 @@
 import argparse
 import os
 import sys
-import time
 from functools import partial
 
 import rospy
@@ -66,8 +65,6 @@ class rosbridge:
                 print(plugin_type)
 
             for halname, signal in haldata.get("input", {}).items():
-                value = signal["value"]
-                userconfig = signal.get("userconfig", {})
                 if self.args.debug:
                     print("   in", halname, signal.get("bool", False))
                 if signal.get("bool", False):
@@ -76,8 +73,6 @@ class rosbridge:
                     self.pubs[halname] = rospy.Publisher(self.rosname(halname), Float32, queue_size=10)
 
             for halname, signal in haldata.get("output", {}).items():
-                value = signal["value"]
-                userconfig = signal.get("userconfig", {})
                 if self.args.debug:
                     print("  out", halname, signal.get("bool", False))
 
@@ -90,10 +85,8 @@ class rosbridge:
     def run(self):
         while not rospy.is_shutdown():
             for plugin_instance, haldata in self.phaldata.items():
-                plugin_type = plugin_instance.NAME
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
-                    userconfig = signal.get("userconfig", {})
                     if signal.get("bool", False):
                         self.pubs[halname].publish(value)
                     else:
@@ -102,9 +95,7 @@ class rosbridge:
             txdata = self.project.txdata_get()
             if self.args.debug:
                 print(f"tx ({len(txdata * 8)}): {txdata}")
-            start = time.time()
             rxdata = self.project.transfare(txdata)
-            stop = time.time()
             self.project.rxdata_set(rxdata)
             if self.args.debug:
                 print(f"rx ({len(rxdata * 8)}): {rxdata}")
