@@ -156,6 +156,7 @@ class MyNode(QGraphicsItem):
     text_scale = 1.6
     text_font = "Times"
     text_color = QColor(220, 220, 220)
+    title_color = QColor(255, 255, 255)
     port_size = 8
     port_tsize = 9
     port_toff_x = 2
@@ -293,7 +294,7 @@ class MyNode(QGraphicsItem):
         painter.strokePath(path, painter.pen())
 
         if title:
-            painter.setPen(QPen(self.text_color, 1))
+            painter.setPen(QPen(self.title_color, 1))
             painter.setFont(QFont(self.text_font, self.title_size))
             painter.drawText(QRectF(0, self.border_size / 2, self.width, self.title_size * self.text_scale), Qt.AlignmentFlag.AlignCenter, title)
 
@@ -390,6 +391,7 @@ class BoardNode(QGraphicsItem):
 
 class PluginNode(MyNode):
     show_signals = True
+    border_color = QColor(150, 250, 150)
 
     def __init__(self, scene, plugin_instance):
         super().__init__()
@@ -473,6 +475,8 @@ class PluginNode(MyNode):
 
 
 class HalNode(MyNode):
+    border_color = QColor(150, 150, 200)
+    
     def __init__(self, scene, name):
         super().__init__()
         self.scene = scene
