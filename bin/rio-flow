@@ -6,10 +6,10 @@ import copy
 import os
 import json
 import sys
-
+from math import floor, ceil
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
-from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QColor, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
 from PyQt5.QtWidgets import (
     QLabel,
     QApplication,
@@ -55,6 +55,8 @@ colors = [
     QColor(250, 250, 250),
     QColor(250, 150, 250),
 ]
+grid_size = 10
+grid_color = QColor(150, 150, 150)
 
 
 class NodeEdgePath(QGraphicsPathItem):
@@ -287,7 +289,7 @@ class MyNode(QGraphicsItem):
         painter.setBrush(brush)
 
         rect = self.boundingRect()
-        rect.adjust(self.border_size / 2, self.border_size / 2, -self.border_size / 2, -self.border_size / 2)
+        # rect.adjust(self.border_size / 2, self.border_size / 2, -self.border_size / 2, -self.border_size / 2)
         path.addRoundedRect(rect, self.radius, self.radius)
         painter.setClipPath(path)
         painter.fillPath(path, painter.brush())
@@ -476,7 +478,7 @@ class PluginNode(MyNode):
 
 class HalNode(MyNode):
     border_color = QColor(150, 150, 200)
-    
+
     def __init__(self, scene, name):
         super().__init__()
         self.scene = scene
@@ -679,6 +681,24 @@ class NodeScene(QGraphicsScene):
                 elif item._source_node == node:
                     self.removeItem(item)
 
+    def drawBackground(self, painter, rect):
+        super().drawBackground(painter, rect)
+
+        left, right = floor(rect.left()), ceil(rect.right())
+        top, bottom = floor(rect.top()), ceil(rect.bottom())
+
+        grid_points = []
+        for x in range(left - (left % grid_size), right, grid_size):
+            for y in range(top - (top % grid_size), bottom, grid_size):
+                grid_points.append(QPoint(x, y))
+
+        if len(grid_points) > 0:
+            pen = QPen(grid_color)
+            pen.setWidthF(1)
+            painter.setPen(pen)
+
+            painter.drawPoints(grid_points)
+
 
 class Window(QWidget):
     def __init__(self):
@@ -880,9 +900,8 @@ class Window(QWidget):
             if not isinstance(item, NodeEdge):
                 px = item.pos().x()
                 py = item.pos().y()
-                grid = 5
-                px = px // grid * grid
-                py = py // grid * grid
+                px = (px + grid_size / 2) // grid_size * grid_size
+                py = (py + grid_size / 2) // grid_size * grid_size
                 item.setPos(px, py)
         self.snapshot()
 
