@@ -455,13 +455,13 @@ class PluginNode(MyNode):
 
         self.paintPorts(painter)
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MiddleButton:
-            self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
-            self.scene.parent.redraw()
-            self.scene.parent.snapshot()
+    def mouseDoubleClickEvent(self, event):
+        self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
 
-        elif event.button() == Qt.LeftButton:
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
             if event.pos().x() > self.width / 2:
                 if self.scene.selection_source == (self, self.port_selected(event.pos())):
                     self.scene.selection_source = None
