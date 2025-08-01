@@ -11,6 +11,8 @@ from math import floor, ceil
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
 from PyQt5.QtWidgets import (
+    QMenu,
+    QAction,
     QLabel,
     QApplication,
     QGraphicsItem,
@@ -710,6 +712,64 @@ class NodeScene(QGraphicsScene):
         self.selection_target = (None, None)
         self.hover = None
         self.edge_hover = None
+        self.menu_selection = None
+
+    def delete(self):
+        if not self.menu_selection:
+            return
+
+        item = self.menu_selection
+        print("####", item)
+        if isinstance(item, BoardNode):
+            return
+
+        elif isinstance(item, ModifierNode):
+            source = self.parent.get_next(item, "in")
+            target = self.parent.get_next(item, "out")
+            if source and target:
+                # reconnect source and target
+                edge = NodeEdge(self, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
+                self.addItem(edge)
+            self.disconnect_node(item)
+
+        elif isinstance(item, PluginNode):
+            self.disconnect_node(item)
+            # remove plugin from cfg
+            plugin_instance = item.plugin_instance
+            plugin_config = plugin_instance.plugin_setup
+            for pn, plugin in enumerate(self.parent.config["plugins"]):
+                if plugin == plugin_config:
+                    self.parent.config["plugins"].pop(pn)
+        self.removeItem(item)
+        self.parent.snapshot()
+
+    def contextMenuEvent(self, event):
+        self.menu_selection = None
+
+        menu = QMenu()
+
+        if self.hover:
+            self.menu_selection = self.hover
+
+            delete = QAction("delete", None)
+            delete.triggered.connect(self.delete)
+            menu.addAction(delete)
+
+        elif self.edge_hover:
+            self.menu_selection = self.edge_hover
+
+            delete = QAction("delete", None)
+            delete.triggered.connect(self.delete)
+            menu.addAction(delete)
+
+        else:
+            pass
+
+        add_plugin = QAction("add Plugin", None)
+        add_plugin.triggered.connect(self.parent.gui_plugins.add_plugin)
+        menu.addAction(add_plugin)
+
+        menu.exec_(event.screenPos())
 
     def disconnect_port(self, node, port):
         for item in self.items():
