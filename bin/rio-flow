@@ -178,7 +178,7 @@ class MyNode(QGraphicsItem):
     port_toff_x = 2
     port_toff_y = 2
     port_boarder = 2
-    port_top = 15
+    port_top = 20
     port_bottom = 2
     port_diff = 10
 
@@ -203,9 +203,9 @@ class MyNode(QGraphicsItem):
             pos_y += ports.index(port) * self.port_diff + self.port_top
 
         ports = list(self.ports_right)
-        if port[1:] in ports:
+        if port in ports:
             pos_x = pos.x() + self.width
-            pos_y += ports.index(port[1:]) * self.port_diff + self.port_top
+            pos_y += ports.index(port) * self.port_diff + self.port_top
 
         return QPointF(pos_x, pos_y)
 
@@ -215,8 +215,8 @@ class MyNode(QGraphicsItem):
             index = ports.index(port)
 
         ports = list(self.ports_right)
-        if port[1:] in ports:
-            index = ports.index(port[1:])
+        if port in ports:
+            index = ports.index(port)
 
         return index
 
@@ -228,13 +228,13 @@ class MyNode(QGraphicsItem):
         for port in self.ports_left:
             if abs(mouse_x - (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
                 return port
-            py += 10
+            py += self.port_diff
 
         py = self.port_top
         for port in self.ports_right:
             if abs(mouse_x - self.width + (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
-                return f"_{port}"
-            py += 10
+                return port
+            py += self.port_diff
 
         return None
 
@@ -246,15 +246,15 @@ class MyNode(QGraphicsItem):
                 self.paintPort(painter, "left", py, port, Qt.GlobalColor.red)
             else:
                 self.paintPort(painter, "left", py, port, Qt.GlobalColor.yellow)
-            py += 10
+            py += self.port_diff
 
         py = self.port_top
         for port in self.ports_right:
-            if (self, f"_{port}") == self.scene.selection_target:
+            if (self, port) == self.scene.selection_target:
                 self.paintPort(painter, "right", py, port, Qt.GlobalColor.red)
             else:
                 self.paintPort(painter, "right", py, port, Qt.GlobalColor.yellow)
-            py += 10
+            py += self.port_diff
 
     def paintPort(self, painter, side, y, name, color):
         if side == "left":
@@ -411,11 +411,7 @@ class PluginNode(MyNode):
         self.name = plugin_config["uid"]
         self.pins = plugin_instance.PINDEFAULTS
         self.signals = plugin_instance.SIGNALS
-        pinnames = list(self.pins)
-        signalnames = list(self.signals)
         self.width = 180
-        self.height = max(len(pinnames) * 10 + 10, 40)
-        self.height = max(len(signalnames) * 10 + 10, self.height)
 
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
@@ -423,6 +419,11 @@ class PluginNode(MyNode):
         self.setAcceptHoverEvents(True)
         self.pixmap = QPixmap.fromImage(QImage(image)).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.selected_port = None
+
+        self.ports_left = self.pins
+        self.ports_right = {}
+        for key, value in self.signals.items():
+            self.ports_right[f"sig_{key}"] = value
 
     def paint(self, painter, option, widget):
         pos = self.pos()
@@ -439,8 +440,6 @@ class PluginNode(MyNode):
         if not self.show_signals:
             painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
 
-        self.ports_left = self.pins
-        self.ports_right = self.signals
         self.paintPorts(painter)
 
     def mousePressEvent(self, event):
@@ -528,33 +527,9 @@ class ModifierNode(MyNode):
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        self.pins = ["in", "out"]
         self.selected_port = None
-
-    def port_pos(self, port):
-        pos = self.pos()
-        pos_x = pos.x()
-        pos_y = pos.y() + self.height // 2
-        pinnames = list(self.pins)
-        if port in pinnames:
-            idx = pinnames.index(port)
-            pos_x += idx * (self.width - 4)
-        return QPointF(pos_x, pos_y)
-
-    def port_index(self, port):
-        pinnames = list(self.pins)
-        index = pinnames.index(port)
-        return index
-
-    def port_selected(self, mouse_pos):
-        mouse_x = mouse_pos.x()
-        mouse_y = mouse_pos.y()
-        px = 0
-        for pinname in self.pins:
-            if abs(mouse_x - px) < 5 and abs(mouse_y - (self.height // 2 - 2)) < 5:
-                return pinname
-            px += self.width - 4
-        return None
+        self.ports_left = ["in"]
+        self.ports_right = ["out"]
 
     def paint(self, painter, option, widget):
         pos = self.pos()
@@ -565,8 +540,6 @@ class ModifierNode(MyNode):
         self.paintBg(painter, Qt.GlobalColor.gray, Qt.GlobalColor.white, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
-        self.ports_left = ["in"]
-        self.ports_right = ["out"]
         self.paintPorts(painter)
 
     def mousePressEvent(self, event):
@@ -862,9 +835,9 @@ class Window(QWidget):
         hnodes = {}
         for signal_name, signal in self.halpins.items():
             ttype = signal["type"]
-            target = signal["target"]
             source = signal["source"]
-            spin = f"_{source[1]}"
+            target = signal["target"]
+            spin = f"sig_{source[1]}"
 
             tsplit = target.split(".")
             group = tsplit[0]
