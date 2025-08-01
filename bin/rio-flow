@@ -209,13 +209,13 @@ class MyNode(QGraphicsItem):
 
         py = self.port_top
         for port in self.ports_left:
-            if abs(mouse_x - (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+            if abs(mouse_x - (self.border_size / 2) - (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
                 return port
             py += self.port_diff
 
         py = self.port_top
         for port in self.ports_right:
-            if abs(mouse_x - self.width + (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+            if abs(mouse_x + (self.border_size / 2) - self.width + (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
                 return port
             py += self.port_diff
 
