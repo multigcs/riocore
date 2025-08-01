@@ -308,7 +308,7 @@ class MyNode(QGraphicsItem):
             painter.drawText(QRectF(0, 0, self.width, 20), Qt.AlignmentFlag.AlignCenter, title)
 
 
-class BoardNode(MyNode):
+class BoardNode(QGraphicsItem):
     def __init__(self, scene, board):
         super().__init__()
         self.scene = scene
@@ -336,8 +336,8 @@ class BoardNode(MyNode):
                 self.ports[pin_data.get("pin")] = {"pos": pos, "dir": ""}
         self.selected_port = None
 
-        self.setPos(120, 220)
-        self.scene.addItem(self)
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
 
     def port_pos(self, port):
         pos = self.pos()
@@ -391,6 +391,7 @@ class BoardNode(MyNode):
         QGraphicsItem.mouseReleaseEvent(self, event)
 
     def hoverEnterEvent(self, event):
+        print("ddd")
         self.scene.hover = self
 
     def hoverLeaveEvent(self, event):
@@ -601,17 +602,18 @@ class NodeViewer(QGraphicsView):
             source_port = self.scene.selection_source[1]
             target_node = self.scene.selection_target[0]
             target_port = self.scene.selection_target[1]
-            if source_node and source_port and target_node and target_port and source_node != target_node:
-                # remove old edges
-                self.scene.disconnect_port(source_node, source_port)
-                self.scene.disconnect_port(target_node, target_port)
-                # add new edge
-                color_idx = target_node.port_index(target_port)
-                color = Qt.GlobalColor.green
-                if color_idx >= 0 and color_idx < len(colors):
-                    color = colors[color_idx]
-                edge = NodeEdge(source_node, source_port, target_node, target_port, color=color)
-                self.scene.addItem(edge)
+            if source_node and source_port and target_node and target_port:
+                if source_node != target_node:
+                    # remove old edges
+                    self.scene.disconnect_port(source_node, source_port)
+                    self.scene.disconnect_port(target_node, target_port)
+                    # add new edge
+                    color_idx = target_node.port_index(target_port)
+                    color = Qt.GlobalColor.green
+                    if color_idx >= 0 and color_idx < len(colors):
+                        color = colors[color_idx]
+                    edge = NodeEdge(source_node, source_port, target_node, target_port, color=color)
+                    self.scene.addItem(edge)
                 # clear selection
                 self.scene.selection_source = (None, None)
                 self.scene.selection_target = (None, None)
@@ -813,6 +815,8 @@ class Window(QWidget):
         self.bnode = None
         if os.path.exists(f"riocore/boards/{boardcfg}/board.json"):
             self.bnode = BoardNode(self.scene, boardcfg)
+            self.bnode.setPos(120, 220)
+            self.scene.addItem(self.bnode)
 
         if "gpios" in self.config:
             pass
