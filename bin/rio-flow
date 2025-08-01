@@ -5,11 +5,7 @@
 import copy
 import os
 import json
-import uuid
-import importlib
-import math
 import sys
-from functools import partial
 
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
@@ -17,19 +13,15 @@ from PyQt5.QtGui import QBrush, QPainter, QPen, QPainterPath, QImage, QPixmap, Q
 from PyQt5.QtWidgets import (
     QLabel,
     QApplication,
-    QGraphicsEllipseItem,
     QGraphicsItem,
-    QGraphicsRectItem,
     QGraphicsScene,
     QGraphicsView,
     QHBoxLayout,
     QPushButton,
-    QSlider,
     QVBoxLayout,
     QWidget,
     QGraphicsPathItem,
     QGraphicsLineItem,
-    QGraphicsDropShadowEffect,
 )
 
 
@@ -40,33 +32,12 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 
 import riocore
-from riocore import VERSION
-from riocore import halpins
-from riocore import components
-from riocore import gpios
 
-from riocore.gui import vcp
 from riocore.gui.plugins import GuiPlugins
-from riocore.gui.components import GuiComponents
 from riocore.gui.modifiers import GuiModifiers
-from riocore.gui.modules import GuiModules
-from riocore.gui.gpios import GuiGpios
 
-from riocore.gui.tab_axis import TabAxis
-from riocore.gui.tab_board import TabBoard
-from riocore.gui.tab_gateware import TabGateware
-from riocore.gui.tab_gpio import TabGpios
-from riocore.gui.tab_hal import TabHal
-from riocore.gui.tab_linuxcnc import TabLinuxCNC
-from riocore.gui.tab_overview import TabOverview
-from riocore.gui.tab_pins import TabPins
-from riocore.gui.tab_signals import TabSignals
 
-from riocore.modifiers import Modifiers
 from riocore.gui.widgets import (
-    MyQSvgWidget,
-    MyQLabel,
-    MyStandardItem,
     edit_file,
     edit_float,
     edit_int,
@@ -74,10 +45,6 @@ from riocore.gui.widgets import (
     edit_bool,
     edit_combobox,
     edit_avgfilter,
-    STYLESHEET,
-    STYLESHEET_CHECKBOX_GREEN_RED,
-    STYLESHEET_BUTTON,
-    STYLESHEET_TABBAR,
 )
 
 

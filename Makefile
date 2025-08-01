@@ -9,10 +9,10 @@ format:
 	ruff format bin/rio* riocore/
 
 check:
-	ruff check bin/ riocore/
+	ruff check bin/rio-* riocore/
 
 check_fix:
-	ruff check --fix bin/ riocore/
+	ruff check --fix bin/rio-* riocore/
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/
