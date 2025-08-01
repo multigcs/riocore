@@ -250,7 +250,7 @@ class MyNode(QGraphicsItem):
 
         py = self.port_top
         for port in self.ports_right:
-            if (self, port) == self.scene.selection_target:
+            if (self, port) == self.scene.selection_source:
                 self.paintPort(painter, "right", py, port, Qt.GlobalColor.red)
             else:
                 self.paintPort(painter, "right", py, port, Qt.GlobalColor.yellow)
@@ -449,10 +449,16 @@ class PluginNode(MyNode):
             self.scene.parent.snapshot()
 
         elif event.button() == Qt.LeftButton:
-            if self.scene.selection_target == (self, self.port_selected(event.pos())):
-                self.scene.selection_target = None
+            if event.pos().x() > self.width / 2:
+                if self.scene.selection_source == (self, self.port_selected(event.pos())):
+                    self.scene.selection_source = None
+                else:
+                    self.scene.selection_source = (self, self.port_selected(event.pos()))
             else:
-                self.scene.selection_target = (self, self.port_selected(event.pos()))
+                if self.scene.selection_target == (self, self.port_selected(event.pos())):
+                    self.scene.selection_target = None
+                else:
+                    self.scene.selection_target = (self, self.port_selected(event.pos()))
 
             if self.selected_port != self.port_selected(event.pos()):
                 self.selected_port = self.port_selected(event.pos())
@@ -595,7 +601,7 @@ class NodeViewer(QGraphicsView):
             source_port = self.scene.selection_source[1]
             target_node = self.scene.selection_target[0]
             target_port = self.scene.selection_target[1]
-            if source_node and source_port and target_node and target_port:
+            if source_node and source_port and target_node and target_port and source_node != target_node:
                 # remove old edges
                 self.scene.disconnect_port(source_node, source_port)
                 self.scene.disconnect_port(target_node, target_port)
