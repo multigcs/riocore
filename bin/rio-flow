@@ -229,29 +229,35 @@ class MyNode(QGraphicsItem):
         py = self.port_top
         for port, data in self.ports_left.items():
             direction = data.get("direction") or "all"
-            if (self, port) == self.scene.selection_target:
-                self.paintPort(painter, "left", py, port, Qt.GlobalColor.red)
+            if direction == "input":
+                title = f">{port}"
+                color = QColor(150, 250, 150)
+            elif direction == "output":
+                title = f"<{port}"
+                color = QColor(250, 150, 150)
             else:
-                if direction == "input":
-                    self.paintPort(painter, "left", py, port, QColor(150, 250, 150))
-                elif direction == "output":
-                    self.paintPort(painter, "left", py, port, QColor(250, 150, 150))
-                else:
-                    self.paintPort(painter, "left", py, port, Qt.GlobalColor.yellow)
+                title = port
+                color = Qt.GlobalColor.yellow
+            if (self, port) == self.scene.selection_target:
+                color = Qt.GlobalColor.red
+            self.paintPort(painter, "left", py, title, color)
             py += self.port_diff
 
         py = self.port_top
         for port, data in self.ports_right.items():
             direction = data.get("direction") or "all"
-            if (self, port) == self.scene.selection_source:
-                self.paintPort(painter, "right", py, port, Qt.GlobalColor.red)
+            if direction == "input":
+                title = f"{port}>"
+                color = QColor(150, 250, 150)
+            elif direction == "output":
+                title = f"{port}<"
+                color = QColor(250, 150, 150)
             else:
-                if direction == "input":
-                    self.paintPort(painter, "right", py, port, QColor(150, 250, 150))
-                elif direction == "output":
-                    self.paintPort(painter, "right", py, port, QColor(250, 150, 150))
-                else:
-                    self.paintPort(painter, "right", py, port, Qt.GlobalColor.yellow)
+                title = port
+                color = Qt.GlobalColor.yellow
+            if (self, port) == self.scene.selection_source:
+                color = Qt.GlobalColor.red
+            self.paintPort(painter, "right", py, title, color)
             py += self.port_diff
 
     def paintPort(self, painter, side, y, name, color):
