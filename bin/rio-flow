@@ -63,8 +63,10 @@ class NodeEdgePath(QGraphicsPathItem):
     width = 2
     width_selected = 4
 
-    def __init__(self, source_node, source_port, des_node, des_port, color=None):
+    def __init__(self, scene, etype, source_node, source_port, des_node, des_port, color=None):
         super().__init__(None)
+        self.etype = etype
+        self.scene = scene
         self._source_node = source_node
         self._source_port = source_port
         self._des_node = des_node
@@ -76,7 +78,9 @@ class NodeEdgePath(QGraphicsPathItem):
         self._pen_default.setWidthF(2)
         self.setZValue(5)
         self.setFlags(QGraphicsItem.ItemIsSelectable)
+        self.setAcceptHoverEvents(True)
         self.update_edge_path()
+        self.hover = False
 
     def paint(self, painter: QPainter, option, widget):
         if self.isSelected():
@@ -85,6 +89,8 @@ class NodeEdgePath(QGraphicsPathItem):
         else:
             self._pen_default = QPen(self.color)
             self._pen_default.setWidthF(self.width)
+        if self.hover:
+            self._pen_default.setWidthF(self.width_selected + 2)
         painter.setPen(self._pen_default)
         self.update_edge_path()
         painter.setBrush(Qt.NoBrush)
@@ -108,6 +114,23 @@ class NodeEdgePath(QGraphicsPathItem):
                 tangent = 150
         path.cubicTo(QPointF(source_pos.x() + tangent, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
         self.setPath(path)
+
+    def mouseDoubleClickEvent(self, event):
+        if self.etype == "pin":
+            self.scene.parent.add_modifier()
+        else:
+            print("# edge mouseDoubleClickEvent", self.etype)
+
+    def hoverEnterEvent(self, event):
+        self.hover = True
+        self.scene.edge_hover = self
+        self.update()
+
+    def hoverLeaveEvent(self, event):
+        self.hover = False
+        if self.scene.edge_hover == self:
+            self.scene.edge_hover = None
+        self.update()
 
 
 class NodeEdgeLine(QGraphicsLineItem):
@@ -593,6 +616,8 @@ class NodeViewer(QGraphicsView):
     def mouseDoubleClickEvent(self, event):
         if self.scene.hover:
             super().mouseDoubleClickEvent(event)
+        elif self.scene.edge_hover:
+            super().mouseDoubleClickEvent(event)
         else:
             position = event.pos()
             position = self.mapToScene(position.x(), position.y())
@@ -620,7 +645,7 @@ class NodeViewer(QGraphicsView):
                     color = Qt.GlobalColor.green
                     if color_idx >= 0 and color_idx < len(colors):
                         color = colors[color_idx]
-                    edge = NodeEdge(source_node, source_port, target_node, target_port, color=color)
+                    edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
                     self.scene.addItem(edge)
                 # clear selection
                 self.scene.selection_source = (None, None)
@@ -675,6 +700,7 @@ class NodeScene(QGraphicsScene):
         self.selection_source = (None, None)
         self.selection_target = (None, None)
         self.hover = None
+        self.edge_hover = None
 
     def disconnect_port(self, node, port):
         for item in self.items():
@@ -888,7 +914,7 @@ class Window(QWidget):
                 self.scene.addItem(hnodes[group])
 
             hnodes[group].add_signal(signal_name, signal)
-            edge = NodeEdge(source[0], spin, hnodes[group], signal_name, color=colors[0])
+            edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal_name, color=colors[0])
             self.scene.addItem(edge)
 
         hnodes_y = 100
@@ -954,12 +980,12 @@ class Window(QWidget):
                         else:
                             mnode.setPos(550 + pmn * 140, py + ph)
                         self.scene.addItem(mnode)
-                        edge = NodeEdge(last_con[0], last_con[1], mnode, "in", color=colors[color_n])
+                        edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])
                         self.scene.addItem(edge)
                         last_con = (mnode, "out")
                     ph += 25
 
-                edge = NodeEdge(last_con[0], last_con[1], pnode, pin, color=colors[color_n])
+                edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], pnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
 
@@ -1020,9 +1046,9 @@ class Window(QWidget):
                 modifier_node.setPos(x, y)
                 # reconnect
                 self.scene.addItem(modifier_node)
-                edge = NodeEdge(source_node, source_port, modifier_node, "in", color)
+                edge = NodeEdge(self.scene, "pin", source_node, source_port, modifier_node, "in", color)
                 self.scene.addItem(edge)
-                edge = NodeEdge(modifier_node, "out", des_node, des_port, color)
+                edge = NodeEdge(self.scene, "pin", modifier_node, "out", des_node, des_port, color)
                 self.scene.addItem(edge)
         self.snapshot()
 
@@ -1076,7 +1102,7 @@ class Window(QWidget):
                 target = self.get_next(item, "out")
                 if source and target:
                     # reconnect source and target
-                    edge = NodeEdge(source[0], source[1], target[0], target[1], color=target[2].color)
+                    edge = NodeEdge(self.scene, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
                     self.scene.addItem(edge)
                 self.scene.disconnect_node(item)
 
