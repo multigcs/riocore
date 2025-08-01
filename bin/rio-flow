@@ -174,8 +174,9 @@ NodeEdge = NodeEdgePath
 class MyNode(QGraphicsItem):
     radius = 5
     border_size = 4
-    border_color_selected = QColor(250, 250, 250)
     border_color = QColor(150, 150, 150)
+    border_color_selected = QColor(250, 250, 250)
+    border_color_hover = QColor(250, 150, 250)
     bg_color = QColor(100, 100, 100)
     title_size = 9
     text_scale = 1.6
@@ -199,6 +200,7 @@ class MyNode(QGraphicsItem):
         self.selected_port = None
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
         self.setAcceptHoverEvents(True)
+        self.hover = False
 
     def boundingRect(self):
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
@@ -324,6 +326,9 @@ class MyNode(QGraphicsItem):
         if self.isSelected():
             pen = QPen(self.border_color_selected, self.border_size)
             brush = QBrush(self.bg_color)
+        elif self.hover:
+            pen = QPen(self.border_color_hover, self.border_size)
+            brush = QBrush(self.bg_color)
         else:
             pen = QPen(self.border_color, self.border_size)
             brush = QBrush(self.bg_color)
@@ -364,11 +369,15 @@ class MyNode(QGraphicsItem):
             QGraphicsItem.mousePressEvent(self, event)
 
     def hoverEnterEvent(self, event):
+        self.hover = True
         self.scene.hover = self
+        self.update()
 
     def hoverLeaveEvent(self, event):
+        self.hover = False
         if self.scene.hover == self:
             self.scene.hover = None
+        self.update()
 
 
 class BoardNode(QGraphicsItem):
