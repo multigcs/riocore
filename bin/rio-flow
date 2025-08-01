@@ -9,7 +9,7 @@ import sys
 
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
-from PyQt5.QtGui import QBrush, QPainter, QPen, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
 from PyQt5.QtWidgets import (
     QLabel,
     QApplication,
@@ -140,8 +140,11 @@ NodeEdge = NodeEdgePath
 class MyNode(QGraphicsItem):
     radius = 5
     bordersize = 4
+    tsize = 9
+    tscale = 1.6
+    tname = "Times"
     port_size = 10
-    port_tsize = 16
+    port_tsize = 9
     port_toff_x = 2
     port_toff_y = 2
     port_boarder = 2
@@ -224,6 +227,7 @@ class MyNode(QGraphicsItem):
             py += self.port_diff
 
     def paintPort(self, painter, side, y, name, color):
+        painter.setFont(QFont(self.tname, self.port_tsize))
         if side == "left":
             painter.fillRect(QRectF(self.bordersize / 2, y - (self.port_size / 2), self.port_size, self.port_size), color)
             painter.fillRect(
@@ -232,7 +236,9 @@ class MyNode(QGraphicsItem):
             )
             if name:
                 painter.drawText(
-                    QRectF(self.bordersize / 2 + self.port_size + self.port_toff_x, y - (self.port_tsize / 2) - self.port_toff_y, self.width, self.port_tsize), Qt.AlignmentFlag.AlignLeft, name
+                    QRectF(self.bordersize / 2 + self.port_size + self.port_toff_x, y - (self.port_tsize * self.tscale / 2) - self.port_toff_y, self.width, self.port_tsize * self.tscale),
+                    Qt.AlignmentFlag.AlignLeft,
+                    name,
                 )
         else:
             painter.fillRect(QRectF(self.width - self.bordersize / 2 - self.port_size, y - (self.port_size / 2), self.port_size, self.port_size), color)
@@ -247,7 +253,9 @@ class MyNode(QGraphicsItem):
             )
             if name:
                 painter.drawText(
-                    QRectF(0, y - (self.port_tsize / 2) - self.port_toff_y, self.width - self.bordersize / 2 - self.port_size - self.port_toff_x, self.port_tsize), Qt.AlignmentFlag.AlignRight, name
+                    QRectF(0, y - (self.port_tsize * self.tscale / 2) - self.port_toff_y, self.width - self.bordersize / 2 - self.port_size - self.port_toff_x, self.port_tsize * self.tscale),
+                    Qt.AlignmentFlag.AlignRight,
+                    name,
                 )
 
     def paintBg(self, painter, bgColor, frameColor, title):
@@ -272,7 +280,8 @@ class MyNode(QGraphicsItem):
 
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
         if title:
-            painter.drawText(QRectF(0, 0, self.width, 20), Qt.AlignmentFlag.AlignCenter, title)
+            painter.setFont(QFont(self.tname, self.tsize))
+            painter.drawText(QRectF(0, self.bordersize / 2, self.width, self.tsize * self.tscale), Qt.AlignmentFlag.AlignCenter, title)
 
 
 class BoardNode(QGraphicsItem):
@@ -358,7 +367,6 @@ class BoardNode(QGraphicsItem):
         QGraphicsItem.mouseReleaseEvent(self, event)
 
     def hoverEnterEvent(self, event):
-        print("ddd")
         self.scene.hover = self
 
     def hoverLeaveEvent(self, event):
@@ -490,6 +498,9 @@ class HalNode(MyNode):
 
 
 class ModifierNode(MyNode):
+    port_top = 13
+    port_bottom = 2
+
     def __init__(self, scene, modifier):
         super().__init__()
         self.scene = scene
