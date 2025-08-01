@@ -227,19 +227,31 @@ class MyNode(QGraphicsItem):
     def paintPorts(self, painter):
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
         py = self.port_top
-        for port in self.ports_left:
+        for port, data in self.ports_left.items():
+            direction = data.get("direction") or "all"
             if (self, port) == self.scene.selection_target:
                 self.paintPort(painter, "left", py, port, Qt.GlobalColor.red)
             else:
-                self.paintPort(painter, "left", py, port, Qt.GlobalColor.yellow)
+                if direction == "input":
+                    self.paintPort(painter, "left", py, port, QColor(150, 250, 150))
+                elif direction == "output":
+                    self.paintPort(painter, "left", py, port, QColor(250, 150, 150))
+                else:
+                    self.paintPort(painter, "left", py, port, Qt.GlobalColor.yellow)
             py += self.port_diff
 
         py = self.port_top
-        for port in self.ports_right:
+        for port, data in self.ports_right.items():
+            direction = data.get("direction") or "all"
             if (self, port) == self.scene.selection_source:
                 self.paintPort(painter, "right", py, port, Qt.GlobalColor.red)
             else:
-                self.paintPort(painter, "right", py, port, Qt.GlobalColor.yellow)
+                if direction == "input":
+                    self.paintPort(painter, "right", py, port, QColor(150, 250, 150))
+                elif direction == "output":
+                    self.paintPort(painter, "right", py, port, QColor(250, 150, 150))
+                else:
+                    self.paintPort(painter, "right", py, port, Qt.GlobalColor.yellow)
             py += self.port_diff
 
     def paintPort(self, painter, side, y, name, color):
@@ -534,8 +546,8 @@ class ModifierNode(MyNode):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.selected_port = None
-        self.ports_left = ["in"]
-        self.ports_right = ["out"]
+        self.ports_left = {"in": {}}
+        self.ports_right = {"out": {}}
 
     def paint(self, painter, option, widget):
         pos = self.pos()
