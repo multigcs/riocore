@@ -165,7 +165,7 @@ class MyNode(QGraphicsItem):
     port_toff_y = 2
     port_boarder = 2
     port_top = 20
-    port_bottom = 2
+    port_bottom = 5
     port_diff = 10
 
     def __init__(self):
@@ -418,6 +418,8 @@ class PluginNode(MyNode):
         for key, value in self.signals.items():
             self.ports_right[f"sig_{key}"] = value
 
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+
     def paint(self, painter, option, widget):
         pos = self.pos()
         pos_x = pos.x()
@@ -578,7 +580,6 @@ class NodeViewer(QGraphicsView):
 
     def getZoom(self):
         transform = self.transform()
-        # print(transform.m11(), transform.m22())
         return transform.m11()
 
     def setZoom(self, zoomFactor):
@@ -594,7 +595,6 @@ class NodeViewer(QGraphicsView):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if self.scene.selection_source and self.scene.selection_target:
-            # print(self.scene.selection_source, self.scene.selection_target)
             source_node = self.scene.selection_source[0]
             source_port = self.scene.selection_source[1]
             target_node = self.scene.selection_target[0]
@@ -930,7 +930,6 @@ class Window(QWidget):
 
                 last_con = (self.bnode, pindata["pin"])
                 if pindata.get("modifier"):
-                    # print("   ", pin, pindata.get("modifier"))
                     for pmn, modifier in enumerate(pindata.get("modifier")):
                         mnode = ModifierNode(self.scene, modifier)
                         if modifier.get("pos"):
@@ -941,7 +940,8 @@ class Window(QWidget):
                         edge = NodeEdge(last_con[0], last_con[1], mnode, "in", color=colors[color_n])
                         self.scene.addItem(edge)
                         last_con = (mnode, "out")
-                    ph += 22
+                    ph += 25
+
                 edge = NodeEdge(last_con[0], last_con[1], pnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
@@ -950,7 +950,6 @@ class Window(QWidget):
         if signals:
             for signal_name, signal in signals.items():
                 halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-                # print(f"rio.{plugin_instance.signal_prefix}.{signal_name}", signal)
                 if halname not in self.halpins:
                     self.halpins[halname] = {
                         "type": "",
@@ -980,7 +979,6 @@ class Window(QWidget):
                     self.halpins[halname]["type"] = "net"
                     self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
             self.joints += 1
-
         ph = max(ph, pnode.height) + 5
         return ph
 
