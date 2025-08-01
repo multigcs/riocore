@@ -168,12 +168,14 @@ class MyNode(QGraphicsItem):
     port_bottom = 5
     port_diff = 10
 
-    def __init__(self):
+    def __init__(self, scene):
         super().__init__()
+        self.scene = scene
         self.ports_left = {}
         self.ports_right = {}
         self.selected_port = None
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+        self.setAcceptHoverEvents(True)
 
     def boundingRect(self):
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
@@ -318,6 +320,13 @@ class MyNode(QGraphicsItem):
             painter.setFont(QFont(self.text_font, self.title_size))
             painter.drawText(QRectF(0, self.border_size / 2, self.width, self.title_size * self.text_scale), Qt.AlignmentFlag.AlignCenter, title)
 
+    def hoverEnterEvent(self, event):
+        self.scene.hover = self
+
+    def hoverLeaveEvent(self, event):
+        if self.scene.hover == self:
+            self.scene.hover = None
+
 
 class BoardNode(QGraphicsItem):
     def __init__(self, scene, board):
@@ -414,9 +423,8 @@ class PluginNode(MyNode):
     border_color = QColor(150, 250, 150)
 
     def __init__(self, scene, plugin_instance):
-        super().__init__()
+        super().__init__(scene)
         plugin_config = plugin_instance.plugin_setup
-        self.scene = scene
         image = f"riocore/plugins/{plugin_config['type']}/image.png"
         self.plugin_instance = plugin_instance
         self.name = plugin_config["uid"]
@@ -427,7 +435,6 @@ class PluginNode(MyNode):
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        self.setAcceptHoverEvents(True)
         self.pixmap = QPixmap.fromImage(QImage(image)).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.selected_port = None
 
@@ -488,20 +495,12 @@ class PluginNode(MyNode):
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
         QGraphicsItem.mouseReleaseEvent(self, event)
 
-    def hoverEnterEvent(self, event):
-        self.scene.hover = self
-
-    def hoverLeaveEvent(self, event):
-        if self.scene.hover == self:
-            self.scene.hover = None
-
 
 class HalNode(MyNode):
     border_color = QColor(150, 150, 200)
 
     def __init__(self, scene, name):
-        super().__init__()
-        self.scene = scene
+        super().__init__(scene)
         self.name = name
         self.width = 450
         self.setZValue(9)
@@ -542,8 +541,7 @@ class ModifierNode(MyNode):
     port_bottom = 2
 
     def __init__(self, scene, modifier):
-        super().__init__()
-        self.scene = scene
+        super().__init__(scene)
         self.modifier = modifier
         self.name = modifier["type"]
         self.width = 100
@@ -595,6 +593,7 @@ class NodeViewer(QGraphicsView):
         self.setTransformationAnchor(self.ViewportAnchor.AnchorUnderMouse)
         self.button_pressed = 0
         self.mouse_pos = QPoint()
+        self.scene.insert_position = None
 
     def getZoom(self):
         transform = self.transform()
@@ -605,6 +604,15 @@ class NodeViewer(QGraphicsView):
         transform.reset()
         transform.scale(zoomFactor, zoomFactor)
         self.setTransform(transform)
+
+    def mouseDoubleClickEvent(self, event):
+        if self.scene.hover:
+            super().mouseDoubleClickEvent(event)
+        else:
+            position = event.pos()
+            position = self.mapToScene(position.x(), position.y())
+            self.scene.insert_position = position
+            self.scene.parent.gui_plugins.add_plugin("")
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.mouse_pos = event.pos()
@@ -727,6 +735,7 @@ class Window(QWidget):
         self.snapshots = []
         self.halpins = {}
         self.joints = 0
+        self.board = {}
 
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
@@ -850,6 +859,7 @@ class Window(QWidget):
             self.bnode = BoardNode(self.scene, boardcfg)
             self.bnode.setPos(120, 220)
             self.scene.addItem(self.bnode)
+            self.board = self.bnode.jdata
 
         if "gpios" in self.config:
             pass
@@ -930,6 +940,10 @@ class Window(QWidget):
         if "pos" in plugin_config:
             hx = plugin_config["pos"][0]
             hy = plugin_config["pos"][1]
+        elif self.scene.insert_position is not None:
+            hx = self.scene.insert_position.x()
+            hy = self.scene.insert_position.y()
+            self.scene.insert_position = None
         else:
             hx = 850
             hy = py
