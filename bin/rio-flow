@@ -320,6 +320,26 @@ class MyNode(QGraphicsItem):
             painter.setFont(QFont(self.text_font, self.title_size))
             painter.drawText(QRectF(0, self.border_size / 2, self.width, self.title_size * self.text_scale), Qt.AlignmentFlag.AlignCenter, title)
 
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if event.pos().x() > self.width / 2:
+                if self.scene.selection_source == (self, self.port_selected(event.pos())):
+                    self.scene.selection_source = None
+                else:
+                    self.scene.selection_source = (self, self.port_selected(event.pos()))
+            else:
+                if self.scene.selection_target == (self, self.port_selected(event.pos())):
+                    self.scene.selection_target = None
+                else:
+                    self.scene.selection_target = (self, self.port_selected(event.pos()))
+
+            if self.selected_port != self.port_selected(event.pos()):
+                self.selected_port = self.port_selected(event.pos())
+            else:
+                self.selected_port = None
+            self.update()
+            QGraphicsItem.mousePressEvent(self, event)
+
     def hoverEnterEvent(self, event):
         self.scene.hover = self
 
@@ -467,26 +487,6 @@ class PluginNode(MyNode):
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            if event.pos().x() > self.width / 2:
-                if self.scene.selection_source == (self, self.port_selected(event.pos())):
-                    self.scene.selection_source = None
-                else:
-                    self.scene.selection_source = (self, self.port_selected(event.pos()))
-            else:
-                if self.scene.selection_target == (self, self.port_selected(event.pos())):
-                    self.scene.selection_target = None
-                else:
-                    self.scene.selection_target = (self, self.port_selected(event.pos()))
-
-            if self.selected_port != self.port_selected(event.pos()):
-                self.selected_port = self.port_selected(event.pos())
-            else:
-                self.selected_port = None
-            self.update()
-            QGraphicsItem.mousePressEvent(self, event)
-
     def mouseReleaseEvent(self, event):
         self.update()
         pos = self.pos()
@@ -515,21 +515,6 @@ class HalNode(MyNode):
         self.paintBg(painter, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
         self.paintPorts(painter)
-
-    def mousePressEvent(self, event):
-        if self.port_selected(event.pos()) == "in":
-            if self.scene.selection_target == (self, self.port_selected(event.pos())):
-                self.scene.selection_target = None
-            else:
-                self.scene.selection_target = (self, self.port_selected(event.pos()))
-        else:
-            if self.scene.selection_source == (self, self.port_selected(event.pos())):
-                self.scene.selection_source = None
-            else:
-                self.scene.selection_source = (self, self.port_selected(event.pos()))
-
-        self.update()
-        QGraphicsItem.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
         self.update()
@@ -652,8 +637,8 @@ class NodeViewer(QGraphicsView):
         super().mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if self.button_pressed == Qt.LeftButton:
-            if not self.scene.selectedItems():
+        if self.button_pressed in [Qt.LeftButton, Qt.MiddleButton]:
+            if not self.scene.selectedItems() or self.button_pressed == Qt.MiddleButton:
                 offset = self.mouse_pos - event.pos()
                 self.mouse_pos = event.pos()
                 dx, dy = offset.x(), offset.y()
@@ -896,10 +881,10 @@ class Window(QWidget):
             # if len(tsplit) > 1 and tsplit[1].isnumeric():
             #    group = ".".join(tsplit[:2])
             if group not in {"joint", "spindle"}:
-                group = "hal"
+                group = "misc"
 
             if group not in hnodes:
-                hnodes[group] = HalNode(self.scene, "hal")
+                hnodes[group] = HalNode(self.scene, group)
                 self.scene.addItem(hnodes[group])
 
             hnodes[group].add_signal(signal_name, signal)
