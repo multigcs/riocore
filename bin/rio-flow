@@ -555,6 +555,17 @@ class HalNode(MyNode):
         self.ports_left[pin] = signal
         self.height = self.port_top + len(self.ports_left) * self.port_diff + self.port_bottom
 
+    def paintPorts(self, painter):
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+        py = self.port_top
+        for port, data in self.ports_left.items():
+            title = data.get("target") or port
+            color = Qt.GlobalColor.yellow
+            if (self, port) == self.scene.selection_target:
+                color = Qt.GlobalColor.red
+            self.paintPort(painter, "left", py, title, color)
+            py += self.port_diff
+
     def paint(self, painter, option, widget):
         self.paintBg(painter, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
