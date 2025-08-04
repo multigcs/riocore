@@ -6,10 +6,10 @@ import copy
 import os
 import json
 import sys
-from math import floor, ceil
+from math import floor, ceil, pi, sin, cos
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
-from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
     QMenu,
     QAction,
@@ -393,16 +393,19 @@ class MyNode(QGraphicsItem):
 
 
 class BoardNode(QGraphicsItem):
-    def __init__(self, scene, board):
+    def __init__(self, scene, board_setup):
         super().__init__()
         self.scene = scene
+        self.board_setup = board_setup
         self.setZValue(1)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.setAcceptHoverEvents(True)
-
+        self.rotate = board_setup["rotate"]
+        board = board_setup["board"]
         image = f"riocore/boards/{board}/board.png"
         pixmap = QPixmap.fromImage(QImage(image))
+        pixmap = pixmap.transformed(QTransform().rotate(self.rotate))
         pixmap_width = pixmap.width()
         pixmap_height = pixmap.height()
         self.name = board
@@ -416,9 +419,26 @@ class BoardNode(QGraphicsItem):
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 pos = pin_data.get("pos") or slot.get("pos")
+
+                if self.rotate == 90:
+                    pos = [pixmap_width - pos[1], pos[0]]
+                elif self.rotate == -90:
+                    pos = [pos[1], pixmap_height - pos[0]]
+                elif self.rotate == 180:
+                    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+
                 self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
                 self.ports[pin_data.get("pin")] = {"pos": pos, "dir": ""}
         self.selected_port = None
+
+    def rotate_cw(self):
+        if self.rotate < 180:
+            self.rotate += 90
+        else:
+            self.rotate = -90
+        self.board_setup["rotate"] = self.rotate
+        self.scene.parent.snapshot()
+        self.scene.parent.redraw()
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
@@ -445,6 +465,11 @@ class BoardNode(QGraphicsItem):
         return None
 
     def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.board_setup["pos"] = (pos_x, pos_y)
+
         painter.drawRect(self.boundingRect())
         painter.drawPixmap(0, 0, self.pixmap)
         for port in self.ports:
@@ -528,8 +553,8 @@ class PluginNode(MyNode):
 
     def mouseDoubleClickEvent(self, event):
         self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
-        self.scene.parent.redraw()
         self.scene.parent.snapshot()
+        self.scene.parent.redraw()
 
     def mouseReleaseEvent(self, event):
         self.update()
@@ -617,8 +642,8 @@ class ModifierNode(MyNode):
                     break
             if modifier_id != -1:
                 self.scene.parent.gui_modifiers.edit_modifier(modifier_list, modifier_id)
-                self.scene.parent.redraw()
                 self.scene.parent.snapshot()
+                self.scene.parent.redraw()
 
     def mousePressEvent(self, event):
         if self.port_selected(event.pos()) == "in":
@@ -754,7 +779,6 @@ class NodeScene(QGraphicsScene):
             return
 
         item = self.menu_selection
-        print("####", item)
         if isinstance(item, BoardNode):
             return
 
@@ -784,14 +808,17 @@ class NodeScene(QGraphicsScene):
 
         if self.hover:
             self.menu_selection = self.hover
-
             delete = QAction("delete", None)
             delete.triggered.connect(self.delete)
             menu.addAction(delete)
+            print(self.menu_selection)
+            if isinstance(self.menu_selection, BoardNode):
+                rotate = QAction("rotate", None)
+                rotate.triggered.connect(self.menu_selection.rotate_cw)
+                menu.addAction(rotate)
 
         elif self.edge_hover:
             self.menu_selection = self.edge_hover
-
             delete = QAction("delete", None)
             delete.triggered.connect(self.delete)
             menu.addAction(delete)
@@ -928,6 +955,11 @@ class Window(QWidget):
             self.config = config
         self.redraw()
 
+    def rotate(self, item):
+        self.cfg_save()
+        if not self.snapshots or self.config != self.snapshots[-1]:
+            self.snapshots.append(copy.deepcopy(self.config))
+
     def snapshot(self):
         self.cfg_save()
         if not self.snapshots or self.config != self.snapshots[-1]:
@@ -945,7 +977,10 @@ class Window(QWidget):
 
     def cfg_save(self):
         for item in self.scene.items():
-            if isinstance(item, PluginNode):
+            if isinstance(item, BoardNode):
+                self.config["boardpos"] = item.board_setup["pos"]
+                self.config["boardrotate"] = item.board_setup["rotate"]
+            elif isinstance(item, PluginNode):
                 plugin_instance = item.plugin_instance
                 plugin_config = plugin_instance.plugin_setup
                 for port in plugin_config.get("pins", []):
@@ -970,10 +1005,16 @@ class Window(QWidget):
             self.scene.removeItem(item)
         self.pinlist = []
         boardcfg = self.config.get("boardcfg")
+        boardpos = self.config.get("boardpos")
+        boardrotate = self.config.get("boardrotate") or 0
         self.bnode = None
+        board_setup = {"board": boardcfg, "pos": boardpos, "rotate": boardrotate}
         if os.path.exists(f"riocore/boards/{boardcfg}/board.json"):
-            self.bnode = BoardNode(self.scene, boardcfg)
-            self.bnode.setPos(120, 220)
+            self.bnode = BoardNode(self.scene, board_setup)
+            if boardpos:
+                self.bnode.setPos(boardpos[0], boardpos[1])
+            else:
+                self.bnode.setPos(120, 220)
             self.scene.addItem(self.bnode)
             self.board = self.bnode.jdata
 
@@ -1197,8 +1238,8 @@ class Window(QWidget):
         for item in self.scene.selectedItems():
             if isinstance(item, PluginNode):
                 self.gui_plugins.edit_plugin(item.plugin_instance, None)
-                self.redraw()
                 self.snapshot()
+                self.redraw()
                 break
 
     def delete_selection(self):
