@@ -617,6 +617,8 @@ class ModifierNode(MyNode):
                     break
             if modifier_id != -1:
                 self.scene.parent.gui_modifiers.edit_modifier(modifier_list, modifier_id)
+                self.scene.parent.redraw()
+                self.scene.parent.snapshot()
 
     def mousePressEvent(self, event):
         if self.port_selected(event.pos()) == "in":
