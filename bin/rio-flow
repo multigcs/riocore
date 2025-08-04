@@ -630,14 +630,12 @@ class NodeViewer(QGraphicsView):
         elif self.scene.edge_hover:
             super().mouseDoubleClickEvent(event)
         else:
-            position = event.pos()
-            position = self.mapToScene(position.x(), position.y())
-            self.scene.insert_position = position
             self.scene.parent.gui_plugins.add_plugin("")
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         self.mouse_pos = event.pos()
         self.button_pressed = event.button()
+        self.scene.insert_position = self.mapToScene(self.mouse_pos.x(), self.mouse_pos.y())
         super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
@@ -745,7 +743,6 @@ class NodeScene(QGraphicsScene):
 
     def contextMenuEvent(self, event):
         self.menu_selection = None
-
         menu = QMenu()
 
         if self.hover:
