@@ -598,11 +598,25 @@ class ModifierNode(MyNode):
         pos_x = pos.x()
         pos_y = pos.y()
         self.modifier["pos"] = (pos_x, pos_y)
-
         self.paintBg(painter, self.name)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
-
         self.paintPorts(painter)
+
+    def mouseDoubleClickEvent(self, event):
+        target = self.scene.parent.get_next(self, "out")
+        while isinstance(target[0], ModifierNode):
+            target = self.scene.parent.get_next(target[0], "out")
+        if isinstance(target[0], PluginNode):
+            plugin_instance = target[0].plugin_instance
+            port = target[1]
+            modifier_id = -1
+            modifier_list = plugin_instance.plugin_setup["pins"][port]["modifier"]
+            for mid, modifier in enumerate(modifier_list):
+                if modifier == self.modifier:
+                    modifier_id = mid
+                    break
+            if modifier_id != -1:
+                self.scene.parent.gui_modifiers.edit_modifier(modifier_list, modifier_id)
 
     def mousePressEvent(self, event):
         if self.port_selected(event.pos()) == "in":
