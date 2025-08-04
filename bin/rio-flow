@@ -286,6 +286,8 @@ class MyNode(QGraphicsItem):
                 color = Qt.GlobalColor.yellow
             if (self, port) == self.scene.selection_source:
                 color = Qt.GlobalColor.red
+            if title.startswith("sig_"):
+                title = title[4:]
             self.paintPort(painter, "right", py, title, color)
             py += self.port_diff
 
