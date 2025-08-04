@@ -61,6 +61,14 @@ grid_size = 10
 grid_color = QColor(150, 150, 150)
 
 
+class cfggraph:
+    def edge(self, port_from, port_to, dir=None, color=None, fontcolor=None):
+        print("edge", port_from, port_to)
+
+    def node(self, title, shape=None, label=None, fontsize=None, style=None, fillcolor=None, URL=None):
+        print("node", title, label)
+
+
 class NodeEdgePath(QGraphicsPathItem):
     width = 2
     width_selected = 4
@@ -816,6 +824,8 @@ class Window(QWidget):
         self.joints = 0
         self.board = {}
 
+        self.cfggraph = cfggraph()
+
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
 
@@ -1015,6 +1025,10 @@ class Window(QWidget):
     def insert_plugin(self, plugin_instance, py=100):
         plugin_config = plugin_instance.plugin_setup
         pnode = PluginNode(self.scene, plugin_instance)
+
+        # if hasattr(plugin_instance, "cfggraph"):
+        #    (p_lcports, p_signalports) = plugin_instance.cfggraph(plugin_instance.instances_name, self.cfggraph)
+        #    print(p_lcports, p_signalports)
 
         if "pos" in plugin_config:
             hx = plugin_config["pos"][0]
