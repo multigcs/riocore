@@ -119,10 +119,14 @@ class NodeEdgePath(QGraphicsPathItem):
             if xwidth > 20:
                 xwidth = 20
             tangent += xwidth
+            tangent_s = tangent
+            if isinstance(self._source_node, BoardNode):
+                tangent_s *= -1
         else:
             if tangent > 20:
                 tangent = 20
-        path.cubicTo(QPointF(source_pos.x() + tangent, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
+            tangent_s = tangent
+        path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
         self.setPath(path)
 
     def mouseDoubleClickEvent(self, event):
