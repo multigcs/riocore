@@ -113,19 +113,22 @@ class NodeEdgePath(QGraphicsPathItem):
         xwidth = source_pos.x() - des_pos.x()
         xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
         yheight = abs(source_pos.y() - des_pos.y())
-        tangent = float(yheight) / xwidth * 0.05
+        tangent = float(yheight) / xwidth * 0.1
+        tangent_s = float(yheight) / xwidth * 0.05
         tangent *= xwidth
+        tangent_s *= xwidth
         if xwidth > 0:
             if xwidth > 20:
                 xwidth = 20
             tangent += xwidth
-            tangent_s = tangent
+            tangent_s += xwidth
             if isinstance(self._source_node, BoardNode):
                 tangent_s *= -1
         else:
-            if tangent > 20:
-                tangent = 20
-            tangent_s = tangent
+            if tangent > 120:
+                tangent = 120
+            if tangent_s > 20:
+                tangent_s = 20
         path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
         self.setPath(path)
 
