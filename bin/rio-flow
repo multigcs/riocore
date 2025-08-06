@@ -726,6 +726,17 @@ class NodeViewer(QGraphicsView):
                         color = colors[color_idx]
                     edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
                     self.scene.addItem(edge)
+
+                    # TODO: update all
+                    if isinstance(target_node, HalNode) and source_port.startswith("sig_"):
+                        # save to plugin setup
+                        plugin_config = source_node.plugin_instance.plugin_setup
+                        if "signals" not in plugin_config:
+                            plugin_config["signals"] = {}
+                        if source_port not in plugin_config["signals"]:
+                            plugin_config["signals"][source_port] = {}
+                        plugin_config["signals"][source_port]["net"] = target_port
+
                 # clear selection
                 self.scene.selection_source = (None, None)
                 self.scene.selection_target = (None, None)
@@ -1078,10 +1089,11 @@ class Window(QWidget):
                 hnodes[group] = HalNode(self.scene, group)
                 self.scene.addItem(hnodes[group])
 
-            hnodes[group].add_signal(signal_name, signal)
+            hnodes[group].add_signal(signal["target"], signal)
+
             if source is not None:
                 spin = f"sig_{source[1]}"
-                edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal_name, color=colors[0])
+                edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[0])
                 self.scene.addItem(edge)
 
         hnodes_y = 100
