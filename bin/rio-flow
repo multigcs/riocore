@@ -6,7 +6,7 @@ import copy
 import os
 import json
 import sys
-from math import floor, ceil, pi, sin, cos
+from math import floor, ceil
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
@@ -444,8 +444,8 @@ class BoardNode(QGraphicsItem):
         else:
             self.rotate = -90
         self.board_setup["rotate"] = self.rotate
-        self.scene.parent.snapshot()
         self.scene.parent.redraw()
+        self.scene.parent.snapshot()
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
@@ -560,8 +560,8 @@ class PluginNode(MyNode):
 
     def mouseDoubleClickEvent(self, event):
         self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
-        self.scene.parent.snapshot()
         self.scene.parent.redraw()
+        self.scene.parent.snapshot()
 
     def mouseReleaseEvent(self, event):
         self.update()
@@ -649,8 +649,8 @@ class ModifierNode(MyNode):
                     break
             if modifier_id != -1:
                 self.scene.parent.gui_modifiers.edit_modifier(modifier_list, modifier_id)
-                self.scene.parent.snapshot()
                 self.scene.parent.redraw()
+                self.scene.parent.snapshot()
 
     def mousePressEvent(self, event):
         if self.port_selected(event.pos()) == "in":
@@ -1245,8 +1245,8 @@ class Window(QWidget):
         for item in self.scene.selectedItems():
             if isinstance(item, PluginNode):
                 self.gui_plugins.edit_plugin(item.plugin_instance, None)
-                self.snapshot()
                 self.redraw()
+                self.snapshot()
                 break
 
     def delete_selection(self):

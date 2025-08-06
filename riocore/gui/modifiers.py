@@ -53,18 +53,32 @@ class GuiModifiers:
 
         def move_left():
             if dialog.modifier_id > 0:
+                positions = []
+                for modifier in modifier_list:
+                    positions.append(modifier.get("pos"))
                 modifier_list[dialog.modifier_id - 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id - 1]
                 if parent_layout:
                     self.modifier_list_update(parent_layout, modifier_list)
                 dialog.modifier_id -= 1
+                for pn, position in enumerate(positions):
+                    modifier_list[pn]["pos"] = position
+                    if position is None:
+                        del modifier_list[pn]["pos"]
                 update()
 
         def move_right():
             if dialog.modifier_id < len(modifier_list) - 1:
+                positions = []
+                for modifier in modifier_list:
+                    positions.append(modifier.get("pos"))
                 modifier_list[dialog.modifier_id + 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id + 1]
                 if parent_layout:
                     self.modifier_list_update(parent_layout, modifier_list)
                 dialog.modifier_id += 1
+                for pn, position in enumerate(positions):
+                    modifier_list[pn]["pos"] = position
+                    if position is None:
+                        del modifier_list[pn]["pos"]
                 update()
 
         dialog = QDialog()
