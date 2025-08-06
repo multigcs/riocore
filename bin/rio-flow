@@ -80,8 +80,8 @@ class NodeEdgePath(QGraphicsPathItem):
         self.scene = scene
         self._source_node = source_node
         self._source_port = source_port
-        self._des_node = des_node
-        self._des_port = des_port
+        self._target_node = des_node
+        self._target_port = des_port
         self.color = color
         if self.color is None:
             self.color = Qt.GlobalColor.green
@@ -109,7 +109,7 @@ class NodeEdgePath(QGraphicsPathItem):
 
     def update_edge_path(self):
         source_pos = self._source_node.port_pos(self._source_port)
-        des_pos = self._des_node.port_pos(self._des_port)
+        des_pos = self._target_node.port_pos(self._target_port)
         path = QPainterPath(source_pos)
         xwidth = source_pos.x() - des_pos.x()
         xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
@@ -156,8 +156,8 @@ class NodeEdgeLine(QGraphicsLineItem):
         super().__init__(None)
         self._source_node = source_node
         self._source_port = source_port
-        self._des_node = des_node
-        self._des_port = des_port
+        self._target_node = des_node
+        self._target_port = des_port
         self.color = color
         if self.color is None:
             self.color = Qt.GlobalColor.green
@@ -182,7 +182,7 @@ class NodeEdgeLine(QGraphicsLineItem):
 
         self.prepareGeometryChange()
         source_pos = self._source_node.port_pos(self._source_port)
-        des_pos = self._des_node.port_pos(self._des_port)
+        des_pos = self._target_node.port_pos(self._target_port)
         self.setLine(QLineF(source_pos, des_pos))
 
 
@@ -727,19 +727,11 @@ class NodeViewer(QGraphicsView):
                     edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
                     self.scene.addItem(edge)
 
-                    # TODO: update all
-                    if isinstance(target_node, HalNode) and source_port.startswith("sig_"):
-                        # save to plugin setup
-                        plugin_config = source_node.plugin_instance.plugin_setup
-                        if "signals" not in plugin_config:
-                            plugin_config["signals"] = {}
-                        if source_port not in plugin_config["signals"]:
-                            plugin_config["signals"][source_port] = {}
-                        plugin_config["signals"][source_port]["net"] = target_port
-
                 # clear selection
                 self.scene.selection_source = (None, None)
                 self.scene.selection_target = (None, None)
+
+            self.scene.parent.update_halpins_from_edges()
 
         self.mouse_pos = event.pos()
         self.button_pressed = 0
@@ -830,7 +822,7 @@ class NodeScene(QGraphicsScene):
             delete = QAction("delete", None)
             delete.triggered.connect(self.delete)
             menu.addAction(delete)
-            print(self.menu_selection)
+            # print(self.menu_selection)
             if isinstance(self.menu_selection, BoardNode):
                 rotate = QAction("rotate", None)
                 rotate.triggered.connect(self.menu_selection.rotate_cw)
@@ -854,7 +846,7 @@ class NodeScene(QGraphicsScene):
     def disconnect_port(self, node, port):
         for item in self.items():
             if isinstance(item, NodeEdge):
-                if item._des_node == node and item._des_port == port:
+                if item._target_node == node and item._target_port == port:
                     self.removeItem(item)
                 elif item._source_node == node and item._source_port == port:
                     self.removeItem(item)
@@ -862,7 +854,7 @@ class NodeScene(QGraphicsScene):
     def disconnect_node(self, node):
         for item in self.items():
             if isinstance(item, NodeEdge):
-                if item._des_node == node:
+                if item._target_node == node:
                     self.removeItem(item)
                 elif item._source_node == node:
                     self.removeItem(item)
@@ -994,6 +986,31 @@ class Window(QWidget):
         jdata = json.dumps(self.config, indent=4)
         open(self.filename, "w").write(jdata)
 
+    def update_halpins_from_edges(self):
+        return
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                plugin_config = item.plugin_instance.plugin_setup
+                for signal_name, signal_data in plugin_config.get("signals", {}).items():
+                    signal_data["net"] = ""
+                    # signal_data["setp"] = ""
+
+        for item in self.scene.items():
+            if isinstance(item, NodeEdge):
+                if isinstance(item._target_node, HalNode) and item._source_port.startswith("sig_"):
+                    # save to plugin setup
+                    plugin_config = item._source_node.plugin_instance.plugin_setup
+                    hinfo = item._target_node.ports_left[item._target_port]
+                    if hinfo["type"] == "net":
+                        if "signals" not in plugin_config:
+                            plugin_config["signals"] = {}
+                        if item._source_port not in plugin_config["signals"]:
+                            plugin_config["signals"][item._source_port] = {}
+                        print(item._source_port, item._target_port)
+                        plugin_config["signals"][item._source_port]["net"] = item._target_port
+                    # elif hinfo["type"] == "setp":
+                    #    plugin_config["signals"][item._source_port]["setp"] = item._target_port
+
     def cfg_save(self):
         for item in self.scene.items():
             if isinstance(item, BoardNode):
@@ -1075,6 +1092,7 @@ class Window(QWidget):
         """
 
         hnodes = {}
+        print(self.halpins)
         for signal_name, signal in self.halpins.items():
             source = signal["source"]
             target = signal["target"]
@@ -1188,7 +1206,7 @@ class Window(QWidget):
                     self.halpins[halname]["target"] = net
                 setp = signal.get("setp")
                 if setp:
-                    self.halpins[halname]["target"] = "setp"
+                    self.halpins[halname]["type"] = "setp"
                     self.halpins[halname]["target"] = setp
 
         is_joint = plugin_config.get("is_joint")
@@ -1202,7 +1220,7 @@ class Window(QWidget):
                             "target": "",
                             "source": (pnode, signal_name),
                         }
-                    self.halpins[halname]["type"] = "net"
+                    self.halpins[halname]["type"] = "joint"
                     self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
             self.joints += 1
         ph = max(ph, pnode.height) + 5
@@ -1213,12 +1231,12 @@ class Window(QWidget):
             if isinstance(item, NodeEdge):
                 source_node = item._source_node
                 source_port = item._source_port
-                des_node = item._des_node
-                des_port = item._des_port
+                des_node = item._target_node
+                des_port = item._target_port
                 source_x = item._source_node.port_pos(item._source_port).x()
                 source_y = item._source_node.port_pos(item._source_port).y()
-                des_x = item._des_node.port_pos(item._des_port).x()
-                des_y = item._des_node.port_pos(item._des_port).y()
+                des_x = item._target_node.port_pos(item._target_port).x()
+                des_y = item._target_node.port_pos(item._target_port).y()
                 color = item.color
                 self.scene.removeItem(item)
                 # add node
@@ -1289,6 +1307,9 @@ class Window(QWidget):
                     self.scene.addItem(edge)
                 self.scene.disconnect_node(item)
 
+            elif isinstance(item, NodeEdge):
+                self.update_halpins_from_edges()
+
             elif isinstance(item, PluginNode):
                 self.scene.disconnect_node(item)
                 # remove plugin from cfg
@@ -1302,15 +1323,15 @@ class Window(QWidget):
 
     def get_next(self, node, port):
         for item in self.scene.items():
-            if isinstance(item, NodeEdge) and item._des_node == node and item._des_port == port:
+            if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
                 return (item._source_node, item._source_port, item)
             elif isinstance(item, NodeEdge) and item._source_node == node and item._source_port == port:
-                return (item._des_node, item._des_port, item)
+                return (item._target_node, item._target_port, item)
         return None
 
     def get_source(self, node, port, modifiers):
         for item in self.scene.items():
-            if isinstance(item, NodeEdge) and item._des_node == node and item._des_port == port:
+            if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
                 if isinstance(item._source_node, ModifierNode):
                     modifiers.append(item._source_node.modifier)
                     source = self.get_source(item._source_node, "in", modifiers)
