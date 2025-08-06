@@ -37,6 +37,7 @@ import riocore
 
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.modifiers import GuiModifiers
+# from riocore.halpins import LINUXCNC_SIGNALS
 
 
 from riocore.gui.widgets import (
@@ -1049,17 +1050,28 @@ class Window(QWidget):
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
 
+        """
+        used_halpins = []
+        for _name, signal in self.halpins.items():
+            used_halpins.append(signal["target"])
+        for signal_name, signal_data in LINUXCNC_SIGNALS["input"].items():
+            if signal_name not in used_halpins:
+                self.halpins[signal_name] = {
+                    "type": "net",
+                    "target": signal_name,
+                    "source": None,
+                }
+        """
+
         hnodes = {}
         for signal_name, signal in self.halpins.items():
             source = signal["source"]
             target = signal["target"]
-            spin = f"sig_{source[1]}"
-
             tsplit = target.split(".")
             group = tsplit[0]
-            # if len(tsplit) > 1 and tsplit[1].isnumeric():
-            #    group = ".".join(tsplit[:2])
-            if group not in {"joint", "spindle"}:
+            if source is None:
+                group = "unused"
+            elif group not in {"joint", "spindle"}:
                 group = "misc"
 
             if group not in hnodes:
@@ -1067,8 +1079,10 @@ class Window(QWidget):
                 self.scene.addItem(hnodes[group])
 
             hnodes[group].add_signal(signal_name, signal)
-            edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal_name, color=colors[0])
-            self.scene.addItem(edge)
+            if source is not None:
+                spin = f"sig_{source[1]}"
+                edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal_name, color=colors[0])
+                self.scene.addItem(edge)
 
         hnodes_y = 100
         for group in hnodes:
