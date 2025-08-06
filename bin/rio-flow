@@ -593,6 +593,8 @@ class HalNode(MyNode):
         py = self.port_top
         for port, data in self.ports_left.items():
             title = data.get("target") or port
+            if data.get("type") == "setp":
+                title = f"setp: {title}"
             color = Qt.GlobalColor.yellow
             if (self, port) == self.scene.selection_target:
                 color = Qt.GlobalColor.red
@@ -987,29 +989,28 @@ class Window(QWidget):
         open(self.filename, "w").write(jdata)
 
     def update_halpins_from_edges(self):
-        return
         for item in self.scene.items():
             if isinstance(item, PluginNode):
                 plugin_config = item.plugin_instance.plugin_setup
                 for signal_name, signal_data in plugin_config.get("signals", {}).items():
                     signal_data["net"] = ""
-                    # signal_data["setp"] = ""
+                    signal_data["setp"] = ""
 
         for item in self.scene.items():
             if isinstance(item, NodeEdge):
                 if isinstance(item._target_node, HalNode) and item._source_port.startswith("sig_"):
+                    source_port = item._source_port[4:]
                     # save to plugin setup
                     plugin_config = item._source_node.plugin_instance.plugin_setup
                     hinfo = item._target_node.ports_left[item._target_port]
                     if hinfo["type"] == "net":
                         if "signals" not in plugin_config:
                             plugin_config["signals"] = {}
-                        if item._source_port not in plugin_config["signals"]:
-                            plugin_config["signals"][item._source_port] = {}
-                        print(item._source_port, item._target_port)
-                        plugin_config["signals"][item._source_port]["net"] = item._target_port
-                    # elif hinfo["type"] == "setp":
-                    #    plugin_config["signals"][item._source_port]["setp"] = item._target_port
+                        if source_port not in plugin_config["signals"]:
+                            plugin_config["signals"][source_port] = {}
+                        plugin_config["signals"][source_port]["net"] = item._target_port
+                    elif hinfo["type"] == "setp":
+                        plugin_config["signals"][source_port]["setp"] = item._target_port
 
     def cfg_save(self):
         for item in self.scene.items():
@@ -1092,7 +1093,6 @@ class Window(QWidget):
         """
 
         hnodes = {}
-        print(self.halpins)
         for signal_name, signal in self.halpins.items():
             source = signal["source"]
             target = signal["target"]
@@ -1103,13 +1103,11 @@ class Window(QWidget):
             elif group not in {"joint", "spindle"}:
                 group = "misc"
 
-            if group not in hnodes:
-                hnodes[group] = HalNode(self.scene, group)
-                self.scene.addItem(hnodes[group])
-
-            hnodes[group].add_signal(signal["target"], signal)
-
-            if source is not None:
+            if source and target:
+                if group not in hnodes:
+                    hnodes[group] = HalNode(self.scene, group)
+                    self.scene.addItem(hnodes[group])
+                hnodes[group].add_signal(target, signal)
                 spin = f"sig_{source[1]}"
                 edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[0])
                 self.scene.addItem(edge)
