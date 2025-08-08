@@ -197,10 +197,12 @@ class MyNode(QGraphicsItem):
     border_color_hover = QColor(250, 150, 250)
     bg_color = QColor(100, 100, 100)
     title_size = 9
+    info_size = 7
     text_scale = 1.6
     text_font = "Times"
     text_color = QColor(220, 220, 220)
     title_color = QColor(255, 255, 255)
+    info_color = QColor(200, 200, 200)
     port_size = 8
     port_tsize = 9
     port_toff_x = 2
@@ -340,7 +342,7 @@ class MyNode(QGraphicsItem):
                     name,
                 )
 
-    def paintBg(self, painter, title):
+    def paintBg(self, painter, title, info=""):
         painter.setRenderHint(QPainter.Antialiasing)
         path = QPainterPath()
         if self.isSelected():
@@ -367,6 +369,12 @@ class MyNode(QGraphicsItem):
             painter.setPen(QPen(self.title_color, 1))
             painter.setFont(QFont(self.text_font, self.title_size))
             painter.drawText(QRectF(0, self.border_size / 2, self.width, self.title_size * self.text_scale), Qt.AlignmentFlag.AlignCenter, title)
+
+        if info:
+            painter.setPen(QPen(self.info_color, 1))
+            painter.setFont(QFont(self.text_font, self.info_size))
+            th = self.title_size * self.text_scale
+            painter.drawText(QRectF(0, self.border_size / 2 + th, self.width, self.height - self.border_size - th), Qt.AlignmentFlag.AlignCenter, info)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -546,8 +554,9 @@ class PluginNode(MyNode):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
+        info = self.plugin_instance.cfg_info()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
-        self.paintBg(painter, self.name)
+        self.paintBg(painter, self.name, info=info)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
 
         width = self.pixmap.width()
@@ -1400,9 +1409,7 @@ class Window(QWidget):
             color_n = 0
             for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
                 pindata = plugin_config.get("pins", {}).get(pin)
-                if pindata is None:
-                    continue
-                if "pin" not in pindata:
+                if pindata is None or "pin" not in pindata or not pindata["pin"]:
                     continue
 
                 last_con = (self.bnode, pindata["pin"])

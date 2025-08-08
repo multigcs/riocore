@@ -79,6 +79,10 @@ class Plugin(PluginBase):
             "mclk": speed,
         }
 
+    def cfg_info(self):
+        ip = self.plugin_setup.get("ip", self.option_default("ip"))
+        return f"IP: {ip}"
+
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]

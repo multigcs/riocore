@@ -220,6 +220,10 @@ class Plugin(PluginBase):
         self.signal_values = 0
         self.signal_name = None
 
+    def cfg_info(self):
+        baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        return f"{baud} baud"
+
     def cfggraph(self, title, gAll):
         lcports = []
         signalports = []

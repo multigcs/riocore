@@ -42,6 +42,11 @@ class Plugin(PluginBase):
                     "bool": True,
                 }
 
+    def cfg_info(self):
+        num_leds = self.plugin_setup.get("leds", 1)
+        level = self.plugin_setup.get("level", 127)
+        return f"LED's: {num_leds}\nLevel: {level}"
+
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
