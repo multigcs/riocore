@@ -1,0 +1,586 @@
+{
+    "name": "Mesa7c81",
+    "description": "Mesa7c81 over SPI - WIP",
+    "url": "https://eusurplus.com/index.php?route=product/product&product_id=131",
+    "toolchain": "ise",
+    "family": "xc6",
+    "type": "xc6slx9-2tqg144",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+    "package": "tqg144",
+    "clock": {
+        "speed": "50000000",
+        "pin": "p50",
+        "startup": "CClk"
+    },
+    "slots": [
+        {
+            "name": "SPI",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "MOSI": {
+                    "pin": "P15",
+                    "pos": [
+                        440,
+                        570
+                    ],
+                    "direction": "input"
+                },
+                "MISO": {
+                    "pin": "P16",
+                    "pos": [
+                        460,
+                        570
+                    ],
+                    "direction": "output"
+                },
+                "SCLK": {
+                    "pin": "P14",
+                    "pos": [
+                        480,
+                        570
+                    ],
+                    "direction": "input"
+                },
+                "SEL": {
+                    "pin": "P56",
+                    "pos": [
+                        440,
+                        590
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "L0": {
+                    "pin": "P48",
+                    "pos": [
+                        680,
+                        262
+                    ],
+                    "direction": "output"
+                },
+                "L1": {
+                    "pin": "P47",
+                    "pos": [
+                        700,
+                        262
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "P46",
+                    "pos": [
+                        720,
+                        262
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "P45",
+                    "pos": [
+                        740,
+                        262
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "MODBUS0",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "RX": {
+                    "pin": "P34",
+                    "pos": [
+                        450,
+                        700
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "P35",
+                    "pos": [
+                        470,
+                        700
+                    ],
+                    "direction": "output"
+                },
+                "TX_EN": {
+                    "pin": "P40",
+                    "pos": [
+                        490,
+                        700
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "MODBUS1",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "RX": {
+                    "pin": "P41",
+                    "pos": [
+                        650,
+                        700
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "P43",
+                    "pos": [
+                        670,
+                        700
+                    ],
+                    "direction": "output"
+                },
+                "TX_EN": {
+                    "pin": "P44",
+                    "pos": [
+                        690,
+                        700
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "A",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "P1": {
+                    "pin": "P0",
+                    "pos": [
+                        115,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "P2",
+                    "pos": [
+                        134,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "P4",
+                    "pos": [
+                        153,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "P6",
+                    "pos": [
+                        172,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P5": {
+                    "pin": "P8",
+                    "pos": [
+                        191,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "P9",
+                    "pos": [
+                        210,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "P10",
+                    "pos": [
+                        229,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "P11",
+                    "pos": [
+                        248,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "P12",
+                    "pos": [
+                        267,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "P13",
+                    "pos": [
+                        286,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "P14",
+                    "pos": [
+                        305,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "P15",
+                    "pos": [
+                        324,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P13": {
+                    "pin": "P16",
+                    "pos": [
+                        343,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "P1",
+                    "pos": [
+                        115,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "P3",
+                    "pos": [
+                        134,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P16": {
+                    "pin": "P5",
+                    "pos": [
+                        153,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "P7",
+                    "pos": [
+                        172,
+                        40
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "B",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "P1": {
+                    "pin": "P19",
+                    "pos": [
+                        345,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "P21",
+                    "pos": [
+                        326,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "P23",
+                    "pos": [
+                        307,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "P25",
+                    "pos": [
+                        288,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P5": {
+                    "pin": "P27",
+                    "pos": [
+                        269,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "P28",
+                    "pos": [
+                        250,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "P29",
+                    "pos": [
+                        231,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "P30",
+                    "pos": [
+                        212,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "P31",
+                    "pos": [
+                        193,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "P32",
+                    "pos": [
+                        174,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "P33",
+                    "pos": [
+                        155,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "P34",
+                    "pos": [
+                        136,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P13": {
+                    "pin": "P35",
+                    "pos": [
+                        117,
+                        733
+                    ],
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "P20",
+                    "pos": [
+                        345,
+                        752
+                    ],
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "P22",
+                    "pos": [
+                        326,
+                        752
+                    ],
+                    "direction": "all"
+                },
+                "P16": {
+                    "pin": "P24",
+                    "pos": [
+                        307,
+                        752
+                    ],
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "P26",
+                    "pos": [
+                        288,
+                        752
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "C",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "P1": {
+                    "pin": "P38",
+                    "pos": [
+                        464,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "P40",
+                    "pos": [
+                        483,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "P42",
+                    "pos": [
+                        502,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "P44",
+                    "pos": [
+                        521,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P5": {
+                    "pin": "P46",
+                    "pos": [
+                        540,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "P47",
+                    "pos": [
+                        559,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "P48",
+                    "pos": [
+                        578,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "P49",
+                    "pos": [
+                        597,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "P50",
+                    "pos": [
+                        616,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "P51",
+                    "pos": [
+                        635,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "P52",
+                    "pos": [
+                        654,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "P53",
+                    "pos": [
+                        673,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P13": {
+                    "pin": "P54",
+                    "pos": [
+                        692,
+                        59
+                    ],
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "P39",
+                    "pos": [
+                        464,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "P41",
+                    "pos": [
+                        483,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P16": {
+                    "pin": "P43",
+                    "pos": [
+                        502,
+                        40
+                    ],
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "P45",
+                    "pos": [
+                        521,
+                        40
+                    ],
+                    "direction": "all"
+                }
+            }
+        }
+    ]
+}
