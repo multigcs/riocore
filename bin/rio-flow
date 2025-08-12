@@ -420,7 +420,7 @@ class BoardNode(QGraphicsItem):
         board = board_setup["board"]
         image = f"riocore/boards/{board}/board.png"
         pixmap = QPixmap.fromImage(QImage(image))
-        pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["boardrotate"]))
+        pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
         pixmap_width = pixmap.width()
         pixmap_height = pixmap.height()
         self.name = board
@@ -435,11 +435,11 @@ class BoardNode(QGraphicsItem):
             for pin_name, pin_data in slot["pins"].items():
                 pos = pin_data.get("pos") or slot.get("pos")
 
-                if self.board_setup["config"]["boardrotate"] == 90:
+                if self.board_setup["config"]["flow"]["board"]["rotate"] == 90:
                     pos = [pixmap_width - pos[1], pos[0]]
-                elif self.board_setup["config"]["boardrotate"] == -90:
+                elif self.board_setup["config"]["flow"]["board"]["rotate"] == -90:
                     pos = [pos[1], pixmap_height - pos[0]]
-                elif self.board_setup["config"]["boardrotate"] == 180:
+                elif self.board_setup["config"]["flow"]["board"]["rotate"] == 180:
                     pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
 
                 self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
@@ -447,10 +447,10 @@ class BoardNode(QGraphicsItem):
         self.selected_port = None
 
     def rotate_cw(self):
-        if self.board_setup["config"]["boardrotate"] < 180:
-            self.board_setup["config"]["boardrotate"] += 90
+        if self.board_setup["config"]["flow"]["board"]["rotate"] < 180:
+            self.board_setup["config"]["flow"]["board"]["rotate"] += 90
         else:
-            self.board_setup["config"]["boardrotate"] = -90
+            self.board_setup["config"]["flow"]["board"]["rotate"] = -90
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
@@ -482,7 +482,7 @@ class BoardNode(QGraphicsItem):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
-        self.board_setup["pos"] = (pos_x, pos_y)
+        self.board_setup["config"]["flow"]["board"]["pos"] = (pos_x, pos_y)
 
         painter.drawRect(self.boundingRect())
         painter.drawPixmap(0, 0, self.pixmap)
@@ -797,8 +797,8 @@ class NodeViewer(QGraphicsView):
         self.button_pressed = 0
 
         # update config
-        self.scene.parent.config["vpos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
-        self.scene.parent.config["vscale"] = self.getZoom()
+        self.scene.parent.config["flow"]["view"]["pos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
+        self.scene.parent.config["flow"]["view"]["scale"] = self.getZoom()
         self.scene.parent.snapshot()
 
         super().mouseReleaseEvent(event)
@@ -1032,6 +1032,10 @@ class Window(QWidget):
             self.config = json.loads(jdata)
         else:
             self.config = config
+        if "flow" not in self.config:
+            self.config["flow"] = {}
+        if "view" not in self.config["flow"]:
+            self.config["flow"]["view"] = {}
         self.redraw()
 
     def rotate(self, item):
@@ -1082,8 +1086,7 @@ class Window(QWidget):
     def cfg_save(self):
         for item in self.scene.items():
             if isinstance(item, BoardNode):
-                self.config["boardpos"] = item.board_setup["config"]["boardpos"]
-                self.config["boardrotate"] = item.board_setup["config"]["boardrotate"]
+                pass
             elif isinstance(item, PluginNode):
                 plugin_instance = item.plugin_instance
                 plugin_config = plugin_instance.plugin_setup
@@ -1234,15 +1237,17 @@ class Window(QWidget):
             self.scene.removeItem(item)
         self.pinlist = []
         boardcfg = self.config.get("boardcfg")
-        if "boardpos" not in self.config:
-            self.config["boardpos"] = (120, 220)
-        if "boardrotate" not in self.config:
-            self.config["boardrotate"] = 0
+        if "board" not in self.config["flow"]:
+            self.config["flow"]["board"] = {}
+        if "pos" not in self.config["flow"]["board"]:
+            self.config["flow"]["board"]["pos"] = (120, 220)
+        if "rotate" not in self.config["flow"]["board"]:
+            self.config["flow"]["board"]["rotate"] = 0
         self.bnode = None
         board_setup = {"board": boardcfg, "config": self.config}
         if os.path.exists(f"riocore/boards/{boardcfg}/board.json"):
             self.bnode = BoardNode(self.scene, board_setup)
-            self.bnode.setPos(self.config["boardpos"][0], self.config["boardpos"][1])
+            self.bnode.setPos(self.config["flow"]["board"]["pos"][0], self.config["flow"]["board"]["pos"][1])
             self.scene.addItem(self.bnode)
             self.board = self.bnode.jdata
 
@@ -1361,11 +1366,11 @@ class Window(QWidget):
         ph = 1
         pv = 1
         zoom = 1.0
-        if "vpos" in self.config:
-            ph = self.config["vpos"][0]
-            pv = self.config["vpos"][1]
-        if "vscale" in self.config:
-            zoom = self.config["vscale"]
+        if "pos" in self.config["flow"]["view"]:
+            ph = self.config["flow"]["view"]["pos"][0]
+            pv = self.config["flow"]["view"]["pos"][1]
+        if "scale" in self.config["flow"]["view"]:
+            zoom = self.config["flow"]["view"]["scale"]
         self.view.setZoom(zoom)
         self.view.horizontalScrollBar().setSliderPosition(ph)
         self.view.verticalScrollBar().setSliderPosition(pv)
