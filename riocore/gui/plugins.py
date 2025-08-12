@@ -700,7 +700,7 @@ class GuiPlugins:
 
             def add_module():
                 dialog.close()
-                self.parent.add_module(None, slot_name=slot_name, slot_select=False)
+                self.parent.gui_modules.add_module(None, slot_name=slot_name, slot_select=False)
 
             slot_button = QPushButton(self.parent.tr("use module selection"))
             slot_button.clicked.connect(add_module)
