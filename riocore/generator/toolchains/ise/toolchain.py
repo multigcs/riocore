@@ -15,7 +15,7 @@ class Toolchain:
 
     def info(cls):
         info = {
-            "url": "https://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.html",
+            "url": "https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/archive-ise.html",
             "info": "Xilinx/AMD ISE WebPACK",
             "description": "",
         }
