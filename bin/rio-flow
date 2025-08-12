@@ -417,11 +417,10 @@ class BoardNode(QGraphicsItem):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.setAcceptHoverEvents(True)
-        self.rotate = board_setup["rotate"]
         board = board_setup["board"]
         image = f"riocore/boards/{board}/board.png"
         pixmap = QPixmap.fromImage(QImage(image))
-        pixmap = pixmap.transformed(QTransform().rotate(self.rotate))
+        pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["boardrotate"]))
         pixmap_width = pixmap.width()
         pixmap_height = pixmap.height()
         self.name = board
@@ -436,11 +435,11 @@ class BoardNode(QGraphicsItem):
             for pin_name, pin_data in slot["pins"].items():
                 pos = pin_data.get("pos") or slot.get("pos")
 
-                if self.rotate == 90:
+                if self.board_setup["config"]["boardrotate"] == 90:
                     pos = [pixmap_width - pos[1], pos[0]]
-                elif self.rotate == -90:
+                elif self.board_setup["config"]["boardrotate"] == -90:
                     pos = [pos[1], pixmap_height - pos[0]]
-                elif self.rotate == 180:
+                elif self.board_setup["config"]["boardrotate"] == 180:
                     pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
 
                 self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
@@ -448,11 +447,10 @@ class BoardNode(QGraphicsItem):
         self.selected_port = None
 
     def rotate_cw(self):
-        if self.rotate < 180:
-            self.rotate += 90
+        if self.board_setup["config"]["boardrotate"] < 180:
+            self.board_setup["config"]["boardrotate"] += 90
         else:
-            self.rotate = -90
-        self.board_setup["rotate"] = self.rotate
+            self.board_setup["config"]["boardrotate"] = -90
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
@@ -1084,8 +1082,8 @@ class Window(QWidget):
     def cfg_save(self):
         for item in self.scene.items():
             if isinstance(item, BoardNode):
-                self.config["boardpos"] = item.board_setup["pos"]
-                self.config["boardrotate"] = item.board_setup["rotate"]
+                self.config["boardpos"] = item.board_setup["config"]["boardpos"]
+                self.config["boardrotate"] = item.board_setup["config"]["boardrotate"]
             elif isinstance(item, PluginNode):
                 plugin_instance = item.plugin_instance
                 plugin_config = plugin_instance.plugin_setup
@@ -1236,16 +1234,15 @@ class Window(QWidget):
             self.scene.removeItem(item)
         self.pinlist = []
         boardcfg = self.config.get("boardcfg")
-        boardpos = self.config.get("boardpos")
-        boardrotate = self.config.get("boardrotate") or 0
+        if "boardpos" not in self.config:
+            self.config["boardpos"] = (120, 220)
+        if "boardrotate" not in self.config:
+            self.config["boardrotate"] = 0
         self.bnode = None
-        board_setup = {"board": boardcfg, "pos": boardpos, "rotate": boardrotate}
+        board_setup = {"board": boardcfg, "config": self.config}
         if os.path.exists(f"riocore/boards/{boardcfg}/board.json"):
             self.bnode = BoardNode(self.scene, board_setup)
-            if boardpos:
-                self.bnode.setPos(boardpos[0], boardpos[1])
-            else:
-                self.bnode.setPos(120, 220)
+            self.bnode.setPos(self.config["boardpos"][0], self.config["boardpos"][1])
             self.scene.addItem(self.bnode)
             self.board = self.bnode.jdata
 
