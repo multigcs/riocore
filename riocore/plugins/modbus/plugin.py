@@ -298,20 +298,21 @@ class Plugin(PluginBase):
         instance["predefines"].append("        end else begin")
         instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= 0;")
         instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 8'd1;")
-        instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
-        for cn, cmd in enumerate(self.ON_ERROR_CMDS):
-            frame = []
-            for cbyte in reversed(cmd):
-                frame.append(f"8'd{cbyte}")
-            instance["predefines"].append(f"                {cn}: begin")
-            if cn == num_on_error_cmds - 1:
-                instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= 0;")
-            else:
-                instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
-            offset = ((2 + len(cmd)) * 8) - 1
-            instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}};")
-            instance["predefines"].append("                end")
-        instance["predefines"].append("            endcase")
+        if self.ON_ERROR_CMDS:
+            instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
+            for cn, cmd in enumerate(self.ON_ERROR_CMDS):
+                frame = []
+                for cbyte in reversed(cmd):
+                    frame.append(f"8'd{cbyte}")
+                instance["predefines"].append(f"                {cn}: begin")
+                if cn == num_on_error_cmds - 1:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= 0;")
+                else:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
+                offset = ((2 + len(cmd)) * 8) - 1
+                instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}};")
+                instance["predefines"].append("                end")
+            instance["predefines"].append("            endcase")
         instance["predefines"].append("        end")
         instance["predefines"].append("    end else begin")
         instance["predefines"].append(f"        {original_name}_TMP <= {original_name};")
