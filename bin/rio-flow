@@ -1545,6 +1545,21 @@ class Window(QWidget):
                         self.halpins[halname]["type"] = "setp"
                         self.halpins[halname]["target"] = setp
 
+            is_joint = plugin_config.get("is_joint")
+            if plugin_instance.SIGNALS and is_joint:
+                for signal_name, signal in plugin_instance.SIGNALS.items():
+                    halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                    if is_joint and signal_name in {"velocity", "position"}:
+                        if halname not in self.halpins:
+                            self.halpins[halname] = {
+                                "type": "",
+                                "target": "",
+                                "source": (mnode, signal_name),
+                            }
+                        self.halpins[halname]["type"] = "joint"
+                        self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
+                self.joints += 1
+
         self.scene.addItem(mnode)
 
         ph = 260
