@@ -585,8 +585,9 @@ class PluginNode(MyNode):
 class ModuleNode(MyNode):
     border_color = QColor(150, 250, 150)
 
-    def __init__(self, scene, module_config):
+    def __init__(self, scene, module_config, sysconfig):
         super().__init__(scene)
+        self.sysconfig = sysconfig
         self.module_config = module_config
         self.module_name = self.module_config["module"]
         self.module_setup = self.module_config["setup"]
@@ -594,7 +595,23 @@ class ModuleNode(MyNode):
         self.module_image = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.png"))
         moduleJsonStr = open(self.module_path, "r").read()
         self.module_defaults = json.loads(moduleJsonStr)
+        self.plugin_uids = []
+
+        self.plugins = riocore.Plugins()
+        for plugin_id, plugin_config in enumerate(self.module_defaults.get("plugins", [])):
+            uid = plugin_config.get("uid")
+            if not uid:
+                uid_prefix = plugin_config["type"]
+                unum = 0
+                while f"{uid_prefix}{unum}" in self.plugin_uids:
+                    unum += 1
+                uid = f"{uid_prefix}{unum}"
+                plugin_config["uid"] = uid
+            self.plugin_uids.append(uid)
+            self.plugins.load_plugin(plugin_id, plugin_config, self.sysconfig)
+
         self.name = self.module_name
+        self.slot = self.module_config["slot"]
         self.pins = {}
         self.port_positions = {}
         self.signals = {}
@@ -605,7 +622,6 @@ class ModuleNode(MyNode):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         # self.pixmap = QPixmap.fromImage(QImage(self.module_image)).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.selected_port = None
-
         self.paintPlugins()
 
     def paint(self, painter, option, widget):
@@ -632,32 +648,33 @@ class ModuleNode(MyNode):
         if painter:
             painter.setPen(QPen(self.text_color, 1))
             painter.setFont(QFont(self.text_font, self.port_tsize))
-        for plugin in self.module_defaults.get("plugins", []):
-            plugin_name = plugin["name"]
+
+        for plugin_instance in self.plugins.plugin_instances:
+            plugin_name = plugin_instance.instances_name
             if painter:
+                plugin_title = plugin_instance.plugin_setup.get("name") or plugin_name
                 painter.drawText(
-                    QRectF(self.border_size / 2 + self.port_size + self.port_toff_x, py - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width, self.port_tsize * self.text_scale),
+                    QRectF(0, py - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width, self.port_tsize * self.text_scale),
                     Qt.AlignmentFlag.AlignCenter,
-                    plugin_name,
+                    plugin_title,
                 )
             pph = 0
-            for pin, pdata in plugin.get("pins", {}).items():
-                pname = pdata.get("pin")
-                if painter:
-                    self.paintPort(painter, "left", py + pph, pname, Qt.GlobalColor.yellow)
-                self.port_positions[pname] = (0, py + pph)
-                pph += self.port_diff
+            for pin_name, pin_data in plugin_instance.pins().items():
+                pin = pin_data.get("pin")
+                if pin:
+                    if painter:
+                        self.paintPort(painter, "left", py + pph, pin, Qt.GlobalColor.yellow)
+                    self.port_positions[pin] = (0, py + pph)
+                    pph += self.port_diff
 
             sph = 0
-            if "signals" not in plugin:
-                plugin["signals"] = {}
-
-            plugin["signals"].update(self.module_setup.get(plugin_name, {}).get("signals", {}))
-            for signal_name, signal_data in plugin.get("signals", {}).items():
+            for signal_name, signal_data in plugin_instance.SIGNALS.items():
+                key = f"sig_{plugin_name}:{signal_name}"
                 if painter:
                     self.paintPort(painter, "right", py + sph, signal_name, Qt.GlobalColor.yellow)
-                self.port_positions[signal_name] = (self.width, py + sph)
+                self.port_positions[key] = (self.width, py + sph)
                 sph += self.port_diff
+
             py += max(pph, sph)
             self.height = self.port_top + py + self.port_bottom
 
@@ -1163,7 +1180,8 @@ class Window(QWidget):
 
         for item in self.scene.items():
             if isinstance(item, NodeEdge):
-                if isinstance(item._target_node, HalNode) and item._source_port.startswith("sig_"):
+                # if isinstance(item._target_node, HalNode) and item._source_port.startswith("sig_"):
+                if isinstance(item._source_node, PluginNode) and item._source_port.startswith("sig_"):
                     source_port = item._source_port[4:]
                     # save to plugin setup
                     plugin_config = item._source_node.plugin_instance.plugin_setup
@@ -1385,19 +1403,6 @@ class Window(QWidget):
                 self.config["modules"][module_id]["setup"] = {}
             py += self.insert_module(module_config, py)
 
-        """
-        used_halpins = []
-        for _name, signal in self.halpins.items():
-            used_halpins.append(signal["target"])
-        for signal_name, signal_data in LINUXCNC_SIGNALS["input"].items():
-            if signal_name not in used_halpins:
-                self.halpins[signal_name] = {
-                    "type": "net",
-                    "target": signal_name,
-                    "source": None,
-                }
-        """
-
         hnodes = {}
         for signal_name, signal in self.halpins.items():
             source = signal["source"]
@@ -1496,7 +1501,7 @@ class Window(QWidget):
         self.snapshot()
 
     def insert_module(self, module_config, py=100):
-        mnode = ModuleNode(self.scene, module_config)
+        mnode = ModuleNode(self.scene, module_config, self.config)
         slot = module_config["slot"]
 
         if "pos" in module_config:
@@ -1510,18 +1515,37 @@ class Window(QWidget):
             hx = 850
             hy = py
         mnode.setPos(hx, hy)
-        self.scene.addItem(mnode)
 
-        module_name = module_config["module"]
-        module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
-        moduleJsonStr = open(module_path, "r").read()
-        module_defaults = json.loads(moduleJsonStr)
-        for plugin in module_defaults.get("plugins", []):
-            for pin, pdata in plugin.get("pins", {}).items():
-                pin = pdata["pin"]
-                bpin = f"{slot}:{pin}"
-                edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[0])
-                self.scene.addItem(edge)
+        for plugin_instance in mnode.plugins.plugin_instances:
+            plugin_name = plugin_instance.instances_name
+            for pin, pin_data in plugin_instance.pins().items():
+                pin = pin_data.get("pin")
+                if pin:
+                    bpin = f"{slot}:{pin}"
+                    edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[0])
+                    self.scene.addItem(edge)
+
+            plugin_config = plugin_instance.plugin_setup
+            signals = plugin_config.get("signals")
+            if signals:
+                for signal_name, signal in signals.items():
+                    halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                    if halname not in self.halpins:
+                        self.halpins[halname] = {
+                            "type": "",
+                            "target": "",
+                            "source": (mnode, f"{plugin_name}:{signal_name}"),
+                        }
+                    net = signal.get("net")
+                    if net:
+                        self.halpins[halname]["type"] = "net"
+                        self.halpins[halname]["target"] = net
+                    setp = signal.get("setp")
+                    if setp:
+                        self.halpins[halname]["type"] = "setp"
+                        self.halpins[halname]["target"] = setp
+
+        self.scene.addItem(mnode)
 
         ph = 260
         ph = max(ph, mnode.height) + 5
