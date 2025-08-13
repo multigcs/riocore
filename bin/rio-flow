@@ -50,6 +50,8 @@ from riocore.gui.widgets import (
     edit_avgfilter,
 )
 
+riocore_path = os.path.dirname(riocore.__file__)
+
 
 colors = [
     QColor(150, 250, 150),
@@ -577,6 +579,79 @@ class PluginNode(MyNode):
         pos_x = pos.x()
         pos_y = pos.y()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+
+class ModuleNode(MyNode):
+    show_signals = True
+    border_color = QColor(150, 250, 150)
+
+    def __init__(self, scene, module_config):
+        super().__init__(scene)
+        self.module_config = module_config
+        self.module_name = self.module_config["module"]
+        self.module_setup = self.module_config["setup"]
+        self.module_path = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.json"))
+        self.module_image = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.png"))
+
+        self.name = "mod"
+        self.pins = {
+            "a": {},
+            "b": {},
+            "c": {},
+            "d": {},
+        }
+        self.signals = {
+            "a": {},
+            "b": {},
+            "c": {},
+            "d": {},
+        }
+        self.width = 180
+
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        # self.pixmap = QPixmap.fromImage(QImage(self.module_image)).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.selected_port = None
+
+        self.ports_left = self.pins
+        self.ports_right = {}
+        for key, value in self.signals.items():
+            self.ports_right[f"sig_{key}"] = value
+
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        info = "Module"
+        # self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
+        self.paintBg(painter, self.name, info=info)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        """
+        width = self.pixmap.width()
+        height = self.pixmap.height()
+        xoff = (30 - width) // 2 + 5
+        yoff = (30 - height) // 2 + 5
+        if not self.show_signals:
+            painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
+        """
+
+        self.paintPorts(painter)
+
+    def mouseDoubleClickEvent(self, event):
+        # self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        # self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
         QGraphicsItem.mouseReleaseEvent(self, event)
 
 
@@ -1229,6 +1304,14 @@ class Window(QWidget):
                     break
         return input_pin
 
+    def get_path(self, path):
+        if os.path.exists(path):
+            return path
+        elif os.path.exists(os.path.join(riocore_path, path)):
+            return os.path.join(riocore_path, path)
+        print(f"can not find path: {path}")
+        exit(1)
+
     def redraw(self):
         # cleanup
         self.halpins = {}
@@ -1257,6 +1340,8 @@ class Window(QWidget):
         py = 100
         if "plugins" not in self.config:
             self.config["plugins"] = []
+        if "modules" not in self.config:
+            self.config["modules"] = []
 
         # loading plugins
         self.plugin_uids = []
@@ -1274,6 +1359,13 @@ class Window(QWidget):
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
+
+        for module_id, module_config in enumerate(self.config.get("modules", [])):
+            slot_name = module_config.get("slot")
+            module_name = module_config.get("module")
+            if "setup" not in module_config:
+                self.config["modules"][module_id]["setup"] = {}
+            py += self.insert_module(module_config, py)
 
         """
         used_halpins = []
@@ -1384,6 +1476,26 @@ class Window(QWidget):
                 py = (py + grid_size / 2) // grid_size * grid_size
                 item.setPos(px, py)
         self.snapshot()
+
+    def insert_module(self, module_config, py=100):
+        mnode = ModuleNode(self.scene, module_config)
+
+        if "pos" in module_config:
+            hx = module_config["pos"][0]
+            hy = module_config["pos"][1]
+        elif self.scene.insert_position is not None:
+            hx = self.scene.insert_position.x()
+            hy = self.scene.insert_position.y()
+            self.scene.insert_position = None
+        else:
+            hx = 850
+            hy = py
+        mnode.setPos(hx, hy)
+        self.scene.addItem(mnode)
+
+        ph = 260
+        ph = max(ph, mnode.height) + 5
+        return ph
 
     def insert_plugin(self, plugin_instance, py=100):
         plugin_config = plugin_instance.plugin_setup
