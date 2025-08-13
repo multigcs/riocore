@@ -593,14 +593,16 @@ class ModuleNode(MyNode):
         self.module_setup = self.module_config["setup"]
         self.module_path = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.json"))
         self.module_image = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.png"))
+        moduleJsonStr = open(self.module_path, "r").read()
+        self.module_defaults = json.loads(moduleJsonStr)
 
-        self.name = "mod"
-        self.pins = {
-            "a": {},
-            "b": {},
-            "c": {},
-            "d": {},
-        }
+        self.name = self.module_name
+
+        self.pins = {}
+        for plugin in self.module_defaults.get("plugins", []):
+            for pin, pdata in plugin.get("pins", {}).items():
+                self.pins[pdata["pin"]] = {"name": pin}
+
         self.signals = {
             "a": {},
             "b": {},
@@ -627,7 +629,7 @@ class ModuleNode(MyNode):
         pos_x = pos.x()
         pos_y = pos.y()
         info = "Module"
-        # self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
+        self.module_config["pos"] = (pos_x, pos_y)
         self.paintBg(painter, self.name, info=info)
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
         """
@@ -651,7 +653,7 @@ class ModuleNode(MyNode):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
-        # self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
+        self.module_config["pos"] = (pos_x, pos_y)
         QGraphicsItem.mouseReleaseEvent(self, event)
 
 
@@ -1361,8 +1363,6 @@ class Window(QWidget):
             py += self.insert_plugin(plugin_instance, py)
 
         for module_id, module_config in enumerate(self.config.get("modules", [])):
-            slot_name = module_config.get("slot")
-            module_name = module_config.get("module")
             if "setup" not in module_config:
                 self.config["modules"][module_id]["setup"] = {}
             py += self.insert_module(module_config, py)
@@ -1479,6 +1479,7 @@ class Window(QWidget):
 
     def insert_module(self, module_config, py=100):
         mnode = ModuleNode(self.scene, module_config)
+        slot = module_config["slot"]
 
         if "pos" in module_config:
             hx = module_config["pos"][0]
@@ -1492,6 +1493,17 @@ class Window(QWidget):
             hy = py
         mnode.setPos(hx, hy)
         self.scene.addItem(mnode)
+
+        module_name = module_config["module"]
+        module_path = self.get_path(os.path.join("modules", module_name, "module.json"))
+        moduleJsonStr = open(module_path, "r").read()
+        module_defaults = json.loads(moduleJsonStr)
+        for plugin in module_defaults.get("plugins", []):
+            for pin, pdata in plugin.get("pins", {}).items():
+                pin = pdata["pin"]
+                bpin = f"{slot}:{pin}"
+                edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[0])
+                self.scene.addItem(edge)
 
         ph = 260
         ph = max(ph, mnode.height) + 5
