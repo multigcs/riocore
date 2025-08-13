@@ -324,7 +324,7 @@ class Gateware:
                     direction = data["direction"]
                     size = data.get("size", 1)
                     if size > 1:
-                        output.append(f"        {direction} wire [{size-1}:0] {name},")
+                        output.append(f"        {direction} wire [{size - 1}:0] {name},")
                     else:
                         output.append(f"        {direction} wire {name},")
 

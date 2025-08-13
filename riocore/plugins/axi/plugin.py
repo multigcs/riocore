@@ -167,7 +167,7 @@ module axi
             if end < 0:
                 size += end
                 end = 0
-            verilog_data.append(f"                        rx_data_buffer[{pos-1}:{end}] <= S_AXI_WDATA[31:{32 - size}];")
+            verilog_data.append(f"                        rx_data_buffer[{pos - 1}:{end}] <= S_AXI_WDATA[31:{32 - size}];")
             pos -= 32
 
         verilog_data.append(f"                    5'h{flen32:02x}: begin")
@@ -241,9 +241,9 @@ module axi
             if end < 0:
                 size += end
                 end = 0
-                verilog_data.append(f"            5'h{n:02x}: reg_data_out <= {{tx_data_buffer[{pos-1}:{end}], {32 - size}'h00}};")
+                verilog_data.append(f"            5'h{n:02x}: reg_data_out <= {{tx_data_buffer[{pos - 1}:{end}], {32 - size}'h00}};")
             else:
-                verilog_data.append(f"            5'h{n:02x}: reg_data_out <= tx_data_buffer[{pos-1}:{end}];")
+                verilog_data.append(f"            5'h{n:02x}: reg_data_out <= tx_data_buffer[{pos - 1}:{end}];")
             pos -= 32
 
         verilog_data += [

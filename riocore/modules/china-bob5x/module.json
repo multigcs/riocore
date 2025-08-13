@@ -2,86 +2,6 @@
   "comment": "5Axis China-BOB",
   "plugins": [
     {
-      "type": "bitout",
-      "name": "enable",
-      "pins": {
-        "bit": {
-          "pin": "P14",
-          "modifier": [
-              {
-                  "type": "invert"
-              },
-              {
-                  "type": "onerror"
-              },
-              {
-                  "type": "invert"
-              }
-          ]
-        }
-      }
-    },
-    {
-      "type": "bitin",
-      "name": "home-x",
-      "pins": {
-        "bit": {
-          "pull": "up",
-          "pin": "P12"
-        }
-      },
-      "signals": {
-          "bit": {
-            "net": "joint.0.home-sw-in"
-          }
-      }
-    },
-    {
-      "type": "bitin",
-      "name": "home-y",
-      "pins": {
-        "bit": {
-          "pull": "up",
-          "pin": "P13"
-        }
-      },
-      "signals": {
-          "bit": {
-            "net": "joint.1.home-sw-in"
-          }
-      }
-    },
-    {
-      "type": "bitin",
-      "name": "home-z",
-      "pins": {
-        "bit": {
-          "pull": "up",
-          "pin": "P15"
-        }
-      },
-      "signals": {
-          "bit": {
-            "net": "joint.2.home-sw-in"
-          }
-      }
-    },
-    {
-      "type": "bitout",
-      "name": "spindle-enable",
-      "pins": {
-        "bit": {
-          "pin": "P17",
-          "modifier": []
-        }
-      },
-      "signals": {
-          "bit": {
-            "net": "spindle.0.on"
-          }
-      }
-    },
-    {
       "type": "pwmout",
       "name": "pwm",
       "pins": {
@@ -92,26 +12,6 @@
               "type": "invert"
             }
           ]
-        }
-      }
-    },
-    {
-      "type": "bitin",
-      "name": "e-stop",
-      "pins": {
-        "bit": {
-          "pull": "up",
-          "pin": "P10"
-        }
-      }
-    },
-    {
-      "type": "bitin",
-      "name": "probe",
-      "pins": {
-        "bit": {
-          "pull": "up",
-          "pin": "P11"
         }
       }
     },
@@ -166,6 +66,106 @@
         }
       },
       "is_joint": true
+    },
+    {
+      "type": "bitin",
+      "name": "e-stop",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P10"
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "probe",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P11"
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-x",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P12"
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.0.home-sw-in"
+          }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-y",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P13"
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.1.home-sw-in"
+          }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "enable",
+      "pins": {
+        "bit": {
+          "pin": "P14",
+          "modifier": [
+              {
+                  "type": "invert"
+              },
+              {
+                  "type": "onerror"
+              },
+              {
+                  "type": "invert"
+              }
+          ]
+        }
+      }
+    },
+    {
+      "type": "bitin",
+      "name": "home-z",
+      "pins": {
+        "bit": {
+          "pull": "up",
+          "pin": "P15"
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "joint.2.home-sw-in"
+          }
+      }
+    },
+    {
+      "type": "bitout",
+      "name": "spindle-enable",
+      "pins": {
+        "bit": {
+          "pin": "P17",
+          "modifier": []
+        }
+      },
+      "signals": {
+          "bit": {
+            "net": "spindle.0.on"
+          }
+      }
     }
   ]
 }
