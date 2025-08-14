@@ -11,6 +11,13 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 class Gateware:
     def __init__(self, project):
         self.project = project
+
+        # clean None pins
+        for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.plugin_setup.get("pins", {}).items():
+                if "pin" in pin_config and not pin_config["pin"]:
+                    del pin_config["pin"]
+
         self.gateware_path = os.path.join(project.config["output_path"], "Gateware")
         project.config["riocore_path"] = riocore_path
 
@@ -40,7 +47,6 @@ class Gateware:
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
         self.armcore = self.config["board_data"].get("armcore", False)
-
         os.makedirs(self.gateware_path, exist_ok=True)
 
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
@@ -84,7 +90,7 @@ class Gateware:
         self.virtual_pins = []
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"].startswith("VIRT:"):
+                if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
                     if pinname not in self.virtual_pins:
                         self.virtual_pins.append(pinname)

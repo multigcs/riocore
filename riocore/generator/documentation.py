@@ -160,7 +160,7 @@ class documentation:
         self.pinmapping_rev = {}
         for plugin_instance in self.project.plugin_instances:
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"].startswith("VIRT:"):
+                if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
                     if pinname not in self.virtual_pins:
                         self.virtual_pins.append(pinname)
@@ -204,10 +204,10 @@ class documentation:
                 elif pin_config["varname"] in self.linked_pins:
                     row.append(f"LINKED:: {self.linked_pins[pin_config['pin']]}")
                 else:
-                    pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"])
+                    pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"]) or ""
                     row.append(pin_real)
 
-                if "pin" in pin_config and pin_real != pin_config["pin"]:
+                if "pin" in pin_config and pin_config.get("pin") and pin_real != pin_config["pin"]:
                     row.append(pin_config["pin"])
                 else:
                     row.append("")

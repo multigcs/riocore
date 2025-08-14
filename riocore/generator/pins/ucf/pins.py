@@ -10,6 +10,8 @@ class Pins:
         for pname, pins in self.config["pinlists"].items():
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
+                if not pin_config["pin"]:
+                    continue
                 iostandard = pin_config.get("iostandard", "LVTTL").upper()
                 drive = pin_config.get("drive", "4")
                 slew = pin_config.get("slew", "SLOW").upper()

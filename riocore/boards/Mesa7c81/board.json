@@ -19,36 +19,36 @@
             "default": "",
             "pins": {
                 "MOSI": {
-                    "pin": "P15",
-                    "pos": [
-                        440,
-                        570
-                    ],
-                    "direction": "input"
-                },
-                "MISO": {
                     "pin": "P16",
                     "pos": [
-                        460,
+                        408,
                         570
                     ],
-                    "direction": "output"
+                    "direction": "all"
+                },
+                "MISO": {
+                    "pin": "P15",
+                    "pos": [
+                        427,
+                        570
+                    ],
+                    "direction": "all"
                 },
                 "SCLK": {
                     "pin": "P14",
                     "pos": [
-                        480,
+                        446,
                         570
                     ],
-                    "direction": "input"
+                    "direction": "all"
                 },
                 "SEL": {
                     "pin": "P56",
                     "pos": [
-                        440,
+                        408,
                         590
                     ],
-                    "direction": "input"
+                    "direction": "all"
                 }
             }
         },
