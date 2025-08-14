@@ -6,7 +6,7 @@
 |  | [axi](axi/README.md) | axi interface for armcore comunication | <img src="axi/image.png" height="48"> | X |
 |  | [rmii](rmii/README.md) | rmii udp interface | <img src="rmii/image.png" height="48"> | X |
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |  |
-|  | [spi_mesa](spi_mesa/README.md) | spi interface for host comunication with mesa card | <img src="spi_mesa/image.png" height="48"> |  |
+|  | [spi_prog](spi_prog/README.md) | spi interface for host comunication and flash programming | <img src="spi_prog/image.png" height="48"> |  |
 |  | [uart](uart/README.md) | uart interface for host cominucation | <img src="uart/image.png" height="48"> |  |
 |  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |  |
 | Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | X |

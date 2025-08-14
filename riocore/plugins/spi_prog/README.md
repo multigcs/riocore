@@ -1,12 +1,12 @@
-# spi_mesa
+# spi_prog
 
 <img align="right" width="320" src="image.png">
 
-**spi interface for host comunication with mesa card**
+**spi interface for host comunication and flash programming**
 
 for direct connections to Raspberry-PI - supporting flash programming
 
-Keywords: interface spi raspberry rpi flash
+Keywords: interface spi raspberry rpi flash mesa
 
 ## Pins:
 *FPGA-pins*
@@ -68,7 +68,7 @@ name of this plugin instance
 ## Basic-Example:
 ```
 {
-    "type": "spi_mesa",
+    "type": "spi_prog",
     "pins": {
         "mosi": {
             "pin": "0"
@@ -104,7 +104,7 @@ name of this plugin instance
 ## Full-Example:
 ```
 {
-    "type": "spi_mesa",
+    "type": "spi_prog",
     "name": "",
     "pins": {
         "mosi": {
@@ -197,4 +197,4 @@ name of this plugin instance
 ```
 
 ## Verilogs:
- * [spi_mesa.v](spi_mesa.v)
+ * [spi_prog.v](spi_prog.v)
