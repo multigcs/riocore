@@ -1,6 +1,7 @@
 {
     "name": "Mesa7c81",
     "description": "Mesa7c81 over SPI - WIP",
+    "comment": "## Write bitfile via spi\n```\necho 25 > /sys/class/gpio/export\necho out > /sys/class/gpio/gpio25/direction\necho 1 > /sys/class/gpio/gpio25/value\nflashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=7000 -w rio-2048.bin\necho 0 > /sys/class/gpio/gpio25/value\n```\n",
     "url": "https://eusurplus.com/index.php?route=product/product&product_id=131",
     "toolchain": "ise",
     "family": "xc6",
@@ -52,6 +53,62 @@
                 }
             }
         },
+
+        {
+            "name": "RPI",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "GPIO25": {
+                    "pin": "P12",
+                    "pos": [
+                        428,
+                        590
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "EEPROM",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "MOSI": {
+                    "pin": "P64",
+                    "pos": [
+                        540,
+                        420
+                    ],
+                    "direction": "output"
+                },
+                "MISO": {
+                    "pin": "P65",
+                    "pos": [
+                        560,
+                        420
+                    ],
+                    "direction": "input"
+                },
+                "SCLK": {
+                    "pin": "P70",
+                    "pos": [
+                        580,
+                        420
+                    ],
+                    "direction": "output"
+                },
+                "SEL": {
+                    "pin": "P38",
+                    "pos": [
+                        600,
+                        420
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+
         {
             "name": "LED",
             "comment": "",

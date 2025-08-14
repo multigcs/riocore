@@ -1,0 +1,332 @@
+{
+    "name": "Mesa7c81",
+    "boardcfg": "Mesa7c81",
+    "modules": [
+        {
+            "slot": "A",
+            "module": "china-bob5x",
+            "setup": {
+                "enable": {
+                    "type": "bitout",
+                    "name": "enable",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                },
+                                {
+                                    "type": "onerror"
+                                },
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    },
+                    "uid": "bitout0",
+                    "signals": {
+                        "bit": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "home-x": {
+                    "type": "bitin",
+                    "name": "home-x",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                            "net": "joint.0.home-sw-in",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitin1"
+                },
+                "home-y": {
+                    "type": "bitin",
+                    "name": "home-y",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                            "net": "joint.1.home-sw-in",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitin2"
+                },
+                "home-z": {
+                    "type": "bitin",
+                    "name": "home-z",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                            "net": "joint.2.home-sw-in",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitin3"
+                },
+                "spindle-enable": {
+                    "type": "bitout",
+                    "name": "spindle-enable",
+                    "signals": {
+                        "bit": {
+                            "net": "spindle.0.on",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitout4"
+                },
+                "pwm": {
+                    "type": "pwmout",
+                    "name": "pwm",
+                    "pins": {
+                        "pwm": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    },
+                    "uid": "pwmout5",
+                    "signals": {
+                        "dty": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "e-stop": {
+                    "type": "bitin",
+                    "name": "e-stop",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "uid": "bitin6",
+                    "signals": {
+                        "bit": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "probe": {
+                    "type": "bitin",
+                    "name": "probe",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "uid": "bitin7",
+                    "signals": {
+                        "bit": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-0": {
+                    "name": "joint-0",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir8",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-1": {
+                    "name": "joint-1",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir9",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-2": {
+                    "name": "joint-2",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir10",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-3": {
+                    "name": "joint-3",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir11",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                }
+            },
+            "pos": [
+                640.0,
+                40.0
+            ]
+        }
+    ],
+    "flow": {
+        "view": {
+            "pos": [
+                75,
+                424
+            ],
+            "scale": 2.491806017276007
+        },
+        "board": {
+            "pos": [
+                139.99999999999997,
+                210.4013153484127
+            ],
+            "rotate": 90
+        }
+    },
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L0",
+                    "modifier": []
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                566.5110680591313,
+                627.3349779880767
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L1",
+                    "modifier": []
+                }
+            },
+            "uid": "blink1",
+            "pos": [
+                509.2234319632641,
+                687.4516331504066
+            ],
+            "frequency": 10.0
+        },
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MISO",
+                    "modifier": []
+                },
+                "miso": {
+                    "pin": "SPI:MOSI",
+                    "modifier": []
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK",
+                    "modifier": []
+                },
+                "sel": {
+                    "pin": "SPI:SEL",
+                    "modifier": []
+                }
+            },
+            "uid": "w55000",
+            "pos": [
+                613.6111677230288,
+                457.9008125388985
+            ],
+            "ip": "192.168.11.194"
+        }
+    ]
+}

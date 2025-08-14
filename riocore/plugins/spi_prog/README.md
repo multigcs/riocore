@@ -1,0 +1,200 @@
+# spi_mesa
+
+<img align="right" width="320" src="image.png">
+
+**spi interface for host comunication with mesa card**
+
+for direct connections to Raspberry-PI - supporting flash programming
+
+Keywords: interface spi raspberry rpi flash
+
+## Pins:
+*FPGA-pins*
+### mosi:
+
+ * direction: input
+
+### miso:
+
+ * direction: output
+
+### sclk:
+
+ * direction: input
+
+### sel:
+
+ * direction: input
+
+### prog:
+
+ * direction: input
+ * pull: down
+
+### eeprom_mosi:
+
+ * direction: output
+
+### eeprom_miso:
+
+ * direction: input
+
+### eeprom_sclk:
+
+ * direction: output
+
+### eeprom_sel:
+
+ * direction: output
+
+
+## Options:
+*user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+
+## Signals:
+*signals/pins in LinuxCNC*
+
+
+## Interfaces:
+*transport layer*
+
+
+## Basic-Example:
+```
+{
+    "type": "spi_mesa",
+    "pins": {
+        "mosi": {
+            "pin": "0"
+        },
+        "miso": {
+            "pin": "1"
+        },
+        "sclk": {
+            "pin": "2"
+        },
+        "sel": {
+            "pin": "3"
+        },
+        "prog": {
+            "pin": "4"
+        },
+        "eeprom_mosi": {
+            "pin": "5"
+        },
+        "eeprom_miso": {
+            "pin": "6"
+        },
+        "eeprom_sclk": {
+            "pin": "7"
+        },
+        "eeprom_sel": {
+            "pin": "8"
+        }
+    }
+}
+```
+
+## Full-Example:
+```
+{
+    "type": "spi_mesa",
+    "name": "",
+    "pins": {
+        "mosi": {
+            "pin": "0",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                }
+            ]
+        },
+        "miso": {
+            "pin": "1",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "sclk": {
+            "pin": "2",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "sel": {
+            "pin": "3",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "prog": {
+            "pin": "4",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "eeprom_mosi": {
+            "pin": "5",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "eeprom_miso": {
+            "pin": "6",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "eeprom_sclk": {
+            "pin": "7",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "eeprom_sel": {
+            "pin": "8",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        }
+    },
+    "signals": {}
+}
+```
+
+## Verilogs:
+ * [spi_mesa.v](spi_mesa.v)
