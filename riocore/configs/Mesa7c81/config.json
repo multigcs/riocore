@@ -290,6 +290,9 @@
                 "prog": {
                     "pin": "RPI:GPIO25"
                 },
+                "reboot": {
+                    "pin": "EEPROM:REBOOT"
+                },
                 "eeprom_mosi": {
                     "pin": "EEPROM:MOSI"
                 },

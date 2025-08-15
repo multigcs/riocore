@@ -8,6 +8,7 @@ module spi_prog
          input sclk,
          input sel,
          input prog,
+         output reg reboot = 1,
          output reg eeprom_mosi = 1,
          input eeprom_miso,
          output reg eeprom_sclk = 1,
@@ -31,6 +32,15 @@ module spi_prog
     reg[BUFFER_SIZE-1:0] byte_data_sent;
     assign rx_data = byte_data_received;
 
+    reg prog_active = 0;
+
+    always @(posedge clk) begin
+        if (prog) begin
+            prog_active <= 1;
+        end else if (~prog && prog_active) begin
+            reboot <= 0;
+        end
+    end
     always @(posedge clk) begin
         if (~SSEL_active) begin
             bitcnt <= 16'd0;

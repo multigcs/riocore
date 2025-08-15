@@ -36,6 +36,11 @@ class Plugin(PluginBase):
                 "invert": False,
                 "pull": "down",
             },
+            "reboot": {
+                "direction": "output",
+                "invert": False,
+                "pull": "down",
+            },
             "eeprom_mosi": {
                 "direction": "output",
                 "invert": False,

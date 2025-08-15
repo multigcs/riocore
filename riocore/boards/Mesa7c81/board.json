@@ -113,6 +113,14 @@
             "comment": "",
             "default": "",
             "pins": {
+                "REBOOT": {
+                    "pin": "P67",
+                    "pos": [
+                        510,
+                        420
+                    ],
+                    "direction": "output"
+                },
                 "MOSI": {
                     "pin": "P64",
                     "pos": [
