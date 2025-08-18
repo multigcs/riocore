@@ -539,10 +539,12 @@ class BreakoutNode(QGraphicsItem):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.setAcceptHoverEvents(True)
+        if "rotate" not in self.breakout_setup:
+            self.breakout_setup["rotate"] = 0
         breakout = breakout_setup["breakout"]
         image = f"riocore/breakouts/{breakout}/breakout.png"
         pixmap = QPixmap.fromImage(QImage(image))
-        # pixmap = pixmap.transformed(QTransform().rotate(self.breakout_setup["config"]["flow"]["breakout"]["rotate"]))
+        pixmap = pixmap.transformed(QTransform().rotate(self.breakout_setup["rotate"]))
         pixmap_width = pixmap.width()
         pixmap_height = pixmap.height()
 
@@ -557,31 +559,32 @@ class BreakoutNode(QGraphicsItem):
 
         for pin_name, pin_data in self.jdata["main"].items():
             pos = pin_data.get("pos")
-            # print(pin_name, pin_data)
+            if self.breakout_setup["rotate"] == 90:
+                pos = [pixmap_width - pos[1], pos[0]]
+            elif self.breakout_setup["rotate"] == -90:
+                pos = [pos[1], pixmap_height - pos[0]]
+            elif self.breakout_setup["rotate"] == 180:
+                pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
             self.ports[pin_name] = {"pos": pos, "dir": ""}
 
         for slot in self.jdata["slots"]:
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 pos = pin_data.get("pos") or slot.get("pos")
-
-                # if self.breakout_setup["config"]["flow"]["breakout"]["rotate"] == 90:
-                #    pos = [pixmap_width - pos[1], pos[0]]
-                # elif self.breakout_setup["config"]["flow"]["breakout"]["rotate"] == -90:
-                #    pos = [pos[1], pixmap_height - pos[0]]
-                # elif self.breakout_setup["config"]["flow"]["breakout"]["rotate"] == 180:
-                #    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
-
-                # print(f"{slot_name}:{pin_name}", pin_data.get("pin"))
+                if self.breakout_setup["rotate"] == 90:
+                    pos = [pixmap_width - pos[1], pos[0]]
+                elif self.breakout_setup["rotate"] == -90:
+                    pos = [pos[1], pixmap_height - pos[0]]
+                elif self.breakout_setup["rotate"] == 180:
+                    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
                 self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
-                # self.ports[pin_data.get("pin")] = {"pos": pos, "dir": ""}
         self.selected_port = None
 
     def rotate_cw(self):
-        # if self.breakout_setup["config"]["flow"]["breakout"]["rotate"] < 180:
-        #    self.breakout_setup["config"]["flow"]["breakout"]["rotate"] += 90
-        # else:
-        #    self.breakout_setup["config"]["flow"]["breakout"]["rotate"] = -90
+        if self.breakout_setup["rotate"] < 180:
+            self.breakout_setup["rotate"] += 90
+        else:
+            self.breakout_setup["rotate"] = -90
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
@@ -620,9 +623,6 @@ class BreakoutNode(QGraphicsItem):
         for port in self.ports:
             if not self.ports[port]["pos"]:
                 continue
-            # if ":" not in port:
-            #    continue
-            # print(port, self.ports[port])
             pos_x = self.ports[port]["pos"][0] // 2
             pos_y = self.ports[port]["pos"][1] // 2
             if (self, port) == self.scene.selection_source:
@@ -633,10 +633,16 @@ class BreakoutNode(QGraphicsItem):
 
     def mousePressEvent(self, event):
         port = self.port_selected(event.pos())
-        if self.scene.selection_source == (self, port):
-            self.scene.selection_source = None
+        if port in self.jdata["main"]:
+            if self.scene.selection_target == (self, port):
+                self.scene.selection_target = None
+            else:
+                self.scene.selection_target = (self, port)
         else:
-            self.scene.selection_source = (self, port)
+            if self.scene.selection_source == (self, port):
+                self.scene.selection_source = None
+            else:
+                self.scene.selection_source = (self, port)
 
         self.update()
         QGraphicsItem.mousePressEvent(self, event)
@@ -1018,16 +1024,32 @@ class NodeViewer(QGraphicsView):
             target_port = self.scene.selection_target[1]
             if source_node and source_port and target_node and target_port:
                 if source_node != target_node:
-                    # remove old edges
-                    self.scene.disconnect_port(source_node, source_port)
-                    self.scene.disconnect_port(target_node, target_port)
-                    # add new edge
-                    color_idx = target_node.port_index(target_port)
-                    color = Qt.GlobalColor.green
-                    if color_idx >= 0 and color_idx < len(colors):
-                        color = colors[color_idx]
-                    edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
-                    self.scene.addItem(edge)
+                    if isinstance(target_node, BreakoutNode) and ":" in source_port:
+                        breakout_name = target_node.name
+                        slot = source_port.split(":")[0]
+                        # remove all old wires
+                        for subitem in self.scene.items():
+                            if isinstance(subitem, NodeEdge):
+                                if subitem.etype == f"breakout:{breakout_name}":
+                                    self.scene.removeItem(subitem)
+                        # connect all main wires
+                        for pin, pin_data in target_node.jdata["main"].items():
+                            bpin = f"{slot}:{pin}"
+                            edge = NodeEdge(self.scene, f"breakout:{breakout_name}", source_node, bpin, target_node, pin, color=colors[-1])
+                            self.scene.addItem(edge)
+                        target_node.breakout_setup["slot"] = slot
+
+                    else:
+                        # remove old edges
+                        self.scene.disconnect_port(source_node, source_port)
+                        self.scene.disconnect_port(target_node, target_port)
+                        # add new edge
+                        color_idx = target_node.port_index(target_port)
+                        color = Qt.GlobalColor.green
+                        if color_idx >= 0 and color_idx < len(colors):
+                            color = colors[color_idx]
+                        edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
+                        self.scene.addItem(edge)
 
                 # clear selection
                 self.scene.selection_source = (None, None)
@@ -1131,7 +1153,7 @@ class NodeScene(QGraphicsScene):
             delete.triggered.connect(self.delete)
             menu.addAction(delete)
             # print(self.menu_selection)
-            if isinstance(self.menu_selection, BoardNode):
+            if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode):
                 rotate = QAction("rotate", None)
                 rotate.triggered.connect(self.menu_selection.rotate_cw)
                 menu.addAction(rotate)
@@ -1349,7 +1371,6 @@ class Window(QWidget):
                 plugin_instance = item.plugin_instance
                 plugin_config = plugin_instance.plugin_setup
                 for port, pin_data in plugin_instance.PINDEFAULTS.items():
-                    direction = pin_data.get("direction")
                     if "pins" not in plugin_config:
                         plugin_config["pins"] = {}
                     if port not in plugin_config["pins"]:
@@ -1539,8 +1560,6 @@ class Window(QWidget):
 
         # loading breakouts
         for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
-            if "setup" not in breakout_config:
-                self.config["breakouts"][breakout_id]["setup"] = {}
             py += self.insert_breakout(breakout_config, py)
 
         # loading modules
@@ -1682,12 +1701,12 @@ class Window(QWidget):
             hx = 850
             hy = py
         mnode.setPos(hx, hy)
-
-        breakout_name = breakout_config["name"]
-        for pin, pin_data in mnode.jdata["main"].items():
-            bpin = f"{slot}:{pin}"
-            edge = NodeEdge(self.scene, "breakout", self.bnode, bpin, mnode, pin, color=colors[0])
-            self.scene.addItem(edge)
+        if slot:
+            breakout_name = breakout_config["name"]
+            for pin, pin_data in mnode.jdata["main"].items():
+                bpin = f"{slot}:{pin}"
+                edge = NodeEdge(self.scene, f"breakout:{breakout_name}", self.bnode, bpin, mnode, pin, color=colors[-1])
+                self.scene.addItem(edge)
 
         self.scene.addItem(mnode)
         return hy
@@ -1934,6 +1953,16 @@ class Window(QWidget):
             if isinstance(item, BoardNode):
                 continue
 
+            elif isinstance(item, BreakoutNode):
+                breakout_name = item.name
+                for subitem in self.scene.items():
+                    if isinstance(subitem, NodeEdge):
+                        if subitem.etype == f"breakout:{breakout_name}":
+                            self.scene.removeItem(subitem)
+                for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
+                    if breakout_config["name"] == item.name:
+                        del self.config["breakouts"][breakout_id]
+
             elif isinstance(item, ModifierNode):
                 source = self.get_next(item, "in")
                 target = self.get_next(item, "out")
@@ -1944,7 +1973,17 @@ class Window(QWidget):
                 self.scene.disconnect_node(item)
 
             elif isinstance(item, NodeEdge):
-                if item.etype == "breakout":
+                if item.etype.startswith("breakout:"):
+                    breakout_name = item.etype.split(":")[1]
+                    bnode = self.breakout_by_name(breakout_name)
+                    if bnode:
+                        bnode.breakout_setup["slot"] = ""
+
+                    # removing all Edges for this slot
+                    for subitem in self.scene.items():
+                        if isinstance(subitem, NodeEdge):
+                            if subitem.etype == f"breakout:{breakout_name}":
+                                self.scene.removeItem(subitem)
                     continue
                 self.update_halpins_from_edges()
 
