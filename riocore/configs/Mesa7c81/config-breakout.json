@@ -26,10 +26,10 @@
     "flow": {
         "view": {
             "pos": [
-                83,
-                68
+                1525,
+                260
             ],
-            "scale": 1.2409454275166012
+            "scale": 3.0065267140722707
         },
         "board": {
             "pos": [
@@ -239,7 +239,7 @@
             ],
             "pins": {
                 "pwm": {
-                    "pin": "bob1:PWM:pwm",
+                    "pin": "bob1:PWM:analog",
                     "modifier": []
                 }
             },

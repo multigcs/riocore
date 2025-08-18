@@ -1686,7 +1686,7 @@ class Window(QWidget):
         breakout_name = breakout_config["name"]
         for pin, pin_data in mnode.jdata["main"].items():
             bpin = f"{slot}:{pin}"
-            edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[0])
+            edge = NodeEdge(self.scene, "breakout", self.bnode, bpin, mnode, pin, color=colors[0])
             self.scene.addItem(edge)
 
         self.scene.addItem(mnode)
@@ -1944,6 +1944,8 @@ class Window(QWidget):
                 self.scene.disconnect_node(item)
 
             elif isinstance(item, NodeEdge):
+                if item.etype == "breakout":
+                    continue
                 self.update_halpins_from_edges()
 
             elif isinstance(item, ModuleNode):

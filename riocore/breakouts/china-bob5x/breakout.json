@@ -121,12 +121,85 @@
 
     },
     "slots": [
+
         {
-            "name": "PWM",
+            "name": "OPTO",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "pwm": {
+                "in0": {
+                    "pin": "P10",
+                    "pos": [
+                        212,
+                        771
+                    ],
+                    "direction": "out"
+                },
+                "in1": {
+                    "pin": "P11",
+                    "pos": [
+                        257,
+                        771
+                    ],
+                    "direction": "out"
+                },
+                "in2": {
+                    "pin": "P11",
+                    "pos": [
+                        302,
+                        771
+                    ],
+                    "direction": "out"
+                },
+                "in3": {
+                    "pin": "P11",
+                    "pos": [
+                        347,
+                        771
+                    ],
+                    "direction": "out"
+                },
+                "in4": {
+                    "pin": "P11",
+                    "pos": [
+                        392,
+                        771
+                    ],
+                    "direction": "out"
+                }
+            }
+        },
+
+        {
+            "name": "RELAIS",
+            "comment": "",
+            "default": "bitout",
+            "pins": {
+                "out": {
+                    "pin": "P17",
+                    "pos": [
+                        190,
+                        28
+                    ],
+                    "direction": "out"
+                }
+            }
+        },
+
+        {
+            "name": "PWM",
+            "comment": "",
+            "default": "pwmout",
+            "pins": {
+                "analog": {
+                    "pin": "P1",
+                    "pos": [
+                        327,
+                        28
+                    ],
+                    "direction": "out"
+                },
+                "digital": {
                     "pin": "P1",
                     "pos": [
                         592,
