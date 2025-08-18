@@ -1039,8 +1039,8 @@ class NodeViewer(QGraphicsView):
         self.button_pressed = 0
 
         # update config
-        self.scene.parent.config["flow"]["view"]["pos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
         self.scene.parent.config["flow"]["view"]["scale"] = self.getZoom()
+        self.scene.parent.config["flow"]["view"]["pos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
         self.scene.parent.snapshot()
 
         super().mouseReleaseEvent(event)
@@ -1075,6 +1075,7 @@ class NodeViewer(QGraphicsView):
         angle = event.angleDelta().y()
         zoomFactor = 1 + (angle / 1000)
         self.scale(zoomFactor, zoomFactor)
+        self.scene.parent.config["flow"]["view"]["scale"] = zoomFactor
 
 
 class NodeScene(QGraphicsScene):
@@ -1262,6 +1263,7 @@ class Window(QWidget):
 
         self.setLayout(vboxMain)
 
+        self.show()
         self.cfg_reload()
         self.snapshot()
 
@@ -1283,6 +1285,8 @@ class Window(QWidget):
             self.config["flow"] = {}
         if "view" not in self.config["flow"]:
             self.config["flow"]["view"] = {}
+        if "hal" not in self.config["flow"]:
+            self.config["flow"]["hal"] = {}
         self.redraw()
 
     def rotate(self, item):
@@ -1335,13 +1339,15 @@ class Window(QWidget):
         for item in self.scene.items():
             if isinstance(item, BoardNode):
                 pass
+            elif isinstance(item, HalNode):
+                pos = item.pos()
+                pos_x = pos.x()
+                pos_y = pos.y()
+                self.config["flow"]["hal"][item.name] = (pos_x, pos_y)
+
             elif isinstance(item, PluginNode):
                 plugin_instance = item.plugin_instance
                 plugin_config = plugin_instance.plugin_setup
-                ##
-                if plugin_config["type"] == "pwmout":
-                    print(plugin_config["type"])
-
                 for port, pin_data in plugin_instance.PINDEFAULTS.items():
                     direction = pin_data.get("direction")
                     if "pins" not in plugin_config:
@@ -1632,7 +1638,11 @@ class Window(QWidget):
 
         hnodes_y = 100
         for group in hnodes:
-            hnodes[group].setPos(1100, hnodes_y)
+            pos = self.config["flow"]["hal"].get(group)
+            if pos:
+                hnodes[group].setPos(pos[0], pos[1])
+            else:
+                hnodes[group].setPos(1100, hnodes_y)
             hnodes_y += hnodes[group].height + 10
 
         ph = 1
@@ -1972,6 +1982,5 @@ class Window(QWidget):
 
 print("######## WIP - only for testing ########")
 app = QApplication(sys.argv)
-w = Window()
-w.show()
+Window()
 app.exec()

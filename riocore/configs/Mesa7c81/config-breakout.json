@@ -7,7 +7,7 @@
             "breakout": "china-bob5x",
             "name": "bob1",
             "pos": [
-                653.9703881873684,
+                650.0,
                 150.0
             ],
             "setup": {}
@@ -18,7 +18,7 @@
             "name": "bob2",
             "pos": [
                 650.0,
-                590.0
+                720.0
             ],
             "setup": {}
         }
@@ -26,10 +26,10 @@
     "flow": {
         "view": {
             "pos": [
-                32,
-                1
+                83,
+                68
             ],
-            "scale": 1.388524331692001
+            "scale": 1.2409454275166012
         },
         "board": {
             "pos": [
@@ -37,6 +37,16 @@
                 430.0
             ],
             "rotate": 90
+        },
+        "hal": {
+            "joint": [
+                1410.0,
+                300.0
+            ],
+            "spindle": [
+                1400.0,
+                100.0
+            ]
         }
     },
     "plugins": [
@@ -49,10 +59,6 @@
                 },
                 "step": {
                     "pin": "bob1:X:step",
-                    "modifier": []
-                },
-                "en": {
-                    "pin": "bob1:ALL:en",
                     "modifier": []
                 }
             },
@@ -90,10 +96,6 @@
                 "step": {
                     "pin": "bob1:Y:step",
                     "modifier": []
-                },
-                "en": {
-                    "pin": "bob1:ALL:en",
-                    "modifier": []
                 }
             },
             "pos": [
@@ -129,10 +131,6 @@
                 },
                 "step": {
                     "pin": "bob1:Z:step",
-                    "modifier": []
-                },
-                "en": {
-                    "pin": "bob1:ALL:en",
                     "modifier": []
                 }
             },
@@ -170,10 +168,6 @@
                 "step": {
                     "pin": "bob1:A:step",
                     "modifier": []
-                },
-                "en": {
-                    "pin": "bob1:ALL:en",
-                    "modifier": []
                 }
             },
             "pos": [
@@ -210,10 +204,6 @@
                 "step": {
                     "pin": "bob1:B:step",
                     "modifier": []
-                },
-                "en": {
-                    "pin": "bob1:ALL:en",
-                    "modifier": []
                 }
             },
             "pos": [
@@ -249,7 +239,20 @@
             ],
             "pins": {
                 "pwm": {
-                    "pin": "bob1:PWM:pwm"
+                    "pin": "bob1:PWM:pwm",
+                    "modifier": []
+                }
+            },
+            "signals": {
+                "dty": {
+                    "display": {},
+                    "net": "spindle.0.speed-out",
+                    "setp": ""
+                },
+                "enable": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
                 }
             }
         }
