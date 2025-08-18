@@ -670,7 +670,7 @@ class ModuleNode(MyNode):
                 pin = pin_data.get("pin")
                 if pin:
                     if painter:
-                        self.paintPort(painter, "left", py + pph, pin, Qt.GlobalColor.yellow)
+                        self.paintPort(painter, "left", py + pph, f"{pin}({pin_name})", Qt.GlobalColor.yellow)
                     self.port_positions[pin] = (0, py + pph)
                     pph += self.port_diff
 
