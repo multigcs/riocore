@@ -530,6 +530,127 @@ class BoardNode(QGraphicsItem):
             self.scene.hover = None
 
 
+class BreakoutNode(QGraphicsItem):
+    def __init__(self, scene, breakout_setup):
+        super().__init__()
+        self.scene = scene
+        self.breakout_setup = breakout_setup
+        self.setZValue(1 + 10)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.setAcceptHoverEvents(True)
+        breakout = breakout_setup["breakout"]
+        image = f"riocore/breakouts/{breakout}/breakout.png"
+        pixmap = QPixmap.fromImage(QImage(image))
+        # pixmap = pixmap.transformed(QTransform().rotate(self.breakout_setup["config"]["flow"]["breakout"]["rotate"]))
+        pixmap_width = pixmap.width()
+        pixmap_height = pixmap.height()
+        self.name = breakout
+        self.width = pixmap_width // 2
+        self.height = pixmap_height // 2
+        self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.ports = {}
+        data = open(f"riocore/breakouts/{breakout}/breakout.json", "r").read()
+        self.jdata = json.loads(data)
+
+        for pin_name, pin_data in self.jdata["main"].items():
+            pos = pin_data.get("pos")
+            # print(pin_name, pin_data)
+            self.ports[pin_name] = {"pos": pos, "dir": ""}
+
+        for slot in self.jdata["slots"]:
+            slot_name = slot["name"]
+            for pin_name, pin_data in slot["pins"].items():
+                pos = pin_data.get("pos") or slot.get("pos")
+
+                # if self.breakout_setup["config"]["flow"]["breakout"]["rotate"] == 90:
+                #    pos = [pixmap_width - pos[1], pos[0]]
+                # elif self.breakout_setup["config"]["flow"]["breakout"]["rotate"] == -90:
+                #    pos = [pos[1], pixmap_height - pos[0]]
+                # elif self.breakout_setup["config"]["flow"]["breakout"]["rotate"] == 180:
+                #    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+
+                # print(f"{slot_name}:{pin_name}", pin_data.get("pin"))
+                self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
+                # self.ports[pin_data.get("pin")] = {"pos": pos, "dir": ""}
+        self.selected_port = None
+
+    def rotate_cw(self):
+        # if self.breakout_setup["config"]["flow"]["breakout"]["rotate"] < 180:
+        #    self.breakout_setup["config"]["flow"]["breakout"]["rotate"] += 90
+        # else:
+        #    self.breakout_setup["config"]["flow"]["breakout"]["rotate"] = -90
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def port_pos(self, port):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        if port in self.ports and self.ports[port]["pos"]:
+            pos_x += self.ports[port]["pos"][0] // 2
+            pos_y += self.ports[port]["pos"][1] // 2
+        return QPointF(pos_x, pos_y)
+
+    def port_selected(self, mouse_pos):
+        mouse_x = mouse_pos.x()
+        mouse_y = mouse_pos.y()
+        for port in self.ports:
+            if not self.ports[port]["pos"]:
+                continue
+            x = self.ports[port]["pos"][0] // 2
+            y = self.ports[port]["pos"][1] // 2
+            if abs(mouse_x - x) < 5 and abs(mouse_y - y) < 5:
+                return port
+        return None
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        # self.breakout_setup["config"]["flow"]["breakout"]["pos"] = (pos_x, pos_y)
+
+        painter.drawRect(self.boundingRect())
+        painter.drawPixmap(0, 0, self.pixmap)
+        for port in self.ports:
+            if not self.ports[port]["pos"]:
+                continue
+            # if ":" not in port:
+            #    continue
+            print(port, self.ports[port])
+            pos_x = self.ports[port]["pos"][0] // 2
+            pos_y = self.ports[port]["pos"][1] // 2
+            if (self, port) == self.scene.selection_source:
+                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.red)
+            else:
+                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
+            painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
+
+    def mousePressEvent(self, event):
+        port = self.port_selected(event.pos())
+        if self.scene.selection_source == (self, port):
+            self.scene.selection_source = None
+        else:
+            self.scene.selection_source = (self, port)
+
+        self.update()
+        QGraphicsItem.mousePressEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+    def hoverEnterEvent(self, event):
+        self.scene.hover = self
+
+    def hoverLeaveEvent(self, event):
+        if self.scene.hover == self:
+            self.scene.hover = None
+
+
 class PluginNode(MyNode):
     show_signals = True
     border_color = QColor(150, 250, 150)
@@ -971,6 +1092,8 @@ class NodeScene(QGraphicsScene):
         item = self.menu_selection
         if isinstance(item, BoardNode):
             return
+        if isinstance(item, BreakoutNode):
+            return
 
         elif isinstance(item, ModifierNode):
             source = self.parent.get_next(item, "in")
@@ -979,6 +1102,9 @@ class NodeScene(QGraphicsScene):
                 # reconnect source and target
                 edge = NodeEdge(self, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
                 self.addItem(edge)
+            self.disconnect_node(item)
+
+        elif isinstance(item, ModuleNode):
             self.disconnect_node(item)
 
         elif isinstance(item, PluginNode):
@@ -1379,6 +1505,17 @@ class Window(QWidget):
             self.scene.addItem(self.bnode)
             self.board = self.bnode.jdata
 
+        """
+        breakoutcfg = "china-bob5x"
+        breakout_setup = {"breakout": breakoutcfg, "config": self.config}
+        if os.path.exists(f"riocore/breakouts/{breakoutcfg}/breakout.json"):
+            self.brnode = BreakoutNode(self.scene, breakout_setup)
+            #self.brnode.setPos(self.config["flow"]["breakout"]["pos"][0], self.config["flow"]["breakout"]["pos"][1])
+            self.brnode.setPos(650, 50)
+            self.scene.addItem(self.brnode)
+            self.breakout = self.brnode.jdata
+        """
+
         if "gpios" in self.config:
             pass
 
@@ -1739,6 +1876,9 @@ class Window(QWidget):
 
             elif isinstance(item, NodeEdge):
                 self.update_halpins_from_edges()
+
+            elif isinstance(item, ModuleNode):
+                self.scene.disconnect_node(item)
 
             elif isinstance(item, PluginNode):
                 self.scene.disconnect_node(item)
