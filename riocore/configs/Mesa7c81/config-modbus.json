@@ -258,10 +258,10 @@
     "flow": {
         "view": {
             "pos": [
-                78,
-                0
+                58,
+                89
             ],
-            "scale": 0.9155594202305545
+            "scale": 0.8662948518477234
         },
         "board": {
             "pos": [
@@ -348,6 +348,235 @@
                 460.0,
                 610.0
             ]
+        },
+        {
+            "type": "modbus",
+            "pins": {
+                "tx": {
+                    "pin": "MODBUS1:TX",
+                    "modifier": []
+                },
+                "rx": {
+                    "pin": "MODBUS1:RX",
+                    "modifier": []
+                },
+                "tx_enable": {
+                    "pin": "MODBUS1:TX_EN",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                102.37248422110758,
+                                651.4321860384546
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "modbus0",
+            "pos": [
+                224.34619708617208,
+                608.1457851264568
+            ],
+            "signals": {
+                "temperature": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_0": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_1": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_2": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_3": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_4": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_5": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_6": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_7": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_8": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_9": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_10": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_11": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_12": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_13": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_14": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_15": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_0": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_1": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_2": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_3": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_4": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_5": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_6": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_7": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_8": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_9": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_10": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_11": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_12": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_13": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_14": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_15": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "config": {
+                "relais1_16": {
+                    "address": 1,
+                    "type": 6,
+                    "register": 112,
+                    "datatype": "bool",
+                    "values": 16,
+                    "scale": 1.0,
+                    "unit": "V",
+                    "error_values": "",
+                    "format": "0.1f",
+                    "timeout": 100,
+                    "delay": 60,
+                    "direction": "output",
+                    "priority": 5
+                },
+                "relais17_32": {
+                    "address": 1,
+                    "type": 6,
+                    "register": 113,
+                    "datatype": "bool",
+                    "values": 16,
+                    "scale": 1.0,
+                    "unit": "V",
+                    "error_values": "",
+                    "format": "0.1f",
+                    "timeout": 100,
+                    "delay": 60,
+                    "direction": "output",
+                    "priority": 5
+                }
+            }
         }
     ]
 }
