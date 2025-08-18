@@ -1351,8 +1351,6 @@ class Window(QWidget):
 
                     modifiers = []
                     source = self.get_source(item, port, modifiers)
-                    if plugin_config["type"] == "pwmout":
-                        print("##", item, port, source)
                     if source:
                         if isinstance(source[0], BreakoutNode):
                             plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
@@ -1363,11 +1361,6 @@ class Window(QWidget):
                     else:
                         if plugin_config.get("pins") and port in plugin_config["pins"]:
                             del plugin_config["pins"][port]
-                        # plugin_config["pins"][port]["pin"] = None
-                        # plugin_config["pins"][port]["modifier"] = []
-
-                    if plugin_config["type"] == "pwmout":
-                        print("#####", plugin_config)
 
     def display(self):
         self.redraw()
