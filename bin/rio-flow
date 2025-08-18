@@ -535,7 +535,7 @@ class BreakoutNode(QGraphicsItem):
         super().__init__()
         self.scene = scene
         self.breakout_setup = breakout_setup
-        self.setZValue(1 + 10)
+        self.setZValue(2)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.setAcceptHoverEvents(True)
@@ -545,13 +545,15 @@ class BreakoutNode(QGraphicsItem):
         # pixmap = pixmap.transformed(QTransform().rotate(self.breakout_setup["config"]["flow"]["breakout"]["rotate"]))
         pixmap_width = pixmap.width()
         pixmap_height = pixmap.height()
-        self.name = breakout
+
+        data = open(f"riocore/breakouts/{breakout}/breakout.json", "r").read()
+        self.jdata = json.loads(data)
+
+        self.name = breakout_setup["name"]
         self.width = pixmap_width // 2
         self.height = pixmap_height // 2
         self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.ports = {}
-        data = open(f"riocore/breakouts/{breakout}/breakout.json", "r").read()
-        self.jdata = json.loads(data)
 
         for pin_name, pin_data in self.jdata["main"].items():
             pos = pin_data.get("pos")
@@ -611,7 +613,7 @@ class BreakoutNode(QGraphicsItem):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
-        # self.breakout_setup["config"]["flow"]["breakout"]["pos"] = (pos_x, pos_y)
+        self.breakout_setup["pos"] = (pos_x, pos_y)
 
         painter.drawRect(self.boundingRect())
         painter.drawPixmap(0, 0, self.pixmap)
@@ -620,7 +622,7 @@ class BreakoutNode(QGraphicsItem):
                 continue
             # if ":" not in port:
             #    continue
-            print(port, self.ports[port])
+            # print(port, self.ports[port])
             pos_x = self.ports[port]["pos"][0] // 2
             pos_y = self.ports[port]["pos"][1] // 2
             if (self, port) == self.scene.selection_source:
@@ -1194,7 +1196,7 @@ class Window(QWidget):
         self.function_cache = {}
 
         super().__init__()
-        self.scene = NodeScene(0, 0, 2500, 2500, self)
+        self.scene = NodeScene(-1500, -1500, 5000, 5000, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.filename = sys.argv[1]
         self.snapshots = []
@@ -1336,16 +1338,36 @@ class Window(QWidget):
             elif isinstance(item, PluginNode):
                 plugin_instance = item.plugin_instance
                 plugin_config = plugin_instance.plugin_setup
-                for port in plugin_config.get("pins", []):
+                ##
+                if plugin_config["type"] == "pwmout":
+                    print(plugin_config["type"])
+
+                for port, pin_data in plugin_instance.PINDEFAULTS.items():
+                    direction = pin_data.get("direction")
+                    if "pins" not in plugin_config:
+                        plugin_config["pins"] = {}
+                    if port not in plugin_config["pins"]:
+                        plugin_config["pins"][port] = {}
+
                     modifiers = []
                     source = self.get_source(item, port, modifiers)
+                    if plugin_config["type"] == "pwmout":
+                        print("##", item, port, source)
                     if source:
-                        plugin_config["pins"][port]["pin"] = source[1]
+                        if isinstance(source[0], BreakoutNode):
+                            plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
+                        else:
+                            plugin_config["pins"][port]["pin"] = source[1]
                         if modifiers:
                             plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
                     else:
-                        plugin_config["pins"][port]["pin"] = None
-                        plugin_config["pins"][port]["modifier"] = []
+                        if plugin_config.get("pins") and port in plugin_config["pins"]:
+                            del plugin_config["pins"][port]
+                        # plugin_config["pins"][port]["pin"] = None
+                        # plugin_config["pins"][port]["modifier"] = []
+
+                    if plugin_config["type"] == "pwmout":
+                        print("#####", plugin_config)
 
     def display(self):
         self.redraw()
@@ -1505,17 +1527,6 @@ class Window(QWidget):
             self.scene.addItem(self.bnode)
             self.board = self.bnode.jdata
 
-        """
-        breakoutcfg = "china-bob5x"
-        breakout_setup = {"breakout": breakoutcfg, "config": self.config}
-        if os.path.exists(f"riocore/breakouts/{breakoutcfg}/breakout.json"):
-            self.brnode = BreakoutNode(self.scene, breakout_setup)
-            #self.brnode.setPos(self.config["flow"]["breakout"]["pos"][0], self.config["flow"]["breakout"]["pos"][1])
-            self.brnode.setPos(650, 50)
-            self.scene.addItem(self.brnode)
-            self.breakout = self.brnode.jdata
-        """
-
         if "gpios" in self.config:
             pass
 
@@ -1524,6 +1535,20 @@ class Window(QWidget):
             self.config["plugins"] = []
         if "modules" not in self.config:
             self.config["modules"] = []
+        if "breakouts" not in self.config:
+            self.config["breakouts"] = []
+
+        # loading breakouts
+        for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
+            if "setup" not in breakout_config:
+                self.config["breakouts"][breakout_id]["setup"] = {}
+            py += self.insert_breakout(breakout_config, py)
+
+        # loading modules
+        for module_id, module_config in enumerate(self.config.get("modules", [])):
+            if "setup" not in module_config:
+                self.config["modules"][module_id]["setup"] = {}
+            py += self.insert_module(module_config, py)
 
         # loading plugins
         self.plugin_uids = []
@@ -1541,11 +1566,6 @@ class Window(QWidget):
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
-
-        for module_id, module_config in enumerate(self.config.get("modules", [])):
-            if "setup" not in module_config:
-                self.config["modules"][module_id]["setup"] = {}
-            py += self.insert_module(module_config, py)
 
         hnodes = {}
         for signal_name, signal in self.halpins.items():
@@ -1644,6 +1664,31 @@ class Window(QWidget):
                 item.setPos(px, py)
         self.snapshot()
 
+    def insert_breakout(self, breakout_config, py=100):
+        mnode = BreakoutNode(self.scene, breakout_config)
+        slot = breakout_config["slot"]
+
+        if "pos" in breakout_config:
+            hx = breakout_config["pos"][0]
+            hy = breakout_config["pos"][1]
+        elif self.scene.insert_position is not None:
+            hx = self.scene.insert_position.x()
+            hy = self.scene.insert_position.y()
+            self.scene.insert_position = None
+        else:
+            hx = 850
+            hy = py
+        mnode.setPos(hx, hy)
+
+        breakout_name = breakout_config["name"]
+        for pin, pin_data in mnode.jdata["main"].items():
+            bpin = f"{slot}:{pin}"
+            edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[0])
+            self.scene.addItem(edge)
+
+        self.scene.addItem(mnode)
+        return hy
+
     def insert_module(self, module_config, py=100):
         mnode = ModuleNode(self.scene, module_config, self.config)
         slot = module_config["slot"]
@@ -1710,6 +1755,12 @@ class Window(QWidget):
         ph = max(ph, mnode.height) + 5
         return ph
 
+    def breakout_by_name(self, breakout_name):
+        for item in self.scene.items():
+            if isinstance(item, BreakoutNode) and item.name == breakout_name:
+                return item
+        return None
+
     def insert_plugin(self, plugin_instance, py=100):
         plugin_config = plugin_instance.plugin_setup
         pnode = PluginNode(self.scene, plugin_instance)
@@ -1739,7 +1790,22 @@ class Window(QWidget):
                 if pindata is None or "pin" not in pindata or not pindata["pin"]:
                     continue
 
-                last_con = (self.bnode, pindata["pin"])
+                if ":" in pindata["pin"] and len(pindata["pin"].split(":")) == 3:
+                    splitted = pindata["pin"].split(":")
+                    bpin = ":".join(splitted[1:])
+                    breakout_name = splitted[0]
+
+                    bnode = self.breakout_by_name(breakout_name)
+                    if not bnode:
+                        continue
+
+                    # print(breakout_name, bnode, bpin)
+                    last_con = (bnode, bpin)
+                else:
+                    last_con = (self.bnode, pindata["pin"])
+
+                # print("##", last_con)
+
                 if pindata.get("modifier"):
                     for pmn, modifier in enumerate(pindata.get("modifier")):
                         mnode = ModifierNode(self.scene, modifier)

@@ -1,0 +1,258 @@
+{
+    "name": "Mesa7c81",
+    "boardcfg": "Mesa7c81",
+    "breakouts": [
+        {
+            "slot": "A",
+            "breakout": "china-bob5x",
+            "name": "bob1",
+            "pos": [
+                653.9703881873684,
+                150.0
+            ],
+            "setup": {}
+        },
+        {
+            "slot": "C",
+            "breakout": "china-bob5x",
+            "name": "bob2",
+            "pos": [
+                650.0,
+                590.0
+            ],
+            "setup": {}
+        }
+    ],
+    "flow": {
+        "view": {
+            "pos": [
+                32,
+                1
+            ],
+            "scale": 1.388524331692001
+        },
+        "board": {
+            "pos": [
+                150.0,
+                430.0
+            ],
+            "rotate": 90
+        }
+    },
+    "plugins": [
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:X:dir",
+                    "modifier": []
+                },
+                "step": {
+                    "pin": "bob1:X:step",
+                    "modifier": []
+                },
+                "en": {
+                    "pin": "bob1:ALL:en",
+                    "modifier": []
+                }
+            },
+            "uid": "stepdir0",
+            "pos": [
+                1090.0,
+                510.0
+            ],
+            "signals": {
+                "velocity": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:Y:dir",
+                    "modifier": []
+                },
+                "step": {
+                    "pin": "bob1:Y:step",
+                    "modifier": []
+                },
+                "en": {
+                    "pin": "bob1:ALL:en",
+                    "modifier": []
+                }
+            },
+            "pos": [
+                1090.0,
+                430.0
+            ],
+            "uid": "stepdir1",
+            "signals": {
+                "velocity": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:Z:dir",
+                    "modifier": []
+                },
+                "step": {
+                    "pin": "bob1:Z:step",
+                    "modifier": []
+                },
+                "en": {
+                    "pin": "bob1:ALL:en",
+                    "modifier": []
+                }
+            },
+            "pos": [
+                1090.0,
+                350.0
+            ],
+            "uid": "stepdir2",
+            "signals": {
+                "velocity": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:A:dir",
+                    "modifier": []
+                },
+                "step": {
+                    "pin": "bob1:A:step",
+                    "modifier": []
+                },
+                "en": {
+                    "pin": "bob1:ALL:en",
+                    "modifier": []
+                }
+            },
+            "pos": [
+                1090.0,
+                270.0
+            ],
+            "uid": "stepdir3",
+            "signals": {
+                "velocity": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:B:dir",
+                    "modifier": []
+                },
+                "step": {
+                    "pin": "bob1:B:step",
+                    "modifier": []
+                },
+                "en": {
+                    "pin": "bob1:ALL:en",
+                    "modifier": []
+                }
+            },
+            "pos": [
+                1090.0,
+                190.0
+            ],
+            "uid": "stepdir4",
+            "signals": {
+                "velocity": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "pwmout",
+            "uid": "pwmout0",
+            "pos": [
+                1090.0,
+                90.0
+            ],
+            "pins": {
+                "pwm": {
+                    "pin": "bob1:PWM:pwm"
+                }
+            }
+        }
+    ],
+    "modules": []
+}

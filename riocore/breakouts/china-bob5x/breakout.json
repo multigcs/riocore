@@ -122,43 +122,50 @@
     },
     "slots": [
         {
-            "name": "STEPDIR5",
+            "name": "PWM",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "step": {
-                    "pin": "P4",
+                "pwm": {
+                    "pin": "P1",
                     "pos": [
                         592,
                         223
-                    ],
-                    "direction": "out"
-                },
-                "dir": {
-                    "pin": "P5",
-                    "pos": [
-                        592,
-                        268
                     ],
                     "direction": "out"
                 }
             }
         },
         {
-            "name": "STEPDIR4",
+            "name": "B",
             "comment": "",
             "default": "stepdir",
             "pins": {
+                "dir": {
+                    "pin": "P17",
+                    "pos": [
+                        592,
+                        268
+                    ],
+                    "direction": "out"
+                },
                 "step": {
-                    "pin": "P2",
+                    "pin": "P16",
                     "pos": [
                         592,
                         313
                     ],
                     "direction": "out"
-                },
-                "dir": {
-                    "pin": "P3",
+                }
+            }
+        },
+        {
+            "name": "ALL",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "en": {
+                    "pin": "P14",
                     "pos": [
                         592,
                         358
@@ -168,20 +175,20 @@
             }
         },
         {
-            "name": "STEPDIR3",
+            "name": "A",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "step": {
-                    "pin": "P2",
+                "dir": {
+                    "pin": "P9",
                     "pos": [
                         592,
                         403
                     ],
                     "direction": "out"
                 },
-                "dir": {
-                    "pin": "P3",
+                "step": {
+                    "pin": "P8",
                     "pos": [
                         592,
                         448
@@ -190,25 +197,21 @@
                 }
             }
         },
-
-
-
-
         {
-            "name": "STEPDIR2",
+            "name": "Z",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "step": {
-                    "pin": "P4",
+                "dir": {
+                    "pin": "P7",
                     "pos": [
                         592,
                         493
                     ],
                     "direction": "out"
                 },
-                "dir": {
-                    "pin": "P5",
+                "step": {
+                    "pin": "P6",
                     "pos": [
                         592,
                         538
@@ -217,21 +220,25 @@
                 }
             }
         },
+
+
+
+
         {
-            "name": "STEPDIR1",
+            "name": "Y",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "step": {
-                    "pin": "P2",
+                "dir": {
+                    "pin": "P5",
                     "pos": [
                         592,
                         583
                     ],
                     "direction": "out"
                 },
-                "dir": {
-                    "pin": "P3",
+                "step": {
+                    "pin": "P4",
                     "pos": [
                         592,
                         628
@@ -241,20 +248,20 @@
             }
         },
         {
-            "name": "STEPDIR0",
+            "name": "X",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "step": {
-                    "pin": "P2",
+                "dir": {
+                    "pin": "P3",
                     "pos": [
                         592,
                         673
                     ],
                     "direction": "out"
                 },
-                "dir": {
-                    "pin": "P3",
+                "step": {
+                    "pin": "P2",
                     "pos": [
                         592,
                         718
@@ -263,7 +270,5 @@
                 }
             }
         }
-
-
     ]
 }
