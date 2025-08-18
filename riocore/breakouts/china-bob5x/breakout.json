@@ -1,0 +1,269 @@
+{
+    "comment": "5Axis China-BOB",
+    "main": {
+        "P1": {
+            "pos": [
+                21,
+                315
+            ]
+        },
+        "P2": {
+            "pos": [
+                21,
+                334
+            ]
+        },
+        "P3": {
+            "pin": "P115",
+            "pos": [
+                21,
+                353
+            ]
+        },
+        "P4": {
+            "pin": "P112",
+            "pos": [
+                21,
+                372
+            ]
+        },
+        "P5": {
+            "pin": "P105",
+            "pos": [
+                21,
+                391
+            ]
+        },
+        "P6": {
+            "pin": "P104",
+            "pos": [
+                21,
+                410
+            ]
+        },
+        "P7": {
+            "pin": "P102",
+            "pos": [
+                21,
+                429
+            ]
+        },
+        "P8": {
+            "pin": "P101",
+            "pos": [
+                21,
+                448
+            ]
+        },
+        "P9": {
+            "pin": "P100",
+            "pos": [
+                21,
+                467
+            ]
+        },
+        "P10": {
+            "pin": "P99",
+            "pos": [
+                21,
+                486
+            ]
+        },
+        "P11": {
+            "pin": "P98",
+            "pos": [
+                21,
+                505
+            ]
+        },
+        "P12": {
+            "pin": "P97",
+            "pos": [
+                21,
+                524
+            ]
+        },
+        "P13": {
+            "pin": "P32",
+            "pos": [
+                21,
+                543
+            ]
+        },
+        "P14": {
+            "pin": "P118",
+            "pos": [
+                40,
+                315
+            ]
+        },
+        "P15": {
+            "pin": "P116",
+            "pos": [
+                40,
+                334
+            ]
+        },
+        "P16": {
+            "pin": "P114",
+            "pos": [
+                40,
+                353
+            ]
+        },
+        "P17": {
+            "pin": "P111",
+            "pos": [
+                40,
+                372
+            ]
+        }
+
+    },
+    "slots": [
+        {
+            "name": "STEPDIR5",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P4",
+                    "pos": [
+                        592,
+                        223
+                    ],
+                    "direction": "out"
+                },
+                "dir": {
+                    "pin": "P5",
+                    "pos": [
+                        592,
+                        268
+                    ],
+                    "direction": "out"
+                }
+            }
+        },
+        {
+            "name": "STEPDIR4",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P2",
+                    "pos": [
+                        592,
+                        313
+                    ],
+                    "direction": "out"
+                },
+                "dir": {
+                    "pin": "P3",
+                    "pos": [
+                        592,
+                        358
+                    ],
+                    "direction": "out"
+                }
+            }
+        },
+        {
+            "name": "STEPDIR3",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P2",
+                    "pos": [
+                        592,
+                        403
+                    ],
+                    "direction": "out"
+                },
+                "dir": {
+                    "pin": "P3",
+                    "pos": [
+                        592,
+                        448
+                    ],
+                    "direction": "out"
+                }
+            }
+        },
+
+
+
+
+        {
+            "name": "STEPDIR2",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P4",
+                    "pos": [
+                        592,
+                        493
+                    ],
+                    "direction": "out"
+                },
+                "dir": {
+                    "pin": "P5",
+                    "pos": [
+                        592,
+                        538
+                    ],
+                    "direction": "out"
+                }
+            }
+        },
+        {
+            "name": "STEPDIR1",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P2",
+                    "pos": [
+                        592,
+                        583
+                    ],
+                    "direction": "out"
+                },
+                "dir": {
+                    "pin": "P3",
+                    "pos": [
+                        592,
+                        628
+                    ],
+                    "direction": "out"
+                }
+            }
+        },
+        {
+            "name": "STEPDIR0",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "P2",
+                    "pos": [
+                        592,
+                        673
+                    ],
+                    "direction": "out"
+                },
+                "dir": {
+                    "pin": "P3",
+                    "pos": [
+                        592,
+                        718
+                    ],
+                    "direction": "out"
+                }
+            }
+        }
+
+
+    ]
+}
