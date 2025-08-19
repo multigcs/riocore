@@ -1600,62 +1600,15 @@ class Window(QWidget):
             target = signal["target"]
             tsplit = target.split(".")
             group = tsplit[0]
+
             if source is None:
                 group = "unused"
-            elif group not in {"joint", "spindle"}:
+            elif group in {"joint", "spindle"}:
+                group = ".".join(tsplit[0:2])
+            else:
                 group = "misc"
 
             if source and target:
-                """
-                lnodes = {}
-                if " " in target:
-
-                    self.signals_out[source[1]] = {"expression": target}
-
-                    # resolv all expressions
-                    for output, data in self.signals_out.items():
-                        cleaned_expression = data["expression"].replace("|", "").replace("&", "")
-                        input_pin = self.brackets_parser(f"({cleaned_expression})", output)
-                        input_signal = self.pin2signal(input_pin, output, data.get("name"))
-                        if output in self.outputs2signals:
-                            self.outputs2signals[output]["signals"].append(input_signal)
-                        else:
-                            self.outputs2signals[output] = {"signals": [input_signal], "target": output}
-
-                    for name in self.hal_logics:
-                        ltype = name.split(".")[1].split("_")[0]
-                        key = ".".join(name.split(".")[:-1])
-                        key = name
-                        lnodes[key] = LogicNode(self.scene, {"name": name, "type": ltype})
-                        self.scene.addItem(lnodes[key])
-
-                    for ctype, clist in self.hal_calcs.items():
-                        for name in clist:
-                            key = name
-                            lnodes[key] = LogicNode(self.scene, {"name": name, "type": ctype})
-                            self.scene.addItem(lnodes[key])
-
-                    for target, value in self.outputs2signals.items():
-                        for sig in value["signals"]:
-                            skey = ".".join(sig.split(".")[:-1])
-                            source_node = lnodes.get(skey)
-
-                            tkey = ".".join(target.split(".")[:-1])
-                            target_node = lnodes.get(tkey)
-
-                            if source_node and target_node:
-                                print("##")
-                                print(sig, " -> ", target)
-
-                                sport = sig.split(".")[-1]
-                                tport = target.split(".")[-1]
-
-                                edge = NodeEdge(self.scene, "hal", source_node, sport, target_node, tport, color=colors[1])
-                                self.scene.addItem(edge)
-
-                    print(lnodes)
-                """
-
                 if group not in hnodes:
                     hnodes[group] = HalNode(self.scene, group)
                     self.scene.addItem(hnodes[group])
