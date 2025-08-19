@@ -36,6 +36,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 import riocore
 
 from riocore.gui.plugins import GuiPlugins
+from riocore.gui.breakouts import GuiBreakouts
 from riocore.gui.modifiers import GuiModifiers
 # from riocore.halpins import LINUXCNC_SIGNALS
 
@@ -581,6 +582,9 @@ class BreakoutNode(QGraphicsItem):
                 self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
         self.selected_port = None
 
+    def port_index(self, port):
+        return 0
+
     def rotate_cw(self):
         if self.breakout_setup["rotate"] < 180:
             self.breakout_setup["rotate"] += 90
@@ -667,7 +671,6 @@ class PluginNode(MyNode):
     def __init__(self, scene, plugin_instance):
         super().__init__(scene)
         plugin_config = plugin_instance.plugin_setup
-        image = f"riocore/plugins/{plugin_config['type']}/image.png"
         self.plugin_instance = plugin_instance
         self.name = plugin_config["uid"]
         self.pins = plugin_instance.PINDEFAULTS
@@ -685,6 +688,7 @@ class PluginNode(MyNode):
             self.ports_right[f"sig_{key}"] = value
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
         """
+        image = f"riocore/plugins/{plugin_config['type']}/image.png"
         pixmap = QPixmap.fromImage(QImage(image))
         pixmap = pixmap.transformed(QTransform().rotate(plugin_config.get("rotate", 0)))
         pixmap_width = pixmap.width()
@@ -1180,6 +1184,10 @@ class NodeScene(QGraphicsScene):
         add_plugin.triggered.connect(self.parent.gui_plugins.add_plugin)
         menu.addAction(add_plugin)
 
+        add_breakout = QAction("add Breakout", None)
+        add_breakout.triggered.connect(self.parent.gui_breakouts.add_breakout)
+        menu.addAction(add_breakout)
+
         menu.exec_(event.screenPos())
 
     def disconnect_port(self, node, port):
@@ -1239,6 +1247,7 @@ class Window(QWidget):
         self.cfggraph = cfggraph()
 
         self.gui_plugins = GuiPlugins(self)
+        self.gui_breakouts = GuiBreakouts(self)
         self.gui_modifiers = GuiModifiers(self)
 
         vbox = QVBoxLayout()
@@ -1568,6 +1577,7 @@ class Window(QWidget):
             self.config["breakouts"] = []
 
         # loading breakouts
+        self.breakout_uids = []
         for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
             py += self.insert_breakout(breakout_config, py)
 
@@ -1651,7 +1661,8 @@ class Window(QWidget):
     def insert_breakout(self, breakout_config, py=100):
         mnode = BreakoutNode(self.scene, breakout_config)
         slot = breakout_config["slot"]
-
+        breakout_name = breakout_config["name"]
+        self.breakout_uids.append(breakout_name)
         if "pos" in breakout_config:
             hx = breakout_config["pos"][0]
             hy = breakout_config["pos"][1]
@@ -1664,7 +1675,6 @@ class Window(QWidget):
             hy = py
         mnode.setPos(hx, hy)
         if slot:
-            breakout_name = breakout_config["name"]
             for pin, pin_data in mnode.jdata["main"].items():
                 bpin = f"{slot}:{pin}"
                 edge = NodeEdge(self.scene, f"breakout:{breakout_name}", self.bnode, bpin, mnode, pin, color=colors[-1])
