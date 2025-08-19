@@ -995,6 +995,7 @@ class WinForm(QWidget):
                 pin = pin_setup.get("pin")
                 if pin not in self.pinlist:
                     self.pinlist.append(pin)
+
         for slot in self.slots:
             slot_name = slot.get("name")
             slot_pins = slot.get("pins", {})
@@ -1008,6 +1009,20 @@ class WinForm(QWidget):
                 self.pinmapping_rev[pin] = pin_id
                 if pin_id not in self.pinlist:
                     self.pinlist.append(pin_id)
+
+        for breakout_data in self.config.get("breakouts", []):
+            breakout = breakout_data.get("breakout")
+            bslot_name = breakout_data.get("slot")
+            breakout_name = breakout_data.get("name")
+            breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
+            breakoutJsonStr = open(breakout_path, "r").read()
+            breakout_defaults = json.loads(breakoutJsonStr)
+            for slot in breakout_defaults["slots"]:
+                slot_name = slot["name"]
+                for pin_name, pin_data in slot["pins"].items():
+                    target = f"{bslot_name}:{pin_data['pin']}"
+                    if target in self.pinmapping:
+                        self.pinmapping[f"{breakout_name}:{slot_name}:{pin_name}"] = self.pinmapping[target]
 
         gpio_ids = {}
         gpio_config = self.config.get("gpios", [])
@@ -1075,6 +1090,7 @@ class WinForm(QWidget):
 
         boards_path = self.get_path("boards")
         modules_path = self.get_path("modules")
+        breakouts_path = self.get_path("breakouts")
 
         self.interfaces = []
         for path in sorted(glob.glob(os.path.join(riocore_path, "interfaces", "*"))):
@@ -1087,6 +1103,9 @@ class WinForm(QWidget):
         self.module_names = []
         for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
             self.module_names.append(path.split(os.sep)[-2])
+        self.breakout_names = []
+        for path in sorted(glob.glob(os.path.join(breakouts_path, "*", "breakout.json"))):
+            self.breakout_names.append(path.split(os.sep)[-2])
         self.slotnames = []
         for slot in self.slots:
             slot_name = slot.get("name")

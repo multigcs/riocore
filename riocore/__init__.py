@@ -636,6 +636,8 @@ class Project:
         if "flashcmd" in project["jdata"]:
             project["flashcmd"] = project["jdata"]["flashcmd"]
 
+        pin_mapping = {}
+
         # loading modules
         project["modules"] = {}
         modules_path = self.get_path("modules")
@@ -648,6 +650,9 @@ class Project:
         for slot_n, slot in enumerate(project["jdata"].get("slots", [])):
             spins = slot["pins"]
             slotname = slot.get("name", f"slot{slot_n}")
+            for spin, spin_data in spins.items():
+                pin_mapping[f"{slotname}:{spin}"] = spin_data["pin"]
+
             modules = []
             # check old config style
             if "module" in slot:
@@ -702,7 +707,28 @@ class Project:
                     print(f"ERROR: module {module} not found")
                     exit(1)
 
+        for breakout_data in project["jdata"].get("breakouts", []):
+            breakout = breakout_data.get("breakout")
+            bslot_name = breakout_data.get("slot")
+            breakout_name = breakout_data.get("name")
+            breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
+            breakoutJsonStr = open(breakout_path, "r").read()
+            breakout_defaults = json.loads(breakoutJsonStr)
+            for slot in breakout_defaults["slots"]:
+                slot_name = slot["name"]
+                for pin_name, pin_data in slot["pins"].items():
+                    target = f"{bslot_name}:{pin_data['pin']}"
+                    if target in pin_mapping:
+                        pin_mapping[f"{breakout_name}:{slot_name}:{pin_name}"] = pin_mapping[target]
+
+        # update plugin pins
+        for plugin in project["plugins"]:
+            for pin_name, pin_data in plugin.get("pins", {}).items():
+                if "pin" in pin_data and pin_data["pin"] in pin_mapping:
+                    pin_data["pin"] = pin_mapping[pin_data["pin"]]
+
         self.config = project
+        self.config["pin_mapping"] = pin_mapping
         self.config["board_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
