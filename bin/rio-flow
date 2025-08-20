@@ -582,7 +582,6 @@ class BreakoutNode(QGraphicsItem):
         for slot in self.jdata["slots"]:
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
-                print(pin_data)
                 pos = pin_data.get("pos") or slot.get("pos")
                 if self.breakout_setup["rotate"] == 90:
                     pos = [pixmap_width - pos[1], pos[0]]
