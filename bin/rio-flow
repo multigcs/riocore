@@ -235,6 +235,9 @@ class MyNode(QGraphicsItem):
             self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
         return QRectF(0, 0, self.width, self.height)
 
+    def port_info(self, port):
+        return "-----"
+
     def port_pos(self, port):
         pos = self.pos()
         pos_x = pos.x()
@@ -446,16 +449,16 @@ class BoardNode(QGraphicsItem):
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 pos = pin_data.get("pos") or slot.get("pos")
-
                 if self.board_setup["config"]["flow"]["board"]["rotate"] == 90:
                     pos = [pixmap_width - pos[1], pos[0]]
                 elif self.board_setup["config"]["flow"]["board"]["rotate"] == -90:
                     pos = [pos[1], pixmap_height - pos[0]]
                 elif self.board_setup["config"]["flow"]["board"]["rotate"] == 180:
                     pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
-
-                self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
-                self.ports[pin_data.get("pin")] = {"pos": pos, "dir": ""}
+                self.ports[f"{slot_name}:{pin_name}"] = pin_data
+                self.ports[f"{slot_name}:{pin_name}"]["pos"] = pos
+                self.ports[pin_data.get("pin")] = pin_data
+                self.ports[pin_data.get("pin")]["pos"] = pos
         self.selected_port = None
 
     def rotate_cw(self):
@@ -468,6 +471,12 @@ class BoardNode(QGraphicsItem):
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
+
+    def port_info(self, port):
+        pin_data = self.ports.get(port)
+        if pin_data:
+            return f"{pin_data['pin']} {pin_data.get('comment', '')}"
+        return ""
 
     def port_pos(self, port):
         pos = self.pos()
@@ -567,11 +576,13 @@ class BreakoutNode(QGraphicsItem):
                 pos = [pos[1], pixmap_height - pos[0]]
             elif self.breakout_setup["rotate"] == 180:
                 pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
-            self.ports[pin_name] = {"pos": pos, "dir": ""}
+            self.ports[pin_name] = pin_data
+            self.ports[pin_name]["pos"] = pos
 
         for slot in self.jdata["slots"]:
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
+                print(pin_data)
                 pos = pin_data.get("pos") or slot.get("pos")
                 if self.breakout_setup["rotate"] == 90:
                     pos = [pixmap_width - pos[1], pos[0]]
@@ -579,7 +590,8 @@ class BreakoutNode(QGraphicsItem):
                     pos = [pos[1], pixmap_height - pos[0]]
                 elif self.breakout_setup["rotate"] == 180:
                     pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
-                self.ports[f"{slot_name}:{pin_name}"] = {"pos": pos, "dir": ""}
+                self.ports[f"{slot_name}:{pin_name}"] = pin_data
+                self.ports[f"{slot_name}:{pin_name}"]["pos"] = pos
         self.selected_port = None
 
     def port_index(self, port):
@@ -595,6 +607,12 @@ class BreakoutNode(QGraphicsItem):
 
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
+
+    def port_info(self, port):
+        pin_data = self.ports.get(port)
+        if pin_data:
+            return f"{pin_data.get('pin', '')} {pin_data.get('comment', '')}"
+        return ""
 
     def port_pos(self, port):
         pos = self.pos()
@@ -1098,7 +1116,8 @@ class NodeViewer(QGraphicsView):
                 position = QPointF(position.x() - hoverpos.x(), position.y() - hoverpos.y())
                 port = self.scene.hover.port_selected(position)
                 if port:
-                    self.scene.parent.info.setText(f"{hovername} - {port}")
+                    pinfo = self.scene.hover.port_info(port)
+                    self.scene.parent.info.setText(f"{hovername} - {port} ({pinfo})")
                 else:
                     self.scene.parent.info.setText(hovername)
             else:

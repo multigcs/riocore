@@ -144,7 +144,7 @@
                     "direction": "out"
                 },
                 "in2": {
-                    "pin": "P11",
+                    "pin": "P12",
                     "pos": [
                         302,
                         771
@@ -152,7 +152,7 @@
                     "direction": "out"
                 },
                 "in3": {
-                    "pin": "P11",
+                    "pin": "P13",
                     "pos": [
                         347,
                         771
@@ -160,7 +160,7 @@
                     "direction": "out"
                 },
                 "in4": {
-                    "pin": "P11",
+                    "pin": "P15",
                     "pos": [
                         392,
                         771
@@ -177,6 +177,7 @@
             "pins": {
                 "out": {
                     "pin": "P17",
+                    "comment": "shared with B dir",
                     "pos": [
                         190,
                         28
@@ -220,6 +221,7 @@
                         592,
                         268
                     ],
+                    "comment": "shared with relais",
                     "direction": "out"
                 },
                 "step": {
@@ -293,8 +295,6 @@
                 }
             }
         },
-
-
 
 
         {
