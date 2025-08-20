@@ -28,15 +28,15 @@
     "flow": {
         "view": {
             "pos": [
-                63,
-                19
+                -38,
+                6
             ],
-            "scale": 0.5643610711958381
+            "scale": 0.5325493125392748
         },
         "board": {
             "pos": [
-                150.0,
-                430.0
+                161.26084187660598,
+                476.1694516940846
             ],
             "rotate": 90
         },
@@ -76,6 +76,69 @@
         }
     },
     "plugins": [
+        {
+            "type": "spi_prog",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                },
+                "prog": {
+                    "pin": "RPI:GPIO25"
+                },
+                "reboot": {
+                    "pin": "EEPROM:REBOOT"
+                },
+                "eeprom_mosi": {
+                    "pin": "EEPROM:MOSI"
+                },
+                "eeprom_miso": {
+                    "pin": "EEPROM:MISO"
+                },
+                "eeprom_sclk": {
+                    "pin": "EEPROM:SCLK"
+                },
+                "eeprom_sel": {
+                    "pin": "EEPROM:SEL"
+                }
+            },
+            "uid": "spi0",
+            "pos": [
+                301.26084187660604,
+                547.555740920289
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L0",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true,
+                            "pos": [
+                                264.06135134705573,
+                                936.1121186786402
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                384.06135134705573,
+                924.9860344909796
+            ]
+        },
         {
             "type": "stepdir",
             "pins": {
