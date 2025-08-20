@@ -125,7 +125,7 @@
         {
             "name": "OPTO",
             "comment": "",
-            "default": "stepdir",
+            "default": "",
             "pins": {
                 "in0": {
                     "pin": "P10",
@@ -133,7 +133,7 @@
                         212,
                         771
                     ],
-                    "direction": "out"
+                    "direction": "input"
                 },
                 "in1": {
                     "pin": "P11",
@@ -141,7 +141,7 @@
                         257,
                         771
                     ],
-                    "direction": "out"
+                    "direction": "input"
                 },
                 "in2": {
                     "pin": "P12",
@@ -149,7 +149,7 @@
                         302,
                         771
                     ],
-                    "direction": "out"
+                    "direction": "input"
                 },
                 "in3": {
                     "pin": "P13",
@@ -157,7 +157,7 @@
                         347,
                         771
                     ],
-                    "direction": "out"
+                    "direction": "input"
                 },
                 "in4": {
                     "pin": "P15",
@@ -165,7 +165,7 @@
                         392,
                         771
                     ],
-                    "direction": "out"
+                    "direction": "input"
                 }
             }
         },
@@ -182,7 +182,7 @@
                         190,
                         28
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         },
@@ -198,7 +198,7 @@
                         327,
                         28
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 },
                 "digital": {
                     "pin": "P1",
@@ -206,7 +206,7 @@
                         592,
                         223
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         },
@@ -222,7 +222,7 @@
                         268
                     ],
                     "comment": "shared with relais",
-                    "direction": "out"
+                    "direction": "output"
                 },
                 "step": {
                     "pin": "P16",
@@ -230,7 +230,7 @@
                         592,
                         313
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         },
@@ -245,7 +245,7 @@
                         592,
                         358
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         },
@@ -260,7 +260,7 @@
                         592,
                         403
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 },
                 "step": {
                     "pin": "P8",
@@ -268,7 +268,7 @@
                         592,
                         448
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         },
@@ -283,7 +283,7 @@
                         592,
                         493
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 },
                 "step": {
                     "pin": "P6",
@@ -291,7 +291,7 @@
                         592,
                         538
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         },
@@ -308,7 +308,7 @@
                         592,
                         583
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 },
                 "step": {
                     "pin": "P4",
@@ -316,7 +316,7 @@
                         592,
                         628
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         },
@@ -331,7 +331,7 @@
                         592,
                         673
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 },
                 "step": {
                     "pin": "P2",
@@ -339,7 +339,7 @@
                         592,
                         718
                     ],
-                    "direction": "out"
+                    "direction": "output"
                 }
             }
         }

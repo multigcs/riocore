@@ -475,7 +475,7 @@ class BoardNode(QGraphicsItem):
     def port_info(self, port):
         pin_data = self.ports.get(port)
         if pin_data:
-            return f"{pin_data['pin']} {pin_data.get('comment', '')}"
+            return f"{pin_data.get('pin', '')} {pin_data.get('direction', '')} {pin_data.get('comment', '')}"
         return ""
 
     def port_pos(self, port):
@@ -610,7 +610,7 @@ class BreakoutNode(QGraphicsItem):
     def port_info(self, port):
         pin_data = self.ports.get(port)
         if pin_data:
-            return f"{pin_data.get('pin', '')} {pin_data.get('comment', '')}"
+            return f"{pin_data.get('pin', '')} {pin_data.get('direction', '')} {pin_data.get('comment', '')}"
         return ""
 
     def port_pos(self, port):
