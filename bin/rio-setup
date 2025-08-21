@@ -59,7 +59,7 @@ from riocore.gui.widgets import (
 
 
 from PyQt5.QtCore import QTimer, Qt, QSize
-from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QColor
+from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap
 from PyQt5.QtWidgets import (
     QStyle,
     QSplitter,
