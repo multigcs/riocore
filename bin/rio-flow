@@ -7,9 +7,10 @@ import os
 import json
 import sys
 from math import floor, ceil
+from functools import partial
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
-from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform, QKeySequence
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
     QTabWidget,
     QMenu,
@@ -25,6 +26,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QGraphicsPathItem,
     QGraphicsLineItem,
+    QDialog,
 )
 
 
@@ -1200,6 +1202,8 @@ class NodeScene(QGraphicsScene):
         else:
             pass
 
+        menu.addSeparator()
+
         add_plugin = QAction("add Plugin", None)
         add_plugin.triggered.connect(self.parent.gui_plugins.add_plugin)
         menu.addAction(add_plugin)
@@ -1207,6 +1211,20 @@ class NodeScene(QGraphicsScene):
         add_breakout = QAction("add Breakout", None)
         add_breakout.triggered.connect(self.parent.gui_breakouts.add_breakout)
         menu.addAction(add_breakout)
+
+        menu.addSeparator()
+
+        add_grid = QAction("align to Grid", None)
+        add_grid.triggered.connect(self.parent.grid_align)
+        menu.addAction(add_grid)
+
+        add_redraw = QAction("Redraw", None)
+        add_redraw.triggered.connect(self.parent.redraw)
+        menu.addAction(add_redraw)
+
+        add_undo = QAction("Undo", None)
+        add_undo.triggered.connect(self.parent.undo)
+        menu.addAction(add_undo)
 
         menu.exec_(event.screenPos())
 
@@ -1925,7 +1943,32 @@ class Window(QWidget):
         ph = max(ph, pnode.height) + 5
         return ph
 
+    def dialog_select(self, title, options):
+        dialog = QDialog()
+        dialog.setWindowTitle(title)
+        dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
+        dialog.selection = None
+
+        def select(item):
+            dialog.selection = item
+            dialog.accept()
+
+        for option in options:
+            button_config = QPushButton(option)
+            button_config.clicked.connect(partial(select, option))
+            dialog.layout.addWidget(button_config)
+        if dialog.exec():
+            return dialog.selection
+        return
+
     def add_modifier(self):
+        # ret = self.dialog_select("select", ["a", "v"])
+
+        modifier_type = self.gui_modifiers.modifier_list_add()
+        if not modifier_type:
+            return
+
         for item in self.scene.selectedItems():
             if isinstance(item, NodeEdge):
                 source_node = item._source_node
@@ -1939,7 +1982,7 @@ class Window(QWidget):
                 color = item.color
                 self.scene.removeItem(item)
                 # add node
-                modifier_node = ModifierNode(self.scene, {"type": "debounce"})
+                modifier_node = ModifierNode(self.scene, {"type": modifier_type})
                 # pos between source and des
                 x = source_x + (des_x - source_x) / 2 - 50
                 y = source_y + (des_y - source_y) / 2 - 10

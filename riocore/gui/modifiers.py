@@ -123,7 +123,7 @@ class GuiModifiers:
         if dialog.exec():
             modifier_list[dialog.modifier_id] = modifier_config
 
-    def modifier_list_add(self, parent_layout, modifier_list):
+    def modifier_list_add(self, parent_layout=None, modifier_list=None):
         modifiers = Modifiers()
         dialog = QDialog()
         dialog.setWindowTitle("add Modifier")
@@ -182,12 +182,16 @@ class GuiModifiers:
         if dialog.exec():
             row = modifier_table.currentRow()
             modifier_type = modifier_table.item(row, 0).text()
+            if not modifier_list:
+                return modifier_type
             modifier_list.append({"type": modifier_type})
             self.modifier_list_update(parent_layout, modifier_list)
             if modifier_type != "invert":
                 self.edit_modifier(modifier_list, len(modifier_list) - 1, parent_layout)
 
     def modifier_list_update(self, parent_layout, modifier_list):
+        if not parent_layout:
+            return
         pc = parent_layout.count()
         for i in reversed(range(pc)):
             parent_layout.itemAt(i).widget().setParent(None)
