@@ -1392,12 +1392,16 @@ class Window(QWidget):
         return config
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
-            self.close()
+        if event.key() in {Qt.Key_Escape, Qt.Key_Backspace}:
+            self.undo()
         elif event.key() == Qt.Key_Delete:
             self.delete_selection()
-        elif event.key() == Qt.Key_Backspace:
-            self.undo()
+        elif event.key() in {Qt.Key_Insert, Qt.Key_Plus}:
+            selection = self.dialog_select("add", ["add Plugin", "add Breakout"])
+            if selection == "add Plugin":
+                self.gui_plugins.add_plugin(None)
+            elif selection == "add Breakout":
+                self.gui_breakouts.add_breakout(None)
         elif event.modifiers() & Qt.ControlModifier:
             if event.key() == Qt.Key_S:
                 self.json_save()
@@ -1966,8 +1970,6 @@ class Window(QWidget):
         return
 
     def add_modifier(self):
-        # ret = self.dialog_select("select", ["a", "v"])
-
         modifier_type = self.gui_modifiers.modifier_list_add()
         if not modifier_type:
             return
