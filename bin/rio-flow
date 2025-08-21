@@ -1134,6 +1134,7 @@ class NodeViewer(QGraphicsView):
         zoomFactor = 1 + (angle / 1000)
         self.scale(zoomFactor, zoomFactor)
         self.scene.parent.config["flow"]["view"]["scale"] = zoomFactor
+        self.scene.parent.cfg_save()
 
 
 class NodeScene(QGraphicsScene):
@@ -1425,7 +1426,6 @@ class Window(QWidget):
         self.cfg_save()
         if not self.snapshots or self.config != self.snapshots[-1]:
             self.snapshots.append(copy.deepcopy(self.config))
-        self.jsontab.update()
 
     def undo(self):
         if len(self.snapshots) > 1:
@@ -1497,6 +1497,7 @@ class Window(QWidget):
                     else:
                         if plugin_config.get("pins") and port in plugin_config["pins"]:
                             del plugin_config["pins"][port]
+        self.jsontab.update()
 
     def display(self):
         self.redraw()
