@@ -202,6 +202,7 @@ NodeEdge = NodeEdgePath
 
 
 class MyNode(QGraphicsItem):
+    name = ""
     radius = 5
     border_size = 4
     border_color = QColor(150, 150, 150)
@@ -1184,10 +1185,11 @@ class NodeScene(QGraphicsScene):
 
         if self.hover:
             self.menu_selection = self.hover
-            delete = QAction("delete", None)
+            node_type = self.menu_selection.__class__.__name__
+            node_name = self.menu_selection.name
+            delete = QAction(f"delete {node_name} ({node_type})", None)
             delete.triggered.connect(self.delete)
             menu.addAction(delete)
-            # print(self.menu_selection)
             if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode):
                 rotate = QAction("rotate", None)
                 rotate.triggered.connect(self.menu_selection.rotate_cw)
