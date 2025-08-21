@@ -11,6 +11,7 @@ from math import floor, ceil
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
+    QTabWidget,
     QMenu,
     QAction,
     QLabel,
@@ -35,6 +36,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 import riocore
 
+from riocore.gui.tab_json import TabJson
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.breakouts import GuiBreakouts
 from riocore.gui.modifiers import GuiModifiers
@@ -1263,7 +1265,6 @@ class Window(QWidget):
         self.board = {}
 
         self.cfggraph = cfggraph()
-
         self.gui_plugins = GuiPlugins(self)
         self.gui_breakouts = GuiBreakouts(self)
         self.gui_modifiers = GuiModifiers(self)
@@ -1309,10 +1310,15 @@ class Window(QWidget):
         vbox.addStretch()
 
         self.view = NodeViewer(self.scene)
+        self.jsontab = TabJson(self)
+
+        self.tabwidget = QTabWidget()
+        self.tabwidget.addTab(self.view, "Chart")
+        self.tabwidget.addTab(self.jsontab.widget(), "Json")
 
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)
-        hbox.addWidget(self.view)
+        hbox.addWidget(self.tabwidget)
 
         vboxMain = QVBoxLayout(self)
         self.info = QLabel("---")
@@ -1324,6 +1330,45 @@ class Window(QWidget):
         self.show()
         self.cfg_reload()
         self.snapshot()
+
+    def struct_clean(self, data):
+        # removing empty lists and dicts
+        for key in list(data):
+            if isinstance(data[key], list):
+                for pn, part in enumerate(data[key]):
+                    if isinstance(part, dict):
+                        if not part:
+                            print("DEL1", key, pn, data[key][pn])
+                            del data[key][pn]
+                        else:
+                            self.struct_clean(data[key][pn])
+                if not data[key]:
+                    del data[key]
+            elif isinstance(data[key], dict):
+                self.struct_clean(data[key])
+                if not data[key]:
+                    del data[key]
+            elif data[key] is None:
+                del data[key]
+
+    def clean_config(self, config_unclean):
+        config = copy.deepcopy(config_unclean)
+        # cleanup
+        for module in config.get("modules", []):
+            for name, setup in module.get("setup", {}).items():
+                for pin, pin_setup in setup.get("pins", {}).items():
+                    if "pin_mapped" in pin_setup:
+                        del pin_setup["pin_mapped"]
+        for plugin in config.get("plugins", []):
+            for name, plugin_config in plugin.get("config", {}).items():
+                if "instance" in plugin_config:
+                    del plugin_config["instance"]
+
+        for nnum, net in enumerate(config.get("linuxcnc", {}).get("net", [])):
+            if not net.get("source") or not net.get("target"):
+                config["linuxcnc"]["net"].pop(nnum)
+        self.struct_clean(config)
+        return config
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
@@ -1337,6 +1382,7 @@ class Window(QWidget):
         if config is None:
             jdata = open(self.filename, "r").read()
             self.config = json.loads(jdata)
+            self.config_original = self.clean_config(self.config)
         else:
             self.config = config
         if "flow" not in self.config:
@@ -1356,16 +1402,20 @@ class Window(QWidget):
         self.cfg_save()
         if not self.snapshots or self.config != self.snapshots[-1]:
             self.snapshots.append(copy.deepcopy(self.config))
+        self.jsontab.update()
 
     def undo(self):
         if len(self.snapshots) > 1:
             self.snapshots.pop()
         self.cfg_reload(config=copy.deepcopy(self.snapshots[-1]))
+        self.jsontab.update()
 
     def json_save(self):
         self.cfg_save()
         jdata = json.dumps(self.config, indent=4)
         open(self.filename, "w").write(jdata)
+        self.config_original = self.clean_config(self.config)
+        self.jsontab.update()
 
     def update_halpins_from_edges(self):
         for item in self.scene.items():
@@ -1427,6 +1477,7 @@ class Window(QWidget):
 
     def display(self):
         self.redraw()
+        self.jsontab.update()
 
     def pin_not(self, input_pin, target):
         component = input_pin.split(".", 1)[0]

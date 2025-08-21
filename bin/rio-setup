@@ -4,7 +4,6 @@
 
 import argparse
 import copy
-import difflib
 import glob
 import importlib
 import json
@@ -32,6 +31,7 @@ from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.modules import GuiModules
 from riocore.gui.gpios import GuiGpios
 
+from riocore.gui.tab_json import TabJson
 from riocore.gui.tab_axis import TabAxis
 from riocore.gui.tab_board import TabBoard
 from riocore.gui.tab_gateware import TabGateware
@@ -73,7 +73,6 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QListWidget,
-    QPlainTextEdit,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
@@ -84,41 +83,6 @@ from PyQt5.QtWidgets import (
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
-
-
-class TabJson:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.jsondiff = QPlainTextEdit()
-        self.jsondiff.clear()
-        self.jsondiff.insertPlainText("...")
-
-    def widget(self):
-        return self.jsondiff
-
-    def timer(self):
-        pass
-
-    def update(self):
-        config = json.dumps(self.parent.clean_config(self.parent.config), indent=4)
-        config_original = json.dumps(self.parent.clean_config(self.parent.config_original), indent=4)
-        self.jsondiff.clear()
-        differ = difflib.Differ()
-        color_format = self.jsondiff.currentCharFormat()
-        default_color = color_format.foreground()
-        for line in differ.compare(config_original.split("\n"), config.split("\n")):
-            marker = line[0]
-            if marker == "-":
-                color = QColor(255, 0, 0)
-            elif marker == "+":
-                color = QColor(0, 255, 0)
-            elif marker == "?":
-                continue
-            else:
-                color = default_color
-            color_format.setForeground(color)
-            self.jsondiff.setCurrentCharFormat(color_format)
-            self.jsondiff.insertPlainText(f"{line}\n")
 
 
 class TabPlugins:
