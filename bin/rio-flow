@@ -9,7 +9,7 @@ import sys
 from math import floor, ceil
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
-from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform, QKeySequence
 from PyQt5.QtWidgets import (
     QTabWidget,
     QMenu,
@@ -1377,6 +1377,9 @@ class Window(QWidget):
             self.delete_selection()
         elif event.key() == Qt.Key_Backspace:
             self.undo()
+        elif event.modifiers() & Qt.ControlModifier:
+            if event.key() == Qt.Key_S:
+                self.json_save()
 
     def cfg_reload(self, widget=None, config=None):
         if config is None:
