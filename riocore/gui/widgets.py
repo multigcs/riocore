@@ -186,6 +186,7 @@ class edit_float(QDoubleSpinBox):
         self.obj = obj
         self.key = key
         self.default = default
+        self.no_update = False
         if help_text:
             self.setToolTip(help_text)
         if decimals is None:
@@ -217,6 +218,8 @@ class edit_float(QDoubleSpinBox):
             return QSpinBox.wheelEvent(self, *args, **kwargs)
 
     def change(self):
+        if self.no_update:
+            return
         if self.value() != self.default:
             self.obj[self.key] = self.value()
         elif self.key in self.obj:
@@ -235,6 +238,7 @@ class edit_int(QSpinBox):
         self.obj = obj
         self.key = key
         self.default = default
+        self.no_update = False
         if help_text:
             self.setToolTip(help_text)
         if vmin:
@@ -258,6 +262,8 @@ class edit_int(QSpinBox):
             return QSpinBox.wheelEvent(self, *args, **kwargs)
 
     def change(self):
+        if self.no_update:
+            return
         if self.value() != self.default:
             self.obj[self.key] = self.value()
         elif self.key in self.obj:
@@ -276,6 +282,7 @@ class edit_avgfilter(QSpinBox):
         self.obj = obj
         self.key = key
         self.default = default
+        self.no_update = False
         self.setValue(0)
         if help_text:
             self.setToolTip(help_text)
@@ -300,6 +307,8 @@ class edit_avgfilter(QSpinBox):
             return QSpinBox.wheelEvent(self, *args, **kwargs)
 
     def change(self):
+        if self.no_update:
+            return
         if self.value() != self.default:
             if self.key not in self.obj:
                 self.obj[self.key] = []
@@ -338,6 +347,7 @@ class edit_text(QLineEdit):
         self.obj = obj
         self.key = key
         self.default = default
+        self.no_update = False
         if help_text:
             self.setToolTip(help_text)
         if key in obj:
@@ -351,6 +361,8 @@ class edit_text(QLineEdit):
     #    self.clicked.emit()
 
     def change(self):
+        if self.no_update:
+            return
         if self.text() != self.default:
             self.obj[self.key] = self.text()
         elif self.key in self.obj:
@@ -372,6 +384,7 @@ class edit_file(QLineEdit):
         self.obj = obj
         self.key = key
         self.default = default
+        self.no_update = False
         if help_text:
             self.setToolTip(help_text)
         if key in obj:
@@ -399,6 +412,8 @@ class edit_file(QLineEdit):
             self.setText(name[0])
 
     def change(self):
+        if self.no_update:
+            return
         if self.text() != self.default:
             self.obj[self.key] = self.text()
         elif self.key in self.obj:
@@ -417,6 +432,7 @@ class edit_bool(QCheckBox):
         self.obj = obj
         self.key = key
         self.default = default
+        self.no_update = False
         self.setStyleSheet(STYLESHEET_CHECKBOX)
         if help_text:
             self.setToolTip(help_text)
@@ -427,6 +443,8 @@ class edit_bool(QCheckBox):
         self.stateChanged.connect(self.change)
 
     def change(self):
+        if self.no_update:
+            return
         if self.isChecked() != self.default:
             self.obj[self.key] = self.isChecked()
         elif self.key in self.obj:
@@ -445,6 +463,7 @@ class edit_combobox(QComboBox):
         self.obj = obj
         self.key = key
         self.default = default
+        self.no_update = False
         options = options.copy()
         options_clean = []
         for opt in options:
@@ -488,6 +507,8 @@ class edit_combobox(QComboBox):
             return QComboBox.wheelEvent(self, *args, **kwargs)
 
     def change(self):
+        if self.no_update:
+            return
         new_value = self.currentText().split("|")[0]
         if new_value != self.default:
             self.obj[str(self.key)] = new_value
