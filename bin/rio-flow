@@ -2,6 +2,7 @@
 #
 #
 
+import argparse
 import copy
 import os
 import json
@@ -12,6 +13,7 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
+    QFileDialog,
     QTabWidget,
     QMenu,
     QAction,
@@ -38,6 +40,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 import riocore
 
+from riocore.gui.loader import ConfigLoader
 from riocore.gui.tab_json import TabJson
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.breakouts import GuiBreakouts
@@ -453,6 +456,8 @@ class BoardNode(QGraphicsItem):
         for slot in self.jdata["slots"]:
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
+                if isinstance(pin_data, str):
+                    pin_data = {"pin": pin_data}
                 pos = pin_data.get("pos") or slot.get("pos")
                 if self.board_setup["config"]["flow"]["board"]["rotate"] == 90:
                     pos = [pixmap_width - pos[1], pos[0]]
@@ -1267,7 +1272,8 @@ class NodeScene(QGraphicsScene):
 
 
 class Window(QWidget):
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
         self.HAS_INVERTS = {"rio": "-not"}
         self.logic_ids = {}
         self.hal_logics = {}
@@ -1279,7 +1285,6 @@ class Window(QWidget):
         super().__init__()
         self.scene = NodeScene(-1500, -1500, 5000, 5000, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
-        self.filename = sys.argv[1]
         self.snapshots = []
         self.halpins = {}
         self.joints = 0
@@ -1348,9 +1353,29 @@ class Window(QWidget):
 
         self.setLayout(vboxMain)
 
+        self.config_file = None
+        self.loader = ConfigLoader(self)
+        if self.args.config:
+            self.config_file = args.config
+        else:
+            if not self.loader.select():
+                exit(1)
+
         self.show()
         self.cfg_reload()
         self.snapshot()
+
+    def get_boardpath(self, board):
+        pathes = [
+            f"{board}.json",
+            os.path.join(riocore_path, "boards", f"{board}.json"),
+            os.path.join(riocore_path, "boards", board, "board.json"),
+        ]
+        for path in pathes:
+            if os.path.exists(path):
+                return path
+        print(f"can not find board: {board}")
+        exit(1)
 
     def struct_clean(self, data):
         # removing empty lists and dicts
@@ -1406,11 +1431,30 @@ class Window(QWidget):
             if event.key() == Qt.Key_S:
                 self.json_save()
 
+    def load_config_from(self):
+        file_dialog = QFileDialog(self)
+        suffix_list = ["*.json"]
+        name = file_dialog.getOpenFileName(
+            self,
+            "Load Config",
+            os.path.join(riocore_path, "configs"),
+            f"config ( {' '.join(suffix_list)} )Load Config",
+            "",
+        )
+        if name[0]:
+            self.config_file = name[0]
+
     def cfg_reload(self, widget=None, config=None):
         if config is None:
-            jdata = open(self.filename, "r").read()
-            self.config = json.loads(jdata)
-            self.config_original = self.clean_config(self.config)
+            if self.config_file is not None:
+                jdata = open(self.config_file, "r").read()
+                self.config = json.loads(jdata)
+                self.config_original = self.clean_config(self.config)
+            elif self.config:
+                self.config_original = self.clean_config(self.config)
+            else:
+                print("ERROR: can not load configuration")
+                self.config = {}
         else:
             self.config = config
         if "flow" not in self.config:
@@ -1440,7 +1484,7 @@ class Window(QWidget):
     def json_save(self):
         self.cfg_save()
         jdata = json.dumps(self.config, indent=4)
-        open(self.filename, "w").write(jdata)
+        open(self.config_file, "w").write(jdata)
         self.config_original = self.clean_config(self.config)
         self.jsontab.update()
 
@@ -2113,7 +2157,13 @@ class Window(QWidget):
         return None
 
 
-print("######## WIP - only for testing ########")
-app = QApplication(sys.argv)
-Window()
-app.exec()
+if __name__ == "__main__":
+    print("######## WIP - only for testing ########")
+
+    app = QApplication(sys.argv)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
+    args = parser.parse_args()
+
+    Window(args)
+    app.exec()
