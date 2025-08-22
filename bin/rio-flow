@@ -13,7 +13,6 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
-    QFileDialog,
     QTabWidget,
     QMenu,
     QAction,
@@ -1430,19 +1429,6 @@ class Window(QWidget):
         elif event.modifiers() & Qt.ControlModifier:
             if event.key() == Qt.Key_S:
                 self.json_save()
-
-    def load_config_from(self):
-        file_dialog = QFileDialog(self)
-        suffix_list = ["*.json"]
-        name = file_dialog.getOpenFileName(
-            self,
-            "Load Config",
-            os.path.join(riocore_path, "configs"),
-            f"config ( {' '.join(suffix_list)} )Load Config",
-            "",
-        )
-        if name[0]:
-            self.config_file = name[0]
 
     def cfg_reload(self, widget=None, config=None):
         if config is None:

@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     QStyle,
+    QFileDialog,
     QDialogButtonBox,
     QTableWidget,
     QTableWidgetItem,
@@ -95,6 +96,19 @@ class ConfigLoader:
         if dialog.exec():
             return True
         return False
+
+    def load_config_from(self):
+        file_dialog = QFileDialog(self.parent)
+        suffix_list = ["*.json"]
+        name = file_dialog.getOpenFileName(
+            self.parent,
+            "Load Config",
+            os.path.join(riocore_path, "configs"),
+            f"config ( {' '.join(suffix_list)} )Load Config",
+            "",
+        )
+        if name[0]:
+            self.parent.config_file = name[0]
 
     def select_config(self):
         def show_config_info(idx):
