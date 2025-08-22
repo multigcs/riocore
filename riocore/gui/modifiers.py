@@ -2,10 +2,6 @@ from functools import partial
 
 from riocore.modifiers import Modifiers
 
-from riocore.gui.widgets import (
-    STYLESHEET,
-)
-
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -83,7 +79,8 @@ class GuiModifiers:
 
         dialog = QDialog()
         dialog.setWindowTitle("edit Modifier")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog.modifier_id = modifier_id
         modifier_config = modifier_list[dialog.modifier_id]
         modifier_type = modifier_config.get("type", "???")
@@ -127,7 +124,8 @@ class GuiModifiers:
         modifiers = Modifiers()
         dialog = QDialog()
         dialog.setWindowTitle("add Modifier")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
 

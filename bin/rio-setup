@@ -107,6 +107,7 @@ class WinForm(QWidget):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("LinuxCNC-RIO - Setup-GUI")
         self.STYLESHEET = STYLESHEET
+        self.STYLESHEET_TABBAR = STYLESHEET_TABBAR
         self.setStyleSheet(STYLESHEET)
         self.args = args
 

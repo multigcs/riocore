@@ -529,6 +529,12 @@ class BoardNode(QGraphicsItem):
                 painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
             painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
 
+    def mouseDoubleClickEvent(self, event):
+        print(self.board_setup)
+        self.scene.parent.gui_boards.edit_board(self.board_setup)
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
     def mousePressEvent(self, event):
         port = self.port_selected(event.pos())
         if self.scene.selection_source == (self, port):
@@ -660,6 +666,11 @@ class BreakoutNode(QGraphicsItem):
             else:
                 painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
             painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
+
+    def mouseDoubleClickEvent(self, event):
+        self.scene.parent.gui_breakouts.edit_breakout(self.breakout_setup)
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
 
     def mousePressEvent(self, event):
         port = self.port_selected(event.pos())
@@ -1181,9 +1192,10 @@ class NodeScene(QGraphicsScene):
             self.menu_selection = self.hover
             node_type = self.menu_selection.__class__.__name__
             node_name = self.menu_selection.name
-            delete = QAction(f"delete {node_name} ({node_type})", None)
-            delete.triggered.connect(self.delete)
-            menu.addAction(delete)
+            if not isinstance(self.menu_selection, BoardNode):
+                delete = QAction(f"delete {node_name} ({node_type})", None)
+                delete.triggered.connect(self.delete)
+                menu.addAction(delete)
             if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode):
                 rotate = QAction("rotate", None)
                 rotate.triggered.connect(self.menu_selection.rotate_cw)
@@ -1327,8 +1339,8 @@ class Window(QWidget):
         self.jsontab = TabJson(self)
 
         self.tabwidget = QTabWidget()
-        self.tabwidget.addTab(self.view, "Chart")
-        self.tabwidget.addTab(self.jsontab.widget(), "Json")
+        self.tabwidget.addTab(self.view, "Drawing")
+        self.tabwidget.addTab(self.jsontab.widget(), "Json-Config")
 
         hbox = QHBoxLayout()
         hbox.addLayout(vbox)

@@ -8,8 +8,6 @@ from riocore import halpins
 
 from riocore.gui.widgets import (
     MyStandardItem,
-    STYLESHEET,
-    STYLESHEET_TABBAR,
 )
 
 from PyQt5 import QtSvg
@@ -187,7 +185,8 @@ class GuiPlugins:
             joint_options[pkey]["default"] = value
 
         joint_tabs = QTabWidget()
-        joint_tabs.setStyleSheet(STYLESHEET_TABBAR)
+        if hasattr(self.parent, "STYLESHEET_TABBAR"):
+            joint_tabs.setStyleSheet(self.parent.STYLESHEET_TABBAR)
 
         general_layout = QVBoxLayout()
         label = QLabel("Joint-Setup")
@@ -522,7 +521,8 @@ class GuiPlugins:
         dialog = QDialog()
         dialog.is_removed = False
         dialog.setWindowTitle(f"edit plugin {plugin_instance.NAME}")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog_buttonBox.rejected.connect(dialog.reject)
@@ -533,7 +533,8 @@ class GuiPlugins:
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
         tab_widget = QTabWidget()
-        tab_widget.setStyleSheet(STYLESHEET_TABBAR)
+        if hasattr(self.parent, "STYLESHEET_TABBAR"):
+            tab_widget.setStyleSheet(self.parent.STYLESHEET_TABBAR)
 
         if is_new and plugin_instance.TYPE == "joint":
             if "position" in plugin_instance.SIGNALS:
@@ -590,7 +591,10 @@ class GuiPlugins:
     def config_plugin(self, plugin_instance, plugin_id, widget):
         if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
-            config_box = plugin_config.config(plugin_instance, styleSheet=STYLESHEET)
+            if hasattr(self.parent, "STYLESHEET"):
+                config_box = plugin_config.config(plugin_instance, styleSheet=self.parent.STYLESHEET)
+            else:
+                config_box = plugin_config.config(plugin_instance)
             config_box.run()
         if hasattr(self.parent, "config_load"):
             self.parent.config_load()
@@ -689,7 +693,8 @@ class GuiPlugins:
 
         dialog = QDialog()
         dialog.setWindowTitle("select plugin")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
 
         dialog.layout = QVBoxLayout()
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)

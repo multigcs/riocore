@@ -3,10 +3,6 @@ import json
 
 import riocore
 
-from riocore.gui.widgets import (
-    STYLESHEET,
-)
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
@@ -30,10 +26,49 @@ class GuiBreakouts:
     def __init__(self, parent):
         self.parent = parent
 
+    def edit_breakout(self, breakout_setup):
+        def update():
+            pass
+
+        def update_rotate(value):
+            breakout_setup["rotate"] = int(value)
+            self.parent.display()
+
+        dialog = QDialog()
+        dialog.setWindowTitle("edit Breakout")
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
+
+        dialog.layout = QVBoxLayout()
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+
+        slots = []
+        for slot in self.parent.bnode.jdata["slots"]:
+            slots.append(slot["name"])
+
+        dialog.layout.addWidget(QLabel("Name:"))
+        dialog.layout.addWidget(self.parent.edit_item(breakout_setup, "name", {"type": str}, cb=None))
+        dialog.layout.addWidget(QLabel("Slot:"))
+        dialog.layout.addWidget(self.parent.edit_item(breakout_setup, "slot", {"type": "select", "options": slots}, cb=None))
+        dialog.layout.addWidget(QLabel("Rotate:"))
+        dialog.layout.addWidget(self.parent.edit_item(breakout_setup, "rotate", {"type": "select", "options": ["0", "90", "180", "-90"]}, cb=update_rotate))
+
+        dialog.mlabel = QLabel("")
+        dialog.layout.addWidget(dialog.mlabel)
+        update()
+
+        dialog.layout.addWidget(dialog_buttonBox)
+        dialog.setLayout(dialog.layout)
+
+        if dialog.exec():
+            pass
+
     def add_breakout(self, pin_id, slot_name=None):
         dialog = QDialog()
         dialog.setWindowTitle("select breakout")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
 
         dialog.layout = QVBoxLayout()
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
