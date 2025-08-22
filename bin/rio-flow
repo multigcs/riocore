@@ -440,7 +440,7 @@ class BoardNode(QGraphicsItem):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.setAcceptHoverEvents(True)
         board = board_setup["board"]
-        image = f"riocore/boards/{board}/board.png"
+        image = os.path.join(riocore_path, "boards", board, "board.png")
         pixmap = QPixmap.fromImage(QImage(image))
         pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
         pixmap_width = pixmap.width()
@@ -450,7 +450,7 @@ class BoardNode(QGraphicsItem):
         self.height = pixmap_height // 2
         self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.ports = {}
-        data = open(f"riocore/boards/{board}/board.json", "r").read()
+        data = open(os.path.join(riocore_path, "boards", board, "board.json"), "r").read()
         self.jdata = json.loads(data)
         for slot in self.jdata["slots"]:
             slot_name = slot["name"]
@@ -564,10 +564,9 @@ class BreakoutNode(QGraphicsItem):
         if "rotate" not in self.breakout_setup:
             self.breakout_setup["rotate"] = 0
         breakout = breakout_setup["breakout"]
-        data = open(f"riocore/breakouts/{breakout}/breakout.json", "r").read()
+        data = open(os.path.join(riocore_path, "breakouts", breakout, "breakout.json"), "r").read()
         self.jdata = json.loads(data)
-
-        image = f"riocore/breakouts/{breakout}/breakout.png"
+        image = os.path.join(riocore_path, "breakouts", breakout, "breakout.png")
         pixmap = QPixmap.fromImage(QImage(image))
         pixmap = pixmap.transformed(QTransform().rotate(self.breakout_setup["rotate"]))
         pixmap_width = pixmap.width()
@@ -713,16 +712,6 @@ class PluginNode(MyNode):
         for key, value in self.signals.items():
             self.ports_right[f"sig_{key}"] = value
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
-        """
-        image = f"riocore/plugins/{plugin_config['type']}/image.png"
-        pixmap = QPixmap.fromImage(QImage(image))
-        pixmap = pixmap.transformed(QTransform().rotate(plugin_config.get("rotate", 0)))
-        pixmap_width = pixmap.width()
-        pixmap_height = pixmap.height()
-        self.width = pixmap_width // 2
-        self.height = pixmap_height // 2
-        self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        """
 
     def paint(self, painter, option, widget):
         pos = self.pos()
@@ -1686,7 +1675,7 @@ class Window(QWidget):
             self.config["flow"]["board"]["rotate"] = 0
         self.bnode = None
         board_setup = {"board": boardcfg, "config": self.config}
-        if os.path.exists(f"riocore/boards/{boardcfg}/board.json"):
+        if os.path.exists(os.path.join(riocore_path, "boards", boardcfg, "board.json")):
             self.bnode = BoardNode(self.scene, board_setup)
             self.bnode.setPos(self.config["flow"]["board"]["pos"][0], self.config["flow"]["board"]["pos"][1])
             self.scene.addItem(self.bnode)
