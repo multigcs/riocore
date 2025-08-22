@@ -72,6 +72,16 @@ colors = [
     QColor(50, 150, 150),
     QColor(50, 250, 50),
     QColor(50, 150, 50),
+    QColor(150, 250, 150),
+    QColor(150, 150, 250),
+    QColor(250, 150, 150),
+    QColor(250, 250, 250),
+    QColor(250, 150, 250),
+    QColor(150, 50, 150),
+    QColor(150, 150, 50),
+    QColor(50, 150, 150),
+    QColor(50, 250, 50),
+    QColor(50, 150, 50),
 ]
 grid_size = 10
 grid_color = QColor(150, 150, 150)
