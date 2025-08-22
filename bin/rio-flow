@@ -40,9 +40,9 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 import riocore
 
 from riocore.gui.loader import ConfigLoader
-from riocore.gui.tab_config import TabConfig
 from riocore.gui.tab_json import TabJson
 from riocore.gui.plugins import GuiPlugins
+from riocore.gui.boards import GuiBoards
 from riocore.gui.breakouts import GuiBreakouts
 from riocore.gui.modifiers import GuiModifiers
 # from riocore.halpins import LINUXCNC_SIGNALS
@@ -529,6 +529,11 @@ class BoardNode(QGraphicsItem):
             else:
                 painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
             painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
+
+    def mouseDoubleClickEvent(self, event):
+        self.scene.parent.gui_boards.edit_board()
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
 
     def mousePressEvent(self, event):
         port = self.port_selected(event.pos())
@@ -1289,6 +1294,7 @@ class Window(QWidget):
 
         self.cfggraph = cfggraph()
         self.gui_plugins = GuiPlugins(self)
+        self.gui_boards = GuiBoards(self)
         self.gui_breakouts = GuiBreakouts(self)
         self.gui_modifiers = GuiModifiers(self)
 
@@ -1334,12 +1340,9 @@ class Window(QWidget):
 
         self.view = NodeViewer(self.scene)
         self.jsontab = TabJson(self)
-        self.configtab = TabConfig(self)
 
         self.tabwidget = QTabWidget()
         self.tabwidget.addTab(self.view, "Drawing")
-        self.tabwidget.addTab(self.configtab.widget(), "Base-Config")
-        self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
 
         hbox = QHBoxLayout()
@@ -1471,7 +1474,6 @@ class Window(QWidget):
             self.snapshots.pop()
         self.cfg_reload(config=copy.deepcopy(self.snapshots[-1]))
         self.jsontab.update()
-        self.configtab.update()
 
     def json_save(self):
         self.cfg_save()
@@ -1479,7 +1481,6 @@ class Window(QWidget):
         open(self.config_file, "w").write(jdata)
         self.config_original = self.clean_config(self.config)
         self.jsontab.update()
-        self.configtab.update()
 
     def update_halpins_from_edges(self):
         for item in self.scene.items():
@@ -1539,12 +1540,10 @@ class Window(QWidget):
                         if plugin_config.get("pins") and port in plugin_config["pins"]:
                             del plugin_config["pins"][port]
         self.jsontab.update()
-        self.configtab.update()
 
     def display(self):
         self.redraw()
         self.jsontab.update()
-        self.configtab.update()
 
     def pin_not(self, input_pin, target):
         component = input_pin.split(".", 1)[0]
