@@ -1349,6 +1349,10 @@ class Window(QWidget):
             if not self.loader.select():
                 exit(1)
 
+        if not self.config_file or not os.path.exists(self.config_file):
+            print(f"ERROR: file not found: {self.config_file}")
+            exit(1)
+
         self.show()
         self.cfg_reload()
         self.snapshot()
