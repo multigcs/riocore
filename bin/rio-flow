@@ -1300,37 +1300,9 @@ class Window(QWidget):
 
         vbox = QVBoxLayout()
 
-        grid = QPushButton("Grid")
-        grid.clicked.connect(self.grid_align)
-        vbox.addWidget(grid)
-
-        edit = QPushButton("Edit")
-        edit.clicked.connect(self.edit_selection)
-        vbox.addWidget(edit)
-
-        add_plugin = QPushButton("add Plugin")
-        add_plugin.clicked.connect(self.gui_plugins.add_plugin)
-        vbox.addWidget(add_plugin)
-
-        add_modifier = QPushButton("add Modifier")
-        add_modifier.clicked.connect(self.add_modifier)
-        vbox.addWidget(add_modifier)
-
-        delete = QPushButton("Delete")
-        delete.clicked.connect(self.delete_selection)
-        vbox.addWidget(delete)
-
-        redraw = QPushButton("Redraw")
-        redraw.clicked.connect(self.redraw)
-        vbox.addWidget(redraw)
-
         cfg_reload = QPushButton("Reload")
         cfg_reload.clicked.connect(self.cfg_reload)
         vbox.addWidget(cfg_reload)
-
-        undo = QPushButton("Undo")
-        undo.clicked.connect(self.undo)
-        vbox.addWidget(undo)
 
         save = QPushButton("Save")
         save.clicked.connect(self.json_save)
