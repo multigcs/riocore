@@ -530,10 +530,13 @@ class BoardNode(QGraphicsItem):
                 painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
             painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
 
-    def mouseDoubleClickEvent(self, event):
+    def edit(self):
         self.scene.parent.gui_boards.edit_board()
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
+
+    def mouseDoubleClickEvent(self, event):
+        self.edit()
 
     def mousePressEvent(self, event):
         port = self.port_selected(event.pos())
@@ -667,10 +670,13 @@ class BreakoutNode(QGraphicsItem):
                 painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
             painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
 
-    def mouseDoubleClickEvent(self, event):
+    def edit(self):
         self.scene.parent.gui_breakouts.edit_breakout(self.breakout_setup)
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
+
+    def mouseDoubleClickEvent(self, event):
+        self.edit()
 
     def mousePressEvent(self, event):
         port = self.port_selected(event.pos())
@@ -743,10 +749,13 @@ class PluginNode(MyNode):
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
         self.paintPorts(painter)
 
-    def mouseDoubleClickEvent(self, event):
+    def edit(self):
         self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
+
+    def mouseDoubleClickEvent(self, event):
+        self.edit()
 
     def mouseReleaseEvent(self, event):
         self.update()
@@ -852,11 +861,6 @@ class ModuleNode(MyNode):
 
             py += max(pph, sph)
             self.height = self.port_top + py + self.port_bottom
-
-    def mouseDoubleClickEvent(self, event):
-        # self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
-        self.scene.parent.redraw()
-        self.scene.parent.snapshot()
 
     def mouseReleaseEvent(self, event):
         self.update()
@@ -1192,16 +1196,23 @@ class NodeScene(QGraphicsScene):
             self.menu_selection = self.hover
             node_type = self.menu_selection.__class__.__name__
             node_name = self.menu_selection.name
-            if not isinstance(self.menu_selection, BoardNode):
-                delete = QAction(f"delete {node_name} ({node_type})", None)
-                delete.triggered.connect(self.delete)
-                menu.addAction(delete)
+
+            menu.addSection(f"Node: {node_name} ({node_type})")
+            if hasattr(self.menu_selection, "edit"):
+                edit = QAction("edit", None)
+                edit.triggered.connect(self.menu_selection.edit)
+                menu.addAction(edit)
             if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode):
                 rotate = QAction("rotate", None)
                 rotate.triggered.connect(self.menu_selection.rotate_cw)
                 menu.addAction(rotate)
+            if not isinstance(self.menu_selection, BoardNode):
+                delete = QAction("delete", None)
+                delete.triggered.connect(self.delete)
+                menu.addAction(delete)
 
         elif self.edge_hover:
+            menu.addSection("Edge / Wire")
             self.menu_selection = self.edge_hover
             delete = QAction("delete", None)
             delete.triggered.connect(self.delete)
@@ -1210,17 +1221,17 @@ class NodeScene(QGraphicsScene):
         else:
             pass
 
-        menu.addSeparator()
+        menu.addSection("Add")
 
-        add_plugin = QAction("add Plugin", None)
+        add_plugin = QAction("Plugin", None)
         add_plugin.triggered.connect(self.parent.gui_plugins.add_plugin)
         menu.addAction(add_plugin)
 
-        add_breakout = QAction("add Breakout", None)
+        add_breakout = QAction("Breakout", None)
         add_breakout.triggered.connect(self.parent.gui_breakouts.add_breakout)
         menu.addAction(add_breakout)
 
-        menu.addSeparator()
+        menu.addSection("View")
 
         add_grid = QAction("align to Grid", None)
         add_grid.triggered.connect(self.parent.grid_align)
