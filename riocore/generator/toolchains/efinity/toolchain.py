@@ -7,7 +7,7 @@ import shutil
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = f"{self.config['output_path']}/Gateware"
+        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
         self.riocore_path = config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("efinity", "")
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):

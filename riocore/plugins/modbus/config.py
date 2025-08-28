@@ -511,7 +511,7 @@ class config:
             device_data = DEVICE_TEMPLATES[selected]
             image_name = device_data.get("image")
             if image_name:
-                image_file = f"{os.path.dirname(__file__)}/images/{image_name}"
+                image_file = os.path.join(os.path.dirname(__file__), "images", image_name)
                 pixmap = QPixmap(image_file)
                 image.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio))
             template_name.setText(selected)

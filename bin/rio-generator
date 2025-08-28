@@ -44,8 +44,8 @@ if args.config:
     if args.config[0].endswith(".json"):
         if os.path.isfile(args.config[0]):
             config_file = args.config[0]
-        elif os.path.isfile(f"{riocore_path}/configs/{args.config[0]}"):
-            config_file = f"{riocore_path}/configs/{args.config[0]}"
+        elif os.path.isfile(os.path.join(riocore_path, "configs", args.config[0])):
+            config_file = os.path.join(riocore_path, "configs", args.config[0])
         else:
             print(f"can not load: {args.config[0]}")
             exit(1)

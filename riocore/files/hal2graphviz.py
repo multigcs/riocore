@@ -363,8 +363,8 @@ def load_halfile(basepath, filepath):
 
         return
 
-    if not os.path.exists(f"{basepath}/{filepath}"):
-        if os.path.exists(f"{LIB_PATH}/{filepath}"):
+    if not os.path.exists(os.path.join(basepath, filepath)):
+        if os.path.exists(os.path.join(LIB_PATH, filepath)):
             basepath = "/usr/share/linuxcnc/hallib"
         else:
             print(f"ERROR: file: {filepath} not found")
@@ -373,7 +373,7 @@ def load_halfile(basepath, filepath):
     if not args.quiet:
         print(f"loading {basepath}/{filepath}")
 
-    halfile_data = open(f"{basepath}/{filepath}", "r").read()
+    halfile_data = open(os.path.join(basepath, filepath), "r").read()
     for line in halfile_data.split("\n"):
         line = line.strip()
 
