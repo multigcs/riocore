@@ -10,9 +10,12 @@ import sys
 from math import floor, ceil
 from functools import partial
 
-from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF
+from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF, QSize
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
+    QStyle,
+    QMainWindow,
+    QToolBar,
     QTabWidget,
     QMenu,
     QAction,
@@ -1114,7 +1117,7 @@ class NodeViewer(QGraphicsView):
         self.button_pressed = 0
 
         # update config
-        self.scene.parent.config["flow"]["view"]["scale"] = round(self.getZoom(),2)
+        self.scene.parent.config["flow"]["view"]["scale"] = round(self.getZoom(), 2)
         self.scene.parent.config["flow"]["view"]["pos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
         self.scene.parent.snapshot()
 
@@ -1292,8 +1295,9 @@ class NodeScene(QGraphicsScene):
             painter.drawPoints(grid_points)
 
 
-class Window(QWidget):
+class Window(QMainWindow):
     def __init__(self, args):
+        super().__init__()
         self.args = args
         self.HAS_INVERTS = {"rio": "-not"}
         self.logic_ids = {}
@@ -1303,7 +1307,6 @@ class Window(QWidget):
         self.signals_out = {}
         self.function_cache = {}
 
-        super().__init__()
         self.scene = NodeScene(-1500, -1500, 5000, 5000, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.snapshots = []
@@ -1320,15 +1323,6 @@ class Window(QWidget):
         self.gui_modifiers = GuiModifiers(self)
 
         vbox = QVBoxLayout()
-
-        cfg_reload = QPushButton("Reload")
-        cfg_reload.clicked.connect(self.cfg_reload)
-        vbox.addWidget(cfg_reload)
-
-        save = QPushButton("Save")
-        save.clicked.connect(self.json_save)
-        vbox.addWidget(save)
-
         vbox.addStretch()
 
         self.view = NodeViewer(self.scene)
@@ -1342,12 +1336,15 @@ class Window(QWidget):
         hbox.addLayout(vbox)
         hbox.addWidget(self.tabwidget)
 
-        vboxMain = QVBoxLayout(self)
-        self.info = QLabel("---")
+        vboxMain = QVBoxLayout()
+        vboxMain.addWidget(self.toolbar())
         vboxMain.addLayout(hbox)
+        self.info = QLabel("---")
         vboxMain.addWidget(self.info)
 
-        self.setLayout(vboxMain)
+        self.main = QWidget()
+        self.setCentralWidget(self.main)
+        self.main.setLayout(vboxMain)
 
         self.config_file = None
         self.loader = ConfigLoader(self)
@@ -1360,10 +1357,40 @@ class Window(QWidget):
         if not self.config_file or not os.path.exists(self.config_file):
             print(f"ERROR: file not found: {self.config_file}")
             exit(1)
-
         self.show()
         self.cfg_reload()
         self.snapshot()
+
+    def toolbar(self):
+        toolbar = QToolBar("Main ToolBar")
+        self.addToolBar(toolbar)
+        toolbar.setIconSize(QSize(16, 16))
+
+        icon = self.style().standardIcon(QStyle.SP_DialogSaveButton)
+        save_action = QAction(icon, "&Save", self)
+        save_action.setStatusTip("Save")
+        save_action.setShortcut("Ctrl+S")
+        save_action.triggered.connect(self.json_save)
+        toolbar.addAction(save_action)
+
+        icon = self.style().standardIcon(QStyle.SP_BrowserReload)
+        reload_action = QAction(icon, "&Reload", self)
+        reload_action.setStatusTip("Reload")
+        reload_action.setShortcut("Ctrl+R")
+        reload_action.triggered.connect(self.cfg_reload)
+        toolbar.addAction(reload_action)
+
+        icon = self.style().standardIcon(QStyle.SP_DialogCloseButton)
+        exit_action = QAction(icon, "&Exit", self)
+        exit_action.setStatusTip("Exit")
+        exit_action.setShortcut("Alt+F4")
+        exit_action.triggered.connect(self.exit)
+        toolbar.addAction(exit_action)
+
+        return toolbar
+
+    def exit(self):
+        exit(0)
 
     def get_boardpath(self, board):
         pathes = [
@@ -1451,6 +1478,7 @@ class Window(QWidget):
         if "hal" not in self.config["flow"]:
             self.config["flow"]["hal"] = {}
         self.redraw()
+        self.cfg_check()
 
     def rotate(self, item):
         self.cfg_save()
