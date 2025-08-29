@@ -1114,7 +1114,7 @@ class NodeViewer(QGraphicsView):
         self.button_pressed = 0
 
         # update config
-        self.scene.parent.config["flow"]["view"]["scale"] = self.getZoom()
+        self.scene.parent.config["flow"]["view"]["scale"] = round(self.getZoom(),2)
         self.scene.parent.config["flow"]["view"]["pos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
         self.scene.parent.snapshot()
 
@@ -1151,7 +1151,7 @@ class NodeViewer(QGraphicsView):
         angle = event.angleDelta().y()
         zoomFactor = 1 + (angle / 1000)
         self.scale(zoomFactor, zoomFactor)
-        self.scene.parent.config["flow"]["view"]["scale"] = zoomFactor
+        self.scene.parent.config["flow"]["view"]["scale"] = round(zoomFactor, 2)
         self.scene.parent.cfg_save()
 
 
