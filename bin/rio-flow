@@ -13,6 +13,7 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF, QSize
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
+    QFileDialog,
     QStyle,
     QMainWindow,
     QToolBar,
@@ -1354,9 +1355,19 @@ class Window(QMainWindow):
             if not self.loader.select():
                 exit(1)
 
-        if not self.config_file or not os.path.exists(self.config_file):
+        self.show()
+
+        if self.config:
+            self.cfg_reload(config=self.config)
+        elif self.config_file and os.path.exists(self.config_file):
+            self.cfg_reload()
+        else:
             print(f"ERROR: file not found: {self.config_file}")
             exit(1)
+        self.snapshot()
+
+    def load(self):
+        self.loader.select()
         self.show()
         self.cfg_reload()
         self.snapshot()
@@ -1365,6 +1376,13 @@ class Window(QMainWindow):
         toolbar = QToolBar("Main ToolBar")
         self.addToolBar(toolbar)
         toolbar.setIconSize(QSize(16, 16))
+
+        icon = self.style().standardIcon(QStyle.SP_DialogOpenButton)
+        load_action = QAction(icon, "&Load", self)
+        load_action.setStatusTip("Load")
+        load_action.setShortcut("Ctrl+O")
+        load_action.triggered.connect(self.load)
+        toolbar.addAction(load_action)
 
         icon = self.style().standardIcon(QStyle.SP_DialogSaveButton)
         save_action = QAction(icon, "&Save", self)
@@ -1379,6 +1397,16 @@ class Window(QMainWindow):
         reload_action.setShortcut("Ctrl+R")
         reload_action.triggered.connect(self.cfg_reload)
         toolbar.addAction(reload_action)
+
+        toolbar.addSeparator()
+
+        icon = self.style().standardIcon(QStyle.SP_ArrowLeft)
+        undo_action = QAction(icon, "&Undo", self)
+        undo_action.setStatusTip("Undo")
+        undo_action.triggered.connect(self.undo)
+        toolbar.addAction(undo_action)
+
+        toolbar.addSeparator()
 
         icon = self.style().standardIcon(QStyle.SP_DialogCloseButton)
         exit_action = QAction(icon, "&Exit", self)
@@ -1471,6 +1499,7 @@ class Window(QMainWindow):
                 self.config = {}
         else:
             self.config = config
+            self.config_original = self.clean_config(self.config)
         if "flow" not in self.config:
             self.config["flow"] = {}
         if "view" not in self.config["flow"]:
@@ -1506,9 +1535,19 @@ class Window(QMainWindow):
     def json_save(self):
         self.cfg_save()
         jdata = json.dumps(self.config, indent=4)
-        open(self.config_file, "w").write(jdata)
-        self.config_original = self.clean_config(self.config)
-        self.cfg_check()
+
+        if self.config_file is None:
+            file_dialog = QFileDialog(self)
+            file_dialog.setNameFilters(["json (*.json)"])
+            name = file_dialog.getSaveFileName(self, "Save File", os.path.join(riocore_path, "configs"), "json (*.json)")
+            if name[0]:
+                if not name[0].endswith(".json"):
+                    name = [f"{name[0]}.json"]
+
+        if self.config_file:
+            open(self.config_file, "w").write(jdata)
+            self.config_original = self.clean_config(self.config)
+            self.cfg_check()
 
     def update_halpins_from_edges(self):
         for item in self.scene.items():
