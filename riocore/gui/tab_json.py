@@ -15,6 +15,7 @@ class TabJson:
         self.jsondiff.insertPlainText("...")
         self.diff_only = diff_only
         self.line_numbers = line_numbers
+        self.found_diffs = False
 
     def widget(self):
         return self.jsondiff
@@ -31,7 +32,7 @@ class TabJson:
         default_color = color_format.foreground()
         last_lines = []
         show_next = 0
-        diffs = False
+        self.found_diffs = False
         for line_n, line in enumerate(differ.compare(config_original.split("\n"), config.split("\n"))):
             marker = line[0]
             show = True
@@ -40,13 +41,13 @@ class TabJson:
                 cursor = self.jsondiff.textCursor()
                 cursor.movePosition(QTextCursor.End)
                 self.jsondiff.setTextCursor(cursor)
-                diffs = True
+                self.found_diffs = True
             elif marker == "+":
                 color = QColor(0, 155, 0)
                 cursor = self.jsondiff.textCursor()
                 cursor.movePosition(QTextCursor.End)
                 self.jsondiff.setTextCursor(cursor)
-                diffs = True
+                self.found_diffs = True
             elif marker == "?":
                 continue
             else:
@@ -78,5 +79,5 @@ class TabJson:
                     last_lines.append(f"{line_n} {line}\n")
                 else:
                     last_lines.append(f"{line}\n")
-        if self.diff_only and not diffs:
+        if self.diff_only and not self.found_diffs:
             self.jsondiff.insertPlainText("--- NO CHANGES ---\n")

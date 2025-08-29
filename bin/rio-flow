@@ -1462,18 +1462,25 @@ class Window(QWidget):
         if not self.snapshots or self.config != self.snapshots[-1]:
             self.snapshots.append(copy.deepcopy(self.config))
 
+    def cfg_check(self):
+        self.jsontab.update()
+        if self.jsontab.found_diffs:
+            self.tabwidget.tabBar().setTabTextColor(1, QColor(250, 0, 0))
+        else:
+            self.tabwidget.tabBar().setTabTextColor(1, QColor(0, 0, 0))
+
     def undo(self):
         if len(self.snapshots) > 1:
             self.snapshots.pop()
         self.cfg_reload(config=copy.deepcopy(self.snapshots[-1]))
-        self.jsontab.update()
+        self.cfg_check()
 
     def json_save(self):
         self.cfg_save()
         jdata = json.dumps(self.config, indent=4)
         open(self.config_file, "w").write(jdata)
         self.config_original = self.clean_config(self.config)
-        self.jsontab.update()
+        self.cfg_check()
 
     def update_halpins_from_edges(self):
         for item in self.scene.items():
@@ -1532,11 +1539,11 @@ class Window(QWidget):
                     else:
                         if plugin_config.get("pins") and port in plugin_config["pins"]:
                             del plugin_config["pins"][port]
-        self.jsontab.update()
+        self.cfg_check()
 
     def display(self):
         self.redraw()
-        self.jsontab.update()
+        self.cfg_check()
 
     def pin_not(self, input_pin, target):
         component = input_pin.split(".", 1)[0]
