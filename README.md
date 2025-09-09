@@ -94,7 +94,7 @@ cd riocore
 - installing dependencies via apt:
 ```
 apt-get update
-apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil
+apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil python3-spidev
 ```
 
 make sure that the toolchain matching your fpga is in the path:
