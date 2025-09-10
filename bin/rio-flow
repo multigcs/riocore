@@ -728,11 +728,10 @@ class PluginNode(MyNode):
         super().__init__(scene)
         plugin_config = plugin_instance.plugin_setup
         self.plugin_instance = plugin_instance
-        self.name = plugin_config["uid"]
+        self.name = plugin_instance.title
         self.pins = plugin_instance.PINDEFAULTS
         self.signals = plugin_instance.SIGNALS
         self.width = 180
-
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
