@@ -1534,7 +1534,7 @@ class Window(QMainWindow):
 
     def json_save(self):
         self.cfg_save()
-        jdata = json.dumps(self.config, indent=4)
+        jdata = json.dumps(self.clean_config(self.config), indent=4)
 
         if self.config_file is None:
             file_dialog = QFileDialog(self)
