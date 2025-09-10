@@ -53,7 +53,7 @@ module modbus
             rx_frame_id <= rx_frame_id + 8'd1;
             rxlen <= 0;
 
-        end else if (RxD_data_ready == 1) begin
+        end else if (RxD_data_ready == 1 && ~tx_enable) begin
             if (rxlen < (RX_BUFFERSIZE / 8) - 3) begin
                 rxbuffer <= {rxbuffer[RX_BUFFERSIZE-25-8:0], RxD_data};
                 //rxbuffer <= {RxD_data, rxbuffer[RX_BUFFERSIZE-17:8]};
