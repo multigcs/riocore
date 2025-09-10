@@ -145,7 +145,7 @@ class hy_vfd:
                             status_scale = self.HYVFD_STATUS_REGISTER[status_register]["scale"]
                             value = self.list2int(frame_data[4:-2])
                             self.HYVFD_STATUS_REGISTER[status_register]["done"] = True
-                            if status_register == 1:
+                            if status_register == 1 and self.HYVFD_DATA["max_freq"]:
                                 self.HYVFD_DATA[status_name] = value * status_scale
                                 self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
                                 self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
@@ -359,8 +359,8 @@ class hy_vfd:
         output.append("")
         output.append("")
         output.append("if (frame_timeout == 1) {")
-        output.append("    value_vfd_error_count += 1;")
-        output.append("    value_vfd_hycomm_ok = 0;")
+        output.append(f"    value_{self.signal_name}_error_count += 1;")
+        output.append(f"    value_{self.signal_name}_hycomm_ok = 0;")
         output.append("}")
         output.append("")
         output.append(f"if ({self.instances_name}_{self.signal_name}_register_setup == 1) {{")
