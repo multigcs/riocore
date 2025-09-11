@@ -13,20 +13,31 @@ class Pins:
                 if not pin_config["pin"]:
                     continue
                 iostandard = pin_config.get("iostandard", "LVTTL").upper()
-                drive = pin_config.get("drive", "4")
+                drive = str(pin_config.get("drive", "4"))
                 slew = pin_config.get("slew", "SLOW").upper()
+                pinstr = f"\"{pin_config['pin']}\""
+                netstr = f"\"{pin_config['varname']}\""
+                options = []
+                options.append(f"LOC = {pinstr:6s}")
+                options.append(f"IOSTANDARD = {iostandard:5s}")
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False):
                         print('WARNING: please change your pin-config to : "pull": "up"')
-                        data.append(f'NET "{pin_config["varname"]}"       PULLUP | LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
+                        options.append("PULLUP")
                     elif pin_config.get("pulldown", False):
                         print('WARNING: please change your pin-config to : "pull": "down"')
-                        data.append(f'NET "{pin_config["varname"]}"       PULLDOWN | LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
+                        options.append("PULLDOWN")
                     elif pin_config.get("pull"):
-                        data.append(f'NET "{pin_config["varname"]}"       PULL{pin_config["pull"].upper()} | LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
-                    else:
-                        data.append(f'NET "{pin_config["varname"]}"       LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} ;')
+                        options.append(f"PULL{pin_config['pull'].upper()}")
                 else:
-                    data.append(f'NET "{pin_config["varname"]}"       LOC = "{pin_config["pin"]}" | IOSTANDARD = {iostandard} | DRIVE = {drive} | SLEW = {slew} ;')
+                    options.append(f"DRIVE = {drive:2s}")
+                    options.append(f"SLEW = {slew:4s}")
+                data.append(f'NET {netstr:32s} {" | ".join(options)} ;')
+                if pin == "sysclk_in":
+                    if self.config["osc_clock"]:
+                        data.append(f"TIMESPEC TS_CLK = PERIOD \"sysclk_in\" {self.config['osc_clock'] / 1000000} MHz HIGH 50%;")
+                        data.append(f"TIMESPEC TS_CLK = PERIOD \"sysclk\"    {self.config['speed'] / 1000000} MHz HIGH 50%;")
+                    else:
+                        data.append(f"TIMESPEC TS_CLK = PERIOD \"sysclk_in\" {self.config['speed'] / 1000000} MHz HIGH 50%;")
             data.append("")
         open(os.path.join(path, "pins.ucf"), "w").write("\n".join(data))

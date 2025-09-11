@@ -726,7 +726,6 @@ class PluginNode(MyNode):
 
     def __init__(self, scene, plugin_instance):
         super().__init__(scene)
-        plugin_config = plugin_instance.plugin_setup
         self.plugin_instance = plugin_instance
         self.name = plugin_instance.title
         self.pins = plugin_instance.PINDEFAULTS
