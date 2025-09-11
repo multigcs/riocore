@@ -784,6 +784,8 @@ class cbase:
                 output.append(f'MODULE_{key}("{value}");')
             output.append("")
 
+        defines.update(self.project.config["jdata"].get("c_defines", {}))
+
         for key, value in defines.items():
             output.append(f"#define {key} {value}")
         output.append("")

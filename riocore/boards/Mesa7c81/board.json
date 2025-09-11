@@ -9,7 +9,8 @@
     "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
     "package": "tqg144",
     "clock": {
-        "speed": "50000000",
+        "osc": "50000000",
+        "speed": "100000000",
         "pin": "P50",
         "startup": "CClk"
     },
