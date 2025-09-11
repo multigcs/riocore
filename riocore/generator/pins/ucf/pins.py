@@ -15,8 +15,8 @@ class Pins:
                 iostandard = pin_config.get("iostandard", "LVTTL").upper()
                 drive = str(pin_config.get("drive", "4"))
                 slew = pin_config.get("slew", "SLOW").upper()
-                pinstr = f"\"{pin_config['pin']}\""
-                netstr = f"\"{pin_config['varname']}\""
+                pinstr = f'"{pin_config["pin"]}"'
+                netstr = f'"{pin_config["varname"]}"'
                 options = []
                 options.append(f"LOC = {pinstr:6s}")
                 options.append(f"IOSTANDARD = {iostandard:5s}")
@@ -32,12 +32,12 @@ class Pins:
                 else:
                     options.append(f"DRIVE = {drive:2s}")
                     options.append(f"SLEW = {slew:4s}")
-                data.append(f'NET {netstr:32s} {" | ".join(options)} ;')
+                data.append(f"NET {netstr:32s} {' | '.join(options)} ;")
                 if pin == "sysclk_in":
                     if self.config["osc_clock"]:
-                        data.append(f"TIMESPEC TS_CLK = PERIOD \"sysclk_in\" {self.config['osc_clock'] / 1000000} MHz HIGH 50%;")
-                        data.append(f"TIMESPEC TS_CLK = PERIOD \"sysclk\"    {self.config['speed'] / 1000000} MHz HIGH 50%;")
+                        data.append(f'TIMESPEC TS_CLK = PERIOD "sysclk_in" {self.config["osc_clock"] / 1000000} MHz HIGH 50%;')
+                        data.append(f'TIMESPEC TS_CLK = PERIOD "sysclk"    {self.config["speed"] / 1000000} MHz HIGH 50%;')
                     else:
-                        data.append(f"TIMESPEC TS_CLK = PERIOD \"sysclk_in\" {self.config['speed'] / 1000000} MHz HIGH 50%;")
+                        data.append(f'TIMESPEC TS_CLK = PERIOD "sysclk_in" {self.config["speed"] / 1000000} MHz HIGH 50%;')
             data.append("")
         open(os.path.join(path, "pins.ucf"), "w").write("\n".join(data))
