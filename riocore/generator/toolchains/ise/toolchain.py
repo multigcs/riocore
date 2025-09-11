@@ -2,6 +2,7 @@ import importlib
 import sys
 import os
 import shutil
+import subprocess
 
 
 class Toolchain:
@@ -28,6 +29,17 @@ class Toolchain:
 """,
         }
         return info
+
+    def pll(self, clock_in, clock_out):
+        if float(clock_out) == 100000000.0 and float(clock_in) == 50000000.0:
+            result = subprocess.check_output(
+                f"{self.riocore_path}/files/ise-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",
+                shell=True,
+            )
+            print(result.decode())
+        else:
+            print(f"WARNING: can not generate pll for this platform: set speed to: {clock_in} Hz")
+            self.config["speed"] = clock_in
 
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.ucf")
