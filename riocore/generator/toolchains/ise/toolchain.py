@@ -97,7 +97,8 @@ class Toolchain:
         makefile_data.append("clean:")
         makefile_data.append("	rm -rf $(PROJECT).ngc $(PROJECT).ngd $(PROJECT).ncd parout.ncd $(PROJECT).bit")
         makefile_data.append("")
-        makefile_data.append("load: $(PROJECT).bit")
+        # makefile_data.append("load: $(PROJECT).bit")
+        makefile_data.append("load:")
         flashcmd = self.config.get("flashcmd")
         if flashcmd:
             makefile_data.append(f"	{flashcmd}")
