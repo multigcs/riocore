@@ -22,11 +22,12 @@ class hy_vfd:
         },
         "speed_fb_rps": {"scale": 1.0, "unit": "RPS"},
         "at_speed": {"scale": 1.0, "bool": True, "helper": False, "display": {"section": "status", "title": "AT-Speed"}},
-        "error_count": {"scale": 1.0, "display": {"section": "vfd", "title": "Errors", "format": "d"}},
+        "error_count": {"scale": 1.0, "helper": False, "display": {"section": "vfd", "title": "Errors", "format": "d"}},
         "hycomm_ok": {"scale": 1.0, "bool": True},
     }
     HYVFD_SIGNALS = {
         "speed_command": {"direction": "output", "unit": "RPM", "net": "spindle.0.speed-out-abs", "display": {"section": "vfd", "title": "Speed-Set", "format": "d"}},
+        "speed_fb_rps": {"direction": "input", "unit": "RPM", "net": "spindle.0.speed-in", "display": {"type": "none"}},
         "spindle_at_speed_tolerance": {"direction": "output", "unit": "", "net": "", "helper": True},
         "spindle_forward": {"direction": "output", "bool": True, "net": "spindle0_forward spindle.0.forward", "display": {"type": "none"}},
         "spindle_reverse": {"direction": "output", "bool": True, "net": "spindle0_reverse spindle.0.reverse", "display": {"type": "none"}},
@@ -92,7 +93,7 @@ class hy_vfd:
             value_name = f"{signal_name}_{name}"
             if data.get("bool", False) is True:
                 self.signals[value_name] = {
-                    "direction": "output",
+                    "direction": data.get("direction", "output"),
                     "net": data.get("net", ""),
                     "unit": data.get("unit", ""),
                     "helper": data.get("helper", False),
@@ -100,8 +101,9 @@ class hy_vfd:
                     "bool": True,
                 }
             else:
+                print(value_name, data.get("net", ""))
                 self.signals[value_name] = {
-                    "direction": "output",
+                    "direction": data.get("direction", "output"),
                     "net": data.get("net", ""),
                     "unit": data.get("unit", ""),
                     "scale": 1.0,

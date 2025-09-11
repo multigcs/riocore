@@ -89,17 +89,17 @@ class LinuxCNC:
             "SPINDLES": 1,
             "MAX_FEED_OVERRIDE": 5.0,
             "MIN_SPINDLE_OVERRIDE": 0.5,
-            "MAX_SPINDLE_OVERRIDE": 1.2,
-            "MIN_SPINDLE_SPEED": 120,
-            "DEFAULT_SPINDLE_SPEED": 1250,
-            "MAX_SPINDLE_SPEED": 3600,
+            "MAX_SPINDLE_OVERRIDE": 2.0,
+            "MIN_SPINDLE_SPEED": 0,
+            "DEFAULT_SPINDLE_SPEED": 6000,
+            "MAX_SPINDLE_SPEED": 22000,
             "MIN_SPINDLE_0_OVERRIDE": 0.5,
             "MAX_SPINDLE_0_OVERRIDE": 1.2,
             "MIN_SPINDLE_0_SPEED": 0,
-            "DEFAULT_SPINDLE_0_SPEED": 200,
-            "SPINDLE_INCREMENT": 10,
-            "MAX_SPINDLE_0_SPEED": 300,
-            "MAX_SPINDLE_POWER": 300,
+            "DEFAULT_SPINDLE_0_SPEED": 6000,
+            "SPINDLE_INCREMENT": 100,
+            "MAX_SPINDLE_0_SPEED": 22000,
+            "MAX_SPINDLE_POWER": 1500,
             "MIN_LINEAR_VELOCITY": 0.0,
             "DEFAULT_LINEAR_VELOCITY": 40.0,
             "MAX_LINEAR_VELOCITY": 45.0,
@@ -1612,6 +1612,27 @@ class LinuxCNC:
             else:
                 self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
+
+        elif gui in {"qtdragon_hd"}:
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.NAME != "modbus":
+                    continue
+                found_error_count = ""
+                found_ampere = ""
+                found_voltage = ""
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_name.endswith("_error_count"):
+                        found_error_count = signal_config["halname"]
+                    elif signal_name.endswith("_ampere"):
+                        found_ampere = signal_config["halname"]
+                    elif signal_name.endswith("_dc_volt"):
+                        found_voltage = signal_config["halname"]
+
+                if found_error_count and found_ampere and found_voltage:
+                    self.halg.net_add(f"rio.{found_error_count}-s32", "qtdragon.spindle-modbus-errors")
+                    self.halg.net_add(f"rio.{found_ampere}", "qtdragon.spindle-amps")
+                    self.halg.net_add(f"rio.{found_voltage}", "qtdragon.spindle-volts")
+                    break
 
         self.mqtt_publisher = []
         for plugin_instance in self.project.plugin_instances:
