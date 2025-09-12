@@ -59,17 +59,13 @@ class Plugin(PluginBase):
         self.PLUGIN_CONFIG = True
         self.TIMEOUT = 200.0
         self.DELAY = 90.0
-        self.rx_buffersize = 128
-        self.tx_buffersize = 128
-        self.OPTIONS["rx_buffersize"]["default"] = self.rx_buffersize
-        self.OPTIONS["tx_buffersize"]["default"] = self.tx_buffersize
         rx_buffersize = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
         tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
-        if rx_buffersize < self.rx_buffersize:
-            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {self.rx_buffersize}")
+        if rx_buffersize < 40:
+            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {40}")
             exit(1)
-        if tx_buffersize < self.tx_buffersize:
-            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {self.tx_buffersize}")
+        if tx_buffersize < 40:
+            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {40}")
             exit(1)
 
         if (rx_buffersize % 8) != 0:
@@ -286,7 +282,7 @@ class Plugin(PluginBase):
         num_on_error_cmds = len(self.ON_ERROR_CMDS)
         original_name = instance["arguments"]["txdata"]
         instance["arguments"]["txdata"] = f"{original_name}_TMP"
-        instance["predefines"].append(f"reg [{self.tx_buffersize - 1}:0] {original_name}_TMP;")
+        instance["predefines"].append(f"reg [{instance_parameter['TX_BUFFERSIZE'] - 1}:0] {original_name}_TMP;")
         instance["predefines"].append(f"reg [7:0] {self.instances_name}_cmd_num = 0;")
         instance["predefines"].append(f"reg [7:0] {self.instances_name}_frame_counter = 0;")
         instance["predefines"].append(f"reg [31:0] {self.instances_name}_cmd_counter = 0;")
@@ -310,7 +306,7 @@ class Plugin(PluginBase):
                 else:
                     instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
                 offset = ((2 + len(cmd)) * 8) - 1
-                instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}};")
+                instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}}; // send cmd on error")
                 instance["predefines"].append("                end")
             instance["predefines"].append("            endcase")
         instance["predefines"].append("        end")

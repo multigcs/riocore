@@ -685,6 +685,9 @@ class WinForm(QWidget):
                         if hasattr(plugin_instance, "testgui_frameio_update"):
                             plugin_instance.testgui_frameio_update(False, rxframe)
 
+                        if args.debug:
+                            print(f"{plugin_instance.title}: frame_rx: {rxfram
+
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
                     value_format = signal.get("format") or "0.2f"
