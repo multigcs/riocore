@@ -27,7 +27,7 @@ then
 else
 	echo "retry.."
 	sleep 1
-	if flashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=7000 -w $1
+	if flashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=2000 -w $1
 	then
         echo ""
         echo "----------------------------------------------------"
