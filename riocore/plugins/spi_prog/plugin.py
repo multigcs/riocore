@@ -64,6 +64,9 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
+        self.TIMING_CONSTRAINTS = {
+            "PININ:sclk": (self.system_setup["speed"] / 4),
+        }
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

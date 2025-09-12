@@ -40,4 +40,12 @@ class Pins:
                     else:
                         data.append(f'TIMESPEC TS_CLK = PERIOD "sysclk_in" {self.config["speed"] / 1000000} MHz HIGH 50%;')
             data.append("")
+
+        # for key, value in self.config["timing_constraints"].items():
+        #    mhz = value / 1000000.0 * 100
+        #    data.append(f"TIMESPEC TS_CLK = PERIOD \"{key}\"    {mhz:0.3f} MHz HIGH 50%;")
+        # for key, value in self.config["timing_constraints_instance"].items():
+        #    print("#", key, value)
+        # data.append("")
+
         open(os.path.join(path, "pins.ucf"), "w").write("\n".join(data))
