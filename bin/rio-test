@@ -686,7 +686,7 @@ class WinForm(QWidget):
                             plugin_instance.testgui_frameio_update(False, rxframe)
 
                         if args.debug:
-                            print(f"{plugin_instance.title}: frame_rx: {rxfram
+                            print(f"{plugin_instance.title}: frame_rx: {rxframe[3 : (frame_rx_len + 3)]}")
 
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
