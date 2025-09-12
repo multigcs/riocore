@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 #
 # pll tool to find best match for the target frequency
-# calculations based on: https://github.com/juj/gowin_fpga_code_generators/blob/main/pll_calculator.html
-# limits from: http://cdn.gowinsemi.com.cn/DS117E.pdf, http://cdn.gowinsemi.com.cn/DS861E.pdf
 #
 
 import argparse
