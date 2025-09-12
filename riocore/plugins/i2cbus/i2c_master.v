@@ -163,7 +163,7 @@ module i2c_master
                 scl <= 1;
                 if (rw == RW_READ && send_mode == MODE_DATA) begin
                     // read
-                    data_rtx[7 - send_cnt] = sdaIn;
+                    data_rtx[7 - send_cnt] <= sdaIn;
                 end
 
             end else if (step == 2) begin

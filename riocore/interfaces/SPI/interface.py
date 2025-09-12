@@ -1,6 +1,8 @@
 class Interface:
     def __init__(self, cstr):
         if cstr:
+            if cstr == "SPI":
+                cstr = "/dev/spidev0.0"
             (bus, device) = cstr.split("/")[-1][-3:].split(".")
         else:
             bus = 0

@@ -64,7 +64,7 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
-        if "speed" in self.system_setup:
+        if self.system_setup and "speed" in self.system_setup:
             self.TIMING_CONSTRAINTS = {
                 "PININ:sclk": (self.system_setup["speed"] / 4),
             }

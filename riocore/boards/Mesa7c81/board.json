@@ -558,7 +558,7 @@
                     "direction": "all"
                 },
                 "P2": {
-                    "pin": "P93",
+                    "pin": "P92",
                     "pos": [
                         483,
                         59
@@ -566,7 +566,7 @@
                     "direction": "all"
                 },
                 "P3": {
-                    "pin": "P92",
+                    "pin": "P87",
                     "pos": [
                         502,
                         59
@@ -574,7 +574,7 @@
                     "direction": "all"
                 },
                 "P4": {
-                    "pin": "P88",
+                    "pin": "P84",
                     "pos": [
                         521,
                         59
@@ -582,7 +582,7 @@
                     "direction": "all"
                 },
                 "P5": {
-                    "pin": "P87",
+                    "pin": "P82",
                     "pos": [
                         540,
                         59
@@ -590,7 +590,7 @@
                     "direction": "all"
                 },
                 "P6": {
-                    "pin": "P85",
+                    "pin": "P81",
                     "pos": [
                         559,
                         59
@@ -598,7 +598,7 @@
                     "direction": "all"
                 },
                 "P7": {
-                    "pin": "P84",
+                    "pin": "P80",
                     "pos": [
                         578,
                         59
@@ -606,7 +606,7 @@
                     "direction": "all"
                 },
                 "P8": {
-                    "pin": "P83",
+                    "pin": "P79",
                     "pos": [
                         597,
                         59
@@ -614,7 +614,7 @@
                     "direction": "all"
                 },
                 "P9": {
-                    "pin": "P82",
+                    "pin": "P78",
                     "pos": [
                         616,
                         59
@@ -622,7 +622,7 @@
                     "direction": "all"
                 },
                 "P10": {
-                    "pin": "P81",
+                    "pin": "P75",
                     "pos": [
                         635,
                         59
@@ -630,7 +630,7 @@
                     "direction": "all"
                 },
                 "P11": {
-                    "pin": "P80",
+                    "pin": "P62",
                     "pos": [
                         654,
                         59
@@ -638,7 +638,7 @@
                     "direction": "all"
                 },
                 "P12": {
-                    "pin": "P79",
+                    "pin": "P61",
                     "pos": [
                         673,
                         59
@@ -646,15 +646,17 @@
                     "direction": "all"
                 },
                 "P13": {
-                    "pin": "P78",
+                    "pin": "P59",
                     "pos": [
                         692,
                         59
                     ],
                     "direction": "all"
                 },
+
+
                 "P14": {
-                    "pin": "P75",
+                    "pin": "P93",
                     "pos": [
                         464,
                         40
@@ -662,7 +664,7 @@
                     "direction": "all"
                 },
                 "P15": {
-                    "pin": "P62",
+                    "pin": "P88",
                     "pos": [
                         483,
                         40
@@ -670,7 +672,7 @@
                     "direction": "all"
                 },
                 "P16": {
-                    "pin": "P61",
+                    "pin": "P85",
                     "pos": [
                         502,
                         40
@@ -678,7 +680,7 @@
                     "direction": "all"
                 },
                 "P17": {
-                    "pin": "P59",
+                    "pin": "P83",
                     "pos": [
                         521,
                         40
