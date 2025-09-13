@@ -241,6 +241,8 @@ class MyNode(QGraphicsItem):
     port_top = 25
     port_bottom = 5
     port_diff = 15
+    width = 180
+    height = 50
 
     def __init__(self, scene):
         super().__init__()
@@ -264,6 +266,13 @@ class MyNode(QGraphicsItem):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
+        for sport, sport_setup in self.ports_right.items():
+            if "sub" in sport_setup:
+                spos = sport_setup["sub"].pos()
+                ports = list(sport_setup["sub"].ports_right)
+                if port in ports:
+                    pos_x = spos.x() + sport_setup["sub"].width
+                    pos_y = spos.y() + ports.index(port) * sport_setup["sub"].port_diff + sport_setup["sub"].port_top
 
         ports = list(self.ports_left)
         if port in ports:
@@ -304,6 +313,11 @@ class MyNode(QGraphicsItem):
             py += self.port_diff
 
         return None
+
+    def paint(self, painter, option, widget):
+        self.paintBg(painter, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
 
     def paintPorts(self, painter):
         if not hasattr(self, "pixmap"):
@@ -443,6 +457,9 @@ class MyNode(QGraphicsItem):
         if self.scene.hover == self:
             self.scene.hover = None
         self.update()
+
+    def delete(self):
+        pass
 
 
 class BoardNode(QGraphicsItem):
@@ -720,12 +737,37 @@ class BreakoutNode(QGraphicsItem):
             self.scene.hover = None
 
 
+class SubNode(MyNode):
+    def __init__(self, parent, title, ports_left, ports_right):
+        super().__init__(parent.scene)
+        self.parent = parent
+        self.name = title
+
+        self.ports_left = ports_left
+        self.ports_right = ports_right
+
+        self.width = 200
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+
+    def paint(self, painter, option, widget):
+        self.paintBg(painter, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
+        self.parent.sub_update(self)
+
+    def mouseDoubleClickEvent(self, event):
+        self.parent.edit()
+
+
 class PluginNode(MyNode):
     show_signals = True
     border_color = QColor(150, 250, 150)
 
     def __init__(self, scene, plugin_instance):
         super().__init__(scene)
+        self.scene = scene
         self.plugin_instance = plugin_instance
         self.name = plugin_instance.title
         self.pins = plugin_instance.PINDEFAULTS
@@ -742,6 +784,33 @@ class PluginNode(MyNode):
             self.ports_right[f"sig_{key}"] = value
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
 
+        py = 1000
+        self.subNodes = []
+        if hasattr(self.plugin_instance, "flow"):
+            devices = self.plugin_instance.flow()
+            for device, ports in devices.items():
+                snode = SubNode(self, device, {"bus": {"title": "bus"}}, ports)
+                spos = self.plugin_instance.plugin_setup.get("sub_pos", {}).get(device, [600, py])
+                snode.setPos(spos[0], spos[1])
+                scene.addItem(snode)
+                edge = NodeEdge(scene, f"sub:{device}", self, f"sub_{device}", snode, "bus", color=colors[-1])
+                scene.addItem(edge)
+                self.subNodes.append(snode)
+                self.ports_right[f"sub_{device}"] = {"title": device, "sub": snode}
+                for port, psetup in ports.items():
+                    if port in self.ports_right:
+                        del self.ports_right[port]
+                    psetup["sub"] = snode
+                py += 100
+
+    def sub_update(self, sub):
+        pos = sub.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        if "sub_pos" not in self.plugin_instance.plugin_setup:
+            self.plugin_instance.plugin_setup["sub_pos"] = {}
+        self.plugin_instance.plugin_setup["sub_pos"][sub.name] = (pos_x, pos_y)
+
     def paint(self, painter, option, widget):
         pos = self.pos()
         pos_x = pos.x()
@@ -749,20 +818,23 @@ class PluginNode(MyNode):
         info = self.plugin_instance.cfg_info()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
         self.paintBg(painter, self.name, info=info)
-        if hasattr(self, "pixmap"):
-            # painter.drawRect(self.boundingRect())
-            # painter.drawPixmap(0, 0, self.pixmap)
-            width = self.pixmap.width()
-            height = self.pixmap.height()
-            xoff = (30 - width) // 2 + 5
-            yoff = (30 - height) // 2 + 5
-            painter.drawPixmap(self.width - width - xoff, yoff, self.pixmap)
-
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
         self.paintPorts(painter)
 
+    def delete(self):
+        for sub_item in self.subNodes:
+            self.scene.disconnect_node(sub_item)
+            self.scene.removeItem(sub_item)
+
+        # remove plugin from cfg
+        plugin_config = self.plugin_instance.plugin_setup
+        for pn, plugin in enumerate(self.scene.parent.config["plugins"]):
+            if plugin == plugin_config:
+                self.scene.parent.config["plugins"].pop(pn)
+
     def edit(self):
         self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
+        print("#", self.plugin_instance.plugin_setup)
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
@@ -984,6 +1056,14 @@ class ModifierNode(MyNode):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
+    def delete(self):
+        source = self.scene.parent.get_next(self, "in")
+        target = self.scene.parent.get_next(self, "out")
+        if source and target:
+            # reconnect source and target
+            edge = NodeEdge(self.scene, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
+            self.scene.addItem(edge)
+
 
 class LogicNode(MyNode):
     def __init__(self, scene, logic):
@@ -1167,38 +1247,24 @@ class NodeScene(QGraphicsScene):
         self.edge_hover = None
         self.menu_selection = None
 
+    def delete_item(self, item):
+        if isinstance(item, BoardNode):
+            return
+        elif isinstance(item, BreakoutNode):
+            return
+        elif isinstance(item, SubNode):
+            return
+
+        item.delete()
+        self.disconnect_node(item)
+        self.removeItem(item)
+        self.parent.cfg_save()
+        self.parent.snapshot()
+
     def delete(self):
         if not self.menu_selection:
             return
-
-        item = self.menu_selection
-        if isinstance(item, BoardNode):
-            return
-        if isinstance(item, BreakoutNode):
-            return
-
-        elif isinstance(item, ModifierNode):
-            source = self.parent.get_next(item, "in")
-            target = self.parent.get_next(item, "out")
-            if source and target:
-                # reconnect source and target
-                edge = NodeEdge(self, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
-                self.addItem(edge)
-            self.disconnect_node(item)
-
-        elif isinstance(item, ModuleNode):
-            self.disconnect_node(item)
-
-        elif isinstance(item, PluginNode):
-            self.disconnect_node(item)
-            # remove plugin from cfg
-            plugin_instance = item.plugin_instance
-            plugin_config = plugin_instance.plugin_setup
-            for pn, plugin in enumerate(self.parent.config["plugins"]):
-                if plugin == plugin_config:
-                    self.parent.config["plugins"].pop(pn)
-        self.removeItem(item)
-        self.parent.snapshot()
+        self.delete_item(self.menu_selection)
 
     def contextMenuEvent(self, event):
         self.menu_selection = None
@@ -1600,11 +1666,11 @@ class Window(QMainWindow):
                             plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
                         else:
                             plugin_config["pins"][port]["pin"] = source[1]
-                        if modifiers:
-                            plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
+                        plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
                     else:
                         if plugin_config.get("pins") and port in plugin_config["pins"]:
                             del plugin_config["pins"][port]
+
         self.cfg_check()
 
     def display(self):
@@ -2146,56 +2212,7 @@ class Window(QMainWindow):
 
     def delete_selection(self):
         for item in self.scene.selectedItems():
-            if isinstance(item, BoardNode):
-                continue
-
-            elif isinstance(item, BreakoutNode):
-                breakout_name = item.name
-                for subitem in self.scene.items():
-                    if isinstance(subitem, NodeEdge):
-                        if subitem.etype == f"breakout:{breakout_name}":
-                            self.scene.removeItem(subitem)
-                for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
-                    if breakout_config["name"] == item.name:
-                        del self.config["breakouts"][breakout_id]
-
-            elif isinstance(item, ModifierNode):
-                source = self.get_next(item, "in")
-                target = self.get_next(item, "out")
-                if source and target:
-                    # reconnect source and target
-                    edge = NodeEdge(self.scene, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
-                    self.scene.addItem(edge)
-                self.scene.disconnect_node(item)
-
-            elif isinstance(item, NodeEdge):
-                if item.etype.startswith("breakout:"):
-                    breakout_name = item.etype.split(":")[1]
-                    bnode = self.breakout_by_name(breakout_name)
-                    if bnode:
-                        bnode.breakout_setup["slot"] = ""
-
-                    # removing all Edges for this slot
-                    for subitem in self.scene.items():
-                        if isinstance(subitem, NodeEdge):
-                            if subitem.etype == f"breakout:{breakout_name}":
-                                self.scene.removeItem(subitem)
-                    continue
-                self.update_halpins_from_edges()
-
-            elif isinstance(item, ModuleNode):
-                self.scene.disconnect_node(item)
-
-            elif isinstance(item, PluginNode):
-                self.scene.disconnect_node(item)
-                # remove plugin from cfg
-                plugin_instance = item.plugin_instance
-                plugin_config = plugin_instance.plugin_setup
-                for pn, plugin in enumerate(self.config["plugins"]):
-                    if plugin == plugin_config:
-                        self.config["plugins"].pop(pn)
-            self.scene.removeItem(item)
-        self.snapshot()
+            self.scene.delete_item(item)
 
     def get_next(self, node, port):
         for item in self.scene.items():

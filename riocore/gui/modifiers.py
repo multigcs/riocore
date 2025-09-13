@@ -180,7 +180,7 @@ class GuiModifiers:
         if dialog.exec():
             row = modifier_table.currentRow()
             modifier_type = modifier_table.item(row, 0).text()
-            if not modifier_list:
+            if modifier_list is None:
                 return modifier_type
             modifier_list.append({"type": modifier_type})
             self.modifier_list_update(parent_layout, modifier_list)
@@ -188,7 +188,7 @@ class GuiModifiers:
                 self.edit_modifier(modifier_list, len(modifier_list) - 1, parent_layout)
 
     def modifier_list_update(self, parent_layout, modifier_list):
-        if not parent_layout:
+        if parent_layout is None:
             return
         pc = parent_layout.count()
         for i in reversed(range(pc)):

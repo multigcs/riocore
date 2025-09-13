@@ -71,7 +71,7 @@ class hy_vfd:
                 "unit": data.get("unit", ""),
                 "scale": 1.0,
                 "format": "7.2f",
-                "plugin_setup": {},
+                "plugin_setup": config,
                 "display": data.get("display", {}),
                 "helper": True,
             }
@@ -87,13 +87,14 @@ class hy_vfd:
                 "display": data.get("display", {}),
                 "scale": 1.0,
                 "format": ".2f",
-                "plugin_setup": {},
+                "plugin_setup": config,
             }
         for name, data in self.HYVFD_SIGNALS.items():
             value_name = f"{signal_name}_{name}"
             if data.get("bool", False) is True:
                 self.signals[value_name] = {
                     "direction": data.get("direction", "output"),
+                    "plugin_setup": config,
                     "net": data.get("net", ""),
                     "unit": data.get("unit", ""),
                     "helper": data.get("helper", False),
@@ -101,14 +102,13 @@ class hy_vfd:
                     "bool": True,
                 }
             else:
-                print(value_name, data.get("net", ""))
                 self.signals[value_name] = {
                     "direction": data.get("direction", "output"),
                     "net": data.get("net", ""),
                     "unit": data.get("unit", ""),
                     "scale": 1.0,
                     "format": "7.2f",
-                    "plugin_setup": {},
+                    "plugin_setup": config,
                     "helper": data.get("helper", False),
                     "display": data.get("display", {}),
                     "min": -24000,

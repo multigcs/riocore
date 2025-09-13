@@ -125,12 +125,14 @@ class Plugin(PluginBase):
                                 "bool": True,
                                 "validation": True,
                                 "helper": True,
+                                "plugin_setup": config,
                             }
                             self.SIGNALS[f"{value_name}_errors"] = {
                                 "direction": "input",
                                 "validation_counter": True,
                                 "format": "03d",
                                 "helper": True,
+                                "plugin_setup": config,
                             }
                 else:
                     self.SIGNALS[signal_name] = {
@@ -150,12 +152,14 @@ class Plugin(PluginBase):
                             "bool": True,
                             "validation": True,
                             "helper": True,
+                            "plugin_setup": config,
                         }
                         self.SIGNALS[f"{signal_name}_errors"] = {
                             "direction": "input",
                             "validation_counter": True,
                             "format": "03d",
                             "helper": True,
+                            "plugin_setup": config,
                         }
 
         self.INTERFACE = {
@@ -267,6 +271,24 @@ class Plugin(PluginBase):
 
         return (lcports, signalports)
 
+    def flow(self):
+        devices = {}
+        # uniq device addresses
+        addresses = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            address = signal_defaults.get("plugin_setup", {}).get("address")
+            if address and address not in addresses:
+                addresses.append(address)
+        for address in addresses:
+            ports = {}
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                dev_address = signal_defaults.get("plugin_setup", {}).get("address")
+                if dev_address != address:
+                    continue
+                ports[f"sig_{signal_name}"] = {"title": signal_name}
+            devices[f"dev-{address}"] = ports
+        return devices
+
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
@@ -306,7 +328,9 @@ class Plugin(PluginBase):
                 else:
                     instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
                 offset = ((2 + len(cmd)) * 8) - 1
-                instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}}; // send cmd on error")
+                instance["predefines"].append(
+                    f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}}; // send cmd on error"
+                )
                 instance["predefines"].append("                end")
             instance["predefines"].append("            endcase")
         instance["predefines"].append("        end")

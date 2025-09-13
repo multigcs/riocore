@@ -365,6 +365,25 @@ graph LR;
 
         self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
 
+    def flow(self):
+        devices = {}
+        devices_ids = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            device_id = signal_defaults.get("device_id")
+            if device_id and device_id not in devices_ids:
+                devices_ids.append(device_id)
+
+        for device_id in devices_ids:
+            ports = {}
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                dev_device_id = signal_defaults.get("device_id")
+                if dev_device_id != device_id:
+                    continue
+                ports[f"sig_{signal_name}"] = {"title": signal_name}
+            devices[f"dev-{device_id}"] = ports
+
+        return devices
+
     def cfggraph(self, title, gAll):
         lcports = []
         signalports = []
