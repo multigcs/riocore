@@ -64,31 +64,17 @@ from riocore.gui.widgets import (
 
 riocore_path = os.path.dirname(riocore.__file__)
 
-
-colors = [
-    QColor(150, 250, 150),
-    QColor(150, 150, 250),
-    QColor(250, 150, 150),
-    QColor(250, 250, 250),
-    QColor(250, 150, 250),
-    QColor(150, 50, 150),
-    QColor(150, 150, 50),
-    QColor(50, 150, 150),
-    QColor(50, 250, 50),
-    QColor(50, 150, 50),
-    QColor(100, 250, 150),
-    QColor(100, 150, 250),
-    QColor(200, 150, 150),
-    QColor(200, 250, 250),
-    QColor(200, 150, 250),
-    QColor(100, 50, 150),
-    QColor(100, 150, 50),
-    QColor(50, 150, 100),
-    QColor(50, 200, 50),
-    QColor(50, 100, 50),
-]
 grid_size = 10
 grid_color = QColor(150, 150, 150)
+cn = 7
+colors = []
+for o in range(0, 10):
+    for i in range(0, cn):
+        hue = i / cn + 1 / cn * o / 10
+        lightness = 0.7
+        saturation = 0.9 / 5 * (10 - o) / 2
+        color = QColor.fromHslF(hue, saturation, lightness)
+        colors.append(color)
 
 
 class NodeEdgePath(QGraphicsPathItem):
@@ -171,6 +157,9 @@ class NodeEdgePath(QGraphicsPathItem):
             self.scene.edge_hover = None
         self.update()
 
+    def delete(self):
+        return True
+
 
 class NodeEdgeLine(QGraphicsLineItem):
     def __init__(self, source_node, source_port, des_node, des_port, color=None):
@@ -205,6 +194,9 @@ class NodeEdgeLine(QGraphicsLineItem):
         source_pos = self._source_node.port_pos(self._source_port)
         des_pos = self._target_node.port_pos(self._target_port)
         self.setLine(QLineF(source_pos, des_pos))
+
+    def delete(self):
+        return True
 
 
 NodeEdge = NodeEdgePath
@@ -800,7 +792,7 @@ class PluginNode(MyNode):
                 spos = self.plugin_instance.plugin_setup.get("sub_pos", {}).get(device, [x + self.width + 50, py])
                 snode = SubNode(scene, spos[0], spos[1], self, device, {"bus": {"title": "bus"}}, ports)
                 scene.addItem(snode)
-                edge = NodeEdge(scene, f"sub:{device}", self, f"sub_{device}", snode, "bus", color=colors[-1])
+                edge = NodeEdge(scene, f"sub:{device}", self, f"sub_{device}", snode, "bus", color=colors[0])
                 scene.addItem(edge)
                 self.subNodes.append(snode)
                 self.ports_right[f"sub_{device}"] = {"title": device, "sub": snode}
@@ -1131,10 +1123,12 @@ class NodeViewer(QGraphicsView):
                                 if subitem.etype == f"breakout:{breakout_name}":
                                     self.scene.removeItem(subitem)
                         # connect all main wires
+                        color_n = 0
                         for pin, pin_data in target_node.jdata["main"].items():
                             bpin = f"{slot}:{pin}"
-                            edge = NodeEdge(self.scene, f"breakout:{breakout_name}", source_node, bpin, target_node, pin, color=colors[-1])
+                            edge = NodeEdge(self.scene, f"breakout:{breakout_name}", source_node, bpin, target_node, pin, color=colors[color_n])
                             self.scene.addItem(edge)
+                            color_n += 1
                         target_node.breakout_setup["slot"] = slot
 
                     else:
@@ -1829,6 +1823,7 @@ class Window(QMainWindow):
 
         hnodes_y = 100
         hnodes = {}
+        color_n = 0
         for signal_name, signal in self.halpins.items():
             source = signal["source"]
             target = signal["target"]
@@ -1850,7 +1845,8 @@ class Window(QMainWindow):
                     hnodes_y += hnodes[group].height + 10
                 hnodes[group].add_signal(target, signal)
                 spin = f"sig_{source[1]}"
-                edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[0])
+                edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[color_n])
+                color_n += 1
                 self.scene.addItem(edge)
 
         ph = 1
@@ -1891,10 +1887,12 @@ class Window(QMainWindow):
         breakout_name = breakout_config["name"]
         self.breakout_uids.append(breakout_name)
         if slot:
+            color_n = 0
             for pin, pin_data in mnode.jdata["main"].items():
                 bpin = f"{slot}:{pin}"
-                edge = NodeEdge(self.scene, f"breakout:{breakout_name}", self.bnode, bpin, mnode, pin, color=colors[-1])
+                edge = NodeEdge(self.scene, f"breakout:{breakout_name}", self.bnode, bpin, mnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
+                color_n += 1
 
         self.scene.addItem(mnode)
         return hy
@@ -1913,14 +1911,16 @@ class Window(QMainWindow):
         mnode = ModuleNode(self.scene, hx, hy, module_config, self.config)
         slot = module_config["slot"]
 
+        color_n = 0
         for plugin_instance in mnode.plugins.plugin_instances:
             plugin_name = plugin_instance.instances_name
             for pin, pin_data in plugin_instance.pins().items():
                 pin = pin_data.get("pin")
                 if pin:
                     bpin = f"{slot}:{pin}"
-                    edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[0])
+                    edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[color_n])
                     self.scene.addItem(edge)
+                    color_n += 1
 
             plugin_config = plugin_instance.plugin_setup
             signals = plugin_config.get("signals")
@@ -1987,8 +1987,8 @@ class Window(QMainWindow):
 
         py = hy
         ph = 0
+        color_n = 0
         if plugin_config.get("pins"):
-            color_n = 0
             for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
                 pindata = plugin_config.get("pins", {}).get(pin)
                 if pindata is None or "pin" not in pindata or not pindata["pin"]:
