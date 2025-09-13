@@ -365,6 +365,20 @@ graph LR;
 
         self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
 
+    def delete_sub(self, device):
+        ret = False
+        if "config" in self.plugin_setup:
+            deletes = []
+            for sub_name, sub_setup in self.plugin_setup["config"].get("devices", {}).items():
+                print(device, sub_name, sub_setup.get("address"))
+                sub_address = sub_setup.get("address")
+                if f"dev-{sub_name}({sub_address})" == device:
+                    deletes.append(sub_name)
+            for sub_name in deletes:
+                del self.plugin_setup["config"]["devices"][sub_name]
+                ret = True
+        return ret
+
     def flow(self):
         devices = {}
         devices_ids = []
