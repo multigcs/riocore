@@ -772,7 +772,7 @@ class PluginNode(MyNode):
         self.name = plugin_instance.title
         self.pins = plugin_instance.PINDEFAULTS
         self.signals = plugin_instance.SIGNALS
-        self.width = 180
+        self.width = 200
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -804,12 +804,12 @@ class PluginNode(MyNode):
                 py += 100
 
     def sub_update(self, sub):
-        pos = sub.pos()
-        pos_x = pos.x()
-        pos_y = pos.y()
-        if "sub_pos" not in self.plugin_instance.plugin_setup:
-            self.plugin_instance.plugin_setup["sub_pos"] = {}
-        self.plugin_instance.plugin_setup["sub_pos"][sub.name] = (pos_x, pos_y)
+        self.plugin_instance.plugin_setup["sub_pos"] = {}
+        for sub_item in self.subNodes:
+            pos = sub_item.pos()
+            pos_x = pos.x()
+            pos_y = pos.y()
+            self.plugin_instance.plugin_setup["sub_pos"][sub_item.name] = (pos_x, pos_y)
 
     def paint(self, painter, option, widget):
         pos = self.pos()
@@ -834,7 +834,6 @@ class PluginNode(MyNode):
 
     def edit(self):
         self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
-        print("#", self.plugin_instance.plugin_setup)
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
