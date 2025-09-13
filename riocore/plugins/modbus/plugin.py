@@ -271,6 +271,19 @@ class Plugin(PluginBase):
 
         return (lcports, signalports)
 
+    def delete_sub(self, device):
+        ret = False
+        if "config" in self.plugin_setup:
+            deletes = []
+            for sub_name, sub_setup in self.plugin_setup["config"].items():
+                sub_address = sub_setup.get("address")
+                if f"dev-{sub_address}" == device:
+                    deletes.append(sub_name)
+            for sub_name in deletes:
+                del self.plugin_setup["config"][sub_name]
+                ret = True
+        return ret
+
     def flow(self):
         devices = {}
         # uniq device addresses

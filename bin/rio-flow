@@ -76,27 +76,19 @@ colors = [
     QColor(50, 150, 150),
     QColor(50, 250, 50),
     QColor(50, 150, 50),
-    QColor(150, 250, 150),
-    QColor(150, 150, 250),
-    QColor(250, 150, 150),
-    QColor(250, 250, 250),
-    QColor(250, 150, 250),
-    QColor(150, 50, 150),
-    QColor(150, 150, 50),
-    QColor(50, 150, 150),
-    QColor(50, 250, 50),
-    QColor(50, 150, 50),
+    QColor(100, 250, 150),
+    QColor(100, 150, 250),
+    QColor(200, 150, 150),
+    QColor(200, 250, 250),
+    QColor(200, 150, 250),
+    QColor(100, 50, 150),
+    QColor(100, 150, 50),
+    QColor(50, 150, 100),
+    QColor(50, 200, 50),
+    QColor(50, 100, 50),
 ]
 grid_size = 10
 grid_color = QColor(150, 150, 150)
-
-
-class cfggraph:
-    def edge(self, port_from, port_to, dir=None, color=None, fontcolor=None):
-        print("edge", port_from, port_to)
-
-    def node(self, title, shape=None, label=None, fontsize=None, style=None, fillcolor=None, URL=None):
-        print("node", title, label)
 
 
 class NodeEdgePath(QGraphicsPathItem):
@@ -244,8 +236,10 @@ class MyNode(QGraphicsItem):
     width = 180
     height = 50
 
-    def __init__(self, scene):
+    def __init__(self, scene, x=None, y=None):
         super().__init__()
+        if x is not None and y is not None:
+            self.setPos(x, y)
         self.scene = scene
         self.ports_left = {}
         self.ports_right = {}
@@ -459,12 +453,13 @@ class MyNode(QGraphicsItem):
         self.update()
 
     def delete(self):
-        pass
+        return False
 
 
 class BoardNode(QGraphicsItem):
-    def __init__(self, scene, board_setup):
+    def __init__(self, scene, x, y, board_setup):
         super().__init__()
+        self.setPos(x, y)
         self.scene = scene
         self.board_setup = board_setup
         self.setZValue(1)
@@ -592,8 +587,9 @@ class BoardNode(QGraphicsItem):
 
 
 class BreakoutNode(QGraphicsItem):
-    def __init__(self, scene, breakout_setup):
+    def __init__(self, scene, x, y, breakout_setup):
         super().__init__()
+        self.setPos(x, y)
         self.scene = scene
         self.breakout_setup = breakout_setup
         self.setZValue(2)
@@ -738,8 +734,8 @@ class BreakoutNode(QGraphicsItem):
 
 
 class SubNode(MyNode):
-    def __init__(self, parent, title, ports_left, ports_right):
-        super().__init__(parent.scene)
+    def __init__(self, scene, x, y, parent, title, ports_left, ports_right):
+        super().__init__(scene, x, y)
         self.parent = parent
         self.name = title
 
@@ -758,16 +754,21 @@ class SubNode(MyNode):
         self.parent.sub_update(self)
 
     def mouseDoubleClickEvent(self, event):
-        self.parent.edit()
+        if hasattr(self.parent, "edit_sub"):
+            self.parent.edit_sub(self)
+
+    def delete(self):
+        if hasattr(self.parent, "delete_sub"):
+            return self.parent.delete_sub(self)
+        return False
 
 
 class PluginNode(MyNode):
     show_signals = True
     border_color = QColor(150, 250, 150)
 
-    def __init__(self, scene, plugin_instance):
-        super().__init__(scene)
-        self.scene = scene
+    def __init__(self, scene, x, y, plugin_instance):
+        super().__init__(scene, x, y)
         self.plugin_instance = plugin_instance
         self.name = plugin_instance.title
         self.pins = plugin_instance.PINDEFAULTS
@@ -784,24 +785,28 @@ class PluginNode(MyNode):
             self.ports_right[f"sig_{key}"] = value
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
 
-        py = 1000
+        if hasattr(self.plugin_instance, "flow"):
+            devices = self.plugin_instance.flow()
+            for device, ports in devices.items():
+                for port, psetup in ports.items():
+                    if port in self.ports_right:
+                        del self.ports_right[port]
+
+        py = y
         self.subNodes = []
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
             for device, ports in devices.items():
-                snode = SubNode(self, device, {"bus": {"title": "bus"}}, ports)
-                spos = self.plugin_instance.plugin_setup.get("sub_pos", {}).get(device, [600, py])
-                snode.setPos(spos[0], spos[1])
+                spos = self.plugin_instance.plugin_setup.get("sub_pos", {}).get(device, [x + self.width + 50, py])
+                snode = SubNode(scene, spos[0], spos[1], self, device, {"bus": {"title": "bus"}}, ports)
                 scene.addItem(snode)
                 edge = NodeEdge(scene, f"sub:{device}", self, f"sub_{device}", snode, "bus", color=colors[-1])
                 scene.addItem(edge)
                 self.subNodes.append(snode)
                 self.ports_right[f"sub_{device}"] = {"title": device, "sub": snode}
                 for port, psetup in ports.items():
-                    if port in self.ports_right:
-                        del self.ports_right[port]
                     psetup["sub"] = snode
-                py += 100
+                py += snode.height + 5
 
     def sub_update(self, sub):
         self.plugin_instance.plugin_setup["sub_pos"] = {}
@@ -831,11 +836,20 @@ class PluginNode(MyNode):
         for pn, plugin in enumerate(self.scene.parent.config["plugins"]):
             if plugin == plugin_config:
                 self.scene.parent.config["plugins"].pop(pn)
+        return True
+
+    def edit_sub(self, sub_item):
+        self.edit()
 
     def edit(self):
         self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
+
+    def delete_sub(self, sub_item):
+        if hasattr(self.plugin_instance, "delete_sub"):
+            return self.plugin_instance.delete_sub(sub_item.name)
+        return False
 
     def mouseDoubleClickEvent(self, event):
         self.edit()
@@ -852,8 +866,8 @@ class PluginNode(MyNode):
 class ModuleNode(MyNode):
     border_color = QColor(150, 250, 150)
 
-    def __init__(self, scene, module_config, sysconfig):
-        super().__init__(scene)
+    def __init__(self, scene, x, y, module_config, sysconfig):
+        super().__init__(scene, x, y)
         self.sysconfig = sysconfig
         self.module_config = module_config
         self.module_name = self.module_config["module"]
@@ -957,8 +971,8 @@ class ModuleNode(MyNode):
 class HalNode(MyNode):
     border_color = QColor(150, 150, 200)
 
-    def __init__(self, scene, name):
-        super().__init__(scene)
+    def __init__(self, scene, x, y, name):
+        super().__init__(scene, x, y)
         self.name = name
         self.width = 450
         self.setZValue(9)
@@ -996,8 +1010,8 @@ class ModifierNode(MyNode):
     port_top = 13
     port_bottom = 2
 
-    def __init__(self, scene, modifier):
-        super().__init__(scene)
+    def __init__(self, scene, x, y, modifier):
+        super().__init__(scene, x, y)
         self.modifier = modifier
         self.name = modifier["type"]
         self.width = 100
@@ -1062,57 +1076,7 @@ class ModifierNode(MyNode):
             # reconnect source and target
             edge = NodeEdge(self.scene, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
             self.scene.addItem(edge)
-
-
-class LogicNode(MyNode):
-    def __init__(self, scene, logic):
-        super().__init__(scene)
-        self.logic = logic
-        self.name = logic["type"]
-        self.type = logic["type"]
-        self.width = 100
-        self.height = 20
-        self.setZValue(9)
-        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        self.selected_port = None
-        self.ports_left = {}
-        self.ports_right = {}
-        if self.type == "not":
-            self.ports_left["in"] = {}
-            self.ports_right["out"] = {}
-        else:
-            for num in range(4):
-                self.ports_left[f"in-{num:02d}"] = {}
-            self.ports_right = {self.type: {}}
-
-    def paint(self, painter, option, widget):
-        pos = self.pos()
-        pos_x = pos.x()
-        pos_y = pos.y()
-        self.logic["pos"] = (pos_x, pos_y)
-        self.paintBg(painter, self.name)
-        painter.setPen(QPen(Qt.GlobalColor.black, 1))
-        self.paintPorts(painter)
-
-    def mousePressEvent(self, event):
-        if self.port_selected(event.pos()) == "in":
-            if self.scene.selection_target == (self, self.port_selected(event.pos())):
-                self.scene.selection_target = None
-            else:
-                self.scene.selection_target = (self, self.port_selected(event.pos()))
-        else:
-            if self.scene.selection_source == (self, self.port_selected(event.pos())):
-                self.scene.selection_source = None
-            else:
-                self.scene.selection_source = (self, self.port_selected(event.pos()))
-
-        self.update()
-        QGraphicsItem.mousePressEvent(self, event)
-
-    def mouseReleaseEvent(self, event):
-        self.update()
-        QGraphicsItem.mouseReleaseEvent(self, event)
+        return True
 
 
 class NodeViewer(QGraphicsView):
@@ -1247,23 +1211,16 @@ class NodeScene(QGraphicsScene):
         self.menu_selection = None
 
     def delete_item(self, item):
-        if isinstance(item, BoardNode):
-            return
-        elif isinstance(item, BreakoutNode):
-            return
-        elif isinstance(item, SubNode):
-            return
-
-        item.delete()
-        self.disconnect_node(item)
-        self.removeItem(item)
-        self.parent.cfg_save()
-        self.parent.snapshot()
+        if item.delete():
+            self.disconnect_node(item)
+            self.removeItem(item)
+            self.parent.cfg_save()
+            self.parent.snapshot()
+            self.parent.redraw()
 
     def delete(self):
-        if not self.menu_selection:
-            return
-        self.delete_item(self.menu_selection)
+        if self.menu_selection:
+            self.delete_item(self.menu_selection)
 
     def contextMenuEvent(self, event):
         self.menu_selection = None
@@ -1380,7 +1337,6 @@ class Window(QMainWindow):
         self.config = {}
         self.interfaces = []
 
-        self.cfggraph = cfggraph()
         self.gui_plugins = GuiPlugins(self)
         self.gui_boards = GuiBoards(self)
         self.gui_breakouts = GuiBreakouts(self)
@@ -1826,8 +1782,9 @@ class Window(QMainWindow):
         self.bnode = None
         board_setup = {"board": boardcfg, "config": self.config}
         if os.path.exists(os.path.join(riocore_path, "boards", boardcfg, "board.json")):
-            self.bnode = BoardNode(self.scene, board_setup)
-            self.bnode.setPos(self.config["flow"]["board"]["pos"][0], self.config["flow"]["board"]["pos"][1])
+            px = self.config["flow"]["board"]["pos"][0]
+            py = self.config["flow"]["board"]["pos"][1]
+            self.bnode = BoardNode(self.scene, px, py, board_setup)
             self.scene.addItem(self.bnode)
             self.board = self.bnode.jdata
 
@@ -1870,6 +1827,7 @@ class Window(QMainWindow):
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
 
+        hnodes_y = 100
         hnodes = {}
         for signal_name, signal in self.halpins.items():
             source = signal["source"]
@@ -1886,21 +1844,14 @@ class Window(QMainWindow):
 
             if source and target:
                 if group not in hnodes:
-                    hnodes[group] = HalNode(self.scene, group)
+                    pos = self.config["flow"]["hal"].get(group, (1100, hnodes_y))
+                    hnodes[group] = HalNode(self.scene, pos[0], pos[1], group)
                     self.scene.addItem(hnodes[group])
+                    hnodes_y += hnodes[group].height + 10
                 hnodes[group].add_signal(target, signal)
                 spin = f"sig_{source[1]}"
                 edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[0])
                 self.scene.addItem(edge)
-
-        hnodes_y = 100
-        for group in hnodes:
-            pos = self.config["flow"]["hal"].get(group)
-            if pos:
-                hnodes[group].setPos(pos[0], pos[1])
-            else:
-                hnodes[group].setPos(1100, hnodes_y)
-            hnodes_y += hnodes[group].height + 10
 
         ph = 1
         pv = 1
@@ -1925,10 +1876,6 @@ class Window(QMainWindow):
         self.snapshot()
 
     def insert_breakout(self, breakout_config, py=100):
-        mnode = BreakoutNode(self.scene, breakout_config)
-        slot = breakout_config["slot"]
-        breakout_name = breakout_config["name"]
-        self.breakout_uids.append(breakout_name)
         if "pos" in breakout_config:
             hx = breakout_config["pos"][0]
             hy = breakout_config["pos"][1]
@@ -1939,7 +1886,10 @@ class Window(QMainWindow):
         else:
             hx = 850
             hy = py
-        mnode.setPos(hx, hy)
+        mnode = BreakoutNode(self.scene, hx, hy, breakout_config)
+        slot = breakout_config["slot"]
+        breakout_name = breakout_config["name"]
+        self.breakout_uids.append(breakout_name)
         if slot:
             for pin, pin_data in mnode.jdata["main"].items():
                 bpin = f"{slot}:{pin}"
@@ -1950,9 +1900,6 @@ class Window(QMainWindow):
         return hy
 
     def insert_module(self, module_config, py=100):
-        mnode = ModuleNode(self.scene, module_config, self.config)
-        slot = module_config["slot"]
-
         if "pos" in module_config:
             hx = module_config["pos"][0]
             hy = module_config["pos"][1]
@@ -1963,7 +1910,8 @@ class Window(QMainWindow):
         else:
             hx = 850
             hy = py
-        mnode.setPos(hx, hy)
+        mnode = ModuleNode(self.scene, hx, hy, module_config, self.config)
+        slot = module_config["slot"]
 
         for plugin_instance in mnode.plugins.plugin_instances:
             plugin_name = plugin_instance.instances_name
@@ -2023,12 +1971,6 @@ class Window(QMainWindow):
 
     def insert_plugin(self, plugin_instance, py=100):
         plugin_config = plugin_instance.plugin_setup
-        pnode = PluginNode(self.scene, plugin_instance)
-
-        # if hasattr(plugin_instance, "cfggraph"):
-        #    (p_lcports, p_signalports) = plugin_instance.cfggraph(plugin_instance.instances_name, self.cfggraph)
-        #    print(p_lcports, p_signalports)
-
         if "pos" in plugin_config:
             hx = plugin_config["pos"][0]
             hy = plugin_config["pos"][1]
@@ -2039,9 +1981,11 @@ class Window(QMainWindow):
         else:
             hx = 850
             hy = py
-        pnode.setPos(hx, hy)
+
+        pnode = PluginNode(self.scene, hx, hy, plugin_instance)
         self.scene.addItem(pnode)
 
+        py = hy
         ph = 0
         if plugin_config.get("pins"):
             color_n = 0
@@ -2059,20 +2003,18 @@ class Window(QMainWindow):
                     if not bnode:
                         continue
 
-                    # print(breakout_name, bnode, bpin)
                     last_con = (bnode, bpin)
                 else:
                     last_con = (self.bnode, pindata["pin"])
 
-                # print("##", last_con)
-
                 if pindata.get("modifier"):
                     for pmn, modifier in enumerate(pindata.get("modifier")):
-                        mnode = ModifierNode(self.scene, modifier)
+                        pos_x = 550 + pmn * 140
+                        pos_y = py + ph
                         if modifier.get("pos"):
-                            mnode.setPos(modifier["pos"][0], modifier["pos"][1])
-                        else:
-                            mnode.setPos(550 + pmn * 140, py + ph)
+                            pos_x = modifier["pos"][0]
+                            pos_y = modifier["pos"][1]
+                        mnode = ModifierNode(self.scene, pos_x, pos_y, modifier)
                         self.scene.addItem(mnode)
                         edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])
                         self.scene.addItem(edge)
@@ -2086,6 +2028,8 @@ class Window(QMainWindow):
         signals = plugin_config.get("signals")
         if signals:
             for signal_name, signal in signals.items():
+                if signal_name not in plugin_instance.SIGNALS:
+                    continue
                 halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
                 if halname not in self.halpins:
                     self.halpins[halname] = {
@@ -2155,12 +2099,11 @@ class Window(QMainWindow):
                 des_y = item._target_node.port_pos(item._target_port).y()
                 color = item.color
                 self.scene.removeItem(item)
-                # add node
-                modifier_node = ModifierNode(self.scene, {"type": modifier_type})
                 # pos between source and des
                 x = source_x + (des_x - source_x) / 2 - 50
                 y = source_y + (des_y - source_y) / 2 - 10
-                modifier_node.setPos(x, y)
+                # add node
+                modifier_node = ModifierNode(self.scene, x, y, {"type": modifier_type})
                 # reconnect
                 self.scene.addItem(modifier_node)
                 edge = NodeEdge(self.scene, "pin", source_node, source_port, modifier_node, "in", color)
