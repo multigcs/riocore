@@ -37,7 +37,7 @@ class GuiPlugins:
     def __init__(self, parent):
         self.parent = parent
 
-    def edit_plugin_pins(self, plugin_instance, plugin_config):
+    def edit_plugin_pins(self, plugin_instance, plugin_config, pin_selected=None):
         def update(arg):
             pass
             # print("#update", arg, plugin_config)
@@ -54,6 +54,9 @@ class GuiPlugins:
             plugin_config["pins"] = {}
 
         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+            if pin_selected is not None and pin_name != pin_selected:
+                continue
+
             if pin_name not in plugin_config["pins"]:
                 plugin_config["pins"][pin_name] = {}
             pin_config = plugin_config.get("pins", {}).get(pin_name, {})
@@ -273,7 +276,7 @@ class GuiPlugins:
 
         return joint_tabs
 
-    def edit_plugin_signals(self, plugin_instance, plugin_config):
+    def edit_plugin_signals(self, plugin_instance, plugin_config, signal_selected=None):
         def update(arg):
             pass
             # print("#update", arg, plugin_config)
@@ -298,6 +301,9 @@ class GuiPlugins:
         signals_setup = plugin_config["signals"]
 
         for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
+            if signal_selected is not None and signal_name != signal_selected:
+                continue
+
             # signal_table.setRowCount(row_n + 1)
             if signal_name not in signals_setup:
                 signals_setup[signal_name] = {}
@@ -514,7 +520,7 @@ class GuiPlugins:
         options_tab.setWidget(options_widget)
         return options_tab
 
-    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False):
+    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None):
         plugin_config = plugin_instance.plugin_setup
         plugin_config_backup = copy.deepcopy(plugin_config)
 
@@ -541,21 +547,27 @@ class GuiPlugins:
                 plugin_config["is_joint"] = True
 
         options_tab = self.edit_plugin_options(plugin_instance, plugin_config)
-        tab_widget.addTab(options_tab, "Plugin")
+        if signal_selected is None and pin_selected is None:
+            tab_widget.addTab(options_tab, "Plugin")
 
         if not nopins:
-            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config)
-            tab_widget.addTab(pins_tab, "Pins")
-            if is_new:
-                tab_widget.setCurrentWidget(pins_tab)
+            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config, pin_selected=pin_selected)
+            if signal_selected is None:
+                tab_widget.addTab(pins_tab, "Pins")
+                if is_new:
+                    tab_widget.setCurrentWidget(pins_tab)
 
         if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
             joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
-            tab_widget.addTab(joint_tab, "Joint")
+            if pin_selected is None:
+                tab_widget.addTab(joint_tab, "Joint")
         if plugin_instance.TYPE != "interface":
             if plugin_instance.SIGNALS:
-                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config)
-                tab_widget.addTab(signals_tab, "Signals")
+                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config, signal_selected=signal_selected)
+                if pin_selected is None:
+                    tab_widget.addTab(signals_tab, "Signals")
+                    if signal_selected is not None:
+                        tab_widget.setCurrentWidget(signals_tab)
 
         right_layout = QVBoxLayout()
         plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)

@@ -761,8 +761,11 @@ class SubNode(MyNode):
         self.parent.sub_update(self)
 
     def mouseDoubleClickEvent(self, event):
+        port = None
+        if event.button() == Qt.LeftButton:
+            port = self.port_selected(event.pos())
         if hasattr(self.parent, "edit_sub"):
-            self.parent.edit_sub(self)
+            self.parent.edit_sub(self, port)
 
     def delete(self):
         if hasattr(self.parent, "delete_sub"):
@@ -845,11 +848,18 @@ class PluginNode(MyNode):
                 self.scene.parent.config["plugins"].pop(pn)
         return True
 
-    def edit_sub(self, sub_item):
-        self.edit()
+    def edit_sub(self, sub_item, port=None):
+        self.edit(port=port)
 
-    def edit(self):
-        self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None)
+    def edit(self, port=None):
+        pin_selected = None
+        signal_selected = None
+        if port is not None:
+            if port.startswith("sig_"):
+                signal_selected = port[4:]
+            else:
+                pin_selected = port
+        self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None, pin_selected=pin_selected, signal_selected=signal_selected)
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
@@ -859,7 +869,10 @@ class PluginNode(MyNode):
         return False
 
     def mouseDoubleClickEvent(self, event):
-        self.edit()
+        port = None
+        if event.button() == Qt.LeftButton:
+            port = self.port_selected(event.pos())
+        self.edit(port)
 
     def mouseReleaseEvent(self, event):
         self.update()
