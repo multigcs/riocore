@@ -600,7 +600,7 @@ class GuiPlugins:
             for key in plugin_config_backup:
                 plugin_config[key] = plugin_config_backup[key]
 
-    def config_plugin(self, plugin_instance, plugin_id, widget):
+    def config_plugin(self, plugin_instance, plugin_id, widget=None):
         if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
             if hasattr(self.parent, "STYLESHEET"):
