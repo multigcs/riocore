@@ -202,6 +202,21 @@ class NodeEdgeLine(QGraphicsLineItem):
 NodeEdge = NodeEdgePath
 
 
+class AreaMarker(QGraphicsItem):
+    def __init__(self, scene, x, y):
+        super().__init__()
+        self.setPos(x, y)
+        self.width = 1
+        self.height = 1
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def paint(self, painter, option, widget):
+        painter.setPen(QPen(QColor(220, 220, 220), 1))
+        painter.drawRect(QRectF(100, 100, self.width - 200, self.height - 200))
+
+
 class MyNode(QGraphicsItem):
     name = ""
     radius = 5
@@ -1080,6 +1095,9 @@ class NodeViewer(QGraphicsView):
         self.setTransformationAnchor(self.ViewportAnchor.AnchorUnderMouse)
         self.button_pressed = 0
         self.mouse_pos = QPoint()
+        self.selection_marker = None
+        self.mouse_selection_start = None
+        self.mouse_selection_end = None
         self.scene.insert_position = None
 
     def getZoom(self):
@@ -1101,12 +1119,24 @@ class NodeViewer(QGraphicsView):
             self.scene.parent.gui_plugins.add_plugin("")
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
+        super().mousePressEvent(event)
         self.mouse_pos = event.pos()
         self.button_pressed = event.button()
         self.scene.insert_position = self.mapToScene(self.mouse_pos.x(), self.mouse_pos.y())
-        super().mousePressEvent(event)
+        if not self.scene.selectedItems():
+            self.mouse_selection_start = self.mapToScene(self.mouse_pos.x(), self.mouse_pos.y())
+
+            # add AreaMarker
+            self.selection_marker = AreaMarker(self.scene, self.mouse_selection_start.x(), self.mouse_selection_start.y())
+            self.scene.addItem(self.selection_marker)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        for item in self.scene.items():
+            if isinstance(item, AreaMarker):
+                self.scene.removeItem(item)
+        self.selection_marker = None
+        self.mouse_selection_start = None
+        self.mouse_selection_end = None
         if self.scene.selection_source and self.scene.selection_target:
             source_node = self.scene.selection_source[0]
             source_port = self.scene.selection_source[1]
@@ -1160,7 +1190,36 @@ class NodeViewer(QGraphicsView):
         super().mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        if self.button_pressed in [Qt.LeftButton, Qt.MiddleButton]:
+        if self.button_pressed in [Qt.LeftButton]:
+            if self.mouse_selection_start is not None and self.selection_marker is not None:
+                mpos = event.pos()
+                self.mouse_selection_end = self.mapToScene(mpos.x(), mpos.y())
+                start_x = min(self.mouse_selection_start.x(), self.mouse_selection_end.x())
+                end_x = max(self.mouse_selection_start.x(), self.mouse_selection_end.x())
+                start_y = min(self.mouse_selection_start.y(), self.mouse_selection_end.y())
+                end_y = max(self.mouse_selection_start.y(), self.mouse_selection_end.y())
+
+                # update rectangle
+                self.selection_marker.setPos(start_x - 100, start_y - 100)
+                self.selection_marker.width = end_x - start_x + 200
+                self.selection_marker.height = end_y - start_y + 200
+                self.selection_marker.update()
+
+                # select items inside area
+                for item in self.items():
+                    pos = item.pos()
+                    if pos:
+                        width = item.width
+                        height = item.height
+                        if start_x <= pos.x() <= end_x and start_y <= pos.y() <= end_y and start_x <= (pos.x() + width) <= end_x and start_y <= (pos.y() + height) <= end_y:
+                            item.setSelected(True)
+                        else:
+                            item.setSelected(False)
+
+                # prevent drawing errors
+                # self.scene.update()
+
+        elif self.button_pressed in [Qt.MiddleButton]:
             if not self.scene.selectedItems() or self.button_pressed == Qt.MiddleButton:
                 offset = self.mouse_pos - event.pos()
                 self.mouse_pos = event.pos()
@@ -1306,7 +1365,6 @@ class NodeScene(QGraphicsScene):
             pen = QPen(grid_color)
             pen.setWidthF(1)
             painter.setPen(pen)
-
             painter.drawPoints(grid_points)
 
 
