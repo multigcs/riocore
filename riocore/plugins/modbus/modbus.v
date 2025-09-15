@@ -84,7 +84,7 @@ module modbus
         if (tx_frame_id != tx_frame_id_last) begin
             tx_frame_id_last <= tx_frame_id;
             txlen <= tx_frame_len + 8'd1;
-            txbuffer <= txdata[TX_BUFFERSIZE-17:16];
+            txbuffer <= {16'd0, txdata[TX_BUFFERSIZE-17:16]};
             tx_state <= 1;
         end
 
