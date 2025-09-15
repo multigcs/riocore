@@ -31,6 +31,11 @@ Keywords: interface spi raspberry rpi flash mesa
  * direction: input
  * pull: down
 
+### reboot:
+
+ * direction: output
+ * pull: down
+
 ### eeprom_mosi:
 
  * direction: output
@@ -85,17 +90,20 @@ name of this plugin instance
         "prog": {
             "pin": "4"
         },
-        "eeprom_mosi": {
+        "reboot": {
             "pin": "5"
         },
-        "eeprom_miso": {
+        "eeprom_mosi": {
             "pin": "6"
         },
-        "eeprom_sclk": {
+        "eeprom_miso": {
             "pin": "7"
         },
-        "eeprom_sel": {
+        "eeprom_sclk": {
             "pin": "8"
+        },
+        "eeprom_sel": {
+            "pin": "9"
         }
     }
 }
@@ -156,7 +164,7 @@ name of this plugin instance
                 }
             ]
         },
-        "eeprom_mosi": {
+        "reboot": {
             "pin": "5",
             "modifiers": [
                 {
@@ -164,8 +172,16 @@ name of this plugin instance
                 }
             ]
         },
-        "eeprom_miso": {
+        "eeprom_mosi": {
             "pin": "6",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "eeprom_miso": {
+            "pin": "7",
             "modifiers": [
                 {
                     "type": "debounce"
@@ -176,7 +192,7 @@ name of this plugin instance
             ]
         },
         "eeprom_sclk": {
-            "pin": "7",
+            "pin": "8",
             "modifiers": [
                 {
                     "type": "invert"
@@ -184,7 +200,7 @@ name of this plugin instance
             ]
         },
         "eeprom_sel": {
-            "pin": "8",
+            "pin": "9",
             "modifiers": [
                 {
                     "type": "invert"
