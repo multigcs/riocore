@@ -651,6 +651,8 @@ class Project:
             spins = slot["pins"]
             slotname = slot.get("name", f"slot{slot_n}")
             for spin, spin_data in spins.items():
+                if isinstance(spin_data, str):
+                    spin_data = {"pin": spin_data}
                 pin_mapping[f"{slotname}:{spin}"] = spin_data["pin"]
 
             modules = []
