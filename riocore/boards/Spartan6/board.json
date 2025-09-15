@@ -17,8 +17,8 @@
             "name": "LED",
             "comment": "LEDs",
             "pins": {
-                "LED1": "p87",
-                "LED2": "p88"
+                "LED1": {"pin":  "p87"},
+                "LED2": {"pin":  "p88"}
             }
         }
     ]
