@@ -482,6 +482,18 @@ class Plugins:
         return False
 
 
+class EstopInstance:
+    TYPE = "io"
+    instances_name = "ESTOP"
+    signal_prefix = ""
+
+    def interface_data(self):
+        return {}
+
+    def signals(self):
+        return {}
+
+
 class Project:
     def __init__(self, configuration, output_path=None):
         plugins = Plugins()
@@ -794,6 +806,9 @@ class Project:
         if self.multiplexed_output:
             self.output_size += self.multiplexed_output_size + 8
 
+        # ESTOP
+        self.output_size += 1
+
         self.input_size = self.input_size + self.header_size + self.timestamp_size
         self.output_size = self.output_size + self.header_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
@@ -818,6 +833,7 @@ class Project:
                 for data_name, data_config in plugin_instance.interface_data().items():
                     if data_config["size"] == size:
                         interface_data.append([size, plugin_instance, data_name, data_config])
+        interface_data.append([1, EstopInstance(), "ESTOP", {"direction": "output", "size": 1, "value": 0, "variable": "ESTOP"}])
         return interface_data
 
     def get_signal_data(self):

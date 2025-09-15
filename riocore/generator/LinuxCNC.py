@@ -1322,7 +1322,7 @@ class LinuxCNC:
                 # pname = gui_gen.draw_checkbutton("mqtt-enable", "mqtt-enable")
                 # self.halg.net_add("mqtt-publisher.enable", pname)
 
-            def vcp_add(tab, signal_config, prefix=""):
+            def vcp_add(tab, signal_config, prefix="", errors=False):
                 halname = signal_config["halname"]
                 netname = signal_config["netname"]
                 direction = signal_config["direction"]
@@ -1361,9 +1361,47 @@ class LinuxCNC:
                 if vunit and "unit" not in displayconfig:
                     displayconfig["unit"] = vunit
 
+                title = displayconfig.get("title", haltitles.get(halname, halname))
+
                 dtype = None
                 section = None
-                if (netname and not virtual) or setp:
+                estop = False
+
+                netmap = {}
+                for net in linuxcnc_config.get("net", []):
+                    net_source = net.get("source")
+                    net_target = net.get("target")
+                    netmap[net_source] = net_target
+
+                if direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
+                    section = displayconfig.get("section", "status").lower()
+                    estop = True
+                    if "type" in displayconfig:
+                        dtype = displayconfig["type"]
+                    else:
+                        dtype = "rectled"
+                        if netname[0] == "!":
+                            displayconfig["color"] = "red"
+                            displayconfig["off_color"] = "green"
+                        else:
+                            displayconfig["color"] = "green"
+                            displayconfig["off_color"] = "red"
+
+                elif direction == "output" and "iocontrol.0.emc-enable-in" in netmap.get(f"riov.{halname}", ""):
+                    section = displayconfig.get("section", "status").lower()
+                    estop = True
+                    if "type" in displayconfig:
+                        dtype = displayconfig["type"]
+                    else:
+                        dtype = "rectled"
+                        if netname[0] == "!":
+                            displayconfig["color"] = "red"
+                            displayconfig["off_color"] = "green"
+                        else:
+                            displayconfig["color"] = "green"
+                            displayconfig["off_color"] = "red"
+
+                elif (netname and not virtual) or setp:
                     if direction == "input":
                         section = displayconfig.get("section", "inputs").lower()
                     elif direction == "output":
@@ -1372,6 +1410,7 @@ class LinuxCNC:
                         dtype = displayconfig.get("type", "number")
                     else:
                         dtype = displayconfig.get("type", "led")
+
                 elif virtual:
                     section = displayconfig.get("section", "virtual").lower()
                     if direction == "output":
@@ -1399,8 +1438,12 @@ class LinuxCNC:
                     else:
                         dtype = displayconfig.get("type", "checkbutton")
 
+                if estop != errors:
+                    return
                 if section != tab:
                     return
+
+                # print(tab, netname)
 
                 if hasattr(gui_gen, f"draw_{dtype}"):
                     if dtype == "multilabel" and not boolean:
@@ -1416,7 +1459,6 @@ class LinuxCNC:
 
                             lnum += 1
 
-                    title = haltitles.get(halname, halname)
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
 
                     # fselect handling
@@ -1478,6 +1520,27 @@ class LinuxCNC:
                     if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
                         continue
                     vcp_add(tab, signal_config, f"{self.hal_prefix}.")
+
+            if tab == "status":
+                gui_gen.draw_frame_begin("ESTOP-STATUS")
+                gui_gen.draw_vbox_begin()
+
+                estop_button = {
+                    "halname": "iocontrol.0.user-enable-out",
+                    "netname": "iocontrol.0.emc-enable-in",
+                    "direction": "input",
+                    "display": {"title": "E-Stop (GUI)"},
+                    "bool": True,
+                }
+                vcp_add(tab, estop_button, "", errors=True)
+
+                for plugin_instance in self.project.plugin_instances:
+                    for signal_name, signal_config in plugin_instance.signals().items():
+                        if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
+                            continue
+                        vcp_add(tab, signal_config, f"{self.hal_prefix}.", errors=True)
+                gui_gen.draw_vbox_end()
+                gui_gen.draw_frame_end()
 
             component_nums = {}
             for comp in linuxcnc_config.get("components", []):

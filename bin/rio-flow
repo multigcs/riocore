@@ -1691,7 +1691,12 @@ class Window(QMainWindow):
                             plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
                         else:
                             plugin_config["pins"][port]["pin"] = source[1]
-                        plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
+
+                        if pin_data["direction"] == "input":
+                            plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
+                        else:
+                            plugin_config["pins"][port]["modifier"] = list(modifiers)
+
                     else:
                         if plugin_config.get("pins") and port in plugin_config["pins"]:
                             del plugin_config["pins"][port]
@@ -2084,7 +2089,11 @@ class Window(QMainWindow):
                     last_con = (self.bnode, pindata["pin"])
 
                 if pindata.get("modifier"):
-                    for pmn, modifier in enumerate(pindata.get("modifier")):
+                    if pin_defaults["direction"] == "input":
+                        modifiers = pindata.get("modifier", [])
+                    else:
+                        modifiers = list(reversed(pindata.get("modifier", [])))
+                    for pmn, modifier in enumerate(modifiers):
                         pos_x = 550 + pmn * 140
                         pos_y = py + ph
                         if modifier.get("pos"):

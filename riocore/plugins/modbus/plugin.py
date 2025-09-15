@@ -6,9 +6,8 @@ from riocore.plugins.modbus import hy_vfd
 
 
 class Plugin(PluginBase):
-    ON_ERROR_CMDS = []
-
     def setup(self):
+        self.ON_ERROR_CMDS = []
         self.NAME = "modbus"
         self.INFO = "generic modbus plugin"
         self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
@@ -323,7 +322,7 @@ class Plugin(PluginBase):
         instance["predefines"].append(f"reg [31:0] {self.instances_name}_cmd_counter = 0;")
 
         instance["predefines"].append("always @(posedge sysclk) begin")
-        instance["predefines"].append("    if (ERROR) begin")
+        instance["predefines"].append("    if (INTERFACE_TIMEOUT) begin")
         instance["predefines"].append(f"        if ({self.instances_name}_cmd_counter < {self.system_setup['speed'] // 5}) begin")
         instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= {self.instances_name}_cmd_counter + 32'd1;")
         instance["predefines"].append("        end else begin")

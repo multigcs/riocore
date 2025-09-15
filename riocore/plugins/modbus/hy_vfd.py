@@ -307,9 +307,11 @@ class hy_vfd:
         output.append("                    break;")
         output.append("                }")
         output.append("            }")
+        output.append(f"            if (value_{self.signal_name}_max_freq > 0.0) {{")
         output.append(
-            f"            value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};"
+            f"                value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};"
         )
+        output.append("            }")
         output.append(f"            value_{self.signal_name}_speed_fb_rps = value_{self.signal_name}_speed_fb / 60.0;")
         output.append(f"            if (value_{self.signal_name}_spindle_at_speed_tolerance == 0.0) {{")
         output.append(f"                value_{self.signal_name}_spindle_at_speed_tolerance = 5.0;")
@@ -377,7 +379,7 @@ class hy_vfd:
         output.append(f"    {self.instances_name}_{self.signal_name}_register_setup = 0;")
         num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
         output.append(f"    for (n = 0; n < {num_config_registers}; n++) {{")
-        output.append(f"        if ({self.instances_name}_{self.signal_name}_config_register[n].done == 0 && {self.instances_name}_{self.signal_name}_config_register[n].try < 5) {{")
+        output.append(f"        if ({self.instances_name}_{self.signal_name}_config_register[n].done == 0 && {self.instances_name}_{self.signal_name}_config_register[n].try < 50) {{")
         output.append(f"            {self.instances_name}_{self.signal_name}_config_register[n].try += 1;")
         output.append(f"            {self.instances_name}_{self.signal_name}_register_setup = 1;")
         output.append(f"            frame_data[0] = {address};")
@@ -414,7 +416,10 @@ class hy_vfd:
         output.append(f"    }} else if ({self.instances_name}_{self.signal_name}_command == 1) {{")
         output.append("        // set speed")
         output.append("        float freq_comp = 0;")
-        output.append(f"        float hz_per_rpm = value_{self.signal_name}_max_freq / value_{self.signal_name}_rated_motor_rev;")
+        output.append("        float hz_per_rpm = 0;")
+        output.append(f"        if (value_{self.signal_name}_rated_motor_rev > 0.0) {{")
+        output.append(f"            hz_per_rpm = value_{self.signal_name}_max_freq / value_{self.signal_name}_rated_motor_rev;")
+        output.append("        }")
         output.append(f"        float value = abs((value_{self.signal_name}_speed_command + freq_comp) * hz_per_rpm);")
         output.append(f"        if (value > value_{self.signal_name}_max_freq) {{")
         output.append(f"            value = value_{self.signal_name}_max_freq;")

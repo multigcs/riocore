@@ -69,6 +69,17 @@
         },
         {
             "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value > 10"
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Overload"
+        },
+        {
+            "type": "signal",
             "uid": "signal0",
             "signals": {
                 "value": {

@@ -344,32 +344,17 @@ class Gateware:
         output.append("    reg INTERFACE_TIMEOUT = 0;")
         output.append("    wire INTERFACE_SYNC;")
 
-        error_signals = ["INTERFACE_TIMEOUT"]
-
-        estop_pin = None
+        error_signals = ["INTERFACE_TIMEOUT", "ESTOP"]
         for plugin_instance in self.project.plugin_instances:
             for data_name, interface_setup in plugin_instance.interface_data().items():
-                if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                    if plugin_instance.NAME == "bitin" and plugin_instance.title.lower() == "estop":
-                        estop_pin = interface_setup["variable"]
-                        break
-
                 error_on = interface_setup.get("error_on")
                 if error_on is True:
                     error_signals.append(interface_setup["variable"])
                 elif error_on is False:
                     error_signals.append(f"~{interface_setup['variable']}")
 
-        if estop_pin is not None:
-            output.append("    wire ESTOP;")
-            output.append(f"    assign ESTOP = {estop_pin};")
-            error_signals.append("ESTOP")
-        else:
-            output.append("    parameter ESTOP = 0;")
         output.append("    wire ERROR;")
-
         output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
-
         output.append("")
 
         osc_clock = self.project.config["osc_clock"]
@@ -430,14 +415,9 @@ class Gateware:
         output.append("    wire [BUFFER_SIZE-1:0] tx_data;")
         output.append("")
         output.append("    reg [31:0] timestamp = 0;")
-        output.append("    reg signed [31:0] header_tx = 0;")
+        output.append("    reg signed [31:0] header_tx = 32'h64617461;")
         output.append("    always @(posedge sysclk) begin")
         output.append("        timestamp <= timestamp + 1'd1;")
-        output.append("        if (ESTOP) begin")
-        output.append("            header_tx <= 32'h65737470;")
-        output.append("        end else begin")
-        output.append("            header_tx <= 32'h64617461;")
-        output.append("        end")
         output.append("    end")
         output.append("")
 

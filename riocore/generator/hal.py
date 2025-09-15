@@ -63,6 +63,7 @@ class hal_generator:
     def logic2signal(self, expression, target):
         logic_types = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
         int_types = {"S+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
+        wcomp_types = {"<": "under", ">": "over"}
 
         if expression in self.function_cache:
             return self.function_cache[expression]
@@ -77,6 +78,8 @@ class hal_generator:
         etype = parts[1].upper()
 
         if etype in logic_types:
+            # pin1 AND pin2
+            # pin1 OR pin2
             personality = logic_types[etype] + n_inputs
             fname = f"func.{etype.lower()}_{new_signal}"
             self.hal_logics[fname] = f"0x{personality:x}"
@@ -93,7 +96,29 @@ class hal_generator:
                 else:
                     self.outputs2signals[f"{fname}.in-{in_n:02d}"]["signals"].append(input_signal)
             output_pin = f"{fname}.{etype.lower()}"
+
+        elif etype in wcomp_types:
+            # pin > value
+            # pin < value
+            wcomp_out = wcomp_types[etype]
+            fname = f"func.wcomp_{wcomp_out}_{new_signal}"
+            if "wcomp" not in self.hal_calcs:
+                self.hal_calcs["wcomp"] = []
+            self.hal_calcs["wcomp"].append(fname)
+            input_pin = parts[0]
+            compare_value = parts[2]
+            input_signal = self.pin2signal(input_pin, target)
+            if f"{fname}.in" not in self.outputs2signals:
+                self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+            else:
+                self.outputs2signals[f"{fname}.in"]["signals"].append(input_signal)
+            self.setp_add(f"{fname}.min", compare_value)
+            self.setp_add(f"{fname}.max", compare_value)
+            output_pin = f"{fname}.{wcomp_out}"
+
         else:
+            # pin1 * pin2
+            # pin1 / pin2
             personality = int_types[etype]
             if etype == "-":
                 fname = f"func.sub2_{new_signal}"
@@ -256,6 +281,10 @@ class hal_generator:
     def net_add(self, input_pin, output_pin, signal_name=None):
         # replace some command/operation words
         input_pin = input_pin.replace("abs(", "abs'(").replace("not(", "!(")
+
+        if output_pin[0] == "!":
+            output_pin = output_pin[1:]
+            input_pin = f"!{input_pin}"
 
         # handle multiple outputs (A,B)
         if "," in output_pin:
