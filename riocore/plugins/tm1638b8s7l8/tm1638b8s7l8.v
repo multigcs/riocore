@@ -135,7 +135,7 @@ module tm1638b8s7l8
             numberAbs <= number1;
             prefix <= 4'hb;
         end
-            num <= nums[digit_pos];
+            num <= nums[digit_pos[2:0]];
         if (state == 0) begin
             sclk <= 1;
             sel <= 0;
@@ -146,7 +146,7 @@ module tm1638b8s7l8
             if (sclk == 1) begin
                 sclk <= 0;
                 if (isSending == 1) begin
-                    dataOut <= cmd[data_pos];
+                    dataOut <= cmd[data_pos[4:0]];
                 end
                 if (isSending == 0) begin
                     data_read <= {data_read[30:0], dataIn};
@@ -187,8 +187,8 @@ module tm1638b8s7l8
                 end
                 2: begin
                     if (digit_pos < 8) begin
-                        cmd[16] <= leds[digit_pos];
-                        cmd[15] <= dots[digit_pos];
+                        cmd[16] <= leds[digit_pos[2:0]];
+                        cmd[15] <= dots[digit_pos[2:0]];
                         cmd[14:8] <= digit;
                         cmd[7:0] <= 8'hc0 + (digit_pos<<1);
                         cmd_size <= 8'd24;

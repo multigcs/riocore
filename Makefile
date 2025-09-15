@@ -18,7 +18,7 @@ unittests:
 	python3 -m pytest -vv -v tests/unit/
 
 verilator:
-	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only riocore/files/verilog/globals.v
+	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only -Wno-WIDTHEXPAND riocore/files/verilog/globals.v
 
 readmes:
 	PYTHONPATH=. bin/rio-plugininfo -g
