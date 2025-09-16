@@ -4,6 +4,7 @@
 
 ### Gui and Generator
 * adding new experimental grafical setup tool: rio-flow
+* support for more hal components (conv-*-*, limit, wcomp, delay)
 
 ### Plugins
 * adding experimental riosub plugin, to chain multiple FPGA's

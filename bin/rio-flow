@@ -853,6 +853,24 @@ class PluginNode(MyNode):
     def edit_sub(self, sub_item, port=None):
         self.edit(port=port)
 
+    def clone(self, xoff=0, yoff=0, redraw=True):
+        plugin_config = copy.deepcopy(self.plugin_instance.plugin_setup)
+        plugin_config["name"] = f"{plugin_config.get('name', plugin_config['uid'])}-clone"
+        plugin_config["uid"] = f"{plugin_config['uid']}b"
+        if xoff == 0 and yoff == 0:
+            yoff = self.height + 5
+        plugin_config["pos"] = (plugin_config["pos"][0] + xoff, plugin_config["pos"][1] + yoff)
+        plugin_config["preselect"] = True
+        for pin_name, pin_data in plugin_config["pins"].items():
+            pin_data["pin"] = "unset"
+            for modifier in pin_data.get("modifier", []):
+                if "pos" in modifier:
+                    modifier["pos"] = (modifier["pos"][0] + xoff, modifier["pos"][1] + yoff)
+        self.scene.parent.config["plugins"].append(plugin_config)
+        if redraw:
+            self.scene.parent.redraw()
+            self.scene.parent.snapshot()
+
     def edit(self, port=None):
         pin_selected = None
         signal_selected = None
@@ -1307,6 +1325,10 @@ class NodeScene(QGraphicsScene):
                 edit = QAction("edit", None)
                 edit.triggered.connect(self.menu_selection.edit)
                 menu.addAction(edit)
+            if hasattr(self.menu_selection, "clone"):
+                clone = QAction("clone", None)
+                clone.triggered.connect(self.menu_selection.clone)
+                menu.addAction(clone)
             if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode):
                 rotate = QAction("rotate", None)
                 rotate.triggered.connect(self.menu_selection.rotate_cw)
@@ -1566,6 +1588,8 @@ class Window(QMainWindow):
             self.undo()
         elif event.key() == Qt.Key_Delete:
             self.delete_selection()
+        elif event.key() == Qt.Key_Asterisk:
+            self.clone_selection()
         elif event.key() in {Qt.Key_Insert, Qt.Key_Plus}:
             selection = self.dialog_select("add", ["add Plugin", "add Breakout"])
             if selection == "add Plugin":
@@ -2063,8 +2087,12 @@ class Window(QMainWindow):
             hx = 850
             hy = py
 
+        preselect = plugin_instance.plugin_setup.get("preselect")
         pnode = PluginNode(self.scene, hx, hy, plugin_instance)
         self.scene.addItem(pnode)
+        if preselect:
+            del plugin_instance.plugin_setup["preselect"]
+            pnode.setSelected(True)
 
         py = hy
         ph = 0
@@ -2101,6 +2129,8 @@ class Window(QMainWindow):
                             pos_y = modifier["pos"][1]
                         mnode = ModifierNode(self.scene, pos_x, pos_y, modifier)
                         self.scene.addItem(mnode)
+                        if preselect:
+                            mnode.setSelected(True)
                         edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])
                         self.scene.addItem(edge)
                         last_con = (mnode, "out")
@@ -2236,6 +2266,13 @@ class Window(QMainWindow):
                 self.redraw()
                 self.snapshot()
                 break
+
+    def clone_selection(self):
+        for item in self.scene.selectedItems():
+            if isinstance(item, PluginNode):
+                item.clone(xoff=item.width + 5, redraw=False)
+        self.redraw()
+        self.snapshot()
 
     def delete_selection(self):
         for item in self.scene.selectedItems():
