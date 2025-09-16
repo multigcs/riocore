@@ -856,7 +856,7 @@ class PluginNode(MyNode):
     def clone(self, xoff=0, yoff=0, redraw=True):
         plugin_config = copy.deepcopy(self.plugin_instance.plugin_setup)
         plugin_config["name"] = f"{plugin_config.get('name', plugin_config['uid'])}-clone"
-        plugin_config["uid"] = f"{plugin_config['uid']}b"
+        plugin_config["uid"] = ""
         if xoff == 0 and yoff == 0:
             yoff = self.height + 5
         plugin_config["pos"] = (plugin_config["pos"][0] + xoff, plugin_config["pos"][1] + yoff)
