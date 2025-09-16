@@ -171,6 +171,24 @@
         },
         {
             "type": "signal",
+            "signals": {
+                "value": {
+                    "_net": "riov.Virt-Float-In1.value >= sig_riov_Virt-Float-In2_value",
+                    "net": "riov.Virt-Float-In1.value >= riov.Virt-Float-In2.value",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "In1 >= In2"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Val1_Over_Val2"
+        },
+        {
+            "type": "signal",
             "uid": "signal0",
             "signals": {
                 "value": {

@@ -110,17 +110,11 @@ class hal_generator:
             min_value = parts[2]
             max_value = min_value
             if etype == ">":
-                min_value = float(min_value) + 0.001
-                max_value = min_value
+                if min_value.replace(".", "").isnumeric():
+                    max_value = str(float(min_value) + 0.001)
             elif etype == "<":
-                min_value = float(min_value) - 0.001
-                max_value = min_value
-            elif etype == ">=":
-                min_value = float(min_value) - 0.001
-                max_value = min_value
-            elif etype == "<=":
-                min_value = float(min_value) + 0.001
-                max_value = min_value
+                if min_value.replace(".", "").isnumeric():
+                    min_value = str(float(min_value) - 0.001)
             elif etype == "<>":
                 max_value = min_value.split(",")[1]
                 min_value = min_value.split(",")[0]
@@ -129,8 +123,23 @@ class hal_generator:
                 self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
             else:
                 self.outputs2signals[f"{fname}.in"]["signals"].append(input_signal)
-            self.setp_add(f"{fname}.min", min_value)
-            self.setp_add(f"{fname}.max", max_value)
+            if min_value.replace(".", "").isnumeric():
+                self.setp_add(f"{fname}.min", min_value)
+            else:
+                input_signal = self.pin2signal(min_value, target)
+                if f"{fname}.min" not in self.outputs2signals:
+                    self.outputs2signals[f"{fname}.min"] = {"signals": [input_signal], "target": target}
+                else:
+                    self.outputs2signals[f"{fname}.min"]["signals"].append(input_signal)
+            if max_value.replace(".", "").isnumeric():
+                self.setp_add(f"{fname}.max", max_value)
+            else:
+                input_signal = self.pin2signal(max_value, target)
+                if f"{fname}.max" not in self.outputs2signals:
+                    self.outputs2signals[f"{fname}.max"] = {"signals": [input_signal], "target": target}
+                else:
+                    self.outputs2signals[f"{fname}.max"]["signals"].append(input_signal)
+
             output_pin = f"{fname}.{wcomp_out}"
 
         else:
