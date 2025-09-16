@@ -64,6 +64,7 @@ class hal_generator:
         logic_types = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
         int_types = {"S+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
         wcomp_types = {"<": "under", ">": "over", "<=": "under", ">=": "over", "<>": "out"}
+        # TODO; using comp for lower / grater
 
         if expression in self.function_cache:
             return self.function_cache[expression]
@@ -248,6 +249,7 @@ class hal_generator:
                         elif inside.startswith("abs'"):
                             target = output_pin
                             inside = self.pin_abs(inside[4:], target)
+                        # TODO: adding converters like: conv_float_s32
                         input_pin = input_pin.replace(expression, inside)
                     break
         return input_pin
