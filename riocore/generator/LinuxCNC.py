@@ -1367,27 +1367,7 @@ class LinuxCNC:
                 section = None
                 estop = False
 
-                netmap = {}
-                for net in linuxcnc_config.get("net", []):
-                    net_source = net.get("source")
-                    net_target = net.get("target")
-                    netmap[net_source] = net_target
-
                 if direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
-                    section = displayconfig.get("section", "status").lower()
-                    estop = True
-                    if "type" in displayconfig:
-                        dtype = displayconfig["type"]
-                    else:
-                        dtype = "rectled"
-                        if netname[0] == "!":
-                            displayconfig["color"] = "red"
-                            displayconfig["off_color"] = "green"
-                        else:
-                            displayconfig["color"] = "green"
-                            displayconfig["off_color"] = "red"
-
-                elif direction == "output" and "iocontrol.0.emc-enable-in" in netmap.get(f"riov.{halname}", ""):
                     section = displayconfig.get("section", "status").lower()
                     estop = True
                     if "type" in displayconfig:
