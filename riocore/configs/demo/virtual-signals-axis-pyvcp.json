@@ -71,12 +71,103 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "riov.Virt-Float-In1.value > 10"
+                    "net": "riov.Virt-Float-In1.value <= 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "<= 50"
+                    }
                 }
             },
             "vtype": "bool",
             "dir": "output",
-            "name": "Overload"
+            "name": "Under_Equal"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value >= 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": ">= 50"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Over_Equal"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value < 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "< 50"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Under"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value > 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "> 50"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Over"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value <> 40,60",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "between 40-60"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Inside"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "!(riov.Virt-Float-In1.value <> 40,60)",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "outside 40-60"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Outside"
         },
         {
             "type": "signal",

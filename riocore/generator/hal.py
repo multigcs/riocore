@@ -63,7 +63,7 @@ class hal_generator:
     def logic2signal(self, expression, target):
         logic_types = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
         int_types = {"S+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
-        wcomp_types = {"<": "under", ">": "over"}
+        wcomp_types = {"<": "under", ">": "over", "<=": "under", ">=": "over", "<>": "out"}
 
         if expression in self.function_cache:
             return self.function_cache[expression]
@@ -99,21 +99,38 @@ class hal_generator:
 
         elif etype in wcomp_types:
             # pin > value
-            # pin < value
+            # pin <= value
+            # pin <> value1,value2
             wcomp_out = wcomp_types[etype]
             fname = f"func.wcomp_{wcomp_out}_{new_signal}"
             if "wcomp" not in self.hal_calcs:
                 self.hal_calcs["wcomp"] = []
             self.hal_calcs["wcomp"].append(fname)
             input_pin = parts[0]
-            compare_value = parts[2]
+            min_value = parts[2]
+            max_value = min_value
+            if etype == ">":
+                min_value = float(min_value) + 0.001
+                max_value = min_value
+            elif etype == "<":
+                min_value = float(min_value) - 0.001
+                max_value = min_value
+            elif etype == ">=":
+                min_value = float(min_value) - 0.001
+                max_value = min_value
+            elif etype == "<=":
+                min_value = float(min_value) + 0.001
+                max_value = min_value
+            elif etype == "<>":
+                max_value = min_value.split(",")[1]
+                min_value = min_value.split(",")[0]
             input_signal = self.pin2signal(input_pin, target)
             if f"{fname}.in" not in self.outputs2signals:
                 self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
             else:
                 self.outputs2signals[f"{fname}.in"]["signals"].append(input_signal)
-            self.setp_add(f"{fname}.min", compare_value)
-            self.setp_add(f"{fname}.max", compare_value)
+            self.setp_add(f"{fname}.min", min_value)
+            self.setp_add(f"{fname}.max", max_value)
             output_pin = f"{fname}.{wcomp_out}"
 
         else:
