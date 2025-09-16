@@ -356,6 +356,22 @@
             "dir": "output",
             "vtype": "bool",
             "name": "Virt-Bool-Out5"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "display": {
+                        "title": "Delayed - 1",
+                        "section": "status",
+                        "type": "led"
+                    },
+                    "net": "delay-1-1'riov.Virt-Bool-In1.value"
+                }
+            },
+            "dir": "output",
+            "vtype": "bool",
+            "name": "Virt-Bool-Delayed"
         }
     ],
     "modules": [

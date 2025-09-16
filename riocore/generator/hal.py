@@ -3,6 +3,7 @@
 # hal generator: can resolve logic operation, multiple assignments and invert pins
 #
 
+import re
 from riocore import halpins
 
 
@@ -219,16 +220,31 @@ class hal_generator:
         fname = f"func.abs_{input_pin.replace('.', '_')}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-
         if "abs" not in self.hal_calcs:
             self.hal_calcs["abs"] = []
         self.hal_calcs["abs"].append(fname)
-
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-
         self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
 
+    def pin_delay(self, input_pin, target, on, off):
+        # delay-1-1'pin
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        if "timedelay" not in self.hal_calcs:
+            self.hal_calcs["timedelay"] = []
+        fnum = len(self.hal_calcs["timedelay"]) + 1
+        fname = f"func.timedelay-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs["timedelay"].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.setp_add(f"{fname}.on-delay", on)
+        self.setp_add(f"{fname}.off-delay", off)
+        self.function_cache[fname] = f"{fname}.out"
         return f"{fname}.out"
 
     def brackets_parser(self, input_pin, output_pin):
@@ -248,7 +264,10 @@ class hal_generator:
                             inside = self.pin_not(inside[1:], target)
                         elif inside.startswith("abs'"):
                             target = output_pin
-                            inside = self.pin_abs(inside[4:], target)
+                            inside = self.pin_abs(inside.split("'")[1], target)
+                        elif m := re.search("delay-(?P<on>[0-9])-(?P<off>[0-9])'", inside):
+                            target = output_pin
+                            inside = self.pin_delay(inside.split("'")[1], target, m.group("on"), m.group("off"))
                         # TODO: adding converters like: conv_float_s32
                         input_pin = input_pin.replace(expression, inside)
                     break
