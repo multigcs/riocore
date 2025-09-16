@@ -305,7 +305,6 @@ class hal_generator:
                         elif m := re.search("conv-(?P<tin>[a-z]*)-(?P<tout>[a-z]*)'", inside):
                             target = output_pin
                             inside = self.pin_conv(inside.split("'")[1], target, m.group("tin"), m.group("tout"))
-                        # TODO: adding converters like: conv_float_s32
                         input_pin = input_pin.replace(expression, inside)
                     break
         return input_pin
