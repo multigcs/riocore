@@ -1365,7 +1365,7 @@ class LinuxCNC:
 
                 dtype = None
                 section = None
-                estop = False
+                estop = displayconfig.get("estop", False)
 
                 if direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
                     section = displayconfig.get("section", "status").lower()
@@ -1796,7 +1796,7 @@ class LinuxCNC:
             net_source = self.gpio_pinmapping.get(net_source, net_source)
             net_target = self.gpio_pinmapping.get(net_target, net_target)
             if net_source and net_target:
-                self.halg.net_add(net_source, net_target, net_name)
+                self.halg.net_add(f"({net_source})", net_target, net_name)
 
         component_nums = {}
         for comp in linuxcnc_config.get("components", []):

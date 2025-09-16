@@ -398,6 +398,7 @@
                     "display": {
                         "title": "Delayed",
                         "section": "status",
+                        "estop": true,
                         "type": "led"
                     },
                     "net": "delay-0.5-1'riov.Virt-Bool-In1.value"
@@ -431,6 +432,9 @@
     "linuxcnc": {
         "simulation": true,
         "gui": "axis",
-        "vcp_type": "pyvcp"
+        "vcp_type": "pyvcp",
+        "net": [
+            {"source": "delay-0.5-1'riov.Virt-Bool-In1.value", "target": "iocontrol.0.emc-enable-in"}
+        ]
     }
 }
