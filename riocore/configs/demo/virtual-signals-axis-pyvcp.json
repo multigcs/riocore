@@ -218,7 +218,41 @@
                 }
             },
             "dir": "output",
-            "name": "Virt-Float-Out1"
+            "name": "Float-Out1"
+        },
+        {
+            "type": "signal",
+            "uid": "signal1",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 100.0
+                    },
+                    "net": "limit-25.0-75.0'riov.Virt-Float-In1.value"
+                }
+            },
+            "dir": "output",
+            "name": "Limit"
+        },
+        {
+            "type": "signal",
+            "uid": "signal1",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 100.0
+                    },
+                    "net": "deadzone-50.0-10.0'riov.Virt-Float-In1.value"
+                }
+            },
+            "dir": "output",
+            "name": "Deadzone"
         },
         {
             "type": "signal",

@@ -247,6 +247,44 @@ class hal_generator:
         self.function_cache[fname] = f"{fname}.out"
         return f"{fname}.out"
 
+    def pin_limit(self, input_pin, target, lmin, lmax):
+        # limit-10-90'pin
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        if "limit1" not in self.hal_calcs:
+            self.hal_calcs["limit1"] = []
+        fnum = len(self.hal_calcs["limit1"]) + 1
+        fname = f"func.limit1-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs["limit1"].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.setp_add(f"{fname}.min", lmin)
+        self.setp_add(f"{fname}.max", lmax)
+        self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
+
+    def pin_deadzone(self, input_pin, target, center, threshold):
+        # limit-10-90'pin
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        if "deadzone" not in self.hal_calcs:
+            self.hal_calcs["deadzone"] = []
+        fnum = len(self.hal_calcs["deadzone"]) + 1
+        fname = f"func.deadzone-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs["deadzone"].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.setp_add(f"{fname}.center", center)
+        self.setp_add(f"{fname}.threshold", threshold)
+        self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
+
     def pin_conv(self, input_pin, target, type_in, type_out):
         # conv-float-u32-'pin
         if target not in self.logic_ids:
@@ -302,6 +340,12 @@ class hal_generator:
                         elif m := re.search("delay-(?P<on>[0-9.]*)-(?P<off>[0-9.]*)'", inside):
                             target = output_pin
                             inside = self.pin_delay(inside.split("'")[1], target, m.group("on"), m.group("off"))
+                        elif m := re.search("limit-(?P<min>[0-9.]*)-(?P<max>[0-9.]*)'", inside):
+                            target = output_pin
+                            inside = self.pin_limit(inside.split("'")[1], target, m.group("min"), m.group("max"))
+                        elif m := re.search("deadzone-(?P<center>[0-9.]*)-(?P<threshold>[0-9.]*)'", inside):
+                            target = output_pin
+                            inside = self.pin_deadzone(inside.split("'")[1], target, m.group("center"), m.group("threshold"))
                         elif m := re.search("conv-(?P<tin>[a-z]*)-(?P<tout>[a-z]*)'", inside):
                             target = output_pin
                             inside = self.pin_conv(inside.split("'")[1], target, m.group("tin"), m.group("tout"))
