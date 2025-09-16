@@ -265,7 +265,7 @@ class hal_generator:
                         elif inside.startswith("abs'"):
                             target = output_pin
                             inside = self.pin_abs(inside.split("'")[1], target)
-                        elif m := re.search("delay-(?P<on>[0-9])-(?P<off>[0-9])'", inside):
+                        elif m := re.search("delay-(?P<on>[0-9.]*)-(?P<off>[0-9.]*)'", inside):
                             target = output_pin
                             inside = self.pin_delay(inside.split("'")[1], target, m.group("on"), m.group("off"))
                         # TODO: adding converters like: conv_float_s32
