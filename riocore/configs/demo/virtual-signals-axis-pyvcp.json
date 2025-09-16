@@ -362,7 +362,7 @@
             "signals": {
                 "value": {
                     "display": {
-                        "title": "Delayed - 1",
+                        "title": "Delayed",
                         "section": "status",
                         "type": "led"
                     },
@@ -372,6 +372,20 @@
             "dir": "output",
             "vtype": "bool",
             "name": "Virt-Bool-Delayed"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "display": {
+                        "title": "Converted",
+                        "section": "status"
+                    },
+                    "net": "conv-bit-float'riov.Virt-Bool-In1.value"
+                }
+            },
+            "dir": "output",
+            "name": "Virt-Float-Conv"
         }
     ],
     "modules": [

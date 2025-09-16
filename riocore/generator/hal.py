@@ -247,6 +247,40 @@ class hal_generator:
         self.function_cache[fname] = f"{fname}.out"
         return f"{fname}.out"
 
+    def pin_conv(self, input_pin, target, type_in, type_out):
+        # conv-float-u32-'pin
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        func = f"conv_{type_in}_{type_out}"
+        if func not in {
+            "conv_bit_float",
+            "conv_bit_s32",
+            "conv_bit_u32",
+            "conv_float_s32",
+            "conv_float_u32",
+            "conv_s32_bit",
+            "conv_s32_float",
+            "conv_s32_u32",
+            "conv_u32_bit",
+            "conv_u32_float",
+            "conv_u32_s32",
+        }:
+            print(f"component: {func} not found")
+            exit(1)
+
+        if func not in self.hal_calcs:
+            self.hal_calcs[func] = []
+        fnum = len(self.hal_calcs[func]) + 1
+        fname = f"func.{func}-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs[func].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
+
     def brackets_parser(self, input_pin, output_pin):
         expression = "#"
         while expression:
@@ -268,6 +302,9 @@ class hal_generator:
                         elif m := re.search("delay-(?P<on>[0-9.]*)-(?P<off>[0-9.]*)'", inside):
                             target = output_pin
                             inside = self.pin_delay(inside.split("'")[1], target, m.group("on"), m.group("off"))
+                        elif m := re.search("conv-(?P<tin>[a-z]*)-(?P<tout>[a-z]*)'", inside):
+                            target = output_pin
+                            inside = self.pin_conv(inside.split("'")[1], target, m.group("tin"), m.group("tout"))
                         # TODO: adding converters like: conv_float_s32
                         input_pin = input_pin.replace(expression, inside)
                     break
