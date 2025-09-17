@@ -126,7 +126,11 @@ class Toolchain:
         # generating ISE project file
         modules = []
         for verilog in self.config["verilog_files"]:
-            modules.append(open(os.path.join(path, verilog), "r").read())
+            source = os.path.join(path, verilog)
+            if os.path.isfile(source):
+                modules.append(open(source, "r").read())
+            else:
+                print(f"ERROR: missing file: {source}")
         open(os.path.join(path, "rio-modules.v"), "w").write("\n\n".join(modules))
 
         ise_project = f"""<?xml version="1.0" encoding="UTF-8" standalone="no" ?>

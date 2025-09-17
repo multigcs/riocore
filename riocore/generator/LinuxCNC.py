@@ -1399,7 +1399,6 @@ class LinuxCNC:
                     for signal_name, signal_config in cinstance.signals().items():
                         vcp_add(signal_config, "", widgets)
 
-
         tablist = []
         for tab in vcp_sections:
             if tab not in widgets:

@@ -226,8 +226,9 @@ class ConfigGraph:
                         net = None
                         function = None
                         if signal_config:
-                            net = signal_config.get("net")
+                            net = signal_config.get("net").replace("!", "not-").replace("<", "-lt-").replace(">", "-gt-")
                             function = signal_config.get("function")
+
                             if function:
                                 gAll.edge(f"{title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
                                 lcports.append(f"<{function}>{function}")

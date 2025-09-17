@@ -32,7 +32,7 @@ class HalGraph:
     ):
         pass
 
-    def png(self, ini_file):
+    def png(self, ini_file, clustering=True):
         try:
             self.gAll = graphviz.Digraph("G", format="png")
             self.gAll.attr(rankdir="LR")
@@ -144,9 +144,9 @@ class HalGraph:
                         cluster = title
                         break
 
-                if cluster:
+                if cluster and clustering:
                     with self.gAll.subgraph(name=f"cluster_{cluster}") as gr:
-                        gr.attr(label=cluster, style="rounded, filled")
+                        gr.attr(label=cluster)
                         gr.node(
                             group_name,
                             shape="record",
@@ -168,7 +168,10 @@ class HalGraph:
             return self.gAll.pipe()
 
         except Exception as error:
-            print(f"ERROR(HAL_GRAPH): {error}")
+            if clustering:
+                return self.png(ini_file, clustering=False)
+            else:
+                print(f"ERROR(HAL_GRAPH): {error}")
         return None
 
     def load_halfile(self, basepath, filepath):
@@ -283,4 +286,5 @@ if __name__ == "__main__":
     graph = HalGraph()
     png_data = graph.png(ini_path)
     if png_data:
-        print(png_data.decode())
+        open("/tmp/test.png", "wb").write(png_data)
+        # print(png_data.decode())
