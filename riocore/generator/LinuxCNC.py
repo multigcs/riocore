@@ -1234,8 +1234,6 @@ class LinuxCNC:
                 if section and section not in vcp_sections:
                     vcp_sections.append(section)
 
-        gui_gen.draw_tabs_begin([tab.title() for tab in vcp_sections])
-
         # analyse halnames to generate titles
         prefixes = {}
         haltitles = {}
@@ -1253,8 +1251,164 @@ class LinuxCNC:
                 for halname in halnames:
                     haltitles[halname] = prefix.title()
 
-        # generate tab (vcp) for each section
+        def vcp_add(signal_config, prefix, widgets, errors=False):
+            halname = signal_config["halname"]
+            netname = signal_config["netname"]
+            direction = signal_config["direction"]
+            userconfig = signal_config.get("userconfig", {})
+            boolean = signal_config.get("bool")
+            virtual = signal_config.get("virtual")
+            mapping = signal_config.get("mapping")
+            setp = userconfig.get("setp")
+            function = userconfig.get("function", "")
+            displayconfig = userconfig.get("display", signal_config.get("display", {}))
+            initval = signal_config.get("default", 0)
+            if not displayconfig and initval:
+                displayconfig["initval"] = initval
+
+            if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
+                return
+            if function and not virtual:
+                return
+            if signal_config.get("helper", False) and not displayconfig:
+                return
+            if setp:
+                return
+            if halname in self.feedbacks:
+                return
+
+            vmin = signal_config.get("min", -1000)
+            vmax = signal_config.get("max", 1000)
+            vformat = signal_config.get("format")
+            vunit = signal_config.get("unit")
+            if "min" not in displayconfig:
+                displayconfig["min"] = vmin
+            if "max" not in displayconfig:
+                displayconfig["max"] = vmax
+            if vformat and "format" not in displayconfig:
+                displayconfig["format"] = vformat
+            if vunit and "unit" not in displayconfig:
+                displayconfig["unit"] = vunit
+
+            dtype = None
+            section = None
+            group = displayconfig.get("group", None)
+
+            if direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
+                section = displayconfig.get("section", "status").lower()
+                group = "ESTOP-STATUS"
+                if "type" in displayconfig:
+                    dtype = displayconfig["type"]
+                else:
+                    dtype = "rectled"
+                    if netname[0] == "!":
+                        displayconfig["color"] = "red"
+                        displayconfig["off_color"] = "green"
+                    else:
+                        displayconfig["color"] = "green"
+                        displayconfig["off_color"] = "red"
+
+            elif (netname and not virtual) or setp:
+                if direction == "input":
+                    section = displayconfig.get("section", "inputs").lower()
+                elif direction == "output":
+                    section = displayconfig.get("section", "outputs").lower()
+                if not boolean:
+                    dtype = displayconfig.get("type", "number")
+                else:
+                    dtype = displayconfig.get("type", "led")
+
+            elif virtual:
+                section = displayconfig.get("section", "virtual").lower()
+                if direction == "output":
+                    if not boolean:
+                        dtype = displayconfig.get("type", "number")
+                    else:
+                        dtype = displayconfig.get("type", "led")
+                elif direction == "input":
+                    if not boolean:
+                        dtype = displayconfig.get("type", "scale")
+                    else:
+                        dtype = displayconfig.get("type", "checkbutton")
+            elif direction == "input":
+                section = displayconfig.get("section", "inputs").lower()
+                if mapping and hasattr(gui_gen, "draw_multilabel"):
+                    dtype = displayconfig.get("type", "multilabel")
+                elif not boolean:
+                    dtype = displayconfig.get("type", "number")
+                else:
+                    dtype = displayconfig.get("type", "led")
+            elif direction == "output":
+                section = displayconfig.get("section", "outputs").lower()
+                if not boolean:
+                    dtype = displayconfig.get("type", "scale")
+                else:
+                    dtype = displayconfig.get("type", "checkbutton")
+
+            if hasattr(gui_gen, f"draw_{dtype}"):
+                if section not in widgets:
+                    widgets[section] = {}
+                if group not in widgets[section]:
+                    widgets[section][group] = []
+                widgets[section][group].append(
+                    {
+                        "section": section,
+                        "group": group,
+                        "direction": direction,
+                        "prefix": prefix,
+                        "boolean": boolean,
+                        "virtual": virtual,
+                        "halname": halname,
+                        "netname": netname,
+                        "mapping": mapping,
+                        "setp": setp,
+                        "dtype": dtype,
+                        "displayconfig": displayconfig,
+                    }
+                )
+            elif dtype != "none":
+                print(f"WARNING: 'draw_{dtype}' not found")
+
+        widgets = {}
+        estop_button = {
+            "group": "ESTOP-STATUS",
+            "halname": "iocontrol.0.user-enable-out",
+            "netname": "iocontrol.0.emc-enable-in",
+            "direction": "input",
+            "display": {"title": "E-Stop (GUI)"},
+            "bool": True,
+        }
+        vcp_add(estop_button, "", widgets, errors=True)
+
+        for plugin_instance in self.project.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
+                    continue
+                vcp_add(signal_config, f"{self.hal_prefix}.", widgets)
+
+        component_nums = {}
+        for comp in linuxcnc_config.get("components", []):
+            comp_type = comp.get("type")
+            if comp_type not in component_nums:
+                component_nums[comp_type] = 0
+            comp["num"] = component_nums[comp_type]
+            component_nums[comp_type] += 1
+            if hasattr(components, f"comp_{comp_type}"):
+                cinstance = getattr(components, f"comp_{comp_type}")(comp)
+                if comp_type != "stepgen":
+                    for signal_name, signal_config in cinstance.signals().items():
+                        vcp_add(signal_config, "", widgets)
+
+
+        tablist = []
         for tab in vcp_sections:
+            if tab not in widgets:
+                continue
+            tablist.append(tab)
+        gui_gen.draw_tabs_begin([tab.title() for tab in tablist])
+
+        # generate tab (vcp) for each section
+        for tab in tablist:
             gui_gen.draw_tab_begin(tab.title())
 
             if tab == "status":
@@ -1316,116 +1470,25 @@ class LinuxCNC:
                 gui_gen.draw_vbox_end()
                 gui_gen.draw_frame_end()
 
-                # if self.mqtt_publisher:
-                # pname = gui_gen.draw_scale("mqtt-period", "mqtt-period")
-                # self.halg.net_add("mqtt-publisher.period", pname.replace("-f", "-u"))
-                # pname = gui_gen.draw_checkbutton("mqtt-enable", "mqtt-enable")
-                # self.halg.net_add("mqtt-publisher.enable", pname)
+            for group in widgets.get(tab, {}):
+                if group:
+                    gui_gen.draw_frame_begin(group)
+                    gui_gen.draw_vbox_begin()
 
-            def vcp_add(tab, signal_config, prefix="", errors=False):
-                halname = signal_config["halname"]
-                netname = signal_config["netname"]
-                direction = signal_config["direction"]
-                userconfig = signal_config.get("userconfig", {})
-                boolean = signal_config.get("bool")
-                virtual = signal_config.get("virtual")
-                mapping = signal_config.get("mapping")
-                setp = userconfig.get("setp")
-                function = userconfig.get("function", "")
-                displayconfig = userconfig.get("display", signal_config.get("display", {}))
-                initval = signal_config.get("default", 0)
-                if not displayconfig and initval:
-                    displayconfig["initval"] = initval
+                for widget in widgets[tab][group]:
+                    section = widget["section"]
+                    direction = widget["direction"]
+                    prefix = widget["prefix"]
+                    boolean = widget["boolean"]
+                    virtual = widget["virtual"]
+                    group = widget["group"]
+                    halname = widget["halname"]
+                    netname = widget["netname"]
+                    mapping = widget["mapping"]
+                    setp = widget["setp"]
+                    dtype = widget["dtype"]
+                    displayconfig = widget["displayconfig"]
 
-                if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
-                    return
-                if function and not virtual:
-                    return
-                if signal_config.get("helper", False) and not displayconfig:
-                    return
-                if setp:
-                    return
-                if halname in self.feedbacks:
-                    return
-
-                vmin = signal_config.get("min", -1000)
-                vmax = signal_config.get("max", 1000)
-                vformat = signal_config.get("format")
-                vunit = signal_config.get("unit")
-                if "min" not in displayconfig:
-                    displayconfig["min"] = vmin
-                if "max" not in displayconfig:
-                    displayconfig["max"] = vmax
-                if vformat and "format" not in displayconfig:
-                    displayconfig["format"] = vformat
-                if vunit and "unit" not in displayconfig:
-                    displayconfig["unit"] = vunit
-
-                title = displayconfig.get("title", haltitles.get(halname, halname))
-
-                dtype = None
-                section = None
-                estop = displayconfig.get("estop", False)
-
-                if direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
-                    section = displayconfig.get("section", "status").lower()
-                    estop = True
-                    if "type" in displayconfig:
-                        dtype = displayconfig["type"]
-                    else:
-                        dtype = "rectled"
-                        if netname[0] == "!":
-                            displayconfig["color"] = "red"
-                            displayconfig["off_color"] = "green"
-                        else:
-                            displayconfig["color"] = "green"
-                            displayconfig["off_color"] = "red"
-
-                elif (netname and not virtual) or setp:
-                    if direction == "input":
-                        section = displayconfig.get("section", "inputs").lower()
-                    elif direction == "output":
-                        section = displayconfig.get("section", "outputs").lower()
-                    if not boolean:
-                        dtype = displayconfig.get("type", "number")
-                    else:
-                        dtype = displayconfig.get("type", "led")
-
-                elif virtual:
-                    section = displayconfig.get("section", "virtual").lower()
-                    if direction == "output":
-                        if not boolean:
-                            dtype = displayconfig.get("type", "number")
-                        else:
-                            dtype = displayconfig.get("type", "led")
-                    elif direction == "input":
-                        if not boolean:
-                            dtype = displayconfig.get("type", "scale")
-                        else:
-                            dtype = displayconfig.get("type", "checkbutton")
-                elif direction == "input":
-                    section = displayconfig.get("section", "inputs").lower()
-                    if mapping and hasattr(gui_gen, "draw_multilabel"):
-                        dtype = displayconfig.get("type", "multilabel")
-                    elif not boolean:
-                        dtype = displayconfig.get("type", "number")
-                    else:
-                        dtype = displayconfig.get("type", "led")
-                elif direction == "output":
-                    section = displayconfig.get("section", "outputs").lower()
-                    if not boolean:
-                        dtype = displayconfig.get("type", "scale")
-                    else:
-                        dtype = displayconfig.get("type", "checkbutton")
-
-                if estop != errors:
-                    return
-                if section != tab:
-                    return
-
-                # print(tab, netname)
-
-                if hasattr(gui_gen, f"draw_{dtype}"):
                     if dtype == "multilabel" and not boolean:
                         self.halextras.append(f"loadrt demux names=demux_{halname} personality={max(mapping.keys()) + 1}")
                         self.halextras.append(f"addf demux_{halname} servo-thread")
@@ -1439,6 +1502,7 @@ class LinuxCNC:
 
                             lnum += 1
 
+                    title = displayconfig.get("title", haltitles.get(halname, halname))
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
 
                     # fselect handling
@@ -1492,48 +1556,9 @@ class LinuxCNC:
                     elif direction == "output":
                         self.halg.net_add(gui_pinname, f"{prefix}{halname}")
 
-                elif dtype != "none":
-                    print(f"WARNING: 'draw_{dtype}' not found")
-
-            for plugin_instance in self.project.plugin_instances:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
-                        continue
-                    vcp_add(tab, signal_config, f"{self.hal_prefix}.")
-
-            if tab == "status":
-                gui_gen.draw_frame_begin("ESTOP-STATUS")
-                gui_gen.draw_vbox_begin()
-
-                estop_button = {
-                    "halname": "iocontrol.0.user-enable-out",
-                    "netname": "iocontrol.0.emc-enable-in",
-                    "direction": "input",
-                    "display": {"title": "E-Stop (GUI)"},
-                    "bool": True,
-                }
-                vcp_add(tab, estop_button, "", errors=True)
-
-                for plugin_instance in self.project.plugin_instances:
-                    for signal_name, signal_config in plugin_instance.signals().items():
-                        if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
-                            continue
-                        vcp_add(tab, signal_config, f"{self.hal_prefix}.", errors=True)
-                gui_gen.draw_vbox_end()
-                gui_gen.draw_frame_end()
-
-            component_nums = {}
-            for comp in linuxcnc_config.get("components", []):
-                comp_type = comp.get("type")
-                if comp_type not in component_nums:
-                    component_nums[comp_type] = 0
-                comp["num"] = component_nums[comp_type]
-                component_nums[comp_type] += 1
-                if hasattr(components, f"comp_{comp_type}"):
-                    cinstance = getattr(components, f"comp_{comp_type}")(comp)
-                    if comp_type != "stepgen":
-                        for signal_name, signal_config in cinstance.signals().items():
-                            vcp_add(tab, signal_config)
+                if group:
+                    gui_gen.draw_vbox_end()
+                    gui_gen.draw_frame_end()
 
             gui_gen.draw_tab_end()
 
