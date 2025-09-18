@@ -1,15 +1,9 @@
 # Mesa7c81
 **Mesa7c81 over SPI - WIP**
 
-## Write bitfile via spi
-```
-echo 25 > /sys/class/gpio/export
-echo out > /sys/class/gpio/gpio25/direction
-echo 1 > /sys/class/gpio/gpio25/value
-flashrom -p linux_spi:dev=/dev/spidev0.0,spispeed=7000 -w rio-2048.bin
-echo 0 > /sys/class/gpio/gpio25/value
-```
-
+*The bitstream can be written via SPI, but you should have a USB Blaster handy so that you can flash via JTAG in an emergency.
+*It is also possible to operate this board with a W5500 via Ethernet, but flashing is then only possible via JTAG.
+*Smartserial is not supported by RIO, but the 2 ports can be used for Modbus.
 
 * URL: [https://eusurplus.com/index.php?route=product/product&product_id=131](https://eusurplus.com/index.php?route=product/product&product_id=131)
 * Toolchain: [ise](../../generator/toolchains/ise/README.md)
