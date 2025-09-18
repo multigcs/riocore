@@ -1,9 +1,11 @@
 # Mesa7c81
 **Mesa7c81 over SPI - WIP**
 
-*The bitstream can be written via SPI, but you should have a USB Blaster handy so that you can flash via JTAG in an emergency.
-*It is also possible to operate this board with a W5500 via Ethernet, but flashing is then only possible via JTAG.
-*Smartserial is not supported by RIO, but the 2 ports can be used for Modbus.
+The bitstream can be written via SPI, but you should have a USB Blaster handy so that you can flash via JTAG in an emergency.
+
+It is also possible to operate this board with a W5500 via Ethernet, but flashing is then only possible via JTAG.
+
+Smartserial is not supported by RIO, but the 2 ports can be used for Modbus.
 
 * URL: [https://eusurplus.com/index.php?route=product/product&product_id=131](https://eusurplus.com/index.php?route=product/product&product_id=131)
 * Toolchain: [ise](../../generator/toolchains/ise/README.md)
