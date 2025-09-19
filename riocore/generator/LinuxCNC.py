@@ -1198,6 +1198,9 @@ class LinuxCNC:
             for pyfile in glob.glob(os.path.join(json_path, "libflexgui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
                 shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
+            for pyfile in glob.glob(os.path.join(json_path, "flexgui-images")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
+                shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
 
         gui_gen = None
         if vcp_mode != "NONE":
