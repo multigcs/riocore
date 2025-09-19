@@ -97,6 +97,12 @@ class flexvcp:
     def draw_frame_begin(self, name=None):
         self.cfgxml_data.append("     <item>")
         self.cfgxml_data.append('   <widget class="QGroupBox" name="groupBox_7">')
+        self.cfgxml_data.append('    <property name="sizePolicy">')
+        self.cfgxml_data.append('     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
+        self.cfgxml_data.append('      <horstretch>0</horstretch>')
+        self.cfgxml_data.append('      <verstretch>0</verstretch>')
+        self.cfgxml_data.append('     </sizepolicy>')
+        self.cfgxml_data.append('    </property>')
         if name:
             self.cfgxml_data.append('    <property name="title">')
             self.cfgxml_data.append(f"     <string>{name}</string>")
