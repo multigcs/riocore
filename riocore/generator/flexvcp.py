@@ -257,16 +257,13 @@ class flexvcp:
         self.draw_title(name)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
-
         self.set_halpin(halpin, "HAL_BIT", "HAL_IN")
-
         self.cfgxml_data.append("        <property name=\"true_text\" stdset=\"0\">")
         self.cfgxml_data.append("         <string>ON</string>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append("         <property name=\"false_text\" stdset=\"0\">")
         self.cfgxml_data.append("         <string>OFF</string>")
         self.cfgxml_data.append("        </property>")
-
         self.cfgxml_data.append('        <property name="sizePolicy">')
         self.cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
         self.cfgxml_data.append("          <horstretch>0</horstretch>")

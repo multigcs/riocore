@@ -508,9 +508,9 @@ class pyvcp:
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)
         size = setup.get("size", 16)
-        color = setup.get("color")
         self.draw_hbox_begin()
         self.draw_title(title, size=30)
+        color = setup.get("color")
         on_color = "yellow"
         off_color = "red"
         if color:

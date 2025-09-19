@@ -280,7 +280,7 @@ then
 		fi
 		if test -e $LAST_HIYAPYCO && test -e $LAST_QTPYVCP && test -e $LAST_PROBEBASIC
 		then
-			sudo apt install -y debhelper-compat dh-python python4-setuptools python3-yaml python3-pyqt5.qtmultimedia python3-pyqt5.qtquick qml-module-qtquick-controls libqt5multimedia5-plugins python3-dev python3-docopt python3-qtpy python3-pyudev python3-psutil python3-markupsafe python3-vtk9 python3-pyqtgraph python3-simpleeval python3-jinja2 python3-deepdiff python3-sqlalchemy qttools5-dev-tools python3-serial python3-distro
+			sudo apt install -y debhelper-compat dh-python python3-setuptools python3-yaml python3-pyqt5.qtmultimedia python3-pyqt5.qtquick qml-module-qtquick-controls libqt5multimedia5-plugins python3-dev python3-docopt python3-qtpy python3-pyudev python3-psutil python3-markupsafe python3-vtk9 python3-pyqtgraph python3-simpleeval python3-jinja2 python3-deepdiff python3-sqlalchemy qttools5-dev-tools python3-serial python3-distro
 			sudo dpkg -i $LAST_HIYAPYCO $LAST_QTPYVCP $LAST_PROBEBASIC || sudo apt-get install -y -f
 		fi
 	fi
