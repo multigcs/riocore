@@ -307,10 +307,10 @@ def tool_changed(parent):
             parent.tool_changed_pb.setChecked(False)
             parent.tool_changed_pb.setText("Tool Changed")
         else:
-            tool_timer = threading.Timer(0.1, tool_check, args=[parent])
+            tool_timer = threading.Timer(0.4, tool_check, args=[parent])
             tool_timer.start()
 
-    tool_timer = threading.Timer(0.1, tool_check, args=[parent])
+    tool_timer = threading.Timer(0.4, tool_check, args=[parent])
     tool_timer.start()
 
 
