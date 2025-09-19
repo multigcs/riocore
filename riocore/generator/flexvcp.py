@@ -274,3 +274,6 @@ class flexvcp:
         self.cfgxml_data.append("    </item>")
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
+
+    def draw_rectled(self, name, halpin, setup={}):
+        return self.draw_led(name, halpin, setup=setup)
