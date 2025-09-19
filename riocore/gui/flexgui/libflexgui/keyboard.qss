@@ -1,0 +1,116 @@
+QPushButton {
+	background-color: rgba(192, 192, 192, 50%);
+	min-height: 25px;
+	min-width: 25px;
+	border:0px solid rgb(128, 128, 128);
+	border-style: outset;
+	border-width: 3px;
+	border-radius: 6px;
+	padding: 2px;
+}
+QPushButton:hover {
+	background-color: rgba(192, 192, 192, 75%);
+}
+
+QPushButton:pressed {
+	background-color: rgba(192, 192, 192, 100%);
+	border-style: inset;
+	border-width: 2px;
+}
+
+QPushButton:checked {
+	border-style: inset;
+}
+
+/* ********** Op Stop RED ********** */
+QPushButton#optional_stop_pb:hover {
+	background-color: rgba(192, 0, 0, 60%); color: white; 
+}
+
+QPushButton#optional_stop_pb:pressed {
+	background-color: rgba(192, 0, 0, 80%); color: white; 
+}
+
+/* **** TOOL BAR BUTTONS **** */
+QToolButton {
+	background-color: rgba(192, 192, 192, 50%);
+	min-height: 40px;
+	min-width: 25px;
+	border: 1px solid black;
+	border-radius: 3px;
+}
+
+QToolButton#flex_Stop:hover {
+	background-color: rgba(192, 0, 0, 60%);
+	color: white;
+}
+
+QToolButton#flex_Quit:hover {
+	background-color: rgba(192, 0, 0, 60%);
+	color: white;
+}
+
+QToolButton:hover {
+	background-color: rgba(0, 192, 0, 60%);
+	color: white;
+}
+
+QToolButton#flex_Quit:pressed {
+	background-color: rgba(192, 0, 0, 80%);
+	color: white;
+	border none;
+}
+
+QToolButton#flex_Stop:pressed {
+	background-color: rgba(192, 0, 0, 80%);
+	color: white;
+	border none;
+}
+
+QToolButton:pressed {
+	background-color: rgba(0, 192, 0, 80%);
+	color: white;
+	border none;
+}
+
+
+
+QSlider::groove:horizontal {
+	border: 1px solid;
+	height: 10px;
+	margin: 0px;
+}
+
+QSlider::handle:horizontal {
+	background-color: black;
+	border: 1px solid;
+	height: 25px;
+	width: 25px;
+	margin: -15px 0px;
+}
+
+/* ********** General Tabs ********** */
+QTabWidget::pane { /* The tab widget frame */
+	border-top: 0px solid #C2C7CB;
+	position: absolute;
+	top: -0.5em;
+}
+
+QTabWidget::tab-bar {
+	alignment: left;
+}
+
+QTabBar::tab:hover {
+	background-color: rgba(0, 192, 0, 40%);
+	color: black;
+}
+
+QTabBar::tab:selected {
+	background-color: rgba(0, 192, 0, 60%);
+	color: white;
+	border-color: #9B9B9B;
+	border-bottom-color: #C2C7CB; /* same as pane color */
+}
+
+
+

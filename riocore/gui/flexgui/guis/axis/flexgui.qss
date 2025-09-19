@@ -1,0 +1,7 @@
+/* Target by Object Name starts with something common*/
+QLabel[objectName*="dro"] {
+	font-family: Courier;
+	font-size: 14pt;
+	font-weight: 700;
+}
+

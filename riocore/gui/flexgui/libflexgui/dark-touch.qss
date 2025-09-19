@@ -1,0 +1,475 @@
+/* Note: With complex widgets such as QComboBox and QScrollBar, if one property
+or sub-control is customized, all the other properties or sub-controls must be
+customized as well. */
+
+/***** QMainWindow *****/
+QMainWindow {
+	color: #ffffff;
+	background-color: #121212;
+}
+
+/***** QWidget *****/
+QWidget {
+	margin: 2px;
+	font-family: Courier;
+	font-size: 14pt;
+	font-weight: 700;
+}
+
+/***** QDialog *****/
+QDialog {
+	color: #ffffff;
+	background-color: #121212;
+}
+
+/***** QMessageBox *****/
+QMessageBox {
+	color: #ffffff;
+	background-color: #121212;
+}
+
+/***** QTabWidget *****/
+QTabWidget {
+	color: #ffffff;
+	background-color: #121212;
+}
+
+QTabWidget::pane { /* The tab widget frame */
+	border: 2px solid;
+	border-color: #ffffff;
+	border-radius: 6px;
+	margin: 2px;
+}
+
+QTabWidget::tab-bar {
+	left: 5px; /* move tab bar to the right */
+}
+
+QTabBar::tab {
+	color: #bfbfbf;
+	background-color: #121212;
+	border: 2px solid;
+	border-color: #bfbfbf;
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+	margin-left: 4px; /* make a space between the tabs */
+	margin-right: 0px;
+	margin-bottom: 3px; /* make non-selected tabs look smaller */
+	padding-left: 5px; /* make sure there is space between the name and the edge */
+	padding-right: 5px;
+	min-height: 50px;
+	min-width: 50px;
+}
+
+QTabBar::tab:selected {
+	border-color: #ffffff;
+	color: #ffffff;
+	background-color: #000000;
+	margin-bottom: 0px; /* make non-selected tabs look smaller */
+}
+
+/***** QGroupBox *****/
+QGroupBox {
+	background-color: #121212;
+	color: #ffffff;
+	border: 2px solid white;
+	border-radius: 6px;
+	margin-top: 6px;
+	margin-right: 5px;
+	padding-top: 5px;
+}
+
+QGroupBox::title {
+	color: #ffffff;
+	subcontrol-origin: margin;
+	left: 7px;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+
+/***** QStackedWidget *****/
+QStackedWidget {
+	background-color: #121212;
+	color: #ffffff;
+	border: 2px solid white;
+	border-radius: 6px;
+}
+
+/***** QAbstractButton *****/
+QAbstractButton{
+	min-height: 50px;
+	min-width: 50px;
+	color: #ffffff;
+	background-color: #121212;
+	border-style: outset;
+	border-color: #b3b3b3; /* rgba colors don't work for border */
+	border-width: 3px;
+	border-radius: 6px;
+	margin-bottom: 1px;
+	padding-right: 5px; /* make sure there is space between the name and the edge */
+	padding-left: 5px;
+}
+
+QPushButton:pressed {
+	border-style: inset;
+}
+
+QPushButton:checked {
+	border-style: inset;
+}
+
+QPushButton:disabled {
+	color: #808080;
+	background-color: #4d4d4d;
+	border-color: #808080;
+}
+
+/***** QAbstractSpinBox *****/
+/* QAbstractSpinBox > QLineEdit */
+/* QSpinBox::up-arrow:disabled */
+/* QSpinBox::up-arrow:off  off state when value is max */
+/* QSpinBox::down-arrow:disabled */
+/* QSpinBox::down-arrow:off  off state when value in min */
+
+QAbstractSpinBox {
+	color: white;
+	background-color: #121212;
+	border: 2px solid #b3b3b3;
+	border-radius: 5px;
+	padding: 2px;
+	min-height: 50px;
+}
+
+QAbstractSpinBox::up-button {
+	subcontrol-origin: content;
+	subcontrol-position: right;
+	min-height: 38px;
+	min-width: 38px;
+	padding: 12px;
+	border-image: url(:/up_arrow.png);
+}
+
+QAbstractSpinBox::up-button:off {
+	border-image: none;
+}
+
+QAbstractSpinBox::up-button:disabled {
+	border-image: url(:/up_arrow_disabled.png);
+}
+
+QAbstractSpinBox::down-button {
+	subcontrol-origin: content;
+	subcontrol-position: left;
+	min-height: 35px;
+	min-width: 35px;
+	padding: 12px;
+	border-image: url(:/down_arrow.png);
+}
+
+QAbstractSpinBox::down-button:off {
+	border-image: none;
+}
+
+QAbstractSpinBox::down-button:disabled {
+	border-image: url(:/down_arrow_disabled.png);
+}
+
+/***** QListWidget *****/
+QListWidget{
+border-radius: 5px;
+color: #bfbfbf;
+background-color: #121212;
+}
+
+QListWidget::item { /* the items in the list */
+min-height: 50px;
+border: 1px solid;
+border-color: #bfbfbf;
+border-radius: 5px;
+}
+
+QListWidget::item:selected {
+	color: #ffffff;
+	background-color: #3333ff;
+}
+
+/***** QLabel *****/
+QLabel {
+	color: #ffffff;
+	background-color: #121212;
+	border: 2px solid white;
+	border-radius: 6px;
+}
+
+/***** QLineEdit *****/
+QLineEdit {
+	min-height: 40px;
+	color: #ffffff;
+	background-color: #121212;
+	border: 3px solid #b3b3b3;
+	border-radius: 6px;
+}
+
+/***** QPlainTextEdit *****/
+QPlainTextEdit {
+	background-color: #121212;
+	color: #ffffff;
+	border: 2px solid white;
+	border-radius: 6px;
+}
+
+/***** QComboBox *****/
+QComboBox {
+	min-height: 50px;
+	color: #ffffff;
+	background-color: #121212;
+	border: 3px solid #808080;
+	border-radius: 6px;
+}
+
+QComboBox QAbstractItemView {
+	color: #ffffff;
+	background-color: #121212;
+	border: 3px solid #808080;
+	border-radius: 6px;
+	selection-background-color: lightgray;
+}
+
+QListView::item {
+	color: #ffffff;
+	background-color: #121212;
+	min-height:50px;
+}
+
+/*
+QComboBox QAbstractItemView
+QComboBox::item
+QComboBox::item:selected
+QComboBox::indicator
+the border should either specify all its properties or just use none;
+*/
+
+/***** QSlider *****/
+
+QSlider:horizontal {
+	min-height: 35px;
+}
+
+/* between the handle and the left edge */
+QSlider::sub-page:horizontal {
+	background: QLinearGradient(
+	x1: 0, y1: 0, x2: 1, y2: 0,
+	stop: 0.00 #acacac,
+	stop: 0.80 #545454);
+}
+
+QSlider::sub-page:horizontal:disabled {
+	background: #808080;
+}
+
+/* background must be specified or height is 0 */
+QSlider::groove:horizontal {
+	height: 35px;
+	background: #ffffff;
+}
+
+QSlider::handle:horizontal {
+	background: QLinearGradient(
+	x1: 0, y1: 1, x2: 1, y2: 0,
+	stop: 0.00 #acacac,
+	stop: 0.80 #545454);
+	height: 10px;
+	width: 30px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	margin-left: 2px;
+	border: 2px;
+	border-color: #404040;
+	border-style: solid;
+	border-radius: 3px;
+}
+
+QSlider::handle:horizontal:pressed {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+QSlider::handle:horizontal:disabled {
+	background-color: #bbbbbb;
+	border-style: none;
+}
+
+/* between the handle and the right edge */
+QSlider::add-page:horizontal {
+	background: QLinearGradient(
+	x1: 1, y1: 0, x2: 0, y2: 0,
+	stop: 0.00 #acacac,
+	stop: 0.80 #545454);
+}
+
+QSlider::add-page:horizontal:disabled {
+	background: #808080;
+}
+
+QSlider:vertical {
+	min-width: 35px;
+	background-color: #808080;
+}
+
+/* background must be specified or width is 0 */
+QSlider::groove:vertical {
+	width: 35px;
+	background: #ffffff;
+}
+
+QSlider::handle:vertical {
+	background: QLinearGradient(
+	x1: 0, y1: 1, x2: 1, y2: 0,
+	stop: 0.00 #acacac,
+	stop: 0.80 #545454);
+	height: 30px;
+	width: 10px;
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+	border: 2px;
+	border-color: #404040;
+	border-style: solid;
+	border-radius: 3px;
+}
+
+QSlider::handle:vertical:pressed {
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+QSlider::handle:vertical:disabled {
+	background-color: #bbbbbb;
+	border-style: none;
+}
+
+QSlider::sub-page:vertical {
+	background: QLinearGradient(
+	x1: 0, y1: 1, x2: 0, y2: 0,
+	stop: 0.00 #acacac,
+	stop: 0.80 #545454);
+}
+
+QSlider::sub-page:vertical:disabled {
+	background: #808080;
+}
+
+QSlider::add-page:vertical {
+	background: QLinearGradient(
+	x1: 0, y1: 0, x2: 0, y2: 1,
+	stop: 0.00 #acacac,
+	stop: 0.80 #545454);
+}
+
+QSlider::add-page:vertical:disabled {
+	background: #808080;
+}
+
+/***** QScrollBar *****/
+QScrollBar:horizontal {
+	background: #808080;
+	height: 35px;
+}
+
+QScrollBar:left-arrow:horizontal {
+	image: url(':dark_left_32.png');
+}
+
+QScrollBar:left-arrow:horizontal:disabled {
+	image: url(':dark_left_disabled_32.png');
+}
+
+QScrollBar::sub-line:horizontal:disabled {
+	background: #a6a6a6;
+}
+
+QScrollBar:right-arrow:horizontal {
+	image: url(':dark_right_32.png');
+}
+
+QScrollBar:right-arrow:horizontal:disabled  {
+	image: url(':dark_right_disabled_32.png');
+}
+
+QScrollBar::add-line:horizontal:disabled {
+	background: #a6a6a6;
+}
+
+/* in between the left arrow and the handle */
+QScrollBar::sub-page:horizontal {
+	background: QLinearGradient(
+	x1: 0, y1: 0, x2: 1, y2: 0,
+	stop: 0.00 #6d6d6d,
+	stop: 0.90 #000000);
+}
+
+QScrollBar::sub-page:horizontal:disabled {
+	background: #a6a6a6;
+}
+
+/* in between the right arrow and the handle */
+QScrollBar::add-page:horizontal {
+	background: QLinearGradient(
+	x1: 0, y1: 0, x2: 1, y2: 0,
+	stop: 0.00 #000000,
+	stop: 0.90 #6d6d6d);
+}
+
+QScrollBar::add-page:horizontal:disabled {
+	background: #a6a6a6;
+}
+
+QScrollBar:vertical {
+	background: #808080;
+	width: 35px;
+}
+
+QScrollBar::up-arrow:vertical {
+	image: url(':dark_up_32.png');
+}
+
+QScrollBar::up-arrow:vertical:disabled {
+	image: url(':dark_up_disabled_32.png');
+}
+
+QScrollBar::down-arrow:vertical {
+	image: url(':dark_down_32.png');
+}
+
+QScrollBar::down-arrow:vertical:disabled {
+	image: url(':dark_down_disabled_32.png');
+}
+
+/* in between the up arrow and the handle */
+QScrollBar::sub-page:vertical {
+	background: QLinearGradient(
+	x1: 0, y1: 1, x2: 0, y2: 0,
+	stop: 0.00 #000000,
+	stop: 0.70 #6d6d6d);
+}
+
+QScrollBar::sub-page:vertical:disabled {
+	background: #a6a6a6;
+}
+
+/* in between the down arrow and the handle */
+QScrollBar::add-page:vertical {
+	background: QLinearGradient(
+	x1: 0, y1: 0, x2: 0, y2: 1,
+	stop: 0.00 #000000,
+	stop: 0.70 #6d6d6d);
+}
+
+QScrollBar::add-page:vertical:disabled {
+	background: #a6a6a6;
+}
+
+
+
+
+
