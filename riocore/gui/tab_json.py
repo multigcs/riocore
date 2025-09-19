@@ -23,9 +23,9 @@ class TabJson:
     def timer(self):
         pass
 
-    def update(self):
-        config = json.dumps(self.parent.clean_config(self.parent.config), indent=4)
-        config_original = json.dumps(self.parent.clean_config(self.parent.config_original), indent=4)
+    def update(self, flow=False):
+        config = json.dumps(self.parent.clean_config(self.parent.config, flow=flow), indent=4)
+        config_original = json.dumps(self.parent.clean_config(self.parent.config_original, flow=flow), indent=4)
         self.jsondiff.clear()
         differ = difflib.Differ()
         color_format = self.jsondiff.currentCharFormat()

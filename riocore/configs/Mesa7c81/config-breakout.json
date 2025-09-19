@@ -10,7 +10,6 @@
                 650.0,
                 150.0
             ],
-            "setup": {},
             "rotate": 0
         },
         {
@@ -21,17 +20,16 @@
                 650.0,
                 720.0
             ],
-            "setup": {},
             "rotate": 0
         }
     ],
     "flow": {
         "view": {
             "pos": [
-                31,
-                19
+                47,
+                30
             ],
-            "scale": 0.48
+            "scale": 0.54
         },
         "board": {
             "pos": [
@@ -143,12 +141,10 @@
             "type": "stepdir",
             "pins": {
                 "dir": {
-                    "pin": "bob1:X:dir",
-                    "modifier": []
+                    "pin": "bob1:X:dir"
                 },
                 "step": {
-                    "pin": "bob1:X:step",
-                    "modifier": []
+                    "pin": "bob1:X:step"
                 }
             },
             "uid": "stepdir0",
@@ -158,17 +154,14 @@
             ],
             "signals": {
                 "velocity": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "position": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "enable": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 }
@@ -179,12 +172,10 @@
             "type": "stepdir",
             "pins": {
                 "dir": {
-                    "pin": "bob1:Y:dir",
-                    "modifier": []
+                    "pin": "bob1:Y:dir"
                 },
                 "step": {
-                    "pin": "bob1:Y:step",
-                    "modifier": []
+                    "pin": "bob1:Y:step"
                 }
             },
             "pos": [
@@ -194,17 +185,14 @@
             "uid": "stepdir1",
             "signals": {
                 "velocity": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "position": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "enable": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 }
@@ -215,12 +203,10 @@
             "type": "stepdir",
             "pins": {
                 "dir": {
-                    "pin": "bob1:Z:dir",
-                    "modifier": []
+                    "pin": "bob1:Z:dir"
                 },
                 "step": {
-                    "pin": "bob1:Z:step",
-                    "modifier": []
+                    "pin": "bob1:Z:step"
                 }
             },
             "pos": [
@@ -230,17 +216,14 @@
             "uid": "stepdir2",
             "signals": {
                 "velocity": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "position": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "enable": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 }
@@ -251,12 +234,10 @@
             "type": "stepdir",
             "pins": {
                 "dir": {
-                    "pin": "bob1:A:dir",
-                    "modifier": []
+                    "pin": "bob1:A:dir"
                 },
                 "step": {
-                    "pin": "bob1:A:step",
-                    "modifier": []
+                    "pin": "bob1:A:step"
                 }
             },
             "pos": [
@@ -266,17 +247,14 @@
             "uid": "stepdir3",
             "signals": {
                 "velocity": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "position": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "enable": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 }
@@ -287,12 +265,10 @@
             "type": "stepdir",
             "pins": {
                 "dir": {
-                    "pin": "bob1:B:dir",
-                    "modifier": []
+                    "pin": "bob1:B:dir"
                 },
                 "step": {
-                    "pin": "bob1:B:step",
-                    "modifier": []
+                    "pin": "bob1:B:step"
                 }
             },
             "pos": [
@@ -302,17 +278,14 @@
             "uid": "stepdir4",
             "signals": {
                 "velocity": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "position": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 },
                 "enable": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 }
@@ -328,23 +301,19 @@
             ],
             "pins": {
                 "pwm": {
-                    "pin": "bob1:PWM:analog",
-                    "modifier": []
+                    "pin": "bob1:PWM:analog"
                 }
             },
             "signals": {
                 "dty": {
-                    "display": {},
                     "net": "spindle.0.speed-out",
                     "setp": ""
                 },
                 "enable": {
-                    "display": {},
                     "net": "",
                     "setp": ""
                 }
             }
         }
-    ],
-    "modules": []
+    ]
 }
