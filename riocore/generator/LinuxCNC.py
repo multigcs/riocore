@@ -524,7 +524,9 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["DISPLAY"] = "flexgui"
             ini_setup["DISPLAY"]["TOOL_EDITOR"] = "tooledit"
             ini_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
-            # ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "halcmd loadusr -Wn qtvcp qtvcp -d -c qtvcp -x {XID} rio-gui"
+            ini_setup["FLEXGUI"] = {
+                "QSS": "flexgui.qss",
+            }
 
         elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
@@ -904,7 +906,6 @@ class LinuxCNC:
                 vmin = halname["vmin"]
                 vmax = halname["vmax"]
                 virtual = halname["virtual"]
-                hal_data.append(f"loadrt {calc} names={','.join(names)}")
                 self.halg.fmt_add(f"loadrt wcomp names=riof.{source}")
                 self.halg.fmt_add(f"addf riof.{source} servo-thread")
                 self.halg.setp_add(f"riof.{source}.min", vmin)
@@ -1194,14 +1195,36 @@ class LinuxCNC:
 
         if gui in {"flexgui"}:
             os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+            ini_setup["DISPLAY"]["DISPLAY"] = "./flexgui"
+            ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
             ini_setup["FLEXGUI"] = {}
+            ini_setup["FLEXGUI"]["QSS"] = "flexgui.qss"
+            flexgui = "axis"
+            if flexgui:
+                for source in glob.glob(os.path.join(riocore_path, "gui", "flexgui", "guis", flexgui, "*")):
+                    target_path = os.path.join(self.configuration_path, os.path.basename(source))
+                    if os.path.isfile(source):
+                        shutil.copy(source, target_path)
+                    else:
+                        shutil.copytree(source, target_path, dirs_exist_ok=True)
+
             for uifile in glob.glob(os.path.join(json_path, "flexgui.ui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(uifile))
-                ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
                 shutil.copy(uifile, target_path)
+
+            for source in glob.glob(os.path.join(riocore_path, "gui", "flexgui", "*")):
+                if source.endswith("/guis"):
+                    continue
+                target_path = os.path.join(self.configuration_path, os.path.basename(source))
+                if os.path.isfile(source):
+                    shutil.copy(source, target_path)
+                else:
+                    shutil.copytree(source, target_path, dirs_exist_ok=True)
+                if target_path.endswith("/flexgui"):
+                    os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
             for qssfile in glob.glob(os.path.join(json_path, "flexgui.qss")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(qssfile))
-                ini_setup["FLEXGUI"]["QSS"] = "flexgui.qss"
                 shutil.copy(qssfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "flexgui.py")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
@@ -1209,7 +1232,6 @@ class LinuxCNC:
                 shutil.copy(pyfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "flexgui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                ini_setup["DISPLAY"]["DISPLAY"] = "./flexgui"
                 shutil.copy(pyfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "libflexgui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))

@@ -43,9 +43,9 @@ class flexvcp:
         self.cfgxml_data.append(f"       <{ptype}>{value}</{ptype}>")
         self.cfgxml_data.append("      </property>")
 
-    def set_halpin(self, halpin, haltype, haldir):
+    def set_halpin(self, halpin, haltype, haldir, function="hal_pin"):
         self.cfgxml_data.append('                <property name="function" stdset="0">')
-        self.cfgxml_data.append("                 <string>hal_pin</string>")
+        self.cfgxml_data.append(f"                 <string>{function}</string>")
         self.cfgxml_data.append("                </property>")
         self.cfgxml_data.append('                <property name="pin_name" stdset="0">')
         self.cfgxml_data.append(f"                 <string>rio.{halpin}</string>")
@@ -99,10 +99,10 @@ class flexvcp:
         self.cfgxml_data.append('   <widget class="QGroupBox" name="groupBox_7">')
         self.cfgxml_data.append('    <property name="sizePolicy">')
         self.cfgxml_data.append('     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
-        self.cfgxml_data.append('      <horstretch>0</horstretch>')
-        self.cfgxml_data.append('      <verstretch>0</verstretch>')
-        self.cfgxml_data.append('     </sizepolicy>')
-        self.cfgxml_data.append('    </property>')
+        self.cfgxml_data.append("      <horstretch>0</horstretch>")
+        self.cfgxml_data.append("      <verstretch>0</verstretch>")
+        self.cfgxml_data.append("     </sizepolicy>")
+        self.cfgxml_data.append("    </property>")
         if name:
             self.cfgxml_data.append('    <property name="title">')
             self.cfgxml_data.append(f"     <string>{name}</string>")
@@ -257,7 +257,16 @@ class flexvcp:
         self.draw_title(name)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
+
         self.set_halpin(halpin, "HAL_BIT", "HAL_IN")
+
+        self.cfgxml_data.append("        <property name=\"true_text\" stdset=\"0\">")
+        self.cfgxml_data.append("         <string>ON</string>")
+        self.cfgxml_data.append("        </property>")
+        self.cfgxml_data.append("         <property name=\"false_text\" stdset=\"0\">")
+        self.cfgxml_data.append("         <string>OFF</string>")
+        self.cfgxml_data.append("        </property>")
+
         self.cfgxml_data.append('        <property name="sizePolicy">')
         self.cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
         self.cfgxml_data.append("          <horstretch>0</horstretch>")
