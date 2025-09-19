@@ -868,6 +868,10 @@ class LinuxCNC:
                         if rio_function[0] not in self.rio_functions:
                             self.rio_functions[rio_function[0]] = {}
                         self.rio_functions[rio_function[0]][rio_function[1]] = halname
+                    elif function and rio_function[0] in {"chargepump"}:
+                        if rio_function[0] not in self.rio_functions:
+                            self.rio_functions[rio_function[0]] = []
+                        self.rio_functions[rio_function[0]].append(halname)
                     elif function and rio_function[0] in {"wcomp"}:
                         if rio_function[0] not in self.rio_functions:
                             self.rio_functions[rio_function[0]] = {}
@@ -881,6 +885,17 @@ class LinuxCNC:
                             "virtual": virtual,
                         }
 
+        if "chargepump" in self.rio_functions:
+            outputs = self.rio_functions["chargepump"]
+            self.halg.fmt_add_top("#################################################################################")
+            self.halg.fmt_add_top("# charge_pump / watchdog output")
+            self.halg.fmt_add_top("#################################################################################")
+            self.halg.fmt_add_top("loadrt charge_pump")
+            self.halg.fmt_add_top("addf charge-pump servo-thread")
+            self.halg.fmt_add_top("")
+            for output in outputs:
+                self.halg.net_add("charge-pump.out", f"rio.{output}")
+
         if "wcomp" in self.rio_functions:
             self.halg.fmt_add("")
             self.halg.fmt_add("# wcomp")
@@ -889,6 +904,7 @@ class LinuxCNC:
                 vmin = halname["vmin"]
                 vmax = halname["vmax"]
                 virtual = halname["virtual"]
+                hal_data.append(f"loadrt {calc} names={','.join(names)}")
                 self.halg.fmt_add(f"loadrt wcomp names=riof.{source}")
                 self.halg.fmt_add(f"addf riof.{source} servo-thread")
                 self.halg.setp_add(f"riof.{source}.min", vmin)
