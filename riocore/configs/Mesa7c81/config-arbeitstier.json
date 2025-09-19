@@ -33,7 +33,7 @@
         "net": [
             {
                 "_source": "riov.splindle_overload.value",
-                "source": "rio.modbus1.power < 3600.0",
+                "source": "rio.mb1.power < 3600.0",
                 "target": "iocontrol.0.emc-enable-in"
             }
         ],
@@ -459,7 +459,7 @@
                     ]
                 }
             },
-            "uid": "modbus0",
+            "uid": "mb0",
             "pos": [
                 1290.0,
                 1200.0
@@ -616,7 +616,7 @@
                     ]
                 }
             },
-            "uid": "modbus1",
+            "uid": "mb1",
             "pos": [
                 1290.0,
                 1110.0
@@ -879,7 +879,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "rio.modbus1.power < 3600.0",
+                    "net": "rio.mb1.power < 3600.0",
                     "setp": "",
                     "display": {
                         "section": "status",

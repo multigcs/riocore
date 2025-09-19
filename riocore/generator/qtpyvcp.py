@@ -2,6 +2,15 @@ import os
 
 
 class qtpyvcp:
+    colormapping = {
+        "white": "<red>255</red><green>255</green><blue>255</blue>",
+        "black": "<red>0</red><green>0</green><blue>0</blue>",
+        "yellow": "<red>255</red><green>255</green><blue>0</blue>",
+        "red": "<red>255</red><green>0</green><blue>0</blue>",
+        "green": "<red>0</red><green>255</green><blue>0</blue>",
+        "blue": "<red>0</red><green>0</green><blue>255</blue>",
+    }
+
     def __init__(self, prefix="qtpyvcp.rio-gui", vcp_pos=None):
         self.prefix = prefix
         self.vcp_pos = vcp_pos
@@ -396,9 +405,25 @@ class UserTab(QWidget):
         return f"{self.prefix}.{halpin}.checked"
 
     def draw_led(self, name, halpin, setup={}):
+        title = setup.get("title", name)
         halpin = halpin.replace("_", "-")
+        color = setup.get("color")
+        on_color = "yellow"
+        off_color = "red"
+        if color:
+            on_color = color
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".R"):
+            on_color = "red"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".G"):
+            on_color = "green"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".B"):
+            on_color = "blue"
+            off_color = setup.get("off_color", "black")
         self.draw_hbox_begin()
-        self.draw_title(name)
+        self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append(f'     <widget class="HalLedIndicator" name="rio.{halpin}">')
         self.cfgxml_data.append('        <property name="sizePolicy">')
@@ -415,18 +440,7 @@ class UserTab(QWidget):
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="color">')
         self.cfgxml_data.append("          <color>")
-        if halpin.endswith(".B"):
-            self.cfgxml_data.append("           <red>85</red>")
-            self.cfgxml_data.append("           <green>0</green>")
-            self.cfgxml_data.append("           <blue>255</blue>")
-        elif halpin.endswith(".R"):
-            self.cfgxml_data.append("           <red>255</red>")
-            self.cfgxml_data.append("           <green>85</green>")
-            self.cfgxml_data.append("           <blue>0</blue>")
-        else:
-            self.cfgxml_data.append("           <red>85</red>")
-            self.cfgxml_data.append("           <green>255</green>")
-            self.cfgxml_data.append("           <blue>0</blue>")
+        self.cfgxml_data.append(f"            {self.colormapping[on_color]}")
         self.cfgxml_data.append("          </color>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="maximumSize">')
@@ -439,3 +453,6 @@ class UserTab(QWidget):
         self.cfgxml_data.append("    </item>")
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.on"
+
+    def draw_rectled(self, name, halpin, setup={}):
+        return self.draw_led(name, halpin, setup=setup)
