@@ -861,7 +861,7 @@ class WinForm(QWidget):
             elif data[key] is None:
                 del data[key]
 
-    def clean_config(self, config_unclean):
+    def clean_config(self, config_unclean, flow=False):
         config = copy.deepcopy(config_unclean)
         # cleanup
         for module in config.get("modules", []):

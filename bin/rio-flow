@@ -1564,7 +1564,7 @@ class Window(QMainWindow):
             elif data[key] is None:
                 del data[key]
 
-    def clean_config(self, config_unclean):
+    def clean_config(self, config_unclean, flow=False):
         config = copy.deepcopy(config_unclean)
         # cleanup
         for module in config.get("modules", []):
@@ -1580,6 +1580,16 @@ class Window(QMainWindow):
         for nnum, net in enumerate(config.get("linuxcnc", {}).get("net", [])):
             if not net.get("source") or not net.get("target"):
                 config["linuxcnc"]["net"].pop(nnum)
+        if flow:
+            for breakouts in config.get("breakouts", []):
+                if "pos" in config["breakouts"]:
+                    del config["breakouts"]["pos"]
+            for breakouts in config.get("plugins", []):
+                if "pos" in config["plugins"]:
+                    del config["plugins"]["pos"]
+            if "flow" in config:
+                del config["flow"]
+
         self.struct_clean(config)
         return config
 
@@ -1634,7 +1644,7 @@ class Window(QMainWindow):
             self.snapshots.append(copy.deepcopy(self.config))
 
     def cfg_check(self):
-        self.jsontab.update()
+        self.jsontab.update(flow=True)
         if self.jsontab.found_diffs:
             self.tabwidget.tabBar().setTabTextColor(1, QColor(250, 0, 0))
         else:

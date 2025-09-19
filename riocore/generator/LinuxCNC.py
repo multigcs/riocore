@@ -1194,23 +1194,27 @@ class LinuxCNC:
 
         if gui in {"flexgui"}:
             os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+            ini_setup["FLEXGUI"] = {}
             for uifile in glob.glob(os.path.join(json_path, "flexgui.ui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(uifile))
                 ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
                 shutil.copy(uifile, target_path)
             for qssfile in glob.glob(os.path.join(json_path, "flexgui.qss")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(qssfile))
-                ini_setup["DISPLAY"]["QSS"] = "flexgui.qss"
+                ini_setup["FLEXGUI"]["QSS"] = "flexgui.qss"
                 shutil.copy(qssfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "flexgui.py")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                ini_setup["DISPLAY"]["RESOURCES"] = "flexgui.py"
+                ini_setup["FLEXGUI"]["RESOURCES"] = "flexgui.py"
                 shutil.copy(pyfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "flexgui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
                 ini_setup["DISPLAY"]["DISPLAY"] = "./flexgui"
                 shutil.copy(pyfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "libflexgui")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
+                shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
+            for pyfile in glob.glob(os.path.join(json_path, "flexgui-images")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
                 shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
 
