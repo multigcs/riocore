@@ -436,6 +436,9 @@ class hal_generator:
                 logic = "OR"
             elif input_pin[0] == "&":
                 logic = "AND"
+            elif output_pin[0] == "&":
+                output_pin = output_pin[1:]
+                logic = "AND"
             elif output_pin in self.signals_out:
                 if self.signals_out[output_pin]["expression"][0] == "|":
                     logic = "OR"

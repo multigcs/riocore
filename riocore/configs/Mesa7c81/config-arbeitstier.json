@@ -34,7 +34,11 @@
             {
                 "_source": "riov.splindle_overload.value",
                 "source": "rio.mb1.power < 3600.0",
-                "target": "iocontrol.0.emc-enable-in"
+                "target": "&motion.enable"
+            },
+            {
+                "source": "rio.Waterflow.frequency > 3.0",
+                "target": "&motion.enable"
             }
         ],
         "_vcp_type": "gladevcp"
@@ -769,17 +773,7 @@
             "pos": [
                 1290.0,
                 920.0
-            ],
-            "signals": {
-                "bit": {
-                    "net": "iocontrol.0.emc-enable-in",
-                    "setp": "",
-                    "display": {
-                        "title": "E-Stop (MAIN)"
-                    }
-                }
-            },
-            "name": "estop"
+            ]
         },
         {
             "type": "bitin",
@@ -805,7 +799,7 @@
             ],
             "signals": {
                 "bit": {
-                    "net": "iocontrol.0.emc-enable-in",
+                    "net": "&motion.enable",
                     "setp": "",
                     "display": {
                         "title": "24V-Power"
@@ -884,14 +878,14 @@
                         "type": "rectled",
                         "color": "green",
                         "off_color": "red",
-                        "group": "ESTOP-STATUS"
+                        "group": "MACHINE-STATUS"
                     }
                 }
             },
-            "uid": "overload",
+            "uid": "mainpower",
             "vtype": "bool",
             "dir": "output",
-            "name": "overload",
+            "name": "Mainpower",
             "pos": [
                 1550.0,
                 1600.0
@@ -905,7 +899,7 @@
                     "setp": "",
                     "display": {
                         "section": "status",
-                        "group": "Spindle",
+                        "group": "MACHINE-STATUS",
                         "type": "rectled",
                         "color": "green",
                         "off_color": "red"
@@ -954,7 +948,7 @@
             "uid": "bitin10",
             "signals": {
                 "bit": {
-                    "net": "iocontrol.0.emc-enable-in",
+                    "net": "&motion.enable",
                     "setp": ""
                 }
             }
@@ -992,7 +986,7 @@
             "uid": "bitin12",
             "signals": {
                 "bit": {
-                    "net": "iocontrol.0.emc-enable-in",
+                    "net": "&motion.enable",
                     "setp": ""
                 }
             }
@@ -1029,7 +1023,7 @@
             "uid": "bitin11",
             "signals": {
                 "bit": {
-                    "net": "iocontrol.0.emc-enable-in",
+                    "net": "&motion.enable",
                     "setp": ""
                 }
             }
@@ -1066,7 +1060,7 @@
             "uid": "bitin9",
             "signals": {
                 "bit": {
-                    "net": "iocontrol.0.emc-enable-in",
+                    "net": "&motion.enable",
                     "setp": ""
                 }
             }
@@ -1160,7 +1154,7 @@
             "name": "Cooling-Water",
             "signals": {
                 "bit": {
-                    "net": "halui.machine.is-on",
+                    "net": "iocontrol.0.user-enable-out",
                     "setp": ""
                 }
             }

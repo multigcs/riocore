@@ -924,10 +924,19 @@ class cbase:
         output.append("    *data->duration = timestamp - fpga_stamp_last;")
         output.append("    fpga_stamp_last = timestamp;")
 
-        if self.rtapi_mode:
-            output.append("    if (*data->sys_enable == 0 || *data->sys_status == 0) {")
-            output.append("        *data->sys_status = 0;")
-            output.append("    }")
+        conn_mode = "estop" # always
+        if conn_mode == "estop":
+            if self.rtapi_mode:
+                output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
+            else:
+                output.append("    if (1) {")
+        else:
+            if self.rtapi_mode:
+                output.append("    if (*data->sys_enable == 0 || *data->sys_status == 0) {")
+                output.append("        *data->sys_status = 0;")
+                output.append("    }")
+                output.append("    if (1) {")
+
         output.append("        data->ESTOP = 1 - *data->sys_status;")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
@@ -985,6 +994,9 @@ class cbase:
         output.append("        } else {")
         output.append("            convert_inputs();")
         output.append("        }")
+        output.append("    } else {")
+        output.append("        *data->sys_status = 0;")
+        output.append("    }")
         output.append("}")
         output.append("")
         output.append("")

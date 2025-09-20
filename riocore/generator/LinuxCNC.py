@@ -1350,6 +1350,20 @@ class LinuxCNC:
                         displayconfig["color"] = "green"
                         displayconfig["off_color"] = "red"
 
+            elif direction == "input" and netname and "motion.enable" in netname:
+                section = displayconfig.get("section", "status").lower()
+                group = "MACHINE-STATUS"
+                if "type" in displayconfig:
+                    dtype = displayconfig["type"]
+                else:
+                    dtype = "rectled"
+                    if netname[0] == "!":
+                        displayconfig["color"] = "red"
+                        displayconfig["off_color"] = "green"
+                    else:
+                        displayconfig["color"] = "green"
+                        displayconfig["off_color"] = "red"
+
             elif (netname and not virtual) or setp:
                 if direction == "input":
                     section = displayconfig.get("section", "inputs").lower()
@@ -1412,16 +1426,6 @@ class LinuxCNC:
                 print(f"WARNING: 'draw_{dtype}' not found")
 
         widgets = {}
-        estop_button = {
-            "group": "ESTOP-STATUS",
-            "halname": "iocontrol.0.user-enable-out",
-            "netname": "iocontrol.0.emc-enable-in",
-            "direction": "input",
-            "display": {"title": "E-Stop (GUI)"},
-            "bool": True,
-        }
-        vcp_add(estop_button, "", widgets, errors=True)
-
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
