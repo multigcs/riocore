@@ -15,7 +15,6 @@ class qtvcp:
         "blue": "<red>0</red><green>0</green><blue>255</blue>",
     }
 
-
     def __init__(self, prefix="qtvcp.rio-gui", vcp_pos=None):
         self.prefix = prefix
         self.vcp_pos = vcp_pos
@@ -433,19 +432,19 @@ QLabel {{
         title = setup.get("title", name)
         color = setup.get("color")
         on_color = "yellow"
-        off_color = "red"
+        # off_color = "red"
         if color:
             on_color = color
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         elif halpin.endswith(".R"):
             on_color = "red"
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         elif halpin.endswith(".G"):
             on_color = "green"
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         elif halpin.endswith(".B"):
             on_color = "blue"
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         size = setup.get("size", 16)
         self.draw_hbox_begin()
         self.draw_title(title)

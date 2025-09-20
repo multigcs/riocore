@@ -924,7 +924,7 @@ class cbase:
         output.append("    *data->duration = timestamp - fpga_stamp_last;")
         output.append("    fpga_stamp_last = timestamp;")
 
-        conn_mode = "estop" # always
+        conn_mode = "estop"  # always
         if conn_mode == "estop":
             if self.rtapi_mode:
                 output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")

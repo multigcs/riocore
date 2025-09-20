@@ -509,7 +509,8 @@ class pyvcp:
         title = setup.get("title", name)
         size = setup.get("size", 16)
         self.draw_hbox_begin()
-        self.draw_title(title, size=30)
+        if title:
+            self.draw_title(title, size=30)
         color = setup.get("color")
         on_color = "yellow"
         off_color = "red"
@@ -556,7 +557,8 @@ class pyvcp:
         color = setup.get("color")
         off_color = setup.get("off_color", "yellow")
         self.draw_hbox_begin()
-        self.draw_title(title, size=30)
+        if title:
+            self.draw_title(title, size=30)
         on_color = "red"
         off_color = "yellow"
         if color:

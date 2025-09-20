@@ -409,19 +409,19 @@ class UserTab(QWidget):
         halpin = halpin.replace("_", "-")
         color = setup.get("color")
         on_color = "yellow"
-        off_color = "red"
+        # off_color = "red"
         if color:
             on_color = color
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         elif halpin.endswith(".R"):
             on_color = "red"
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         elif halpin.endswith(".G"):
             on_color = "green"
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         elif halpin.endswith(".B"):
             on_color = "blue"
-            off_color = setup.get("off_color", "black")
+            # off_color = setup.get("off_color", "black")
         self.draw_hbox_begin()
         self.draw_title(title)
         self.cfgxml_data.append("    <item>")

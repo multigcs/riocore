@@ -445,12 +445,12 @@ class LinuxCNC:
             if "motion.probe-input" in netlist:
                 if machinetype == "lathe":
                     if axis_name == "X":
-                        ini_setup["HALUI"]["MDI_COMMAND|Touch-X"] = "o<x_touch> call"
+                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-X"] = "o<x_touch> call"
                     elif axis_name == "Z":
-                        ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
                 else:
                     if axis_name == "Z":
-                        ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
 
         if gui == "axis":
             if gui_type == "pyvcp":
@@ -1495,6 +1495,9 @@ class LinuxCNC:
                         if mdi_group != mdi_group_last:
                             if mdi_group is not None:
                                 if mdi_group_last is not None:
+                                    if mdi_group_last == "Touch":
+                                        pname = gui_gen.draw_led("", "probe-input")
+                                        self.halg.net_add("motion.probe-input", pname)
                                     gui_gen.draw_hbox_end()
                                     gui_gen.draw_frame_end()
                                 gui_gen.draw_frame_begin(mdi_group)
@@ -1509,6 +1512,9 @@ class LinuxCNC:
                         mdi_group_last = mdi_group
 
                 if mdi_group_last is not None:
+                    if mdi_group_last == "Touch":
+                        pname = gui_gen.draw_led("", "probe-input")
+                        self.halg.net_add("motion.probe-input", pname)
                     gui_gen.draw_hbox_end()
                     gui_gen.draw_frame_end()
 

@@ -32,12 +32,23 @@
         "machinetype": "mill",
         "net": [
             {
-                "_source": "riov.splindle_overload.value",
+                "comment": "if main-power > 3.6kw, disable motion",
                 "source": "rio.mb1.power < 3600.0",
                 "target": "&motion.enable"
             },
             {
+                "comment": "if waterflow < 3Hz, disable motion",
                 "source": "rio.Waterflow.frequency > 3.0",
+                "target": "&motion.enable"
+            },
+            {
+                "comment": "if spindle not at speed for 5sec, disable motion",
+                "source": "delay-0-5'rio.mb0.spindle_at_speed",
+                "target": "&motion.enable"
+            },
+            {
+                "comment": "if spindle-current > 4A for 2sec, disable motion",
+                "source": "delay-0-2'(rio.mb0.spindle_ampere < 4.0)",
                 "target": "&motion.enable"
             }
         ],
@@ -80,8 +91,8 @@
             },
             "uid": "spi0",
             "pos": [
-                710.0,
-                680.0
+                510.0,
+                720.0
             ]
         },
         {
@@ -475,6 +486,19 @@
                     "net": "spindle.0.speed-in",
                     "setp": ""
                 },
+                "spindle_speed_fb": {
+                    "display": {
+                        "section": "status",
+                        "group": "Spindle",
+                        "title": "RPM",
+                        "_type": "bar",
+                        "type": "meter",
+                        "min": 0,
+                        "max": 24000,
+                        "size": 200,
+                        "region": [[0, 6000, "gray"], [6000, 20000, "green"], [20000, 24000, "red"]]
+                    }
+                },
                 "spindle_spindle_on": {
                     "net": "spindle.0.on",
                     "setp": ""
@@ -488,7 +512,7 @@
                     "setp": ""
                 },
                 "spindle_error_count": {
-                    "display": {
+                    "_display": {
                         "title": "Modbus-Errors",
                         "section": "status",
                         "group": "Spindle",
@@ -633,7 +657,10 @@
                         "group": "Power-Usage",
                         "type": "bar",
                         "min": 0.0,
-                        "max": 3700.0
+                        "max": 3700.0,
+                        "size": 100,
+                        "region": [[0, 20, "red"], [20, 2500, "green"], [2500, 3700, "red"]]
+
                     }
                 },
                 "power_total": {
@@ -859,10 +886,7 @@
             "signals": {
                 "bit": {
                     "net": "motion.probe-input",
-                    "setp": "",
-                    "display": {
-                        "section": "status"
-                    }
+                    "setp": ""
                 }
             },
             "name": "touchprobe"
@@ -887,8 +911,8 @@
             "dir": "output",
             "name": "Mainpower",
             "pos": [
-                1550.0,
-                1600.0
+                1510.0,
+                910.0
             ]
         },
         {
@@ -909,10 +933,58 @@
             "uid": "waterflow_status",
             "vtype": "bool",
             "dir": "output",
-            "name": "Waterflow-Status",
+            "name": "Waterflow",
             "pos": [
-                1550.0,
-                1650.0
+                1510.0,
+                960.0
+            ]
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "delay-0-5'rio.mb0.spindle_at_speed",
+                    "setp": "",
+                    "display": {
+                        "section": "status",
+                        "type": "rectled",
+                        "color": "green",
+                        "off_color": "red",
+                        "group": "MACHINE-STATUS"
+                    }
+                }
+            },
+            "uid": "spindle",
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Spindlespeed",
+            "pos": [
+                1510.0,
+                1010.0
+            ]
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "delay-0-2'(rio.mb0.spindle_ampere < 4.0)",
+                    "setp": "",
+                    "display": {
+                        "section": "status",
+                        "type": "rectled",
+                        "color": "green",
+                        "off_color": "red",
+                        "group": "MACHINE-STATUS"
+                    }
+                }
+            },
+            "uid": "spindle",
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Spindleload",
+            "pos": [
+                1510.0,
+                1060.0
             ]
         },
         {
@@ -944,7 +1016,7 @@
                 1280.0,
                 1320.0
             ],
-            "name": "servo0_ready",
+            "name": "ServoX1",
             "uid": "bitin10",
             "signals": {
                 "bit": {
@@ -982,7 +1054,7 @@
                 1280.0,
                 1370.0
             ],
-            "name": "servo1_ready",
+            "name": "ServoX2",
             "uid": "bitin12",
             "signals": {
                 "bit": {
@@ -1019,7 +1091,7 @@
                 1280.0,
                 1420.0
             ],
-            "name": "servo2_ready",
+            "name": "ServoY",
             "uid": "bitin11",
             "signals": {
                 "bit": {
@@ -1056,7 +1128,7 @@
                 1280.0,
                 1470.0
             ],
-            "name": "servo3_ready",
+            "name": "ServoZ",
             "uid": "bitin9",
             "signals": {
                 "bit": {
@@ -1222,8 +1294,11 @@
                         "section": "status",
                         "group": "Spindle",
                         "type": "bar",
+                        "_type": "meter",
                         "min": 0.0,
-                        "max": 10.0
+                        "max": 10.0,
+                        "size": 100,
+                        "region": [[0, 3, "red"], [3, 4, "yellow"], [4, 10, "green"]]
                     },
                     "net": "",
                     "setp": ""
@@ -1259,15 +1334,15 @@
     "flow": {
         "view": {
             "pos": [
-                891,
-                571
+                -410,
+                -99
             ],
-            "scale": 1.63
+            "scale": 0.6
         },
         "board": {
             "pos": [
-                590.0,
-                580.0
+                390.0,
+                620.0
             ],
             "rotate": 90
         },
@@ -1305,8 +1380,8 @@
                 400.0
             ],
             "misc": [
-                1720.0,
-                750.0
+                1800.0,
+                860.0
             ]
         }
     }
