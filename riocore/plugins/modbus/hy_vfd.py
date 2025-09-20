@@ -376,6 +376,7 @@ class hy_vfd:
         address = self.config["address"]
         output = []
         output.append("uint8_t n = 0;")
+        output.append("static uint8_t init_timer = 0;")
         output.append("")
         output.append("")
         output.append("if (frame_timeout == 1) {")
@@ -384,6 +385,13 @@ class hy_vfd:
         output.append(f"    value_{self.signal_name}_at_speed = 0;")
         output.append("}")
         output.append("")
+        output.append("if (*data->machine_on == 0 && init_timer++ > 10) {")
+        output.append("    init_timer = 0;")
+        output.append(f"	{self.instances_name}_{self.signal_name}_register_setup = 1;")
+        output.append("    for (n = 0; n < 6; n++) {")
+        output.append(f"        {self.instances_name}_{self.signal_name}_config_register[n].try = 0;")
+        output.append("	}")
+        output.append("}")
         output.append(f"if ({self.instances_name}_{self.signal_name}_register_setup == 1) {{")
         output.append(f"    {self.instances_name}_{self.signal_name}_register_setup = 0;")
         num_config_registers = len(self.HYVFD_CONFIG_REGISTER)

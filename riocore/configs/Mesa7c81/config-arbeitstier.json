@@ -37,9 +37,7 @@
                 "target": "iocontrol.0.emc-enable-in"
             }
         ],
-        "_gui": "gmoccapy",
-        "_vcp_type": "gladevcp",
-        "gui": "probe_basic"
+        "_vcp_type": "gladevcp"
     },
     "plugins": [
         {

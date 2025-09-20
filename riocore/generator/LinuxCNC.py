@@ -1683,6 +1683,7 @@ class LinuxCNC:
                 self.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
                 self.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
                 self.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
+                self.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
         else:
             self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
 
