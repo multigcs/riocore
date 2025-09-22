@@ -1256,12 +1256,11 @@ class NodeViewer(QGraphicsView):
                 # self.scene.update()
 
         elif self.button_pressed in [Qt.MiddleButton]:
-            if not self.scene.selectedItems() or self.button_pressed == Qt.MiddleButton:
-                offset = self.mouse_pos - event.pos()
-                self.mouse_pos = event.pos()
-                dx, dy = offset.x(), offset.y()
-                self.horizontalScrollBar().setValue(int(self.horizontalScrollBar().value() + dx))
-                self.verticalScrollBar().setValue(int(self.verticalScrollBar().value() + dy))
+            offset = self.mouse_pos - event.pos()
+            self.mouse_pos = event.pos()
+            dx, dy = offset.x(), offset.y()
+            self.horizontalScrollBar().setValue(int(self.horizontalScrollBar().value() + dx))
+            self.verticalScrollBar().setValue(int(self.verticalScrollBar().value() + dy))
 
         else:
             if self.scene.hover:
@@ -1420,7 +1419,7 @@ class Window(QMainWindow):
         self.signals_out = {}
         self.function_cache = {}
 
-        self.scene = NodeScene(-1500, -1500, 5000, 5000, self)
+        self.scene = NodeScene(-5000, -5000, 7500, 7500, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.snapshots = []
         self.halpins = {}
