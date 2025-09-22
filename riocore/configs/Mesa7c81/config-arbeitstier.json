@@ -18,15 +18,16 @@
         }
     ],
     "linuxcnc": {
+        "_debug_info": true,
         "ini": {
             "DISPLAY": {
-                "MAX_FEED_OVERRIDE": 3.0,
+                "MAX_FEED_OVERRIDE": 5.0,
                 "MAX_ANGULAR_VELOCITY": 10.0,
-                "MAX_LINEAR_VELOCITY": 120.0,
+                "MAX_LINEAR_VELOCITY": 100.0,
                 "DEFAULT_LINEAR_VELOCITY": 100.0
             },
             "EMCMOT": {
-                "SERVO_PERIOD": 500000
+                "SERVO_PERIOD": 140000
             }
         },
         "machinetype": "mill",
@@ -43,12 +44,12 @@
             },
             {
                 "comment": "if spindle not at speed for 5sec, disable motion",
-                "source": "delay(rio.mb0.spindle_at_speed,0,5)",
+                "source": "delay(rio.mb0.spindle_at_speed, 0, 5)",
                 "target": "&motion.enable"
             },
             {
                 "comment": "if spindle-current > 4A for 2sec, disable motion",
-                "source": "delay(rio.mb0.spindle_ampere < 4.0,0,2)",
+                "source": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
                 "target": "&motion.enable"
             }
         ],
@@ -153,7 +154,7 @@
                 "ferror": 2.0,
                 "min_ferror": 0.1,
                 "max_velocity": 100.0,
-                "max_acceleration": 300.0,
+                "max_acceleration": 400.0,
                 "home_offset": -5.0,
                 "min_limit": -4.0,
                 "max_limit": 900.0
@@ -196,7 +197,7 @@
                 "ferror": 2.0,
                 "min_ferror": 0.1,
                 "max_velocity": 100.0,
-                "max_acceleration": 300.0,
+                "max_acceleration": 400.0,
                 "home_offset": -5.0,
                 "min_limit": -4.0,
                 "max_limit": 900.0
@@ -239,7 +240,7 @@
                 "ferror": 2.0,
                 "min_ferror": 0.1,
                 "max_velocity": 100.0,
-                "max_acceleration": 300.0,
+                "max_acceleration": 400.0,
                 "home": 0.0,
                 "home_offset": -5.0,
                 "min_limit": -4.0,
@@ -283,7 +284,7 @@
                 "ferror": 2.0,
                 "min_ferror": 0.1,
                 "max_velocity": 100.0,
-                "max_acceleration": 300.0,
+                "max_acceleration": 400.0,
                 "home": 95.0,
                 "home_offset": 100.0,
                 "min_limit": 0.0,
@@ -955,6 +956,7 @@
                     "net": "rio.Waterflow.frequency > 3.0",
                     "setp": "",
                     "display": {
+                        "title": "Waterflow",
                         "section": "status",
                         "group": "MACHINE-STATUS",
                         "type": "rectled",
@@ -976,7 +978,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "delay(rio.mb0.spindle_at_speed,0,5)",
+                    "net": "delay(rio.mb0.spindle_at_speed, 0, 5)",
                     "setp": "",
                     "display": {
                         "section": "status",
@@ -1000,7 +1002,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "delay(rio.mb0.spindle_ampere < 4.0,0,2)",
+                    "net": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
                     "setp": "",
                     "display": {
                         "section": "status",
@@ -1372,8 +1374,8 @@
             ],
             "signals": {
                 "bit": {
-                    "net": "",
-                    "function": "chargepump",
+                    "net": "chargepump(4)",
+                    "function": "",
                     "setp": ""
                 }
             },

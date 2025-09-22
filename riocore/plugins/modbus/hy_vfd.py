@@ -160,9 +160,9 @@ class hy_vfd:
                                 self.HYVFD_DATA[status_name] = value * status_scale
                                 self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
                                 self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
-                                set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
+                                et_speed = abs(sself.signals[f"{self.signal_name}_speed_command"]["value"])
                                 tolerance = set_speed * self.signals[f"{self.signal_name}_spindle_at_speed_tolerance"]["value"]
-                                diff = self.HYVFD_DATA["speed_fb"] - set_speed
+                                diff = abs(self.HYVFD_DATA["speed_fb"]) - set_speed
                                 if diff <= tolerance:
                                     self.HYVFD_DATA["at_speed"] = 1
                                 else:
@@ -325,8 +325,8 @@ class hy_vfd:
         output.append(f"            if (value_{self.signal_name}_spindle_at_speed_tolerance == 0.0) {{")
         output.append(f"                value_{self.signal_name}_spindle_at_speed_tolerance = 5.0;")
         output.append("            }")
-        output.append(f"            float tolerance = value_{self.signal_name}_speed_command * value_{self.signal_name}_spindle_at_speed_tolerance / 100.0;")
-        output.append(f"            float diff = abs(value_{self.signal_name}_speed_fb - value_{self.signal_name}_speed_command);")
+        output.append(f"            float tolerance = abs(value_{self.signal_name}_speed_command) * value_{self.signal_name}_spindle_at_speed_tolerance / 100.0;")
+        output.append(f"            float diff = abs(value_{self.signal_name}_speed_fb) - abs(value_{self.signal_name}_speed_command);")
         output.append("            if (diff <= tolerance) {")
         output.append(f"                value_{self.signal_name}_at_speed = 1;")
         output.append("            } else {")

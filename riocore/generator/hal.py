@@ -284,6 +284,14 @@ class hal_generator:
         self.function_cache[fname] = f"{fname}.out"
         return f"{fname}.out"
 
+    def pin_chargepump(self, divider):
+        if divider:
+            input_pin = f"charge-pump.out-{divider}"
+        else:
+            input_pin = "charge-pump.out"
+        self.hal_calcs["charge_pump"] = ["charge-pump"]
+        return input_pin
+
     def pin_conv(self, input_pin, target, type_in, type_out):
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
@@ -339,24 +347,27 @@ class hal_generator:
                         new_pin = self.logic2signal(inside, output_pin)
                         input_pin = input_pin.replace(expression, new_pin)
                     else:
-                        if inside[0] == "!":
-                            inside = self.pin_not(inside[1:], output_pin)
+                        new_pin = inside
+                        if expression in self.function_cache and function:
+                            new_pin = self.function_cache[expression]
+                        elif inside and inside[0] == "!":
+                            new_pin = self.pin_not(inside[1:], output_pin)
                         elif function == "not":
-                            inside = self.pin_not(inside, output_pin)
+                            new_pin = self.pin_not(inside, output_pin)
                         elif function == "abs":
-                            inside = self.pin_abs(inside, output_pin)
+                            new_pin = self.pin_abs(inside, output_pin)
                         elif function == "delay":
-                            inside = self.pin_delay(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                            new_pin = self.pin_delay(inside, output_pin, function_params[0].strip(), function_params[1].strip())
                         elif function == "limit":
-                            inside = self.pin_limit(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                            new_pin = self.pin_limit(inside, output_pin, function_params[0].strip(), function_params[1].strip())
                         elif function == "deadzone":
-                            inside = self.pin_deadzone(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                            new_pin = self.pin_deadzone(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function == "chargepump":
+                            new_pin = self.pin_chargepump(inside)
                         elif function == "conv":
-                            print("###", function_params[0].strip(), function_params[1].strip())
-                            inside = self.pin_conv(inside, output_pin, function_params[0].strip(), function_params[1].strip())
-
-                        input_pin = input_pin.replace(expression, inside)
-
+                            new_pin = self.pin_conv(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        input_pin = input_pin.replace(expression, new_pin)
+                        self.function_cache[expression] = new_pin
                     break
 
         return input_pin
@@ -523,7 +534,10 @@ class hal_generator:
         func_names = []
         func_personalities = []
         for calc, names in self.hal_calcs.items():
-            hal_data.append(f"loadrt {calc} names={','.join(names)}")
+            if calc in {"charge_pump"}:
+                hal_data.append(f"loadrt {calc}")
+            else:
+                hal_data.append(f"loadrt {calc} names={','.join(names)}")
             for name in names:
                 hal_data.append(f"addf {name} servo-thread")
             hal_data.append("")
@@ -662,7 +676,8 @@ class hal_generator:
             postgui_data.append("# setp")
             postgui_data.append("#################################################################################")
 
-            for pin, value in self.setps.items():
+            for pin in sorted(list(self.setps)):
+                value = self.setps[pin]
                 if "[JOINT_" in str(value):
                     continue
 

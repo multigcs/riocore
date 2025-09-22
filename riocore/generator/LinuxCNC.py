@@ -896,7 +896,7 @@ class LinuxCNC:
             self.halg.fmt_add_top("addf charge-pump servo-thread")
             self.halg.fmt_add_top("")
             for output in outputs:
-                self.halg.net_add("charge-pump.out", f"rio.{output}")
+                self.halg.net_add("charge-pump.out-4", f"rio.{output}")
 
         if "wcomp" in self.rio_functions:
             self.halg.fmt_add("")
@@ -1520,6 +1520,22 @@ class LinuxCNC:
 
                 gui_gen.draw_vbox_end()
                 gui_gen.draw_frame_end()
+
+                if linuxcnc_config.get("debug_info"):
+                    gui_gen.draw_frame_begin("Debug-Info")
+                    gui_gen.draw_vbox_begin()
+
+                    pname = gui_gen.draw_number_s32("Servothread-Time", "servothreadtime")
+                    self.halg.net_add("servo-thread.time", pname)
+
+                    for axis_name, axis_config in self.project.axis_dict.items():
+                        joints = axis_config["joints"]
+                        for joint in joints:
+                            pname = gui_gen.draw_number(f"J{joint}-Error", f"j{joint}error")
+                            self.halg.net_add(f"joint.{joint}.f-error", pname)
+
+                    gui_gen.draw_vbox_end()
+                    gui_gen.draw_frame_end()
 
             for group in widgets.get(tab, {}):
                 if group:

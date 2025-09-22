@@ -430,6 +430,7 @@
         }
     ],
     "linuxcnc": {
+        "debug_info": true,
         "simulation": true,
         "gui": "axis",
         "vcp_type": "pyvcp",
