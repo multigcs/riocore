@@ -3,7 +3,6 @@
 # hal generator: can resolve logic operation, multiple assignments and invert pins
 #
 
-import re
 from riocore import halpins
 
 
@@ -118,8 +117,11 @@ class hal_generator:
                 if min_value.replace(".", "").isnumeric():
                     min_value = str(float(min_value) - 0.001)
             elif etype == "<>":
-                max_value = min_value.split(",")[1]
-                min_value = min_value.split(",")[0]
+                if "," in min_value:
+                    max_value = min_value.split(",")[1]
+                    min_value = min_value.split(",")[0]
+                else:
+                    max_value = min_value
             input_signal = self.pin2signal(input_pin, target)
             if f"{fname}.in" not in self.outputs2signals:
                 self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
@@ -179,38 +181,38 @@ class hal_generator:
 
     def text_in_bracket(self, text, right):
         chars = []
+        b_end = False
         for c in reversed(text[:right]):
-            if c != "(":
+            if b_end and c not in {" ", ")", "("}:
+                chars.append(c)
+            elif b_end:
+                break
+            elif c == "(":
+                b_end = True
                 chars.append(c)
             else:
                 chars.append(c)
-                break
         return "".join(reversed(chars))
 
     def pin_not(self, input_pin, target):
         component = input_pin.split(".", 1)[0]
         if component in self.HAS_INVERTS:
             return f"{input_pin}{self.HAS_INVERTS[component]}"
-
         if input_pin in self.HAS_INVERTS:
             return f"{input_pin}{self.HAS_INVERTS[input_pin]}"
-
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
         fname = f"func.not_{input_pin.replace('.', '_')}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-
         if "not" not in self.hal_calcs:
             self.hal_calcs["not"] = []
         self.hal_calcs["not"].append(fname)
 
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-
         self.function_cache[fname] = f"{fname}.out"
-
         return f"{fname}.out"
 
     def pin_abs(self, input_pin, target):
@@ -229,7 +231,6 @@ class hal_generator:
         return f"{fname}.out"
 
     def pin_delay(self, input_pin, target, on, off):
-        # delay-1-1'pin
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
@@ -248,7 +249,6 @@ class hal_generator:
         return f"{fname}.out"
 
     def pin_limit(self, input_pin, target, lmin, lmax):
-        # limit-10-90'pin
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
@@ -267,7 +267,6 @@ class hal_generator:
         return f"{fname}.out"
 
     def pin_deadzone(self, input_pin, target, center, threshold):
-        # limit-10-90'pin
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
@@ -286,7 +285,6 @@ class hal_generator:
         return f"{fname}.out"
 
     def pin_conv(self, input_pin, target, type_in, type_out):
-        # conv-float-u32-'pin
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
@@ -327,30 +325,40 @@ class hal_generator:
                 if c == ")":
                     expression = self.text_in_bracket(input_pin, n + 1)
                     inside = expression.lstrip("(").rstrip(")")
+
+                    function = ""
+                    if expression.split("(")[0]:
+                        inside = expression.split("(", 1)[1].rstrip(")").split(",")[0]
+                        function = expression.split("(", 1)[0]
+                        if "," in expression:
+                            function_params = expression.split("(", 1)[1].rstrip(")").split(",")[1:]
+                        else:
+                            function_params = []
+
                     if " " in inside:
                         new_pin = self.logic2signal(inside, output_pin)
                         input_pin = input_pin.replace(expression, new_pin)
                     else:
                         if inside[0] == "!":
-                            target = output_pin
-                            inside = self.pin_not(inside[1:], target)
-                        elif inside.startswith("abs'"):
-                            target = output_pin
-                            inside = self.pin_abs(inside.split("'")[1], target)
-                        elif m := re.search("delay-(?P<on>[0-9.]*)-(?P<off>[0-9.]*)'", inside):
-                            target = output_pin
-                            inside = self.pin_delay(inside.split("'")[1], target, m.group("on"), m.group("off"))
-                        elif m := re.search("limit-(?P<min>[0-9.]*)-(?P<max>[0-9.]*)'", inside):
-                            target = output_pin
-                            inside = self.pin_limit(inside.split("'")[1], target, m.group("min"), m.group("max"))
-                        elif m := re.search("deadzone-(?P<center>[0-9.]*)-(?P<threshold>[0-9.]*)'", inside):
-                            target = output_pin
-                            inside = self.pin_deadzone(inside.split("'")[1], target, m.group("center"), m.group("threshold"))
-                        elif m := re.search("conv-(?P<tin>[a-z]*)-(?P<tout>[a-z]*)'", inside):
-                            target = output_pin
-                            inside = self.pin_conv(inside.split("'")[1], target, m.group("tin"), m.group("tout"))
+                            inside = self.pin_not(inside[1:], output_pin)
+                        elif function == "not":
+                            inside = self.pin_not(inside, output_pin)
+                        elif function == "abs":
+                            inside = self.pin_abs(inside, output_pin)
+                        elif function == "delay":
+                            inside = self.pin_delay(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function == "limit":
+                            inside = self.pin_limit(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function == "deadzone":
+                            inside = self.pin_deadzone(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function == "conv":
+                            print("###", function_params[0].strip(), function_params[1].strip())
+                            inside = self.pin_conv(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+
                         input_pin = input_pin.replace(expression, inside)
+
                     break
+
         return input_pin
 
     def setp_add(self, output_pin, value):

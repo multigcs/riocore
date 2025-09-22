@@ -231,7 +231,7 @@
                         "min": 0.0,
                         "max": 100.0
                     },
-                    "net": "limit-25.0-75.0'riov.Virt-Float-In1.value"
+                    "net": "limit(riov.Virt-Float-In1.value, 25.0, 75.0)"
                 }
             },
             "dir": "output",
@@ -248,7 +248,7 @@
                         "min": 0.0,
                         "max": 100.0
                     },
-                    "net": "deadzone-50.0-10.0'riov.Virt-Float-In1.value"
+                    "net": "deadzone(riov.Virt-Float-In1.value, 50.0, 10.0)"
                 }
             },
             "dir": "output",
@@ -401,7 +401,7 @@
                         "estop": true,
                         "type": "led"
                     },
-                    "net": "delay-0.5-1'riov.Virt-Bool-In1.value"
+                    "net": "delay(riov.Virt-Bool-In1.value, 0.5, 1)"
                 }
             },
             "dir": "output",
@@ -416,7 +416,7 @@
                         "title": "Converted",
                         "section": "status"
                     },
-                    "net": "conv-bit-float'riov.Virt-Bool-In1.value"
+                    "net": "conv(riov.Virt-Bool-In1.value, bit, float)"
                 }
             },
             "dir": "output",
@@ -434,7 +434,7 @@
         "gui": "axis",
         "vcp_type": "pyvcp",
         "net": [
-            {"source": "delay-0.5-1'riov.Virt-Bool-In1.value", "target": "iocontrol.0.emc-enable-in"}
+            {"source": "delay(riov.Virt-Bool-In1.value, -0.5, 1)", "target": "iocontrol.0.emc-enable-in"}
         ]
     }
 }

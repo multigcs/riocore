@@ -43,12 +43,12 @@
             },
             {
                 "comment": "if spindle not at speed for 5sec, disable motion",
-                "source": "delay-0-5'rio.mb0.spindle_at_speed",
+                "source": "delay(rio.mb0.spindle_at_speed,0,5)",
                 "target": "&motion.enable"
             },
             {
                 "comment": "if spindle-current > 4A for 2sec, disable motion",
-                "source": "delay-0-2'(rio.mb0.spindle_ampere < 4.0)",
+                "source": "delay(rio.mb0.spindle_ampere < 4.0,0,2)",
                 "target": "&motion.enable"
             }
         ],
@@ -976,7 +976,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "delay-0-5'rio.mb0.spindle_at_speed",
+                    "net": "delay(rio.mb0.spindle_at_speed,0,5)",
                     "setp": "",
                     "display": {
                         "section": "status",
@@ -1000,7 +1000,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "delay-0-2'(rio.mb0.spindle_ampere < 4.0)",
+                    "net": "delay(rio.mb0.spindle_ampere < 4.0,0,2)",
                     "setp": "",
                     "display": {
                         "section": "status",
