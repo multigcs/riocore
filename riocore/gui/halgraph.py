@@ -32,10 +32,11 @@ class HalGraph:
     ):
         pass
 
-    def png(self, ini_file, clustering=True):
+    def png(self, ini_file, clustering=False, html=True):
         try:
             self.gAll = graphviz.Digraph("G", format="png")
             self.gAll.attr(rankdir="LR")
+            # self.gAll.attr(splines="ortho")
             base_dir = os.path.dirname(ini_file)
             ini_data = open(ini_file, "r").read()
 
@@ -117,7 +118,10 @@ class HalGraph:
                 pin_strs = []
                 for pin in pins:
                     port = pin.split("=")[0]
-                    pin_str = f"<{port}>{pin}"
+                    if html:
+                        pin_str = f'<tr><td port="{port}">{pin}</td></tr>'
+                    else:
+                        pin_str = f"<{port}>{pin}"
                     pin_strs.append(pin_str)
 
                 color = "lightyellow"
@@ -130,38 +134,46 @@ class HalGraph:
                 for setp, value in self.setps.items():
                     if setp.startswith(group_name):
                         setp = setp.split(".")[-1]
-                        if not cgroup:
-                            pin_str = f"<{setp}>{setp}={value}"
+                        if html:
+                            pin_str = f'<tr><td port="{setp}">{setp}={value}</td></tr>'
                         else:
                             pin_str = f"<{setp}>{setp}={value}"
                         pin_strs.append(pin_str)
 
-                label = f"{title} | {'|'.join(pin_strs)} "
-
+                if html:
+                    label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td  bgcolor="black"><font color="white">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
+                else:
+                    label = f"{title} | {'|'.join(pin_strs)} "
                 cluster = None
                 for title, prefixes in clusters.items():
                     if cgroup in prefixes:
                         cluster = title
                         break
 
+                if html:
+                    style = ""
+                    shape = "plaintext"
+                else:
+                    style = "rounded, filled"
+                    shape = "record"
                 if cluster and clustering:
                     with self.gAll.subgraph(name=f"cluster_{cluster}") as gr:
                         gr.attr(label=cluster)
                         gr.node(
                             group_name,
-                            shape="record",
+                            shape=shape,
                             label=label,
                             fontsize="11pt",
-                            style="rounded, filled",
+                            style=style,
                             fillcolor=color,
                         )
                 else:
                     self.gAll.node(
                         group_name,
-                        shape="record",
+                        shape=shape,
                         label=label,
                         fontsize="11pt",
-                        style="rounded, filled",
+                        style=style,
                         fillcolor=color,
                     )
 
