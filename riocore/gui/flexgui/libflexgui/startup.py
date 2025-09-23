@@ -1723,6 +1723,25 @@ def setup_watch_var(parent):
                 if line.startswith(value[0]):
                     getattr(parent, key).setText(f"{float(line.split()[1]):.{value[1]}f}")
 
+class CustomWidgets():
+    def paintEventLED(self, event):
+        self._diameter = 10
+        painter = QPainter(self)
+        size = self.rect()
+        x_center = size.width() / 2
+        y_center = size.height() / 2
+        x = size.width() - self._diameter
+        y = size.height() - self._diameter
+        gradient = QRadialGradient(x + self._diameter / 2, y + self._diameter / 2, self._diameter * 0.4, self._diameter * 0.4, self._diameter * 0.4)
+        gradient.setColorAt(0, Qt.GlobalColor.white)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        if hasattr(Qt.GlobalColor, self.led_color):
+            gradient.setColorAt(1, getattr(Qt.GlobalColor, self.led_color))
+        else:
+            gradient.setColorAt(1, Qt.GlobalColor.black)
+        painter.setBrush(QBrush(gradient))
+        painter.setPen(Qt.GlobalColor.black)
+        painter.drawEllipse(QPointF(x_center, y_center), self._diameter / 2, self._diameter / 2)
 
 def setup_hal(parent):
     hal_labels = []
@@ -1821,30 +1840,9 @@ def setup_hal(parent):
             elif isinstance(child, QSlider):
                 hal_sliders.append(child)
             elif isinstance(child, QLabel):
-
-                def paintEvent(self, event):
-                    self._diameter = 10
-                    painter = QPainter(self)
-                    size = self.rect()
-                    x_center = size.width() / 2
-                    y_center = size.height() / 2
-                    x = size.width() - self._diameter
-                    y = size.height() - self._diameter
-                    gradient = QRadialGradient(x + self._diameter / 2, y + self._diameter / 2, self._diameter * 0.4, self._diameter * 0.4, self._diameter * 0.4)
-                    gradient.setColorAt(0, Qt.GlobalColor.white)
-                    painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-                    if hasattr(Qt.GlobalColor, self.led_color):
-                        gradient.setColorAt(1, getattr(Qt.GlobalColor, self.led_color))
-                    else:
-                        gradient.setColorAt(1, Qt.GlobalColor.black)
-                    painter.setBrush(QBrush(gradient))
-                    painter.setPen(Qt.GlobalColor.red)
-                    painter.drawEllipse(QPointF(x_center, y_center), self._diameter / 2, self._diameter / 2)
-
                 if child.property("true_color"):
                     child.led_color = Qt.GlobalColor.black
-                    child.paintEvent = partial(paintEvent, child)
-
+                    child.paintEvent = partial(CustomWidgets.paintEventLED, child)
                 hal_labels.append(child)
             elif isinstance(child, QProgressBar):
                 hal_progressbar.append(child)
@@ -2031,7 +2029,6 @@ def setup_hal(parent):
                 if hal_type == 2:
                     item.setMinimum(item.minimum() * 100)
                     item.setMaximum(item.maximum() * 100)
-                print(item.minimum(), item.maximum())
                 setattr(parent, f"{pin_name}", parent.halcomp.newpin(pin_name, hal_type, hal_dir))
                 pin = getattr(parent, f"{pin_name}")
                 parent.hal_progressbars[progressbar_name] = pin_name
