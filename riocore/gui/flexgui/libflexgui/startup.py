@@ -1792,10 +1792,10 @@ def setup_hal(parent):
                     msg = "The QDoubleSpinBox hal_type must be\nset to hal.HAL_FLOAT."
                     dialogs.error_msg_ok(parent, msg, "Error")
             elif isinstance(child, QSlider):
-                if hal_type in [hal.HAL_S32, hal.HAL_U32]:
+                if hal_type in [hal.HAL_S32, hal.HAL_U32, hal.HAL_FLOAT]:
                     child.valueChanged.connect(partial(utilities.update_hal_io, parent))
                 else:
-                    msg = "The QSlider hal_type must be\nset to hal.HAL_S32 or hal.HAL_U32."
+                    msg = "The QSlider hal_type must be\nset to hal.HAL_S32 or hal.HAL_U32 or hal.HAL_FLOAT."
                     dialogs.error_msg_ok(parent, msg, "Error")
 
             parent.hal_io[child_name] = pin_name
@@ -2031,6 +2031,7 @@ def setup_hal(parent):
                 if hal_type == 2:
                     item.setMinimum(item.minimum() * 100)
                     item.setMaximum(item.maximum() * 100)
+                print(item.minimum(), item.maximum())
                 setattr(parent, f"{pin_name}", parent.halcomp.newpin(pin_name, hal_type, hal_dir))
                 pin = getattr(parent, f"{pin_name}")
                 parent.hal_progressbars[progressbar_name] = pin_name
@@ -2183,13 +2184,13 @@ def setup_hal(parent):
                 slider.valueChanged.connect(partial(utilities.update_hal_slider, parent))
                 parent.state_estop[slider_name] = False
                 parent.state_estop_reset[slider_name] = False
-                if parent.probe_controls:  # make sure the probing_enable_pb is there
-                    if slider_name.startswith("probe_"):  # don't enable it when power is on
-                        parent.probe_controls.append(slider_name)
+                if parent.probe_controls and slider_name.startswith("probe_"):  # don't enable it when power is on
+                    parent.probe_controls.append(slider_name)
                 elif slider.property("required") == "homed":
                     parent.home_required.append(slider_name)
                 else:
                     parent.state_on[slider_name] = True
+                parent.state_on[slider_name] = True
 
     if len(hal_leds) > 0:  # setup hal leds
         for led in hal_leds:
