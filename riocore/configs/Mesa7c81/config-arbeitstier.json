@@ -53,6 +53,7 @@
                 "target": "&motion.enable"
             }
         ],
+        "_gui": "flexgui",
         "_vcp_type": "gladevcp"
     },
     "plugins": [
