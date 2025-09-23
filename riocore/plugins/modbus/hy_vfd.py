@@ -160,7 +160,7 @@ class hy_vfd:
                                 self.HYVFD_DATA[status_name] = value * status_scale
                                 self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
                                 self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
-                                et_speed = abs(sself.signals[f"{self.signal_name}_speed_command"]["value"])
+                                set_speed = abs(self.signals[f"{self.signal_name}_speed_command"]["value"])
                                 tolerance = set_speed * self.signals[f"{self.signal_name}_spindle_at_speed_tolerance"]["value"]
                                 diff = abs(self.HYVFD_DATA["speed_fb"]) - set_speed
                                 if diff <= tolerance:

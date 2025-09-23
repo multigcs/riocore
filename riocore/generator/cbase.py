@@ -937,7 +937,6 @@ class cbase:
                 output.append("    }")
                 output.append("    if (1) {")
 
-        output.append("        data->ESTOP = 1 - *data->sys_status;")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         output.append("        if (*data->sys_simulation != 1) {")

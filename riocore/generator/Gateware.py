@@ -344,7 +344,7 @@ class Gateware:
         output.append("    reg INTERFACE_TIMEOUT = 0;")
         output.append("    wire INTERFACE_SYNC;")
 
-        error_signals = ["INTERFACE_TIMEOUT", "ESTOP"]
+        error_signals = ["INTERFACE_TIMEOUT"]
         for plugin_instance in self.project.plugin_instances:
             for data_name, interface_setup in plugin_instance.interface_data().items():
                 error_on = interface_setup.get("error_on")
