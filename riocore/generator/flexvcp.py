@@ -178,7 +178,8 @@ class flexvcp:
         display_max = setup.get("max", vmax)
         title = setup.get("title", name)
         self.draw_hbox_begin()
-        self.draw_title(title)
+        if title:
+            self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         # self.cfgxml_data.append(f'     <widget class="QDoubleSpinBox">')
         self.cfgxml_data.append('     <widget class="QSlider">')
@@ -266,16 +267,37 @@ class flexvcp:
         return f"{self.prefix}.{halpin}"
 
     def draw_led(self, name, halpin, setup={}):
+        title = setup.get("title", name)
+        width = setup.get("width", 32)
+        height = setup.get("height", 32)
+        color = setup.get("color")
+        off_color = setup.get("off_color", "yellow")
+        on_color = "red"
+        off_color = "yellow"
+        if color:
+            on_color = color
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".R"):
+            on_color = "red"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".G"):
+            on_color = "green"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".B"):
+            on_color = "blue"
+            off_color = setup.get("off_color", "black")
+
         self.draw_hbox_begin()
-        self.draw_title(name)
+        if title:
+            self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.set_halpin(halpin, "HAL_BIT", "HAL_IN")
         self.cfgxml_data.append('        <property name="true_color" stdset="0">')
-        self.cfgxml_data.append("         <string>green</string>")
+        self.cfgxml_data.append(f"         <string>{on_color}</string>")
         self.cfgxml_data.append("        </property>")
-        self.cfgxml_data.append('         <property name="false_color" stdset="0">')
-        self.cfgxml_data.append("         <string>red</string>")
+        self.cfgxml_data.append('        <property name="false_color" stdset="0">')
+        self.cfgxml_data.append(f"         <string>{off_color}</string>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="sizePolicy">')
         self.cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
@@ -285,8 +307,8 @@ class flexvcp:
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="minimumSize">')
         self.cfgxml_data.append("         <size>")
-        self.cfgxml_data.append("          <width>32</width>")
-        self.cfgxml_data.append("          <height>32</height>")
+        self.cfgxml_data.append(f"          <width>{width}</width>")
+        self.cfgxml_data.append(f"          <height>{height}</height>")
         self.cfgxml_data.append("         </size>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="maximumSize">')

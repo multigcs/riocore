@@ -1723,7 +1723,8 @@ def setup_watch_var(parent):
                 if line.startswith(value[0]):
                     getattr(parent, key).setText(f"{float(line.split()[1]):.{value[1]}f}")
 
-class CustomWidgets():
+
+class CustomWidgets:
     def paintEventLED(self, event):
         self._diameter = 10
         painter = QPainter(self)
@@ -1742,6 +1743,7 @@ class CustomWidgets():
         painter.setBrush(QBrush(gradient))
         painter.setPen(Qt.GlobalColor.black)
         painter.drawEllipse(QPointF(x_center, y_center), self._diameter / 2, self._diameter / 2)
+
 
 def setup_hal(parent):
     hal_labels = []
