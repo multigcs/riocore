@@ -1260,7 +1260,9 @@ class LinuxCNC:
         if not gui_gen:
             return
 
-        gui_gen.check(self.configuration_path)
+        if not gui_gen.check(self.configuration_path):
+            print("ERROR: vcp: vcp-gui is disabled")
+            return
 
         gui_gen.draw_begin()
 

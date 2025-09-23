@@ -26,7 +26,7 @@ class flexvcp:
         # check
         for element in root.xpath("..//widget[@name='rioTab']"):
             return True
-        print("ERROR: flexvcp: no 'QTabWidget' named 'rioTab' found, rio-gui is disabled")
+        print("ERROR: flexvcp: no 'QTabWidget' named 'rioTab' found")
         return False
 
     def save(self, configuration_path):
