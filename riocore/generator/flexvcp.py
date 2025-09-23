@@ -165,7 +165,7 @@ class flexvcp:
         return f"{self.prefix}.{halpin}"
 
     def draw_title(self, title):
-        title = title.replace("<", "lt").replace(">", "gt")
+        title = title.replace("<", "&lt;").replace(">", "&gt;")
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.add_property("text", title, ptype="string")
