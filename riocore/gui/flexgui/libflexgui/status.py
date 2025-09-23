@@ -475,8 +475,12 @@ def update(parent):
         state = hal.get_value(f"flexhal.{value[0]}")
         if state:
             getattr(parent, key).setText(value[1])
+            if len(value) == 5:
+                getattr(parent, key).led_color = value[3]
         else:
             getattr(parent, key).setText(value[2])
+            if len(value) == 5:
+                getattr(parent, key).led_color = value[4]
 
     # update hal progressbars key is the progressbar name and value is the pin name
     for key, value in parent.hal_progressbars.items():

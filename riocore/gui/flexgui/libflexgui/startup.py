@@ -3,6 +3,8 @@ import sys
 import importlib
 from functools import partial
 
+from PyQt6.QtCore import Qt, QPointF
+from PyQt6.QtGui import QRadialGradient, QBrush, QPainter, QAction
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtWidgets import QLineEdit
 from PyQt6.QtWidgets import QSlider, QMenu
@@ -11,7 +13,6 @@ from PyQt6.QtWidgets import QLabel, QLCDNumber, QListView
 from PyQt6.QtWidgets import QAbstractSpinBox, QDoubleSpinBox, QSpinBox
 from PyQt6.QtWidgets import QGridLayout, QVBoxLayout, QHBoxLayout
 from PyQt6.QtWidgets import QProgressBar, QButtonGroup
-from PyQt6.QtGui import QAction
 
 import linuxcnc as emc
 import hal
@@ -1820,6 +1821,30 @@ def setup_hal(parent):
             elif isinstance(child, QSlider):
                 hal_sliders.append(child)
             elif isinstance(child, QLabel):
+
+                def paintEvent(self, event):
+                    self._diameter = 10
+                    painter = QPainter(self)
+                    size = self.rect()
+                    x_center = size.width() / 2
+                    y_center = size.height() / 2
+                    x = size.width() - self._diameter
+                    y = size.height() - self._diameter
+                    gradient = QRadialGradient(x + self._diameter / 2, y + self._diameter / 2, self._diameter * 0.4, self._diameter * 0.4, self._diameter * 0.4)
+                    gradient.setColorAt(0, Qt.GlobalColor.white)
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+                    if hasattr(Qt.GlobalColor, self.led_color):
+                        gradient.setColorAt(1, getattr(Qt.GlobalColor, self.led_color))
+                    else:
+                        gradient.setColorAt(1, Qt.GlobalColor.black)
+                    painter.setBrush(QBrush(gradient))
+                    painter.setPen(Qt.GlobalColor.red)
+                    painter.drawEllipse(QPointF(x_center, y_center), self._diameter / 2, self._diameter / 2)
+
+                if child.property("true_color"):
+                    child.led_color = Qt.GlobalColor.black
+                    child.paintEvent = partial(paintEvent, child)
+
                 hal_labels.append(child)
             elif isinstance(child, QProgressBar):
                 hal_progressbar.append(child)
@@ -1882,6 +1907,8 @@ def setup_hal(parent):
             pin_name = label.property("pin_name")
             true_text = label.property("true_text")
             false_text = label.property("false_text")
+            true_color = label.property("true_color")
+            false_color = label.property("false_color")
             if pin_name in dir(parent):
                 msg = f"HAL Label {label_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created."
                 dialogs.critical_msg_ok(parent, msg, "Configuration Error")
@@ -1917,8 +1944,10 @@ def setup_hal(parent):
                     p = label.property("precision")
                     p = p if p is not None else parent.default_precision
                     parent.hal_floats[f"{label_name}"] = [pin_name, p]  # label ,status item, precision
+                elif true_color and false_color:
+                    parent.hal_bool_labels[label_name] = [pin_name, "TRUE", "FALSE", true_color, false_color]
                 elif true_text and false_text:
-                    parent.hal_bool_labels[label_name] = [pin_name, true_text, false_text]
+                    parent.hal_bool_labels[label_name] = [pin_name, true_text, false_text, true_color, false_color]
                 else:
                     parent.hal_readers[label_name] = pin_name
 

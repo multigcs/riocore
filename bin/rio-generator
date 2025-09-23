@@ -105,7 +105,7 @@ if args.config:
                 jdata["port"] = "2390"
 
                 for pm, module in enumerate(jdata.get("modules", [])):
-                    for name, plugin in module.get("setup").items():
+                    for name, plugin in module.get("setup", {}).items():
                         if plugin.get("is_joint", False):
                             if "joint" not in plugin:
                                 jdata["modules"][pm]["setup"][name]["joint"] = {}

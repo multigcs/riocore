@@ -21,6 +21,10 @@ class flexvcp:
     def save(self, configuration_path):
         ui_filename = os.path.join(configuration_path, "flexgui.ui")
         # read rio xml-gui
+        dat = "\n".join(self.cfgxml_data).strip()
+
+        open("/tmp/rio.xml", "w").write(dat)
+
         rio_items = etree.fromstring("\n".join(self.cfgxml_data).strip())
         # read template
         xml_template = open(ui_filename, "rb").read()
@@ -153,6 +157,7 @@ class flexvcp:
         return f"{self.prefix}.{halpin}"
 
     def draw_title(self, title):
+        title = title.replace("<", "lt").replace(">", "gt")
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.add_property("text", title, ptype="string")
@@ -258,11 +263,11 @@ class flexvcp:
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.set_halpin(halpin, "HAL_BIT", "HAL_IN")
-        self.cfgxml_data.append('        <property name="true_text" stdset="0">')
-        self.cfgxml_data.append("         <string>ON</string>")
+        self.cfgxml_data.append('        <property name="true_color" stdset="0">')
+        self.cfgxml_data.append("         <string>green</string>")
         self.cfgxml_data.append("        </property>")
-        self.cfgxml_data.append('         <property name="false_text" stdset="0">')
-        self.cfgxml_data.append("         <string>OFF</string>")
+        self.cfgxml_data.append('         <property name="false_color" stdset="0">')
+        self.cfgxml_data.append("         <string>red</string>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="sizePolicy">')
         self.cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
