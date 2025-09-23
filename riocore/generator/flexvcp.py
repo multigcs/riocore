@@ -22,9 +22,6 @@ class flexvcp:
         ui_filename = os.path.join(configuration_path, "flexgui.ui")
         # read rio xml-gui
         dat = "\n".join(self.cfgxml_data).strip()
-
-        open("/tmp/rio.xml", "w").write(dat)
-
         rio_items = etree.fromstring("\n".join(self.cfgxml_data).strip())
         # read template
         xml_template = open(ui_filename, "rb").read()
