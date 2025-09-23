@@ -1,7 +1,7 @@
 import os
 
-from PyQt6.QtGui import QColor, QTextFormat
-from PyQt6.QtWidgets import QApplication, QTextEdit, QFileDialog
+from PyQt5.QtGui import QColor, QTextFormat
+from PyQt5.QtWidgets import QApplication, QTextEdit, QFileDialog
 
 import linuxcnc as emc
 

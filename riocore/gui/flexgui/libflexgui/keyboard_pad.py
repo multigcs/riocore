@@ -2,8 +2,8 @@ import sys
 import os
 from functools import partial
 
-from PyQt6.QtWidgets import QDialog, QPushButton
-from PyQt6.uic import loadUi
+from PyQt5.QtWidgets import QDialog, QPushButton
+from PyQt5.uic import loadUi
 
 
 class keyboard_pad(QDialog):

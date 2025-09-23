@@ -2,29 +2,36 @@ import os
 import sys
 import importlib
 from functools import partial
+import traceback
 
-from PyQt6.QtCore import Qt, QPointF
-from PyQt6.QtGui import QRadialGradient, QBrush, QPainter, QAction
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtWidgets import QLineEdit
-from PyQt6.QtWidgets import QSlider, QMenu
-from PyQt6.QtWidgets import QAbstractButton, QPushButton, QCheckBox, QRadioButton
-from PyQt6.QtWidgets import QLabel, QLCDNumber, QListView
-from PyQt6.QtWidgets import QAbstractSpinBox, QDoubleSpinBox, QSpinBox
-from PyQt6.QtWidgets import QGridLayout, QVBoxLayout, QHBoxLayout
-from PyQt6.QtWidgets import QProgressBar, QButtonGroup
+from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtGui import QRadialGradient, QBrush, QPainter
+from PyQt5.QtWidgets import (
+    QWidget,
+    QAction,
+    QLineEdit,
+    QSlider,
+    QMenu,
+    QAbstractButton,
+    QPushButton,
+    QCheckBox,
+    QRadioButton,
+    QLabel,
+    QLCDNumber,
+    QListView,
+    QAbstractSpinBox,
+    QDoubleSpinBox,
+    QSpinBox,
+    QGridLayout,
+    QVBoxLayout,
+    QHBoxLayout,
+    QProgressBar,
+    QButtonGroup,
+)
 
 import linuxcnc as emc
 import hal
-
-import traceback
-
-from libflexgui import led
-from libflexgui import actions
-from libflexgui import commands
-from libflexgui import dialogs
-from libflexgui import utilities
-from libflexgui import probe
+from libflexgui import led, actions, commands, dialogs, utilities, probe
 
 AXES = ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
 

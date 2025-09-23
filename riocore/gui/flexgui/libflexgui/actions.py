@@ -3,7 +3,7 @@ import subprocess
 import shutil
 from functools import partial
 
-from PyQt6.QtWidgets import QApplication, QFileDialog, QMenu
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMenu
 
 import linuxcnc as emc
 import hal

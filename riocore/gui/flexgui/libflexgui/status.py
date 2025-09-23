@@ -1,13 +1,12 @@
 from math import sqrt
 
-from PyQt6.QtGui import QTextCursor
-from PyQt6.QtWidgets import QLCDNumber, QAbstractSpinBox, QCheckBox, QSlider
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QLCDNumber, QAbstractSpinBox, QCheckBox, QSlider
 
 import linuxcnc as emc
 import hal
 
-from libflexgui import utilities
-from libflexgui import dialogs
+from libflexgui import utilities, dialogs
 
 """
 STATE_ESTOP

@@ -1,6 +1,6 @@
-from PyQt6.QtWidgets import QDialog, QGridLayout
-from PyQt6.QtWidgets import QLabel, QLineEdit, QCheckBox, QPushButton
-from PyQt6.QtGui import QTextDocument
+from PyQt5.QtWidgets import QDialog, QGridLayout
+from PyQt5.QtWidgets import QLabel, QLineEdit, QCheckBox, QPushButton
+from PyQt5.QtGui import QTextDocument
 
 
 class FindDialog(QDialog):

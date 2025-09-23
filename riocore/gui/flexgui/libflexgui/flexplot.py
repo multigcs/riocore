@@ -3,12 +3,10 @@
 # import sys
 # import math
 
-from PyQt6.QtCore import pyqtSignal, QSize, Qt, QTimer
-from PyQt6.QtGui import QColor
-from PyQt6.QtOpenGLWidgets import QOpenGLWidget
-from OpenGL import GL
-from OpenGL.GL import glColor4f
-from OpenGL import GLU
+from PyQt5.QtCore import pyqtSignal, QSize, Qt, QTimer
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import QOpenGLWidget
+from OpenGL import GL, GLU
 
 import _thread
 
@@ -745,7 +743,7 @@ class emc_plot(QOpenGLWidget, glcanon.GlCanonDraw, glnav.GlNavBase):
         self.update()
 
     def qglColor(self, color):
-        glColor4f(color.redF(), color.greenF(), color.blueF(), color.alphaF())
+        GL.glColor4f(color.redF(), color.greenF(), color.blueF(), color.alphaF())
 
     # called when widget is completely redrawn
     def initializeGL(self):

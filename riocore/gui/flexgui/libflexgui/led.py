@@ -1,6 +1,6 @@
-from PyQt6.QtCore import Qt, pyqtProperty, QPointF
-from PyQt6.QtGui import QRadialGradient, QBrush, QPainter
-from PyQt6.QtWidgets import QPushButton
+from PyQt5.QtCore import Qt, pyqtProperty, QPointF
+from PyQt5.QtGui import QRadialGradient, QBrush, QPainter
+from PyQt5.QtWidgets import QPushButton
 
 
 class IndicatorButton(QPushButton):

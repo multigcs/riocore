@@ -1,7 +1,7 @@
 import shutil
 
-from PyQt6.QtWidgets import QDialog
-from PyQt6.QtWidgets import QDialogButtonBox, QVBoxLayout, QLabel, QComboBox
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialogButtonBox, QVBoxLayout, QLabel, QComboBox
 
 
 class editor_dialog(QDialog):

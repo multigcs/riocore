@@ -1,10 +1,10 @@
 import os
 
-from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel
-from PyQt6.QtWidgets import QMessageBox, QPlainTextEdit
-from PyQt6.QtWidgets import QSpinBox, QDoubleSpinBox
-from PyQt6.QtGui import QPixmap, QTextCursor
-from PyQt6.QtCore import Qt
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QMessageBox, QPlainTextEdit
+from PyQt5.QtWidgets import QSpinBox, QDoubleSpinBox
+from PyQt5.QtGui import QPixmap, QTextCursor
+from PyQt5.QtCore import Qt
 
 import linuxcnc as emc
 import hal

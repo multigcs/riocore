@@ -7,10 +7,10 @@ sys.dont_write_bytecode = True
 
 from functools import partial
 
-from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.uic import loadUi
-from PyQt6.QtCore import QObject, Qt, QTimer, QEvent
-from PyQt6.QtGui import QKeyEvent
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.uic import loadUi
+from PyQt5.QtCore import QObject, Qt, QTimer, QEvent
+from PyQt5.QtGui import QKeyEvent
 
 import linuxcnc as emc
 import hal

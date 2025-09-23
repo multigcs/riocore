@@ -1,7 +1,7 @@
 import os
 
-from PyQt6.QtCore import QSettings
-from PyQt6.QtGui import QColor
+from PyQt5.QtCore import QSettings
+from PyQt5.QtGui import QColor
 
 from libflexgui import dialogs
 from libflexgui import utilities

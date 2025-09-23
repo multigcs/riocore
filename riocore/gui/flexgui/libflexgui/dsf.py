@@ -4,8 +4,8 @@ import os
 import sys
 from math import pi
 
-from PyQt6.QtWidgets import QWidget
-from PyQt6.uic import loadUi
+from PyQt5.QtWidgets import QWidget
+from PyQt5.uic import loadUi
 
 from libflexgui import utilities
 
