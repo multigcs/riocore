@@ -45,7 +45,7 @@ class flexvcp:
                     continue
                 keep = False
                 for sub in child:
-                    if sub.tag == "layout":
+                    if sub.tag in {"widget", "layout"}:
                         keep = True
                         break
                 if not keep:

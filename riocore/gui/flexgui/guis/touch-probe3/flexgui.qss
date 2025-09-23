@@ -1,0 +1,679 @@
+
+/* QWidget  */
+/*QWidget { */
+/*	background-color: rgba(0, 96, 192, 40%); color: white; */
+/*	background-color: darkgrey; */
+/*	} */
+QMenu, QLabel, QPlainTextEdit#gcode_pte {
+	background-color: #121212;
+	color: white;
+	border-color: #051a39;
+	}
+QPlainTextEdit#gcode_pte {
+    border: 1px solid white;
+	background-color: rgba(0, 96, 192, 60%);
+	color: lightgreen;
+   	}
+
+QPlainTextEdit#errors_pte {
+	background-color: rgba(0, 96, 192, 60%); color: white;
+    border: 1px solid white;
+	color: lightgreen;
+	}
+
+QListWidget, QLineEdit, QComboBox {
+	background-color: rgba(0, 96, 192, 60%);
+	color: lightgreen;
+    border: 2px solid;
+	border-radius: 3px;
+	border-color: grey;
+	}
+
+QTabBar, QToolButton, QAbstractSpinBox {
+	background-color: rgba(0, 96, 192, 60%);
+	color: lightgreen;
+	border-color: #051a39;
+	}
+QToolBar {
+/*	background-color: lightgreen; */
+	background-color: rgba(0, 96, 192, 30%);
+
+}
+
+QMainWindow {
+	background-color: black;
+	color: white;
+	border-color: grey;
+	}
+
+QMenu {
+    border: 1px solid white;
+	}
+
+QMenu::separator {
+    height: 2px;
+    background: lightgreen;
+    margin-left: 3px;
+    margin-right: 3px;
+	}
+
+QMenu::item:selected{
+	background-color: rgba(192, 192, 192, 90%);
+	color: black;
+	}
+	
+QMenu::item:!selected{
+	background-color: black;
+	color: white;
+	}
+	
+QMenu::item:disabled {
+	background-color: black;
+	color: darkgray;
+	}
+
+QMenu::icon:checked { /* appearance of a 'checked' icon */
+    background: gray;
+    border: 1px inset gray;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    left: 1px;
+	}
+
+QMenu::indicator {
+    width: 13px;
+    height: 13px;
+	}
+
+QPlainTextEdit {
+    border: 1px solid gray;
+    border-radius: 3px;
+	}
+
+QListWidget {
+    border: 1px solid gray;
+    border-radius: 3px;
+	}
+	
+QCheckBox {
+	background-color: rgba(0, 96, 192, 60%);
+    border: 1px solid white;
+	color: lightgreen;
+	}
+QCheckBox:hover {
+	background-color: rgba(0, 96, 192, 90%); color: white;
+	}
+
+QGroupBox {
+    border: 1px solid gray;
+    /* border-radius: 3px; */
+	color: white
+	/* color: darkgrey */
+	}
+
+QLineEdit{
+    border: 1px solid gray;
+    border-radius: 3px;
+	}
+
+QLineEdit#mdi_command_le{
+    border: 1px solid gray;
+    border-radius: 3px;
+    color white;
+	}
+
+QMenuBar {
+    background-color: black; color: white;
+    spacing: 3px;
+	border: white;
+	}
+
+QDoubleSpinBox, QSpinbox, QSlider, QLabel#spindle_actual_speed_lb {
+    border: 2px solid gray;
+    border-radius: 3px;
+	background-color: rgba(192, 192, 192, 50%);
+	background-color: rgba(0, 96, 192, 60%);
+    padding: 1px 1px 1px 1px;
+	}
+
+QDoubleSpinBox:hover  {
+	color: white;
+	}
+/*QDoubleSpinBox  {
+	min-height: 25px;
+	}*/
+
+/* ********** QDoublespinBox tool tips ********** */
+/* done in UI file for now */
+/* QDoubleSpinBox#probe_search_feed{
+	toolTip: 'Sets the Faster feedrate'
+	}
+QDoubleSpinBox#probe_fine_feed{
+	toolTip: 'Set the Fine feedrate'
+	}
+QDoubleSpinBox#probe_search_dist{
+	toolTip: 'Max XY search distance on some routines'
+	}
+QDoubleSpinBox#probe_z_max_probe{
+	toolTip: 'Max Z probe search distance'
+	}
+QDoubleSpinBox#probe_retract_dist{
+	toolTip: 'Retract Distance on edge probes'
+	}
+QDoubleSpinBox#probe_xy_travel_dist{
+	toolTip: 'On long probe routines sets max XY travel'
+	}
+QDoubleSpinBox#probe_angle_base_dist {
+	toolTip: 'Sets the angle base side length'
+	}
+QDoubleSpinBox#probe_x_coord{
+	toolTip: 'X Coordinate for tool probe'
+	}
+QDoubleSpinBox#probe_y_coord{
+	toolTip: 'Y Coordinate for tool probe'
+	}
+QDoubleSpinBox#probe_z_start{
+	toolTip: 'Z start for tool probing'
+	}
+QDoubleSpinBox#probe_max_hole_r{
+	toolTip: 'Set this a bit larger than the hold radius'
+	}
+QDoubleSpinBox#probe_max_bar_r{
+	toolTip: 'Set this a bit larger than the bar radius'
+	}
+QDoubleSpinBox#probe_tip_diam{
+	toolTip: 'Enter your probe tip diameter here'
+	}
+*/
+/* ********** QDoublespinBox tool tips ********** */
+
+QStatusBar {
+	background-color: rgba(0, 96, 192, 60%); color: white;
+	}
+
+QPushButton {
+	min-height: 35px;
+	min-width: 35px;
+	margin: 2px;
+	border: 0px solid rgba(128, 128, 128, 100%);
+	border-width: 2px;
+	border-style: outset;
+	border-radius: 5px;
+	background-color: rgba(0, 96, 192, 60%);
+	background-position: center;
+	background-origin: content;
+	/* background-clip: padding; */
+	background-repeat: no-repeat;
+	color: lightgreen;
+	}
+	
+QTabBar::tab {
+	background-color: rgba(0, 96, 192, 60%);
+    border-bottom-color: #C2C7CB; /* same as the pane color */
+	border: 2px solid rgba(128, 128, 128, 100%);
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	min-height: 30px; /*	min-height: 50px; */
+    min-width: 8ex;
+    padding: 1px;
+	}
+
+QToolButton { /* all types of tool button */
+	background-color: rgba(0, 96, 192, 60%);
+	min-width: 75px;
+	min-height: 30px;
+	border: 2px solid rgb(128, 128, 128);
+	border-radius: 10px;
+	}
+
+/* ################################# */
+QToolButton#flex_Stop:hover {
+	background-color: rgba(192, 0, 0, 40%); color: white;
+	}
+QToolButton#flex_Quit:hover {
+	background-color: rgba(192, 0, 0, 40%); color: white;
+	}
+QToolButton:hover {
+	background-color: rgba(0, 192, 0, 40%); color: white;
+	}
+QToolButton#flex_Quit:pressed {
+	background-color: rgba(192, 0, 0, 80%); color: white; border none;
+	}
+QToolButton#flex_Stop:pressed {
+	background-color: rgba(192, 0, 0, 80%); color: white; border none;
+	}
+QToolButton:pressed {
+	background-color: rgba(0, 192, 0, 80%);  color: white; border none;
+	}
+
+/* ********** Spin Box ********** */
+QAbstractSpinBox {
+	min-height: 40px;
+	}
+
+QAbstractSpinBox::up-button {
+	min-width: 20px;
+	}
+
+QAbstractSpinBox::down-button {
+	min-width: 20px;
+	}
+
+/* ********** General Buttons ********** */
+QPushButton:hover {
+	background-color: rgba(0, 96, 192, 90%); color: white;
+	}
+
+QPushButton:pressed {  
+	background-color: rgba(0, 96, 192, 35%); color: white; border none;
+    border-style: inset;
+    border-width: 2px;
+	}
+
+QPushButton:checked {
+	background-color: rgba(0, 192, 0, 40%); border none;
+	/* background-color: rgba(0, 192, 0, 90%); border none; */
+	border-style: inset;
+	}
+	
+QPushButton:unchecked {
+	background-color: darkgray; border none;
+	border-style: inset;
+	}
+
+/* ********** General Tabs ********** */
+
+/* The tab widget frame */
+QTabWidget::pane { 
+    border-top: 1px solid grey;
+    border-left: 1px solid grey;
+    border-right: 1px solid grey;
+    border-bottom: 1px solid grey;
+    /*    border-top: 1px solid #C2C7CB; */
+    position: absolute;
+    top: -0.05em;  /* top: -0.5em; */
+	}
+
+QTabWidget::tab-bar {
+    alignment: left;
+	}
+
+QTabBar::tab:hover {
+	background-color: rgba(0, 96, 192, 90%); color: white;
+	}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+	background-color: rgba(0, 96, 192, 35%); color: white; border none;
+	}
+
+QTabBar::tab:selected {
+    border-color: #9B9B9B;
+    border-bottom-color: #C2C7CB; /* same as pane color */
+	}
+
+/* ********** Sliders ********** */
+QSlider::groove:horizontal {
+    border: 1px solid;
+    height: 10px;
+    margin: 0px;
+    }
+    
+QSlider::handle:horizontal {
+	background-color: rgba(0, 0, 192, 60%);
+    border: 1px solid;
+    height: 15px;
+    width: 10px;
+    margin: -15px 0px;
+    }
+
+/* ********** Op Stop RED ********** */
+QPushButton#optional_stop_pb:hover {
+	background-color: rgba(192, 0, 0, 40%); color: white; 
+	}
+
+QPushButton#optional_stop_pb:pressed {
+	background-color: rgba(192, 0, 0, 80%); color: white; 
+	}
+
+QPushButton#optional_stop_pb:on {
+	background-color: rgba(192, 0, 0, 60%); color: white; 
+	}
+
+/* ********** E Stop RED ********** */
+QPushButton#estop_pb:hover {
+	background-color: rgba(192, 0, 0, 40%); color: white; 
+	}
+
+QPushButton#estop_pb:pressed {
+	background-color: rgba(192, 0, 0, 80%); color: white; 
+	}
+
+QPushButton#estop_pb:off {
+	background-color: rgba(192, 0, 0, 60%); color: white; 
+	}
+
+/* ********** Stop RED ********** */
+QPushButton#stop_pb:hover {
+	background-color: rgba(192, 0, 0, 40%); color: white;
+	}
+
+QPushButton#stop_pb:pressed {
+	background-color: rgba(192, 0, 0, 80%); color: white; border none;
+	}
+
+/* ********** Quit RED ********** */
+QPushButton#quit_pb:hover {
+	background-color: rgba(192, 0, 0, 40%); color: white;
+	}
+
+QPushButton#quit_pb:pressed {
+	background-color: rgba(192, 0, 0, 80%); color: white; border none;
+	}
+
+/* ********** XY Plus/Minus Yellow ********** */
+QPushButton#G1_XY_plus:hover, QPushButton#G1_XY_minus:hover { 
+	background-color: rgba(250, 250, 0, 60%); color: white; border none;
+	}
+
+QPushButton#G1_XY_plus:pressed, QPushButton#G1_XY_minus:pressed {
+	background-color: rgba(250, 250, 0, 80%); color: white; border none;
+	} 
+/* ********** Tool Change, Jog Modes Combo Box ********** */
+
+QComboBox#tool_change_cb::item:selected, QComboBox#jog_modes_cb::item:selected {
+	background-color: rgba(0, 96, 192, 60%);
+	color: white;
+	}
+	
+QComboBox#tool_change_cb::item:!selected, QComboBox#jog_modes_cb::item:!selected {
+	background-color: rgba(0, 96, 192, 80%);
+	color: lightgreen;
+	}
+
+/* **************************************** */
+QPushButton#probe_inXminusYplus {
+	background-image: url("images/inX-Y+.png");
+	}
+QPushButton#probe_inYplus { 
+	background-image: url("images/inY+.png");
+	}
+QPushButton#probe_inXplusYplus {
+	background-image: url("images/inX+Y+.png");
+	}
+QPushButton#probe_inXminus{
+	background-image: url("images/inX-.png");
+	}
+QPushButton#probe_inhole{
+	background-image: url("images/inHole.png");
+	}
+QPushButton#probe_inXplus {
+	background-image: url("images/inX+.png");
+	}
+QPushButton#probe_inXminusYminus {
+	background-image: url("images/inX-Y-.png");
+	}
+QPushButton#probe_inYminus {
+	background-image: url("images/inY-.png");
+	}
+QPushButton#probe_inXplusYminus {
+	background-image: url("images/inX+Y-.png");
+	}
+
+/* ************** Distance **************** */
+
+QPushButton#probe_p_lx_in {
+	background-image: url("images/Lx_in.png");
+	}
+QPushButton#probe_p_lx_out {
+	background-image: url("images/Lx_out.png");
+	}
+QPushButton#probe_p_ly_in {
+	background-image: url("images/Ly_in.png");
+	}
+QPushButton#probe_p_ly_out {
+	background-image: url("images/Ly_out.png");
+	}
+
+/* *********** Angle ********************* */
+QPushButton#probe_p_angle_x_minus {
+	background-image: url("images/angleX-.png");
+	}
+QPushButton#probe_p_angle_y_minus {
+	background-image: url("images/angleY-.png");
+	}
+QPushButton#probe_p_angle_x_plus {
+	background-image: url("images/angleX+.png");
+	}
+QPushButton#probe_p_angle_y_plus {
+	background-image: url("images/angleY+.png");
+	}
+
+/* ************ flipped angles ************ */
+QPushButton#probe_p_angle_x_minus_flip {
+	background-image: url("images/angleX-flip.png");
+	}
+QPushButton#probe_p_angle_y_minus_flip {
+	background-image: url("images/angleY-flip.png");
+	}
+QPushButton#probe_p_angle_x_plus_flip {
+	background-image: url("images/angleX+flip.png");
+	}
+QPushButton#probe_p_angle_y_plus_flip {
+	background-image: url("images/angleY+flip.png");
+	}
+
+/* **************************************** */
+
+QPushButton#probe_XminusYplus {
+	background-image: url("images/X-Y+.png");
+	}
+QPushButton#probe_Yplus {
+	background-image: url("images/Y+.png");
+	}
+QPushButton#probe_XplusYplus {
+	background-image: url("images/X+Y+.png");
+	}
+QPushButton#probe_Xminus{
+	background-image: url("images/X-.png");
+	}
+QPushButton#probe_wk_center{
+	background-image: url("images/xy_center.png");
+	}
+QPushButton#probe_Xplus {
+	background-image: url("images/X+.png");
+	}
+QPushButton#probe_XminusYminus {
+	background-image: url("images/X-Y-.png");
+	}
+QPushButton#probe_Yminus {
+	background-image: url("images/Y-.png");
+	}
+QPushButton#probe_XplusYminus {
+	background-image: url("images/X+Y-.png");
+	}	
+QPushButton#probe_workpiece_height {
+	background-image: url("images/workpiece_height.png");
+	}	
+/*QPushButton#probe_ts_height {
+	background-image: url("images/ts_height.png");
+	}*/	
+/*QPushButton#probe_angleXplus {
+	background-image: url("images/angleX+.png");
+	}	
+QPushButton#probe_angleXminus {
+	background-image: url("images/angleX-.png");
+	}
+QPushButton#probe_angleYplus {
+	background-image: url("images/angleY+.png");
+	}	
+QPushButton#probe_angleYminus {
+	background-image: url("images/angleY-.png");
+	}*/	
+
+QFrame#logo {
+    border: 1px grey;
+    border-radius: 2px;
+    padding: 2px;
+/*    background-image: url(images/Flex-probe117.png); */
+/*    background-image: url(images/Chips117_red.png); */
+    background-image: url(images/Chips117_plain.png);
+
+}
+
+QPushButton#probing_enable_pb:enabled:checked {
+	color: white;
+/*	background-color: rgba(192, 0, 0, 80%); */
+	background-color: rgba(0, 192, 0, 80%);
+}
+
+QPushButton#probing_enable_pb:enabled {
+	color: lightgreen;
+	background-color: rgba(0, 96, 192, 60%);
+	/*yellow;*/
+}
+QPushButton#probing_enable_pb:enabled:hover {
+        color: white;
+}
+
+/* ******************** LCD ******************** */
+QLCDNumber#spindlespeedlcd{ 
+	background-color: rgb(0, 0, 0);
+	border: 1px solid rgb(113, 113, 113);
+	border-width: 1px;
+	border-radius: 2px;
+	color: rgba(0, 255, 0, 100%);
+}
+QLCDNumber#timehrslcd, QLCDNumber#timeminlcd, QLCDNumber#timeseclcd{
+	background-color: rgb(0, 0, 0);
+	border: 1px solid rgb(113, 113, 113);
+	border-width: 1px;
+	border-radius: 2px;
+	color: rgba(255, 255, 0, 100%);}
+
+/*  spindlespeedlcd
+QLCDNumber{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 255, 255);
+}
+QLCDNumber#spindle_speed_0_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 0, 0);
+}
+QLCDNumber#Spindle_Temp_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 255, 0);
+}
+QLCDNumber#Spindle_Actual_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 0, 0);
+}
+QLCDNumber#Spindle_HP_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(0, 255, 0);
+}
+QLCDNumber#Spindle_Load_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(0, 255, 0);
+}
+QLCDNumber#Cycle_Hrs_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 255, 0);
+}
+QLCDNumber#Cycle_Min_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 255, 0);
+}
+QLCDNumber#Cycle_Sec_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 255, 0);
+}
+QLCDNumber#Tool_PSI_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 255, 0);
+}
+QLCDNumber#Comp_PSI_lcd{
+	background-color: rgb(0, 0, 0);
+	border: 2px solid rgb(113, 113, 113);
+	border-width: 2px;
+	border-radius: 10px;
+	color: rgb(255, 255, 0);
+}
+*/
+/* ******************** LCD ******************** */
+/* ********** NOTES ********** */
+/*  QMainWindow{
+	background-color: rgba(0, 0, 192, 20%);
+	} */
+/* QPlainTextEdit{
+	background-color: rgba(192, 192, 192, 40%); color: black;
+	} */
+	
+/* Widget names for actions...
+flex_Open
+flex_Edit
+flex_Reload
+flex_Save_As
+flex_Edit_Tool_Table
+flex_Reload_Tool_Table
+flex_Ladder_Editor
+flex_Quit
+flex_E_Stop
+flex_Power
+flex_Run
+flex_Run_From_Line
+flex_Step
+flex_Pause
+flex_Resume
+flex_Stop
+flex_Clear_MDI_History
+flex_Copy_MDI_History
+flex_Show_HAL
+flex_HAL_Meter
+flex_HAL_Scope
+flex_About
+*/
+
+/* example for single button property:
+QPushButton#optional_stop_pb:hover
+*/
+
+/* _pb properties
+hover
+pressed
+released
+clicked
+on / off
+*/
+

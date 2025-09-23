@@ -432,6 +432,6 @@
     "linuxcnc": {
         "simulation": true,
         "gui": "flexgui",
-        "_flexgui": "touch"
+        "_flexgui": "touch-probe3"
     }
 }

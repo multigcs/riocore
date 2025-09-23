@@ -1,0 +1,40 @@
+<RCC>
+  <qresource prefix="/">
+    <file>images/angleX+.png</file>
+    <file>images/angleX-.png</file>
+    <file>images/angleX+flip.png</file>
+    <file>images/angleX-flip.png</file>
+    <file>images/angleY+.png</file>
+    <file>images/angleY-.png</file>
+    <file>images/angleY+flip.png</file>
+    <file>images/angleY-flip.png</file>
+    <file>images/Chips117_plain.png</file>
+    <file>images/Chips117_red.png</file>
+    <file>images/Flex-probe.png</file>
+    <file>images/Flex-probe117.png</file>
+    <file>images/inHole.png</file>
+    <file>images/inX+.png</file>
+    <file>images/inX-.png</file>
+    <file>images/inX+Y+.png</file>
+    <file>images/inX+Y-.png</file>
+    <file>images/inX-Y+.png</file>
+    <file>images/inX-Y-.png</file>
+    <file>images/inY+.png</file>
+    <file>images/inY-.png</file>
+    <file>images/Lx_in.png</file>
+    <file>images/Lx_out.png</file>
+    <file>images/Ly_in.png</file>
+    <file>images/Ly_out.png</file>
+    <file>images/ts_height.png</file>
+    <file>images/workpiece_height.png</file>
+    <file>images/X+.png</file>
+    <file>images/X-.png</file>
+    <file>images/X+Y+.png</file>
+    <file>images/X+Y-.png</file>
+    <file>images/X-Y+.png</file>
+    <file>images/X-Y-.png</file>
+    <file>images/xy_center.png</file>
+    <file>images/Y+.png</file>
+    <file>images/Y-.png</file>
+  </qresource>
+</RCC>
