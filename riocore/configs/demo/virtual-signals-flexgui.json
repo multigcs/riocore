@@ -432,7 +432,6 @@
     "linuxcnc": {
         "simulation": true,
         "gui": "flexgui",
-        "_gui": "axis",
-        "_vcp_type": "pyvcp"
+        "_flexgui": "touch"
     }
 }

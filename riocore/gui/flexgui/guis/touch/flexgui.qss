@@ -1,0 +1,218 @@
+/* Note: With complex widgets such as QComboBox and QScrollBar, if one property
+or sub-control is customized, all the other properties or sub-controls must be
+customized as well. */
+
+/***** QLineEdit *****/
+
+QLineEdit {
+min-height: 30px;
+}
+
+/***** QTabWidget *****/
+
+QTabWidget::tab-bar {
+	left: 10px; /* move tab bar to the right */
+}
+
+QTabWidget::pane { /* this styles the border around the tab widget */
+	border: 3px solid rgba(0, 0, 0, 60%);
+	border-radius: 6px;
+}
+
+QTabBar::tab {
+	min-height: 50px;
+	min-width: 50px;
+	color: rgba(0, 0, 0, 75%);
+	background-color: rgba(0, 0, 0, 10%);
+	border-width: 2px;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 30%);
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	margin-left: 4px; /* make a space between the tabs */
+	margin-right: 0px;
+	padding-left: 5px; /* make sure there is space between the name and the edge */
+	padding-right: 5px;
+}
+
+QTabBar::tab:selected {
+	border-color: rgba(0, 0, 0, 80%);
+	color: rgba(255, 255, 255, 100%);
+	background-color: rgba(0, 0, 0, 50%);
+}
+
+/***** QAbstractButton *****/
+
+QAbstractButton{
+	min-height: 50px;
+	min-width: 50px;
+	border-style: outset;
+	border-color: #b3b3b3; /* rgba colors don't work for border */
+	border-width: 3px;
+	border-radius: 6px;
+	margin-bottom: 1px;
+	padding-right: 5px; /* make sure there is space between the name and the edge */
+	padding-left: 5px;
+}
+
+QPushButton:checked, QPushButton:pressed
+{
+border-style: inset;
+background-color: rgba(125, 125, 125, 75%);
+}
+
+/***** QListWidget *****/
+
+QListWidget{
+border-radius: 5px;
+font-size: 18px;
+}
+
+QListWidget::item { /* the items in the list */
+min-height: 50px;
+
+selection-color: black;
+selection-background-color: #0d0d0d;
+border: 1px solid grey;
+border-radius: 5px;
+}
+
+QScrollBar:vertical {
+border: 1px solid grey;
+background: #bfbfbf;
+width: 50px;
+height: 50px;
+margin: 50px 0 50px 0;
+}
+/*
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+border: 2px solid grey;
+width: 10px;
+height: 10px;
+background: white;
+}
+*/
+
+QScrollBar::up-arrow { /* requires width and height */
+image: url(:/images/arrow_up.png);
+width: 25px;
+height: 25px;
+}
+
+QScrollBar::up-arrow:disabled,
+QScrollBar::up-arrow:off { /* off state when value is max */
+	image: url(:/images/arrow_up_disabled.png);
+}
+
+QScrollBar::down-arrow { /* requires width and height */
+image: url(:/images/arrow_down.png);
+width: 25px;
+height: 25px;
+}
+
+QScrollBar::down-arrow:disabled,
+QScrollBar::down-arrow:off { /* off state when value in min */
+	image: url(:/images/arrow_down_disabled.png);
+}
+
+QScrollBar::handle:vertical {
+background: white;
+min-height: 50px;
+}
+
+QScrollBar::add-line:vertical {
+border: 2px solid grey;
+background: #bfbfbf;
+height: 50px;
+subcontrol-position: bottom;
+subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+border: 2px solid grey;
+background: #bfbfbf;
+height: 50px;
+subcontrol-position: top;
+subcontrol-origin: margin;
+}
+
+/*
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+background: none;
+}
+*/
+
+/***** QSlider *****/
+QSlider:horizontal {
+    min-height: 50px;
+    max-height: 50px;
+    background: #bfbfbf;
+}
+
+QSlider::groove:horizontal {
+    height: 42px;
+    background: #393939;
+    margin-left: -1px;
+}
+
+QSlider::handle:horizontal {
+    background: #bfbfbf;
+    width: 50px;
+    margin-top: -3px;
+    margin-bottom: -3px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+}
+QSlider::add-page:horizontal {
+    background: white;
+}
+
+QSlider::sub-page:horizontal {
+    background: green;
+}
+
+QSlider:vertical {
+    min-width: 50px;
+    max-width: 50px;
+    background: #bfbfbf;
+}
+
+QSlider::groove:vertical {
+    background: #bfbfbf;
+    position: absolute;
+    /* absolutely position 4px from the left and right of the widget.*/
+    /* setting margins on the widget should work too... */
+    left: 4px;
+    right: 4px;
+}
+
+QSlider::handle:vertical {
+    height: 40px;
+    background: #bfbfbf;
+    margin-left: -3px;
+    margin-right: -3px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+}
+
+QSlider::add-page:vertical {
+    background: green;
+}
+
+QSlider::sub-page:vertical {
+    background: white;
+}
+
+/***** QComboBox *****/
+QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-height: 50px;
+}
+QComboBox QAbstractItemView {
+    min-height: 50px;
+    border: 2px solid darkgray;
+}
+
+

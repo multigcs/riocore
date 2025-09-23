@@ -43,7 +43,13 @@ class flexvcp:
             for child in element:
                 if child.tag == "property":
                     continue
-                element.remove(child)
+                keep = False
+                for sub in child:
+                    if sub.tag == "layout":
+                        keep = True
+                        break
+                if not keep:
+                    element.remove(child)
             # adding new sub elements
             for child in rio_items:
                 element.append(child)
@@ -110,7 +116,7 @@ class flexvcp:
         self.cfgxml_data.append("     <item>")
         self.cfgxml_data.append('   <widget class="QGroupBox" name="groupBox_7">')
         self.cfgxml_data.append('    <property name="sizePolicy">')
-        self.cfgxml_data.append('     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
+        self.cfgxml_data.append('     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
         self.cfgxml_data.append("      <horstretch>0</horstretch>")
         self.cfgxml_data.append("      <verstretch>0</verstretch>")
         self.cfgxml_data.append("     </sizepolicy>")
@@ -170,6 +176,19 @@ class flexvcp:
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.add_property("text", title, ptype="string")
         self.add_property("indent", "4")
+
+        self.cfgxml_data.append('         <property name="sizePolicy">')
+        self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
+        self.cfgxml_data.append("           <horstretch>0</horstretch>")
+        self.cfgxml_data.append("           <verstretch>0</verstretch>")
+        self.cfgxml_data.append("          </sizepolicy>")
+        self.cfgxml_data.append("         </property>")
+        self.cfgxml_data.append(' <property name="minimumSize">')
+        self.cfgxml_data.append("  <size>")
+        self.cfgxml_data.append("   <width>32</width>")
+        self.cfgxml_data.append("   <height>32</height>")
+        self.cfgxml_data.append("  </size>")
+        self.cfgxml_data.append(" </property>")
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
 
@@ -185,7 +204,7 @@ class flexvcp:
         self.cfgxml_data.append('     <widget class="QSlider">')
         self.set_halpin(halpin, "HAL_FLOAT", "HAL_OUT")
         self.cfgxml_data.append('         <property name="sizePolicy">')
-        self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">')
+        self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
         self.cfgxml_data.append("           <horstretch>0</horstretch>")
         self.cfgxml_data.append("           <verstretch>0</verstretch>")
         self.cfgxml_data.append("          </sizepolicy>")
@@ -257,8 +276,8 @@ class flexvcp:
         self.cfgxml_data.append(" </property>")
         self.cfgxml_data.append(' <property name="minimumSize">')
         self.cfgxml_data.append("  <size>")
-        self.cfgxml_data.append("   <width>32</width>")
-        self.cfgxml_data.append("   <height>32</height>")
+        self.cfgxml_data.append("   <width>22</width>")
+        self.cfgxml_data.append("   <height>22</height>")
         self.cfgxml_data.append("  </size>")
         self.cfgxml_data.append(" </property>")
         self.cfgxml_data.append("     </widget>")

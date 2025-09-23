@@ -1,0 +1,1620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1046</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="0" column="0" colspan="4">
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="7">
+        <widget class="QPushButton" name="quit_pb">
+         <property name="text">
+          <string>Quit</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="pause_pb">
+         <property name="text">
+          <string>Pause</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="step_pb">
+         <property name="text">
+          <string>Step</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="power_pb">
+         <property name="text">
+          <string>Power</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QPushButton" name="stop_pb">
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="run_pb">
+         <property name="text">
+          <string>Run</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QPushButton" name="resume_pb">
+         <property name="text">
+          <string>Resume</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="estop_pb">
+         <property name="text">
+          <string>E-Stop</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="4">
+     <widget class="QTabWidget" name="rioTab">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Home</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QFrame" name="frame_2">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="2" column="0">
+            <widget class="QPushButton" name="home_pb_1">
+             <property name="text">
+              <string>Home Y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="unhome_all_pb">
+             <property name="text">
+              <string>UnHome All</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="home_all_pb">
+             <property name="text">
+              <string>Home All</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="unhome_pb_1">
+             <property name="text">
+              <string>UnHome Y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="home_pb_0">
+             <property name="text">
+              <string>Home X</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="unhome_pb_0">
+             <property name="text">
+              <string>UnHome X</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="home_pb_2">
+             <property name="text">
+              <string>Home Z</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="unhome_pb_2">
+             <property name="text">
+              <string>UnHome Z</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QFrame" name="frame_9">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="1" column="3">
+            <widget class="QLabel" name="spindle_speed_0_lb">
+             <property name="text">
+              <string>Spindle Speed</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="spindle_stop_pb">
+             <property name="text">
+              <string>Spindle Off</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="spindle_fwd_pb">
+             <property name="text">
+              <string>Spindle Fwd</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="spindle_rev_pb">
+             <property name="text">
+              <string>Spindle Rev</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="spindle_minus_pb">
+             <property name="text">
+              <string>Spindle -</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="spindle_plus_pb">
+             <property name="text">
+              <string>Spindle +</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QFrame" name="frame_8">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="1" column="1">
+            <widget class="QPushButton" name="clear_info_pb">
+             <property name="text">
+              <string>Clear
+Info</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="0" rowspan="2">
+            <widget class="QPlainTextEdit" name="info_pte"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QFrame" name="frame_3">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0" rowspan="2">
+            <widget class="QGroupBox" name="groupBox_9">
+             <property name="title">
+              <string>Jog</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_31">
+              <item row="0" column="2">
+               <widget class="QPushButton" name="jog_minus_pb_0">
+                <property name="text">
+                 <string>&lt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Y</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QPushButton" name="jog_minus_pb_2">
+                <property name="text">
+                 <string>v</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string>Z</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="jog_minus_pb_1">
+                <property name="text">
+                 <string>v</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QPushButton" name="jog_plus_pb_0">
+                <property name="text">
+                 <string>&gt;</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>X</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QPushButton" name="jog_plus_pb_1">
+                <property name="text">
+                 <string>^</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QPushButton" name="jog_plus_pb_2">
+                <property name="text">
+                 <string>^</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="4">
+               <widget class="QSlider" name="jog_vel_sl">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="4">
+               <widget class="QLabel" name="jog_vel_lb">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QComboBox" name="jog_modes_cb"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QFrame" name="frame_14">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_32">
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Tool Touch Off</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="1">
+               <widget class="QPushButton" name="tool_touchoff_x">
+                <property name="text">
+                 <string>X</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QPushButton" name="tool_touchoff_z">
+                <property name="text">
+                 <string>Z</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLineEdit" name="tool_touchoff_le">
+                <property name="input" stdset="0">
+                 <string>number</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="tool_touchoff_y">
+                <property name="text">
+                 <string>Y</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Coordinate System Touch Off</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="0" column="2">
+               <widget class="QPushButton" name="touchoff_pb_y">
+                <property name="text">
+                 <string>Y</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="touchoff_pb_x">
+                <property name="text">
+                 <string>X</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QPushButton" name="touchoff_pb_z">
+                <property name="text">
+                 <string>Z</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLineEdit" name="touchoff_le">
+                <property name="input" stdset="0">
+                 <string>number</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_7">
+       <attribute name="title">
+        <string>Plot</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_12">
+        <item row="0" column="0" rowspan="2">
+         <widget class="QTabWidget" name="tabWidget_2">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_8">
+           <attribute name="title">
+            <string>Plot</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_23">
+            <item row="0" column="0">
+             <widget class="QFrame" name="plot_widget">
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_9">
+           <attribute name="title">
+            <string>Settings</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_24">
+            <item row="0" column="1">
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="title">
+               <string>Plot</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_26">
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="view_limits_cb">
+                 <property name="text">
+                  <string>Show Limits</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="0">
+                <widget class="QCheckBox" name="view_extents_option_cb">
+                 <property name="text">
+                  <string>Show Extents</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QCheckBox" name="view_metric_units_cb">
+                 <property name="text">
+                  <string>Use Metric</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QCheckBox" name="view_tool_cb">
+                 <property name="text">
+                  <string>Show Tool</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0">
+             <widget class="QGroupBox" name="groupBox_3">
+              <property name="title">
+               <string>DRO Settings</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_25">
+               <item row="4" column="0">
+                <spacer name="verticalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="view_velocity_cb">
+                 <property name="text">
+                  <string>Show Velocity</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="view_dro_cb">
+                 <property name="text">
+                  <string>Show DRO</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QCheckBox" name="view_dtg_cb">
+                 <property name="text">
+                  <string>Show DTG</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QCheckBox" name="view_offsets_cb">
+                 <property name="text">
+                  <string>Show Offsets</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="title">
+               <string>G code</string>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_27">
+               <item row="0" column="0">
+                <widget class="QCheckBox" name="view_program_cb">
+                 <property name="text">
+                  <string>Show Program</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="2" column="0">
+                <widget class="QCheckBox" name="view_rapids_cb">
+                 <property name="text">
+                  <string>Show Rapids</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="view_live_plot_cb">
+                 <property name="text">
+                  <string>Show Live Plot</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="title">
+           <string>Pan</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_28">
+           <item row="0" column="0" colspan="2">
+            <widget class="QPushButton" name="view_pan_up_pb">
+             <property name="text">
+              <string>^</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="view_pan_right_pb">
+             <property name="text">
+              <string>&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QPushButton" name="view_pan_down_pb">
+             <property name="text">
+              <string>v</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="view_pan_left_pb">
+             <property name="text">
+              <string>&lt;</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QGroupBox" name="groupBox_7">
+          <property name="title">
+           <string>Rotate</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_29">
+           <item row="0" column="0" colspan="2">
+            <widget class="QPushButton" name="view_rotate_up_pb">
+             <property name="text">
+              <string>^</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="view_rotate_left_pb">
+             <property name="text">
+              <string>&lt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="view_rotate_right_pb">
+             <property name="text">
+              <string>&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QPushButton" name="view_rotate_down_pb">
+             <property name="text">
+              <string>v</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QGroupBox" name="groupBox_14">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>150</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>Views</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_22">
+           <item row="3" column="1">
+            <widget class="QPushButton" name="view_z2_pb">
+             <property name="text">
+              <string>Z2</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="view_y2_pb">
+             <property name="text">
+              <string>Y2</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="view_z_pb">
+             <property name="text">
+              <string>Z</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="view_y_pb">
+             <property name="text">
+              <string>Y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="view_x_pb">
+             <property name="text">
+              <string>X</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="view_p_pb">
+             <property name="text">
+              <string>P</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QGroupBox" name="groupBox_8">
+          <property name="title">
+           <string>Zoom</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_30">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="view_zoom_out_pb">
+             <property name="text">
+              <string>Out</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="view_zoom_in_pb">
+             <property name="text">
+              <string>In</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="view_clear_pb">
+             <property name="text">
+              <string>Clear</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>MDI</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QListWidget" name="mdi_history_lw"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLineEdit" name="mdi_command_le">
+          <property name="input" stdset="0">
+           <string>nccode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" rowspan="4">
+         <widget class="QFrame" name="frame_4">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_19">
+           <item row="2" column="0">
+            <widget class="QPushButton" name="copy_mdi_history_pb">
+             <property name="text">
+              <string>Copy History</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="run_mdi_pb">
+             <property name="text">
+              <string>Run MDI</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="clear_mdi_history_pb">
+             <property name="text">
+              <string>Clear History</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>G Code</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QListWidget" name="file_lw">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>BPG Courier S GPL&amp;GNU</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="gcode_pte">
+          <property name="font">
+           <font>
+            <family>BPG Courier S GPL&amp;GNU</family>
+            <pointsize>12</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_5">
+       <attribute name="title">
+        <string>Info</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_20">
+        <item row="0" column="1">
+         <widget class="QFrame" name="frame_13">
+          <property name="minimumSize">
+           <size>
+            <width>300</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_21">
+           <item row="0" column="0">
+            <widget class="QLabel" name="gcodes_lb">
+             <property name="text">
+              <string>G codes</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="mcodes_lb">
+             <property name="text">
+              <string>M codes</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QFrame" name="frame_7">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <item row="2" column="0">
+            <widget class="QLabel" name="motion_mode_lb">
+             <property name="text">
+              <string>Motion Mode</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="task_mode_lb">
+             <property name="text">
+              <string>Task Mode</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="task_state_lb">
+             <property name="text">
+              <string>Task State</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="interp_state_lb">
+             <property name="text">
+              <string>Interperter State</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Errors</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_15">
+        <item row="0" column="0">
+         <widget class="QPlainTextEdit" name="errors_pte"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="clear_errors_pb">
+          <property name="text">
+           <string>Clear Errors</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>FSC</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QFrame" name="fsc_container">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="input" stdset="0">
+           <string>number</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_10">
+       <attribute name="title">
+        <string>DSF</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QFrame" name="dsf_container">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="input" stdset="0">
+           <string>number</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QFrame" name="frame_6">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="1" column="0">
+        <widget class="QLabel" name="file_lb">
+         <property name="text">
+          <string>File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="reload_pb">
+         <property name="text">
+          <string>Reload File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="mdi_pb_01">
+         <property name="text">
+          <string>G0 X0 Y0</string>
+         </property>
+         <property name="command" stdset="0">
+          <string>G0 X0 Y0</string>
+         </property>
+         <property name="function" stdset="0">
+          <string>mdi</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <widget class="QFrame" name="frame_5">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>25</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>BPG Courier S GPL&amp;GNU</family>
+           <pointsize>18</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>X</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4" rowspan="4">
+        <widget class="QFrame" name="frame_12">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_18">
+          <item row="1" column="0">
+           <widget class="QLabel" name="g92_lb_x">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G92</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="g92_lb_y">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="g92_lb_z">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="3" rowspan="4">
+        <widget class="QFrame" name="frame_11">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_17">
+          <item row="1" column="0">
+           <widget class="QLabel" name="g5x_lb_x">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G5x</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="g5x_lb_y">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="g5x_lb_z">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="2" rowspan="4">
+        <widget class="QFrame" name="frame_10">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_16">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>DRO</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="dro_lb_y">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="dro_lb_x">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="dro_lb_z">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>BPG Courier S GPL&amp;GNU</family>
+              <pointsize>18</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>BPG Courier S GPL&amp;GNU</family>
+           <pointsize>18</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Z</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="minimumSize">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>BPG Courier S GPL&amp;GNU</family>
+           <pointsize>18</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Y</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="home_lb_0">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Home</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="home_lb_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Home</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="home_lb_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>20</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Home</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1046</width>
+     <height>23</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

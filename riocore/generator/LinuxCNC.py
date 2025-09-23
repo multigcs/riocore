@@ -1199,7 +1199,7 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
             ini_setup["FLEXGUI"] = {}
             ini_setup["FLEXGUI"]["QSS"] = "flexgui.qss"
-            flexgui = "axis"
+            flexgui = linuxcnc_config.get("flexgui", "axis")
             if flexgui:
                 for source in glob.glob(os.path.join(riocore_path, "gui", "flexgui", "guis", flexgui, "*")):
                     target_path = os.path.join(self.configuration_path, os.path.basename(source))

@@ -1743,7 +1743,7 @@ class CustomWidgets:
         gradient = QRadialGradient(x + self._diameter / 2, y + self._diameter / 2, self._diameter * 0.4, self._diameter * 0.4, self._diameter * 0.4)
         gradient.setColorAt(0, Qt.GlobalColor.white)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-        if hasattr(Qt.GlobalColor, self.led_color):
+        if isinstance(self.led_color, str) and hasattr(Qt.GlobalColor, self.led_color):
             gradient.setColorAt(1, getattr(Qt.GlobalColor, self.led_color))
         else:
             gradient.setColorAt(1, Qt.GlobalColor.black)
