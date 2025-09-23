@@ -2133,7 +2133,7 @@ def setup_hal(parent):
                 parent.state_estop[spinbox_name] = False
                 parent.state_estop_reset[spinbox_name] = False
                 if parent.probe_controls and spinbox_name.startswith("probe_"):  # don't enable it when power is on
-                        parent.probe_controls.append(spinbox_name)
+                    parent.probe_controls.append(spinbox_name)
                 elif spinbox.property("required") == "homed":
                     parent.home_required.append(spinbox_name)
                 else:

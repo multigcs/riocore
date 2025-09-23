@@ -1260,6 +1260,8 @@ class LinuxCNC:
         if not gui_gen:
             return
 
+        gui_gen.check(self.configuration_path)
+
         gui_gen.draw_begin()
 
         # build complete list of sections (in right order)

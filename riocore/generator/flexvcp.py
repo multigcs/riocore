@@ -18,8 +18,20 @@ class flexvcp:
     def xml(self):
         return "\n".join(self.cfgxml_data).strip()
 
+    def check(self, configuration_path):
+        ui_filename = os.path.join(configuration_path, "flexgui.ui")
+        # read template
+        xml_template = open(ui_filename, "rb").read()
+        root = etree.fromstring(xml_template)
+        # check
+        for element in root.xpath("..//widget[@name='rioTab']"):
+            return True
+        print("ERROR: flexvcp: no 'QTabWidget' named 'rioTab' found, rio-gui is disabled")
+        return False
+
     def save(self, configuration_path):
         ui_filename = os.path.join(configuration_path, "flexgui.ui")
+
         # read rio xml-gui
         rio_items = etree.fromstring("\n".join(self.cfgxml_data).strip())
         # read template
@@ -168,8 +180,8 @@ class flexvcp:
         self.draw_hbox_begin()
         self.draw_title(title)
         self.cfgxml_data.append("    <item>")
-        self.cfgxml_data.append(f'     <widget class="QDoubleSpinBox">')
-        #self.cfgxml_data.append('     <widget class="QSlider">')
+        # self.cfgxml_data.append(f'     <widget class="QDoubleSpinBox">')
+        self.cfgxml_data.append('     <widget class="QSlider">')
         self.set_halpin(halpin, "HAL_FLOAT", "HAL_OUT")
         self.cfgxml_data.append('         <property name="sizePolicy">')
         self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">')
@@ -179,7 +191,7 @@ class flexvcp:
         self.cfgxml_data.append("         </property>")
         self.add_property("minimum", int(display_min))
         self.add_property("maximum", int(display_max))
-        #self.add_property("orientation", "Qt::Horizontal", "enum")
+        self.add_property("orientation", "Qt::Horizontal", "enum")
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
         self.draw_hbox_end()

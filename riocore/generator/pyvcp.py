@@ -8,6 +8,9 @@ class pyvcp:
         self.prefix = prefix
         self.vcp_pos = vcp_pos
 
+    def check(self, configuration_path):
+        return True
+
     def draw_begin(self):
         self.root = etree.Element("pyvcp")
         self.parent = self.root
