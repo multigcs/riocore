@@ -110,7 +110,7 @@ def find_children(parent):  # get the object names of all widgets
 def update_check(parent):
     if "feedrate_lb" in parent.children:
         msg = "The Feed Override Percent Label object name\nfeedrate_lb has been changed to feed_override_lb.\nChange the name in the ui file.\nThe label will be disabled and will not function."
-        dialogs.critical_msg_ok(parent, msg, "Object Name Changed")
+        print(f"Object Name Changed: {msg}")
         parent.feedrate_lb.setEnabled(False)
 
 
@@ -1156,7 +1156,7 @@ def load_postgui(parent):  # load post gui hal and tcl files if found
                     raise SystemExit(res)
             else:
                 msg = f"The POSTGUI_HALFILE\n{os.path.join(parent.config_path, f)}\nwas not found in the configuration directory."
-                dialogs.warn_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
 
 
 def setup_mdi(parent):
@@ -1212,7 +1212,7 @@ def setup_jog(parent):
             # don't make the connection if all required widgets are not present
             if item not in parent.children:
                 msg = f"{item} is required to jog\n but was not found.\nJog Buttons will be disabled."
-                dialogs.warn_msg_ok(parent, msg, "Missing Item")
+                print(f"Missing Item: {msg}")
                 for item in parent.jog_buttons:
                     getattr(parent, item).setEnabled(False)
                 return
@@ -1240,7 +1240,7 @@ def setup_jog(parent):
                     "results in less than 1 unit per minute.\n"
                     "The jog slider uses integers only so it will be set to 0."
                 )
-                dialogs.info_msg_ok(parent, msg, "INI Configuration")
+                print(f"INI Configuration: {msg}")
 
         # FIXME move to read_ini.py
         max_jog_vel = parent.inifile.find("TRAJ", "MAX_LINEAR_VELOCITY") or False
@@ -1307,10 +1307,10 @@ def setup_jog(parent):
                                 break
                             else:
                                 msg = f"Malformed INCREMENTS value\n{distance}\nmay be missing comma seperators?"
-                                dialogs.warn_msg_ok(parent, msg, "Error")
+                                print(f"Error: {msg}")
                     else:
                         msg = f"INI section DISPLAY value INCREMENTS\n{item} is not a valid jog increment\nand will not be added to the jog options."
-                        dialogs.warn_msg_ok(parent, msg, "Configuration Error")
+                        print(f"Configuration Error: {msg}")
 
 
 def setup_jog_selected(parent):
@@ -1474,14 +1474,14 @@ def setup_touchoff(parent):
                 else:
                     getattr(parent, item).setEnabled(False)
                     msg = "The Touchoff Button requires\nthe Offset Line Edit touchoff_le\nor a Dynamic Property named source that\nhas the name of the QLineEdit to be used."
-                    dialogs.warn_msg_ok(parent, msg, "Required Item Missing")
+                    print(f"Required Item Missing: {msg}")
             else:  # property source is found
                 if source in parent.children:
                     getattr(parent, item).clicked.connect(partial(getattr(commands, "touchoff"), parent))
                     parent.home_required.append(item)
                 else:  # the source was not found
                     msg = f"The {source} for {item}\nwas not found. The QPushButton\n{item} will be disabled."
-                    dialogs.warn_msg_ok(parent, msg, "Required Item Missing")
+                    print(f"Required Item Missing: {msg}")
 
     # setup Axis style touch off buttons
     if "touchoff_selected_pb" in parent.children:
@@ -1502,7 +1502,7 @@ def setup_tools(parent):
             missing_items = list(sorted(set(tool_change_required) - set(parent.children)))
             missing = " ".join(missing_items)
             msg = f"Tool change requires both\nthe tool_change_cb combo box\nand the tool_change_pb push button.\n{missing} was not found."
-            dialogs.warn_msg_ok(parent, msg, "Required Item Missing")
+            print(f"Required Item Missing: {msg}")
             return
         parent.tool_change_pb.clicked.connect(partial(commands.tool_change, parent))
         parent.home_required.append("tool_change_pb")
@@ -1567,14 +1567,14 @@ def setup_tools(parent):
                 else:
                     getattr(parent, item).setEnabled(False)
                     msg = "Tool Touchoff Button requires\nthe Tool Offset Line Edit tool_touchoff_le\nor a Dynamic Property named source that\nhas the name of the QLineEdit to be used."
-                    dialogs.warn_msg_ok(parent, msg, "Required Item Missing")
+                    print(f"Required Item Missing: {msg}")
             else:  # property source is found
                 if source in parent.children:
                     getattr(parent, item).clicked.connect(partial(getattr(commands, "tool_touchoff"), parent))
                     parent.home_required.append(item)
                 else:  # the source was not found
                     msg = f"The {source} for {item}\nwas not found. The QPushButton\n{item} will be disabled."
-                    dialogs.warn_msg_ok(msg, "Source Name Error")
+                    print(f"Source Name Error: {msg}")
 
     # Axis style tool touch off
     if "tool_touchoff_selected_pb" in parent.children:
@@ -1650,11 +1650,11 @@ def setup_probing(parent):
 
         else:
             msg = "The Probing Enable Push Button\nwas not found, all probe controls\nwill be disabled. Did you name it\nprobing_enable_pb?"
-            dialogs.warn_msg_ok(parent, msg, "Object Not Found!")
+            print(f"Object Not Found: {msg}")
     else:  # no prob controls found
         if "probing_enable_pb" in parent.children:
             msg = "The Probing Enable Push Button\nwas found, but no probe controls\nwere found. The button will be set\nto disabled."
-            dialogs.warn_msg_ok(parent, msg, "Configuration Error!")
+            print(f"Configuration Error: {msg}")
             parent.probing_enable_pb.setEnabled(False)
 
 
@@ -1673,7 +1673,7 @@ def setup_mdi_buttons(parent):
                     parent.home_required.append(button_name)
             else:
                 msg = f"MDI Button {button.text()}\nDoes not have a command\n{button.text()} will not be functional."
-                dialogs.warn_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 button.setEnabled(False)
 
 
@@ -1701,7 +1701,7 @@ def setup_set_var(parent):
                         break
                 if not found:
                     msg = f"The variable {var} was not found\nin the variables file {parent.var_file}\nthe QDoubleSpinBox {child.objectName()}\nwill not contain any value."
-                    dialogs.warn_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
 
 
 def setup_watch_var(parent):
@@ -1783,41 +1783,41 @@ def setup_hal(parent):
                     child.stateChanged.connect(partial(utilities.update_hal_io, parent))
                 else:
                     msg = f"The {child_name} has a hal_type of {hal_type}\nOnly a hal_type of HAL_BIT can be used with\na QCheckBox"
-                    dialogs.error_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
             elif isinstance(child, QPushButton):
                 if hal_type == hal.HAL_BIT:
                     if child.isCheckable():
                         child.toggled.connect(partial(utilities.update_hal_io, parent))
                     else:
                         msg = f"The QPushButton {child_name} must be\nset to checkable to be a IO button."
-                        dialogs.error_msg_ok(parent, msg, "Error")
+                        print(f"Error: {msg}")
                 else:
                     msg = "The QPushButton hal_type must be\nset to hal.HAL_BIT."
-                    dialogs.error_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
             elif isinstance(child, QRadioButton):
                 if hal_type == hal.HAL_BIT:
                     child.toggled.connect(partial(utilities.update_hal_io, parent))
                 else:
                     msg = "The QRadioButton hal_type must be\nset to hal.HAL_BIT."
-                    dialogs.error_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
             elif isinstance(child, QSpinBox):
                 if hal_type in [hal.HAL_S32, hal.HAL_U32]:
                     child.valueChanged.connect(partial(utilities.update_hal_io, parent))
                 else:
                     msg = "The QSpinBox hal_type must be\nset to hal.HAL_S32 or hal.HAL_U32."
-                    dialogs.error_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
             elif isinstance(child, QDoubleSpinBox):
                 if hal_type == hal.HAL_FLOAT:
                     child.valueChanged.connect(partial(utilities.update_hal_io, parent))
                 else:
                     msg = "The QDoubleSpinBox hal_type must be\nset to hal.HAL_FLOAT."
-                    dialogs.error_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
             elif isinstance(child, QSlider):
                 if hal_type in [hal.HAL_S32, hal.HAL_U32, hal.HAL_FLOAT]:
                     child.valueChanged.connect(partial(utilities.update_hal_io, parent))
                 else:
                     msg = "The QSlider hal_type must be\nset to hal.HAL_S32 or hal.HAL_U32 or hal.HAL_FLOAT."
-                    dialogs.error_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
 
             parent.hal_io[child_name] = pin_name
 
@@ -1831,7 +1831,7 @@ def setup_hal(parent):
                         break
                 if not found:
                     msg = f"The variable {var} was not found\nin the variables file {parent.var_file}\nthe QDoubleSpinBox {child.objectName()}\nwill not contain any value."
-                    dialogs.warn_msg_ok(parent, msg, "Error")
+                    print(f"Error: {msg}")
 
     for child in children:
         if child.property("function") == "hal_pin":
@@ -1864,27 +1864,27 @@ def setup_hal(parent):
             pin_name = lcd.property("pin_name")
             if pin_name in dir(parent):
                 msg = f"HAL LCD {lcd_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_type = lcd.property("hal_type")
             if hal_type not in valid_types:
                 lcd.setEnabled(False)
                 msg = f"{hal_type} is not valid\nfor a HAL LCD, only\nHAL_FLOAT or HAL_S32 or HAL_U32\ncan be used. The {lcd_name} will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_dir = lcd.property("hal_dir")
             if hal_dir != "HAL_IN":
                 lcd.setEnabled(False)
                 msg = f"{hal_dir} is not a valid\nhal_dir for a HAL LCD Display,\nonly HAL_IN can be used for hal_dir.\nThe {lcd_name} LCD will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if lcd_name == pin_name:
                 lcd.setEnabled(False)
                 msg = f"The object name {lcd_name}\ncan not be the same as the\npin name {pin_name}.\nThe HAL object will not be created\nand the LCD will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if None not in [pin_name, hal_type, hal_dir]:
@@ -1911,27 +1911,27 @@ def setup_hal(parent):
             false_color = label.property("false_color")
             if pin_name in dir(parent):
                 msg = f"HAL Label {label_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_type = label.property("hal_type")
             if hal_type not in valid_types:
                 label.setEnabled(False)
                 msg = f"{hal_type} is not valid for a HAL Label\n, only HAL_BIT, HAL_FLOAT, HAL_S32 or HAL_U32\ncan be used. The {label_name} label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_dir = label.property("hal_dir")
             if hal_dir != "HAL_IN":
                 label.setEnabled(False)
                 msg = f"{hal_dir} is not a valid\nhal_dir for a HAL Lable,\nonly HAL_IN can be used for hal_dir.\nThe {label_name} Label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if label_name == pin_name:
                 label.setEnabled(False)
                 msg = f"The object name {label_name}\ncan not be the same as the\npin name {pin_name}.\nThe HAL object will not be created\nand the label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if None not in [pin_name, hal_type, hal_dir]:
@@ -1957,27 +1957,27 @@ def setup_hal(parent):
             pin_name = item.property("pin_name")
             if pin_name in dir(parent):
                 msg = f"HAL Multi-State Label {label_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_type = item.property("hal_type")
             if hal_type != "HAL_U32":
                 item.setEnabled(False)
                 msg = f"{hal_type} is not valid for a HAL Multi-State Label\n, only HAL_U32 can be used.\nThe {msl_name} label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_dir = item.property("hal_dir")
             if hal_dir != "HAL_IN":
                 item.setEnabled(False)
                 msg = f"{hal_dir} is not a valid\nhal_dir for a HAL Multi-State Lable,\nonly HAL_IN can be used for hal_dir.\nThe {msl_name} Label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if msl_name == pin_name:
                 item.setEnabled(False)
                 msg = f"The object name {msl_name}\ncan not be the same as the\npin name {pin_name}.\nThe HAL object will not be created\nand the label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if None not in [pin_name, hal_type, hal_dir]:
@@ -2002,27 +2002,27 @@ def setup_hal(parent):
             pin_name = item.property("pin_name")
             if pin_name in dir(parent):
                 msg = f"HAL Label {label_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_type = item.property("hal_type")
             if hal_type not in valid_types:
                 item.setEnabled(False)
                 msg = f"{hal_type} is not valid for a HAL Progressbar\n, only HAL_S32 or HAL_U32\ncan be used. The {progressbar_name} label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_dir = item.property("hal_dir")
             if hal_dir != "HAL_IN":
                 item.setEnabled(False)
                 msg = f"{hal_dir} is not a valid\nhal_dir for a HAL Lable,\nonly HAL_IN can be used for hal_dir.\nThe {progressbar_name} Label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if progressbar_name == pin_name:
                 item.setEnabled(False)
                 msg = f"The object name {progressbar_name}\ncan not be the same as the\npin name {pin_name}.\nThe HAL object will not be created\nand the label will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if None not in [pin_name, hal_type, hal_dir]:
@@ -2042,27 +2042,27 @@ def setup_hal(parent):
             if pin_name in dir(parent):
                 button.setEnabled(False)
                 msg = f"HAL Button {button_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created.The {button_name} button will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if button_name == pin_name:
                 button.setEnabled(False)
                 msg = f"The object name {button_name}\ncan not be the same as the\npin name {pin_name}.\nThe HAL object will not be created\nThe {button_name} button will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_type = button.property("hal_type")
             if hal_type != "HAL_BIT":
                 button.setEnabled(False)
                 msg = f"{hal_type} is not a valid\nhal_type for a HAL Button,\nonly HAL_BIT can be used for hal_type.\nThe {button_name} button will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_dir = button.property("hal_dir")
             if hal_dir not in {"HAL_OUT", "HAL_IN"}:
                 button.setEnabled(False)
                 msg = f"{hal_dir} is not a valid\nhal_dir for a HAL Button,\nonly HAL_OUT can be used for hal_dir.\nThe {button_name} button will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if None not in [pin_name, hal_type, hal_dir]:
@@ -2099,27 +2099,27 @@ def setup_hal(parent):
             if pin_name in dir(parent):
                 spinbox.setEnabled(False)
                 msg = f"HAL Spinbox {spinbox_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created.The {spinbox_name} spinbox will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if spinbox_name == pin_name:
                 spinbox.setEnabled(False)
                 msg = f"The object name {spinbox_name}\ncan not be the same as the\npin name {pin_name}.\nThe HAL object will not be created\nThe {spinbox_name} spinbox will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_type = spinbox.property("hal_type")
             if hal_type not in valid_types:
                 spinbox.setEnabled(False)
                 msg = f"{hal_type} is not valid\nfor a HAL spinbox, only\nHAL_FLOAT or HAL_S32 or HAL_U32\nThe {spinbox_name} spinbox will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_dir = spinbox.property("hal_dir")
             if hal_dir != "HAL_OUT":
                 spinbox.setEnabled(False)
                 msg = f"{hal_dir} is not a valid\nhal_dir for a HAL Spinbox,\nonly HAL_OUT can be used for hal_dir.\nThe {spinbox_name} spinbox will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if None not in [pin_name, hal_type, hal_dir]:
@@ -2147,27 +2147,27 @@ def setup_hal(parent):
                 slider.setEnabled(False)
                 msg = f"HAL Slider {slider_name}\npin name {pin_name}\nis already used in Flex GUI\nThe HAL pin can not be created."
                 f"The {slider_name} slider will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if slider_name == pin_name:
                 slider.setEnabled(False)
                 msg = f"The object name {slider_name}\ncan not be the same as the\npin name {pin_name}.\nThe HAL object will not be created\nThe {slider_name} slider will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_type = slider.property("hal_type")
             if hal_type not in valid_types:
                 slider.setEnabled(False)
                 msg = f"{hal_type} is not valid\nfor a HAL slider, only\nHAL_S32 or HAL_U32 are valid\nThe {slider_name} slider will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             hal_dir = slider.property("hal_dir")
             if hal_dir != "HAL_OUT":
                 slider.setEnabled(False)
                 msg = f"{hal_dir} is not a valid\nhal_dir for a HAL Slider,\nonly HAL_OUT can be used for hal_dir.\nThe {slider_name} slider will be disabled."
-                dialogs.critical_msg_ok(parent, msg, "Configuration Error!")
+                print(f"Configuration Error: {msg}")
                 continue
 
             if None not in [pin_name, hal_type, hal_dir]:
@@ -2206,7 +2206,7 @@ def setup_tool_change(parent):
     if parent.manual_tool_change:
         if hal.component_exists("hal_manualtoolchange"):
             msg = "The Flex Manual Tool Change\ncan not function with the hal_manualtoolchange\ncomponent. You must find and remove the\nhal_manualtoolchange component!\nSee the Docs for more info."
-            dialogs.critical_msg_ok(parent, msg, "Configuration ERROR!")
+            print(f"Configuration Error: {msg}")
             parent.manual_tool_change = False
             return
 
@@ -2247,7 +2247,7 @@ def setup_plot(parent):
         dro_font = parent.inifile.find("DISPLAY", "DRO_FONT_SIZE") or False
         if dro_font:
             msg = "DRO_FONT_SIZE has been moved to the [FLEXGUI]\nsection of the ini file.\nFor now it will still work but soon\nit will be removed so get it changed."
-            dialogs.warn_msg_ok(parent, msg, "INI Configuration ERROR!")
+            print(f"INI Configuration ERROR: {msg}")
         else:  # look in the new spot
             dro_font = parent.inifile.find("FLEXGUI", "DRO_FONT_SIZE") or "12"
 
@@ -2477,10 +2477,10 @@ def setup_import(parent):
                 except Exception:
                     print(traceback.format_exc())
                     msg = f"The python file\n{module_path}\nhas an error in the module code.\n{traceback.format_exc()}"
-                    dialogs.warn_msg_ok(parent, msg, "Import Failed")
+                    print(f"Import Failed: {msg}")
             else:
                 msg = f"The python file\n{module_path}\nwas not found.\n"
-                dialogs.warn_msg_ok(parent, msg, "Import Failed")
+                print(f"Import Failed: {msg}")
 
 
 def setup_help(parent):
