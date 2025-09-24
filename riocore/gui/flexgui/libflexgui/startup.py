@@ -1773,11 +1773,13 @@ class CustomWidgets:
         painter.drawRect(0, 0, width - 1, height - 1)
 
         painter.setPen(Qt.GlobalColor.red)
-        x_last = 0
-        y_last = height - (height / 100 * self.history[0])
+        gwidth = width - 2
+        gheight = height - 2
+        x_last = 1
+        y_last = gheight - (gheight / self.vmax * self.history[0]) + 1
         for vn, value in enumerate(self.history):
-            x = width / self.history_max * vn
-            y = height - (height / 100 * value)
+            x = gwidth / self.history_max * vn + 1
+            y = gheight - (gheight / self.vmax * value) + 1
             painter.drawLine(int(x_last), int(y_last), int(x), int(y))
             x_last = x
             y_last = y
@@ -1888,6 +1890,8 @@ def setup_hal(parent):
                     child.paintEvent = partial(CustomWidgets.paintEventGraph, child)
                     child.addValue = partial(CustomWidgets.addValueGraph, child)
                     child.history_max = int(child.property("history"))
+                    child.vmin = float(child.property("min"))
+                    child.vmax = float(child.property("max"))
                     child.history = []
                 hal_labels.append(child)
                 parent.hal_history.append(child)
