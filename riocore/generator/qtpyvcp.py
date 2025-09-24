@@ -356,6 +356,9 @@ class UserTab(QWidget):
         halpin = halpin.replace("_", "-")
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
+    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+        return self.draw_bar(name, halpin, setup=setup)
+
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         halpin = halpin.replace("_", "-")
         self.draw_hbox_begin()

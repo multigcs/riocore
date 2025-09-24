@@ -53,7 +53,7 @@
                 "target": "&motion.enable"
             }
         ],
-        "_gui": "flexgui",
+        "gui": "flexgui",
         "_vcp_type": "gladevcp"
     },
     "plugins": [
@@ -556,7 +556,8 @@
                         "title": "Load",
                         "section": "status",
                         "group": "Spindle",
-                        "type": "bar",
+                        "type": "graph",
+                        "height": 70,
                         "min": 0.0,
                         "max": 4.0
                     }
@@ -675,7 +676,8 @@
                         "title": "Power",
                         "section": "status",
                         "group": "Power-Usage",
-                        "type": "bar",
+                        "type": "graph",
+                        "height": 70,
                         "min": 0.0,
                         "max": 3700.0,
                         "size": 100,
@@ -1329,8 +1331,8 @@
                         "title": "Waterflow",
                         "section": "status",
                         "group": "Spindle",
-                        "type": "bar",
-                        "_type": "meter",
+                        "type": "graph",
+                        "height": 70,
                         "min": 0.0,
                         "max": 10.0,
                         "size": 100,

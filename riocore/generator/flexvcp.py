@@ -241,9 +241,9 @@ class flexvcp:
 
     def draw_graph(self, name, halpin, setup={}, hal_type="float"):
         title = setup.get("title", name)
-        vmin = setup.get("width", 0)
-        vmax = setup.get("height", 100)
-        width = setup.get("width", 32)
+        vmin = setup.get("min", 0)
+        vmax = setup.get("max", 100)
+        width = setup.get("width", 230)
         height = setup.get("height", 32)
         self.draw_hbox_begin()
         if title:
@@ -267,7 +267,7 @@ class flexvcp:
         self.cfgxml_data.append("  </size>")
         self.cfgxml_data.append(" </property>")
         self.cfgxml_data.append('      <property name="sizePolicy">')
-        self.cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
+        self.cfgxml_data.append('       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
         self.cfgxml_data.append("        <horstretch>0</horstretch>")
         self.cfgxml_data.append("        <verstretch>0</verstretch>")
         self.cfgxml_data.append("       </sizepolicy>")

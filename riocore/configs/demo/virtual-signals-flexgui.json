@@ -213,7 +213,7 @@
                         "section": "status",
                         "type": "graph",
                         "min": 0.0,
-                        "max": 100.0,
+                        "max": 50.0,
                         "height": 100
                     },
                     "net": "riov.Virt-Float-In1.value"

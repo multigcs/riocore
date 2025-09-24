@@ -352,6 +352,9 @@ QLabel {{
     def draw_number_s32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
+    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+        return self.draw_bar(name, halpin, setup=setup)
+
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         if hal_type == "float":
             display_format = setup.get("format", "0.2f")

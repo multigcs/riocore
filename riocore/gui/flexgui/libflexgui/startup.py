@@ -5,7 +5,7 @@ from functools import partial
 import traceback
 
 from PyQt5.QtCore import Qt, QPointF, QPoint
-from PyQt5.QtGui import QRadialGradient, QBrush, QPainter, QFont
+from PyQt5.QtGui import QRadialGradient, QBrush, QPainter, QFont, QPen
 from PyQt5.QtWidgets import (
     QWidget,
     QAction,
@@ -1755,6 +1755,10 @@ class CustomWidgets:
         # TODO: limiting update interval
         self.history.append(value)
         self.history = self.history[-(self.history_max + 1) :]
+        if value > self.vmax:
+            value = self.vmax
+        if value < self.vmin:
+            value = self.vmin
         self.setText(str(value))
 
     def paintEventGraph(self, event):
@@ -1766,7 +1770,7 @@ class CustomWidgets:
 
         fsize = 10
         ydiff = 10
-        xoff = 30
+        xoff = 50
         yoff = int(fsize / 2)
         gwidth = width - 1 - xoff
         gheight = height - 1 - yoff * 2
@@ -1776,12 +1780,16 @@ class CustomWidgets:
 
         painter.setFont(QFont("times", fsize))
         painter.setPen(Qt.GlobalColor.gray)
-        for value in range(0, int(self.vmax) + int(ydiff), int(ydiff)):
-            y = gheight / self.vmax * value
+        ysteps = 5
+        ystep = self.vmax / ysteps
+        for value in range(0, 11, 1):
+            y = gheight / ysteps * value
             painter.drawLine(int(xoff), int(height - (y + yoff)), int(width), int(height - (y + yoff)))
-            painter.drawText(QPoint(0, int(height - (y + yoff)) + int(fsize / 2)), f"{value}")
+            painter.drawText(QPoint(0, int(height - (y + yoff)) + int(fsize / 2)), f"{(value * ystep):0.1f}")
 
-        painter.setPen(Qt.GlobalColor.red)
+        pen = QPen(Qt.GlobalColor.red)
+        pen.setWidthF(3)
+        painter.setPen(pen)
         x_last = 0
         y_last = gheight / self.vmax * self.history[0]
         for vn, value in enumerate(self.history):
