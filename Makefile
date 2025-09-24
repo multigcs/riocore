@@ -6,13 +6,13 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	ruff format bin/rio* riocore/
+	ruff format bin/rio* riocore/ riocore/gui/flexgui/flexgui
 
 check:
-	ruff check bin/rio-* riocore/
+	ruff check bin/rio-* riocore/ riocore/gui/flexgui/flexgui
 
 check_fix:
-	ruff check --fix bin/rio-* riocore/
+	ruff check --fix bin/rio-* riocore/ riocore/gui/flexgui/flexgui
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/
