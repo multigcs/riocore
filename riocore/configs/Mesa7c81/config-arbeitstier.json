@@ -1,10 +1,13 @@
 {
     "name": "Mesa7c81",
     "boardcfg": "Mesa7c81",
+    "async": true,
+    "protocol": "UDP",
     "c_defines": {
         "SPI_SPEED": "BCM2835_SPI_CLOCK_DIVIDER_64"
     },
-    "flashcmd": "./spiflash.sh rio-2048.bin",
+    "_flashcmd": "./spiflash.sh rio-2048.bin",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 rio.bit -f",
     "breakouts": [
         {
             "slot": "B",
@@ -18,7 +21,7 @@
         }
     ],
     "linuxcnc": {
-        "_debug_info": true,
+        "debug_info": true,
         "ini": {
             "DISPLAY": {
                 "MAX_FEED_OVERRIDE": 5.0,
@@ -27,7 +30,7 @@
                 "DEFAULT_LINEAR_VELOCITY": 100.0
             },
             "EMCMOT": {
-                "SERVO_PERIOD": 140000
+                "SERVO_PERIOD": 300000
             }
         },
         "machinetype": "mill",
@@ -53,50 +56,10 @@
                 "target": "&motion.enable"
             }
         ],
-        "gui": "flexgui",
+        "_gui": "flexgui",
         "_vcp_type": "gladevcp"
     },
     "plugins": [
-        {
-            "type": "spi_prog",
-            "pins": {
-                "mosi": {
-                    "pin": "SPI:MOSI"
-                },
-                "miso": {
-                    "pin": "SPI:MISO"
-                },
-                "sclk": {
-                    "pin": "SPI:SCLK"
-                },
-                "sel": {
-                    "pin": "SPI:SEL"
-                },
-                "prog": {
-                    "pin": "RPI:GPIO25"
-                },
-                "reboot": {
-                    "pin": "EEPROM:REBOOT"
-                },
-                "eeprom_mosi": {
-                    "pin": "EEPROM:MOSI"
-                },
-                "eeprom_miso": {
-                    "pin": "EEPROM:MISO"
-                },
-                "eeprom_sclk": {
-                    "pin": "EEPROM:SCLK"
-                },
-                "eeprom_sel": {
-                    "pin": "EEPROM:SEL"
-                }
-            },
-            "uid": "spi0",
-            "pos": [
-                -1968.1191259398493,
-                686.6246582365002
-            ]
-        },
         {
             "type": "blink",
             "pins": {
@@ -1383,20 +1346,42 @@
                 }
             },
             "name": "chargepump"
+        },
+        {
+            "type": "w5500",
+            "pins": {
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                },
+                "miso": {
+                    "pin": "SPI:MOSI"
+                },
+                "mosi": {
+                    "pin": "SPI:MISO"
+                }
+            },
+            "uid": "w55000",
+            "pos": [
+                -1887.7840733152937,
+                758.2150200011466
+            ]
         }
     ],
     "flow": {
         "view": {
             "pos": [
-                -663,
-                -47
+                -8248,
+                2513
             ],
-            "scale": 0.29
+            "scale": 3.74
         },
         "board": {
             "pos": [
                 -2088.1191259398493,
-                586.6246582365002
+                586.2716867631126
             ],
             "rotate": 90
         },

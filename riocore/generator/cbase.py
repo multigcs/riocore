@@ -771,6 +771,10 @@ class cbase:
             defines["UDP_IP"] = f'"{ip}"'
             defines["SRC_PORT"] = src_port
             defines["DST_PORT"] = dst_port
+
+        udp_async = self.project.config["jdata"].get("async", False)
+        if udp_async:
+            defines["UDP_ASYNC"] = 1
         defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
         defines["SERIAL_BAUD"] = "B1000000"
 
@@ -946,9 +950,15 @@ class cbase:
             output.append("            uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
         elif protocol == "SPI":
             output.append("            spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+
         elif protocol == "UDP":
+            output.append("#ifdef UDP_ASYNC")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE, 1);")
             output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
-            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE);")
+            output.append("#else")
+            output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE, 0);")
+            output.append("#endif")
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)
