@@ -4,8 +4,8 @@ import importlib
 from functools import partial
 import traceback
 
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QRadialGradient, QBrush, QPainter
+from PyQt5.QtCore import Qt, QPointF, QPoint
+from PyQt5.QtGui import QRadialGradient, QBrush, QPainter, QFont
 from PyQt5.QtWidgets import (
     QWidget,
     QAction,
@@ -1764,23 +1764,30 @@ class CustomWidgets:
         width = size.width()
         height = size.height()
 
-        # painter.setPen(Qt.GlobalColor.gray)
-        # for n in range(0, 100, 10):
-        #    y = height - n
-        #    painter.drawLine(0, int(y), width, int(y))
+        fsize = 10
+        ydiff = 10
+        xoff = 30
+        yoff = int(fsize / 2)
+        gwidth = width - 1 - xoff
+        gheight = height - 1 - yoff * 2
 
         painter.setPen(Qt.GlobalColor.black)
-        painter.drawRect(0, 0, width - 1, height - 1)
+        painter.drawRect(xoff, yoff, width - 1 - xoff, height - 1 - yoff * 2)
+
+        painter.setFont(QFont("times", fsize))
+        painter.setPen(Qt.GlobalColor.gray)
+        for value in range(0, int(self.vmax) + int(ydiff), int(ydiff)):
+            y = gheight / self.vmax * value
+            painter.drawLine(int(xoff), int(height - (y + yoff)), int(width), int(height - (y + yoff)))
+            painter.drawText(QPoint(0, int(height - (y + yoff)) + int(fsize / 2)), f"{value}")
 
         painter.setPen(Qt.GlobalColor.red)
-        gwidth = width - 2
-        gheight = height - 2
-        x_last = 1
-        y_last = gheight - (gheight / self.vmax * self.history[0]) + 1
+        x_last = 0
+        y_last = gheight / self.vmax * self.history[0]
         for vn, value in enumerate(self.history):
-            x = gwidth / self.history_max * vn + 1
-            y = gheight - (gheight / self.vmax * value) + 1
-            painter.drawLine(int(x_last), int(y_last), int(x), int(y))
+            x = gwidth / self.history_max * vn
+            y = gheight / self.vmax * value
+            painter.drawLine(int(x_last + xoff), int(height - (y_last + yoff)), int(x + xoff), int(height - (y + yoff)))
             x_last = x
             y_last = y
 
