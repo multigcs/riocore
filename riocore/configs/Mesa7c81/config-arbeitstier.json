@@ -21,7 +21,9 @@
         }
     ],
     "linuxcnc": {
-        "debug_info": true,
+        "_debug_info": true,
+        "_gui": "flexgui",
+        "_vcp_type": "gladevcp",
         "ini": {
             "DISPLAY": {
                 "MAX_FEED_OVERRIDE": 5.0,
@@ -55,9 +57,7 @@
                 "source": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
                 "target": "&motion.enable"
             }
-        ],
-        "_gui": "flexgui",
-        "_vcp_type": "gladevcp"
+        ]
     },
     "plugins": [
         {
