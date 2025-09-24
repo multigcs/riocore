@@ -21,7 +21,7 @@
         }
     ],
     "linuxcnc": {
-        "_debug_info": true,
+        "debug_info": true,
         "_gui": "flexgui",
         "_vcp_type": "gladevcp",
         "ini": {
@@ -32,7 +32,7 @@
                 "DEFAULT_LINEAR_VELOCITY": 100.0
             },
             "EMCMOT": {
-                "SERVO_PERIOD": 300000
+                "SERVO_PERIOD": 250000
             }
         },
         "machinetype": "mill",
@@ -1367,7 +1367,10 @@
             "pos": [
                 -1887.7840733152937,
                 758.2150200011466
-            ]
+            ],
+            "speed": 20000000,
+            "gw": "192.168.11.1",
+            "ip": "192.168.11.194"
         }
     ],
     "flow": {
