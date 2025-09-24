@@ -1751,6 +1751,37 @@ class CustomWidgets:
         painter.setPen(Qt.GlobalColor.black)
         painter.drawEllipse(QPointF(x_center, y_center), self._diameter / 2, self._diameter / 2)
 
+    def addValueGraph(self, value):
+        # TODO: limiting update interval
+        self.history.append(value)
+        self.history = self.history[-(self.history_max + 1) :]
+        self.setText(str(value))
+
+    def paintEventGraph(self, event):
+        self.graph = True
+        painter = QPainter(self)
+        size = self.rect()
+        width = size.width()
+        height = size.height()
+
+        # painter.setPen(Qt.GlobalColor.gray)
+        # for n in range(0, 100, 10):
+        #    y = height - n
+        #    painter.drawLine(0, int(y), width, int(y))
+
+        painter.setPen(Qt.GlobalColor.black)
+        painter.drawRect(0, 0, width - 1, height - 1)
+
+        painter.setPen(Qt.GlobalColor.red)
+        x_last = 0
+        y_last = height - (height / 100 * self.history[0])
+        for vn, value in enumerate(self.history):
+            x = width / self.history_max * vn
+            y = height - (height / 100 * value)
+            painter.drawLine(int(x_last), int(y_last), int(x), int(y))
+            x_last = x
+            y_last = y
+
 
 def setup_hal(parent):
     hal_labels = []
@@ -1767,6 +1798,7 @@ def setup_hal(parent):
     parent.hal_bool_labels = {}
     parent.hal_progressbars = {}
     parent.hal_floats = {}
+    parent.hal_history = []
     children = parent.findChildren(QWidget)
 
     var_file = os.path.join(parent.config_path, parent.var_file)
@@ -1852,7 +1884,13 @@ def setup_hal(parent):
                 if child.property("true_color"):
                     child.led_color = Qt.GlobalColor.black
                     child.paintEvent = partial(CustomWidgets.paintEventLED, child)
+                elif child.property("history"):
+                    child.paintEvent = partial(CustomWidgets.paintEventGraph, child)
+                    child.addValue = partial(CustomWidgets.addValueGraph, child)
+                    child.history_max = int(child.property("history"))
+                    child.history = []
                 hal_labels.append(child)
+                parent.hal_history.append(child)
             elif isinstance(child, QProgressBar):
                 hal_progressbar.append(child)
             elif isinstance(child, QLCDNumber):

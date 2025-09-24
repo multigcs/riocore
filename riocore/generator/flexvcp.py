@@ -239,13 +239,43 @@ class flexvcp:
     def draw_number_s32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
+    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+        self.draw_hbox_begin()
+        self.draw_title(name)
+        self.cfgxml_data.append("    <item>")
+        self.cfgxml_data.append('     <widget class="QLabel">')
+        self.set_halpin(halpin, f"HAL_{hal_type.upper()}", "HAL_IN")
+        self.cfgxml_data.append('      <property name="history" stdset="0">')
+        self.cfgxml_data.append("       <string>20</string>")
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append('      <property name="sizePolicy">')
+        self.cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
+        self.cfgxml_data.append("        <horstretch>0</horstretch>")
+        self.cfgxml_data.append("        <verstretch>0</verstretch>")
+        self.cfgxml_data.append("       </sizepolicy>")
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append('      <property name="styleSheet">')
+        self.cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append("     </widget>")
+        self.cfgxml_data.append("    </item>")
+        self.draw_hbox_end()
+        return f"{self.prefix}.{halpin}"
+
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         self.draw_hbox_begin()
         self.draw_title(name)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLCDNumber">')
+        # self.cfgxml_data.append('     <widget class="QLabel">')
         self.set_halpin(halpin, f"HAL_{hal_type.upper()}", "HAL_IN")
+        self.add_property("digitCount", "1")
         self.add_property("digitCount", "10")
+
+        # self.cfgxml_data.append('                <property name="history" stdset="0">')
+        # self.cfgxml_data.append(f"                 <string>20</string>")
+        # self.cfgxml_data.append("                </property>")
+
         self.cfgxml_data.append('      <property name="sizePolicy">')
         self.cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
         self.cfgxml_data.append("        <horstretch>0</horstretch>")

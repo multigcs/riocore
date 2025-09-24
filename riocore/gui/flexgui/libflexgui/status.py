@@ -505,7 +505,11 @@ def update(parent):
         if isinstance(getattr(parent, key), QLCDNumber):
             getattr(parent, key).display(f"{hal_value:.{value[1]}f}")
         else:
-            getattr(parent, key).setText(f"{hal_value:.{value[1]}f}")
+            widget = getattr(parent, key)
+            if addValue := getattr(widget, "addValue"):
+                addValue(hal_value)
+            else:
+                getattr(parent, key).setText(f"{hal_value:.{value[1]}f}")
 
     # homed status
     for item in parent.home_status:
