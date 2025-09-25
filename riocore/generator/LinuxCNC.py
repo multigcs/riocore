@@ -15,6 +15,7 @@ from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
 from riocore.generator.gladevcp import gladevcp
 from riocore.generator.flexvcp import flexvcp
+from riocore.generator.tncvcp import tncvcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -273,6 +274,9 @@ class LinuxCNC:
             elif gui in {"flexgui"}:
                 self.gui_type = "flexvcp"
                 self.gui_prefix = "flexhal.rio"
+            elif gui in {"tnc"}:
+                self.gui_type = "tncvcp"
+                self.gui_prefix = "qtpyvcp"
             # elif gui in {"woodpecker"}:
             #    self.gui_type = "qtvcp"
             #    self.gui_prefix = "qtvcp"
@@ -1240,6 +1244,16 @@ class LinuxCNC:
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
                 shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
 
+        elif gui in {"tnc"}:
+            os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+            ini_setup["DISPLAY"]["DISPLAY"] = "./tnc"
+            for source in glob.glob(os.path.join(riocore_path, "gui", "tnc", "*")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(source))
+                if os.path.isfile(source):
+                    shutil.copy(source, target_path)
+                else:
+                    shutil.copytree(source, target_path, dirs_exist_ok=True)
+
         gui_gen = None
         if vcp_mode != "NONE":
             if self.gui_type == "gladevcp":
@@ -1256,6 +1270,8 @@ class LinuxCNC:
                 gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos)
             elif self.gui_type == "flexvcp":
                 gui_gen = flexvcp(self.gui_prefix, vcp_pos=vcp_pos)
+            elif self.gui_type == "tncvcp":
+                gui_gen = tncvcp(self.gui_prefix, vcp_pos=vcp_pos)
 
         if not gui_gen:
             return

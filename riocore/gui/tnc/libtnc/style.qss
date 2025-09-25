@@ -1,0 +1,103 @@
+
+QMainWindow {
+  background-color:#2d2d30;
+  color:#353535;
+}
+
+
+QWidget{
+  background:#2d2d30;
+  color:#f1f1f1;
+}
+
+#estop_abutton{
+  border-style:none;
+  border-bottom:3px solid #FF0000;
+  color:#f1f1f1;
+  background:#3e3e42;
+  padding:5px;
+}
+
+
+#estop_abutton:checked{
+  border-bottom:3px solid #00ff00;
+  background:#3e3e42;
+}
+
+#power_abutton{
+  border-style:none;
+  border-bottom:3px solid #007acc;
+  color:#f1f1f1;
+  background:#3e3e42;
+  padding:5px;
+}
+
+#power_abutton:checked{
+  border-bottom:3px solid #00FF00;
+  background:#3e3e42;
+}
+
+#home_dbutton{
+  border-style:none;
+  border-bottom:3px solid #007acc;
+  color:#f1f1f1;
+  background:#3e3e42;
+  padding:5px;
+}
+
+#home_dbutton:checked{
+  border-bottom:3px solid #00FF00;
+  background:#3e3e42;
+}
+
+QPushButton {
+  border-style:none;
+  border-bottom:3px solid #ff7300;
+  color:#f1f1f1;
+  background:#3e3e42;
+  padding:5px;
+}
+
+QPushButton::pressed {
+  border: 3px solid #007acc;
+  background:#3e3e42;
+
+}
+
+QPushButton::disabled {
+  border-bottom: 3px solid #C0C0C0;
+  background:#3e3e42;
+}
+
+QPushButton::checked {
+  border-bottom: 3px solid #00FF00;
+  background:#3e3e42;
+}
+
+
+
+/*===========================================================================*/
+/*                             tool and offset table                         */
+/*===========================================================================*/
+
+QHeaderView {
+    font: 14pt;
+    background-color: rgb(220, 220, 220);
+    color: black;
+    border: none;
+}
+
+ToolTable {
+    border-top: 8px rgb(120, 120, 120);
+    border-left: 4px  rgb(120, 120, 120);
+    border-bottom: 5px rgb(120, 120, 120);
+    border-right: 4px rgb(120, 120, 120);
+    border-radius: 5px;
+    border-color: rgb(120, 120, 120);
+    border-style: solid;
+    background-color: rgb(120, 120, 120);
+    gridline-color: rgb(203, 203, 203);
+    alternate-background-color: rgb(90, 90, 90);
+    color: white;
+    font: 15pt;
+}

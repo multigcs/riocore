@@ -1,0 +1,256 @@
+{% include "menubar.yml" %}
+
+qtdesigner:
+  ui_file: ( windows.mainwindow.kwargs.ui_file )
+  qss_file: ( application.kwargs.stylesheet )
+
+vcp:
+  name: TurBoNC
+  version: v0.0.2
+  author: TurBoss
+  description: Just the basic functions I need to run linuxcnc
+
+data_plugins:
+  status:
+    provider: qtpyvcp.plugins.status:Status
+    kwargs:
+      cycle_time: 30
+
+  clock:
+    provider: qtpyvcp.plugins.clock:Clock
+
+
+
+  persistent_data_manager:
+    provider: qtpyvcp.plugins.persistent_data_manager:PersistentDataManager
+    kwargs:
+      # serialization method to use: json or pickle
+      serialization_method: pickle
+      # persistence_file: .vcp_data.json
+
+
+  gcode_properties:
+    provider: qtpyvcp.plugins.gcode_properties:GCodeProperties
+
+#  widgets:
+#    provider: qtpyvcp.plugins.widgets:Widgets
+  
+windows:
+  mainwindow:
+    provider: tnc.main:MainWindow
+    kwargs:
+      menu: ( default_menubar )
+      ui_file: {{ file.dir }}/ui/window.ui
+
+application:
+  kwargs:
+    stylesheet: {{ file.dir }}/style.qss
+
+dialogs:
+  zero_xy:
+    provider: tnc.dialogs.zero_xy:ZeroXY
+    kwargs:
+      ui_file: {{ file.dir }}/dialogs/zero_xy.ui
+
+  home_all:
+    provider: tnc.dialogs.home_all:HomeAll
+    kwargs:
+      ui_file: {{ file.dir }}/dialogs/home_all.ui
+
+ 
+settings:
+  touch-probe.calibration-offset:
+    description: Probe trigger point offset.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 1
+
+  probe-parameters.probe-tool-number:
+    description: probe tool number.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 9999
+
+  probe-parameters.step-off-width:
+    description: probe step off width.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 1000
+
+  probe-parameters.probe-fast-fr:
+    description: probe fast feedrate.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 1000
+
+  probe-parameters.probe-slow-fr:
+    description: probe slow feedrate.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 1000
+
+  probe-parameters.max-xy-distance:
+    description: max x and y probe travel distance.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 100
+
+  probe-parameters.xy-clearance:
+    description: x and y clearance distance.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 1000
+
+  probe-parameters.max-z-distance:
+    description: max z probe travel distance.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 100
+
+  probe-parameters.z-clearance:
+    description: z clearance distance.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 1000
+
+  probe-parameters.extra-probe-depth:
+    description: extra probe depth.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 100
+
+  probe-parameters.edge-width:
+    description: edge width probing distance.
+    default_value: 0.0
+    persistent: true
+    min_value: 0
+    max_value: 1000
+
+  tool-change-position.x-tool-change-position:
+    description: x axis tool change position.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-change-position.y-tool-change-position:
+    description: y axis tool change position.
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-change-position.z-tool-change-position:
+    description: z axis tool change position.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-setter-probe.fast-probe-fr:
+    description: tool probe fast feedrate.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-setter-probe.slow-probe-fr:
+    description: tool probe slow feedrate.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-setter-probe.z-max-travel:
+    description: maximumm z travel while probing before erroring out.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-setter-probe.xy-max-travel:
+    description: maximumm xy travel while probing before erroring out.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-setter-probe.retract-distance:
+    description: distance tool retracts after fast probe move.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+
+  tool-setter-probe.spindle-nose-height:
+    description: distance from home to tool setter for the spindle nose.
+    default_value: 0.0
+    persistent: true
+    min_value: -1000
+    max_value: 1000
+  touch-probe.diameter-offset:
+    default_value: .123123
+    persistent: true
+    min_value: 0
+    max_value: 1
+
+  dro.display-units:
+    default_value: 0
+    options: [Auto, Inch, Metric]
+
+  dro.lathe-radius-mode:
+    default_value: 0
+    options: [Auto, Radius, Diameter]
+
+  dro.inch-format:
+    default_value: '%9.4f'
+    value_type: str
+
+  dro.millimeter-format:
+    default_value: '%9.3f'
+    value_type: str
+
+  dro.degree-format:
+    default_value: '%9.2f'
+
+  # VTK backplot view settings
+
+  backplot.show-grid:
+    default_value: false
+
+  backplot.show-program-bounds:
+    default_value: false
+
+  backplot.show-spindle:
+    default_value: false
+    
+  backplot.show-tools:
+    default_value: false
+        
+  backplot.show-machine-bounds:
+    default_value: false
+
+  backplot.show-machine-labels:
+    default_value: false
+
+  backplot.show-machine-ticks:
+    default_value: false
+
+  backplot.perspective-view:
+    default_value: True
+
+  backplot.view:
+    default_value: 0
+    options: ["X: Front View", "XZ: Lathe View", "XZ2: Lathe View", "Y: Front View", "Z: Top View", "Z2: Bottom View", "P: Isometric"]
+
+  backplot.multitool-colors:
+    default_value: True
