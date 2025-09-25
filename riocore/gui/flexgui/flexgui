@@ -104,7 +104,7 @@ class flexgui(QMainWindow):
         try:
             self.status.poll()
         except Exception:
-            msg = "Flex GUI must be called from\n" "the LinuxCNC ini file."
+            msg = "Flex GUI must be called from\nthe LinuxCNC ini file."
             print(f"Error: {msg}")
             sys.exit()
 
@@ -149,7 +149,7 @@ class flexgui(QMainWindow):
                 self.config_path = os.path.split(sys.argv[i])[0]
                 break
         else:  # no match was found
-            msg = "Flex GUI must be called from\n" "the LinuxCNC ini file."
+            msg = "Flex GUI must be called from\nthe LinuxCNC ini file."
             print(f"Error: {msg}")
             sys.exit()
 
@@ -181,7 +181,7 @@ class flexgui(QMainWindow):
             try:
                 sys.path.append(self.config_path)
             except Exception:
-                msg = f"The resources file {self.resources_file} was\n" "not found, check for file name resources.py."
+                msg = f"The resources file {self.resources_file} was\nnot found, check for file name resources.py."
                 print(f"Import Failed: {msg}")
 
         # THEME is now loaded in read_ini.py
@@ -201,7 +201,7 @@ class flexgui(QMainWindow):
                 with open(stylesheet, "r") as f:
                     self.setStyleSheet(f.read())
             else:
-                msg = f"The Stylesheet {stylesheet}\n" "was not found."
+                msg = f"The Stylesheet {stylesheet}\nwas not found."
                 print(f"INI Error: {msg}")
 
         # get a list of axis letters in the configuration

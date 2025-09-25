@@ -73,10 +73,7 @@ then
 fi
 echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
-if test "$SYSTEM" = "x64"
-then
-	echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
-fi
+echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
 
 

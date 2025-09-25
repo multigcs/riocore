@@ -95,7 +95,7 @@ int udp_rx(uint8_t *rxBuffer, uint16_t size, uint8_t udp_async) {
     } else {
         t1 = rtapi_get_time();
         do {
-            ret = recv(udpSocket, rxBufferTmp, size * 2, MSG_DONTWAIT);
+            ret = recv(udpSocket, rxBufferTmp, size * 2, 0);
             if (ret < 0) {
                 rtapi_delay(READ_PCK_DELAY_NS);
             }

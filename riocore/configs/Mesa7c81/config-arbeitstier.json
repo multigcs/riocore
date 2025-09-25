@@ -32,7 +32,7 @@
                 "DEFAULT_LINEAR_VELOCITY": 100.0
             },
             "EMCMOT": {
-                "SERVO_PERIOD": 250000
+                "SERVO_PERIOD": 1000000
             }
         },
         "machinetype": "mill",
