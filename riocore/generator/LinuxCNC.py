@@ -1245,14 +1245,26 @@ class LinuxCNC:
                 shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
 
         elif gui in {"tnc"}:
-            os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
-            ini_setup["DISPLAY"]["DISPLAY"] = "./tnc"
-            for source in glob.glob(os.path.join(riocore_path, "gui", "tnc", "*")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(source))
-                if os.path.isfile(source):
-                    shutil.copy(source, target_path)
-                else:
-                    shutil.copytree(source, target_path, dirs_exist_ok=True)
+            try:
+                import tnc
+
+                tnc_path = os.path.dirname(tnc.__file__)
+                os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+                ini_setup["DISPLAY"]["DISPLAY"] = "./tnc"
+                for part in ("ui", "style.qss", "dialogs", "config.yml"):
+                    for source in glob.glob(os.path.join(tnc_path, part)):
+                        target_path = os.path.join(self.configuration_path, os.path.basename(source))
+                        if os.path.isfile(source):
+                            shutil.copy(source, target_path)
+                        else:
+                            shutil.copytree(source, target_path, dirs_exist_ok=True)
+
+                target_path = os.path.join(self.configuration_path, "tnc")
+                shutil.copy(os.path.join(riocore_path, "gui", "tnc", "tnc"), target_path)
+                os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+                shutil.copy(os.path.join(riocore_path, "gui", "tnc", "window.ui"), os.path.join(self.configuration_path, "ui", "window.ui"))
+            except Exception:
+                print("ERROR: no tnc installation found")
 
         gui_gen = None
         if vcp_mode != "NONE":
