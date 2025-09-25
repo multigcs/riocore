@@ -1262,7 +1262,7 @@ class LinuxCNC:
                 target_path = os.path.join(self.configuration_path, "tnc")
                 shutil.copy(os.path.join(riocore_path, "gui", "tnc", "tnc"), target_path)
                 os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
-                shutil.copy(os.path.join(riocore_path, "gui", "tnc", "window.ui"), os.path.join(self.configuration_path, "ui", "window.ui"))
+                shutil.copy(os.path.join(tnc_path, "ui", "window.ui"), os.path.join(self.configuration_path, "ui", "window.ui"))
             except Exception:
                 print("ERROR: no tnc installation found")
 

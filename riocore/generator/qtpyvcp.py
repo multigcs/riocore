@@ -21,6 +21,7 @@ class qtpyvcp:
     def check(self, configuration_path):
         if self.mode != "tnc":
             return True
+        return True
         ui_filename = os.path.join(configuration_path, "ui/window.ui")
         # read template
         xml_template = open(ui_filename, "rb").read()
@@ -154,6 +155,49 @@ class qtpyvcp:
             # read template
             xml_template = open(ui_filename, "rb").read()
             root = etree.fromstring(xml_template)
+
+            centralwidget = root.find("widget/widget[@name='centralwidget']")
+            layout = root.find("widget/widget[@name='centralwidget']/layout")
+
+            hlayout = etree.SubElement(centralwidget, "layout")
+            hlayout.set("class", "QHBoxLayout")
+            hlayout.set("name", "hLayout")
+
+            item = etree.SubElement(hlayout, "item")
+            item.append(layout)
+
+            item = etree.SubElement(hlayout, "item")
+            riotab = etree.SubElement(item, "widget")
+            riotab.set("class", "QTabWidget")
+            riotab.set("name", "rioTab")
+
+            prop = etree.SubElement(riotab, "property", name="sizePolicy")
+            sizepolicy = etree.SubElement(prop, "sizepolicy", hsizetype="Fixed", vsizetype="Expanding")
+            etree.SubElement(sizepolicy, "horstretch").text = "0"
+            etree.SubElement(sizepolicy, "verstretch").text = "0"
+
+            prop = etree.SubElement(riotab, "property", name="minimumSize")
+            size = etree.SubElement(prop, "size")
+            etree.SubElement(size, "width").text = "300"
+            etree.SubElement(size, "height").text = "0"
+
+            customs = {
+                "HalLabel": ("QLabel", "qtpyvcp.widgets.hal_widgets.hal_label"),
+                "HalCheckBox": ("QCheckBox", "qtpyvcp.widgets.hal_widgets.hal_checkbox"),
+                "HalSlider": ("QSlider", "qtpyvcp.widgets.hal_widgets.hal_slider"),
+            }
+
+            customwidgets = root.find("customwidgets")
+            for wclass, data in customs.items():
+                customwidget = etree.SubElement(customwidgets, "customwidget")
+                etree.SubElement(customwidget, "class").text = wclass
+                etree.SubElement(customwidget, "extends").text = data[0]
+                etree.SubElement(customwidget, "header").text = data[1]
+
+            # fix currentIndex of main tab
+            tab_current = root.find("widget/widget/layout/item/layout/item/widget/property[@name='currentIndex']/number")
+            tab_current.text = "0"
+
             # merge
             for element in root.xpath("..//widget[@name='rioTab']"):
                 # remove old sub elements
@@ -171,7 +215,9 @@ class qtpyvcp:
                 for child in rio_items:
                     element.append(child)
             self.formated = etree.tostring(root, pretty_print=True).decode()
+
             open(ui_filename, "w").write(self.formated)
+
         else:
             ui_filename = os.path.join(configuration_path, "user_tabs/rio/rio.ui")
             py_filename = os.path.join(configuration_path, "user_tabs/rio/rio.py")
