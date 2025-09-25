@@ -467,8 +467,8 @@ class UserTab(QWidget):
     def draw_checkbutton(self, name, halpin, setup={}):
         title = setup.get("title", name)
         halpin = halpin.replace("_", "-")
-        width = setup.get("width", 32)
-        height = setup.get("height", 32)
+        width = setup.get("width", 16)
+        height = setup.get("height", 16)
         self.draw_hbox_begin()
         if title:
             self.draw_title(title)
