@@ -1755,10 +1755,6 @@ class CustomWidgets:
         # TODO: limiting update interval
         self.history.append(value)
         self.history = self.history[-(self.history_max + 1) :]
-        if value > self.vmax:
-            value = self.vmax
-        if value < self.vmin:
-            value = self.vmin
         self.setText(str(value))
 
     def paintEventGraph(self, event):
@@ -1769,7 +1765,6 @@ class CustomWidgets:
         height = size.height()
 
         fsize = 10
-        ydiff = 10
         xoff = 50
         yoff = int(fsize / 2)
         gwidth = width - 1 - xoff
@@ -1793,6 +1788,10 @@ class CustomWidgets:
         x_last = 0
         y_last = gheight / self.vmax * self.history[0]
         for vn, value in enumerate(self.history):
+            if value > self.vmax:
+                self.vmax = value
+            if value < self.vmin:
+                self.vmin = value
             x = gwidth / self.history_max * vn
             y = gheight / self.vmax * value
             painter.drawLine(int(x_last + xoff), int(height - (y_last + yoff)), int(x + xoff), int(height - (y + yoff)))
