@@ -1259,8 +1259,29 @@ class LinuxCNC:
                         else:
                             shutil.copytree(source, target_path, dirs_exist_ok=True)
 
+                tnc_main = """#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+import os
+import re
+import sys
+from tnc import main
+from qtpyvcp.utilities.opt_parser import parse_opts
+
+VCP_DIR = os.path.realpath(os.path.dirname(__file__))
+VCP_CONFIG_FILE = os.path.join(VCP_DIR, "config.yml")
+
+if __name__ == "__main__":
+    sys.argv[0] = re.sub(r"(-script\.pyw|\.exe)?$", "", sys.argv[0])
+    opts = parse_opts(vcp_cmd="tnc", vcp_name="TurBoNC", vcp_version="0.1.rio")
+
+    # opts["fullscreen"] = True
+    # opts["confirm_exit"] = False
+    opts["config_file"] = VCP_CONFIG_FILE
+
+    sys.exit(main(opts))
+"""
                 target_path = os.path.join(self.configuration_path, "tnc")
-                shutil.copy(os.path.join(riocore_path, "gui", "tnc", "tnc"), target_path)
+                open(target_path, "w").write(tnc_main)
                 os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
                 shutil.copy(os.path.join(tnc_path, "ui", "window.ui"), os.path.join(self.configuration_path, "ui", "window.ui"))
             except Exception:
