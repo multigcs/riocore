@@ -15,7 +15,6 @@ from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
 from riocore.generator.gladevcp import gladevcp
 from riocore.generator.flexvcp import flexvcp
-from riocore.generator.tncvcp import tncvcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -266,7 +265,7 @@ class LinuxCNC:
                 self.gui_prefix = "qtdragon.rio-gui"
             elif gui in {"probe_basic", "probe_basic_lathe"}:
                 self.gui_type = "qtpyvcp"
-                self.gui_prefix = "qtpyvcp.rio"
+                self.gui_prefix = "qtpyvcp"
             elif gui in {"gscreen"}:
                 self.gui_type = "gladevcp"
                 self.gui_prefix = "rio-gui"
@@ -275,7 +274,7 @@ class LinuxCNC:
                 self.gui_type = "flexvcp"
                 self.gui_prefix = "flexhal.rio"
             elif gui in {"tnc"}:
-                self.gui_type = "tncvcp"
+                self.gui_type = "qtpyvcp"
                 self.gui_prefix = "qtpyvcp"
             # elif gui in {"woodpecker"}:
             #    self.gui_type = "qtvcp"
@@ -1267,11 +1266,9 @@ class LinuxCNC:
                     vcp_pos = "TAB"
                 gui_gen = qtvcp(self.gui_prefix, vcp_pos=vcp_pos)
             elif self.gui_type == "qtpyvcp":
-                gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos)
+                gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos, mode=gui)
             elif self.gui_type == "flexvcp":
                 gui_gen = flexvcp(self.gui_prefix, vcp_pos=vcp_pos)
-            elif self.gui_type == "tncvcp":
-                gui_gen = tncvcp(self.gui_prefix, vcp_pos=vcp_pos)
 
         if not gui_gen:
             return
