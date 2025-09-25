@@ -1,0 +1,42 @@
+o<bolt_hole_pattern> sub
+	o100 if [#5400 EQ 0]
+		(debug,Tool must be non zero)
+		M30
+	o100 endif
+	G20 S#2046
+	#2043 = [#2037 / 2]				; Pattern Radius
+	#2040 = [360 / #2038]			; Circle / number of holes
+;	G0 G90 G53 Z0
+	G0 G43 Z#2045 H#5400 F #2044	; move to z clear #5400 tool in spindle
+	G0 G90 X#2006 Y #2007			; Find center
+	G92 X0 Y0						; Shift the work offset
+	G0 G90 X 0 Y 0					; Find new center
+	M3								; Spindle On
+	G0 @[0 + #2043] ^#2039 Z#2045	; Position over first hole establishing radius
+	G1 Z #2041 F #2044				; Move to Z start depth
+	o101 if [#2059 EQ 0]
+		G91 G98 G81 R#2045 Z#2042 ^#2040 L#2038 F#2044		; normao drill cycle
+	o101 else
+		G91 G98 G83 R#2045 Q#2059 Z#2042 ^#2040 L#2038 F#2044	; fixup for peck drill
+	o101 endif
+	M5								; Turn spindle off
+	G92.1							; turn offset off
+	G90 G0 X0 Y0					; move back to original center
+	G53 G00 Z0
+o<bolt_hole_pattern> endsub
+M2
+
+;	Parameters
+;	#2006	X start point  			
+;	#2007	Y start point
+;	#2037	diameter
+;	#2038	hole count
+;	#2039	start angle
+;	#2040	angle increment
+;	#2041	Z start
+;	#2042	Z depth
+;	#2043	Radius
+;	#2044 	Feedrate
+;	#2045 	Clear Return point
+;	#2046	Spindle speed
+	#2059	Peck Q word. If 0 regular drill cycle >0 peck selected

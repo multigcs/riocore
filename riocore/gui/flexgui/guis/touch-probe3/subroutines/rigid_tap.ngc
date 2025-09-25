@@ -1,0 +1,30 @@
+o<rigid_tap> sub
+	o100 if [#5400 EQ 0]
+		(debug,Tool must be non zero)
+		M30
+	o100 endif
+	#2066 = [1/#2065]			; TPI to IPR
+	G90 G17 G20
+;	G53 G0 Z0					; start at safe machine Z0
+	S#2067 M03					; spindle speed set from UI
+	G0 X#2060 Y#2061 			; move over hole (zero for pattern)
+	G43 Z#2063 H#5400			; move to z clear #5400 tool in spindle
+	G1 Z #2062 F#2068			; move to z start
+	M49							; disable feed & spindle override during rigid tapping
+	G98 G33.1 Z- #2064 K#2066	; tap to hole depth
+	M48							; Enable feed & spindle override after rigid tapping
+	G0 G90 Z #2063				; maybe #2062 + #2063 z clear
+	M05
+;	G53 G00 Z0
+o<rigid_tap> endsub
+M2
+
+;	#2060	tap X Center
+;	#2061	tap Y Center	
+;	#2062	tap Z Start
+;	#2063	tap Z Clear
+;	#2064	tap Z Depth
+;	#2065	tap TPI
+;	#2066	tap IPR calculated from TPI
+;	#2067	tap Speed
+;	#2068	tap Feed ( for linear moves only)

@@ -1,0 +1,12 @@
+o<p_top> sub
+	G20
+	G91 G38.2 F #2000 Z-#2002
+	G90 G0 Z[#5063 + #2003]
+	G91 G38.2 F #2001 Z-[#2003 + 0.020]
+	#2025 = #5063
+	(debug, Z Top: #2025)
+	G90 G0 Z[#5063 + 0.2 ]	;	G90 G0 Z[#5063 + 0.2 - #2012])
+	(debug,Probe tip is 0.2 above)
+o<p_top> endsub
+
+M2
