@@ -73,6 +73,10 @@ then
 fi
 echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
+if test "$SYSTEM" = "x64"
+then
+	echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
+fi
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
 
 
@@ -253,6 +257,15 @@ EOF
 
 fi
 
+if grep -s -q '"turbonc"' in $TEMPFILE
+then
+	echo 'deb [arch=$SYSTEM2] https://repository.qtpyvcp.com/apt stable main' | sudo tee /etc/apt/sources.list.d/kcjengr.list
+	curl -sS https://repository.qtpyvcp.com/repo/kcjengr.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/kcjengr.gpg > /dev/null
+	gpg --keyserver keys.openpgp.org --recv-key 2DEC041F290DF85A
+	sudo apt update
+	sudo apt install -f python3-qtpyvcp python3-turbonc
+fi
+
 if grep -s -q '"probe_basic"' in $TEMPFILE
 then
 	if whiptail --menu "installing ProbeBasic" 20 60 12 stable "Stable" develop "Develop" 2> ${TEMPFILE}2
@@ -287,7 +300,7 @@ then
 fi
 
 
-cd $TARGETDIR/riocore/
+cd $TARGETDIR/riocore/ 2>/dev/null
 echo ""
 echo "####################################################################"
 echo ""
