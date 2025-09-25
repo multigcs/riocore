@@ -90,7 +90,7 @@
                 "value": {
                     "display": {
                         "section": "status",
-                        "type": "bar",
+                        "type": "graph",
                         "min": 0.0,
                         "max": 100.0
                     },

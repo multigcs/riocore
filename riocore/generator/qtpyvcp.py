@@ -185,6 +185,7 @@ class qtpyvcp:
                 "HalLabel": ("QLabel", "qtpyvcp.widgets.hal_widgets.hal_label"),
                 "HalCheckBox": ("QCheckBox", "qtpyvcp.widgets.hal_widgets.hal_checkbox"),
                 "HalSlider": ("QSlider", "qtpyvcp.widgets.hal_widgets.hal_slider"),
+                "HalPlot": ("QWidget", "qtpyvcp.widgets.hal_widgets.hal_plot"),
             }
 
             customwidgets = root.find("customwidgets")
@@ -448,21 +449,43 @@ class UserTab(QWidget):
         return f"{self.prefix}.{halpin}.out-f"
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        title = setup.get("title", name)
         halpin = halpin.replace("_", "-")
+        width = setup.get("width", 100)
+        height = setup.get("height", 32)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
-        # display_text = setup.get("text", name)
-        # display_threshold = setup.get("threshold")
-        # display_size = setup.get("size", "150")
+        self.draw_hbox_begin()
+        if title:
+            self.draw_title(title)
         self.cfgxml_data.append("   <item>")
         self.cfgxml_data.append(f'       <widget class="HalBarIndicator" name="rio.{halpin}">')
         self.cfgxml_data.append('        <property name="pinBaseName" stdset="0">')
         self.cfgxml_data.append(f"          <string>{halpin}</string>")
         self.cfgxml_data.append("        </property>")
+        self.cfgxml_data.append('        <property name="sizePolicy">')
+        self.cfgxml_data.append('         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
+        self.cfgxml_data.append("          <horstretch>0</horstretch>")
+        self.cfgxml_data.append("          <verstretch>0</verstretch>")
+        self.cfgxml_data.append("         </sizepolicy>")
+        self.cfgxml_data.append("        </property>")
+        self.cfgxml_data.append('        <property name="minimumSize">')
+        self.cfgxml_data.append("         <size>")
+        self.cfgxml_data.append(f"          <width>{width}</width>")
+        self.cfgxml_data.append(f"          <height>{height}</height>")
+        self.cfgxml_data.append("         </size>")
+        self.cfgxml_data.append("        </property>")
+        self.cfgxml_data.append('        <property name="maximumSize">')
+        self.cfgxml_data.append("         <size>")
+        self.cfgxml_data.append(f"          <width>{width}</width>")
+        self.cfgxml_data.append(f"          <height>{height}</height>")
+        self.cfgxml_data.append("         </size>")
+        self.cfgxml_data.append("        </property>")
         self.add_property("minimum", int(display_min))
         self.add_property("maximum", int(display_max))
         self.cfgxml_data.append("       </widget>")
         self.cfgxml_data.append("   </item>")
+        self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.in-f"
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
@@ -478,7 +501,47 @@ class UserTab(QWidget):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
     def draw_graph(self, name, halpin, setup={}, hal_type="float"):
-        return self.draw_bar(name, halpin, setup=setup)
+        title = setup.get("title", name)
+        halpin = halpin.replace("_", "-")
+        width = setup.get("width", 200)
+        height = setup.get("height", 100)
+        display_min = setup.get("min", 0)
+        display_max = setup.get("max", 100)
+        self.draw_hbox_begin()
+        if title:
+            self.draw_title(title)
+        self.cfgxml_data.append("    <item>")
+        self.cfgxml_data.append(f'     <widget class="HalPlot" name="rio.{halpin}">')
+        self.cfgxml_data.append('        <property name="pinBaseName" stdset="0">')
+        self.cfgxml_data.append(f"          <string>{halpin}</string>")
+        self.cfgxml_data.append("        </property>")
+
+        self.cfgxml_data.append('        <property name="sizePolicy">')
+        self.cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
+        self.cfgxml_data.append("          <horstretch>0</horstretch>")
+        self.cfgxml_data.append("          <verstretch>0</verstretch>")
+        self.cfgxml_data.append("         </sizepolicy>")
+        self.cfgxml_data.append("        </property>")
+        self.cfgxml_data.append('        <property name="minimumSize">')
+        self.cfgxml_data.append("         <size>")
+        self.cfgxml_data.append(f"          <width>{width}</width>")
+        self.cfgxml_data.append(f"          <height>{height}</height>")
+        self.cfgxml_data.append("         </size>")
+        self.cfgxml_data.append("        </property>")
+        self.cfgxml_data.append('        <property name="maximumSize">')
+        self.cfgxml_data.append("         <size>")
+        self.cfgxml_data.append(f"          <width>{width}</width>")
+        self.cfgxml_data.append(f"          <height>{height}</height>")
+        self.cfgxml_data.append("         </size>")
+        self.cfgxml_data.append("        </property>")
+
+        # self.add_property("minimum", int(display_min))
+        # self.add_property("maximum", int(display_max))
+
+        self.cfgxml_data.append("     </widget>")
+        self.cfgxml_data.append("    </item>")
+        self.draw_hbox_end()
+        return f"{self.prefix}.{halpin}.Series1"
 
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         halpin = halpin.replace("_", "-")
