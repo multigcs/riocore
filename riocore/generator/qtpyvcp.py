@@ -21,7 +21,7 @@ class qtpyvcp:
     def check(self, configuration_path):
         if self.mode != "tnc":
             return True
-        ui_filename = os.path.join(configuration_path, "libtnc/ui/window.ui")
+        ui_filename = os.path.join(configuration_path, "ui/window.ui")
         # read template
         xml_template = open(ui_filename, "rb").read()
         root = etree.fromstring(xml_template)
@@ -147,7 +147,7 @@ class qtpyvcp:
 
     def save(self, configuration_path):
         if self.mode == "tnc":
-            ui_filename = os.path.join(configuration_path, "libtnc/ui/window.ui")
+            ui_filename = os.path.join(configuration_path, "ui/window.ui")
 
             # read rio xml-gui
             rio_items = etree.fromstring("\n".join(self.cfgxml_data).strip())
@@ -388,7 +388,7 @@ class UserTab(QWidget):
         self.cfgxml_data.append(f"          <string>{halpin}</string>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('         <property name="sizePolicy">')
-        self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">')
+        self.cfgxml_data.append('          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
         self.cfgxml_data.append("           <horstretch>0</horstretch>")
         self.cfgxml_data.append("           <verstretch>0</verstretch>")
         self.cfgxml_data.append("          </sizepolicy>")

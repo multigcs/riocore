@@ -159,6 +159,7 @@ class LinuxCNC:
             "DEFAULT_ANGULAR_VELOCITY": 60.0,
             "MAX_ANGULAR_VELOCITY": 100.0,
             "NO_FORCE_HOMING": 1,
+            "SPINDLES": 1,
         },
         "EMCIO": {
             "EMCIO": "io",
