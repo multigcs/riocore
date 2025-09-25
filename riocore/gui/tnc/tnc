@@ -11,16 +11,8 @@ VCP_CONFIG_FILE = os.path.join(VCP_DIR, "config.yml")
 
 if __name__ == "__main__":
     sys.argv[0] = re.sub(r"(-script\.pyw|\.exe)?$", "", sys.argv[0])
-
     opts = parse_opts(vcp_cmd="tnc", vcp_name="TurBoNC", vcp_version="0.1.rio")
 
-    # {
-    #'ini': '/usr/src/MXM/riocore/Output/Tangbob/LinuxCNC/rio.ini',
-    #'log_level': None, 'theme': None, 'stylesheet': None, 'develop': False, 'perfmon': False, 'hide_menu_bar': False,
-    #'hide_cursor': False, 'maximize': None, 'position': None, 'confirm_exit': None, 'hide_status_bar': False,
-    #'command_line_args': None, 'log_file': None, 'config_file': None, 'qt_api': None, 'fullscreen': None,
-    #'size': None, 'help': False, 'version': False, 'info': False
-    # }
     # opts["fullscreen"] = True
     # opts["confirm_exit"] = False
     opts["config_file"] = VCP_CONFIG_FILE
