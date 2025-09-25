@@ -30,11 +30,11 @@ class MainWindow(VCPMainWindow):
 
     @Slot(QAbstractButton)
     def on_probeTabGroup_buttonClicked(self, button):
-        self.probe_tab_widget.setCurrentIndex(button.property('page'))
+        self.probe_tab_widget.setCurrentIndex(button.property("page"))
 
     @Slot(QAbstractButton)
     def on_sidebarTabGroup_buttonClicked(self, button):
-        self.sidebar_widget.setCurrentIndex(button.property('page'))
+        self.sidebar_widget.setCurrentIndex(button.property("page"))
 
     # Fwd/Back buttons off the stacked widget
     def on_probe_help_next_released(self):
@@ -52,4 +52,3 @@ class MainWindow(VCPMainWindow):
             self.probe_help_widget.setCurrentIndex(lastPage)
         else:
             self.probe_help_widget.setCurrentIndex(currentIndex - 1)
-            

@@ -26,7 +26,6 @@ VCP_CONFIG_FILE = os.path.join(VCP_DIR, "config.yml")
 
 
 def main(opts=None):
-
     if opts is None:
         from qtpyvcp.utilities.opt_parser import parse_opts
 
@@ -37,4 +36,3 @@ def main(opts=None):
 
 if __name__ == "__main__":
     main()
-

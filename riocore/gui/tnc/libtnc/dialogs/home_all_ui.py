@@ -65,5 +65,7 @@ class Ui_Dialog(object):
         self.homeall_abutton.setText(_translate("Dialog", "OK"))
         self.homeall_abutton.setProperty("rules", _translate("Dialog", "[]"))
         self.homeall_abutton.setProperty("actionName", _translate("Dialog", "machine.home.all"))
+
+
 from qtpyvcp.widgets.button_widgets.action_button import ActionButton
 from qtpyvcp.widgets.display_widgets.status_label import StatusLabel

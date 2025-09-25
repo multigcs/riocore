@@ -59,25 +59,38 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Frame"))
-        self.statuslabel.setText(_translate("Dialog", "Do you want to set X and Y to ZERO?\n"
-" WCS G53 P0"))
-        self.statuslabel.setProperty("rules", _translate("Dialog", "[{\"channels\": [{\"url\": \"status:g5x_index\", \"trigger\": true}], \"property\": \"Text\", \"expression\": \"\\\"Do you want to set X and Y to ZERO?\\\\n WCS G5{} P{}\\\".format(3+ch[0], ch[0])\", \"name\": \"Active WCS\"}]"))
+        self.statuslabel.setText(_translate("Dialog", "Do you want to set X and Y to ZERO?\n" " WCS G53 P0"))
+        self.statuslabel.setProperty(
+            "rules",
+            _translate(
+                "Dialog",
+                '[{"channels": [{"url": "status:g5x_index", "trigger": true}], "property": "Text", "expression": "\\"Do you want to set X and Y to ZERO?\\\\n WCS G5{} P{}\\".format(3+ch[0], ch[0])", "name": "Active WCS"}]',
+            ),
+        )
         self.close_button.setText(_translate("Dialog", "CLOSE"))
         self.zero_xy_button.setText(_translate("Dialog", "OK"))
-        self.zero_xy_button.setProperty("rules", _translate("Dialog", "[\n"
-"    {\n"
-"        \"channels\": [\n"
-"            {\n"
-"                \"url\": \"status:g5x_index\",\n"
-"                \"trigger\": true,\n"
-"                \"type\": \"int\"\n"
-"            }\n"
-"        ],\n"
-"        \"expression\": \"\",\n"
-"        \"name\": \"G5x Index\",\n"
-"        \"property\": \"None\"\n"
-"    }\n"
-"]"))
+        self.zero_xy_button.setProperty(
+            "rules",
+            _translate(
+                "Dialog",
+                "[\n"
+                "    {\n"
+                '        "channels": [\n'
+                "            {\n"
+                '                "url": "status:g5x_index",\n'
+                '                "trigger": true,\n'
+                '                "type": "int"\n'
+                "            }\n"
+                "        ],\n"
+                '        "expression": "",\n'
+                '        "name": "G5x Index",\n'
+                '        "property": "None"\n'
+                "    }\n"
+                "]",
+            ),
+        )
         self.zero_xy_button.setProperty("MDICommand", _translate("Dialog", "G10 L20 P{ch[0]} X0.0 Y0.0"))
+
+
 from qtpyvcp.widgets.button_widgets.mdi_button import MDIButton
 from qtpyvcp.widgets.display_widgets.status_label import StatusLabel
