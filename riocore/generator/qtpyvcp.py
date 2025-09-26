@@ -505,8 +505,8 @@ class UserTab(QWidget):
         halpin = halpin.replace("_", "-")
         width = setup.get("width", 200)
         height = setup.get("height", 100)
-        display_min = setup.get("min", 0)
-        display_max = setup.get("max", 100)
+        # display_min = setup.get("min", 0)
+        # display_max = setup.get("max", 100)
         self.draw_hbox_begin()
         if title:
             self.draw_title(title)

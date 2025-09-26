@@ -7,7 +7,23 @@ from riocore import halpins
 
 
 class hal_generator:
-    POSTGUI_COMPONENTS = ["pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy", "flexhal"]
+    POSTGUI_COMPONENTS = [
+        "pyvcp",
+        "gladevcp",
+        "rio-gui",
+        "qtdragon",
+        "qtvcp",
+        "qtpyvcp",
+        "axisui",
+        "mpg",
+        "vismach",
+        "kinstype",
+        "melfagui",
+        "fanuc_200f",
+        "gmoccapy",
+        "flexhal",
+        "hal_manualtoolchange",
+    ]
     VIRTUAL_COMPONENTS = [
         "riov",
     ]

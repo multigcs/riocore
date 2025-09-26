@@ -57,7 +57,11 @@
                 "source": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
                 "target": "&motion.enable"
             }
-        ]
+        ],
+        "mxmpg": {
+            "enable": true,
+            "device": "/dev/ttyUSB0"
+        }
     },
     "plugins": [
         {

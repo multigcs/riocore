@@ -86,26 +86,28 @@ class LinuxCNC:
             "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
             "ANGULAR_INCREMENTS": "1, 5, 10, 30, 45, 90, 180, 360",
             "INCREMENTS": "50mm, 10mm, 5mm, 1mm, .5mm, .1mm, .05mm, .01mm",
-            "SPINDLES": 1,
+            # feedrate
             "MAX_FEED_OVERRIDE": 5.0,
+            "MIN_LINEAR_VELOCITY": 0.0,
+            "MAX_LINEAR_VELOCITY": 45.0,
+            "DEFAULT_LINEAR_VELOCITY": 40.0,
+            "MIN_ANGULAR_VELOCITY": 0.0,
+            "MAX_ANGULAR_VELOCITY": 5.0,
+            "DEFAULT_ANGULAR_VELOCITY": 2.5,
+            # spindle
+            "SPINDLES": 1,
             "MIN_SPINDLE_OVERRIDE": 0.5,
             "MAX_SPINDLE_OVERRIDE": 2.0,
             "MIN_SPINDLE_SPEED": 0,
-            "DEFAULT_SPINDLE_SPEED": 6000,
             "MAX_SPINDLE_SPEED": 22000,
+            "DEFAULT_SPINDLE_SPEED": 6000,
             "MIN_SPINDLE_0_OVERRIDE": 0.5,
-            "MAX_SPINDLE_0_OVERRIDE": 1.2,
+            "MAX_SPINDLE_0_OVERRIDE": 2.0,
             "MIN_SPINDLE_0_SPEED": 0,
+            "MAX_SPINDLE_0_SPEED": 22000,
             "DEFAULT_SPINDLE_0_SPEED": 6000,
             "SPINDLE_INCREMENT": 100,
-            "MAX_SPINDLE_0_SPEED": 22000,
             "MAX_SPINDLE_POWER": 1500,
-            "MIN_LINEAR_VELOCITY": 0.0,
-            "DEFAULT_LINEAR_VELOCITY": 40.0,
-            "MAX_LINEAR_VELOCITY": 45.0,
-            "MIN_ANGULAR_VELOCITY": 0.0,
-            "DEFAULT_ANGULAR_VELOCITY": 2.5,
-            "MAX_ANGULAR_VELOCITY": 5.0,
         },
         "MQTT": {
             # "DRYRUN": "--dryrun",
@@ -1690,8 +1692,16 @@ if __name__ == "__main__":
             else:
                 self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
-
+        elif gui in {"qtdragon"}:
+            self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+            self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+            self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+            self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
         elif gui in {"qtdragon_hd"}:
+            self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+            self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+            self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+            self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.NAME != "modbus":
                     continue
