@@ -1284,6 +1284,12 @@ class NodeViewer(QGraphicsView):
         angle = event.angleDelta().y()
         zoomFactor = 1 + (angle / 1000)
         self.scale(zoomFactor, zoomFactor)
+
+        if self.getZoom() < 0.2:
+            self.setZoom(0.2)
+        if self.getZoom() > 2.5:
+            self.setZoom(2.5)
+
         self.scene.parent.config["flow"]["view"]["scale"] = round(zoomFactor, 2)
         self.scene.parent.cfg_save()
 
