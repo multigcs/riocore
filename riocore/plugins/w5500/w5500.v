@@ -18,7 +18,7 @@ module w5500
          output sclk,
          output sel,
          input intr,
-         output reg rst = 1,
+         output rst,
          input [BUFFER_SIZE-1:0] tx_data,
          output [BUFFER_SIZE-1:0] rx_data,
          output reg sync = 0
@@ -74,6 +74,7 @@ module w5500
 
     wiznet5500 #(.IP_ADDR(IP_ADDR), .NET_MASK(NET_MASK), .GW_ADDR(GW_ADDR), .MAC_ADDR(MAC_ADDR), .PORT(PORT), .BUFFER_SIZE_RX(BUFFER_SIZE), .BUFFER_SIZE_TX(BUFFER_SIZE), .MSGID(MSGID)) eth_iface (
                    .clk(mclk),
+                   .rst(rst),
                    .miso(miso),
                    .mosi(mosi),
                    .spi_clk(sclk),
@@ -103,6 +104,7 @@ module wiznet5500
      )
      (
          input clk,
+         output reg rst = 0,
          input miso,
          input data_input_valid,
          input [BUFFER_SIZE_TX-1:0] data_input,
@@ -213,19 +215,20 @@ module wiznet5500
     localparam STATE_SET_IP_3 =	         5'd15;
     localparam STATE_SET_PORT_0 =	     5'd16;
     localparam STATE_SET_PORT_1 =	     5'd17;
+    localparam STATE_STARTDELAY =	     5'd18;
 
     reg is_busy = 1'b0;
     reg [BUFFER_SIZE_RX+HEADER_SIZE+24-1:0] rx_buffer = 0;
-    reg [31:0] current_instruction;
-    reg [9:0] spi_clock_count;
-    reg [4:0] state = STATE_INITIALIZING;
+    reg [31:0] current_instruction = 32'd0;
+    reg [9:0] spi_clock_count = 10'd0;
+    reg [4:0] state = STATE_STARTDELAY;
     reg [4:0] next_state = STATE_UNDEFINED;
     reg [5:0] initialization_progress = 6'b000000;
     reg [7:0] data_read = 8'd0;
     reg waiting_for_socket = 1'b0;
     reg is_initialized = 1'b0;
     reg is_check_rx = 0;
-    reg [(BUFFER_SIZE_TX+24-1):0] tx_buffer;
+    reg [(BUFFER_SIZE_TX+24-1):0] tx_buffer = 0;
 
     assign is_available = !is_busy && !data_input_valid && !flush_requested;
 
@@ -381,6 +384,18 @@ module wiznet5500
             current_instruction <= {SET_SOCKET_0_DST_PRT_1, dst_port[7:0]};
             next_state <= STATE_UNDEFINED;
 
+        end else if (state == STATE_STARTDELAY) begin
+            if (current_instruction < 30000000) begin
+                current_instruction <= current_instruction + 1;
+                rst <= 0;
+            end else if (current_instruction < 35000000) begin
+                current_instruction <= current_instruction + 1;
+                rst <= 1;
+            end else begin
+                current_instruction <= 0;
+                state <= STATE_INITIALIZING;
+                rst <= 1;
+            end
 
         end else if (state == STATE_INITIALIZING && waiting_for_socket == 1'b1) begin
             // If the socket is open, then we are done initializing
