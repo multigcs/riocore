@@ -3,7 +3,7 @@
 ## v0.9.4
 
 ### Gui and Generator
-* adding new experimental grafical setup tool: rio-flow
+* adding new experimental graphical setup tool: rio-flow
 * support for more hal components (conv-*-*, limit, wcomp, delay)
 
 ### Plugins
