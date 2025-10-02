@@ -16,5 +16,17 @@ testb_debouncer:
 	vvp testb_debouncer.out
 	test -e testb_debouncer.gtkw && gtkwave testb_debouncer.gtkw || gtkwave testb_debouncer.vcd
 
+testb_delay:
+	iverilog -Wall -o testb_delay.out testb_delay.v delay.v
+	vvp testb_delay.out
+	test -e testb_delay.gtkw && gtkwave testb_delay.gtkw || gtkwave testb_delay.vcd
+
+testb_pwmmod:
+	cat pwmmod.v | sed 's| clog2(| $$clog2(|g' > pwmmod-test.v
+	iverilog -Wall -o testb_pwmmod.out testb_pwmmod.v pwmmod-test.v
+	rm -rf pwmmod-test.v
+	vvp testb_pwmmod.out
+	test -e testb_pwmmod.gtkw && gtkwave testb_pwmmod.gtkw || gtkwave testb_pwmmod.vcd
+
 clean:
 	rm -rf *.out *.vcd

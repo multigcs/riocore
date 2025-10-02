@@ -18,6 +18,11 @@ Keywords: serial uart interface
 
  * direction: output
 
+### tx_enable:
+
+ * direction: output
+ * optional: True
+
 
 ## Options:
 *user-options*
@@ -29,6 +34,12 @@ serial baud rate
  * max: 10000000
  * default: 1000000
  * unit: bit/s
+
+### csum:
+activate checksums
+
+ * type: bool
+ * default: False
 
 ### name:
 name of this plugin instance
@@ -55,6 +66,9 @@ name of this plugin instance
         },
         "tx": {
             "pin": "1"
+        },
+        "tx_enable": {
+            "pin": "2"
         }
     }
 }
@@ -65,6 +79,7 @@ name of this plugin instance
 {
     "type": "uart",
     "baud": 1000000,
+    "csum": false,
     "name": "",
     "pins": {
         "rx": {
@@ -77,6 +92,14 @@ name of this plugin instance
         },
         "tx": {
             "pin": "1",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "tx_enable": {
+            "pin": "2",
             "modifiers": [
                 {
                     "type": "invert"

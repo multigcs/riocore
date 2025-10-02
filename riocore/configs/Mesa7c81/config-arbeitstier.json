@@ -1,0 +1,1434 @@
+{
+    "name": "Mesa7c81",
+    "boardcfg": "Mesa7c81",
+    "async": true,
+    "protocol": "UDP",
+    "c_defines": {
+        "SPI_SPEED": "BCM2835_SPI_CLOCK_DIVIDER_64"
+    },
+    "_flashcmd": "./spiflash.sh rio-2048.bin",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 rio.bit -f",
+    "breakouts": [
+        {
+            "slot": "B",
+            "breakout": "china-bob5x",
+            "name": "bob1",
+            "pos": [
+                -1868.119125939849,
+                96.6246582365003
+            ],
+            "rotate": 0
+        }
+    ],
+    "linuxcnc": {
+        "debug_info": true,
+        "_gui": "flexgui",
+        "_vcp_type": "gladevcp",
+        "ini": {
+            "DISPLAY": {
+                "MAX_FEED_OVERRIDE": 5.0,
+                "MAX_ANGULAR_VELOCITY": 10.0,
+                "MAX_LINEAR_VELOCITY": 100.0,
+                "DEFAULT_LINEAR_VELOCITY": 100.0
+            },
+            "EMCMOT": {
+                "SERVO_PERIOD": 1000000
+            }
+        },
+        "machinetype": "mill",
+        "net": [
+            {
+                "comment": "if main-power > 3.6kw, disable motion",
+                "source": "rio.mb1.power < 3600.0",
+                "target": "&motion.enable"
+            },
+            {
+                "comment": "if waterflow < 3Hz, disable motion",
+                "source": "rio.Waterflow.frequency > 3.0",
+                "target": "&motion.enable"
+            },
+            {
+                "comment": "if spindle not at speed for 5sec, disable motion",
+                "source": "delay(rio.mb0.spindle_at_speed, 0, 5)",
+                "target": "&motion.enable"
+            },
+            {
+                "comment": "if spindle-current > 4A for 2sec, disable motion",
+                "source": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
+                "target": "&motion.enable"
+            }
+        ],
+        "mxmpg": {
+            "enable": true,
+            "device": "/dev/ttyUSB0"
+        }
+    },
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L0",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true,
+                            "pos": [
+                                -1298.1191259398493,
+                                1036.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                -1188.1191259398493,
+                1026.6246582365002
+            ]
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:X:dir"
+                },
+                "step": {
+                    "pin": "bob1:X:step"
+                }
+            },
+            "uid": "stepdir0",
+            "pos": [
+                -1188.1191259398493,
+                366.62465823650024
+            ],
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 2000.0,
+                "ferror": 2.0,
+                "min_ferror": 0.1,
+                "max_velocity": 100.0,
+                "max_acceleration": 400.0,
+                "home_offset": -5.0,
+                "min_limit": -4.0,
+                "max_limit": 900.0
+            },
+            "axis": "X",
+            "name": "X1"
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:Y:dir"
+                },
+                "step": {
+                    "pin": "bob1:Y:step"
+                }
+            },
+            "pos": [
+                -1188.1191259398493,
+                286.62465823650024
+            ],
+            "uid": "stepdir1",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 2000.0,
+                "ferror": 2.0,
+                "min_ferror": 0.1,
+                "max_velocity": 100.0,
+                "max_acceleration": 400.0,
+                "home_offset": -5.0,
+                "min_limit": -4.0,
+                "max_limit": 900.0
+            },
+            "axis": "X",
+            "name": "X2"
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:Z:dir"
+                },
+                "step": {
+                    "pin": "bob1:Z:step"
+                }
+            },
+            "pos": [
+                -1188.1191259398493,
+                206.62465823650024
+            ],
+            "uid": "stepdir2",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 2000.0,
+                "ferror": 2.0,
+                "min_ferror": 0.1,
+                "max_velocity": 100.0,
+                "max_acceleration": 400.0,
+                "home": 0.0,
+                "home_offset": -5.0,
+                "min_limit": -4.0,
+                "max_limit": 450.0
+            },
+            "axis": "Y",
+            "name": "Y"
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:A:dir"
+                },
+                "step": {
+                    "pin": "bob1:A:step"
+                }
+            },
+            "pos": [
+                -1188.1191259398493,
+                126.62465823650024
+            ],
+            "uid": "stepdir3",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -2000.0,
+                "ferror": 2.0,
+                "min_ferror": 0.1,
+                "max_velocity": 100.0,
+                "max_acceleration": 400.0,
+                "home": 95.0,
+                "home_offset": 100.0,
+                "min_limit": 0.0,
+                "max_limit": 100.0
+            },
+            "axis": "Z",
+            "name": "Z"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:ALL:en",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "pos": [
+                                -1298.1191259398493,
+                                86.6246582365003
+                            ]
+                        },
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1418.1191259398493,
+                                86.6246582365003
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitout0",
+            "pos": [
+                -1188.1191259398493,
+                76.6246582365003
+            ],
+            "signals": {
+                "bit": {
+                    "net": "halui.machine.is-on",
+                    "setp": ""
+                }
+            },
+            "name": "senable"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:RELAIS:out"
+                }
+            },
+            "uid": "bitout1",
+            "pos": [
+                -1188.1191259398493,
+                26.624658236500295
+            ],
+            "signals": {
+                "bit": {
+                    "net": "",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:OPTO:in0"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                -1188.1191259398493,
+                686.6246582365002
+            ],
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "homeX1"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:OPTO:in1"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "homeX2",
+            "uid": "bitin1",
+            "pos": [
+                -1188.1191259398493,
+                636.6246582365002
+            ]
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:OPTO:in2"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "_net": "joint.2.home-sw-in,joint.2.neg-lim-sw-in",
+                    "net": "joint.2.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "homeY",
+            "uid": "bitin2",
+            "pos": [
+                -1188.1191259398493,
+                586.6246582365002
+            ]
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:OPTO:in3"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.3.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "homeZ",
+            "uid": "bitin3",
+            "pos": [
+                -1188.1191259398493,
+                536.6246582365002
+            ]
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:OPTO:in4"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "name": "salarm",
+            "uid": "bitin4",
+            "pos": [
+                -1188.1191259398493,
+                486.62465823650024
+            ]
+        },
+        {
+            "type": "modbus",
+            "tx_buffersize": 96,
+            "rx_buffersize": 96,
+            "pins": {
+                "rx": {
+                    "pin": "MODBUS1:RX"
+                },
+                "tx": {
+                    "pin": "MODBUS1:TX"
+                },
+                "tx_enable": {
+                    "pin": "MODBUS1:TX_EN",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1298.1191259398493,
+                                1206.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "mb0",
+            "pos": [
+                -1188.1191259398493,
+                1166.6246582365002
+            ],
+            "signals": {
+                "spindle_speed_command": {
+                    "net": "spindle.0.speed-out",
+                    "setp": ""
+                },
+                "spindle_speed_fb_rps": {
+                    "net": "spindle.0.speed-in",
+                    "setp": ""
+                },
+                "spindle_speed_fb": {
+                    "display": {
+                        "section": "status",
+                        "group": "Spindle",
+                        "title": "RPM",
+                        "_type": "bar",
+                        "type": "meter",
+                        "min": 0,
+                        "max": 24000,
+                        "size": 200,
+                        "region": [
+                            [
+                                0,
+                                6000,
+                                "gray"
+                            ],
+                            [
+                                6000,
+                                20000,
+                                "green"
+                            ],
+                            [
+                                20000,
+                                24000,
+                                "red"
+                            ]
+                        ]
+                    },
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_spindle_on": {
+                    "net": "spindle.0.on",
+                    "setp": ""
+                },
+                "spindle_spindle_forward": {
+                    "net": "spindle.0.forward",
+                    "setp": ""
+                },
+                "spindle_spindle_reverse": {
+                    "net": "spindle.0.reverse",
+                    "setp": ""
+                },
+                "spindle_error_count": {
+                    "_display": {
+                        "title": "Modbus-Errors",
+                        "section": "status",
+                        "group": "Spindle",
+                        "type": "number"
+                    },
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_frq_set": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_frq_get": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_ampere": {
+                    "net": "",
+                    "setp": "",
+                    "display": {
+                        "title": "Load",
+                        "section": "status",
+                        "group": "Spindle",
+                        "type": "graph",
+                        "height": 70,
+                        "min": 0.0,
+                        "max": 4.0
+                    }
+                },
+                "spindle_rpm": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_dc_volt": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_ac_volt": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_max_freq": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_base_freq": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_freq_lower_limit": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_rated_motor_voltage": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_rated_motor_current": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_rpm_at_50hz": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_rated_motor_rev": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_at_speed": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_hycomm_ok": {
+                    "net": "",
+                    "setp": ""
+                },
+                "spindle_spindle_at_speed_tolerance": {
+                    "setp": "4.0",
+                    "net": ""
+                }
+            },
+            "config": {
+                "spindle": {
+                    "address": 1,
+                    "type": 101,
+                    "register": 0,
+                    "values": 1,
+                    "datatype": "float",
+                    "scale": 1.0,
+                    "unit": "",
+                    "error_values": "",
+                    "format": "d",
+                    "timeout": 150,
+                    "delay": 100,
+                    "priority": 0,
+                    "direction": "output"
+                }
+            },
+            "sub_pos": {
+                "dev-1": [
+                    -938.1191259398493,
+                    1156.6246582365002
+                ]
+            }
+        },
+        {
+            "type": "modbus",
+            "tx_buffersize": 96,
+            "rx_buffersize": 96,
+            "pins": {
+                "rx": {
+                    "pin": "MODBUS0:RX"
+                },
+                "tx": {
+                    "pin": "MODBUS0:TX"
+                },
+                "tx_enable": {
+                    "pin": "MODBUS0:TX_EN",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1298.1191259398493,
+                                1116.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "mb1",
+            "pos": [
+                -1188.1191259398493,
+                1076.6246582365002
+            ],
+            "signals": {
+                "power": {
+                    "net": "",
+                    "setp": "",
+                    "display": {
+                        "title": "Power",
+                        "section": "status",
+                        "group": "Power-Usage",
+                        "type": "graph",
+                        "height": 70,
+                        "min": 0.0,
+                        "max": 3700.0,
+                        "size": 100,
+                        "region": [
+                            [
+                                0,
+                                20,
+                                "red"
+                            ],
+                            [
+                                20,
+                                2500,
+                                "green"
+                            ],
+                            [
+                                2500,
+                                3700,
+                                "red"
+                            ]
+                        ]
+                    }
+                },
+                "power_total": {
+                    "net": "",
+                    "setp": "",
+                    "display": {
+                        "title": "Power-Total",
+                        "section": "status",
+                        "group": "Power-Usage",
+                        "type": "number"
+                    }
+                },
+                "voltage": {
+                    "net": "",
+                    "setp": ""
+                },
+                "voltage_valid": {
+                    "net": "",
+                    "setp": ""
+                },
+                "voltage_errors": {
+                    "net": "",
+                    "setp": ""
+                },
+                "current": {
+                    "net": "",
+                    "setp": ""
+                },
+                "current_valid": {
+                    "net": "",
+                    "setp": ""
+                },
+                "current_errors": {
+                    "net": "",
+                    "setp": ""
+                },
+                "power_valid": {
+                    "net": "",
+                    "setp": ""
+                },
+                "power_errors": {
+                    "net": "",
+                    "setp": ""
+                },
+                "power_total_valid": {
+                    "net": "",
+                    "setp": ""
+                },
+                "power_total_errors": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "config": {
+                "voltage": {
+                    "address": 16,
+                    "type": 4,
+                    "register": 0,
+                    "datatype": "float",
+                    "values": 1,
+                    "scale": 1.0,
+                    "unit": "V",
+                    "error_values": "",
+                    "format": "0.1f",
+                    "timeout": 300,
+                    "delay": 150,
+                    "direction": "input",
+                    "priority": 0
+                },
+                "current": {
+                    "address": 16,
+                    "type": 4,
+                    "register": 8,
+                    "datatype": "float",
+                    "values": 1,
+                    "scale": 1.0,
+                    "unit": "A",
+                    "error_values": "",
+                    "format": "0.2f",
+                    "timeout": 300,
+                    "delay": 150,
+                    "direction": "input"
+                },
+                "power": {
+                    "address": 16,
+                    "type": 4,
+                    "register": 18,
+                    "datatype": "float",
+                    "values": 1,
+                    "scale": 1.0,
+                    "unit": "W",
+                    "error_values": "",
+                    "format": "0.1f",
+                    "timeout": 300,
+                    "delay": 150,
+                    "direction": "input"
+                },
+                "power_total": {
+                    "address": 16,
+                    "type": 4,
+                    "register": 256,
+                    "datatype": "float",
+                    "values": 1,
+                    "scale": 1.0,
+                    "unit": "kWh",
+                    "error_values": "",
+                    "format": "0.1f",
+                    "timeout": 300,
+                    "delay": 150,
+                    "direction": "input"
+                }
+            },
+            "sub_pos": {
+                "dev-16": [
+                    -718.1191259398493,
+                    1056.6246582365002
+                ]
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P17",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1308.1191259398493,
+                                896.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitin8",
+            "pos": [
+                -1188.1191259398493,
+                886.6246582365002
+            ]
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P14",
+                    "pull": "",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1308.1191259398493,
+                                746.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitin5",
+            "pos": [
+                -1188.1191259398493,
+                736.6246582365002
+            ],
+            "signals": {
+                "bit": {
+                    "net": "&motion.enable",
+                    "setp": "",
+                    "display": {
+                        "title": "24V-Power"
+                    }
+                }
+            },
+            "name": "p24ok"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P15",
+                    "pull": ""
+                }
+            },
+            "uid": "bitin6",
+            "pos": [
+                -1188.1191259398493,
+                786.6246582365002
+            ],
+            "signals": {
+                "bit": {
+                    "net": "",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P16",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1418.1191259398493,
+                                846.6246582365002
+                            ]
+                        },
+                        {
+                            "type": "debounce",
+                            "pos": [
+                                -1308.1191259398493,
+                                846.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitin7",
+            "pos": [
+                -1188.1191259398493,
+                836.6246582365002
+            ],
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input",
+                    "setp": ""
+                }
+            },
+            "name": "touchprobe"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "rio.mb1.power < 3600.0",
+                    "setp": "",
+                    "display": {
+                        "section": "status",
+                        "type": "rectled",
+                        "color": "green",
+                        "off_color": "red",
+                        "group": "MACHINE-STATUS"
+                    }
+                }
+            },
+            "uid": "mainpower",
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Mainpower",
+            "pos": [
+                -968.1191259398493,
+                876.6246582365002
+            ]
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "rio.Waterflow.frequency > 3.0",
+                    "setp": "",
+                    "display": {
+                        "title": "Waterflow",
+                        "section": "status",
+                        "group": "MACHINE-STATUS",
+                        "type": "rectled",
+                        "color": "green",
+                        "off_color": "red"
+                    }
+                }
+            },
+            "uid": "waterflow_status",
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Waterflow",
+            "pos": [
+                -968.1191259398493,
+                926.6246582365002
+            ]
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "delay(rio.mb0.spindle_at_speed, 0, 5)",
+                    "setp": "",
+                    "display": {
+                        "section": "status",
+                        "type": "rectled",
+                        "color": "green",
+                        "off_color": "red",
+                        "group": "MACHINE-STATUS"
+                    }
+                }
+            },
+            "uid": "spindle",
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Spindlespeed",
+            "pos": [
+                -968.1191259398493,
+                976.6246582365002
+            ]
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
+                    "setp": "",
+                    "display": {
+                        "section": "status",
+                        "type": "rectled",
+                        "color": "green",
+                        "off_color": "red",
+                        "group": "MACHINE-STATUS"
+                    }
+                }
+            },
+            "uid": "spindle",
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Spindleload",
+            "pos": [
+                -968.1191259398493,
+                1026.6246582365002
+            ]
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P1",
+                    "pull": "",
+                    "modifier": [
+                        {
+                            "type": "debounce",
+                            "delay": 100.0,
+                            "pos": [
+                                -1458.1191259398493,
+                                1296.6246582365002
+                            ]
+                        },
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1328.1191259398493,
+                                1296.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                -1198.1191259398493,
+                1286.6246582365002
+            ],
+            "name": "ServoX1",
+            "uid": "bitin10",
+            "signals": {
+                "bit": {
+                    "net": "&motion.enable",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P2",
+                    "pull": "",
+                    "modifier": [
+                        {
+                            "type": "debounce",
+                            "delay": 100.0,
+                            "pos": [
+                                -1458.1191259398493,
+                                1346.6246582365002
+                            ]
+                        },
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1328.1191259398493,
+                                1346.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                -1198.1191259398493,
+                1336.6246582365002
+            ],
+            "name": "ServoX2",
+            "uid": "bitin12",
+            "signals": {
+                "bit": {
+                    "net": "&motion.enable",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P3",
+                    "modifier": [
+                        {
+                            "type": "debounce",
+                            "delay": 100.0,
+                            "pos": [
+                                -1458.1191259398493,
+                                1396.6246582365002
+                            ]
+                        },
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1328.1191259398493,
+                                1396.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                -1198.1191259398493,
+                1386.6246582365002
+            ],
+            "name": "ServoY",
+            "uid": "bitin11",
+            "signals": {
+                "bit": {
+                    "net": "&motion.enable",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "C:P4",
+                    "modifier": [
+                        {
+                            "type": "debounce",
+                            "delay": 100.0,
+                            "pos": [
+                                -1458.1191259398493,
+                                1446.6246582365002
+                            ]
+                        },
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1328.1191259398493,
+                                1446.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                -1198.1191259398493,
+                1436.6246582365002
+            ],
+            "name": "ServoZ",
+            "uid": "bitin9",
+            "signals": {
+                "bit": {
+                    "net": "&motion.enable",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "C:P5",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1338.1191259398493,
+                                1526.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitout2",
+            "pos": [
+                -1198.1191259398493,
+                1516.6246582365002
+            ],
+            "signals": {
+                "bit": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "name": "sdr1"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "C:P6",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1338.1191259398493,
+                                1576.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitout3",
+            "pos": [
+                -1198.1191259398493,
+                1566.6246582365002
+            ],
+            "name": "sdr2",
+            "signals": {
+                "bit": {
+                    "net": "",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "C:P7",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "pos": [
+                                -1338.1191259398493,
+                                1626.6246582365002
+                            ]
+                        },
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1448.1191259398493,
+                                1626.6246582365002
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitout4",
+            "pos": [
+                -1198.1191259398493,
+                1616.6246582365002
+            ],
+            "name": "Cooling-Water",
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.user-enable-out",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "C:P8",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -1338.1191259398493,
+                                1676.6246582365004
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "bitout5",
+            "pos": [
+                -1198.1191259398493,
+                1666.6246582365004
+            ],
+            "name": "Cooling-Air",
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.coolant-mist",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "name": "Waterflow",
+            "type": "freqin",
+            "pins": {
+                "freq": {
+                    "pin": "C:P9",
+                    "modifier": [
+                        {
+                            "type": "debounce",
+                            "delay": 10.0,
+                            "pos": [
+                                -1338.1191259398493,
+                                1726.6246582365004
+                            ]
+                        }
+                    ]
+                }
+            },
+            "freq_min": 2,
+            "freq_max": 100,
+            "uid": "waterflow",
+            "signals": {
+                "frequency": {
+                    "filters": [
+                        {
+                            "type": "avg",
+                            "depth": 10
+                        }
+                    ],
+                    "display": {
+                        "title": "Waterflow",
+                        "section": "status",
+                        "group": "Spindle",
+                        "type": "graph",
+                        "height": 70,
+                        "min": 0.0,
+                        "max": 10.0,
+                        "size": 100,
+                        "region": [
+                            [
+                                0,
+                                3,
+                                "red"
+                            ],
+                            [
+                                3,
+                                4,
+                                "yellow"
+                            ],
+                            [
+                                4,
+                                10,
+                                "green"
+                            ]
+                        ]
+                    },
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "pos": [
+                -1198.1191259398493,
+                1716.6246582365004
+            ]
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "bob1:B:step"
+                }
+            },
+            "uid": "bitout6",
+            "pos": [
+                -1188.1191259398493,
+                -23.375341763499705
+            ],
+            "signals": {
+                "bit": {
+                    "net": "chargepump(4)",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "name": "chargepump"
+        },
+        {
+            "type": "w5500",
+            "pins": {
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                },
+                "miso": {
+                    "pin": "SPI:MOSI"
+                },
+                "mosi": {
+                    "pin": "SPI:MISO"
+                }
+            },
+            "uid": "w55000",
+            "pos": [
+                -1887.7840733152937,
+                758.2150200011466
+            ],
+            "speed": 20000000,
+            "gw": "192.168.11.1",
+            "ip": "192.168.11.194"
+        }
+    ],
+    "flow": {
+        "view": {
+            "pos": [
+                -822,
+                -12
+            ],
+            "scale": 0.34
+        },
+        "board": {
+            "pos": [
+                -2088.1191259398493,
+                586.2716867631126
+            ],
+            "rotate": 90
+        },
+        "hal": {
+            "joint": [
+                1410.0,
+                300.0
+            ],
+            "spindle": [
+                1400.0,
+                100.0
+            ],
+            "spindle.0": [
+                -668.1191259398493,
+                1436.6246582365002
+            ],
+            "joint.4": [
+                1380.0,
+                190.0
+            ],
+            "joint.3": [
+                -898.1191259398493,
+                126.62465823650024
+            ],
+            "joint.2": [
+                -898.1191259398493,
+                206.62465823650024
+            ],
+            "joint.1": [
+                -898.1191259398493,
+                286.62465823650024
+            ],
+            "joint.0": [
+                -898.1191259398493,
+                366.62465823650024
+            ],
+            "misc": [
+                -678.1191259398493,
+                826.6246582365002
+            ]
+        }
+    }
+}

@@ -14,6 +14,13 @@ def hal(parent):
         # display status
         parent.halg.net_add("halui.machine.is-on", "mpg.machine.is-on")
         parent.halg.net_add("halui.program.is-running", "mpg.program.is-running")
+        parent.halg.setp_add("mpg.display-mode", 1)
+        parent.halg.net_add("halui.mode.is-auto", "mpg.mode.is-auto")
+        parent.halg.net_add("halui.mode.is-manual", "mpg.mode.is-manual")
+        parent.halg.net_add("halui.mode.is-mdi", "mpg.mode.is-mdi")
+        parent.halg.net_add("iocontrol.0.coolant-mist", "mpg.coolant-mist")
+        parent.halg.net_add("iocontrol.0.coolant-flood", "mpg.coolant-flood")
+        parent.halg.net_add("iocontrol.0.tool-number", "mpg.tool-number")
 
         for button_name in BUTTON_NAMES:
             for bfunc in BUTTON_FUNCS:

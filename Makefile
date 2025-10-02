@@ -6,19 +6,19 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	ruff format bin/rio* riocore/
+	ruff format bin/rio* riocore/ riocore/gui/flexgui/flexgui
 
 check:
-	ruff check bin/ riocore/
+	ruff check bin/rio-* riocore/ riocore/gui/flexgui/flexgui
 
 check_fix:
-	ruff check --fix bin/ riocore/
+	ruff check --fix bin/rio-* riocore/ riocore/gui/flexgui/flexgui
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/
 
 verilator:
-	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only
+	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only -Wno-WIDTHEXPAND riocore/files/verilog/globals.v
 
 readmes:
 	PYTHONPATH=. bin/rio-plugininfo -g

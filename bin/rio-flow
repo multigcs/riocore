@@ -1,0 +1,2325 @@
+#!/usr/bin/env python3
+#
+#
+
+import argparse
+import copy
+import os
+import json
+import sys
+from math import floor, ceil
+from functools import partial
+
+from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF, QSize
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
+from PyQt5.QtWidgets import (
+    QFileDialog,
+    QStyle,
+    QMainWindow,
+    QToolBar,
+    QTabWidget,
+    QMenu,
+    QAction,
+    QLabel,
+    QApplication,
+    QGraphicsItem,
+    QGraphicsScene,
+    QGraphicsView,
+    QHBoxLayout,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+    QGraphicsPathItem,
+    QGraphicsLineItem,
+    QDialog,
+)
+
+
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
+elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+
+import riocore
+
+from riocore.gui.loader import ConfigLoader
+from riocore.gui.tab_json import TabJson
+from riocore.gui.plugins import GuiPlugins
+from riocore.gui.boards import GuiBoards
+from riocore.gui.breakouts import GuiBreakouts
+from riocore.gui.modifiers import GuiModifiers
+# from riocore.halpins import LINUXCNC_SIGNALS
+
+
+from riocore.gui.widgets import (
+    edit_file,
+    edit_float,
+    edit_int,
+    edit_text,
+    edit_bool,
+    edit_combobox,
+    edit_avgfilter,
+)
+
+riocore_path = os.path.dirname(riocore.__file__)
+
+grid_size = 10
+grid_color = QColor(150, 150, 150)
+cn = 7
+colors = []
+for o in range(0, 10):
+    for i in range(0, cn):
+        hue = i / cn + 1 / cn * o / 10
+        lightness = 0.7
+        saturation = 0.9 / 5 * (10 - o) / 2
+        color = QColor.fromHslF(hue, saturation, lightness)
+        colors.append(color)
+
+
+class NodeEdgePath(QGraphicsPathItem):
+    width = 2
+    width_selected = 4
+
+    def __init__(self, scene, etype, source_node, source_port, des_node, des_port, color=None):
+        super().__init__(None)
+        self.etype = etype
+        self.scene = scene
+        self._source_node = source_node
+        self._source_port = source_port
+        self._target_node = des_node
+        self._target_port = des_port
+        self.color = color
+        if self.color is None:
+            self.color = Qt.GlobalColor.green
+        self._pen_default = QPen(self.color)
+        self._pen_default.setWidthF(2)
+        self.setZValue(5)
+        self.setFlags(QGraphicsItem.ItemIsSelectable)
+        self.setAcceptHoverEvents(True)
+        self.update_edge_path()
+        self.hover = False
+
+    def paint(self, painter: QPainter, option, widget):
+        if self.isSelected():
+            self._pen_default = QPen(Qt.GlobalColor.yellow)
+            self._pen_default.setWidthF(self.width_selected)
+        else:
+            self._pen_default = QPen(self.color)
+            self._pen_default.setWidthF(self.width)
+        if self.hover:
+            self._pen_default.setWidthF(self.width_selected + 2)
+        painter.setPen(self._pen_default)
+        self.update_edge_path()
+        painter.setBrush(Qt.NoBrush)
+        painter.drawPath(self.path())
+
+    def update_edge_path(self):
+        source_pos = self._source_node.port_pos(self._source_port)
+        des_pos = self._target_node.port_pos(self._target_port)
+        path = QPainterPath(source_pos)
+        xwidth = source_pos.x() - des_pos.x()
+        xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
+        yheight = abs(source_pos.y() - des_pos.y())
+        tangent = float(yheight) / xwidth * 0.1
+        tangent_s = float(yheight) / xwidth * 0.05
+        tangent *= xwidth
+        tangent_s *= xwidth
+        if xwidth > 0:
+            if xwidth > 20:
+                xwidth = 20
+            tangent += xwidth
+            tangent_s += xwidth
+            if isinstance(self._source_node, BoardNode):
+                tangent_s *= -1
+        else:
+            if tangent > 120:
+                tangent = 120
+            if tangent_s > 20:
+                tangent_s = 20
+        path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
+        self.setPath(path)
+
+    def mouseDoubleClickEvent(self, event):
+        if self.etype == "pin":
+            self.scene.parent.add_modifier()
+        else:
+            print("# edge mouseDoubleClickEvent", self.etype)
+
+    def hoverEnterEvent(self, event):
+        self.hover = True
+        self.scene.edge_hover = self
+        self.update()
+
+    def hoverLeaveEvent(self, event):
+        self.hover = False
+        if self.scene.edge_hover == self:
+            self.scene.edge_hover = None
+        self.update()
+
+    def delete(self):
+        return True
+
+
+class NodeEdgeLine(QGraphicsLineItem):
+    def __init__(self, source_node, source_port, des_node, des_port, color=None):
+        super().__init__(None)
+        self._source_node = source_node
+        self._source_port = source_port
+        self._target_node = des_node
+        self._target_port = des_port
+        self.color = color
+        if self.color is None:
+            self.color = Qt.GlobalColor.green
+        self._pen_default = QPen(self.color)
+        self._pen_default.setWidthF(2)
+        self.setZValue(5)
+        self.setFlags(QGraphicsItem.ItemIsSelectable)
+        self.update_edge_path()
+
+    def paint(self, painter: QPainter, option, widget):
+        self.update_edge_path()
+        super().paint(painter, option, widget)
+
+    def update_edge_path(self):
+        if self.isSelected():
+            self._pen_default = QPen(Qt.GlobalColor.yellow)
+            self._pen_default.setWidthF(7)
+        else:
+            self._pen_default = QPen(self.color)
+            self._pen_default.setWidthF(5)
+        self.setPen(self._pen_default)
+
+        self.prepareGeometryChange()
+        source_pos = self._source_node.port_pos(self._source_port)
+        des_pos = self._target_node.port_pos(self._target_port)
+        self.setLine(QLineF(source_pos, des_pos))
+
+    def delete(self):
+        return True
+
+
+NodeEdge = NodeEdgePath
+
+
+class AreaMarker(QGraphicsItem):
+    def __init__(self, scene, x, y):
+        super().__init__()
+        self.setPos(x, y)
+        self.width = 1
+        self.height = 1
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def paint(self, painter, option, widget):
+        painter.setPen(QPen(QColor(220, 220, 220), 1))
+        painter.drawRect(QRectF(100, 100, self.width - 200, self.height - 200))
+
+
+class MyNode(QGraphicsItem):
+    name = ""
+    radius = 5
+    border_size = 4
+    border_color = QColor(150, 150, 150)
+    border_color_selected = QColor(250, 250, 250)
+    border_color_hover = QColor(250, 150, 250)
+    bg_color = QColor(100, 100, 100)
+    title_size = 9
+    info_size = 7
+    text_scale = 1.8
+    text_font = "Times"
+    text_color = QColor(220, 220, 220)
+    title_color = QColor(255, 255, 255)
+    info_color = QColor(200, 200, 200)
+    port_size = 8
+    port_tsize = 9
+    port_toff_x = 2
+    port_toff_y = 2
+    port_boarder = 2
+    port_top = 25
+    port_bottom = 5
+    port_diff = 15
+    width = 180
+    height = 50
+
+    def __init__(self, scene, x=None, y=None):
+        super().__init__()
+        if x is not None and y is not None:
+            self.setPos(x, y)
+        self.scene = scene
+        self.ports_left = {}
+        self.ports_right = {}
+        self.selected_port = None
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+        self.setAcceptHoverEvents(True)
+        self.hover = False
+
+    def boundingRect(self):
+        if not hasattr(self, "pixmap"):
+            self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+        return QRectF(0, 0, self.width, self.height)
+
+    def port_info(self, port):
+        return "-----"
+
+    def port_pos(self, port):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        for sport, sport_setup in self.ports_right.items():
+            if "sub" in sport_setup:
+                spos = sport_setup["sub"].pos()
+                ports = list(sport_setup["sub"].ports_right)
+                if port in ports:
+                    pos_x = spos.x() + sport_setup["sub"].width
+                    pos_y = spos.y() + ports.index(port) * sport_setup["sub"].port_diff + sport_setup["sub"].port_top
+
+        ports = list(self.ports_left)
+        if port in ports:
+            pos_y += ports.index(port) * self.port_diff + self.port_top
+
+        ports = list(self.ports_right)
+        if port in ports:
+            pos_x = pos.x() + self.width
+            pos_y += ports.index(port) * self.port_diff + self.port_top
+
+        return QPointF(pos_x, pos_y)
+
+    def port_index(self, port):
+        ports = list(self.ports_left)
+        if port in ports:
+            index = ports.index(port)
+
+        ports = list(self.ports_right)
+        if port in ports:
+            index = ports.index(port)
+
+        return index
+
+    def port_selected(self, mouse_pos):
+        mouse_x = mouse_pos.x()
+        mouse_y = mouse_pos.y()
+
+        py = self.port_top
+        for port in self.ports_left:
+            if abs(mouse_x - (self.border_size / 2) - (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+                return port
+            py += self.port_diff
+
+        py = self.port_top
+        for port in self.ports_right:
+            if abs(mouse_x + (self.border_size / 2) - self.width + (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+                return port
+            py += self.port_diff
+
+        return None
+
+    def paint(self, painter, option, widget):
+        self.paintBg(painter, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
+
+    def paintPorts(self, painter):
+        if not hasattr(self, "pixmap"):
+            self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+        py = self.port_top
+        for port, data in self.ports_left.items():
+            direction = data.get("direction") or "all"
+            port_name = data.get("title") or port
+            if direction == "input":
+                title = f">{port_name}"
+                color = QColor(150, 250, 150)
+            elif direction == "output":
+                title = f"<{port_name}"
+                color = QColor(250, 150, 150)
+            else:
+                title = port_name
+                color = Qt.GlobalColor.yellow
+            if (self, port) == self.scene.selection_target:
+                color = Qt.GlobalColor.red
+            self.paintPort(painter, "left", py, title, color)
+            py += self.port_diff
+
+        py = self.port_top
+        for port, data in self.ports_right.items():
+            direction = data.get("direction") or "all"
+            port_name = data.get("title") or port
+            if direction == "input":
+                title = f"{port_name}>"
+                color = QColor(150, 250, 150)
+            elif direction == "output":
+                title = f"{port_name}<"
+                color = QColor(250, 150, 150)
+            else:
+                title = port_name
+                color = Qt.GlobalColor.yellow
+            if (self, port) == self.scene.selection_source:
+                color = Qt.GlobalColor.red
+            if title.startswith("sig_"):
+                title = title[4:]
+            self.paintPort(painter, "right", py, title, color)
+            py += self.port_diff
+
+    def paintPort(self, painter, side, y, name, color):
+        painter.setPen(QPen(self.text_color, 1))
+        painter.setFont(QFont(self.text_font, self.port_tsize))
+        if side == "left":
+            painter.fillRect(QRectF(self.border_size / 2, y - (self.port_size / 2), self.port_size, self.port_size), color)
+            painter.fillRect(
+                QRectF(self.border_size / 2 + (self.port_boarder / 2), y - ((self.port_size - self.port_boarder) / 2), self.port_size - self.port_boarder, self.port_size - self.port_boarder),
+                Qt.GlobalColor.black,
+            )
+            if name:
+                painter.drawText(
+                    QRectF(self.border_size / 2 + self.port_size + self.port_toff_x, y - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width, self.port_tsize * self.text_scale),
+                    Qt.AlignmentFlag.AlignLeft,
+                    name,
+                )
+        else:
+            painter.fillRect(QRectF(self.width - self.border_size / 2 - self.port_size, y - (self.port_size / 2), self.port_size, self.port_size), color)
+            painter.fillRect(
+                QRectF(
+                    self.width - self.border_size / 2 - self.port_size + (self.port_boarder / 2),
+                    y - ((self.port_size - self.port_boarder) / 2),
+                    self.port_size - self.port_boarder,
+                    self.port_size - self.port_boarder,
+                ),
+                Qt.GlobalColor.black,
+            )
+            if name:
+                painter.drawText(
+                    QRectF(0, y - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width - self.border_size / 2 - self.port_size - self.port_toff_x, self.port_tsize * self.text_scale),
+                    Qt.AlignmentFlag.AlignRight,
+                    name,
+                )
+
+    def paintBg(self, painter, title, info=""):
+        painter.setRenderHint(QPainter.Antialiasing)
+        path = QPainterPath()
+        if self.isSelected():
+            pen = QPen(self.border_color_selected, self.border_size)
+            brush = QBrush(self.bg_color)
+        elif self.hover:
+            pen = QPen(self.border_color_hover, self.border_size)
+            brush = QBrush(self.bg_color)
+        else:
+            pen = QPen(self.border_color, self.border_size)
+            brush = QBrush(self.bg_color)
+
+        painter.setPen(pen)
+        painter.setBrush(brush)
+
+        rect = self.boundingRect()
+        # rect.adjust(self.border_size / 2, self.border_size / 2, -self.border_size / 2, -self.border_size / 2)
+        path.addRoundedRect(rect, self.radius, self.radius)
+        painter.setClipPath(path)
+        painter.fillPath(path, painter.brush())
+        painter.strokePath(path, painter.pen())
+
+        if title:
+            painter.setPen(QPen(self.title_color, 1))
+            painter.setFont(QFont(self.text_font, self.title_size))
+            painter.drawText(QRectF(0, self.border_size / 2, self.width, self.title_size * self.text_scale), Qt.AlignmentFlag.AlignCenter, title)
+
+        if info:
+            painter.setPen(QPen(self.info_color, 1))
+            painter.setFont(QFont(self.text_font, self.info_size))
+            th = self.title_size * self.text_scale
+            painter.drawText(QRectF(0, self.border_size / 2 + th, self.width, self.height - self.border_size - th), Qt.AlignmentFlag.AlignCenter, info)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if event.pos().x() > self.width / 2:
+                if self.scene.selection_source == (self, self.port_selected(event.pos())):
+                    self.scene.selection_source = None
+                else:
+                    self.scene.selection_source = (self, self.port_selected(event.pos()))
+            else:
+                if self.scene.selection_target == (self, self.port_selected(event.pos())):
+                    self.scene.selection_target = None
+                else:
+                    self.scene.selection_target = (self, self.port_selected(event.pos()))
+
+            if self.selected_port != self.port_selected(event.pos()):
+                self.selected_port = self.port_selected(event.pos())
+            else:
+                self.selected_port = None
+            self.update()
+            QGraphicsItem.mousePressEvent(self, event)
+
+    def hoverEnterEvent(self, event):
+        self.hover = True
+        self.scene.hover = self
+        self.update()
+
+    def hoverLeaveEvent(self, event):
+        self.hover = False
+        if self.scene.hover == self:
+            self.scene.hover = None
+        self.update()
+
+    def delete(self):
+        return False
+
+
+class BoardNode(QGraphicsItem):
+    def __init__(self, scene, x, y, board_setup):
+        super().__init__()
+        self.setPos(x, y)
+        self.scene = scene
+        self.board_setup = board_setup
+        self.setZValue(1)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.setAcceptHoverEvents(True)
+        board = board_setup["board"]
+        image = os.path.join(riocore_path, "boards", board, "board.png")
+        pixmap = QPixmap.fromImage(QImage(image))
+        pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
+        pixmap_width = pixmap.width()
+        pixmap_height = pixmap.height()
+        self.name = board
+        self.width = pixmap_width // 2
+        self.height = pixmap_height // 2
+        self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.ports = {}
+        data = open(os.path.join(riocore_path, "boards", board, "board.json"), "r").read()
+        self.jdata = json.loads(data)
+        for slot in self.jdata["slots"]:
+            slot_name = slot["name"]
+            for pin_name, pin_data in slot["pins"].items():
+                if isinstance(pin_data, str):
+                    pin_data = {"pin": pin_data}
+                pos = pin_data.get("pos") or slot.get("pos")
+                if self.board_setup["config"]["flow"]["board"]["rotate"] == 90:
+                    pos = [pixmap_width - pos[1], pos[0]]
+                elif self.board_setup["config"]["flow"]["board"]["rotate"] == -90:
+                    pos = [pos[1], pixmap_height - pos[0]]
+                elif self.board_setup["config"]["flow"]["board"]["rotate"] == 180:
+                    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+                self.ports[f"{slot_name}:{pin_name}"] = pin_data
+                self.ports[f"{slot_name}:{pin_name}"]["pos"] = pos
+                self.ports[pin_data.get("pin")] = pin_data
+                self.ports[pin_data.get("pin")]["pos"] = pos
+        self.selected_port = None
+
+    def rotate_cw(self):
+        if self.board_setup["config"]["flow"]["board"]["rotate"] < 180:
+            self.board_setup["config"]["flow"]["board"]["rotate"] += 90
+        else:
+            self.board_setup["config"]["flow"]["board"]["rotate"] = -90
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def port_info(self, port):
+        pin_data = self.ports.get(port)
+        if pin_data:
+            return f"{pin_data.get('pin', '')} {pin_data.get('direction', '')} {pin_data.get('comment', '')}"
+        return ""
+
+    def port_pos(self, port):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        if port in self.ports and self.ports[port]["pos"]:
+            pos_x += self.ports[port]["pos"][0] // 2
+            pos_y += self.ports[port]["pos"][1] // 2
+        return QPointF(pos_x, pos_y)
+
+    def port_selected(self, mouse_pos):
+        mouse_x = mouse_pos.x()
+        mouse_y = mouse_pos.y()
+        for port in self.ports:
+            if not self.ports[port]["pos"]:
+                continue
+            x = self.ports[port]["pos"][0] // 2
+            y = self.ports[port]["pos"][1] // 2
+            if abs(mouse_x - x) < 5 and abs(mouse_y - y) < 5:
+                return port
+        return None
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.board_setup["config"]["flow"]["board"]["pos"] = (pos_x, pos_y)
+
+        painter.drawRect(self.boundingRect())
+        painter.drawPixmap(0, 0, self.pixmap)
+        for port in self.ports:
+            if not self.ports[port]["pos"]:
+                continue
+            if ":" not in port:
+                continue
+            pos_x = self.ports[port]["pos"][0] // 2
+            pos_y = self.ports[port]["pos"][1] // 2
+            if (self, port) == self.scene.selection_source:
+                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.red)
+            else:
+                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
+            painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
+
+    def edit(self):
+        self.scene.parent.gui_boards.edit_board()
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def mouseDoubleClickEvent(self, event):
+        self.edit()
+
+    def mousePressEvent(self, event):
+        port = self.port_selected(event.pos())
+        if self.scene.selection_source == (self, port):
+            self.scene.selection_source = None
+        else:
+            self.scene.selection_source = (self, port)
+
+        self.update()
+        QGraphicsItem.mousePressEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+    def hoverEnterEvent(self, event):
+        self.scene.hover = self
+
+    def hoverLeaveEvent(self, event):
+        if self.scene.hover == self:
+            self.scene.hover = None
+
+
+class BreakoutNode(QGraphicsItem):
+    def __init__(self, scene, x, y, breakout_setup):
+        super().__init__()
+        self.setPos(x, y)
+        self.scene = scene
+        self.breakout_setup = breakout_setup
+        self.setZValue(2)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.setAcceptHoverEvents(True)
+        self.name = breakout_setup["name"]
+        if "rotate" not in self.breakout_setup:
+            self.breakout_setup["rotate"] = 0
+        breakout = breakout_setup["breakout"]
+        data = open(os.path.join(riocore_path, "breakouts", breakout, "breakout.json"), "r").read()
+        self.jdata = json.loads(data)
+        image = os.path.join(riocore_path, "breakouts", breakout, "breakout.png")
+        pixmap = QPixmap.fromImage(QImage(image))
+        pixmap = pixmap.transformed(QTransform().rotate(self.breakout_setup["rotate"]))
+        pixmap_width = pixmap.width()
+        pixmap_height = pixmap.height()
+        self.width = pixmap_width // 2
+        self.height = pixmap_height // 2
+        self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.ports = {}
+        for pin_name, pin_data in self.jdata["main"].items():
+            pos = pin_data.get("pos")
+            if self.breakout_setup["rotate"] == 90:
+                pos = [pixmap_width - pos[1], pos[0]]
+            elif self.breakout_setup["rotate"] == -90:
+                pos = [pos[1], pixmap_height - pos[0]]
+            elif self.breakout_setup["rotate"] == 180:
+                pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+            self.ports[pin_name] = pin_data
+            self.ports[pin_name]["pos"] = pos
+
+        for slot in self.jdata["slots"]:
+            slot_name = slot["name"]
+            for pin_name, pin_data in slot["pins"].items():
+                pos = pin_data.get("pos") or slot.get("pos")
+                if self.breakout_setup["rotate"] == 90:
+                    pos = [pixmap_width - pos[1], pos[0]]
+                elif self.breakout_setup["rotate"] == -90:
+                    pos = [pos[1], pixmap_height - pos[0]]
+                elif self.breakout_setup["rotate"] == 180:
+                    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+                self.ports[f"{slot_name}:{pin_name}"] = pin_data
+                self.ports[f"{slot_name}:{pin_name}"]["pos"] = pos
+        self.selected_port = None
+
+    def port_index(self, port):
+        return 0
+
+    def rotate_cw(self):
+        if self.breakout_setup["rotate"] < 180:
+            self.breakout_setup["rotate"] += 90
+        else:
+            self.breakout_setup["rotate"] = -90
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def port_info(self, port):
+        pin_data = self.ports.get(port)
+        if pin_data:
+            return f"{pin_data.get('pin', '')} {pin_data.get('direction', '')} {pin_data.get('comment', '')}"
+        return ""
+
+    def port_pos(self, port):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        if port in self.ports and self.ports[port]["pos"]:
+            pos_x += self.ports[port]["pos"][0] // 2
+            pos_y += self.ports[port]["pos"][1] // 2
+        return QPointF(pos_x, pos_y)
+
+    def port_selected(self, mouse_pos):
+        mouse_x = mouse_pos.x()
+        mouse_y = mouse_pos.y()
+        for port in self.ports:
+            if not self.ports[port]["pos"]:
+                continue
+            x = self.ports[port]["pos"][0] // 2
+            y = self.ports[port]["pos"][1] // 2
+            if abs(mouse_x - x) < 5 and abs(mouse_y - y) < 5:
+                return port
+        return None
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.breakout_setup["pos"] = (pos_x, pos_y)
+
+        painter.drawRect(self.boundingRect())
+        painter.drawPixmap(0, 0, self.pixmap)
+        for port in self.ports:
+            if not self.ports[port]["pos"]:
+                continue
+            pos_x = self.ports[port]["pos"][0] // 2
+            pos_y = self.ports[port]["pos"][1] // 2
+            if (self, port) == self.scene.selection_source:
+                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.red)
+            else:
+                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
+            painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
+
+    def edit(self):
+        self.scene.parent.gui_breakouts.edit_breakout(self.breakout_setup)
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def mouseDoubleClickEvent(self, event):
+        self.edit()
+
+    def mousePressEvent(self, event):
+        port = self.port_selected(event.pos())
+        if port in self.jdata["main"]:
+            if self.scene.selection_target == (self, port):
+                self.scene.selection_target = None
+            else:
+                self.scene.selection_target = (self, port)
+        else:
+            if self.scene.selection_source == (self, port):
+                self.scene.selection_source = None
+            else:
+                self.scene.selection_source = (self, port)
+
+        self.update()
+        QGraphicsItem.mousePressEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+    def hoverEnterEvent(self, event):
+        self.scene.hover = self
+
+    def hoverLeaveEvent(self, event):
+        if self.scene.hover == self:
+            self.scene.hover = None
+
+
+class SubNode(MyNode):
+    def __init__(self, scene, x, y, parent, title, ports_left, ports_right):
+        super().__init__(scene, x, y)
+        self.parent = parent
+        self.name = title
+
+        self.ports_left = ports_left
+        self.ports_right = ports_right
+
+        self.width = 200
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+
+    def paint(self, painter, option, widget):
+        self.paintBg(painter, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
+        self.parent.sub_update(self)
+
+    def mouseDoubleClickEvent(self, event):
+        if hasattr(self.parent, "edit_sub"):
+            port = None
+            if event.button() == Qt.LeftButton:
+                port = self.port_selected(event.pos())
+                if port in self.ports_left:
+                    port = "sub_"
+            self.parent.edit_sub(self, port)
+
+    def delete(self):
+        if hasattr(self.parent, "delete_sub"):
+            return self.parent.delete_sub(self)
+        return False
+
+
+class PluginNode(MyNode):
+    show_signals = True
+    border_color = QColor(150, 250, 150)
+
+    def __init__(self, scene, x, y, plugin_instance):
+        super().__init__(scene, x, y)
+        self.plugin_instance = plugin_instance
+        self.name = plugin_instance.title
+        self.pins = plugin_instance.PINDEFAULTS
+        self.signals = plugin_instance.SIGNALS
+        self.width = 200
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.selected_port = None
+
+        self.ports_left = self.pins
+        self.ports_right = {}
+        for key, value in self.signals.items():
+            self.ports_right[f"sig_{key}"] = value
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+
+        if hasattr(self.plugin_instance, "flow"):
+            devices = self.plugin_instance.flow()
+            for device, ports in devices.items():
+                for port, psetup in ports.items():
+                    if port in self.ports_right:
+                        del self.ports_right[port]
+
+        py = y
+        self.subNodes = []
+        if hasattr(self.plugin_instance, "flow"):
+            devices = self.plugin_instance.flow()
+            for device, ports in devices.items():
+                spos = self.plugin_instance.plugin_setup.get("sub_pos", {}).get(device, [x + self.width + 50, py])
+                snode = SubNode(scene, spos[0], spos[1], self, device, {"bus": {"title": "bus"}}, ports)
+                scene.addItem(snode)
+                edge = NodeEdge(scene, f"sub:{device}", self, f"sub_{device}", snode, "bus", color=colors[0])
+                scene.addItem(edge)
+                self.subNodes.append(snode)
+                self.ports_right[f"sub_{device}"] = {"title": device, "sub": snode}
+                for port, psetup in ports.items():
+                    psetup["sub"] = snode
+                py += snode.height + 5
+
+    def sub_update(self, sub):
+        self.plugin_instance.plugin_setup["sub_pos"] = {}
+        for sub_item in self.subNodes:
+            pos = sub_item.pos()
+            pos_x = pos.x()
+            pos_y = pos.y()
+            self.plugin_instance.plugin_setup["sub_pos"][sub_item.name] = (pos_x, pos_y)
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        info = self.plugin_instance.cfg_info()
+        self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
+        self.paintBg(painter, self.name, info=info)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
+
+    def delete(self):
+        for sub_item in self.subNodes:
+            self.scene.disconnect_node(sub_item)
+            self.scene.removeItem(sub_item)
+
+        # remove plugin from cfg
+        plugin_config = self.plugin_instance.plugin_setup
+        for pn, plugin in enumerate(self.scene.parent.config["plugins"]):
+            if plugin == plugin_config:
+                self.scene.parent.config["plugins"].pop(pn)
+        return True
+
+    def edit_sub(self, sub_item, port=None):
+        self.edit(port=port)
+
+    def clone(self, xoff=0, yoff=0, redraw=True):
+        plugin_config = copy.deepcopy(self.plugin_instance.plugin_setup)
+        plugin_config["name"] = f"{plugin_config.get('name', plugin_config['uid'])}-clone"
+        plugin_config["uid"] = ""
+        if xoff == 0 and yoff == 0:
+            yoff = self.height + 5
+        plugin_config["pos"] = (plugin_config["pos"][0] + xoff, plugin_config["pos"][1] + yoff)
+        plugin_config["preselect"] = True
+        for pin_name, pin_data in plugin_config["pins"].items():
+            pin_data["pin"] = "unset"
+            for modifier in pin_data.get("modifier", []):
+                if "pos" in modifier:
+                    modifier["pos"] = (modifier["pos"][0] + xoff, modifier["pos"][1] + yoff)
+        self.scene.parent.config["plugins"].append(plugin_config)
+        if redraw:
+            self.scene.parent.redraw()
+            self.scene.parent.snapshot()
+
+    def edit(self, port=None):
+        pin_selected = None
+        signal_selected = None
+        if port is not None:
+            if port.startswith("sig_"):
+                signal_selected = port[4:]
+            elif port.startswith("sub_") and self.plugin_instance.PLUGIN_CONFIG:
+                self.scene.parent.gui_plugins.config_plugin(self.plugin_instance, self.plugin_instance.plugin_id)
+                return
+            else:
+                pin_selected = port
+        self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None, pin_selected=pin_selected, signal_selected=signal_selected)
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def delete_sub(self, sub_item):
+        if hasattr(self.plugin_instance, "delete_sub"):
+            return self.plugin_instance.delete_sub(sub_item.name)
+        return False
+
+    def mouseDoubleClickEvent(self, event):
+        port = None
+        if event.button() == Qt.LeftButton:
+            port = self.port_selected(event.pos())
+        self.edit(port)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+
+class ModuleNode(MyNode):
+    border_color = QColor(150, 250, 150)
+
+    def __init__(self, scene, x, y, module_config, sysconfig):
+        super().__init__(scene, x, y)
+        self.sysconfig = sysconfig
+        self.module_config = module_config
+        self.module_name = self.module_config["module"]
+        self.module_setup = self.module_config["setup"]
+        self.module_path = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.json"))
+        self.module_image = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.png"))
+        moduleJsonStr = open(self.module_path, "r").read()
+        self.module_defaults = json.loads(moduleJsonStr)
+        self.plugin_uids = []
+
+        self.plugins = riocore.Plugins()
+        for plugin_id, plugin_config in enumerate(self.module_defaults.get("plugins", [])):
+            uid = plugin_config.get("uid")
+            if not uid:
+                uid_prefix = plugin_config["type"]
+                unum = 0
+                while f"{uid_prefix}{unum}" in self.plugin_uids:
+                    unum += 1
+                uid = f"{uid_prefix}{unum}"
+                plugin_config["uid"] = uid
+            self.plugin_uids.append(uid)
+            self.plugins.load_plugin(plugin_id, plugin_config, self.sysconfig)
+
+        self.name = self.module_name
+        self.slot = self.module_config["slot"]
+        self.pins = {}
+        self.port_positions = {}
+        self.signals = {}
+        self.width = 250
+        self.height = 50
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        # self.pixmap = QPixmap.fromImage(QImage(self.module_image)).scaled(30, 30, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.selected_port = None
+        self.paintPlugins()
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.module_config["pos"] = (pos_x, pos_y)
+        self.paintBg(painter, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPlugins(painter)
+
+    def boundingRect(self):
+        return QRectF(0, 0, self.width, self.height)
+
+    def port_pos(self, port):
+        pos = self.pos()
+        ppos = self.port_positions.get(port, (0, 0))
+        pos_x = pos.x() + ppos[0]
+        pos_y = pos.y() + ppos[1]
+        return QPointF(pos_x, pos_y)
+
+    def paintPlugins(self, painter=None):
+        py = self.port_top
+        if painter:
+            painter.setPen(QPen(self.text_color, 1))
+            painter.setFont(QFont(self.text_font, self.port_tsize))
+
+        for plugin_instance in self.plugins.plugin_instances:
+            plugin_name = plugin_instance.instances_name
+            if painter:
+                plugin_title = plugin_instance.plugin_setup.get("name") or plugin_name
+                painter.drawText(
+                    QRectF(0, py - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width, self.port_tsize * self.text_scale),
+                    Qt.AlignmentFlag.AlignCenter,
+                    plugin_title,
+                )
+            pph = 0
+            for pin_name, pin_data in plugin_instance.pins().items():
+                pin = pin_data.get("pin")
+                if pin:
+                    if painter:
+                        self.paintPort(painter, "left", py + pph, f"{pin}({pin_name})", Qt.GlobalColor.yellow)
+                    self.port_positions[pin] = (0, py + pph)
+                    pph += self.port_diff
+
+            sph = 0
+            for signal_name, signal_data in plugin_instance.SIGNALS.items():
+                key = f"sig_{plugin_name}:{signal_name}"
+                if painter:
+                    self.paintPort(painter, "right", py + sph, signal_name, Qt.GlobalColor.yellow)
+                self.port_positions[key] = (self.width, py + sph)
+                sph += self.port_diff
+
+            py += max(pph, sph)
+            self.height = self.port_top + py + self.port_bottom
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.module_config["pos"] = (pos_x, pos_y)
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+
+class HalNode(MyNode):
+    border_color = QColor(150, 150, 200)
+
+    def __init__(self, scene, x, y, name):
+        super().__init__(scene, x, y)
+        self.name = name
+        self.width = 450
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+
+    def add_signal(self, pin, signal):
+        self.ports_left[pin] = signal
+        self.height = self.port_top + len(self.ports_left) * self.port_diff + self.port_bottom
+
+    def paintPorts(self, painter):
+        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+        py = self.port_top
+        for port, data in self.ports_left.items():
+            title = data.get("target") or port
+            if data.get("type") == "setp":
+                title = f"setp: {title}"
+            color = Qt.GlobalColor.yellow
+            if (self, port) == self.scene.selection_target:
+                color = Qt.GlobalColor.red
+            self.paintPort(painter, "left", py, title, color)
+            py += self.port_diff
+
+    def paint(self, painter, option, widget):
+        self.paintBg(painter, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+
+class ModifierNode(MyNode):
+    port_top = 13
+    port_bottom = 2
+
+    def __init__(self, scene, x, y, modifier):
+        super().__init__(scene, x, y)
+        self.modifier = modifier
+        self.name = modifier["type"]
+        self.width = 100
+        self.height = 20
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.selected_port = None
+        self.ports_left = {"in": {"title": " "}}
+        self.ports_right = {"out": {"title": " "}}
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.modifier["pos"] = (pos_x, pos_y)
+        self.paintBg(painter, self.name)
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
+
+    def mouseDoubleClickEvent(self, event):
+        target = self.scene.parent.get_next(self, "out")
+        while isinstance(target[0], ModifierNode):
+            target = self.scene.parent.get_next(target[0], "out")
+        if isinstance(target[0], PluginNode):
+            plugin_instance = target[0].plugin_instance
+            port = target[1]
+            modifier_id = -1
+            modifier_list = plugin_instance.plugin_setup["pins"][port]["modifier"]
+            for mid, modifier in enumerate(modifier_list):
+                if modifier == self.modifier:
+                    modifier_id = mid
+                    break
+            if modifier_id != -1:
+                self.scene.parent.gui_modifiers.edit_modifier(modifier_list, modifier_id)
+                self.scene.parent.redraw()
+                self.scene.parent.snapshot()
+
+    def mousePressEvent(self, event):
+        if self.port_selected(event.pos()) == "in":
+            if self.scene.selection_target == (self, self.port_selected(event.pos())):
+                self.scene.selection_target = None
+            else:
+                self.scene.selection_target = (self, self.port_selected(event.pos()))
+        else:
+            if self.scene.selection_source == (self, self.port_selected(event.pos())):
+                self.scene.selection_source = None
+            else:
+                self.scene.selection_source = (self, self.port_selected(event.pos()))
+
+        self.update()
+        QGraphicsItem.mousePressEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        self.update()
+        QGraphicsItem.mouseReleaseEvent(self, event)
+
+    def delete(self):
+        source = self.scene.parent.get_next(self, "in")
+        target = self.scene.parent.get_next(self, "out")
+        if source and target:
+            # reconnect source and target
+            edge = NodeEdge(self.scene, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
+            self.scene.addItem(edge)
+        return True
+
+
+class NodeViewer(QGraphicsView):
+    def __init__(self, scene):
+        super().__init__()
+        self.scene = scene
+        self.setScene(self.scene)
+        self.setRenderHint(QPainter.RenderHint.Antialiasing)
+        self.setTransformationAnchor(self.ViewportAnchor.AnchorUnderMouse)
+        self.button_pressed = 0
+        self.mouse_pos = QPoint()
+        self.selection_marker = None
+        self.mouse_selection_start = None
+        self.mouse_selection_end = None
+        self.scene.insert_position = None
+
+    def getZoom(self):
+        transform = self.transform()
+        return transform.m11()
+
+    def setZoom(self, zoomFactor):
+        transform = self.transform()
+        transform.reset()
+        transform.scale(zoomFactor, zoomFactor)
+        self.setTransform(transform)
+
+    def mouseDoubleClickEvent(self, event):
+        if self.scene.hover:
+            super().mouseDoubleClickEvent(event)
+        elif self.scene.edge_hover:
+            super().mouseDoubleClickEvent(event)
+        else:
+            self.scene.parent.gui_plugins.add_plugin("")
+
+    def mousePressEvent(self, event: QMouseEvent) -> None:
+        super().mousePressEvent(event)
+        self.mouse_pos = event.pos()
+        self.button_pressed = event.button()
+        self.scene.insert_position = self.mapToScene(self.mouse_pos.x(), self.mouse_pos.y())
+        if not self.scene.selectedItems():
+            self.mouse_selection_start = self.mapToScene(self.mouse_pos.x(), self.mouse_pos.y())
+
+            # add AreaMarker
+            self.selection_marker = AreaMarker(self.scene, self.mouse_selection_start.x(), self.mouse_selection_start.y())
+            self.scene.addItem(self.selection_marker)
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        for item in self.scene.items():
+            if isinstance(item, AreaMarker):
+                self.scene.removeItem(item)
+        self.selection_marker = None
+        self.mouse_selection_start = None
+        self.mouse_selection_end = None
+        if self.scene.selection_source and self.scene.selection_target:
+            source_node = self.scene.selection_source[0]
+            source_port = self.scene.selection_source[1]
+            target_node = self.scene.selection_target[0]
+            target_port = self.scene.selection_target[1]
+            if source_node and source_port and target_node and target_port:
+                if source_node != target_node:
+                    if isinstance(target_node, BreakoutNode) and ":" in source_port:
+                        breakout_name = target_node.name
+                        slot = source_port.split(":")[0]
+                        # remove all old wires
+                        for subitem in self.scene.items():
+                            if isinstance(subitem, NodeEdge):
+                                if subitem.etype == f"breakout:{breakout_name}":
+                                    self.scene.removeItem(subitem)
+                        # connect all main wires
+                        color_n = 0
+                        for pin, pin_data in target_node.jdata["main"].items():
+                            bpin = f"{slot}:{pin}"
+                            edge = NodeEdge(self.scene, f"breakout:{breakout_name}", source_node, bpin, target_node, pin, color=colors[color_n])
+                            self.scene.addItem(edge)
+                            color_n += 1
+                        target_node.breakout_setup["slot"] = slot
+
+                    else:
+                        # remove old edges
+                        self.scene.disconnect_port(source_node, source_port)
+                        self.scene.disconnect_port(target_node, target_port)
+                        # add new edge
+                        color_idx = target_node.port_index(target_port)
+                        color = Qt.GlobalColor.green
+                        if color_idx >= 0 and color_idx < len(colors):
+                            color = colors[color_idx]
+                        edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
+                        self.scene.addItem(edge)
+
+                # clear selection
+                self.scene.selection_source = (None, None)
+                self.scene.selection_target = (None, None)
+
+            self.scene.parent.update_halpins_from_edges()
+
+        self.mouse_pos = event.pos()
+        self.button_pressed = 0
+
+        # update config
+        self.scene.parent.config["flow"]["view"]["scale"] = round(self.getZoom(), 2)
+        self.scene.parent.config["flow"]["view"]["pos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
+        self.scene.parent.snapshot()
+
+        super().mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        if self.button_pressed in [Qt.LeftButton]:
+            if self.mouse_selection_start is not None and self.selection_marker is not None:
+                mpos = event.pos()
+                self.mouse_selection_end = self.mapToScene(mpos.x(), mpos.y())
+                start_x = min(self.mouse_selection_start.x(), self.mouse_selection_end.x())
+                end_x = max(self.mouse_selection_start.x(), self.mouse_selection_end.x())
+                start_y = min(self.mouse_selection_start.y(), self.mouse_selection_end.y())
+                end_y = max(self.mouse_selection_start.y(), self.mouse_selection_end.y())
+
+                # update rectangle
+                self.selection_marker.setPos(start_x - 100, start_y - 100)
+                self.selection_marker.width = end_x - start_x + 200
+                self.selection_marker.height = end_y - start_y + 200
+                self.selection_marker.update()
+
+                # select items inside area
+                for item in self.items():
+                    pos = item.pos()
+                    if pos:
+                        width = item.width
+                        height = item.height
+                        if start_x <= pos.x() <= end_x and start_y <= pos.y() <= end_y and start_x <= (pos.x() + width) <= end_x and start_y <= (pos.y() + height) <= end_y:
+                            item.setSelected(True)
+                        else:
+                            item.setSelected(False)
+
+                # prevent drawing errors
+                # self.scene.update()
+
+        elif self.button_pressed in [Qt.MiddleButton]:
+            offset = self.mouse_pos - event.pos()
+            self.mouse_pos = event.pos()
+            dx, dy = offset.x(), offset.y()
+            self.horizontalScrollBar().setValue(int(self.horizontalScrollBar().value() + dx))
+            self.verticalScrollBar().setValue(int(self.verticalScrollBar().value() + dy))
+
+        else:
+            if self.scene.hover:
+                position = QPoint(event.pos())
+                position = self.mapToScene(position.x(), position.y())
+                hovername = self.scene.hover.name
+                hoverpos = self.scene.hover.pos()
+                position = QPointF(position.x() - hoverpos.x(), position.y() - hoverpos.y())
+                port = self.scene.hover.port_selected(position)
+                if port:
+                    pinfo = self.scene.hover.port_info(port)
+                    self.scene.parent.info.setText(f"{hovername} - {port} ({pinfo})")
+                else:
+                    self.scene.parent.info.setText(hovername)
+            else:
+                self.scene.parent.info.setText("")
+
+        super().mouseMoveEvent(event)
+
+    def wheelEvent(self, event):
+        angle = event.angleDelta().y()
+        zoomFactor = 1 + (angle / 1000)
+        self.scale(zoomFactor, zoomFactor)
+
+        if self.getZoom() < 0.2:
+            self.setZoom(0.2)
+        if self.getZoom() > 2.5:
+            self.setZoom(2.5)
+
+        self.scene.parent.config["flow"]["view"]["scale"] = round(zoomFactor, 2)
+        self.scene.parent.cfg_save()
+
+
+class NodeScene(QGraphicsScene):
+    def __init__(self, x, y, w, h, parent):
+        super().__init__(x, y, w, h)
+        self.parent = parent
+        self.selection_source = (None, None)
+        self.selection_target = (None, None)
+        self.hover = None
+        self.edge_hover = None
+        self.menu_selection = None
+
+    def delete_item(self, item):
+        if item.delete():
+            self.disconnect_node(item)
+            self.removeItem(item)
+            self.parent.cfg_save()
+            self.parent.snapshot()
+            self.parent.redraw()
+
+    def delete(self):
+        if self.menu_selection:
+            self.delete_item(self.menu_selection)
+
+    def contextMenuEvent(self, event):
+        self.menu_selection = None
+        menu = QMenu()
+
+        if self.hover:
+            self.menu_selection = self.hover
+            node_type = self.menu_selection.__class__.__name__
+            node_name = self.menu_selection.name
+
+            menu.addSection(f"Node: {node_name} ({node_type})")
+            if hasattr(self.menu_selection, "edit"):
+                edit = QAction("edit", None)
+                edit.triggered.connect(self.menu_selection.edit)
+                menu.addAction(edit)
+            if hasattr(self.menu_selection, "clone"):
+                clone = QAction("clone", None)
+                clone.triggered.connect(self.menu_selection.clone)
+                menu.addAction(clone)
+            if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode):
+                rotate = QAction("rotate", None)
+                rotate.triggered.connect(self.menu_selection.rotate_cw)
+                menu.addAction(rotate)
+            if not isinstance(self.menu_selection, BoardNode):
+                delete = QAction("delete", None)
+                delete.triggered.connect(self.delete)
+                menu.addAction(delete)
+
+        elif self.edge_hover:
+            menu.addSection("Edge / Wire")
+            self.menu_selection = self.edge_hover
+            delete = QAction("delete", None)
+            delete.triggered.connect(self.delete)
+            menu.addAction(delete)
+
+        else:
+            pass
+
+        menu.addSection("Add")
+
+        add_plugin = QAction("Plugin", None)
+        add_plugin.triggered.connect(self.parent.gui_plugins.add_plugin)
+        menu.addAction(add_plugin)
+
+        add_breakout = QAction("Breakout", None)
+        add_breakout.triggered.connect(self.parent.gui_breakouts.add_breakout)
+        menu.addAction(add_breakout)
+
+        menu.addSection("View")
+
+        add_grid = QAction("align to Grid", None)
+        add_grid.triggered.connect(self.parent.grid_align)
+        menu.addAction(add_grid)
+
+        add_redraw = QAction("Redraw", None)
+        add_redraw.triggered.connect(self.parent.redraw)
+        menu.addAction(add_redraw)
+
+        add_undo = QAction("Undo", None)
+        add_undo.triggered.connect(self.parent.undo)
+        menu.addAction(add_undo)
+
+        menu.exec_(event.screenPos())
+
+    def disconnect_port(self, node, port):
+        for item in self.items():
+            if isinstance(item, NodeEdge):
+                if item._target_node == node and item._target_port == port:
+                    self.removeItem(item)
+                elif item._source_node == node and item._source_port == port:
+                    self.removeItem(item)
+
+    def disconnect_node(self, node):
+        for item in self.items():
+            if isinstance(item, NodeEdge):
+                if item._target_node == node:
+                    self.removeItem(item)
+                elif item._source_node == node:
+                    self.removeItem(item)
+
+    def drawBackground(self, painter, rect):
+        super().drawBackground(painter, rect)
+
+        left, right = floor(rect.left()), ceil(rect.right())
+        top, bottom = floor(rect.top()), ceil(rect.bottom())
+
+        grid_points = []
+        for x in range(left - (left % grid_size), right, grid_size):
+            for y in range(top - (top % grid_size), bottom, grid_size):
+                grid_points.append(QPoint(x, y))
+
+        if len(grid_points) > 0:
+            pen = QPen(grid_color)
+            pen.setWidthF(1)
+            painter.setPen(pen)
+            painter.drawPoints(grid_points)
+
+
+class Window(QMainWindow):
+    def __init__(self, args):
+        super().__init__()
+        self.args = args
+        self.HAS_INVERTS = {"rio": "-not"}
+        self.logic_ids = {}
+        self.hal_logics = {}
+        self.hal_calcs = {}
+        self.outputs2signals = {}
+        self.signals_out = {}
+        self.function_cache = {}
+
+        self.scene = NodeScene(-5000, -5000, 7500, 7500, self)
+        self.scene.setBackgroundBrush(QColor("#262626"))
+        self.snapshots = []
+        self.halpins = {}
+        self.joints = 0
+        self.board = {}
+        self.config = {}
+        self.interfaces = []
+
+        self.gui_plugins = GuiPlugins(self)
+        self.gui_boards = GuiBoards(self)
+        self.gui_breakouts = GuiBreakouts(self)
+        self.gui_modifiers = GuiModifiers(self)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch()
+
+        self.view = NodeViewer(self.scene)
+        self.jsontab = TabJson(self)
+
+        self.tabwidget = QTabWidget()
+        self.tabwidget.addTab(self.view, "Drawing")
+        self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
+
+        hbox = QHBoxLayout()
+        hbox.addLayout(vbox)
+        hbox.addWidget(self.tabwidget)
+
+        vboxMain = QVBoxLayout()
+        vboxMain.addWidget(self.toolbar())
+        vboxMain.addLayout(hbox)
+        self.info = QLabel("---")
+        vboxMain.addWidget(self.info)
+
+        self.main = QWidget()
+        self.setCentralWidget(self.main)
+        self.main.setLayout(vboxMain)
+
+        self.config_file = None
+        self.loader = ConfigLoader(self)
+        if self.args.config:
+            self.config_file = args.config
+        else:
+            if not self.loader.select():
+                exit(1)
+
+        self.show()
+
+        if self.config:
+            self.cfg_reload(config=self.config)
+        elif self.config_file and os.path.exists(self.config_file):
+            self.cfg_reload()
+        else:
+            print(f"ERROR: file not found: {self.config_file}")
+            exit(1)
+        self.snapshot()
+
+    def load(self):
+        self.snapshots = []
+        self.loader.select()
+        self.show()
+        self.cfg_reload()
+        self.snapshot()
+
+    def toolbar(self):
+        toolbar = QToolBar("Main ToolBar")
+        self.addToolBar(toolbar)
+        toolbar.setIconSize(QSize(16, 16))
+
+        icon = self.style().standardIcon(QStyle.SP_DialogOpenButton)
+        load_action = QAction(icon, "&Load", self)
+        load_action.setStatusTip("Load")
+        load_action.setShortcut("Ctrl+O")
+        load_action.triggered.connect(self.load)
+        toolbar.addAction(load_action)
+
+        icon = self.style().standardIcon(QStyle.SP_DialogSaveButton)
+        save_action = QAction(icon, "&Save", self)
+        save_action.setStatusTip("Save")
+        save_action.setShortcut("Ctrl+S")
+        save_action.triggered.connect(self.json_save)
+        toolbar.addAction(save_action)
+
+        icon = self.style().standardIcon(QStyle.SP_BrowserReload)
+        reload_action = QAction(icon, "&Reload", self)
+        reload_action.setStatusTip("Reload")
+        reload_action.setShortcut("Ctrl+R")
+        reload_action.triggered.connect(self.cfg_reload)
+        toolbar.addAction(reload_action)
+
+        toolbar.addSeparator()
+
+        icon = self.style().standardIcon(QStyle.SP_ArrowLeft)
+        undo_action = QAction(icon, "&Undo", self)
+        undo_action.setStatusTip("Undo")
+        undo_action.triggered.connect(self.undo)
+        toolbar.addAction(undo_action)
+
+        toolbar.addSeparator()
+
+        icon = self.style().standardIcon(QStyle.SP_DialogCloseButton)
+        exit_action = QAction(icon, "&Exit", self)
+        exit_action.setStatusTip("Exit")
+        exit_action.setShortcut("Alt+F4")
+        exit_action.triggered.connect(self.exit)
+        toolbar.addAction(exit_action)
+
+        return toolbar
+
+    def exit(self):
+        exit(0)
+
+    def get_boardpath(self, board):
+        pathes = [
+            f"{board}.json",
+            os.path.join(riocore_path, "boards", f"{board}.json"),
+            os.path.join(riocore_path, "boards", board, "board.json"),
+        ]
+        for path in pathes:
+            if os.path.exists(path):
+                return path
+        print(f"can not find board: {board}")
+        exit(1)
+
+    def struct_clean(self, data):
+        # removing empty lists and dicts
+        for key in list(data):
+            if isinstance(data[key], list):
+                for pn, part in enumerate(data[key]):
+                    if isinstance(part, dict):
+                        if not part:
+                            print("DEL1", key, pn, data[key][pn])
+                            del data[key][pn]
+                        else:
+                            self.struct_clean(data[key][pn])
+                if not data[key]:
+                    del data[key]
+            elif isinstance(data[key], dict):
+                self.struct_clean(data[key])
+                if not data[key]:
+                    del data[key]
+            elif data[key] is None:
+                del data[key]
+
+    def clean_config(self, config_unclean, flow=False):
+        config = copy.deepcopy(config_unclean)
+        # cleanup
+        for module in config.get("modules", []):
+            for name, setup in module.get("setup", {}).items():
+                for pin, pin_setup in setup.get("pins", {}).items():
+                    if "pin_mapped" in pin_setup:
+                        del pin_setup["pin_mapped"]
+        for plugin in config.get("plugins", []):
+            for name, plugin_config in plugin.get("config", {}).items():
+                if "instance" in plugin_config:
+                    del plugin_config["instance"]
+
+        for nnum, net in enumerate(config.get("linuxcnc", {}).get("net", [])):
+            if not net.get("source") or not net.get("target"):
+                config["linuxcnc"]["net"].pop(nnum)
+        if flow:
+            for breakouts in config.get("breakouts", []):
+                if "pos" in config["breakouts"]:
+                    del config["breakouts"]["pos"]
+            for breakouts in config.get("plugins", []):
+                if "pos" in config["plugins"]:
+                    del config["plugins"]["pos"]
+            if "flow" in config:
+                del config["flow"]
+
+        self.struct_clean(config)
+        return config
+
+    def keyPressEvent(self, event):
+        if event.key() in {Qt.Key_Escape, Qt.Key_Backspace}:
+            self.undo()
+        elif event.key() == Qt.Key_Delete:
+            self.delete_selection()
+        elif event.key() == Qt.Key_Asterisk:
+            self.clone_selection()
+        elif event.key() in {Qt.Key_Insert, Qt.Key_Plus}:
+            selection = self.dialog_select("add", ["add Plugin", "add Breakout"])
+            if selection == "add Plugin":
+                self.gui_plugins.add_plugin(None)
+            elif selection == "add Breakout":
+                self.gui_breakouts.add_breakout(None)
+        elif event.modifiers() & Qt.ControlModifier:
+            if event.key() == Qt.Key_S:
+                self.json_save()
+
+    def cfg_reload(self, widget=None, config=None):
+        if config is None:
+            if self.config_file is not None:
+                jdata = open(self.config_file, "r").read()
+                self.config = json.loads(jdata)
+                self.config_original = self.clean_config(self.config)
+            elif self.config:
+                self.config_original = self.clean_config(self.config)
+            else:
+                print("ERROR: can not load configuration")
+                self.config = {}
+        else:
+            self.config = config
+            self.config_original = self.clean_config(self.config)
+        if "flow" not in self.config:
+            self.config["flow"] = {}
+        if "view" not in self.config["flow"]:
+            self.config["flow"]["view"] = {}
+        if "hal" not in self.config["flow"]:
+            self.config["flow"]["hal"] = {}
+        self.redraw()
+        self.cfg_check()
+
+    def rotate(self, item):
+        self.cfg_save()
+        if not self.snapshots or self.config != self.snapshots[-1]:
+            self.snapshots.append(copy.deepcopy(self.config))
+
+    def snapshot(self):
+        self.cfg_save()
+        if not self.snapshots or self.config != self.snapshots[-1]:
+            self.snapshots.append(copy.deepcopy(self.config))
+
+    def cfg_check(self):
+        self.jsontab.update(flow=True)
+        if self.jsontab.found_diffs:
+            self.tabwidget.tabBar().setTabTextColor(1, QColor(250, 0, 0))
+        else:
+            self.tabwidget.tabBar().setTabTextColor(1, QColor(0, 0, 0))
+
+    def undo(self):
+        if len(self.snapshots) > 1:
+            self.snapshots.pop()
+        self.cfg_reload(config=copy.deepcopy(self.snapshots[-1]))
+        self.cfg_check()
+
+    def json_save(self):
+        self.cfg_save()
+        jdata = json.dumps(self.clean_config(self.config), indent=4)
+
+        if self.config_file is None:
+            file_dialog = QFileDialog(self)
+            file_dialog.setNameFilters(["json (*.json)"])
+            name = file_dialog.getSaveFileName(self, "Save File", os.path.join(riocore_path, "configs"), "json (*.json)")
+            if name[0]:
+                if not name[0].endswith(".json"):
+                    name = [f"{name[0]}.json"]
+
+        if self.config_file:
+            open(self.config_file, "w").write(jdata)
+            self.config_original = self.clean_config(self.config)
+            self.cfg_check()
+
+    def update_halpins_from_edges(self):
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                plugin_config = item.plugin_instance.plugin_setup
+                for signal_name, signal_data in plugin_config.get("signals", {}).items():
+                    signal_data["net"] = ""
+                    signal_data["setp"] = ""
+
+        for item in self.scene.items():
+            if isinstance(item, NodeEdge):
+                # if isinstance(item._target_node, HalNode) and item._source_port.startswith("sig_"):
+                if isinstance(item._source_node, PluginNode) and item._source_port.startswith("sig_"):
+                    source_port = item._source_port[4:]
+                    # save to plugin setup
+                    plugin_config = item._source_node.plugin_instance.plugin_setup
+                    if item._target_port in item._target_node.ports_left:
+                        hinfo = item._target_node.ports_left[item._target_port]
+                        if hinfo["type"] == "net":
+                            if "signals" not in plugin_config:
+                                plugin_config["signals"] = {}
+                            if source_port not in plugin_config["signals"]:
+                                plugin_config["signals"][source_port] = {}
+                            plugin_config["signals"][source_port]["net"] = item._target_port
+                        elif hinfo["type"] == "setp":
+                            plugin_config["signals"][source_port]["setp"] = item._target_port
+
+    def cfg_save(self):
+        for item in self.scene.items():
+            if isinstance(item, BoardNode):
+                pass
+            elif isinstance(item, HalNode):
+                pos = item.pos()
+                pos_x = pos.x()
+                pos_y = pos.y()
+                self.config["flow"]["hal"][item.name] = (pos_x, pos_y)
+
+            elif isinstance(item, PluginNode):
+                plugin_instance = item.plugin_instance
+                plugin_config = plugin_instance.plugin_setup
+                for port, pin_data in plugin_instance.PINDEFAULTS.items():
+                    if "pins" not in plugin_config:
+                        plugin_config["pins"] = {}
+                    if port not in plugin_config["pins"]:
+                        plugin_config["pins"][port] = {}
+
+                    modifiers = []
+                    source = self.get_source(item, port, modifiers)
+                    if source:
+                        if isinstance(source[0], BreakoutNode):
+                            plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
+                        else:
+                            plugin_config["pins"][port]["pin"] = source[1]
+
+                        if pin_data["direction"] == "input":
+                            plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
+                        else:
+                            plugin_config["pins"][port]["modifier"] = list(modifiers)
+
+                    else:
+                        if plugin_config.get("pins") and port in plugin_config["pins"]:
+                            del plugin_config["pins"][port]
+
+        self.cfg_check()
+
+    def display(self):
+        self.redraw()
+        self.cfg_check()
+
+    def pin_not(self, input_pin, target):
+        component = input_pin.split(".", 1)[0]
+        if component in self.HAS_INVERTS:
+            return f"{input_pin}{self.HAS_INVERTS[component]}"
+
+        if input_pin in self.HAS_INVERTS:
+            return f"{input_pin}{self.HAS_INVERTS[input_pin]}"
+
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        fname = f"func.not_{input_pin.replace('.', '_')}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+
+        if "not" not in self.hal_calcs:
+            self.hal_calcs["not"] = []
+        self.hal_calcs["not"].append(fname)
+
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+
+        self.function_cache[fname] = f"{fname}.out"
+
+        return f"{fname}.out"
+
+    def pin2signal(self, pin, target, signal_name=None):
+        return pin
+
+    def logic2signal(self, expression, target):
+        logic_types = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
+        int_types = {"S+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
+
+        if expression in self.function_cache:
+            return self.function_cache[expression]
+
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        logic_num = list(self.logic_ids).index(target)
+        new_signal = f"{logic_num}.{self.logic_ids[target]}"
+        parts = expression.split()
+        n_inputs = (len(parts) + 1) // 2
+        etype = parts[1].upper()
+
+        if etype in logic_types:
+            personality = logic_types[etype] + n_inputs
+            fname = f"func.{etype.lower()}_{new_signal}"
+            self.hal_logics[fname] = f"0x{personality:x}"
+            for in_n in range(n_inputs):
+                input_pin = parts[in_n * 2]
+                if input_pin.replace(".", "").lstrip("-").isnumeric():
+                    self.setp_add(f"{fname}.in-{in_n:02d}", input_pin)
+                    continue
+                if input_pin[0] == "!":
+                    input_pin = self.pin_not(input_pin[1:], target)
+                input_signal = self.pin2signal(input_pin, target)
+                if f"{fname}.in-{in_n:02d}" not in self.outputs2signals:
+                    self.outputs2signals[f"{fname}.in-{in_n:02d}"] = {"signals": [input_signal], "target": target}
+                else:
+                    self.outputs2signals[f"{fname}.in-{in_n:02d}"]["signals"].append(input_signal)
+            output_pin = f"{fname}.{etype.lower()}"
+        else:
+            personality = int_types[etype]
+            if etype == "-":
+                fname = f"func.sub2_{new_signal}"
+            else:
+                fname = f"func.{int_types[etype]}_{new_signal}"
+            if personality not in self.hal_calcs:
+                self.hal_calcs[personality] = []
+            self.hal_calcs[personality].append(fname)
+            for in_n in range(n_inputs):
+                input_pin = parts[in_n * 2]
+                if input_pin.replace(".", "").lstrip("-").isnumeric():
+                    self.setp_add(f"{fname}.in{in_n}", input_pin)
+                    continue
+                input_signal = self.pin2signal(input_pin, target)
+                if f"{fname}.in{in_n}" not in self.outputs2signals:
+                    self.outputs2signals[f"{fname}.in{in_n}"] = {"signals": [input_signal], "target": target}
+                else:
+                    self.outputs2signals[f"{fname}.in{in_n}"]["signals"].append(input_signal)
+
+                if etype == "-" and in_n == 1:
+                    self.outputs2signals[f"{fname}.gain{in_n}"] = {"signals": -1, "target": target}
+
+            if etype.upper() == "S+":
+                output_pin = f"{fname}.out-s"
+            else:
+                output_pin = f"{fname}.out"
+
+        self.function_cache[expression] = output_pin
+        return output_pin
+
+    def text_in_bracket(self, text, right):
+        chars = []
+        for c in reversed(text[:right]):
+            if c != "(":
+                chars.append(c)
+            else:
+                chars.append(c)
+                break
+        return "".join(reversed(chars))
+
+    def brackets_parser(self, input_pin, output_pin):
+        expression = "#"
+        while expression:
+            expression = ""
+            for n, c in enumerate(input_pin):
+                if c == ")":
+                    expression = self.text_in_bracket(input_pin, n + 1)
+                    inside = expression.lstrip("(").rstrip(")")
+                    if " " in inside:
+                        new_pin = self.logic2signal(inside, output_pin)
+                        input_pin = input_pin.replace(expression, new_pin)
+                    else:
+                        if inside[0] == "!":
+                            target = output_pin
+                            inside = self.pin_not(inside[1:], target)
+                        elif inside.startswith("abs'"):
+                            target = output_pin
+                            inside = self.pin_abs(inside[4:], target)
+                        input_pin = input_pin.replace(expression, inside)
+                    break
+        return input_pin
+
+    def get_path(self, path):
+        if os.path.exists(path):
+            return path
+        elif os.path.exists(os.path.join(riocore_path, path)):
+            return os.path.join(riocore_path, path)
+        print(f"can not find path: {path}")
+        exit(1)
+
+    def redraw(self):
+        # cleanup
+        self.halpins = {}
+        self.joints = 0
+        for item in self.scene.items():
+            self.scene.removeItem(item)
+        self.pinlist = []
+        boardcfg = self.config.get("boardcfg")
+        if "board" not in self.config["flow"]:
+            self.config["flow"]["board"] = {}
+        if "pos" not in self.config["flow"]["board"]:
+            self.config["flow"]["board"]["pos"] = (120, 220)
+        if "rotate" not in self.config["flow"]["board"]:
+            self.config["flow"]["board"]["rotate"] = 0
+        self.bnode = None
+        board_setup = {"board": boardcfg, "config": self.config}
+        if os.path.exists(os.path.join(riocore_path, "boards", boardcfg, "board.json")):
+            px = self.config["flow"]["board"]["pos"][0]
+            py = self.config["flow"]["board"]["pos"][1]
+            self.bnode = BoardNode(self.scene, px, py, board_setup)
+            self.scene.addItem(self.bnode)
+            self.board = self.bnode.jdata
+
+        if "gpios" in self.config:
+            pass
+
+        py = 100
+        if "plugins" not in self.config:
+            self.config["plugins"] = []
+        if "modules" not in self.config:
+            self.config["modules"] = []
+        if "breakouts" not in self.config:
+            self.config["breakouts"] = []
+
+        # loading breakouts
+        self.breakout_uids = []
+        for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
+            py += self.insert_breakout(breakout_config, py)
+
+        # loading modules
+        for module_id, module_config in enumerate(self.config.get("modules", [])):
+            if "setup" not in module_config:
+                self.config["modules"][module_id]["setup"] = {}
+            py += self.insert_module(module_config, py)
+
+        # loading plugins
+        self.plugin_uids = []
+        self.plugins = riocore.Plugins()
+        for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
+            uid = plugin_config.get("uid")
+            if not uid:
+                uid_prefix = plugin_config["type"]
+                unum = 0
+                while f"{uid_prefix}{unum}" in self.plugin_uids:
+                    unum += 1
+                uid = f"{uid_prefix}{unum}"
+                plugin_config["uid"] = uid
+            self.plugin_uids.append(uid)
+            self.plugins.load_plugin(plugin_id, plugin_config, self.config)
+            plugin_instance = self.plugins.plugin_instances[-1]
+            py += self.insert_plugin(plugin_instance, py)
+
+        hnodes_y = 100
+        hnodes = {}
+        color_n = 0
+        for signal_name, signal in self.halpins.items():
+            source = signal["source"]
+            target = signal["target"]
+            tsplit = target.split(".")
+            group = tsplit[0]
+
+            if source is None:
+                group = "unused"
+            elif group in {"joint", "spindle"}:
+                group = ".".join(tsplit[0:2])
+            else:
+                group = "misc"
+
+            if source and target:
+                if group not in hnodes:
+                    pos = self.config["flow"]["hal"].get(group, (1100, hnodes_y))
+                    hnodes[group] = HalNode(self.scene, pos[0], pos[1], group)
+                    self.scene.addItem(hnodes[group])
+                    hnodes_y += hnodes[group].height + 10
+                hnodes[group].add_signal(target, signal)
+                spin = f"sig_{source[1]}"
+                edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[color_n])
+                color_n += 1
+                self.scene.addItem(edge)
+
+        ph = 1
+        pv = 1
+        zoom = 1.0
+        if "pos" in self.config["flow"]["view"]:
+            ph = self.config["flow"]["view"]["pos"][0]
+            pv = self.config["flow"]["view"]["pos"][1]
+        if "scale" in self.config["flow"]["view"]:
+            zoom = self.config["flow"]["view"]["scale"]
+        self.view.setZoom(zoom)
+        self.view.horizontalScrollBar().setSliderPosition(ph)
+        self.view.verticalScrollBar().setSliderPosition(pv)
+
+    def grid_align(self):
+        for item in self.scene.items():
+            if not isinstance(item, NodeEdge):
+                px = item.pos().x()
+                py = item.pos().y()
+                px = (px + grid_size / 2) // grid_size * grid_size
+                py = (py + grid_size / 2) // grid_size * grid_size
+                item.setPos(px, py)
+        self.snapshot()
+
+    def insert_breakout(self, breakout_config, py=100):
+        if "pos" in breakout_config:
+            hx = breakout_config["pos"][0]
+            hy = breakout_config["pos"][1]
+        elif self.scene.insert_position is not None:
+            hx = self.scene.insert_position.x()
+            hy = self.scene.insert_position.y()
+            self.scene.insert_position = None
+        else:
+            hx = 850
+            hy = py
+        mnode = BreakoutNode(self.scene, hx, hy, breakout_config)
+        slot = breakout_config["slot"]
+        breakout_name = breakout_config["name"]
+        self.breakout_uids.append(breakout_name)
+        if slot:
+            color_n = 0
+            for pin, pin_data in mnode.jdata["main"].items():
+                bpin = f"{slot}:{pin}"
+                edge = NodeEdge(self.scene, f"breakout:{breakout_name}", self.bnode, bpin, mnode, pin, color=colors[color_n])
+                self.scene.addItem(edge)
+                color_n += 1
+
+        self.scene.addItem(mnode)
+        return hy
+
+    def insert_module(self, module_config, py=100):
+        if "pos" in module_config:
+            hx = module_config["pos"][0]
+            hy = module_config["pos"][1]
+        elif self.scene.insert_position is not None:
+            hx = self.scene.insert_position.x()
+            hy = self.scene.insert_position.y()
+            self.scene.insert_position = None
+        else:
+            hx = 850
+            hy = py
+        mnode = ModuleNode(self.scene, hx, hy, module_config, self.config)
+        slot = module_config["slot"]
+
+        color_n = 0
+        for plugin_instance in mnode.plugins.plugin_instances:
+            plugin_name = plugin_instance.instances_name
+            for pin, pin_data in plugin_instance.pins().items():
+                pin = pin_data.get("pin")
+                if pin:
+                    bpin = f"{slot}:{pin}"
+                    edge = NodeEdge(self.scene, "pin", self.bnode, bpin, mnode, pin, color=colors[color_n])
+                    self.scene.addItem(edge)
+                    color_n += 1
+
+            plugin_config = plugin_instance.plugin_setup
+            signals = plugin_config.get("signals")
+            if signals:
+                for signal_name, signal in signals.items():
+                    halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                    if halname not in self.halpins:
+                        self.halpins[halname] = {
+                            "type": "",
+                            "target": "",
+                            "source": (mnode, f"{plugin_name}:{signal_name}"),
+                        }
+                    net = signal.get("net")
+                    if net:
+                        self.halpins[halname]["type"] = "net"
+                        self.halpins[halname]["target"] = net
+                    setp = signal.get("setp")
+                    if setp:
+                        self.halpins[halname]["type"] = "setp"
+                        self.halpins[halname]["target"] = setp
+
+            is_joint = plugin_config.get("is_joint")
+            if plugin_instance.SIGNALS and is_joint:
+                for signal_name, signal in plugin_instance.SIGNALS.items():
+                    halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                    if is_joint and signal_name in {"velocity", "position"}:
+                        if halname not in self.halpins:
+                            self.halpins[halname] = {
+                                "type": "",
+                                "target": "",
+                                "source": (mnode, signal_name),
+                            }
+                        self.halpins[halname]["type"] = "joint"
+                        self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
+                self.joints += 1
+
+        self.scene.addItem(mnode)
+
+        ph = 260
+        ph = max(ph, mnode.height) + 5
+        return ph
+
+    def breakout_by_name(self, breakout_name):
+        for item in self.scene.items():
+            if isinstance(item, BreakoutNode) and item.name == breakout_name:
+                return item
+        return None
+
+    def insert_plugin(self, plugin_instance, py=100):
+        plugin_config = plugin_instance.plugin_setup
+        if "pos" in plugin_config:
+            hx = plugin_config["pos"][0]
+            hy = plugin_config["pos"][1]
+        elif self.scene.insert_position is not None:
+            hx = self.scene.insert_position.x()
+            hy = self.scene.insert_position.y()
+            self.scene.insert_position = None
+        else:
+            hx = 850
+            hy = py
+
+        preselect = plugin_instance.plugin_setup.get("preselect")
+        pnode = PluginNode(self.scene, hx, hy, plugin_instance)
+        self.scene.addItem(pnode)
+        if preselect:
+            del plugin_instance.plugin_setup["preselect"]
+            pnode.setSelected(True)
+
+        py = hy
+        ph = 0
+        color_n = 0
+        if plugin_config.get("pins"):
+            for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                pindata = plugin_config.get("pins", {}).get(pin)
+                if pindata is None or "pin" not in pindata or not pindata["pin"]:
+                    continue
+
+                if ":" in pindata["pin"] and len(pindata["pin"].split(":")) == 3:
+                    splitted = pindata["pin"].split(":")
+                    bpin = ":".join(splitted[1:])
+                    breakout_name = splitted[0]
+
+                    bnode = self.breakout_by_name(breakout_name)
+                    if not bnode:
+                        continue
+
+                    last_con = (bnode, bpin)
+                else:
+                    last_con = (self.bnode, pindata["pin"])
+
+                if pindata.get("modifier"):
+                    if pin_defaults["direction"] == "input":
+                        modifiers = pindata.get("modifier", [])
+                    else:
+                        modifiers = list(reversed(pindata.get("modifier", [])))
+                    for pmn, modifier in enumerate(modifiers):
+                        pos_x = 550 + pmn * 140
+                        pos_y = py + ph
+                        if modifier.get("pos"):
+                            pos_x = modifier["pos"][0]
+                            pos_y = modifier["pos"][1]
+                        mnode = ModifierNode(self.scene, pos_x, pos_y, modifier)
+                        self.scene.addItem(mnode)
+                        if preselect:
+                            mnode.setSelected(True)
+                        edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])
+                        self.scene.addItem(edge)
+                        last_con = (mnode, "out")
+                    ph += 25
+
+                edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], pnode, pin, color=colors[color_n])
+                self.scene.addItem(edge)
+                color_n += 1
+
+        signals = plugin_config.get("signals")
+        if signals:
+            for signal_name, signal in signals.items():
+                if signal_name not in plugin_instance.SIGNALS:
+                    continue
+                halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                if halname not in self.halpins:
+                    self.halpins[halname] = {
+                        "type": "",
+                        "target": "",
+                        "source": (pnode, signal_name),
+                    }
+                net = signal.get("net")
+                if net:
+                    self.halpins[halname]["type"] = "net"
+                    self.halpins[halname]["target"] = net
+                setp = signal.get("setp")
+                if setp:
+                    self.halpins[halname]["type"] = "setp"
+                    self.halpins[halname]["target"] = setp
+
+        is_joint = plugin_config.get("is_joint")
+        if plugin_instance.SIGNALS and is_joint:
+            for signal_name, signal in plugin_instance.SIGNALS.items():
+                halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+                if is_joint and signal_name in {"velocity", "position"}:
+                    if halname not in self.halpins:
+                        self.halpins[halname] = {
+                            "type": "",
+                            "target": "",
+                            "source": (pnode, signal_name),
+                        }
+                    self.halpins[halname]["type"] = "joint"
+                    self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
+            self.joints += 1
+        ph = max(ph, pnode.height) + 5
+        return ph
+
+    def dialog_select(self, title, options):
+        dialog = QDialog()
+        dialog.setWindowTitle(title)
+        dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
+        dialog.selection = None
+
+        def select(item):
+            dialog.selection = item
+            dialog.accept()
+
+        for option in options:
+            button_config = QPushButton(option)
+            button_config.clicked.connect(partial(select, option))
+            dialog.layout.addWidget(button_config)
+        if dialog.exec():
+            return dialog.selection
+        return
+
+    def add_modifier(self):
+        modifier_type = self.gui_modifiers.modifier_list_add()
+        if not modifier_type:
+            return
+
+        for item in self.scene.selectedItems():
+            if isinstance(item, NodeEdge):
+                source_node = item._source_node
+                source_port = item._source_port
+                des_node = item._target_node
+                des_port = item._target_port
+                source_x = item._source_node.port_pos(item._source_port).x()
+                source_y = item._source_node.port_pos(item._source_port).y()
+                des_x = item._target_node.port_pos(item._target_port).x()
+                des_y = item._target_node.port_pos(item._target_port).y()
+                color = item.color
+                self.scene.removeItem(item)
+                # pos between source and des
+                x = source_x + (des_x - source_x) / 2 - 50
+                y = source_y + (des_y - source_y) / 2 - 10
+                # add node
+                modifier_node = ModifierNode(self.scene, x, y, {"type": modifier_type})
+                # reconnect
+                self.scene.addItem(modifier_node)
+                edge = NodeEdge(self.scene, "pin", source_node, source_port, modifier_node, "in", color)
+                self.scene.addItem(edge)
+                edge = NodeEdge(self.scene, "pin", modifier_node, "out", des_node, des_port, color)
+                self.scene.addItem(edge)
+        self.snapshot()
+
+    def edit_item(self, obj, key, var_setup=None, cb=None, help_text=None, need_enter=False):
+        if var_setup is None:
+            var_setup = {}
+        if help_text is None:
+            help_text = var_setup.get("help_text", var_setup.get("description"))
+        if var_setup["type"] == "select":
+            return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
+        elif var_setup["type"] is int:
+            return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] is float:
+            return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
+        elif var_setup["type"] is bool:
+            return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "file":
+            return edit_file(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "avgfilter":
+            return edit_avgfilter(self, obj, key, vmin=0, vmax=10000, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "vpins":
+            default = var_setup.get("default")
+            options = ["sysclk", "ERROR", "ESTOP", "INTERFACE_SYNC"]
+            for plugin_instance in self.plugins.plugin_instances:
+                for pin, pin_data in plugin_instance.pins().items():
+                    direction = pin_data.get("direction")
+                    varname = pin_data.get("varname")
+                    if varname and direction in {"input", "output"}:
+                        options.append(varname)
+                        options.append(f"{varname}_RAW")
+            if default not in options:
+                options.append(default)
+            return edit_combobox(self, obj, key, options, cb=cb, help_text=help_text, default=default)
+        return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+
+    def edit_selection(self):
+        for item in self.scene.selectedItems():
+            if isinstance(item, PluginNode):
+                self.gui_plugins.edit_plugin(item.plugin_instance, None)
+                self.redraw()
+                self.snapshot()
+                break
+
+    def clone_selection(self):
+        for item in self.scene.selectedItems():
+            if isinstance(item, PluginNode):
+                item.clone(xoff=item.width + 5, redraw=False)
+        self.redraw()
+        self.snapshot()
+
+    def delete_selection(self):
+        for item in self.scene.selectedItems():
+            self.scene.delete_item(item)
+
+    def get_next(self, node, port):
+        for item in self.scene.items():
+            if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
+                return (item._source_node, item._source_port, item)
+            elif isinstance(item, NodeEdge) and item._source_node == node and item._source_port == port:
+                return (item._target_node, item._target_port, item)
+        return None
+
+    def get_source(self, node, port, modifiers):
+        for item in self.scene.items():
+            if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
+                if isinstance(item._source_node, ModifierNode):
+                    modifiers.append(item._source_node.modifier)
+                    source = self.get_source(item._source_node, "in", modifiers)
+                    return source
+                else:
+                    return (item._source_node, item._source_port)
+        return None
+
+
+if __name__ == "__main__":
+    print("######## WIP - only for testing ########")
+
+    app = QApplication(sys.argv)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
+    args = parser.parse_args()
+
+    Window(args)
+    app.exec()

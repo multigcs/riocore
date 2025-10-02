@@ -40,7 +40,7 @@ module max6675
                 data_pos <= data_pos + 1;
             end else begin
                 sclk <= 0;
-                temperature <= tmp_data[15:3];
+                temperature <= {3'd0, tmp_data[15:3]};
                 state <= state + 1;
             end
         end else if (state == 2) begin

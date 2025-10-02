@@ -16,6 +16,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import riocore
+from PyQt5 import uic
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
@@ -38,6 +39,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QTabWidget,
 )
+
 
 from riocore.gui.widgets import STYLESHEET, STYLESHEET_CHECKBOX, STYLESHEET_TABBAR, STYLESHEET_CHECKBOX_BIG
 
@@ -116,6 +118,17 @@ class SliderProxyStyle(QProxyStyle):
         elif metric == QStyle.PM_SliderLength:
             return 40
         return super().pixelMetric(metric, option, widget)
+
+
+class PluginUI(QWidget):
+    def __init__(self, ui_file):
+        super(PluginUI, self).__init__()
+        uic.loadUi(ui_file, self)
+
+    def widget(self, name):
+        if hasattr(self, name):
+            return getattr(self, name)
+        return None
 
 
 class WinForm(QWidget):
@@ -207,6 +220,7 @@ class WinForm(QWidget):
                     self.draw_instance(plugin_instance, haldata, tab_layout, pg, tab_num=tab_num)
                 tab_layout.addStretch()
 
+        self.errors = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(args.interval)
@@ -241,13 +255,24 @@ class WinForm(QWidget):
         return tab_layout
 
     def draw_instance(self, plugin_instance, haldata, layout, pg, tab_num=0):
+        plugin_ui = None
+
+        ui_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "widget.ui")
+        if os.path.isfile(ui_path):
+            plugin_ui = PluginUI(ui_path)
+
         if pg:
             pen = pg.mkPen(color=(255, 255, 255))
         num_signals = len(plugin_instance.SIGNALS)
         if num_signals > 1:
             row_layout = QHBoxLayout()
             layout.addLayout(row_layout)
-            row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"))
+
+            if not plugin_ui:
+                row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"))
+
+        if plugin_ui:
+            layout.addWidget(plugin_ui, stretch=6)
 
         for hdir in ("output", "input", "inout"):
             for halname, signal in haldata.get(hdir, {}).items():
@@ -267,12 +292,14 @@ class WinForm(QWidget):
 
                 row_layout = QHBoxLayout()
                 layout.addLayout(row_layout)
-                if num_signals == 1:
-                    row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"), stretch=2)
-                if helper:
-                    row_layout.addWidget(QLabel(f"        {halname_np}"), stretch=2)
-                else:
-                    row_layout.addWidget(QLabel(f"    {halname_np}"), stretch=2)
+
+                if not plugin_ui:
+                    if num_signals == 1:
+                        row_layout.addWidget(QLabel(f"{plugin_instance.title} ({plugin_instance.NAME})"), stretch=2)
+                    if helper:
+                        row_layout.addWidget(QLabel(f"        {halname_np}"), stretch=2)
+                    else:
+                        row_layout.addWidget(QLabel(f"    {halname_np}"), stretch=2)
 
                 if virtual:
                     # swap direction vor virt signals
@@ -281,8 +308,13 @@ class WinForm(QWidget):
                     else:
                         direction = "input"
 
+                wname = halname.split(".")[-1]
+
                 if signal.get("bool"):
-                    signal[wid] = QCheckBox()
+                    if plugin_ui:
+                        signal[wid] = plugin_ui.widget(wname)
+                    else:
+                        signal[wid] = QCheckBox()
                     signal[wid].setChecked(value)
                     if not args.nostyle:
                         signal[wid].setStyleSheet(STYLESHEET_CHECKBOX)
@@ -306,10 +338,14 @@ class WinForm(QWidget):
                             pen=pen,
                         )
                         row_layout.addWidget(plot_graph)
-                    row_layout.addWidget(signal[wid], stretch=6)
+                    if not plugin_ui:
+                        row_layout.addWidget(signal[wid], stretch=6)
 
                 elif direction == "input":
-                    signal[wid] = QLabel("--")
+                    if plugin_ui:
+                        signal[wid] = plugin_ui.widget(wname)
+                    else:
+                        signal[wid] = QLabel("--")
                     if args.graphs:
                         signal[f"graph_tab_{plugin_instance.title}"] = tab_num
                         signal[f"graph_minmax_{plugin_instance.title}"] = (0, 1)
@@ -326,15 +362,15 @@ class WinForm(QWidget):
                             pen=pen,
                         )
                         row_layout.addWidget(plot_graph)
-                    row_layout.addWidget(signal[wid], stretch=6)
-
-                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
-                        if plugin_instance.instances_name not in pid_controller:
-                            pid_controller[plugin_instance.instances_name] = {}
-                        pid_controller[plugin_instance.instances_name]["time"] = 0
-                        pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
-                        pid_controller[plugin_instance.instances_name]["input"] = 0.0
-                        pid_controller[plugin_instance.instances_name]["output"] = 0.0
+                    if not plugin_ui:
+                        row_layout.addWidget(signal[wid], stretch=6)
+                        if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                            if plugin_instance.instances_name not in pid_controller:
+                                pid_controller[plugin_instance.instances_name] = {}
+                            pid_controller[plugin_instance.instances_name]["time"] = 0
+                            pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
+                            pid_controller[plugin_instance.instances_name]["input"] = 0.0
+                            pid_controller[plugin_instance.instances_name]["output"] = 0.0
 
                 else:
                     vmin = int(signal.get("userconfig", {}).get("display", {}).get("min", signal.get("min", 0)))
@@ -342,16 +378,24 @@ class WinForm(QWidget):
                     steps = int(vmax / 100)
                     titles = signal.get("titles")
                     if titles:
-                        signal[wid] = QComboBox()
+                        if plugin_ui:
+                            signal[wid] = plugin_ui.widget(wname)
+                        else:
+                            signal[wid] = QComboBox()
+
                         for text in titles:
                             signal[wid].addItem(text)
                         signal[wid].setMinimumWidth(200)
                         signal[wid].setCurrentIndex(value)
                         signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
-                        row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
-                        row_layout.addWidget(signal[wid], stretch=6)
+                        if not plugin_ui:
+                            row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
+                            row_layout.addWidget(signal[wid], stretch=6)
                     else:
-                        signal[wid] = QSlider(Qt.Horizontal)
+                        if plugin_ui:
+                            signal[wid] = plugin_ui.widget(wname)
+                        else:
+                            signal[wid] = QSlider(Qt.Horizontal)
                         if args.touch:
                             style = SliderProxyStyle(signal[wid].style())
                             signal[wid].setStyle(style)
@@ -363,20 +407,26 @@ class WinForm(QWidget):
                         signal[wid].setMinimumWidth(200)
                         signal[wid].setValue(value)
                         signal[f"widget_out_{plugin_instance.title}"] = QLabel("      ")
-                        row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
-                        row_layout.addWidget(signal[wid], stretch=6)
 
-                        button = QPushButton("0")
-                        button.clicked.connect(partial(self.slider_reset, signal[wid]))
-                        row_layout.addWidget(button, stretch=1)
+                        if plugin_ui:
+                            button = plugin_ui.widget(f"{wname}_zero")
+                            if button:
+                                button.clicked.connect(partial(self.slider_reset, signal[wid]))
+                        else:
+                            row_layout.addWidget(signal[f"widget_out_{plugin_instance.title}"])
+                            row_layout.addWidget(signal[wid], stretch=6)
 
-                    if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
-                        if plugin_instance.instances_name not in pid_controller:
-                            pid_controller[plugin_instance.instances_name] = {}
-                        pid_controller[plugin_instance.instances_name]["time"] = 0
-                        pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
-                        pid_controller[plugin_instance.instances_name]["input"] = 0.0
-                        pid_controller[plugin_instance.instances_name]["output"] = 0.0
+                            button = QPushButton("0")
+                            button.clicked.connect(partial(self.slider_reset, signal[wid]))
+                            row_layout.addWidget(button, stretch=1)
+                    if not plugin_ui:
+                        if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
+                            if plugin_instance.instances_name not in pid_controller:
+                                pid_controller[plugin_instance.instances_name] = {}
+                            pid_controller[plugin_instance.instances_name]["time"] = 0
+                            pid_controller[plugin_instance.instances_name]["feedback"] = 0.0
+                            pid_controller[plugin_instance.instances_name]["input"] = 0.0
+                            pid_controller[plugin_instance.instances_name]["output"] = 0.0
 
         if args.debug and plugin_instance.TYPE == "frameio":
             row_layout = QHBoxLayout()
@@ -576,17 +626,23 @@ class WinForm(QWidget):
             stop = time.time()
             if args.debug:
                 print("rx:", rxdata)
+                # print("rx:", [f"{val:3d}" for val in rxdata])
                 print((stop - start) * 1000)
 
             if not args.debug or True:
                 if len(rxdata) != self.project.buffer_bytes:
-                    print(f"ERROR: reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
+                    print(f"ERROR({self.errors}): reveived data have wrong size: {len(rxdata)} / {self.project.buffer_bytes}")
+                    self.errors += 1
                     # return
                 if not rxdata:
-                    print("ERROR: no data reveived")
+                    print("ERROR({self.errors}): no data reveived")
+                    self.errors += 1
                 elif rxdata[0] != 0x61 or rxdata[1] != 0x74 or rxdata[2] != 0x61 and rxdata[3] != 0x64:
-                    print(f"ERROR: reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
+                    print(f"ERROR({self.errors}): reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
+                    self.errors += 1
                     # return
+                else:
+                    self.errors = 0
 
             self.project.rxdata_set(rxdata)
             if args.debug:
@@ -629,6 +685,9 @@ class WinForm(QWidget):
                         if hasattr(plugin_instance, "testgui_frameio_update"):
                             plugin_instance.testgui_frameio_update(False, rxframe)
 
+                        if args.debug:
+                            print(f"{plugin_instance.title}: frame_rx: {rxframe[3 : (frame_rx_len + 3)]}")
+
                 for halname, signal in haldata.get("input", {}).items():
                     value = signal["value"]
                     value_format = signal.get("format") or "0.2f"
@@ -640,8 +699,10 @@ class WinForm(QWidget):
                     value_offset = userconfig.get("offset", 0.0)
                     value_scale = userconfig.get("scale", signal.get("scale", 1.0))
 
+                    """
                     if plugin_instance.TYPE == "joint" and not signal.get("absolute"):
                         pid_controller[plugin_instance.instances_name]["feedback"] = value
+                    """
 
                     helper = signal.get("helper", False)
                     if helper and not args.helper:

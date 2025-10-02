@@ -94,7 +94,7 @@ cd riocore
 - installing dependencies via apt:
 ```
 apt-get update
-apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil
+apt-get -y install python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil python3-spidev
 ```
 
 make sure that the toolchain matching your fpga is in the path:
@@ -218,6 +218,7 @@ graph LR;
     LinuxCNC<-->rio.c;
     rio.c<-->riocomp.c;
     riocomp.c<--UDP/SPI-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 ### ROS
@@ -228,6 +229,7 @@ graph LR;
     ROS-Plugin-N<--TCP-->ROS-core
     ROS-core<--TCP-->rosbridge;
     rosbridge<--UDP/SPI-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 ### MQTT
@@ -239,6 +241,7 @@ graph LR;
     MQTT-Client-N<--MQTT-->MQTT-Broker
     MQTT-Broker<--MQTT-->mqttbridge;
     mqttbridge<--UDP/SPI-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 ### JSLIB
@@ -246,6 +249,7 @@ graph LR;
 graph LR;
     nodejs<-->JSLIB
     JSLIB<--UDP-->FPGA;
+    FPGA<--RS422/RS485-->SUB_FPGA;
 ```
 
 

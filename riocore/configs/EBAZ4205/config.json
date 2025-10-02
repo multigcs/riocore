@@ -1,0 +1,56 @@
+{
+    "name": "EBAZ4205",
+    "description": "EBAZ4205 - test config - no onboard Ethernet support",
+    "boardcfg": "EBAZ4205",
+    "flashcmd": "openFPGALoader -c usb-blaster --index-chain 1 rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "M17"
+                }
+            },
+            "frequency": 1.0,
+            "uid": "blink0"
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "N20"
+                }
+            },
+            "uid": "pwmout0"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "V20"
+                }
+            },
+            "uid": "bitin0"
+        },
+        {
+            "type": "tm1638b8s7l8",
+            "pins": {
+                "sel": {
+                    "pin": "DATA2:14"
+                },
+                "sclk": {
+                    "pin": "DATA2:16"
+                },
+                "data": {
+                    "pin": "DATA2:18"
+                }
+            },
+            "uid": "tm1638b8s7l80"
+        },
+        {
+            "type": "axi",
+            "uid": "axi0"
+        }
+    ],
+    "protocol": "UDP"
+}

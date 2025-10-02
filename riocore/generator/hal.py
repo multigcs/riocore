@@ -7,7 +7,23 @@ from riocore import halpins
 
 
 class hal_generator:
-    POSTGUI_COMPONENTS = ["pyvcp", "gladevcp", "rio-gui", "qtdragon", "qtvcp", "qtpyvcp", "axisui", "mpg", "vismach", "kinstype", "melfagui", "fanuc_200f", "gmoccapy", "flexhal"]
+    POSTGUI_COMPONENTS = [
+        "pyvcp",
+        "gladevcp",
+        "rio-gui",
+        "qtdragon",
+        "qtvcp",
+        "qtpyvcp",
+        "axisui",
+        "mpg",
+        "vismach",
+        "kinstype",
+        "melfagui",
+        "fanuc_200f",
+        "gmoccapy",
+        "flexhal",
+        "hal_manualtoolchange",
+    ]
     VIRTUAL_COMPONENTS = [
         "riov",
     ]
@@ -63,6 +79,8 @@ class hal_generator:
     def logic2signal(self, expression, target):
         logic_types = {"AND": 0x100, "OR": 0x200, "XOR": 0x400, "NAND": 0x800, "NOR": 0x1000}
         int_types = {"S+": "scaled_s32_sums", "+": "sum2", "-": "sum2", "*": "mult2", "/": "div2"}
+        wcomp_types = {"<": "under", ">": "over", "<=": "under", ">=": "over", "<>": "out"}
+        # TODO; using comp for lower / grater
 
         if expression in self.function_cache:
             return self.function_cache[expression]
@@ -77,6 +95,8 @@ class hal_generator:
         etype = parts[1].upper()
 
         if etype in logic_types:
+            # pin1 AND pin2
+            # pin1 OR pin2
             personality = logic_types[etype] + n_inputs
             fname = f"func.{etype.lower()}_{new_signal}"
             self.hal_logics[fname] = f"0x{personality:x}"
@@ -93,7 +113,58 @@ class hal_generator:
                 else:
                     self.outputs2signals[f"{fname}.in-{in_n:02d}"]["signals"].append(input_signal)
             output_pin = f"{fname}.{etype.lower()}"
+
+        elif etype in wcomp_types:
+            # pin > value
+            # pin <= value
+            # pin <> value1,value2
+            wcomp_out = wcomp_types[etype]
+            fname = f"func.wcomp_{wcomp_out}_{new_signal}"
+            if "wcomp" not in self.hal_calcs:
+                self.hal_calcs["wcomp"] = []
+            self.hal_calcs["wcomp"].append(fname)
+            input_pin = parts[0]
+            min_value = parts[2]
+            max_value = min_value
+            if etype == ">":
+                if min_value.replace(".", "").isnumeric():
+                    max_value = str(float(min_value) + 0.001)
+            elif etype == "<":
+                if min_value.replace(".", "").isnumeric():
+                    min_value = str(float(min_value) - 0.001)
+            elif etype == "<>":
+                if "," in min_value:
+                    max_value = min_value.split(",")[1]
+                    min_value = min_value.split(",")[0]
+                else:
+                    max_value = min_value
+            input_signal = self.pin2signal(input_pin, target)
+            if f"{fname}.in" not in self.outputs2signals:
+                self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+            else:
+                self.outputs2signals[f"{fname}.in"]["signals"].append(input_signal)
+            if min_value.replace(".", "").isnumeric():
+                self.setp_add(f"{fname}.min", min_value)
+            else:
+                input_signal = self.pin2signal(min_value, target)
+                if f"{fname}.min" not in self.outputs2signals:
+                    self.outputs2signals[f"{fname}.min"] = {"signals": [input_signal], "target": target}
+                else:
+                    self.outputs2signals[f"{fname}.min"]["signals"].append(input_signal)
+            if max_value.replace(".", "").isnumeric():
+                self.setp_add(f"{fname}.max", max_value)
+            else:
+                input_signal = self.pin2signal(max_value, target)
+                if f"{fname}.max" not in self.outputs2signals:
+                    self.outputs2signals[f"{fname}.max"] = {"signals": [input_signal], "target": target}
+                else:
+                    self.outputs2signals[f"{fname}.max"]["signals"].append(input_signal)
+
+            output_pin = f"{fname}.{wcomp_out}"
+
         else:
+            # pin1 * pin2
+            # pin1 / pin2
             personality = int_types[etype]
             if etype == "-":
                 fname = f"func.sub2_{new_signal}"
@@ -126,38 +197,38 @@ class hal_generator:
 
     def text_in_bracket(self, text, right):
         chars = []
+        b_end = False
         for c in reversed(text[:right]):
-            if c != "(":
+            if b_end and c not in {" ", ")", "("}:
+                chars.append(c)
+            elif b_end:
+                break
+            elif c == "(":
+                b_end = True
                 chars.append(c)
             else:
                 chars.append(c)
-                break
         return "".join(reversed(chars))
 
     def pin_not(self, input_pin, target):
         component = input_pin.split(".", 1)[0]
         if component in self.HAS_INVERTS:
             return f"{input_pin}{self.HAS_INVERTS[component]}"
-
         if input_pin in self.HAS_INVERTS:
             return f"{input_pin}{self.HAS_INVERTS[input_pin]}"
-
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
         fname = f"func.not_{input_pin.replace('.', '_')}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-
         if "not" not in self.hal_calcs:
             self.hal_calcs["not"] = []
         self.hal_calcs["not"].append(fname)
 
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-
         self.function_cache[fname] = f"{fname}.out"
-
         return f"{fname}.out"
 
     def pin_abs(self, input_pin, target):
@@ -167,16 +238,107 @@ class hal_generator:
         fname = f"func.abs_{input_pin.replace('.', '_')}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-
         if "abs" not in self.hal_calcs:
             self.hal_calcs["abs"] = []
         self.hal_calcs["abs"].append(fname)
-
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-
         self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
 
+    def pin_delay(self, input_pin, target, on, off):
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        if "timedelay" not in self.hal_calcs:
+            self.hal_calcs["timedelay"] = []
+        fnum = len(self.hal_calcs["timedelay"]) + 1
+        fname = f"func.timedelay-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs["timedelay"].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.setp_add(f"{fname}.on-delay", on)
+        self.setp_add(f"{fname}.off-delay", off)
+        self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
+
+    def pin_limit(self, input_pin, target, lmin, lmax):
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        if "limit1" not in self.hal_calcs:
+            self.hal_calcs["limit1"] = []
+        fnum = len(self.hal_calcs["limit1"]) + 1
+        fname = f"func.limit1-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs["limit1"].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.setp_add(f"{fname}.min", lmin)
+        self.setp_add(f"{fname}.max", lmax)
+        self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
+
+    def pin_deadzone(self, input_pin, target, center, threshold):
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        if "deadzone" not in self.hal_calcs:
+            self.hal_calcs["deadzone"] = []
+        fnum = len(self.hal_calcs["deadzone"]) + 1
+        fname = f"func.deadzone-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs["deadzone"].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.setp_add(f"{fname}.center", center)
+        self.setp_add(f"{fname}.threshold", threshold)
+        self.function_cache[fname] = f"{fname}.out"
+        return f"{fname}.out"
+
+    def pin_chargepump(self, divider):
+        if divider:
+            input_pin = f"charge-pump.out-{divider}"
+        else:
+            input_pin = "charge-pump.out"
+        self.hal_calcs["charge_pump"] = ["charge-pump"]
+        return input_pin
+
+    def pin_conv(self, input_pin, target, type_in, type_out):
+        if target not in self.logic_ids:
+            self.logic_ids[target] = 0
+        self.logic_ids[target] += 1
+        func = f"conv_{type_in}_{type_out}"
+        if func not in {
+            "conv_bit_float",
+            "conv_bit_s32",
+            "conv_bit_u32",
+            "conv_float_s32",
+            "conv_float_u32",
+            "conv_s32_bit",
+            "conv_s32_float",
+            "conv_s32_u32",
+            "conv_u32_bit",
+            "conv_u32_float",
+            "conv_u32_s32",
+        }:
+            print(f"component: {func} not found")
+            exit(1)
+
+        if func not in self.hal_calcs:
+            self.hal_calcs[func] = []
+        fnum = len(self.hal_calcs[func]) + 1
+        fname = f"func.{func}-{fnum}"
+        if fname in self.function_cache:
+            return self.function_cache[fname]
+        self.hal_calcs[func].append(fname)
+        input_signal = self.pin2signal(input_pin, target)
+        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
+        self.function_cache[fname] = f"{fname}.out"
         return f"{fname}.out"
 
     def brackets_parser(self, input_pin, output_pin):
@@ -187,18 +349,43 @@ class hal_generator:
                 if c == ")":
                     expression = self.text_in_bracket(input_pin, n + 1)
                     inside = expression.lstrip("(").rstrip(")")
+
+                    function = ""
+                    if expression.split("(")[0]:
+                        inside = expression.split("(", 1)[1].rstrip(")").split(",")[0]
+                        function = expression.split("(", 1)[0]
+                        if "," in expression:
+                            function_params = expression.split("(", 1)[1].rstrip(")").split(",")[1:]
+                        else:
+                            function_params = []
+
                     if " " in inside:
                         new_pin = self.logic2signal(inside, output_pin)
                         input_pin = input_pin.replace(expression, new_pin)
                     else:
-                        if inside[0] == "!":
-                            target = output_pin
-                            inside = self.pin_not(inside[1:], target)
-                        elif inside.startswith("abs'"):
-                            target = output_pin
-                            inside = self.pin_abs(inside[4:], target)
-                        input_pin = input_pin.replace(expression, inside)
+                        new_pin = inside
+                        if expression in self.function_cache and function:
+                            new_pin = self.function_cache[expression]
+                        elif inside and inside[0] == "!":
+                            new_pin = self.pin_not(inside[1:], output_pin)
+                        elif function == "not":
+                            new_pin = self.pin_not(inside, output_pin)
+                        elif function == "abs":
+                            new_pin = self.pin_abs(inside, output_pin)
+                        elif function == "delay":
+                            new_pin = self.pin_delay(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function == "limit":
+                            new_pin = self.pin_limit(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function == "deadzone":
+                            new_pin = self.pin_deadzone(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function == "chargepump":
+                            new_pin = self.pin_chargepump(inside)
+                        elif function == "conv":
+                            new_pin = self.pin_conv(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        input_pin = input_pin.replace(expression, new_pin)
+                        self.function_cache[expression] = new_pin
                     break
+
         return input_pin
 
     def setp_add(self, output_pin, value):
@@ -257,6 +444,10 @@ class hal_generator:
         # replace some command/operation words
         input_pin = input_pin.replace("abs(", "abs'(").replace("not(", "!(")
 
+        if output_pin[0] == "!":
+            output_pin = output_pin[1:]
+            input_pin = f"!{input_pin}"
+
         # handle multiple outputs (A,B)
         if "," in output_pin:
             for pin in output_pin.split(","):
@@ -279,6 +470,9 @@ class hal_generator:
             if input_pin[0] == "|":
                 logic = "OR"
             elif input_pin[0] == "&":
+                logic = "AND"
+            elif output_pin[0] == "&":
+                output_pin = output_pin[1:]
                 logic = "AND"
             elif output_pin in self.signals_out:
                 if self.signals_out[output_pin]["expression"][0] == "|":
@@ -356,7 +550,10 @@ class hal_generator:
         func_names = []
         func_personalities = []
         for calc, names in self.hal_calcs.items():
-            hal_data.append(f"loadrt {calc} names={','.join(names)}")
+            if calc in {"charge_pump"}:
+                hal_data.append(f"loadrt {calc}")
+            else:
+                hal_data.append(f"loadrt {calc} names={','.join(names)}")
             for name in names:
                 hal_data.append(f"addf {name} servo-thread")
             hal_data.append("")
@@ -495,7 +692,8 @@ class hal_generator:
             postgui_data.append("# setp")
             postgui_data.append("#################################################################################")
 
-            for pin, value in self.setps.items():
+            for pin in sorted(list(self.setps)):
+                value = self.setps[pin]
                 if "[JOINT_" in str(value):
                     continue
 

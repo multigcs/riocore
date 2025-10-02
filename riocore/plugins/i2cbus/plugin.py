@@ -365,6 +365,39 @@ graph LR;
 
         self.VERILOGS_DATA = {f"i2cbus_{self.instances_name}.v": "\n".join(verilog_data)}
 
+    def delete_sub(self, device):
+        ret = False
+        if "config" in self.plugin_setup:
+            deletes = []
+            for sub_name, sub_setup in self.plugin_setup["config"].get("devices", {}).items():
+                print(device, sub_name, sub_setup.get("address"))
+                sub_address = sub_setup.get("address")
+                if f"dev-{sub_name}({sub_address})" == device:
+                    deletes.append(sub_name)
+            for sub_name in deletes:
+                del self.plugin_setup["config"]["devices"][sub_name]
+                ret = True
+        return ret
+
+    def flow(self):
+        devices = {}
+        devices_ids = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            device_id = signal_defaults.get("device_id")
+            if device_id and device_id not in devices_ids:
+                devices_ids.append(device_id)
+
+        for device_id in devices_ids:
+            ports = {}
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                dev_device_id = signal_defaults.get("device_id")
+                if dev_device_id != device_id:
+                    continue
+                ports[f"sig_{signal_name}"] = {"title": signal_name}
+            devices[f"dev-{device_id}"] = ports
+
+        return devices
+
     def cfggraph(self, title, gAll):
         lcports = []
         signalports = []
@@ -380,11 +413,11 @@ graph LR;
                     subs.append(subid)
 
         if subs:
-            gAll.edge(f"{title}:bus", f"{sub_title}:conn", dir="normal", color="white", fontcolor="white")
+            gAll.edge(f"{title}:bus", f"{sub_title}:conn", dir="both", color="white", fontcolor="white")
             gAll.node(
                 sub_title,
                 shape="record",
-                label=f"{{ <conn>Multiplexer | {{ {'|'.join(subs)} }} }}",
+                label=f"{{ {{ {'|'.join(subs)} }} | <conn>Multiplexer }}",
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",
@@ -405,9 +438,9 @@ graph LR;
                 sub = signal_defaults.get("subbus")
                 break
             if sub and sub != "none":
-                gAll.edge(f"{sub_title}:sub{sub}", f"{title}_device_{device}:conn", dir="normal", color="white", fontcolor="white")
+                gAll.edge(f"{sub_title}:sub{sub}", f"{title}_device_{device}:conn", dir="both", color="white", fontcolor="white")
             else:
-                gAll.edge(f"{title}:bus", f"{title}_device_{device}:conn", dir="normal", color="white", fontcolor="white")
+                gAll.edge(f"{title}:bus", f"{title}_device_{device}:conn", dir="both", color="white", fontcolor="white")
             dev_title = f"{title}_device_{device}"
             devports = []
             for signal_name, signal_defaults in self.SIGNALS.items():
@@ -433,7 +466,7 @@ graph LR;
             gAll.node(
                 dev_title,
                 shape="record",
-                label=f"{{ <conn>{device} | {{ {'|'.join(devports)} }} }}",
+                label=f"{{ {{ {'|'.join(devports)} }} | <conn>{device} }}",
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",

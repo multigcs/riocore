@@ -8,8 +8,6 @@ from riocore import halpins
 
 from riocore.gui.widgets import (
     MyStandardItem,
-    STYLESHEET,
-    STYLESHEET_TABBAR,
 )
 
 from PyQt5 import QtSvg
@@ -39,7 +37,7 @@ class GuiPlugins:
     def __init__(self, parent):
         self.parent = parent
 
-    def edit_plugin_pins(self, plugin_instance, plugin_config):
+    def edit_plugin_pins(self, plugin_instance, plugin_config, pin_selected=None):
         def update(arg):
             pass
             # print("#update", arg, plugin_config)
@@ -56,6 +54,9 @@ class GuiPlugins:
             plugin_config["pins"] = {}
 
         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
+            if pin_selected is not None and pin_name != pin_selected:
+                continue
+
             if pin_name not in plugin_config["pins"]:
                 plugin_config["pins"][pin_name] = {}
             pin_config = plugin_config.get("pins", {}).get(pin_name, {})
@@ -161,7 +162,8 @@ class GuiPlugins:
 
     def edit_plugin_joints(self, plugin_instance, plugin_config):
         def update(arg):
-            svgWidget.load(self.parent.draw_joint_home(joints_setup, joint_options))
+            if hasattr(self.parent, "draw_joint_home"):
+                svgWidget.load(self.parent.draw_joint_home(joints_setup, joint_options))
 
         myFont = QFont()
         myFont.setBold(True)
@@ -186,7 +188,8 @@ class GuiPlugins:
             joint_options[pkey]["default"] = value
 
         joint_tabs = QTabWidget()
-        joint_tabs.setStyleSheet(STYLESHEET_TABBAR)
+        if hasattr(self.parent, "STYLESHEET_TABBAR"):
+            joint_tabs.setStyleSheet(self.parent.STYLESHEET_TABBAR)
 
         general_layout = QVBoxLayout()
         label = QLabel("Joint-Setup")
@@ -273,7 +276,7 @@ class GuiPlugins:
 
         return joint_tabs
 
-    def edit_plugin_signals(self, plugin_instance, plugin_config):
+    def edit_plugin_signals(self, plugin_instance, plugin_config, signal_selected=None):
         def update(arg):
             pass
             # print("#update", arg, plugin_config)
@@ -298,6 +301,9 @@ class GuiPlugins:
         signals_setup = plugin_config["signals"]
 
         for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
+            if signal_selected is not None and signal_name != signal_selected:
+                continue
+
             # signal_table.setRowCount(row_n + 1)
             if signal_name not in signals_setup:
                 signals_setup[signal_name] = {}
@@ -428,12 +434,13 @@ class GuiPlugins:
             display_setup = {
                 "title": {"type": str},
                 "section": {"type": str},
+                "initval": {"type": bool, "default": bool(signal_defaults.get("default", 0))},
                 "type": {"type": "select", "options": type_options},
             }
             if not signal_defaults.get("bool", False):
                 display_setup["min"] = {"type": float, "default": None}
                 display_setup["max"] = {"type": float, "default": None}
-                display_setup["initval"] = {"type": float, "default": 0.0}
+                display_setup["initval"] = {"type": float, "default": float(signal_defaults.get("default", 0))}
             for option, option_setup in display_setup.items():
                 display_cols = QHBoxLayout()
                 display_rows.addLayout(display_cols)
@@ -513,14 +520,15 @@ class GuiPlugins:
         options_tab.setWidget(options_widget)
         return options_tab
 
-    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False):
+    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None):
         plugin_config = plugin_instance.plugin_setup
         plugin_config_backup = copy.deepcopy(plugin_config)
 
         dialog = QDialog()
         dialog.is_removed = False
         dialog.setWindowTitle(f"edit plugin {plugin_instance.NAME}")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
         dialog_buttonBox.rejected.connect(dialog.reject)
@@ -531,28 +539,35 @@ class GuiPlugins:
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
         tab_widget = QTabWidget()
-        tab_widget.setStyleSheet(STYLESHEET_TABBAR)
+        if hasattr(self.parent, "STYLESHEET_TABBAR"):
+            tab_widget.setStyleSheet(self.parent.STYLESHEET_TABBAR)
 
         if is_new and plugin_instance.TYPE == "joint":
             if "position" in plugin_instance.SIGNALS:
                 plugin_config["is_joint"] = True
 
         options_tab = self.edit_plugin_options(plugin_instance, plugin_config)
-        tab_widget.addTab(options_tab, "Plugin")
+        if signal_selected is None and pin_selected is None:
+            tab_widget.addTab(options_tab, "Plugin")
 
         if not nopins:
-            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config)
-            tab_widget.addTab(pins_tab, "Pins")
-            if is_new:
-                tab_widget.setCurrentWidget(pins_tab)
+            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config, pin_selected=pin_selected)
+            if signal_selected is None:
+                tab_widget.addTab(pins_tab, "Pins")
+                if is_new:
+                    tab_widget.setCurrentWidget(pins_tab)
 
         if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
             joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
-            tab_widget.addTab(joint_tab, "Joint")
+            if pin_selected is None:
+                tab_widget.addTab(joint_tab, "Joint")
         if plugin_instance.TYPE != "interface":
             if plugin_instance.SIGNALS:
-                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config)
-                tab_widget.addTab(signals_tab, "Signals")
+                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config, signal_selected=signal_selected)
+                if pin_selected is None:
+                    tab_widget.addTab(signals_tab, "Signals")
+                    if signal_selected is not None:
+                        tab_widget.setCurrentWidget(signals_tab)
 
         right_layout = QVBoxLayout()
         plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
@@ -574,8 +589,9 @@ class GuiPlugins:
         dialog.setLayout(dialog_layout)
 
         if dialog.exec():
-            self.parent.config_load()
-            # self.parent.display()
+            if hasattr(self.parent, "config_load"):
+                self.parent.config_load()
+                # self.parent.display()
             return
         if not dialog.is_removed:
             for key in list(plugin_config.keys()):
@@ -584,14 +600,18 @@ class GuiPlugins:
             for key in plugin_config_backup:
                 plugin_config[key] = plugin_config_backup[key]
 
-    def config_plugin(self, plugin_instance, plugin_id, widget):
+    def config_plugin(self, plugin_instance, plugin_id, widget=None):
         if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
-            config_box = plugin_config.config(plugin_instance, styleSheet=STYLESHEET)
+            if hasattr(self.parent, "STYLESHEET"):
+                config_box = plugin_config.config(plugin_instance, styleSheet=self.parent.STYLESHEET)
+            else:
+                config_box = plugin_config.config(plugin_instance)
             config_box.run()
-        self.parent.config_load()
-        # self.parent.load_tree()
-        # self.parent.display()
+        if hasattr(self.parent, "config_load"):
+            self.parent.config_load()
+            # self.parent.load_tree()
+            # self.parent.display()
 
     def add_plugin(self, pin_id, slot_name=None):
         boardcfg = self.parent.config.get("boardcfg")
@@ -685,7 +705,8 @@ class GuiPlugins:
 
         dialog = QDialog()
         dialog.setWindowTitle("select plugin")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
 
         dialog.layout = QVBoxLayout()
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
@@ -696,7 +717,7 @@ class GuiPlugins:
 
             def add_module():
                 dialog.close()
-                self.parent.add_module(None, slot_name=slot_name, slot_select=False)
+                self.parent.gui_modules.add_module(None, slot_name=slot_name, slot_select=False)
 
             slot_button = QPushButton(self.parent.tr("use module selection"))
             slot_button.clicked.connect(add_module)
@@ -958,10 +979,12 @@ class GuiPlugins:
                                     break
                             self.parent.config["plugins"][plugin_id]["pins"][pin_name] = pinconfig
 
-                self.tree_add_plugin(self.parent.tree_plugins, plugin_instance, expand=True)
-                self.parent.display()
-
-                self.edit_plugin(plugin_instance, None, is_new=True)
+                if hasattr(self.parent, "insert_plugin"):
+                    self.parent.insert_plugin(plugin_instance)
+                elif hasattr(self.parent, "tree_plugins"):
+                    self.tree_add_plugin(self.parent.tree_plugins, plugin_instance, expand=True)
+                    self.parent.display()
+                    self.edit_plugin(plugin_instance, None, is_new=True)
 
             return dialog.selected
 
@@ -971,8 +994,9 @@ class GuiPlugins:
             dialog.is_removed = True
             dialog.close()
         self.parent.config["plugins"].pop(plugin_id)
-        self.parent.config_load()
-        # self.display()
+        if hasattr(self.parent, "config_load"):
+            self.parent.config_load()
+            # self.display()
 
     def tree_add_plugin(self, parent, plugin_instance, nopins=False, expand=False):
         name = plugin_instance.plugin_setup.get("name")

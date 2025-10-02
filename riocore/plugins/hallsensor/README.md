@@ -28,6 +28,14 @@ Keywords: feedback encoder rotary bldc brushless
 
 ## Options:
 *user-options*
+### poles:
+number of motor poles
+
+ * type: int
+ * min: 3
+ * max: 20
+ * default: 7
+
 ### rps_sum:
 number of collected values before calculate the rps value
 
@@ -51,6 +59,12 @@ position feedback in steps
  * type: float
  * direction: input
 
+### angle:
+angle (0-360°)
+
+ * type: float
+ * direction: input
+
 ### rps:
 calculates revolutions per second
 
@@ -69,6 +83,11 @@ calculates revolutions per minute
 ### position:
 
  * size: 32 bit
+ * direction: input
+
+### angle:
+
+ * size: 16 bit
  * direction: input
 
 
@@ -94,6 +113,7 @@ calculates revolutions per minute
 ```
 {
     "type": "hallsensor",
+    "poles": 7,
     "rps_sum": 10,
     "name": "",
     "pins": {
@@ -136,6 +156,17 @@ calculates revolutions per minute
             "offset": 0.0,
             "display": {
                 "title": "position",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "angle": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "angle",
                 "section": "inputs",
                 "type": "meter"
             }

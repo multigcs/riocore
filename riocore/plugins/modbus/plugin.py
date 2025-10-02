@@ -6,9 +6,8 @@ from riocore.plugins.modbus import hy_vfd
 
 
 class Plugin(PluginBase):
-    ON_ERROR_CMDS = []
-
     def setup(self):
+        self.ON_ERROR_CMDS = []
         self.NAME = "modbus"
         self.INFO = "generic modbus plugin"
         self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
@@ -59,17 +58,13 @@ class Plugin(PluginBase):
         self.PLUGIN_CONFIG = True
         self.TIMEOUT = 200.0
         self.DELAY = 90.0
-        self.rx_buffersize = 128
-        self.tx_buffersize = 128
-        self.OPTIONS["rx_buffersize"]["default"] = self.rx_buffersize
-        self.OPTIONS["tx_buffersize"]["default"] = self.tx_buffersize
         rx_buffersize = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
         tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
-        if rx_buffersize < self.rx_buffersize:
-            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {self.rx_buffersize}")
+        if rx_buffersize < 40:
+            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {40}")
             exit(1)
-        if tx_buffersize < self.tx_buffersize:
-            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {self.tx_buffersize}")
+        if tx_buffersize < 40:
+            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {40}")
             exit(1)
 
         if (rx_buffersize % 8) != 0:
@@ -129,12 +124,14 @@ class Plugin(PluginBase):
                                 "bool": True,
                                 "validation": True,
                                 "helper": True,
+                                "plugin_setup": config,
                             }
                             self.SIGNALS[f"{value_name}_errors"] = {
                                 "direction": "input",
                                 "validation_counter": True,
                                 "format": "03d",
                                 "helper": True,
+                                "plugin_setup": config,
                             }
                 else:
                     self.SIGNALS[signal_name] = {
@@ -154,12 +151,14 @@ class Plugin(PluginBase):
                             "bool": True,
                             "validation": True,
                             "helper": True,
+                            "plugin_setup": config,
                         }
                         self.SIGNALS[f"{signal_name}_errors"] = {
                             "direction": "input",
                             "validation_counter": True,
                             "format": "03d",
                             "helper": True,
+                            "plugin_setup": config,
                         }
 
         self.INTERFACE = {
@@ -220,6 +219,10 @@ class Plugin(PluginBase):
         self.signal_values = 0
         self.signal_name = None
 
+    def cfg_info(self):
+        baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        return f"{baud} baud"
+
     def cfggraph(self, title, gAll):
         lcports = []
         signalports = []
@@ -232,7 +235,7 @@ class Plugin(PluginBase):
 
         for address in addresses:
             signalports.append(f"<device_{address}>DEVICE{address}")
-            gAll.edge(f"{title}:device_{address}", f"{title}_device_{address}:conn", dir="normal", color="white", fontcolor="white")
+            gAll.edge(f"{title}:device_{address}", f"{title}_device_{address}:conn", dir="both", color="white", fontcolor="white")
             dev_title = f"{title}_device_{address}"
             devports = []
             for signal_name, signal_defaults in self.SIGNALS.items():
@@ -258,7 +261,7 @@ class Plugin(PluginBase):
             gAll.node(
                 dev_title,
                 shape="record",
-                label=f"{{ <conn>DEVICE{address} | {{ {'|'.join(devports)} }} }}",
+                label=f"{{ {{ {'|'.join(devports)} }} | <conn>DEVICE{address} }}",
                 fontsize="11pt",
                 style="rounded, filled",
                 fillcolor="lightblue",
@@ -266,6 +269,37 @@ class Plugin(PluginBase):
             )
 
         return (lcports, signalports)
+
+    def delete_sub(self, device):
+        ret = False
+        if "config" in self.plugin_setup:
+            deletes = []
+            for sub_name, sub_setup in self.plugin_setup["config"].items():
+                sub_address = sub_setup.get("address")
+                if f"dev-{sub_address}" == device:
+                    deletes.append(sub_name)
+            for sub_name in deletes:
+                del self.plugin_setup["config"][sub_name]
+                ret = True
+        return ret
+
+    def flow(self):
+        devices = {}
+        # uniq device addresses
+        addresses = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            address = signal_defaults.get("plugin_setup", {}).get("address")
+            if address and address not in addresses:
+                addresses.append(address)
+        for address in addresses:
+            ports = {}
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                dev_address = signal_defaults.get("plugin_setup", {}).get("address")
+                if dev_address != address:
+                    continue
+                ports[f"sig_{signal_name}"] = {"title": signal_name}
+            devices[f"dev-{address}"] = ports
+        return devices
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -282,32 +316,35 @@ class Plugin(PluginBase):
         num_on_error_cmds = len(self.ON_ERROR_CMDS)
         original_name = instance["arguments"]["txdata"]
         instance["arguments"]["txdata"] = f"{original_name}_TMP"
-        instance["predefines"].append(f"reg [{self.tx_buffersize - 1}:0] {original_name}_TMP;")
+        instance["predefines"].append(f"reg [{instance_parameter['TX_BUFFERSIZE'] - 1}:0] {original_name}_TMP;")
         instance["predefines"].append(f"reg [7:0] {self.instances_name}_cmd_num = 0;")
         instance["predefines"].append(f"reg [7:0] {self.instances_name}_frame_counter = 0;")
         instance["predefines"].append(f"reg [31:0] {self.instances_name}_cmd_counter = 0;")
 
         instance["predefines"].append("always @(posedge sysclk) begin")
-        instance["predefines"].append("    if (ERROR) begin")
+        instance["predefines"].append("    if (INTERFACE_TIMEOUT) begin")
         instance["predefines"].append(f"        if ({self.instances_name}_cmd_counter < {self.system_setup['speed'] // 5}) begin")
         instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= {self.instances_name}_cmd_counter + 32'd1;")
         instance["predefines"].append("        end else begin")
         instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= 0;")
         instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 8'd1;")
-        instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
-        for cn, cmd in enumerate(self.ON_ERROR_CMDS):
-            frame = []
-            for cbyte in reversed(cmd):
-                frame.append(f"8'd{cbyte}")
-            instance["predefines"].append(f"                {cn}: begin")
-            if cn == num_on_error_cmds - 1:
-                instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= 0;")
-            else:
-                instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
-            offset = ((2 + len(cmd)) * 8) - 1
-            instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}};")
-            instance["predefines"].append("                end")
-        instance["predefines"].append("            endcase")
+        if self.ON_ERROR_CMDS:
+            instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
+            for cn, cmd in enumerate(self.ON_ERROR_CMDS):
+                frame = []
+                for cbyte in reversed(cmd):
+                    frame.append(f"8'd{cbyte}")
+                instance["predefines"].append(f"                {cn}: begin")
+                if cn == num_on_error_cmds - 1:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= 0;")
+                else:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
+                offset = ((2 + len(cmd)) * 8) - 1
+                instance["predefines"].append(
+                    f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}}; // send cmd on error"
+                )
+                instance["predefines"].append("                end")
+            instance["predefines"].append("            endcase")
         instance["predefines"].append("        end")
         instance["predefines"].append("    end else begin")
         instance["predefines"].append(f"        {original_name}_TMP <= {original_name};")

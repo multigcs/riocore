@@ -38,10 +38,10 @@ def riocore_h(project, folder):
     output.append("extern uint8_t rxBuffer[BUFFER_SIZE];")
     output.append("extern uint8_t txBuffer[BUFFER_SIZE];")
 
-    if project.multiplexed_input:
+    if project.multiplexed_output:
         output.append("extern float MULTIPLEXER_INPUT_VALUE;")
         output.append("extern uint8_t MULTIPLEXER_INPUT_ID;")
-    if project.multiplexed_output:
+    if project.multiplexed_input:
         output.append("extern float MULTIPLEXER_OUTPUT_VALUE;")
         output.append("extern uint8_t MULTIPLEXER_OUTPUT_ID;")
 
@@ -122,8 +122,8 @@ def riocore_c(project, folder):
     output.append(f"    // memcpy(&header, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}) // {input_pos};")
     input_pos -= variable_size
 
-    if project.multiplexed_output:
-        variable_size = project.multiplexed_output_size
+    if project.multiplexed_input:
+        variable_size = project.multiplexed_input_size
         byte_start, byte_size, bit_offset = project.get_bype_pos(input_pos, variable_size)
         byte_start = project.buffer_bytes - 1 - byte_start
         output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_VALUE, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")

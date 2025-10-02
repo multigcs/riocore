@@ -4,9 +4,7 @@
 
 import argparse
 import copy
-import difflib
 import glob
-import hashlib
 import importlib
 import json
 import os
@@ -23,18 +21,18 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import riocore
-from riocore import VERSION
 from riocore import halpins
-from riocore import components
 from riocore import gpios
 
 from riocore.gui import vcp
+from riocore.gui.loader import ConfigLoader
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.components import GuiComponents
 from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.modules import GuiModules
 from riocore.gui.gpios import GuiGpios
 
+from riocore.gui.tab_json import TabJson
 from riocore.gui.tab_axis import TabAxis
 from riocore.gui.tab_board import TabBoard
 from riocore.gui.tab_gateware import TabGateware
@@ -45,11 +43,9 @@ from riocore.gui.tab_overview import TabOverview
 from riocore.gui.tab_pins import TabPins
 from riocore.gui.tab_signals import TabSignals
 
-from riocore.modifiers import Modifiers
 from riocore.gui.widgets import (
-    MyQSvgWidget,
-    MyQLabel,
     MyStandardItem,
+    edit_file,
     edit_float,
     edit_int,
     edit_text,
@@ -63,16 +59,10 @@ from riocore.gui.widgets import (
 )
 
 
-from PyQt5 import QtSvg
-from PyQt5.QtCore import QTimer, QPoint, Qt, QSize, QRect
-from PyQt5.QtGui import QStandardItemModel, QFont, QPixmap, QIcon, QPainter, QColor
+from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import (
-    QStyle,
     QSplitter,
-    QMessageBox,
-    QHeaderView,
-    QGroupBox,
-    QLineEdit,
     QApplication,
     QCheckBox,
     QComboBox,
@@ -82,11 +72,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QListWidget,
-    QPlainTextEdit,
     QPushButton,
-    QScrollArea,
-    QTableWidget,
-    QTableWidgetItem,
     QTabWidget,
     QTreeView,
     QVBoxLayout,
@@ -94,41 +80,6 @@ from PyQt5.QtWidgets import (
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
-
-
-class TabJson:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.jsondiff = QPlainTextEdit()
-        self.jsondiff.clear()
-        self.jsondiff.insertPlainText("...")
-
-    def widget(self):
-        return self.jsondiff
-
-    def timer(self):
-        pass
-
-    def update(self):
-        config = json.dumps(self.parent.clean_config(self.parent.config), indent=4)
-        config_original = json.dumps(self.parent.clean_config(self.parent.config_original), indent=4)
-        self.jsondiff.clear()
-        differ = difflib.Differ()
-        color_format = self.jsondiff.currentCharFormat()
-        default_color = color_format.foreground()
-        for line in differ.compare(config_original.split("\n"), config.split("\n")):
-            marker = line[0]
-            if marker == "-":
-                color = QColor(255, 0, 0)
-            elif marker == "+":
-                color = QColor(0, 255, 0)
-            elif marker == "?":
-                continue
-            else:
-                color = default_color
-            color_format.setForeground(color)
-            self.jsondiff.setCurrentCharFormat(color_format)
-            self.jsondiff.insertPlainText(f"{line}\n")
 
 
 class TabPlugins:
@@ -155,6 +106,8 @@ class WinForm(QWidget):
     def __init__(self, args, parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("LinuxCNC-RIO - Setup-GUI")
+        self.STYLESHEET = STYLESHEET
+        self.STYLESHEET_TABBAR = STYLESHEET_TABBAR
         self.setStyleSheet(STYLESHEET)
         self.args = args
 
@@ -171,8 +124,10 @@ class WinForm(QWidget):
         splitter = QSplitter(Qt.Horizontal)
         layout.addWidget(splitter, stretch=1)
 
+        self.loader = ConfigLoader(self)
+
         if not self.args.config:
-            if not self.main_dialog():
+            if not self.loader.select():
                 exit(1)
 
         elif self.args.config:
@@ -358,292 +313,6 @@ class WinForm(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(2000)
-
-    def main_dialog(self):
-        dialog = QDialog()
-        dialog.setWindowTitle("rio-setup")
-        dialog.setStyleSheet(STYLESHEET)
-        dialog.layout = QVBoxLayout()
-        dialog.setLayout(dialog.layout)
-
-        def select_config():
-            self.config_file = self.select_config()
-            if self.config_file is None:
-                exit(1)
-            dialog.accept()
-
-        def select_board():
-            self.config_file = None
-            boardcfg = self.select_board()
-            if boardcfg:
-                self.config = {
-                    "name": boardcfg,
-                    "boardcfg": boardcfg,
-                    "plugins": [],
-                }
-            else:
-                exit(1)
-            dialog.accept()
-
-        def select_file():
-            self.load_config_from()
-            dialog.accept()
-
-        def select_exit():
-            exit(1)
-
-        button_config = QPushButton(" Select Config")
-        button_config.setIcon(self.style().standardIcon(QStyle.SP_ComputerIcon))
-        button_config.setIconSize(QSize(48, 48))
-        button_config.setFixedSize(300, 100)
-        button_config.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_config.clicked.connect(select_config)
-        dialog.layout.addWidget(button_config)
-
-        button_board = QPushButton(" Select Board")
-        button_board.setIcon(self.style().standardIcon(QStyle.SP_FileIcon))
-        button_board.setIconSize(QSize(48, 48))
-        button_board.setFixedSize(300, 100)
-        button_board.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_board.clicked.connect(select_board)
-        dialog.layout.addWidget(button_board)
-
-        button_file = QPushButton(" Open config file from...")
-        button_file.setIcon(self.style().standardIcon(QStyle.SP_DirIcon))
-        button_file.setIconSize(QSize(48, 48))
-        button_file.setFixedSize(300, 100)
-        button_file.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_file.clicked.connect(select_file)
-        dialog.layout.addWidget(button_file)
-
-        dialog.layout.addStretch()
-
-        button_exit = QPushButton("Exit")
-        button_exit.setIcon(self.style().standardIcon(QStyle.SP_DialogCancelButton))
-        button_exit.clicked.connect(select_exit)
-        dialog.layout.addWidget(button_exit)
-
-        if dialog.exec():
-            return True
-        return False
-
-    def select_board(self):
-        def show_board_info(idx):
-            board_path = board_list[idx]
-            board_folder = None
-            if board_path.endswith(".json"):
-                board_name = board_path.split(os.sep)[-1].replace(".json", "")
-            else:
-                board_name = board_path.split(os.sep)[-1]
-                board_folder = board_path
-                board_path = os.path.join(board_path, "board.json")
-
-            board_raw = open(board_path, "r").read()
-            board_config = json.loads(board_raw)
-
-            if board_folder:
-                pinimage = board_config.get("pinimage", "board.png")
-                image_path = os.path.join(board_folder, pinimage)
-                if os.path.isfile(image_path):
-                    pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
-                    image_label.setPixmap(pixmap)
-                else:
-                    image_label.clear()
-
-            name_label.setText(board_name)
-            description = []
-            for key in ("name", "description", "type", "family", "toolchain"):
-                value = board_config.get(key)
-                description.append(f"{key.title()}: {value}")
-            description_label.setText("\n".join(description))
-            dialog.selected = board_name
-
-        dialog = QDialog()
-        dialog.setWindowTitle("create new config / select board")
-        dialog.setStyleSheet(STYLESHEET)
-        # dialog.setMinimumWidth(800)
-        dialog.setMinimumHeight(480)
-
-        dialog.layout = QVBoxLayout()
-        dialog.setLayout(dialog.layout)
-
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-        dialog_buttonBox.rejected.connect(dialog.reject)
-
-        board_table = QTableWidget()
-        board_table.setColumnCount(1)
-        board_table.setHorizontalHeaderItem(0, QTableWidgetItem("Boards"))
-        header = board_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
-
-        board_list = []
-        board_n = 0
-        for path in sorted(glob.glob(os.path.join(riocore_path, "boards", "*"))):
-            if path.endswith(".json"):
-                board_name = path.split(os.sep)[-1].replace(".json", "")
-            elif os.path.isdir(path):
-                if not os.path.isfile(os.path.join(path, "board.json")):
-                    print(f"WARNING: can not found board.json in {path}")
-                    continue
-                board_name = path.split(os.sep)[-1]
-            else:
-                continue
-            board_table.setRowCount(board_n + 1)
-            board_list.append(path)
-            pitem = QTableWidgetItem(board_name)
-            board_table.setItem(board_n, 0, pitem)
-            board_n += 1
-
-        board_table.setFixedWidth(300)
-        board_table.cellClicked.connect(show_board_info)
-        board_table.currentCellChanged.connect(show_board_info)
-
-        mid_layout = QVBoxLayout()
-        mid_widget = QWidget()
-        mid_widget.setFixedWidth(400)
-        mid_widget.setLayout(mid_layout)
-        name_label = QLabel("name")
-        name_label_font = QFont()
-        name_label_font.setBold(True)
-        name_label.setFont(name_label_font)
-
-        mid_layout.addWidget(name_label)
-        description_label = QLabel("description")
-        mid_layout.addWidget(description_label)
-        mid_layout.addStretch()
-
-        right_layout = QVBoxLayout()
-        right_widget = QWidget()
-        right_widget.setLayout(right_layout)
-        image_label = QLabel(self)
-        right_layout.addWidget(image_label)
-        right_layout.addStretch()
-
-        infos = QHBoxLayout()
-        infos.addWidget(board_table, stretch=1)
-        infos.addWidget(mid_widget, stretch=3)
-        infos.addWidget(right_widget, stretch=1)
-
-        dialog.layout.addLayout(infos)
-        dialog.layout.addWidget(dialog_buttonBox)
-
-        show_board_info(0)
-
-        if dialog.exec():
-            return dialog.selected
-
-    def load_config_from(self):
-        file_dialog = QFileDialog(self)
-        suffix_list = ["*.json"]
-        name = file_dialog.getOpenFileName(
-            self,
-            "Load Config",
-            os.path.join(riocore_path, "configs"),
-            f"config ( {' '.join(suffix_list)} )Load Config",
-            "",
-        )
-        if name[0]:
-            self.config_file = name[0]
-
-    def select_config(self):
-        def show_config_info(idx):
-            config_path = config_list[idx]
-            config_name = config_path.split(os.sep)[-1]
-            config_folder = os.path.dirname(config_path)
-            config_raw = open(config_path, "r").read()
-            config_config = json.loads(config_raw)
-
-            boardcfg = config_config.get("boardcfg")
-            boardcfg_path = ""
-            if boardcfg:
-                board_file = self.get_boardpath(boardcfg)
-                boardcfg_path = os.path.dirname(board_file)
-
-            image_path = os.path.join(boardcfg_path, "board.png")
-            if os.path.isfile(image_path):
-                pixmap = QPixmap(image_path).scaled(320, 240, Qt.KeepAspectRatio)
-                image_label.setPixmap(pixmap)
-            else:
-                image_label.clear()
-
-            name_label.setText(config_name)
-            description = []
-            for key in ("name", "description", "boardcfg"):
-                value = config_config.get(key)
-                description.append(f"{key.title()}: {value}")
-            description_label.setText("\n".join(description))
-            dialog.selected = config_path
-
-        dialog = QDialog()
-        dialog.setWindowTitle("load config")
-        dialog.setStyleSheet(STYLESHEET)
-        # dialog.setMinimumWidth(800)
-        dialog.setMinimumHeight(480)
-
-        dialog.layout = QVBoxLayout()
-        dialog.setLayout(dialog.layout)
-
-        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-        dialog_buttonBox.rejected.connect(dialog.reject)
-
-        config_table = QTableWidget()
-        config_table.setColumnCount(1)
-        config_table.setHorizontalHeaderItem(0, QTableWidgetItem("configs"))
-        header = config_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
-
-        config_list = []
-        config_n = 0
-        for path in sorted(glob.glob(os.path.join(riocore_path, "configs", "*", "*.json"))):
-            if path.endswith(".json"):
-                config_name = path.split(os.sep)[-2] + "/" + path.split(os.sep)[-1]
-            else:
-                continue
-            config_table.setRowCount(config_n + 1)
-            config_list.append(path)
-            pitem = QTableWidgetItem(config_name)
-            config_table.setItem(config_n, 0, pitem)
-            config_n += 1
-
-        config_table.setFixedWidth(300)
-        config_table.cellClicked.connect(show_config_info)
-        config_table.currentCellChanged.connect(show_config_info)
-
-        mid_layout = QVBoxLayout()
-        mid_widget = QWidget()
-        mid_widget.setFixedWidth(400)
-        mid_widget.setLayout(mid_layout)
-        name_label = QLabel("name")
-        name_label_font = QFont()
-        name_label_font.setBold(True)
-        name_label.setFont(name_label_font)
-
-        mid_layout.addWidget(name_label)
-        description_label = QLabel("description")
-        mid_layout.addWidget(description_label)
-        mid_layout.addStretch()
-
-        right_layout = QVBoxLayout()
-        right_widget = QWidget()
-        right_widget.setLayout(right_layout)
-        image_label = QLabel(self)
-        right_layout.addWidget(image_label)
-        right_layout.addStretch()
-
-        infos = QHBoxLayout()
-        infos.addWidget(config_table, stretch=1)
-        infos.addWidget(mid_widget, stretch=3)
-        infos.addWidget(right_widget, stretch=1)
-
-        dialog.layout.addLayout(infos)
-        dialog.layout.addWidget(dialog_buttonBox)
-
-        show_config_info(0)
-
-        if dialog.exec():
-            return dialog.selected
 
     def check_status(self):
         self.config_checked = self.clean_config(self.config)
@@ -1006,6 +675,7 @@ class WinForm(QWidget):
                 pin = pin_setup.get("pin")
                 if pin not in self.pinlist:
                     self.pinlist.append(pin)
+
         for slot in self.slots:
             slot_name = slot.get("name")
             slot_pins = slot.get("pins", {})
@@ -1019,6 +689,20 @@ class WinForm(QWidget):
                 self.pinmapping_rev[pin] = pin_id
                 if pin_id not in self.pinlist:
                     self.pinlist.append(pin_id)
+
+        for breakout_data in self.config.get("breakouts", []):
+            breakout = breakout_data.get("breakout")
+            bslot_name = breakout_data.get("slot")
+            breakout_name = breakout_data.get("name")
+            breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
+            breakoutJsonStr = open(breakout_path, "r").read()
+            breakout_defaults = json.loads(breakoutJsonStr)
+            for slot in breakout_defaults["slots"]:
+                slot_name = slot["name"]
+                for pin_name, pin_data in slot["pins"].items():
+                    target = f"{bslot_name}:{pin_data['pin']}"
+                    if target in self.pinmapping:
+                        self.pinmapping[f"{breakout_name}:{slot_name}:{pin_name}"] = self.pinmapping[target]
 
         gpio_ids = {}
         gpio_config = self.config.get("gpios", [])
@@ -1086,6 +770,7 @@ class WinForm(QWidget):
 
         boards_path = self.get_path("boards")
         modules_path = self.get_path("modules")
+        breakouts_path = self.get_path("breakouts")
 
         self.interfaces = []
         for path in sorted(glob.glob(os.path.join(riocore_path, "interfaces", "*"))):
@@ -1098,6 +783,9 @@ class WinForm(QWidget):
         self.module_names = []
         for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
             self.module_names.append(path.split(os.sep)[-2])
+        self.breakout_names = []
+        for path in sorted(glob.glob(os.path.join(breakouts_path, "*", "breakout.json"))):
+            self.breakout_names.append(path.split(os.sep)[-2])
         self.slotnames = []
         for slot in self.slots:
             slot_name = slot.get("name")
@@ -1173,7 +861,7 @@ class WinForm(QWidget):
             elif data[key] is None:
                 del data[key]
 
-    def clean_config(self, config_unclean):
+    def clean_config(self, config_unclean, flow=False):
         config = copy.deepcopy(config_unclean)
         # cleanup
         for module in config.get("modules", []):
@@ -1205,6 +893,8 @@ class WinForm(QWidget):
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
         elif var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        elif var_setup["type"] == "file":
+            return edit_file(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] == "avgfilter":
             return edit_avgfilter(self, obj, key, vmin=0, vmax=10000, cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] == "vpins":
@@ -1314,7 +1004,6 @@ class WinForm(QWidget):
             options_target.append(halpin)
 
         for setp_name, setp_value in setp_config.items():
-            aitem_target = MyStandardItem()
             aitem_value = MyStandardItem()
             tree_lcncsetp.appendRow(
                 [
@@ -1521,7 +1210,7 @@ class WinForm(QWidget):
             "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
             "gui": {
                 "type": "select",
-                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy", "gscreen"],
+                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy", "gscreen", "tnc", "flexgui"],
                 "default": "axis",
                 "help_text": "linuxcnc gui to use",
             },

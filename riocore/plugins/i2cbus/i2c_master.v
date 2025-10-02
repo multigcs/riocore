@@ -139,7 +139,7 @@ module i2c_master
                 scl <= 0;
                 step <= 0;
                 send_mode <= MODE_ADDR;
-                data_rtx <= {addr, rw};
+                data_rtx <= {24'd0, addr, rw};
                 send_cnt <= 0;
                 send_byte_n <= 0;
                 mystate <= STATE_RTX;
@@ -163,7 +163,7 @@ module i2c_master
                 scl <= 1;
                 if (rw == RW_READ && send_mode == MODE_DATA) begin
                     // read
-                    data_rtx[7 - send_cnt] = sdaIn;
+                    data_rtx[7 - send_cnt] <= sdaIn;
                 end
 
             end else if (step == 2) begin
@@ -189,7 +189,7 @@ module i2c_master
             if (step == 0) begin
                 step <= 1;
 
-                if (send_mode == MODE_DATA && rw == RW_READ && send_byte_n < bytes) begin
+                if (send_mode == MODE_DATA && rw == RW_READ && send_byte_n < {3'd0, bytes}) begin
                     sdaOut <= 0;
                     isSending <= 1;
                 end else begin
@@ -205,7 +205,7 @@ module i2c_master
                 scl <= 0;
                 sdaOut <= 0;
                 isSending <= 1;
-                if (send_byte_n < bytes) begin
+                if (send_byte_n < {3'd0, bytes}) begin
                     if (send_mode == MODE_ADDR && sdaIn == 1) begin
                         // nack
                         mystate <= STATE_STOP;
@@ -213,7 +213,7 @@ module i2c_master
                     end else begin
                         send_mode <= MODE_DATA;
                         if (rw == RW_WRITE) begin
-                            data_rtx <= data_out[MAX_BITS-1:MAX_BITS-8];
+                            data_rtx <= {24'd0, data_out[MAX_BITS-1:MAX_BITS-8]};
                             data_out <= {data_out[MAX_BITS-1-8:0], 8'd0};
                         end else begin
                             data_rtx <= 0;

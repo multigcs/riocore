@@ -185,10 +185,10 @@ class i2c_device:
         sensor = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
 
         if sensor == "ntc":
-            return """
+            return f"""
                 value = (int16_t)value>>3;
                 value /= 1000.0;
-                float Rt = 10.0 * value / (self.reference - value);
+                float Rt = 10.0 * value / ({self.reference} - value);
                 float tempK = 1.0 / (log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0));
                 float tempC = tempK - 273.15;
                 value = tempC;

@@ -3,7 +3,7 @@
 module max7219
     #(
         parameter DIVIDER = 22,
-        parameter BRIGHTNESS = 8'h04,
+        parameter BRIGHTNESS = 8'h04
      )
      (
          input clk,
@@ -138,9 +138,9 @@ module max7219
                 4: begin
                     if (num < 8) begin
                         if (num == 2) begin
-                            cmddata <= {num + 1, 1'd1, digit};
+                            cmddata <= {num + 4'd1, 1'd1, digit};
                         end else begin
-                            cmddata <= {num + 1, 1'd0, digit};
+                            cmddata <= {num + 4'd1, 1'd0, digit};
                         end
                         num <= num + 1;
                     end else begin

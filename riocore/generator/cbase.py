@@ -115,12 +115,9 @@ class cbase:
                                 continue
 
                             comp_signals.append(varname)
-
-                            # TODO: fixing for wled plugin
                             check = varname.split("_")[-1].strip()
-                            if plugin_instance.NAME in {"wled", "i2cbus"}:
+                            if plugin_instance.NAME in {"wled", "i2cbus", "riosub"}:
                                 check = varname.split("_")[-2].strip() + "_" + varname.split("_")[-1].strip()
-
                             if data_name.upper() == check:
                                 source = varname.split()[-1].strip("*")
                                 if variable_size > 1:
@@ -215,7 +212,10 @@ class cbase:
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
+                            helper = signal_config.get("helper")
                             output.append(f"    *data->{varname} = value_{signal_name};")
+                            if not helper and not boolean and direction == "input":
+                                output.append(f"    *data->{varname}_S32 = (int)value_{signal_name};")
                         output.append("")
                         output.append("    /**************************/")
                         output.append("}")
@@ -295,8 +295,12 @@ class cbase:
                             var_prefix = signal_config["var_prefix"]
                             varname = signal_config["varname"]
 
-                            if variable_name.endswith(signal_name.upper()):
+                            check1 = "_".join(variable_name.split("_")[1:]).replace(plugin_instance.instances_name.upper(), var_prefix)
+                            check2 = "_".join(varname.split("_")[1:])
+
+                            if check1 == check2:
                                 source = variable_name.split()[-1].strip("*")
+
                                 if not boolean:
                                     output.append(f"    float value = data->{source};")
                                 else:
@@ -508,7 +512,6 @@ class cbase:
         diff = self.project.buffer_size - self.project.input_size
         output.append("void read_rxbuffer(uint8_t *rxBuffer) {")
         output.append(f"    // FPGA -> PC ({self.project.input_size} + {diff})")
-        output.append(f"    // FPGA -> PC ({self.project.input_size} + {diff})")
         input_pos = self.project.buffer_size
 
         variable_size = 32
@@ -584,6 +587,7 @@ class cbase:
         output.append(f"    {self.typemap.get('bool')}   *sys_enable;")
         output.append(f"    {self.typemap.get('bool')}   *sys_enable_request;")
         output.append(f"    {self.typemap.get('bool')}   *sys_status;")
+        output.append(f"    {self.typemap.get('bool')}   *machine_on;")
         output.append(f"    {self.typemap.get('bool')}   *sys_simulation;")
         output.append(f"    {self.typemap.get('u32')}   *fpga_timestamp;")
         output.append(f"    {self.typemap.get('float')} *duration;")
@@ -597,7 +601,6 @@ class cbase:
 
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
-                halname = signal_config["halname"]
                 varname = signal_config["varname"]
                 var_prefix = signal_config["var_prefix"]
                 direction = signal_config["direction"]
@@ -663,6 +666,10 @@ class cbase:
         output.append("} data_t;")
         output.append("static data_t *data;")
         output.append("")
+        return output
+
+    def variables_register(self):
+        output = []
 
         output.append("void register_signals(void) {")
         output.append("    int retval = 0;")
@@ -685,6 +692,7 @@ class cbase:
         output.append(self.vinit("sys_status", "bool", "sys-status", "input"))
         output.append(self.vinit("sys_enable", "bool", "sys-enable", "output"))
         output.append(self.vinit("sys_enable_request", "bool", "sys-enable-request", "output"))
+        output.append(self.vinit("machine_on", "bool", "machine-on", "output"))
         output.append(self.vinit("sys_simulation", "bool", "sys-simulation", "output"))
         output.append(self.vinit("duration", "float", "duration", "input"))
         output.append("    *data->duration = rtapi_get_time();")
@@ -696,10 +704,8 @@ class cbase:
                 var_prefix = signal_config["var_prefix"]
                 boolean = signal_config.get("bool")
                 hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
-                vtype = self.typemap.get(hal_type, hal_type)
                 signal_source = signal_config.get("source")
                 virtual = signal_config.get("virtual")
-                component = signal_config.get("component")
                 if virtual:
                     continue
                 if not boolean:
@@ -765,6 +771,10 @@ class cbase:
             defines["UDP_IP"] = f'"{ip}"'
             defines["SRC_PORT"] = src_port
             defines["DST_PORT"] = dst_port
+
+        udp_async = self.project.config["jdata"].get("async", False)
+        if udp_async:
+            defines["UDP_ASYNC"] = 1
         defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
         defines["SERIAL_BAUD"] = "B1000000"
 
@@ -782,6 +792,8 @@ class cbase:
             for key, value in self.module_info.items():
                 output.append(f'MODULE_{key}("{value}");')
             output.append("")
+
+        defines.update(self.project.config["jdata"].get("c_defines", {}))
 
         for key, value in defines.items():
             output.append(f"#define {key} {value}")
@@ -819,7 +831,9 @@ class cbase:
         output.append("")
 
         output += self.variables()
+        output += self.variables_register()
 
+        iface_data = None
         generic_spi = self.project.config["jdata"].get("generic_spi", False)
         rpi5 = self.project.config["jdata"].get("rpi5", False)
         if protocol == "SPI" and generic_spi is True:
@@ -847,7 +861,8 @@ class cbase:
             iface_data = iface_data.replace("rtapi_print", "printf")
             iface_data = iface_data.replace("strerror(errno)", '"error"')
             iface_data = iface_data.replace("errno", "1")
-        output.append(iface_data)
+        if iface_data:
+            output.append(iface_data)
 
         output.append("int interface_init(void) {")
         if protocol == "UART":
@@ -877,8 +892,8 @@ class cbase:
         output.append("/*")
         output.append("    hal functions")
         output.append("*/")
-
-        output.append(open(os.path.join(riocore_path, "files", self.filename_functions), "r").read())
+        if self.filename_functions:
+            output.append(open(os.path.join(riocore_path, "files", self.filename_functions), "r").read())
 
         output.append("")
         output.append("/***********************************************************************")
@@ -913,10 +928,19 @@ class cbase:
         output.append("    *data->duration = timestamp - fpga_stamp_last;")
         output.append("    fpga_stamp_last = timestamp;")
 
-        if self.rtapi_mode:
-            output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
+        conn_mode = "estop"  # always
+        if conn_mode == "estop":
+            if self.rtapi_mode:
+                output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
+            else:
+                output.append("    if (1) {")
         else:
-            output.append("    if (1) {")
+            if self.rtapi_mode:
+                output.append("    if (*data->sys_enable == 0 || *data->sys_status == 0) {")
+                output.append("        *data->sys_status = 0;")
+                output.append("    }")
+                output.append("    if (1) {")
+
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         output.append("        if (*data->sys_simulation != 1) {")
@@ -926,9 +950,15 @@ class cbase:
             output.append("            uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
         elif protocol == "SPI":
             output.append("            spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+
         elif protocol == "UDP":
+            output.append("#ifdef UDP_ASYNC")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE, 1);")
             output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
-            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE);")
+            output.append("#else")
+            output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE, 0);")
+            output.append("#endif")
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)

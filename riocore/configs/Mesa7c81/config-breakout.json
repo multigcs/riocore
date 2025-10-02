@@ -1,0 +1,319 @@
+{
+    "name": "Mesa7c81",
+    "boardcfg": "Mesa7c81",
+    "breakouts": [
+        {
+            "slot": "A",
+            "breakout": "china-bob5x",
+            "name": "bob1",
+            "pos": [
+                650.0,
+                150.0
+            ],
+            "rotate": 0
+        },
+        {
+            "slot": "C",
+            "breakout": "china-bob5x",
+            "name": "bob2",
+            "pos": [
+                650.0,
+                720.0
+            ],
+            "rotate": 0
+        }
+    ],
+    "flow": {
+        "view": {
+            "pos": [
+                47,
+                30
+            ],
+            "scale": 0.54
+        },
+        "board": {
+            "pos": [
+                160.0,
+                480.0
+            ],
+            "rotate": 90
+        },
+        "hal": {
+            "joint": [
+                1410.0,
+                300.0
+            ],
+            "spindle": [
+                1400.0,
+                100.0
+            ],
+            "spindle.0": [
+                1380.0,
+                90.0
+            ],
+            "joint.4": [
+                1380.0,
+                190.0
+            ],
+            "joint.3": [
+                1380.0,
+                270.0
+            ],
+            "joint.2": [
+                1380.0,
+                350.0
+            ],
+            "joint.1": [
+                1380.0,
+                430.0
+            ],
+            "joint.0": [
+                1380.0,
+                510.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "spi_prog",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                },
+                "prog": {
+                    "pin": "RPI:GPIO25"
+                },
+                "reboot": {
+                    "pin": "EEPROM:REBOOT"
+                },
+                "eeprom_mosi": {
+                    "pin": "EEPROM:MOSI"
+                },
+                "eeprom_miso": {
+                    "pin": "EEPROM:MISO"
+                },
+                "eeprom_sclk": {
+                    "pin": "EEPROM:SCLK"
+                },
+                "eeprom_sel": {
+                    "pin": "EEPROM:SEL"
+                }
+            },
+            "uid": "spi0",
+            "pos": [
+                300.0,
+                550.0
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L0",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true,
+                            "pos": [
+                                260.0,
+                                940.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                380.0,
+                920.0
+            ]
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:X:dir"
+                },
+                "step": {
+                    "pin": "bob1:X:step"
+                }
+            },
+            "uid": "stepdir0",
+            "pos": [
+                1090.0,
+                510.0
+            ],
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:Y:dir"
+                },
+                "step": {
+                    "pin": "bob1:Y:step"
+                }
+            },
+            "pos": [
+                1090.0,
+                430.0
+            ],
+            "uid": "stepdir1",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:Z:dir"
+                },
+                "step": {
+                    "pin": "bob1:Z:step"
+                }
+            },
+            "pos": [
+                1090.0,
+                350.0
+            ],
+            "uid": "stepdir2",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:A:dir"
+                },
+                "step": {
+                    "pin": "bob1:A:step"
+                }
+            },
+            "pos": [
+                1090.0,
+                270.0
+            ],
+            "uid": "stepdir3",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "dir": {
+                    "pin": "bob1:B:dir"
+                },
+                "step": {
+                    "pin": "bob1:B:step"
+                }
+            },
+            "pos": [
+                1090.0,
+                190.0
+            ],
+            "uid": "stepdir4",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "pwmout",
+            "uid": "pwmout0",
+            "pos": [
+                1090.0,
+                90.0
+            ],
+            "pins": {
+                "pwm": {
+                    "pin": "bob1:PWM:analog"
+                }
+            },
+            "signals": {
+                "dty": {
+                    "net": "spindle.0.speed-out",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "setp": ""
+                }
+            }
+        }
+    ]
+}

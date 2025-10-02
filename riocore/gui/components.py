@@ -563,7 +563,7 @@ class GuiComponents:
             if "linuxcnc" not in self.parent.config:
                 self.parent.config["linuxcnc"] = {}
             if "components" not in self.parent.config["linuxcnc"]:
-                self.parent.config["linuxcnc"] = []
+                self.parent.config["linuxcnc"]["components"] = []
 
             pins = {}
             self.parent.config["linuxcnc"]["components"].append(

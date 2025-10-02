@@ -6,9 +6,21 @@ class qtvcp:
     # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
     #
 
+    colormapping = {
+        "white": "<red>255</red><green>255</green><blue>255</blue>",
+        "black": "<red>0</red><green>0</green><blue>0</blue>",
+        "yellow": "<red>255</red><green>255</green><blue>0</blue>",
+        "red": "<red>255</red><green>0</green><blue>0</blue>",
+        "green": "<red>0</red><green>255</green><blue>0</blue>",
+        "blue": "<red>0</red><green>0</green><blue>255</blue>",
+    }
+
     def __init__(self, prefix="qtvcp.rio-gui", vcp_pos=None):
         self.prefix = prefix
         self.vcp_pos = vcp_pos
+
+    def check(self, configuration_path):
+        return True
 
     def draw_begin(self):
         self.cfgxml_data = []
@@ -340,6 +352,9 @@ QLabel {{
     def draw_number_s32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
+    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+        return self.draw_bar(name, halpin, setup=setup)
+
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         if hal_type == "float":
             display_format = setup.get("format", "0.2f")
@@ -421,6 +436,21 @@ QLabel {{
 
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)
+        color = setup.get("color")
+        on_color = "yellow"
+        # off_color = "red"
+        if color:
+            on_color = color
+            # off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".R"):
+            on_color = "red"
+            # off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".G"):
+            on_color = "green"
+            # off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".B"):
+            on_color = "blue"
+            # off_color = setup.get("off_color", "black")
         size = setup.get("size", 16)
         self.draw_hbox_begin()
         self.draw_title(title)
@@ -441,18 +471,7 @@ QLabel {{
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="color">')
         self.cfgxml_data.append("          <color>")
-        if halpin.endswith(".B"):
-            self.cfgxml_data.append("           <red>85</red>")
-            self.cfgxml_data.append("           <green>0</green>")
-            self.cfgxml_data.append("           <blue>255</blue>")
-        elif halpin.endswith(".R"):
-            self.cfgxml_data.append("           <red>255</red>")
-            self.cfgxml_data.append("           <green>85</green>")
-            self.cfgxml_data.append("           <blue>0</blue>")
-        else:
-            self.cfgxml_data.append("           <red>85</red>")
-            self.cfgxml_data.append("           <green>255</green>")
-            self.cfgxml_data.append("           <blue>0</blue>")
+        self.cfgxml_data.append(f"            {self.colormapping[on_color]}")
         self.cfgxml_data.append("          </color>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="maximumSize">')
@@ -465,3 +484,6 @@ QLabel {{
         self.cfgxml_data.append("    </item>")
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
+
+    def draw_rectled(self, name, halpin, setup={}):
+        return self.draw_led(name, halpin, setup=setup)

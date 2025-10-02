@@ -10,12 +10,15 @@ import sys
 import traceback
 
 from .generator.Gateware import Gateware
+
+# from .generator.EtherCat import EtherCat
 from .generator.Simulator import Simulator
 from .generator.Firmware import Firmware
 from .generator.LinuxCNC import LinuxCNC
 
 from riocore.generator.rosbridge import rosbridge
 from riocore.generator.mqttbridge import mqttbridge
+from riocore.generator.easycat import easycat
 from riocore.generator.jslib import jslib
 from riocore.generator.documentation import documentation
 
@@ -112,7 +115,7 @@ class Plugins:
             output.append("")
         return "\n".join(output)
 
-    def load_plugin(self, plugin_id, plugin_config, system_setup=None):
+    def load_plugin(self, plugin_id, plugin_config, system_setup=None, subfix=None):
         try:
             plugin_type = plugin_config["type"]
             if plugin_type not in self.plugin_modules:
@@ -122,10 +125,10 @@ class Plugins:
                     if self.plugin_builder(plugin_type, os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v"), plugin_config):
                         self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
                 elif not plugin_type or plugin_type[0] != "_":
-                    print(f"WARNING: plugin not found: {plugin_type}")
+                    print(f"WARNING: plugin not found: {plugin_type}", os.path.join(riocore_path, "plugins", plugin_type, "plugin.py"))
 
             if plugin_type in self.plugin_modules:
-                plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
+                plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup, subfix=subfix)
                 plugin_instance.setup_object = plugin_config
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
@@ -133,9 +136,6 @@ class Plugins:
                             print(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
                             del pin_config["pin"]
                 self.plugin_instances.append(plugin_instance)
-
-                # if not os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/testb.v") and os.path.isfile(f"{riocore_path}/plugins/{plugin_type}/{plugin_type}.v"):
-                #    self.testbench_builder(plugin_type, plugin_instance)
 
                 return plugin_instance
         except Exception:
@@ -494,10 +494,12 @@ class Project:
         self.generator_linuxcnc = LinuxCNC(self)
         if self.config["toolchain"]:
             self.generator_gateware = Gateware(self)
+            # self.generator_ethercat = EtherCat(self)
             self.generator_simulator = Simulator(self)
             self.generator_firmware = Firmware(self)
         else:
             self.generator_gateware = None
+            # self.generator_ethercat = None
             self.generator_simulator = None
             self.generator_firmware = None
 
@@ -578,6 +580,8 @@ class Project:
 
     def load_config(self, configuration, output_path=None):
         project = {}
+        project["boardcfg_path"] = ""
+        project["json_path"] = ""
 
         if output_path is None:
             output_path = "Output"
@@ -621,6 +625,7 @@ class Project:
             print(f"loading board setup: {board}")
             board_file = self.get_boardpath(board)
             bdata = open(board_file, "r").read()
+            project["boardcfg_path"] = os.path.dirname(board_file)
             project["board_data"] = json.loads(bdata)
             if "name" in project["board_data"]:
                 project["board"] = project["board_data"]["name"]
@@ -630,6 +635,8 @@ class Project:
 
         if "flashcmd" in project["jdata"]:
             project["flashcmd"] = project["jdata"]["flashcmd"]
+
+        pin_mapping = {}
 
         # loading modules
         project["modules"] = {}
@@ -643,6 +650,11 @@ class Project:
         for slot_n, slot in enumerate(project["jdata"].get("slots", [])):
             spins = slot["pins"]
             slotname = slot.get("name", f"slot{slot_n}")
+            for spin, spin_data in spins.items():
+                if isinstance(spin_data, str):
+                    spin_data = {"pin": spin_data}
+                pin_mapping[f"{slotname}:{spin}"] = spin_data["pin"]
+
             modules = []
             # check old config style
             if "module" in slot:
@@ -697,7 +709,29 @@ class Project:
                     print(f"ERROR: module {module} not found")
                     exit(1)
 
+        for breakout_data in project["jdata"].get("breakouts", []):
+            breakout = breakout_data.get("breakout")
+            bslot_name = breakout_data.get("slot")
+            breakout_name = breakout_data.get("name")
+            breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
+            breakoutJsonStr = open(breakout_path, "r").read()
+            breakout_defaults = json.loads(breakoutJsonStr)
+            for slot in breakout_defaults["slots"]:
+                slot_name = slot["name"]
+                for pin_name, pin_data in slot["pins"].items():
+                    target = f"{bslot_name}:{pin_data['pin']}"
+                    if target in pin_mapping:
+                        pin_mapping[f"{breakout_name}:{slot_name}:{pin_name}"] = pin_mapping[target]
+
+        # update plugin pins
+        for plugin in project["plugins"]:
+            for pin_name, pin_data in plugin.get("pins", {}).items():
+                if "pin" in pin_data and pin_data["pin"] in pin_mapping:
+                    pin_data["pin"] = pin_mapping[pin_data["pin"]]
+
         self.config = project
+        self.config["pin_mapping"] = pin_mapping
+        self.config["board_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
         self.config["speed"] = int(project["jdata"].get("clock", {}).get("speed", 1))
@@ -1043,14 +1077,19 @@ class Project:
                 generate_pll = False
             if self.generator_gateware:
                 self.generator_gateware.generator(generate_pll=generate_pll)
-        if protocol == "UDP":
-            self.generator_simulator.generator()
+            # if self.generator_ethercat:
+            #     self.generator_ethercat.generator()
         self.generator_linuxcnc.generator(preview=preview)
 
-        if toolchain:
-            rosbridge(self)
-            mqttbridge(self)
-            jslib(self)
+        if toolchain and not preview:
+            if protocol == "UDP":
+                self.generator_simulator.generator()
+            if protocol == "ETHERCAT":
+                easycat(self)
+            else:
+                rosbridge(self)
+                mqttbridge(self)
+                jslib(self)
             documentation(self)
 
         target = os.path.join(self.config["output_path"], ".config.json")

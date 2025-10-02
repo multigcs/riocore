@@ -32,8 +32,19 @@ class Plugin(PluginBase):
                 "size": 32,
                 "direction": "input",
             },
+            "angle": {
+                "size": 16,
+                "direction": "input",
+            },
         }
         self.OPTIONS = {
+            "poles": {
+                "default": 7,
+                "type": int,
+                "min": 3,
+                "max": 20,
+                "description": "number of motor poles",
+            },
             "rps_sum": {
                 "default": 10,
                 "type": int,
@@ -42,6 +53,8 @@ class Plugin(PluginBase):
                 "description": "number of collected values before calculate the rps value",
             },
         }
+
+        self.scale = 90
 
         rps_sum = self.plugin_setup.get("rps_sum", self.OPTIONS["rps_sum"]["default"])
         rps_calculation = f"""
@@ -69,6 +82,10 @@ class Plugin(PluginBase):
                 },
                 "description": "position feedback in steps",
             },
+            "angle": {
+                "direction": "input",
+                "description": "angle (0-360°)",
+            },
             "rps": {
                 "direction": "input",
                 "source": "position",
@@ -84,8 +101,11 @@ class Plugin(PluginBase):
         self.last_pos = 0
 
     def convert(self, signal_name, signal_setup, value):
+        if signal_name == "angle":
+            return value
+            return value * 360 / 90
         if signal_name == "position":
-            scale = self.plugin_setup.get("signals", {}).get(signal_name, {}).get("scale", 1.0)
+            scale = self.plugin_setup.get("signals", {}).get(signal_name, {}).get("scale", self.scale)
 
             # calc rps/rpm
             if self.duration > 0:
@@ -94,7 +114,7 @@ class Plugin(PluginBase):
                 self.SIGNALS["rps"]["value"] = rps
                 self.SIGNALS["rpm"]["value"] = rps * 60
             self.last_pos = value
-
+            """
             vmin = self.plugin_setup.get("min")
             vmax = self.plugin_setup.get("max")
             if vmin is not None and value < vmin:
@@ -103,6 +123,8 @@ class Plugin(PluginBase):
                 value = vmax
             if scale is not None:
                 value *= scale
+            """
+
         return value
 
     def convert_c(self, signal_name, signal_setup):

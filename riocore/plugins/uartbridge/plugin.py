@@ -434,6 +434,6 @@ class Plugin(PluginBase):
         output.append("}")
         output.append("")
 
-        folder = f"{self.system_setup['output_path']}/arduino_example_{self.instances_name}"
-        os.makedirs(f"{folder}/src/", exist_ok=True)
-        open(f"{folder}/src/main.ino", "w").write("\n".join(output))
+        folder = os.path.join(self.system_setup["output_path"], f"arduino_example_{self.instances_name}")
+        os.makedirs(os.path.join(folder, "src"), exist_ok=True)
+        open(os.path.join(folder, "src", "main.ino"), "w").write("\n".join(output))

@@ -41,7 +41,6 @@ class Plugin(PluginBase):
         defines.append(f"reg [{num_leds - 1}:0] {self.expansion_prefix}_GREEN = {num_leds}'d0;")
         defines.append(f"reg [{num_leds - 1}:0] {self.expansion_prefix}_BLUE = {num_leds}'d0;")
         defines.append(f"reg [{num_leds - 1}:0] {self.expansion_prefix}_RED = {num_leds}'d0;")
-
         return defines
 
     def expansion_outputs(self):

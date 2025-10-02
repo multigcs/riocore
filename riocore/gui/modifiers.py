@@ -2,10 +2,6 @@ from functools import partial
 
 from riocore.modifiers import Modifiers
 
-from riocore.gui.widgets import (
-    STYLESHEET,
-)
-
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
@@ -53,23 +49,38 @@ class GuiModifiers:
 
         def move_left():
             if dialog.modifier_id > 0:
+                positions = []
+                for modifier in modifier_list:
+                    positions.append(modifier.get("pos"))
                 modifier_list[dialog.modifier_id - 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id - 1]
                 if parent_layout:
                     self.modifier_list_update(parent_layout, modifier_list)
                 dialog.modifier_id -= 1
+                for pn, position in enumerate(positions):
+                    modifier_list[pn]["pos"] = position
+                    if position is None:
+                        del modifier_list[pn]["pos"]
                 update()
 
         def move_right():
             if dialog.modifier_id < len(modifier_list) - 1:
+                positions = []
+                for modifier in modifier_list:
+                    positions.append(modifier.get("pos"))
                 modifier_list[dialog.modifier_id + 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id + 1]
                 if parent_layout:
                     self.modifier_list_update(parent_layout, modifier_list)
                 dialog.modifier_id += 1
+                for pn, position in enumerate(positions):
+                    modifier_list[pn]["pos"] = position
+                    if position is None:
+                        del modifier_list[pn]["pos"]
                 update()
 
         dialog = QDialog()
         dialog.setWindowTitle("edit Modifier")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog.modifier_id = modifier_id
         modifier_config = modifier_list[dialog.modifier_id]
         modifier_type = modifier_config.get("type", "???")
@@ -109,11 +120,12 @@ class GuiModifiers:
         if dialog.exec():
             modifier_list[dialog.modifier_id] = modifier_config
 
-    def modifier_list_add(self, parent_layout, modifier_list):
+    def modifier_list_add(self, parent_layout=None, modifier_list=None):
         modifiers = Modifiers()
         dialog = QDialog()
         dialog.setWindowTitle("add Modifier")
-        dialog.setStyleSheet(STYLESHEET)
+        if hasattr(self.parent, "STYLESHEET"):
+            dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog_buttonBox.accepted.connect(dialog.accept)
 
@@ -168,12 +180,16 @@ class GuiModifiers:
         if dialog.exec():
             row = modifier_table.currentRow()
             modifier_type = modifier_table.item(row, 0).text()
+            if modifier_list is None:
+                return modifier_type
             modifier_list.append({"type": modifier_type})
             self.modifier_list_update(parent_layout, modifier_list)
             if modifier_type != "invert":
                 self.edit_modifier(modifier_list, len(modifier_list) - 1, parent_layout)
 
     def modifier_list_update(self, parent_layout, modifier_list):
+        if parent_layout is None:
+            return
         pc = parent_layout.count()
         for i in reversed(range(pc)):
             parent_layout.itemAt(i).widget().setParent(None)

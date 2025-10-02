@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.9.4
+
+### Gui and Generator
+* adding new experimental graphical setup tool: rio-flow
+* support for more hal components (conv-*-*, limit, wcomp, delay)
+
+### Plugins
+* adding experimental riosub plugin, to chain multiple FPGA's
+* adding absulute encoder plugins (experimental) for panasonic, t3d, stepperonline
+* adding new spi interface with programming support (spi passthrough)
+* modbus: some little fixes
+
+### Modifiers
+* adding delay with separately configurable rising/faling edges
+
+### Boards
+* adding Mesa 7c81 support
+
+### Toolchains
+* vivado: initial support for Xilinx Zynq 7010
+* ise: pll support for Spartan6
+
+### Generator
+* adding experimental easycat support (EtherCat-Bridge)
+* adding experimental support for breakout-boards (for rio-flow / only one at the moment)
+
+
 ## v0.9.3
 
 ### Gui and Generator

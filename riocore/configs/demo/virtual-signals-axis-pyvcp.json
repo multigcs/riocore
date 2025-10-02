@@ -69,6 +69,126 @@
         },
         {
             "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value <= 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "<= 50"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Under_Equal"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value >= 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": ">= 50"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Over_Equal"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value < 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "< 50"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Under"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value > 50",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "> 50"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Over"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "riov.Virt-Float-In1.value <> 40,60",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "between 40-60"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Inside"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "net": "!(riov.Virt-Float-In1.value <> 40,60)",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "outside 40-60"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Outside"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "_net": "riov.Virt-Float-In1.value >= sig_riov_Virt-Float-In2_value",
+                    "net": "riov.Virt-Float-In1.value >= riov.Virt-Float-In2.value",
+                    "display": {
+                        "section": "Status",
+                        "color": "green",
+                        "off_color": "red",
+                        "title": "In1 >= In2"
+                    }
+                }
+            },
+            "vtype": "bool",
+            "dir": "output",
+            "name": "Val1_Over_Val2"
+        },
+        {
+            "type": "signal",
             "uid": "signal0",
             "signals": {
                 "value": {
@@ -98,7 +218,41 @@
                 }
             },
             "dir": "output",
-            "name": "Virt-Float-Out1"
+            "name": "Float-Out1"
+        },
+        {
+            "type": "signal",
+            "uid": "signal1",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 100.0
+                    },
+                    "net": "limit(riov.Virt-Float-In1.value, 25.0, 75.0)"
+                }
+            },
+            "dir": "output",
+            "name": "Limit"
+        },
+        {
+            "type": "signal",
+            "uid": "signal1",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "status",
+                        "type": "bar",
+                        "min": 0.0,
+                        "max": 100.0
+                    },
+                    "net": "deadzone(riov.Virt-Float-In1.value, 50.0, 10.0)"
+                }
+            },
+            "dir": "output",
+            "name": "Deadzone"
         },
         {
             "type": "signal",
@@ -236,6 +390,37 @@
             "dir": "output",
             "vtype": "bool",
             "name": "Virt-Bool-Out5"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "display": {
+                        "title": "Delayed",
+                        "section": "status",
+                        "estop": true,
+                        "type": "led"
+                    },
+                    "net": "delay(riov.Virt-Bool-In1.value, 0.5, 1)"
+                }
+            },
+            "dir": "output",
+            "vtype": "bool",
+            "name": "Virt-Bool-Delayed"
+        },
+        {
+            "type": "signal",
+            "signals": {
+                "value": {
+                    "display": {
+                        "title": "Converted",
+                        "section": "status"
+                    },
+                    "net": "conv(riov.Virt-Bool-In1.value, bit, float)"
+                }
+            },
+            "dir": "output",
+            "name": "Virt-Float-Conv"
         }
     ],
     "modules": [
@@ -245,8 +430,12 @@
         }
     ],
     "linuxcnc": {
+        "debug_info": true,
         "simulation": true,
         "gui": "axis",
-        "vcp_type": "pyvcp"
+        "vcp_type": "pyvcp",
+        "net": [
+            {"source": "delay(riov.Virt-Bool-In1.value, -0.5, 1)", "target": "iocontrol.0.emc-enable-in"}
+        ]
     }
 }

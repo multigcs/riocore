@@ -1,0 +1,582 @@
+{
+    "name": "Mesa7c81",
+    "boardcfg": "Mesa7c81",
+    "modules": [
+        {
+            "slot": "A",
+            "module": "china-bob5x",
+            "setup": {
+                "enable": {
+                    "type": "bitout",
+                    "name": "enable",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                },
+                                {
+                                    "type": "onerror"
+                                },
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    },
+                    "uid": "bitout0",
+                    "signals": {
+                        "bit": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "home-x": {
+                    "type": "bitin",
+                    "name": "home-x",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                            "net": "joint.0.home-sw-in",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitin1"
+                },
+                "home-y": {
+                    "type": "bitin",
+                    "name": "home-y",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                            "net": "joint.1.home-sw-in",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitin2"
+                },
+                "home-z": {
+                    "type": "bitin",
+                    "name": "home-z",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "signals": {
+                        "bit": {
+                            "net": "joint.2.home-sw-in",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitin3"
+                },
+                "spindle-enable": {
+                    "type": "bitout",
+                    "name": "spindle-enable",
+                    "signals": {
+                        "bit": {
+                            "net": "spindle.0.on",
+                            "function": "",
+                            "setp": ""
+                        }
+                    },
+                    "uid": "bitout4"
+                },
+                "pwm": {
+                    "type": "pwmout",
+                    "name": "pwm",
+                    "pins": {
+                        "pwm": {
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    },
+                    "uid": "pwmout5",
+                    "signals": {
+                        "dty": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "e-stop": {
+                    "type": "bitin",
+                    "name": "e-stop",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "uid": "bitin6",
+                    "signals": {
+                        "bit": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "probe": {
+                    "type": "bitin",
+                    "name": "probe",
+                    "pins": {
+                        "bit": {
+                            "pull": "up"
+                        }
+                    },
+                    "uid": "bitin7",
+                    "signals": {
+                        "bit": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-0": {
+                    "name": "joint-0",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir8",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-1": {
+                    "name": "joint-1",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir9",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-2": {
+                    "name": "joint-2",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir10",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                },
+                "joint-3": {
+                    "name": "joint-3",
+                    "type": "stepdir",
+                    "is_joint": true,
+                    "uid": "stepdir11",
+                    "signals": {
+                        "velocity": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "position": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        },
+                        "enable": {
+                            "net": "",
+                            "function": "",
+                            "setp": ""
+                        }
+                    }
+                }
+            },
+            "pos": [
+                682.6307611948574,
+                44.73675124387307
+            ]
+        }
+    ],
+    "flow": {
+        "view": {
+            "pos": [
+                58,
+                89
+            ],
+            "scale": 0.8662948518477234
+        },
+        "board": {
+            "pos": [
+                140.0,
+                160.3383213016986
+            ],
+            "rotate": 90
+        }
+    },
+    "plugins": [
+        {
+            "type": "spi_prog",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                },
+                "prog": {
+                    "pin": "RPI:GPIO25"
+                },
+                "reboot": {
+                    "pin": "EEPROM:REBOOT"
+                },
+                "eeprom_mosi": {
+                    "pin": "EEPROM:MOSI"
+                },
+                "eeprom_miso": {
+                    "pin": "EEPROM:MISO"
+                },
+                "eeprom_sclk": {
+                    "pin": "EEPROM:SCLK"
+                },
+                "eeprom_sel": {
+                    "pin": "EEPROM:SEL"
+                }
+            },
+            "uid": "spi0",
+            "pos": [
+                290.0,
+                230.0
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L0",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true,
+                            "pos": [
+                                460.0,
+                                560.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                580.0,
+                550.0
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:L1",
+                    "modifier": []
+                }
+            },
+            "uid": "blink1",
+            "pos": [
+                460.0,
+                610.0
+            ]
+        },
+        {
+            "type": "modbus",
+            "pins": {
+                "tx": {
+                    "pin": "MODBUS1:TX",
+                    "modifier": []
+                },
+                "rx": {
+                    "pin": "MODBUS1:RX",
+                    "modifier": []
+                },
+                "tx_enable": {
+                    "pin": "MODBUS1:TX_EN",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                102.37248422110758,
+                                651.4321860384546
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "modbus0",
+            "pos": [
+                224.34619708617208,
+                608.1457851264568
+            ],
+            "signals": {
+                "temperature": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_0": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_1": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_2": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_3": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_4": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_5": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_6": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_7": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_8": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_9": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_10": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_11": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_12": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_13": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_14": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais1_16_15": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_0": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_1": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_2": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_3": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_4": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_5": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_6": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_7": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_8": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_9": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_10": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_11": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_12": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_13": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_14": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                },
+                "relais17_32_15": {
+                    "display": {},
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "config": {
+                "relais1_16": {
+                    "address": 1,
+                    "type": 6,
+                    "register": 112,
+                    "datatype": "bool",
+                    "values": 16,
+                    "scale": 1.0,
+                    "unit": "V",
+                    "error_values": "",
+                    "format": "0.1f",
+                    "timeout": 100,
+                    "delay": 60,
+                    "direction": "output",
+                    "priority": 5
+                },
+                "relais17_32": {
+                    "address": 1,
+                    "type": 6,
+                    "register": 113,
+                    "datatype": "bool",
+                    "values": 16,
+                    "scale": 1.0,
+                    "unit": "V",
+                    "error_values": "",
+                    "format": "0.1f",
+                    "timeout": 100,
+                    "delay": 60,
+                    "direction": "output",
+                    "priority": 5
+                }
+            }
+        }
+    ]
+}

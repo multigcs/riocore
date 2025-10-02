@@ -48,7 +48,7 @@ module hx711
 
             end else begin
                 sclk <= 0;
-                weight <= tmp_data[23:3];
+                weight <= {3'd0, tmp_data[23:3]};
                 state <= state + 1;
             end
         end else if (state <= 600) begin

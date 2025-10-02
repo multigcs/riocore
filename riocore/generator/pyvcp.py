@@ -8,6 +8,9 @@ class pyvcp:
         self.prefix = prefix
         self.vcp_pos = vcp_pos
 
+    def check(self, configuration_path):
+        return True
+
     def draw_begin(self):
         self.root = etree.Element("pyvcp")
         self.parent = self.root
@@ -417,6 +420,9 @@ class pyvcp:
     def draw_number_s32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
+    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+        return self.draw_bar(name, halpin, setup=setup)
+
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         title = setup.get("title", name)
         if hal_type == "float":
@@ -508,9 +514,10 @@ class pyvcp:
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)
         size = setup.get("size", 16)
-        color = setup.get("color")
         self.draw_hbox_begin()
-        self.draw_title(title, size=30)
+        if title:
+            self.draw_title(title, size=30)
+        color = setup.get("color")
         on_color = "yellow"
         off_color = "red"
         if color:
@@ -556,7 +563,8 @@ class pyvcp:
         color = setup.get("color")
         off_color = setup.get("off_color", "yellow")
         self.draw_hbox_begin()
-        self.draw_title(title, size=30)
+        if title:
+            self.draw_title(title, size=30)
         on_color = "red"
         off_color = "yellow"
         if color:

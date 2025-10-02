@@ -35,24 +35,24 @@ module stepper
             end else begin
                 double <= 0;
             end
-            seq[0] <= 4'b1000;
-            seq[1] <= 4'b1100;
-            seq[2] <= 4'b0100;
-            seq[3] <= 4'b0110;
-            seq[4] <= 4'b0010;
-            seq[5] <= 4'b0011;
-            seq[6] <= 4'b0001;
-            seq[7] <= 4'b1001;
+            seq[0] = 4'b1000;
+            seq[1] = 4'b1100;
+            seq[2] = 4'b0100;
+            seq[3] = 4'b0110;
+            seq[4] = 4'b0010;
+            seq[5] = 4'b0011;
+            seq[6] = 4'b0001;
+            seq[7] = 4'b1001;
         end else if (STEPTYPE == TYPE_FULL) begin
-            double <= 1;
-            seq[0] <= 4'b1001;
-            seq[1] <= 4'b1001;
-            seq[2] <= 4'b1100;
-            seq[3] <= 4'b1100;
-            seq[4] <= 4'b0110;
-            seq[5] <= 4'b0110;
-            seq[6] <= 4'b0011;
-            seq[7] <= 4'b0011;
+            double = 1;
+            seq[0] = 4'b1001;
+            seq[1] = 4'b1001;
+            seq[2] = 4'b1100;
+            seq[3] = 4'b1100;
+            seq[4] = 4'b0110;
+            seq[5] = 4'b0110;
+            seq[6] = 4'b0011;
+            seq[7] = 4'b0011;
         end
     end
 

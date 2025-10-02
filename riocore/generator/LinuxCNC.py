@@ -86,26 +86,28 @@ class LinuxCNC:
             "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
             "ANGULAR_INCREMENTS": "1, 5, 10, 30, 45, 90, 180, 360",
             "INCREMENTS": "50mm, 10mm, 5mm, 1mm, .5mm, .1mm, .05mm, .01mm",
-            "SPINDLES": 1,
+            # feedrate
             "MAX_FEED_OVERRIDE": 5.0,
-            "MIN_SPINDLE_OVERRIDE": 0.5,
-            "MAX_SPINDLE_OVERRIDE": 1.2,
-            "MIN_SPINDLE_SPEED": 120,
-            "DEFAULT_SPINDLE_SPEED": 1250,
-            "MAX_SPINDLE_SPEED": 3600,
-            "MIN_SPINDLE_0_OVERRIDE": 0.5,
-            "MAX_SPINDLE_0_OVERRIDE": 1.2,
-            "MIN_SPINDLE_0_SPEED": 0,
-            "DEFAULT_SPINDLE_0_SPEED": 200,
-            "SPINDLE_INCREMENT": 10,
-            "MAX_SPINDLE_0_SPEED": 300,
-            "MAX_SPINDLE_POWER": 300,
             "MIN_LINEAR_VELOCITY": 0.0,
-            "DEFAULT_LINEAR_VELOCITY": 40.0,
             "MAX_LINEAR_VELOCITY": 45.0,
+            "DEFAULT_LINEAR_VELOCITY": 40.0,
             "MIN_ANGULAR_VELOCITY": 0.0,
-            "DEFAULT_ANGULAR_VELOCITY": 2.5,
             "MAX_ANGULAR_VELOCITY": 5.0,
+            "DEFAULT_ANGULAR_VELOCITY": 2.5,
+            # spindle
+            "SPINDLES": 1,
+            "MIN_SPINDLE_OVERRIDE": 0.5,
+            "MAX_SPINDLE_OVERRIDE": 2.0,
+            "MIN_SPINDLE_SPEED": 0,
+            "MAX_SPINDLE_SPEED": 22000,
+            "DEFAULT_SPINDLE_SPEED": 6000,
+            "MIN_SPINDLE_0_OVERRIDE": 0.5,
+            "MAX_SPINDLE_0_OVERRIDE": 2.0,
+            "MIN_SPINDLE_0_SPEED": 0,
+            "MAX_SPINDLE_0_SPEED": 22000,
+            "DEFAULT_SPINDLE_0_SPEED": 6000,
+            "SPINDLE_INCREMENT": 100,
+            "MAX_SPINDLE_POWER": 1500,
         },
         "MQTT": {
             # "DRYRUN": "--dryrun",
@@ -159,6 +161,7 @@ class LinuxCNC:
             "DEFAULT_ANGULAR_VELOCITY": 60.0,
             "MAX_ANGULAR_VELOCITY": 100.0,
             "NO_FORCE_HOMING": 1,
+            "SPINDLES": 1,
         },
         "EMCIO": {
             "EMCIO": "io",
@@ -175,9 +178,14 @@ class LinuxCNC:
         self.halextras = []
         self.mqtt_publisher = []
         self.project = project
+        self.protocol = project.config["jdata"].get("protocol", "SPI")
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
+        if self.protocol == "ETHERCAT":
+            self.hal_prefix = "lcec.0.rio"
+        else:
+            self.hal_prefix = "rio"
         self.create_axis_config()
         self.addons = {}
         self.gpionames = []
@@ -260,7 +268,7 @@ class LinuxCNC:
                 self.gui_prefix = "qtdragon.rio-gui"
             elif gui in {"probe_basic", "probe_basic_lathe"}:
                 self.gui_type = "qtpyvcp"
-                self.gui_prefix = "qtpyvcp.rio"
+                self.gui_prefix = "qtpyvcp"
             elif gui in {"gscreen"}:
                 self.gui_type = "gladevcp"
                 self.gui_prefix = "rio-gui"
@@ -268,6 +276,9 @@ class LinuxCNC:
             elif gui in {"flexgui"}:
                 self.gui_type = "flexvcp"
                 self.gui_prefix = "flexhal.rio"
+            elif gui in {"tnc"}:
+                self.gui_type = "qtpyvcp"
+                self.gui_prefix = "qtpyvcp"
             # elif gui in {"woodpecker"}:
             #    self.gui_type = "qtvcp"
             #    self.gui_prefix = "qtvcp"
@@ -277,7 +288,8 @@ class LinuxCNC:
         self.startscript()
         self.readme()
         if self.project.config["toolchain"]:
-            component(self.project)
+            if self.protocol != "ETHERCAT":
+                component(self.project)
         self.hal()
         self.riof()
         self.misc()
@@ -439,12 +451,12 @@ class LinuxCNC:
             if "motion.probe-input" in netlist:
                 if machinetype == "lathe":
                     if axis_name == "X":
-                        ini_setup["HALUI"]["MDI_COMMAND|Touch-X"] = "o<x_touch> call"
+                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-X"] = "o<x_touch> call"
                     elif axis_name == "Z":
-                        ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
                 else:
                     if axis_name == "Z":
-                        ini_setup["HALUI"]["MDI_COMMAND|Touch-Z"] = "o<z_touch> call"
+                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
 
         if gui == "axis":
             if gui_type == "pyvcp":
@@ -518,7 +530,9 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["DISPLAY"] = "flexgui"
             ini_setup["DISPLAY"]["TOOL_EDITOR"] = "tooledit"
             ini_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
-            # ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "halcmd loadusr -Wn qtvcp qtvcp -d -c qtvcp -x {XID} rio-gui"
+            ini_setup["FLEXGUI"] = {
+                "QSS": "flexgui.qss",
+            }
 
         elif gui in {"qtdragon", "qtdragon_hd"}:
             qtdragon_setup = {
@@ -538,125 +552,16 @@ class LinuxCNC:
                 "PROBE": {
                     "USE_PROBE": "NO",
                 },
-                "DIALOG_GEOMETRY": {
-                    "LncMessage-geometry": "790 510 318 118",
-                    "ToolChangeDialog-geometry": "764 357 340 243",
-                },
-                "DIALOG_OPTIONS": {
-                    "EntryDialog_play_sound": "False",
-                    "EntryDialog_sound_type": "READY",
-                    "toolDialog_play_sound": "False",
-                    "toolDialog_speak": "False",
-                    "toolDialog_sound_type": "READY",
-                    "fileDialog_play_sound": "False",
-                    "fileDialog_sound_type": "READY",
-                    "CalculatorDialog_play_sound": "False",
-                    "CalculatorDialog_sound_type": "READY",
-                    "MachineLogDialog_play_sound": "False",
-                    "MachineLogDialog_sound_type": "READY",
-                    "RunFromLineDialog_play_sound": "False",
-                    "RunFromLineDialog_sound_type": "READY",
-                },
-                "BOOK_KEEPING": {
-                    "last_loaded_file": "",
-                    "style_QSS_Path": "DEFAULT",
-                },
-                "ORIGINOFFSET_SYSTEM_NAMES": {
-                    "__dialogOffsetViewWidget-G54": "User System 1",
-                    "__dialogOffsetViewWidget-G55": "User System 2",
-                    "__dialogOffsetViewWidget-G56": "User System 3",
-                    "__dialogOffsetViewWidget-G57": "User System 4",
-                    "__dialogOffsetViewWidget-G58": "User System 5",
-                    "__dialogOffsetViewWidget-G59": "User System 6",
-                    "__dialogOffsetViewWidget-G59.1": "User System 7",
-                    "__dialogOffsetViewWidget-G59.2": "User System 8",
-                    "__dialogOffsetViewWidget-G59.3": "User System 9",
-                    "offset_table-G54": "User System 1",
-                    "offset_table-G55": "User System 2",
-                    "offset_table-G56": "User System 3",
-                    "offset_table-G57": "User System 4",
-                    "offset_table-G58": "User System 5",
-                    "offset_table-G59": "User System 6",
-                    "offset_table-G59.1": "User System 7",
-                    "offset_table-G59.2": "User System 8",
-                    "offset_table-G59.3": "User System 9",
-                },
-                "SCREEN_OPTIONS": {
-                    "catch_errors": "True",
-                    "desktop_notify": "True",
-                    "notify_max_msgs": "10",
-                    "shutdown_check": "True",
-                    "sound_player_on": "False",
-                    "MainWindow-geometry": "0 55 1680 964",
-                },
-                "MCH_MSG_OPTIONS": {
-                    "mchnMsg_play_sound": "False",
-                    "mchnMsg_speak_errors": "False",
-                    "mchnMsg_speak_text": "True",
-                    "mchnMsg_sound_type": "ATTENTION",
-                },
-                "USR_MSG_OPTIONS": {
-                    "usermsg_play_sound": "False",
-                    "userMsg_sound_type": "ATTENTION",
-                    "userMsg_use_focusOverlay": "False",
-                },
-                "SHUTDOWN_OPTIONS": {
-                    "shutdown_play_sound": "False",
-                    "shutdown_alert_sound_type": "READY",
-                    "shutdown_exit_sound_type": "LOGOUT",
-                    "shutdown_msg_title": "Do you want to Shutdown now?",
-                    "shutdown_msg_focus_text": "",
-                    "shutdown_msg_detail": "",
-                },
-                "NOTIFY_OPTIONS": {
-                    "notify_start_greeting": "False",
-                    "notify_start_title": "Welcome",
-                    "notify_start_detail": "This option can be changed in the preference file",
-                    "notify_start_timeout": "5",
-                },
-                "SCREEN_CONTROL_LAST_SETTING": {
-                    "gcodegraphics-user-view": "p",
-                    "gcodegraphics-user-zoom": "44.78930710676536",
-                    "gcodegraphics-user-panx": "-48.0",
-                    "gcodegraphics-user-pany": "14.0",
-                    "gcodegraphics-user-lat": "-60.0",
-                    "gcodegraphics-user-lon": "335.0",
-                },
-                "CUSTOM_FORM_ENTRIES": {
-                    "Laser X": "0.0",
-                    "Laser Y": "0.0",
-                    "Sensor X": "0.0",
-                    "Sensor Y": "0.0",
-                    "Camera X": "0.0",
-                    "Camera Y": "0.0",
-                    "Work Height": "20.0",
-                    "Touch Height": "40.0",
-                    "Sensor Height": "40.0",
-                    "Search Velocity": "40.0",
-                    "Probe Velocity": "50.0",
-                    "Max Probe": "30.0",
-                    "Retract Distance": "2.0",
-                    "Z Safe Travel": "-2.0",
-                    "Eoffset count": "0",
-                    "External offsets": "True",
-                    "Reload program": "False",
-                    "Reload tool": "True",
-                    "Use keyboard": "True",
-                    "Run from line": "False",
-                    "Use virtual keyboard": "False",
-                    "Use tool sensor": "True",
-                    "Use camera": "False",
-                    "Use alpha display mode": "True",
-                    "Inhibit display mouse selection": "True",
-                    "Camview xscale": "100",
-                    "Camview yscale": "100",
-                    "Camview cam number": "0",
-                },
             }
+
+            if "motion.probe-input" in netlist:
+                qtdragon_setup["PROBE"]["USE_PROBE"] = "versaprobe"
+
             if gui_type == "qtvcp":
                 qtdragon_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
                 qtdragon_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "qtvcp rio-gui"
-                qtdragon_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "tabWidget_utilities"
+                # qtdragon_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "tabWidget_utilities"
+                qtdragon_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "stackedWidget_mainTab"
 
             for section, sdata in qtdragon_setup.items():
                 if section not in ini_setup:
@@ -843,9 +748,9 @@ class LinuxCNC:
                     setp = userconfig.get("setp")
                     if not netname and setp is not None:
                         if scale:
-                            self.halg.setp_add(f"rio.{halname}-scale", scale)
+                            self.halg.setp_add(f"{self.hal_prefix}.{halname}-scale", scale)
                         if offset:
-                            self.halg.setp_add(f"rio.{halname}-offset", offset)
+                            self.halg.setp_add(f"{self.hal_prefix}.{halname}-offset", offset)
 
         # rio-functions
         self.rio_functions = {}
@@ -862,6 +767,10 @@ class LinuxCNC:
                         if rio_function[0] not in self.rio_functions:
                             self.rio_functions[rio_function[0]] = {}
                         self.rio_functions[rio_function[0]][rio_function[1]] = halname
+                    elif function and rio_function[0] in {"chargepump"}:
+                        if rio_function[0] not in self.rio_functions:
+                            self.rio_functions[rio_function[0]] = []
+                        self.rio_functions[rio_function[0]].append(halname)
                     elif function and rio_function[0] in {"wcomp"}:
                         if rio_function[0] not in self.rio_functions:
                             self.rio_functions[rio_function[0]] = {}
@@ -874,6 +783,17 @@ class LinuxCNC:
                             "vmax": vmax,
                             "virtual": virtual,
                         }
+
+        if "chargepump" in self.rio_functions:
+            outputs = self.rio_functions["chargepump"]
+            self.halg.fmt_add_top("#################################################################################")
+            self.halg.fmt_add_top("# charge_pump / watchdog output")
+            self.halg.fmt_add_top("#################################################################################")
+            self.halg.fmt_add_top("loadrt charge_pump")
+            self.halg.fmt_add_top("addf charge-pump servo-thread")
+            self.halg.fmt_add_top("")
+            for output in outputs:
+                self.halg.net_add("charge-pump.out-4", f"rio.{output}")
 
         if "wcomp" in self.rio_functions:
             self.halg.fmt_add("")
@@ -890,7 +810,7 @@ class LinuxCNC:
                 if virtual:
                     self.halg.net_add(f"riov.{source}", f"riof.{source}.in")
                 else:
-                    self.halg.net_add(f"rio.{source}", f"riof.{source}.in")
+                    self.halg.net_add(f"{self.hal_prefix}.{source}", f"riof.{source}.in")
 
         if "jog" in self.rio_functions:
             self.halg.fmt_add("")
@@ -959,9 +879,9 @@ class LinuxCNC:
                     for function, halname in self.rio_functions["jog"].items():
                         if function in {"fast", "speed0", "speed1"}:
                             if speed_selector_mux == 2:
-                                self.halg.net_add(f"rio.{halname}", "riof.jog.wheelscale_mux.sel")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", "riof.jog.wheelscale_mux.sel")
                             else:
-                                self.halg.net_add(f"rio.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", f"riof.jog.wheelscale_mux.sel{in_n}")
                                 in_n += 1
 
                     # pname = gui_gen.draw_number("Jogscale", "jogscale")
@@ -971,7 +891,7 @@ class LinuxCNC:
                 halname_wheel = ""
                 for function, halname in self.rio_functions["jog"].items():
                     if function == "wheel":
-                        halname_wheel = f"rio.{halname}-s32"
+                        halname_wheel = f"{self.hal_prefix}.{halname}-s32"
                         break
 
                 wheelfilter = riof_jog_setup("wheel", "filter")
@@ -1026,7 +946,7 @@ class LinuxCNC:
                         self.halg.setp_add(f"axis.{laxis}.jog-enable", 1)
                         for function, halname in self.rio_functions["jog"].items():
                             if function == fname:
-                                self.halg.net_add(f"rio.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
 
                         for joint, joint_setup in joints.items():
                             self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
@@ -1039,7 +959,7 @@ class LinuxCNC:
                             self.halg.setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
-                                    self.halg.net_add(f"rio.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                                    self.halg.net_add(f"{self.hal_prefix}.{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
 
             if speed_selector:
                 speed_selector_mux = 1
@@ -1075,9 +995,9 @@ class LinuxCNC:
                     for function, halname in self.rio_functions["jog"].items():
                         if function in {"fast", "speed0", "speed1"}:
                             if speed_selector_mux == 2:
-                                self.halg.net_add(f"rio.{halname}", "riof.jog.speed_mux.sel")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", "riof.jog.speed_mux.sel")
                             else:
-                                self.halg.net_add(f"rio.{halname}", f"riof.jog.speed_mux.sel{in_n}")
+                                self.halg.net_add(f"{self.hal_prefix}.{halname}", f"riof.jog.speed_mux.sel{in_n}")
                                 in_n += 1
 
                     # pname = gui_gen.draw_number("Jogspeed", "jogspeed")
@@ -1091,16 +1011,16 @@ class LinuxCNC:
             if axis_move:
                 for function, halname in self.rio_functions["jog"].items():
                     if function in {"plus", "minus"}:
-                        self.halg.net_add(f"rio.{halname}", f"halui.joint.selected.{function}")
-                        self.halg.net_add(f"rio.{halname}", f"halui.axis.selected.{function}")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.joint.selected.{function}")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.axis.selected.{function}")
 
             if axis_selector:
                 joint_n = 0
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("select-"):
                         axis_name = function.split("-")[-1]
-                        self.halg.net_add(f"rio.{halname}", f"halui.axis.{axis_name}.select")
-                        self.halg.net_add(f"rio.{halname}", f"halui.joint.{joint_n}.select")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.axis.{axis_name}.select")
+                        self.halg.net_add(f"{self.hal_prefix}.{halname}", f"halui.joint.{joint_n}.select")
                         # pname = gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         # self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
                         for axis_id, axis_config in self.project.axis_dict.items():
@@ -1150,13 +1070,13 @@ class LinuxCNC:
                         mux_select += 1
                         mux_input = mux_input * 2
                     elif function == "position":
-                        self.halg.net_add("riof.jog.position_mux.out-f", f"rio.{halname}")
+                        self.halg.net_add("riof.jog.position_mux.out-f", f"{self.hal_prefix}.{halname}")
 
             if axis_leds:
                 for function, halname in self.rio_functions["jog"].items():
                     if function.startswith("selected-"):
                         axis_name = function.split("-")[-1]
-                        self.halg.net_add(f"halui.axis.{axis_name}.is-selected", f"rio.{halname}")
+                        self.halg.net_add(f"halui.axis.{axis_name}.is-selected", f"{self.hal_prefix}.{halname}")
 
     def vcp_gui(self):
         os.makedirs(self.configuration_path, exist_ok=True)
@@ -1172,25 +1092,93 @@ class LinuxCNC:
 
         if gui in {"flexgui"}:
             os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+            ini_setup["DISPLAY"]["DISPLAY"] = "./flexgui"
+            ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
+            ini_setup["FLEXGUI"] = {}
+            ini_setup["FLEXGUI"]["QSS"] = "flexgui.qss"
+            flexgui = linuxcnc_config.get("flexgui", "axis")
+            if flexgui:
+                for source in glob.glob(os.path.join(riocore_path, "gui", "flexgui", "guis", flexgui, "*")):
+                    target_path = os.path.join(self.configuration_path, os.path.basename(source))
+                    if os.path.isfile(source):
+                        shutil.copy(source, target_path)
+                    else:
+                        shutil.copytree(source, target_path, dirs_exist_ok=True)
+
             for uifile in glob.glob(os.path.join(json_path, "flexgui.ui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(uifile))
-                ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
                 shutil.copy(uifile, target_path)
+
+            for source in glob.glob(os.path.join(riocore_path, "gui", "flexgui", "*")):
+                if source.endswith("/guis"):
+                    continue
+                target_path = os.path.join(self.configuration_path, os.path.basename(source))
+                if os.path.isfile(source):
+                    shutil.copy(source, target_path)
+                else:
+                    shutil.copytree(source, target_path, dirs_exist_ok=True)
+                if target_path.endswith("/flexgui"):
+                    os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
             for qssfile in glob.glob(os.path.join(json_path, "flexgui.qss")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(qssfile))
-                ini_setup["DISPLAY"]["QSS"] = "flexgui.qss"
                 shutil.copy(qssfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "flexgui.py")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                ini_setup["DISPLAY"]["RESOURCES"] = "flexgui.py"
+                ini_setup["FLEXGUI"]["RESOURCES"] = "flexgui.py"
                 shutil.copy(pyfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "flexgui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                ini_setup["DISPLAY"]["DISPLAY"] = "./flexgui"
                 shutil.copy(pyfile, target_path)
             for pyfile in glob.glob(os.path.join(json_path, "libflexgui")):
                 target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
                 shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
+            for pyfile in glob.glob(os.path.join(json_path, "flexgui-images")):
+                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
+                shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
+
+        elif gui in {"tnc"}:
+            try:
+                import tnc
+
+                tnc_path = os.path.dirname(tnc.__file__)
+                os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
+                ini_setup["DISPLAY"]["DISPLAY"] = "./tnc"
+                for part in ("ui", "style.qss", "dialogs", "config.yml"):
+                    for source in glob.glob(os.path.join(tnc_path, part)):
+                        target_path = os.path.join(self.configuration_path, os.path.basename(source))
+                        if os.path.isfile(source):
+                            shutil.copy(source, target_path)
+                        else:
+                            shutil.copytree(source, target_path, dirs_exist_ok=True)
+
+                tnc_main = """#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+import os
+import re
+import sys
+from tnc import main
+from qtpyvcp.utilities.opt_parser import parse_opts
+
+VCP_DIR = os.path.realpath(os.path.dirname(__file__))
+VCP_CONFIG_FILE = os.path.join(VCP_DIR, "config.yml")
+
+if __name__ == "__main__":
+    sys.argv[0] = re.sub(r"(-script\.pyw|\.exe)?$", "", sys.argv[0])
+    opts = parse_opts(vcp_cmd="tnc", vcp_name="TurBoNC", vcp_version="0.1.rio")
+
+    # opts["fullscreen"] = True
+    # opts["confirm_exit"] = False
+    opts["config_file"] = VCP_CONFIG_FILE
+
+    sys.exit(main(opts))
+"""
+                target_path = os.path.join(self.configuration_path, "tnc")
+                open(target_path, "w").write(tnc_main)
+                os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+                shutil.copy(os.path.join(tnc_path, "ui", "window.ui"), os.path.join(self.configuration_path, "ui", "window.ui"))
+            except Exception:
+                print("ERROR: no tnc installation found")
 
         gui_gen = None
         if vcp_mode != "NONE":
@@ -1205,11 +1193,15 @@ class LinuxCNC:
                     vcp_pos = "TAB"
                 gui_gen = qtvcp(self.gui_prefix, vcp_pos=vcp_pos)
             elif self.gui_type == "qtpyvcp":
-                gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos)
+                gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos, mode=gui)
             elif self.gui_type == "flexvcp":
                 gui_gen = flexvcp(self.gui_prefix, vcp_pos=vcp_pos)
 
         if not gui_gen:
+            return
+
+        if not gui_gen.check(self.configuration_path):
+            print("ERROR: vcp: vcp-gui is disabled")
             return
 
         gui_gen.draw_begin()
@@ -1228,8 +1220,6 @@ class LinuxCNC:
                 if section and section not in vcp_sections:
                     vcp_sections.append(section)
 
-        gui_gen.draw_tabs_begin([tab.title() for tab in vcp_sections])
-
         # analyse halnames to generate titles
         prefixes = {}
         haltitles = {}
@@ -1247,8 +1237,167 @@ class LinuxCNC:
                 for halname in halnames:
                     haltitles[halname] = prefix.title()
 
-        # generate tab (vcp) for each section
+        def vcp_add(signal_config, prefix, widgets, errors=False):
+            halname = signal_config["halname"]
+            netname = signal_config["netname"]
+            direction = signal_config["direction"]
+            userconfig = signal_config.get("userconfig", {})
+            boolean = signal_config.get("bool")
+            virtual = signal_config.get("virtual")
+            mapping = signal_config.get("mapping")
+            setp = userconfig.get("setp")
+            function = userconfig.get("function", "")
+            displayconfig = userconfig.get("display", signal_config.get("display", {}))
+            initval = signal_config.get("default", 0)
+            if not displayconfig and initval:
+                displayconfig["initval"] = initval
+
+            if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
+                return
+            if function and not virtual:
+                return
+            if signal_config.get("helper", False) and not displayconfig:
+                return
+            if setp:
+                return
+            if halname in self.feedbacks:
+                return
+
+            vmin = signal_config.get("min", -1000)
+            vmax = signal_config.get("max", 1000)
+            vformat = signal_config.get("format")
+            vunit = signal_config.get("unit")
+            if "min" not in displayconfig:
+                displayconfig["min"] = vmin
+            if "max" not in displayconfig:
+                displayconfig["max"] = vmax
+            if vformat and "format" not in displayconfig:
+                displayconfig["format"] = vformat
+            if vunit and "unit" not in displayconfig:
+                displayconfig["unit"] = vunit
+
+            dtype = None
+            section = None
+            group = displayconfig.get("group", None)
+
+            if direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
+                section = displayconfig.get("section", "status").lower()
+                group = "ESTOP-STATUS"
+                if "type" in displayconfig:
+                    dtype = displayconfig["type"]
+                else:
+                    dtype = "rectled"
+                    if netname[0] == "!":
+                        displayconfig["color"] = "red"
+                        displayconfig["off_color"] = "green"
+                    else:
+                        displayconfig["color"] = "green"
+                        displayconfig["off_color"] = "red"
+
+            elif direction == "input" and netname and "motion.enable" in netname:
+                section = displayconfig.get("section", "status").lower()
+                group = "MACHINE-STATUS"
+                if "type" in displayconfig:
+                    dtype = displayconfig["type"]
+                else:
+                    dtype = "rectled"
+                    if netname[0] == "!":
+                        displayconfig["color"] = "red"
+                        displayconfig["off_color"] = "green"
+                    else:
+                        displayconfig["color"] = "green"
+                        displayconfig["off_color"] = "red"
+
+            elif (netname and not virtual) or setp:
+                if direction == "input":
+                    section = displayconfig.get("section", "inputs").lower()
+                elif direction == "output":
+                    section = displayconfig.get("section", "outputs").lower()
+                if not boolean:
+                    dtype = displayconfig.get("type", "number")
+                else:
+                    dtype = displayconfig.get("type", "led")
+
+            elif virtual:
+                section = displayconfig.get("section", "virtual").lower()
+                if direction == "output":
+                    if not boolean:
+                        dtype = displayconfig.get("type", "number")
+                    else:
+                        dtype = displayconfig.get("type", "led")
+                elif direction == "input":
+                    if not boolean:
+                        dtype = displayconfig.get("type", "scale")
+                    else:
+                        dtype = displayconfig.get("type", "checkbutton")
+            elif direction == "input":
+                section = displayconfig.get("section", "inputs").lower()
+                if mapping and hasattr(gui_gen, "draw_multilabel"):
+                    dtype = displayconfig.get("type", "multilabel")
+                elif not boolean:
+                    dtype = displayconfig.get("type", "number")
+                else:
+                    dtype = displayconfig.get("type", "led")
+            elif direction == "output":
+                section = displayconfig.get("section", "outputs").lower()
+                if not boolean:
+                    dtype = displayconfig.get("type", "scale")
+                else:
+                    dtype = displayconfig.get("type", "checkbutton")
+
+            if hasattr(gui_gen, f"draw_{dtype}"):
+                if section not in widgets:
+                    widgets[section] = {}
+                if group not in widgets[section]:
+                    widgets[section][group] = []
+                widgets[section][group].append(
+                    {
+                        "section": section,
+                        "group": group,
+                        "direction": direction,
+                        "prefix": prefix,
+                        "boolean": boolean,
+                        "virtual": virtual,
+                        "halname": halname,
+                        "netname": netname,
+                        "mapping": mapping,
+                        "setp": setp,
+                        "dtype": dtype,
+                        "displayconfig": displayconfig,
+                    }
+                )
+            elif dtype != "none":
+                print(f"WARNING: 'draw_{dtype}' not found")
+
+        widgets = {}
+        for plugin_instance in self.project.plugin_instances:
+            for signal_name, signal_config in plugin_instance.signals().items():
+                if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
+                    continue
+                vcp_add(signal_config, f"{self.hal_prefix}.", widgets)
+
+        component_nums = {}
+        for comp in linuxcnc_config.get("components", []):
+            comp_type = comp.get("type")
+            if comp_type not in component_nums:
+                component_nums[comp_type] = 0
+            comp["num"] = component_nums[comp_type]
+            component_nums[comp_type] += 1
+            if hasattr(components, f"comp_{comp_type}"):
+                cinstance = getattr(components, f"comp_{comp_type}")(comp)
+                if comp_type != "stepgen":
+                    for signal_name, signal_config in cinstance.signals().items():
+                        vcp_add(signal_config, "", widgets)
+
+        tablist = []
         for tab in vcp_sections:
+            if tab not in widgets:
+                continue
+            tablist.append(tab)
+        gui_gen.draw_tabs_begin([tab.title() for tab in tablist])
+
+        # generate tab (vcp) for each section
+        for tab in tablist:
             gui_gen.draw_tab_begin(tab.title())
 
             if tab == "status":
@@ -1290,6 +1439,9 @@ class LinuxCNC:
                         if mdi_group != mdi_group_last:
                             if mdi_group is not None:
                                 if mdi_group_last is not None:
+                                    if mdi_group_last == "Touch":
+                                        pname = gui_gen.draw_led("", "probe-input")
+                                        self.halg.net_add("motion.probe-input", pname)
                                     gui_gen.draw_hbox_end()
                                     gui_gen.draw_frame_end()
                                 gui_gen.draw_frame_begin(mdi_group)
@@ -1304,96 +1456,50 @@ class LinuxCNC:
                         mdi_group_last = mdi_group
 
                 if mdi_group_last is not None:
+                    if mdi_group_last == "Touch":
+                        pname = gui_gen.draw_led("", "probe-input")
+                        self.halg.net_add("motion.probe-input", pname)
                     gui_gen.draw_hbox_end()
                     gui_gen.draw_frame_end()
 
                 gui_gen.draw_vbox_end()
                 gui_gen.draw_frame_end()
 
-                # if self.mqtt_publisher:
-                # pname = gui_gen.draw_scale("mqtt-period", "mqtt-period")
-                # self.halg.net_add("mqtt-publisher.period", pname.replace("-f", "-u"))
-                # pname = gui_gen.draw_checkbutton("mqtt-enable", "mqtt-enable")
-                # self.halg.net_add("mqtt-publisher.enable", pname)
+                if linuxcnc_config.get("debug_info"):
+                    gui_gen.draw_frame_begin("Debug-Info")
+                    gui_gen.draw_vbox_begin()
 
-            def vcp_add(tab, signal_config, prefix=""):
-                halname = signal_config["halname"]
-                netname = signal_config["netname"]
-                direction = signal_config["direction"]
-                userconfig = signal_config.get("userconfig", {})
-                boolean = signal_config.get("bool")
-                virtual = signal_config.get("virtual")
-                mapping = signal_config.get("mapping")
-                setp = userconfig.get("setp")
-                function = userconfig.get("function", "")
-                displayconfig = userconfig.get("display", signal_config.get("display", {}))
+                    pname = gui_gen.draw_number_s32("Servothread-Time", "servothreadtime")
+                    self.halg.net_add("servo-thread.time", pname)
 
-                if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
-                    return
-                if function and not virtual:
-                    return
-                if signal_config.get("helper", False) and not displayconfig:
-                    return
-                if setp:
-                    return
-                if halname in self.feedbacks:
-                    return
+                    for axis_name, axis_config in self.project.axis_dict.items():
+                        joints = axis_config["joints"]
+                        for joint in joints:
+                            pname = gui_gen.draw_number(f"J{joint}-Error", f"j{joint}error")
+                            self.halg.net_add(f"joint.{joint}.f-error", pname)
 
-                vmin = signal_config.get("min", -1000)
-                vmax = signal_config.get("max", 1000)
-                vformat = signal_config.get("format")
-                vunit = signal_config.get("unit")
-                if "min" not in displayconfig:
-                    displayconfig["min"] = vmin
-                if "max" not in displayconfig:
-                    displayconfig["max"] = vmax
-                if vformat and "format" not in displayconfig:
-                    displayconfig["format"] = vformat
-                if vunit and "unit" not in displayconfig:
-                    displayconfig["unit"] = vunit
+                    gui_gen.draw_vbox_end()
+                    gui_gen.draw_frame_end()
 
-                dtype = None
-                section = None
-                if (netname and not virtual) or setp:
-                    if direction == "input":
-                        section = displayconfig.get("section", "inputs").lower()
-                    elif direction == "output":
-                        section = displayconfig.get("section", "outputs").lower()
-                    if not boolean:
-                        dtype = displayconfig.get("type", "number")
-                    else:
-                        dtype = displayconfig.get("type", "led")
-                elif virtual:
-                    section = displayconfig.get("section", "virtual").lower()
-                    if direction == "output":
-                        if not boolean:
-                            dtype = displayconfig.get("type", "number")
-                        else:
-                            dtype = displayconfig.get("type", "led")
-                    elif direction == "input":
-                        if not boolean:
-                            dtype = displayconfig.get("type", "scale")
-                        else:
-                            dtype = displayconfig.get("type", "checkbutton")
-                elif direction == "input":
-                    section = displayconfig.get("section", "inputs").lower()
-                    if mapping and hasattr(gui_gen, "draw_multilabel"):
-                        dtype = displayconfig.get("type", "multilabel")
-                    elif not boolean:
-                        dtype = displayconfig.get("type", "number")
-                    else:
-                        dtype = displayconfig.get("type", "led")
-                elif direction == "output":
-                    section = displayconfig.get("section", "outputs").lower()
-                    if not boolean:
-                        dtype = displayconfig.get("type", "scale")
-                    else:
-                        dtype = displayconfig.get("type", "checkbutton")
+            for group in widgets.get(tab, {}):
+                if group:
+                    gui_gen.draw_frame_begin(group)
+                    gui_gen.draw_vbox_begin()
 
-                if section != tab:
-                    return
+                for widget in widgets[tab][group]:
+                    section = widget["section"]
+                    direction = widget["direction"]
+                    prefix = widget["prefix"]
+                    boolean = widget["boolean"]
+                    virtual = widget["virtual"]
+                    group = widget["group"]
+                    halname = widget["halname"]
+                    netname = widget["netname"]
+                    mapping = widget["mapping"]
+                    setp = widget["setp"]
+                    dtype = widget["dtype"]
+                    displayconfig = widget["displayconfig"]
 
-                if hasattr(gui_gen, f"draw_{dtype}"):
                     if dtype == "multilabel" and not boolean:
                         self.halextras.append(f"loadrt demux names=demux_{halname} personality={max(mapping.keys()) + 1}")
                         self.halextras.append(f"addf demux_{halname} servo-thread")
@@ -1407,7 +1513,7 @@ class LinuxCNC:
 
                             lnum += 1
 
-                    title = haltitles.get(halname, halname)
+                    title = displayconfig.get("title", haltitles.get(halname, halname))
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
 
                     # fselect handling
@@ -1461,27 +1567,9 @@ class LinuxCNC:
                     elif direction == "output":
                         self.halg.net_add(gui_pinname, f"{prefix}{halname}")
 
-                elif dtype != "none":
-                    print(f"WARNING: 'draw_{dtype}' not found")
-
-            for plugin_instance in self.project.plugin_instances:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
-                        continue
-                    vcp_add(tab, signal_config, "rio.")
-
-            component_nums = {}
-            for comp in linuxcnc_config.get("components", []):
-                comp_type = comp.get("type")
-                if comp_type not in component_nums:
-                    component_nums[comp_type] = 0
-                comp["num"] = component_nums[comp_type]
-                component_nums[comp_type] += 1
-                if hasattr(components, f"comp_{comp_type}"):
-                    cinstance = getattr(components, f"comp_{comp_type}")(comp)
-                    if comp_type != "stepgen":
-                        for signal_name, signal_config in cinstance.signals().items():
-                            vcp_add(tab, signal_config)
+                if group:
+                    gui_gen.draw_vbox_end()
+                    gui_gen.draw_frame_end()
 
             gui_gen.draw_tab_end()
 
@@ -1508,7 +1596,7 @@ class LinuxCNC:
                     direction = signal_config["direction"]
                     userconfig = signal_config.get("userconfig", {})
                     boolean = signal_config.get("bool")
-                    halpin_info[f"rio.{halname}"] = {
+                    halpin_info[f"{self.hal_prefix}.{halname}"] = {
                         "direction": direction,
                         "boolean": boolean,
                     }
@@ -1526,13 +1614,17 @@ class LinuxCNC:
         )
 
         if self.project.config["toolchain"]:
-            self.halg.fmt_add_top("loadrt rio")
-            self.halg.fmt_add_top("")
-            self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
-            if simulation:
-                self.halg.fmt_add_top("setp rio.sys-simulation 1")
+            if self.protocol == "ETHERCAT":
+                self.halg.fmt_add_top("loadusr -W lcec_conf ethercat-conf.xml")
+                self.halg.fmt_add_top("loadrt lcec")
             else:
-                self.halg.fmt_add_top("setp rio.sys-simulation 0")
+                self.halg.fmt_add_top("loadrt rio")
+                self.halg.fmt_add_top("")
+                self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
+                if simulation:
+                    self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 1")
+                else:
+                    self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 0")
             self.halg.fmt_add_top("")
 
         num_pids = self.num_joints
@@ -1544,14 +1636,24 @@ class LinuxCNC:
         self.halg.fmt_add_top("# add the rio and motion functions to threads")
         self.halg.fmt_add_top("addf motion-command-handler servo-thread")
         self.halg.fmt_add_top("addf motion-controller servo-thread")
+
         if self.project.config["toolchain"]:
-            self.halg.fmt_add_top("addf rio.readwrite servo-thread")
+            if self.protocol == "ETHERCAT":
+                self.halg.fmt_add_top("addf	lcec.read-all			servo-thread")
+                self.halg.fmt_add_top("addf	lcec.write-all			servo-thread")
+            else:
+                self.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
+
         self.halg.fmt_add_top("")
 
         if self.project.config["toolchain"]:
-            self.halg.net_add("iocontrol.0.user-enable-out", "rio.sys-enable", "user-enable-out")
-            self.halg.net_add("iocontrol.0.user-request-enable", "rio.sys-enable-request", "user-request-enable")
-            self.halg.net_add("&rio.sys-status", "iocontrol.0.emc-enable-in")
+            if self.protocol == "ETHERCAT":
+                self.halg.fmt_add_top("setp iocontrol.0.emc-enable-in 1")
+            else:
+                self.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
+                self.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
+                self.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
+                self.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
         else:
             self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
 
@@ -1590,6 +1692,35 @@ class LinuxCNC:
             else:
                 self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
+        elif gui in {"qtdragon"}:
+            self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+            self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+            self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+            self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+        elif gui in {"qtdragon_hd"}:
+            self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+            self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+            self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+            self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.NAME != "modbus":
+                    continue
+                found_error_count = ""
+                found_ampere = ""
+                found_voltage = ""
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_name.endswith("_error_count"):
+                        found_error_count = signal_config["halname"]
+                    elif signal_name.endswith("_ampere"):
+                        found_ampere = signal_config["halname"]
+                    elif signal_name.endswith("_dc_volt"):
+                        found_voltage = signal_config["halname"]
+
+                if found_error_count and found_ampere and found_voltage:
+                    # self.halg.net_add(f"rio.{found_error_count}-s32", "qtdragon.spindle-modbus-errors")
+                    self.halg.net_add(f"rio.{found_ampere}", "qtdragon.spindle-amps")
+                    self.halg.net_add(f"rio.{found_voltage}", "qtdragon.spindle-volts")
+                    break
 
         self.mqtt_publisher = []
         for plugin_instance in self.project.plugin_instances:
@@ -1599,7 +1730,7 @@ class LinuxCNC:
                 mqtt = userconfig.get("mqtt")
                 direction = signal_config["direction"]
                 if mqtt:
-                    self.mqtt_publisher.append(f"rio.{halname}")
+                    self.mqtt_publisher.append(f"{self.hal_prefix}.{halname}")
         if self.mqtt_publisher:
             self.halg.fmt_add_top("# mqtt-publisher")
             self.halg.fmt_add_top("loadusr -W mqtt-publisher [MQTT]DRYRUN --mqtt-broker=[MQTT]BROKER \\")
@@ -1710,7 +1841,7 @@ class LinuxCNC:
             net_source = self.gpio_pinmapping.get(net_source, net_source)
             net_target = self.gpio_pinmapping.get(net_target, net_target)
             if net_source and net_target:
-                self.halg.net_add(net_source, net_target, net_name)
+                self.halg.net_add(f"({net_source})", net_target, net_name)
 
         component_nums = {}
         for comp in linuxcnc_config.get("components", []):
@@ -1805,9 +1936,9 @@ class LinuxCNC:
                         self.halg.setp_add(f"{rprefix}.{halname}", setp)
                     elif virtual and comp:
                         if direction == "input":
-                            self.halg.net_add(f"{rprefix}.{halname}", f"rio.{halname}")
+                            self.halg.net_add(f"{rprefix}.{halname}", f"{self.hal_prefix}.{halname}")
                         else:
-                            self.halg.net_add(f"rio.{halname}", f"{rprefix}.{halname}")
+                            self.halg.net_add(f"{self.hal_prefix}.{halname}", f"{rprefix}.{halname}")
 
         for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
@@ -1913,6 +2044,7 @@ class LinuxCNC:
                 if axis_name:
                     named_axis.append(axis_name)
 
+        # rio joints
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint"):
                 axis_name = plugin_instance.plugin_setup.get("axis")
@@ -1936,6 +2068,7 @@ class LinuxCNC:
                         self.feedbacks.append(feedback.replace(":", "."))
                     self.num_joints += 1
 
+        # soft-component joints (parport/gpio)
         stepgen_num = 0
         for comp in linuxcnc_config.get("components", []):
             comp_type = comp.get("type")
@@ -2027,7 +2160,7 @@ class LinuxCNC:
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
 
-                prefix = "rio."
+                prefix = f"{self.hal_prefix}."
                 if enable:
                     enable_halname = f"{prefix}{enable['halname']}"
                 if velocity:

@@ -83,9 +83,7 @@ class Plugin(PluginBase):
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance["arguments"]
 
         mac = self.plugin_setup.get("mac", self.option_default("mac"))
         ip = self.plugin_setup.get("ip", self.option_default("ip"))

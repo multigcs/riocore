@@ -38,7 +38,7 @@ module testb_debouncer;
         # 100 $finish;
     end
 
-    debouncer #(.WIDTH(10)) debouncer0 (
+    debouncer #(.DELAY(10)) debouncer0 (
         .clk(clk),
         .din(din),
         .dout(dout)

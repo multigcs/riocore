@@ -78,7 +78,7 @@ void udp_tx(uint8_t *txBuffer, uint16_t size) {
     send(udpSocket, txBuffer, size, 0);
 }
 
-int udp_rx(uint8_t *rxBuffer, uint16_t size) {
+int udp_rx(uint8_t *rxBuffer, uint16_t size, uint8_t udp_async) {
     int i;
     int ret;
     long t1;
@@ -90,15 +90,19 @@ int udp_rx(uint8_t *rxBuffer, uint16_t size) {
     }
 
     // Receive incoming datagram
-    t1 = rtapi_get_time();
-    do {
-        ret = recv(udpSocket, rxBufferTmp, size * 2, 0);
-        if (ret < 0) {
-            rtapi_delay(READ_PCK_DELAY_NS);
+    if (udp_async == 1) {
+        ret = recv(udpSocket, rxBufferTmp, size * 2, MSG_DONTWAIT);
+    } else {
+        t1 = rtapi_get_time();
+        do {
+            ret = recv(udpSocket, rxBufferTmp, size * 2, 0);
+            if (ret < 0) {
+                rtapi_delay(READ_PCK_DELAY_NS);
+            }
+            t2 = rtapi_get_time();
         }
-        t2 = rtapi_get_time();
+        while ((ret < 0) && ((t2 - t1) < READ_PCK_TIMEOUT_MS * 1000 * 1000));
     }
-    while ((ret < 0) && ((t2 - t1) < READ_PCK_TIMEOUT_MS * 1000 * 1000));
 
     if (ret > 0) {
         errCount = 0;

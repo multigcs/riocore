@@ -44,8 +44,8 @@ if args.config:
     if args.config[0].endswith(".json"):
         if os.path.isfile(args.config[0]):
             config_file = args.config[0]
-        elif os.path.isfile(f"{riocore_path}/configs/{args.config[0]}"):
-            config_file = f"{riocore_path}/configs/{args.config[0]}"
+        elif os.path.isfile(os.path.join(riocore_path, "configs", args.config[0])):
+            config_file = os.path.join(riocore_path, "configs", args.config[0])
         else:
             print(f"can not load: {args.config[0]}")
             exit(1)
@@ -54,7 +54,8 @@ if args.config:
         if args.udpsim or args.simulator:
             # rewrite config for simulator
             jdata = json.loads(open(config_file, "r").read())
-
+            config_dir = os.path.dirname(config_file)
+            config_name = os.path.basename(config_file)
             if jdata.get("linuxcnc", {}).get("machinetype", "") in {"melfa"}:
                 for pm, module in enumerate(jdata.get("modules", [])):
                     for name, plugin in module.get("setup").items():
@@ -104,7 +105,7 @@ if args.config:
                 jdata["port"] = "2390"
 
                 for pm, module in enumerate(jdata.get("modules", [])):
-                    for name, plugin in module.get("setup").items():
+                    for name, plugin in module.get("setup", {}).items():
                         if plugin.get("is_joint", False):
                             if "joint" not in plugin:
                                 jdata["modules"][pm]["setup"][name]["joint"] = {}
@@ -116,8 +117,8 @@ if args.config:
                             jdata["plugins"][pn]["joint"] = {}
                         jdata["plugins"][pn]["joint"]["scale"] = 100.0
 
-            open("/tmp/tmp-config.json", "w").write(json.dumps(jdata, indent=4))
-            config_file = "/tmp/tmp-config.json"
+            config_file = os.path.join(config_dir, f"tmp-{config_name}")
+            open(config_file, "w").write(json.dumps(jdata, indent=4))
 
         project = riocore.Project(config_file, args.output)
         project.generator(preview=args.preview)

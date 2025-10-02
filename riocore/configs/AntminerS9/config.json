@@ -1,0 +1,19 @@
+{
+    "name": "AntminerS9",
+    "description": "AntminerS9 - test config",
+    "boardcfg": "AntminerS9",
+    "flashcmd": "openFPGALoader -c usb-blaster --index-chain 1 rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "M17"
+                }
+            },
+            "frequency": 1.0,
+            "uid": "blink0"
+        }
+    ],
+    "protocol": "UDP"
+}

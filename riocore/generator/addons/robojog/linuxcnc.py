@@ -10,8 +10,8 @@ def ini(parent, ini_setup):
     robojog_config = linuxcnc_config.get("robojog", {})
     robojog_enable = robojog_config.get("enable", False)
     if robojog_enable:
-        source = f"{addon_path}/robojog.py"
-        target = f"{parent.component_path}/robojog.py"
+        source = os.path.join(addon_path, "robojog.py")
+        target = os.path.join(parent.component_path, "robojog.py")
         shutil.copy(source, target)
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
         tabname = robojog_config.get("tabname", "robojog")

@@ -6,7 +6,7 @@ from riocore.modifiers import Modifiers
 class PluginBase:
     expansions = []
 
-    def __init__(self, plugin_id, plugin_setup, system_setup=None):
+    def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.SIGNALS = {}
@@ -20,6 +20,10 @@ class PluginBase:
         self.EXPERIMENTAL = False
         self.DESCRIPTION = ""
         self.URL = ""
+        if subfix:
+            self.SUBFIX = subfix
+        else:
+            self.SUBFIX = ""
         self.GRAPH = ""
         self.KEYWORDS = ""
         self.ORIGIN = ""
@@ -27,6 +31,7 @@ class PluginBase:
         self.SYNC = None
         self.ERROR = None
         self.OPTIONS = {}
+        self.PASSTHROUGH = {}
         self.PLUGIN_CONFIG = False
         self.LIMITATIONS = {}
         self.system_setup = system_setup
@@ -40,6 +45,13 @@ class PluginBase:
         self.instances_name = self.plugin_setup["uid"]
 
         self.setup()
+
+        # update INTERFACE by user-signal-config
+        for interface_name, interface_data in self.INTERFACE.items():
+            signals = plugin_setup.get("signals", {})
+            if interface_name in signals:
+                if "multiplexed" in signals[interface_name]:
+                    interface_data["multiplexed"] = signals[interface_name]["multiplexed"]
 
         if self.TYPE == "frameio":
             self.timeout = self.TIMEOUT
@@ -85,6 +97,9 @@ class PluginBase:
             self.expansion_prefix = ename.upper()
             self.expansions.append(self.expansion_prefix)
 
+    def cfg_info(self):
+        return ""
+
     def signed(self, n, byte_count):
         return int.from_bytes(n.to_bytes(byte_count, "little", signed=False), "little", signed=True)
 
@@ -92,6 +107,9 @@ class PluginBase:
         self.title = self.plugin_setup.get("name") or self.instances_name
 
     def setup(self):
+        pass
+
+    def post_setup(self, project):
         pass
 
     def gateware_files(self):
@@ -200,6 +218,10 @@ class PluginBase:
             elif pin_config["direction"] != "output":
                 pins[pin_name] = pin_config.copy()
                 pins[pin_name]["varname"] = f"UNUSED_PIN_{self.instances_name}_{pin_name}".upper()
+            else:
+                pins[pin_name] = pin_config.copy()
+                pins[pin_name]["varname"] = f"UNUSED_PIN_{self.instances_name}_{pin_name}".upper()
+
         return pins
 
     def signals(self):
@@ -243,7 +265,7 @@ class PluginBase:
             if multiplexed is not None:
                 data[name]["multiplexed"] = multiplexed
 
-            data[name]["variable"] = f"VAR{direction}{size}_{self.instances_name}_{name}".upper()
+            data[name]["variable"] = f"VAR{direction}{size}_{self.SUBFIX}{self.instances_name}_{name}".upper()
         return data
 
     def expansion_outputs(self):
@@ -372,6 +394,10 @@ class PluginBase:
             instance_arguments["sync"] = "INTERFACE_SYNC"
         elif self.SYNC is False:
             instance_arguments["sync"] = "0"
+
+        if self.PASSTHROUGH:
+            for name in self.PASSTHROUGH:
+                instance_arguments[name] = name
 
         if self.TYPE == "interface":
             instance_arguments["rx_data"] = "rx_data"

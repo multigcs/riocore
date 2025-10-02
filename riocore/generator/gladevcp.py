@@ -2,9 +2,21 @@ import os
 
 
 class gladevcp:
+    colormapping = {
+        "white": "#ffffffffffff",
+        "black": "#000000000000",
+        "yellow": "#ffffffff0000",
+        "red": "#ffff00000000",
+        "green": "#0000ffff0000",
+        "blue": "#00000000ffff",
+    }
+
     def __init__(self, prefix="gladevcp", vcp_pos=None):
         self.prefix = prefix
         self.vcp_pos = vcp_pos
+
+    def check(self, configuration_path):
+        return True
 
     def draw_begin(self):
         self.cfgxml_data = []
@@ -400,6 +412,9 @@ def get_handlers(halcomp,builder,useropts):
     def draw_number_s32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
+    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+        return self.draw_bar(name, halpin, setup=setup)
+
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         if hal_type == "float":
             display_format = setup.get("format", "0.2f")
@@ -465,6 +480,21 @@ def get_handlers(halcomp,builder,useropts):
 
     def draw_led(self, name, halpin, setup={}):
         title = setup.get("title", name)
+        color = setup.get("color")
+        on_color = "yellow"
+        off_color = "red"
+        if color:
+            on_color = color
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".R"):
+            on_color = "red"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".G"):
+            on_color = "green"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".B"):
+            on_color = "blue"
+            off_color = setup.get("off_color", "black")
         self.cfgxml_data.append("    <child>")
         self.cfgxml_data.append('      <object class="GtkHBox">')
         self.cfgxml_data.append('        <property name="visible">True</property>')
@@ -473,8 +503,8 @@ def get_handlers(halcomp,builder,useropts):
         self.cfgxml_data.append("                    <child>")
         self.cfgxml_data.append(f'                      <object class="HAL_LED" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
-        self.cfgxml_data.append('                        <property name="pick_color_on">#ffffb7b90b5c</property>')
-        self.cfgxml_data.append('                        <property name="pick_color_off">#000000000000</property>')
+        self.cfgxml_data.append(f'                        <property name="pick_color_on">{self.colormapping[on_color]}</property>')
+        self.cfgxml_data.append(f'                        <property name="pick_color_off">{self.colormapping[off_color]}</property>')
         self.cfgxml_data.append("                      </object>")
         self.cfgxml_data.append("                  <packing>")
         self.cfgxml_data.append('                    <property name="expand">False</property>')
@@ -486,3 +516,6 @@ def get_handlers(halcomp,builder,useropts):
         self.cfgxml_data.append("      </object>")
         self.cfgxml_data.append("    </child>")
         return f"{self.prefix}.{halpin}"
+
+    def draw_rectled(self, name, halpin, setup={}):
+        return self.draw_led(name, halpin, setup=setup)

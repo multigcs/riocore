@@ -48,8 +48,8 @@
             "name": "I2C",
             "comment": "I2C for the CDCE913",
             "pins": {
-                "SCL": "P12",
-                "SDA": "U13"
+                "SCL": {"pin":  "P12"},
+                "SDA": {"pin":  "U13"}
             }
         },
         {

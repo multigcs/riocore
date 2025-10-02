@@ -18,8 +18,20 @@ class flexvcp:
     def xml(self):
         return "\n".join(self.cfgxml_data).strip()
 
+    def check(self, configuration_path):
+        ui_filename = os.path.join(configuration_path, "flexgui.ui")
+        # read template
+        xml_template = open(ui_filename, "rb").read()
+        root = etree.fromstring(xml_template)
+        # check
+        for element in root.xpath("..//widget[@name='rioTab']"):
+            return True
+        print("ERROR: flexvcp: no 'QTabWidget' named 'rioTab' found")
+        return False
+
     def save(self, configuration_path):
         ui_filename = os.path.join(configuration_path, "flexgui.ui")
+
         # read rio xml-gui
         rio_items = etree.fromstring("\n".join(self.cfgxml_data).strip())
         # read template
@@ -31,7 +43,13 @@ class flexvcp:
             for child in element:
                 if child.tag == "property":
                     continue
-                element.remove(child)
+                keep = False
+                for sub in child:
+                    if sub.tag in {"widget", "layout"}:
+                        keep = True
+                        break
+                if not keep:
+                    element.remove(child)
             # adding new sub elements
             for child in rio_items:
                 element.append(child)
@@ -43,9 +61,9 @@ class flexvcp:
         self.cfgxml_data.append(f"       <{ptype}>{value}</{ptype}>")
         self.cfgxml_data.append("      </property>")
 
-    def set_halpin(self, halpin, haltype, haldir):
+    def set_halpin(self, halpin, haltype, haldir, function="hal_pin"):
         self.cfgxml_data.append('                <property name="function" stdset="0">')
-        self.cfgxml_data.append("                 <string>hal_pin</string>")
+        self.cfgxml_data.append(f"                 <string>{function}</string>")
         self.cfgxml_data.append("                </property>")
         self.cfgxml_data.append('                <property name="pin_name" stdset="0">')
         self.cfgxml_data.append(f"                 <string>rio.{halpin}</string>")
@@ -97,6 +115,12 @@ class flexvcp:
     def draw_frame_begin(self, name=None):
         self.cfgxml_data.append("     <item>")
         self.cfgxml_data.append('   <widget class="QGroupBox" name="groupBox_7">')
+        self.cfgxml_data.append('    <property name="sizePolicy">')
+        self.cfgxml_data.append('     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
+        self.cfgxml_data.append("      <horstretch>0</horstretch>")
+        self.cfgxml_data.append("      <verstretch>0</verstretch>")
+        self.cfgxml_data.append("     </sizepolicy>")
+        self.cfgxml_data.append("    </property>")
         if name:
             self.cfgxml_data.append('    <property name="title">')
             self.cfgxml_data.append(f"     <string>{name}</string>")
@@ -147,10 +171,24 @@ class flexvcp:
         return f"{self.prefix}.{halpin}"
 
     def draw_title(self, title):
+        title = title.replace("<", "&lt;").replace(">", "&gt;")
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.add_property("text", title, ptype="string")
         self.add_property("indent", "4")
+
+        self.cfgxml_data.append('         <property name="sizePolicy">')
+        self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
+        self.cfgxml_data.append("           <horstretch>0</horstretch>")
+        self.cfgxml_data.append("           <verstretch>0</verstretch>")
+        self.cfgxml_data.append("          </sizepolicy>")
+        self.cfgxml_data.append("         </property>")
+        self.cfgxml_data.append(' <property name="minimumSize">')
+        self.cfgxml_data.append("  <size>")
+        self.cfgxml_data.append("   <width>32</width>")
+        self.cfgxml_data.append("   <height>32</height>")
+        self.cfgxml_data.append("  </size>")
+        self.cfgxml_data.append(" </property>")
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
 
@@ -159,13 +197,14 @@ class flexvcp:
         display_max = setup.get("max", vmax)
         title = setup.get("title", name)
         self.draw_hbox_begin()
-        self.draw_title(title)
+        if title:
+            self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         # self.cfgxml_data.append(f'     <widget class="QDoubleSpinBox">')
         self.cfgxml_data.append('     <widget class="QSlider">')
         self.set_halpin(halpin, "HAL_FLOAT", "HAL_OUT")
         self.cfgxml_data.append('         <property name="sizePolicy">')
-        self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">')
+        self.cfgxml_data.append('          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
         self.cfgxml_data.append("           <horstretch>0</horstretch>")
         self.cfgxml_data.append("           <verstretch>0</verstretch>")
         self.cfgxml_data.append("          </sizepolicy>")
@@ -200,12 +239,61 @@ class flexvcp:
     def draw_number_s32(self, name, halpin, setup={}):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
+    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+        title = setup.get("title", name)
+        vmin = setup.get("min", 0)
+        vmax = setup.get("max", 100)
+        width = setup.get("width", 230)
+        height = setup.get("height", 32)
+        self.draw_hbox_begin()
+        if title:
+            self.draw_title(name)
+        self.cfgxml_data.append("    <item>")
+        self.cfgxml_data.append('     <widget class="QLabel">')
+        self.set_halpin(halpin, f"HAL_{hal_type.upper()}", "HAL_IN")
+        self.cfgxml_data.append('      <property name="history" stdset="0">')
+        self.cfgxml_data.append("       <string>20</string>")
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append('      <property name="min" stdset="0">')
+        self.cfgxml_data.append(f"       <string>{vmin}</string>")
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append('      <property name="max" stdset="0">')
+        self.cfgxml_data.append(f"       <string>{vmax}</string>")
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append(' <property name="minimumSize">')
+        self.cfgxml_data.append("  <size>")
+        self.cfgxml_data.append(f"   <width>{width}</width>")
+        self.cfgxml_data.append(f"   <height>{height}</height>")
+        self.cfgxml_data.append("  </size>")
+        self.cfgxml_data.append(" </property>")
+        self.cfgxml_data.append(' <property name="maximumSize">')
+        self.cfgxml_data.append("  <size>")
+        self.cfgxml_data.append(f"   <width>{width}</width>")
+        self.cfgxml_data.append(f"   <height>{height}</height>")
+        self.cfgxml_data.append("  </size>")
+        self.cfgxml_data.append(" </property>")
+        self.cfgxml_data.append('      <property name="sizePolicy">')
+        self.cfgxml_data.append('       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
+        self.cfgxml_data.append("        <horstretch>0</horstretch>")
+        self.cfgxml_data.append("        <verstretch>0</verstretch>")
+        self.cfgxml_data.append("       </sizepolicy>")
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append('      <property name="styleSheet">')
+        self.cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
+        self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append("     </widget>")
+        self.cfgxml_data.append("    </item>")
+        self.draw_hbox_end()
+        return f"{self.prefix}.{halpin}"
+
     def draw_number(self, name, halpin, setup={}, hal_type="float"):
         self.draw_hbox_begin()
         self.draw_title(name)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLCDNumber">')
+        # self.cfgxml_data.append('     <widget class="QLabel">')
         self.set_halpin(halpin, f"HAL_{hal_type.upper()}", "HAL_IN")
+        self.add_property("digitCount", "1")
         self.add_property("digitCount", "10")
         self.cfgxml_data.append('      <property name="sizePolicy">')
         self.cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
@@ -237,8 +325,8 @@ class flexvcp:
         self.cfgxml_data.append(" </property>")
         self.cfgxml_data.append(' <property name="minimumSize">')
         self.cfgxml_data.append("  <size>")
-        self.cfgxml_data.append("   <width>32</width>")
-        self.cfgxml_data.append("   <height>32</height>")
+        self.cfgxml_data.append("   <width>22</width>")
+        self.cfgxml_data.append("   <height>22</height>")
         self.cfgxml_data.append("  </size>")
         self.cfgxml_data.append(" </property>")
         self.cfgxml_data.append("     </widget>")
@@ -247,11 +335,38 @@ class flexvcp:
         return f"{self.prefix}.{halpin}"
 
     def draw_led(self, name, halpin, setup={}):
+        title = setup.get("title", name)
+        width = setup.get("width", 32)
+        height = setup.get("height", 32)
+        color = setup.get("color")
+        off_color = setup.get("off_color", "yellow")
+        on_color = "red"
+        off_color = "yellow"
+        if color:
+            on_color = color
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".R"):
+            on_color = "red"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".G"):
+            on_color = "green"
+            off_color = setup.get("off_color", "black")
+        elif halpin.endswith(".B"):
+            on_color = "blue"
+            off_color = setup.get("off_color", "black")
+
         self.draw_hbox_begin()
-        self.draw_title(name)
+        if title:
+            self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.set_halpin(halpin, "HAL_BIT", "HAL_IN")
+        self.cfgxml_data.append('        <property name="true_color" stdset="0">')
+        self.cfgxml_data.append(f"         <string>{on_color}</string>")
+        self.cfgxml_data.append("        </property>")
+        self.cfgxml_data.append('        <property name="false_color" stdset="0">')
+        self.cfgxml_data.append(f"         <string>{off_color}</string>")
+        self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="sizePolicy">')
         self.cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
         self.cfgxml_data.append("          <horstretch>0</horstretch>")
@@ -260,8 +375,8 @@ class flexvcp:
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="minimumSize">')
         self.cfgxml_data.append("         <size>")
-        self.cfgxml_data.append("          <width>32</width>")
-        self.cfgxml_data.append("          <height>32</height>")
+        self.cfgxml_data.append(f"          <width>{width}</width>")
+        self.cfgxml_data.append(f"          <height>{height}</height>")
         self.cfgxml_data.append("         </size>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="maximumSize">')
@@ -274,3 +389,6 @@ class flexvcp:
         self.cfgxml_data.append("    </item>")
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
+
+    def draw_rectled(self, name, halpin, setup={}):
+        return self.draw_led(name, halpin, setup=setup)

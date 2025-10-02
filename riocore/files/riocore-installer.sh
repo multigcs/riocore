@@ -73,6 +73,7 @@ then
 fi
 echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
+echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
 
 
@@ -91,7 +92,7 @@ then
 	fi
 	echo "installing dependencies"
 	sudo apt-get update || doexit 1
-	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil openfpgaloader || doexit 1
+	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil python3-spidev openfpgaloader || doexit 1
 fi
 
 if grep -s -q '"rio"' in $TEMPFILE
@@ -253,6 +254,15 @@ EOF
 
 fi
 
+if grep -s -q '"turbonc"' in $TEMPFILE
+then
+	echo 'deb [arch=$SYSTEM2] https://repository.qtpyvcp.com/apt stable main' | sudo tee /etc/apt/sources.list.d/kcjengr.list
+	curl -sS https://repository.qtpyvcp.com/repo/kcjengr.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/kcjengr.gpg > /dev/null
+	gpg --keyserver keys.openpgp.org --recv-key 2DEC041F290DF85A
+	sudo apt update
+	sudo apt install -f python3-qtpyvcp python3-turbonc
+fi
+
 if grep -s -q '"probe_basic"' in $TEMPFILE
 then
 	if whiptail --menu "installing ProbeBasic" 20 60 12 stable "Stable" develop "Develop" 2> ${TEMPFILE}2
@@ -280,14 +290,14 @@ then
 		fi
 		if test -e $LAST_HIYAPYCO && test -e $LAST_QTPYVCP && test -e $LAST_PROBEBASIC
 		then
-			sudo apt install -y debhelper-compat dh-python python4-setuptools python3-yaml python3-pyqt5.qtmultimedia python3-pyqt5.qtquick qml-module-qtquick-controls libqt5multimedia5-plugins python3-dev python3-docopt python3-qtpy python3-pyudev python3-psutil python3-markupsafe python3-vtk9 python3-pyqtgraph python3-simpleeval python3-jinja2 python3-deepdiff python3-sqlalchemy qttools5-dev-tools python3-serial python3-distro
+			sudo apt install -y debhelper-compat dh-python python3-setuptools python3-yaml python3-pyqt5.qtmultimedia python3-pyqt5.qtquick qml-module-qtquick-controls libqt5multimedia5-plugins python3-dev python3-docopt python3-qtpy python3-pyudev python3-psutil python3-markupsafe python3-vtk9 python3-pyqtgraph python3-simpleeval python3-jinja2 python3-deepdiff python3-sqlalchemy qttools5-dev-tools python3-serial python3-distro
 			sudo dpkg -i $LAST_HIYAPYCO $LAST_QTPYVCP $LAST_PROBEBASIC || sudo apt-get install -y -f
 		fi
 	fi
 fi
 
 
-cd $TARGETDIR/riocore/
+cd $TARGETDIR/riocore/ 2>/dev/null
 echo ""
 echo "####################################################################"
 echo ""

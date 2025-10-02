@@ -88,6 +88,10 @@ class Plugin(PluginBase):
         if "dir" in self.plugin_setup.get("pins", {}):
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
 
+    def cfg_info(self):
+        freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
+        return f"{freq} Hz"
+
     # optional function, only needed if you add parameter to the verilog functions
     def gateware_instances(self):
         instances = self.gateware_instances_base()
