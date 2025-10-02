@@ -49,7 +49,7 @@ int rtapi_app_main(void) {
 
     interface_init();
 
-    rio_readwrite();
+    rio_readwrite(NULL, 0);
 
     return 0;
 }
