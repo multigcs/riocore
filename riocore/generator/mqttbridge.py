@@ -385,7 +385,7 @@ body {
 
         output.append("")
         output.append("    while (1) {")
-        output.append("        rio_readwrite();")
+        output.append("        rio_readwrite(NULL, 0);")
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]

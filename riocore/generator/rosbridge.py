@@ -158,7 +158,7 @@ class rosbridge(cbase):
         output.append("    ros::Rate loop_rate(10);")
         output.append("")
         output.append("    while (ros::ok()) {")
-        output.append("        rio_readwrite();")
+        output.append("        rio_readwrite(NULL, 0);")
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:

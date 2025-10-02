@@ -826,7 +826,7 @@ class cbase:
         output.append("float fpga_stamp_last = 0;")
         output.append("uint32_t fpga_timestamp = 0;")
         output.append("")
-        output.append("void rio_readwrite();")
+        output.append("void rio_readwrite(void *inst, long period);")
         output.append("int error_handler(int retval);")
         output.append("")
 
@@ -912,7 +912,7 @@ class cbase:
         output += self.c_signal_converter()
         output += self.c_buffer_converter()
         output += self.c_buffer()
-        output.append("void rio_readwrite() {")
+        output.append("void rio_readwrite(void *inst, long period) {")
         output.append("    int ret = 0;")
         output.append("    uint8_t i = 0;")
         output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
