@@ -31,6 +31,8 @@ def ini(parent, ini_setup):
             cmd_args.append("--xid {XID}")
             if camjog_device.startswith("/dev/video"):
                 cmd_args.append(f"--video {camjog_device[-1]}")
+            elif camjog_device.startswith("rtsp://"):
+                cmd_args.append(f"--camera {camjog_device}")
             elif len(camjog_device) <= 2:
                 cmd_args.append(f"--video {camjog_device}")
             else:
@@ -66,7 +68,7 @@ def hal(parent):
     linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
     for camjog_num, camjog in enumerate(linuxcnc_config.get("camjog", [])):
         if camjog and camjog.get("enable"):
-            parent.postgui_components_add("camjog")
+            parent.halg.postgui_components_add("camjog")
             # jog axis
             for axis_name, axis_config in parent.project.axis_dict.items():
                 if axis_name not in {"X", "Y"}:

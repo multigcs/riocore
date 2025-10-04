@@ -147,8 +147,11 @@ class MyImage(QLabel):
             (offset_x, offset_y) = self.parent.convert_to_cam((self.new_x, self.new_y))
 
             if self.parent.options["mode"] == "goto":
-                h["axis.x.jog-counts"] += int(offset_x / h["axis.x.jog-scale"] * h["axis.x.cal"])
-                h["axis.y.jog-counts"] += int(offset_y / h["axis.y.jog-scale"] * h["axis.y.cal"])
+                x_scale = h["axis.x.jog-scale"]
+                y_scale = h["axis.y.jog-scale"]
+                if x_scale and y_scale:
+                    h["axis.x.jog-counts"] += int(offset_x / x_scale * h["axis.x.cal"])
+                    h["axis.y.jog-counts"] += int(offset_y / y_scale * h["axis.y.cal"])
 
             elif self.parent.options["mode"] == "touch":
                 self.parent.options["points"] = []
@@ -172,8 +175,11 @@ class MyImage(QLabel):
             z = self.parent.options["zoom"]
             offset_x = int(diff_x / z / s)
             offset_y = int(diff_y / z / s)
-            h["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / h["axis.x.jog-scale"] * h["axis.x.cal"])
-            h["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / h["axis.y.jog-scale"] * h["axis.y.cal"])
+            x_scale = h["axis.x.jog-scale"]
+            y_scale = h["axis.y.jog-scale"]
+            if x_scale and y_scale:
+                h["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / x_scale * h["axis.x.cal"])
+                h["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / y_scale * h["axis.y.cal"])
 
 
 class WinForm(QWidget):
