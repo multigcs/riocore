@@ -188,12 +188,16 @@ class WinForm(QWidget):
         parser.add_argument("--scale", help="scale image", type=float, default=1.0)
         args = parser.parse_args()
 
-        if args.video == -1:
+        self.video = args.video
+
+        if args.camera and args.camera.startswith("rtsp://"):
+            self.video = args.camera
+        elif args.video == -1:
             for index in range(9):
                 if os.path.exists(f"/sys/class/video4linux/video{index}/name"):
                     name = open(f"/sys/class/video4linux/video{index}/name", "r").read().strip()
                     if args.camera in name:
-                        args.video = index
+                        self.video = index
                         break
 
         self.options = {
@@ -265,7 +269,6 @@ class WinForm(QWidget):
         layout.addWidget(self.video_img)
         layout.addStretch()
 
-        self.video = args.video
         self.camera = CameraThread(self.video, self.options)
         self.camera.image.connect(self.update_image)
         self.camera.start()
