@@ -1,6 +1,8 @@
 # EP4CE6E22C8
 **EP4CE6E22C8 devboard**
 
+cheap but low LE count and can not write to flash via openFPGALoarder
+
 * URL: []()
 * Toolchain: [quartus](../../generator/toolchains/quartus/README.md)
 * Family: Cyclone IV E

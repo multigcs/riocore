@@ -1,6 +1,7 @@
 {
     "name": "EP4CE6E22C8",
     "description": "EP4CE6E22C8 devboard",
+    "comment": "cheap but low LE count and can not write to flash via openFPGALoarder",
     "url": "",
     "toolchain": "quartus",
     "family": "Cyclone IV E",
