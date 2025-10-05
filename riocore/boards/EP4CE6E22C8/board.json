@@ -1,8 +1,8 @@
 {
     "name": "EP4CE6E22C8",
     "description": "EP4CE6E22C8 devboard",
-    "comment": "cheap but low LE count and can not write to flash via openFPGALoarder",
-    "url": "",
+    "comment": "cheap devboard from china but low LE count and can not write to flash via openFPGALoarder",
+    "url": "https://de.aliexpress.com/item/1005009306876743.html",
     "toolchain": "quartus",
     "family": "Cyclone IV E",
     "type": "EP4CE6E22C8",
