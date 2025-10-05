@@ -12,6 +12,7 @@
 | [Colorlight_i9plus-v6.1](Colorlight_i9plus-v6.1/README.md) | Artix7 on SODIMM-200P board | xc7 / xc7a50tifgg484-1l | [vivado](../generator/toolchains/vivado/README.md) | <img src="Colorlight_i9plus-v6.1/board.png" height="48"> |
 | [EBAZ4205](EBAZ4205/README.md) | EBAZ4205 - WIP | XC7 / xc7z010clg400-1 | [vivado](../generator/toolchains/vivado/README.md) | <img src="EBAZ4205/board.png" height="48"> |
 | [EP2C5T144](EP2C5T144/README.md) | EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1) | Cyclone II / EP2C5T144C8 | [quartus](../generator/toolchains/quartus/README.md) | <img src="EP2C5T144/board.png" height="48"> |
+| [EP4CE6E22C8](EP4CE6E22C8/README.md) | EP4CE6E22C8 devboard | Cyclone IV E / EP4CE6E22C8 | [quartus](../generator/toolchains/quartus/README.md) | <img src="EP4CE6E22C8/board.png" height="48"> |
 | [FireAnt](FireAnt/README.md) | Efinix FireAnt - only for toolchain testing | Trion / T8F81 | [efinity](../generator/toolchains/efinity/README.md) | |
 | [ICEBreakerV1.0e](ICEBreakerV1.0e/README.md) | Small and low cost FPGA educational and development board | ice40 / up5k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="ICEBreakerV1.0e/board.png" height="48"> |
 | [IceShield](IceShield/README.md) | RIO-IceShield board for Raspberry PI4 | ice40 / up5k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="IceShield/board.png" height="48"> |

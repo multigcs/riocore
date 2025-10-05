@@ -55,7 +55,7 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
-        if sys.platform == "linux":
+        if sys.platform == "linux" and not self.toolchain_path:
             quartus_sh = shutil.which("quartus_sh")
             if quartus_sh is None:
                 print("WARNING: can not found toolchain installation in PATH: quartus")
@@ -71,7 +71,8 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("# Toolchain: Quartus")
         makefile_data.append("")
         if self.toolchain_path:
-            makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
+            makefile_data.append(f"PATH            := {self.toolchain_path}:$(PATH)")
+            makefile_data.append(f"LD_LIBRARY_PATH := {self.toolchain_path}:$(LD_LIBRARY_PATH)")
             makefile_data.append("")
         makefile_data.append("PROJECT   := rio")
         makefile_data.append("TOP       := rio")
@@ -155,10 +156,11 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("	rm -f smart.log *.rpt *.sof *.chg *.qsf *.qpf *.summary *.smsg *.pin *.jdi")
         makefile_data.append("")
         makefile_data.append("load: $(PROJECT).svf")
-        makefile_data.append("	openFPGALoader -m $(PROJECT).svf -f")
+        makefile_data.append("	# openFPGALoader -v -c usb-blaster -m $(PROJECT).svf -f")
+        makefile_data.append("	openFPGALoader -v -c usb-blaster -m $(PROJECT).rbf -f")
         makefile_data.append("")
         makefile_data.append("sload: $(PROJECT).svf")
-        makefile_data.append("	openFPGALoader -m $(PROJECT).svf")
+        makefile_data.append("	openFPGALoader -v -c usb-blaster -m $(PROJECT).rbf")
         makefile_data.append("")
         makefile_data.append("qpload:")
         makefile_data.append("prog: $(PROJECT).sof")

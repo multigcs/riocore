@@ -1,0 +1,91 @@
+{
+    "name": "EP4CE6E22C8",
+    "boardcfg": "EP4CE6E22C8",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D1"
+                }
+            },
+            "uid": "blink1",
+            "pos": [
+                850.0,
+                100.0
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D2"
+                }
+            },
+            "uid": "blink2",
+            "pos": [
+                850.0,
+                150.0
+            ],
+            "frequency": 2.0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D3"
+                }
+            },
+            "uid": "blink3",
+            "pos": [
+                850.0,
+                200.0
+            ],
+            "frequency": 3.0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D4"
+                }
+            },
+            "uid": "blink4",
+            "pos": [
+                850.0,
+                250.0
+            ],
+            "frequency": 4.0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:D5"
+                }
+            },
+            "uid": "blink5",
+            "pos": [
+                850.0,
+                300.0
+            ],
+            "frequency": 5.0
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 2.5,
+            "pos": [
+                391,
+                8
+            ]
+        },
+        "board": {
+            "pos": [
+                310.0,
+                170.0
+            ],
+            "rotate": 0
+        }
+    }
+}
