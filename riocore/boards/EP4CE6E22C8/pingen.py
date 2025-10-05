@@ -3,7 +3,8 @@ import json
 config = {
     "name": "EP4CE6E22C8",
     "description": "EP4CE6E22C8 devboard",
-    "url": "",
+    "comment": "cheap devboard from china but low LE count and can not write to flash via openFPGALoarder",
+    "url": "https://de.aliexpress.com/item/1005009306876743.html",
     "toolchain": "quartus",
     "family": "Cyclone IV E",
     "type": "EP4CE6E22C8",
@@ -37,6 +38,7 @@ config = {
                 "B5": {"pin": "73", "pos": [718, 369], "direction": "input"},
             },
         },
+        {"name": "UART", "comment": "", "default": "", "pins": {"RX": {"pin": "23", "pos": [218, 100], "direction": "input"}, "TX": {"pin": "10", "pos": [240, 100], "direction": "input"}}},
     ],
 }
 

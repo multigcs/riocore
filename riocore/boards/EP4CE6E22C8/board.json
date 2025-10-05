@@ -744,6 +744,29 @@
                     "direction": "input"
                 }
             }
+        },
+        {
+            "name": "UART",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "RX": {
+                    "pin": "23",
+                    "pos": [
+                        218,
+                        100
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "10",
+                    "pos": [
+                        240,
+                        100
+                    ],
+                    "direction": "input"
+                }
+            }
         }
     ]
 }
