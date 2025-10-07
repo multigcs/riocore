@@ -32,13 +32,18 @@ class Pins:
                 else:
                     options.append(f"DRIVE = {drive:2s}")
                     options.append(f"SLEW = {slew:4s}")
+
+                if pin == "sysclk_in":
+                    options.append('TNM_NET = "sysclk_in"')
+
                 data.append(f"NET {netstr:32s} {' | '.join(options)} ;")
                 if pin == "sysclk_in":
                     if self.config["osc_clock"]:
-                        data.append(f'TIMESPEC TS_CLK = PERIOD "sysclk_in" {self.config["osc_clock"] / 1000000} MHz HIGH 50%;')
-                        data.append(f'TIMESPEC TS_CLK = PERIOD "sysclk"    {self.config["speed"] / 1000000} MHz HIGH 50%;')
+                        data.append(f'NET "sysclk"                         TNM_NET = "sysclk";')
+                        data.append(f'TIMESPEC TS_CLK1 = PERIOD "sysclk_in" {(self.config["osc_clock"] / 1000000):6.2f} MHz HIGH 50%;')
+                        data.append(f'TIMESPEC TS_CLK2 = PERIOD "sysclk"    {(self.config["speed"] / 1000000):6.2f} MHz HIGH 50%;')
                     else:
-                        data.append(f'TIMESPEC TS_CLK = PERIOD "sysclk_in" {self.config["speed"] / 1000000} MHz HIGH 50%;')
+                        data.append(f'TIMESPEC TS_CLK1 = PERIOD "sysclk_in" {(self.config["speed"] / 1000000):6.2f} MHz HIGH 50%;')
             data.append("")
 
         # for key, value in self.config["timing_constraints"].items():
