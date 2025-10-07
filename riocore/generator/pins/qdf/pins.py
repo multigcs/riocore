@@ -24,7 +24,10 @@ class Pins:
                     data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin_config['varname']}")
 
                 if family != "Cyclone II":
-                    iostandard = pin_config.get("iostandard", "3.3-V LVTTL").upper()
+                    default = "3.3-V LVTTL"
+                    if pin_config["varname"] == "sysclk_in":
+                        default = "3.0-V LVTTL"
+                    iostandard = pin_config.get("iostandard", default).upper()
                     # drive = pin_config.get("drive", "4")
                     # slew = pin_config.get("slew", "SLOW").upper()
                     data.append(f'set_instance_assignment -name IO_STANDARD "{iostandard}" -to {pin_config["varname"]}')

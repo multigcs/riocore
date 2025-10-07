@@ -38,16 +38,10 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
 
     def pll(self, clock_in, clock_out):
         if self.config["jdata"]["family"] in {"MAX 10", "Cyclone 10 LP", "Cyclone IV E"}:
+            pll_cmd = f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'"
             if self.toolchain_path:
-                result = subprocess.check_output(
-                    f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v' '{self.toolchain_path}'",
-                    shell=True,
-                )
-            else:
-                result = subprocess.check_output(
-                    f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",
-                    shell=True,
-                )
+                pll_cmd += f" '{self.toolchain_path}'"
+            result = subprocess.check_output(pll_cmd, shell=True)
             achieved = re.findall(r"OUTPUT FREQ:\s*(\d*\.\d*)", result.decode())
             if achieved:
                 new_speed = int(achieved[0].replace(".", ""))
@@ -68,7 +62,6 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
                 print("  example: export PATH=$PATH:/opt/intelFPGA_lite/22.1std/quartus/bin/")
 
         verilogs = " ".join(self.config["verilog_files"])
-        clkname = "sysclk_in"
         family = self.config["family"]
         ftype = self.config["type"]
 
@@ -82,6 +75,8 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
             makefile_data.append("")
         makefile_data.append("PROJECT   := rio")
         makefile_data.append("TOP       := rio")
+        # makefile_data.append(f"NUM_CPUS  := $(shell nproc)")
+        makefile_data.append(f"NUM_CPUS  := $(shell grep 'cpu cores' /proc/cpuinfo | tail -n 1 | cut -d':' -f2)")
         makefile_data.append(f"PART      := {ftype}")
         makefile_data.append(f'FAMILY    := "{family}"')
         makefile_data.append(f"VERILOGS  := {verilogs}")
@@ -117,6 +112,7 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append('	$(Q)$(ECHO) "Generating asignment files."')
         makefile_data.append("	$(QC) --prepare -f $(FAMILY) -t $(TOP) $(PROJECT)")
         makefile_data.append("	echo >> $(PROJECT).qsf")
+        makefile_data.append('	echo "set_global_assignment -name NUM_PARALLEL_PROCESSORS $(NUM_CPUS)" >> $(PROJECT).qsf')
         makefile_data.append('	echo "set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005" >> $(PROJECT).qsf')
         makefile_data.append('	echo "set_global_assignment -name ON_CHIP_BITSTREAM_DECOMPRESSION OFF" >> $(PROJECT).qsf')
         makefile_data.append('	echo "set_global_assignment -name GENERATE_RBF_FILE ON" >> $(PROJECT).qsf')
@@ -177,10 +173,14 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
-        clock = self.config["speed"]
+        clock_speed = self.config["jdata"]["clock"]["speed"]
+        clock_name = "sysclk"
+        osc_speed = self.config["jdata"]["clock"].get("osc", clock_speed)
+        osc_name = "sysclk_in"
+
         sdc_data = []
         sdc_data.append("")
-        sdc_data.append(f'create_clock -name {clkname} -period "{float(clock) / 1000000} MHz" [get_ports {clkname}]')
+        sdc_data.append(f'create_clock -name {osc_name} -period "{float(osc_speed) / 1000000} MHz" [get_ports {osc_name}]')
         sdc_data.append("derive_pll_clocks")
         sdc_data.append("derive_clock_uncertainty")
         sdc_data.append("")
