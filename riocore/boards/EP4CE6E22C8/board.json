@@ -8,7 +8,8 @@
     "type": "EP4CE6E22C8",
     "package": "",
     "clock": {
-        "speed": "50000000",
+        "osc": "50000000",
+        "speed": "100000000",
         "pin": "PIN_24"
     },
     "slots": [

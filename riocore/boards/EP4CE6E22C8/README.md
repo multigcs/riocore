@@ -8,7 +8,7 @@ cheap devboard from china but low LE count and can not write to flash via openFP
 * Family: Cyclone IV E
 * Type: EP4CE6E22C8
 * Package: 
-* Clock: 50.000Mhz (Pin:PIN_24)
+* Clock: 50.000Mhz -> PLL -> 100.000Mhz (Pin:PIN_24)
 * Example-Configs: [EP4CE6E22C8](../../configs/EP4CE6E22C8)
 
 ![board.png](board.png)

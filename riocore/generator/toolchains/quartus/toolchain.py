@@ -37,11 +37,17 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         return info
 
     def pll(self, clock_in, clock_out):
-        if self.config["jdata"]["family"] in {"MAX 10", "Cyclone 10 LP"}:
-            result = subprocess.check_output(
-                f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",
-                shell=True,
-            )
+        if self.config["jdata"]["family"] in {"MAX 10", "Cyclone 10 LP", "Cyclone IV E"}:
+            if self.toolchain_path:
+                result = subprocess.check_output(
+                    f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v' '{self.toolchain_path}'",
+                    shell=True,
+                )
+            else:
+                result = subprocess.check_output(
+                    f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",
+                    shell=True,
+                )
             achieved = re.findall(r"OUTPUT FREQ:\s*(\d*\.\d*)", result.decode())
             if achieved:
                 new_speed = int(achieved[0].replace(".", ""))
