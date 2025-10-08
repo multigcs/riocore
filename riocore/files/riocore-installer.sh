@@ -71,7 +71,10 @@ then
 		echo "	gowin \"install Gowin Toolchain\" OFF \\" >> ${TEMPFILE}2
 	fi
 fi
-echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
+if ! grep -s -q "autologin-user" /usr/share/lightdm/lightdm.conf.d/01_debian.conf
+then
+    echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
+fi
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
@@ -144,6 +147,7 @@ then
 			mkdir -p riocore/toolchains/gowin
 			cd riocore/toolchains/gowin || doexit 1
 			wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_linux.tar.gz" || doexit 1
+			# wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.11.03_Education_Linux.tar.gz" || doexit 1
 			tar xzvpf Gowin_V1.9.10.03_Education_linux.tar.gz || doexit 1
 			rm -rf Gowin_V1.9.10.03_Education_linux.tar.gz
 		)
