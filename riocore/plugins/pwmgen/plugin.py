@@ -25,7 +25,7 @@ a hardware PWM generator is a better choice."""
                 "description": "Modus",
             },
             "pwm-freq": {
-                "default": 10000,
+                "default": 100,
                 "type": float,
                 "min": 1,
                 "max": 100000,
@@ -33,7 +33,7 @@ a hardware PWM generator is a better choice."""
                 "description": "pwm frequency",
             },
             "scale": {
-                "default": 1.0,
+                "default": 100.0,
                 "type": float,
                 "min": -10000.0,
                 "max": 10000.0,
@@ -57,10 +57,10 @@ a hardware PWM generator is a better choice."""
                 "description": "minimum duty cycle",
             },
             "max-dc": {
-                "default": 100.0,
+                "default": 1.0,
                 "type": float,
                 "min": 0.0,
-                "max": 100.0,
+                "max": 1.0,
                 "unit": "",
                 "description": "maximum duty cycle",
             },
@@ -74,6 +74,8 @@ a hardware PWM generator is a better choice."""
         self.SIGNALS = {
             "value": {
                 "direction": "output",
+                "min": -100.0,
+                "max": 100.0,
             },
             "enable": {
                 "direction": "output",

@@ -5,7 +5,7 @@ config = {
     "description": "RPI5",
     "comment": "",
     "url": "",
-    "type": "gpio",
+    "type": "hal_gpio",
     "slots": [
         {"name": "GPIO", "comment": "", "default": "", "pins": {}},
     ],
@@ -62,10 +62,10 @@ for n, pin in enumerate(pins, 1):
     pname = f"P{n}"
 
     px = 528
+    py = n // 2 * 25.3 + 82
     if si == 1:
         px += 25
-
-    py = n // 2 * 25.3 + 82
+        py -= 25.3
     if pin.startswith("GP"):
         config["slots"][0]["pins"][pname] = {"pin": f"{pin}", "rotate": True, "pos": [px, py], "direction": "all"}
 

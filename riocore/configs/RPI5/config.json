@@ -3,16 +3,16 @@
     "boardcfg": "RPI5",
     "flow": {
         "view": {
-            "scale": 1.12,
+            "scale": 2.19,
             "pos": [
-                -576,
-                -183
+                -7,
+                289
             ]
         },
         "board": {
             "pos": [
-                120.0,
-                220.0
+                120.45662100456622,
+                220.45662100456622
             ],
             "rotate": 0
         }
@@ -68,37 +68,37 @@
         },
         {
             "type": "pwmgen",
+            "pins": {
+                "pwm": {
+                    "pin": "GPIO:P10"
+                },
+                "dir": {
+                    "pin": "GPIO:P12"
+                }
+            },
             "uid": "pwmgen0",
             "pos": [
                 590.0,
                 410.0
-            ],
-            "pins": {
-                "pwm": {
-                    "pin": "GPIO:P11"
-                },
-                "dir": {
-                    "pin": "GPIO:P10"
-                }
-            }
+            ]
         },
         {
             "type": "encoder",
             "pins": {
                 "phase-A": {
-                    "pin": "GPIO:P13"
+                    "pin": "GPIO:P36"
                 },
                 "phase-B": {
-                    "pin": "GPIO:P12"
+                    "pin": "GPIO:P38"
                 },
                 "phase-Z": {
-                    "pin": "GPIO:P15"
+                    "pin": "GPIO:P40"
                 }
             },
             "uid": "encoder0",
             "pos": [
-                590.0,
-                480.0
+                592.2374429223744,
+                477.6255707762558
             ]
         }
     ]

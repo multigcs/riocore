@@ -58,7 +58,7 @@ If higher rates are needed, a hardware step generator is a better choice."""
             },
         }
         self.mode_pins = {
-            "0": {"step": {"direction": "output"}, "dir": {"direction": "output"}},
+            "0": {"step": {"direction": "output", "reset": True}, "dir": {"direction": "output"}},
             "1": {"up": {"direction": "output"}, "down": {"direction": "output"}},
             "2": {"phase-A": {"direction": "output"}, "phase-B": {"direction": "output"}},
             "3": {"phase-A": {"direction": "output"}, "phase-B": {"direction": "output"}, "phase-C": {"direction": "output"}},

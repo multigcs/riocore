@@ -1382,9 +1382,12 @@ if __name__ == "__main__":
         widgets = {}
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
-                if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
+                if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "position-scale", "position-fb", "velocity", "position-cmd", "enable", "dty"}:
                     continue
-                vcp_add(signal_config, f"{self.hal_prefix}.", widgets)
+                hal_prefix = f"{self.hal_prefix}."
+                if plugin_instance.PLUGIN_TYPE == "gpio":
+                    hal_prefix = ""
+                vcp_add(signal_config, hal_prefix, widgets)
 
         tablist = []
         for tab in vcp_sections:
@@ -1601,7 +1604,6 @@ if __name__ == "__main__":
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
-
                 if plugin_instance.COMPONENT not in components:
                     components[plugin_instance.COMPONENT] = []
                 components[plugin_instance.COMPONENT].append(plugin_instance)
@@ -1613,6 +1615,43 @@ if __name__ == "__main__":
         self.halg.fmt_add_top(
             "loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO"
         )
+        self.halg.fmt_add_top("")
+
+        # load gpio drivers (rpi/parport)
+        if self.project.config["type"] == "hal_gpio":
+            hal_gpios = {
+                "input": [],
+                "output": [],
+                "invert": [],
+                "reset": [],
+            }
+            for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.PLUGIN_TYPE == "gpio":
+                    for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                        direction = plugin_instance.PINDEFAULTS[name]["direction"]
+                        reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
+                        pin = psetup["pin"]
+                        hal_gpios[direction].append(pin)
+                        if reset:
+                            hal_gpios["reset"].append(pin)
+                        if direction == "output":
+                            psetup["pin"] = f"hal_gpio.{pin}-out"
+                        elif direction == "input":
+                            psetup["pin"] = f"hal_gpio.{pin}-in"
+            self.halg.fmt_add_top("# load hal_gpio")
+            args = []
+            if hal_gpios["input"]:
+                args.append(f"inputs={','.join(hal_gpios['input'])}")
+            if hal_gpios["output"]:
+                args.append(f"outputs={','.join(hal_gpios['output'])}")
+            if hal_gpios["invert"]:
+                args.append(f"invert={','.join(hal_gpios['invert'])}")
+            if hal_gpios["reset"]:
+                args.append(f"reset={','.join(hal_gpios['reset'])}")
+            self.halg.fmt_add_top(f"loadrt hal_gpio {' '.join(args)}")
+            self.halg.fmt_add_top("addf hal_gpio.read base-thread")
+            self.halg.fmt_add_top("addf hal_gpio.write base-thread")
+            self.halg.fmt_add_top("")
 
         if self.project.config["toolchain"]:
             if self.protocol == "ETHERCAT":
