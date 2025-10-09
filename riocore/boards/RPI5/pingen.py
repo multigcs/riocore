@@ -56,7 +56,7 @@ pins = (
 )
 
 si = 0
-for n, pin in enumerate(pins):
+for n, pin in enumerate(pins, 1):
     if not pin:
         continue
     pname = f"P{n}"

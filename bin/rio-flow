@@ -935,7 +935,7 @@ class ModuleNode(MyNode):
             self.plugins.load_plugin(plugin_id, plugin_config, self.sysconfig)
 
         self.name = self.module_name
-        self.slot = self.module_config["slot"]
+        self.slot = self.module_config.get("slot", "")
         self.pins = {}
         self.port_positions = {}
         self.signals = {}
@@ -2004,7 +2004,7 @@ class Window(QMainWindow):
             hx = 850
             hy = py
         mnode = BreakoutNode(self.scene, hx, hy, breakout_config)
-        slot = breakout_config["slot"]
+        slot = breakout_config.get("slot", "")
         breakout_name = breakout_config["name"]
         self.breakout_uids.append(breakout_name)
         if slot:

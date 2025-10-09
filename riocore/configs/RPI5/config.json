@@ -3,16 +3,16 @@
     "boardcfg": "RPI5",
     "flow": {
         "view": {
-            "scale": 0.87,
+            "scale": 0.88,
             "pos": [
-                -7,
-                121
+                64,
+                63
             ]
         },
         "board": {
             "pos": [
-                120.89285714285711,
-                220.89285714285717
+                122.6278190352889,
+                220.02537619664128
             ],
             "rotate": 0
         }
@@ -22,17 +22,9 @@
             "type": "stepgen",
             "uid": "stepgen0",
             "pos": [
-                550.9256403538125,
-                259.4432773109244
+                1017.1361557766313,
+                212.02598103764558
             ],
-            "pins": {
-                "step": {
-                    "pin": "GPIO:P2"
-                },
-                "dir": {
-                    "pin": "GPIO:P4"
-                }
-            },
             "signals": {
                 "position-cmd": {
                     "net": "",
@@ -47,59 +39,79 @@
                     "setp": ""
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P14"
+                },
+                "dir": {
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P15"
+                }
+            }
         },
         {
             "type": "stepgen",
             "uid": "stepgen1",
             "pos": [
-                550.9256403538125,
-                339.4432773109244
+                1124.8416182805972,
+                337.21879677632444
             ],
+            "is_joint": true,
             "pins": {
-                "dir": {
-                    "pin": "GPIO:P6"
-                },
                 "step": {
-                    "pin": "GPIO:P7"
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P5"
+                },
+                "dir": {
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P6"
                 }
-            },
-            "is_joint": true
+            }
         },
         {
             "type": "pwmgen",
-            "pins": {
-                "pwm": {
-                    "pin": "GPIO:P9"
-                },
-                "dir": {
-                    "pin": "GPIO:P11"
-                }
-            },
             "uid": "pwmgen0",
             "pos": [
-                550.8928571428571,
-                418.75000000000006
-            ]
+                1155.951562554041,
+                468.8008120284987
+            ],
+            "pins": {
+                "pwm": {
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P7"
+                },
+                "dir": {
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P8"
+                }
+            }
         },
         {
             "type": "encoder",
             "pins": {
-                "phase-Z": {
-                    "pin": "GPIO:P39"
+                "phase-A": {
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P10"
                 },
                 "phase-B": {
-                    "pin": "GPIO:P36"
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P11"
                 },
-                "phase-A": {
-                    "pin": "GPIO:P37"
+                "phase-Z": {
+                    "pin": "rpi-byte2bot-db25hat0:DB25:P12"
                 }
             },
             "uid": "encoder0",
             "pos": [
-                549.1071428571429,
-                508.03571428571445
+                964.2618035946587,
+                543.9300947292803
             ]
+        }
+    ],
+    "breakouts": [
+        {
+            "breakout": "rpi-byte2bot-db25hat",
+            "name": "rpi-byte2bot-db25hat0",
+            "pos": [
+                513.4307985800041,
+                137.26455165107882
+            ],
+            "rotate": 0,
+            "slot": "GPIO"
         }
     ]
 }

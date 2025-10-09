@@ -77,7 +77,7 @@ class GuiBreakouts:
 
         dialog.setLayout(dialog.layout)
 
-        breakouts = ["china-bob5x"]
+        breakouts = ["china-bob5x", "rpi-byte2bot-db25hat"]
 
         def show_breakout_info(idx):
             if not breakout_table.item(idx, 1):
