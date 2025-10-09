@@ -64,9 +64,16 @@ Some hardware-based systems can count at MHz rates."""
             },
         }
         self.PINDEFAULTS = {
-            "phase-A": {"direction": "input"},
-            "phase-B": {"direction": "input"},
-            "phase-Z": {"direction": "input"},
+            "phase-A": {
+                "direction": "input",
+            },
+            "phase-B": {
+                "direction": "input",
+            },
+            "phase-Z": {
+                "direction": "input",
+                "optional": True,
+            },
         }
 
     def update_prefixes(cls, instances):

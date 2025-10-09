@@ -1387,6 +1387,14 @@ if __name__ == "__main__":
                 hal_prefix = f"{self.hal_prefix}."
                 if plugin_instance.PLUGIN_TYPE == "gpio":
                     hal_prefix = ""
+
+                if plugin_instance.NAME in {"gpioout", "gpioin"}:
+                    # overwrite halname with direct pin
+                    for pin_name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                        if signal_name == pin_name:
+                            print(pin_name, psetup["pin"])
+                            signal_config["halname"] = psetup["pin"]
+
                 vcp_add(signal_config, hal_prefix, widgets)
 
         tablist = []
@@ -1861,7 +1869,8 @@ if __name__ == "__main__":
                     continue
                 jprefix = plugin_instance.PREFIX
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
+                    if plugin_instance.NAME not in {"gpioout", "gpioin"}:
+                        self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():

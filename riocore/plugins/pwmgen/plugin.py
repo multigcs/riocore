@@ -83,8 +83,20 @@ a hardware PWM generator is a better choice."""
             },
         }
         self.mode_pins = {
-            "1": {"pwm": {"direction": "output"}, "dir": {"direction": "output"}},
-            "2": {"up": {"direction": "output"}, "down": {"direction": "output"}},
+            "1": {
+                "pwm": {"direction": "output"},
+                "dir": {
+                    "direction": "output",
+                    "optional": True,
+                },
+            },
+            "2": {
+                "up": {"direction": "output"},
+                "down": {
+                    "direction": "output",
+                    "optional": True,
+                },
+            },
         }
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
