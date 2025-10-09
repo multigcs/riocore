@@ -9,145 +9,26 @@ config = {
             "comment": "",
             "default": "",
             "pins": {
-                "P1": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P2": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P3": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P4": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P5": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P6": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P7": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P8": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P9": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P10": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P11": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P12": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P13": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P14": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P15": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P16": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "P17": {
-                    "pin": "P1",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                }
-            }
+                "P1": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P2": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P3": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P4": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P5": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P6": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P7": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P8": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P9": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P10": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P11": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P12": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P13": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P14": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P15": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P16": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+                "P17": {"pin": "P1", "pos": [212, 771], "direction": "input"},
+            },
         }
-    ]
+    ],
 }
 
 mapping = {
@@ -229,7 +110,6 @@ for n, pin in enumerate(pins, 1):
         config["main"][pname] = {"pos": [px, py]}
 
     si = 1 - si
-
 
 
 for n in range(17):

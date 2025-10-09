@@ -568,6 +568,9 @@ class BoardNode(QGraphicsItem):
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
+    def delete(self):
+        return False
+
     def mouseDoubleClickEvent(self, event):
         self.edit()
 
@@ -708,6 +711,14 @@ class BreakoutNode(QGraphicsItem):
         self.scene.parent.gui_breakouts.edit_breakout(self.breakout_setup)
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
+
+    def delete(self):
+        # remove breakout from cfg
+        breakout_setup = self.breakout_setup
+        for pn, breakout in enumerate(self.scene.parent.config["breakouts"]):
+            if breakout == breakout_setup:
+                self.scene.parent.config["breakouts"].pop(pn)
+        return True
 
     def mouseDoubleClickEvent(self, event):
         self.edit()
