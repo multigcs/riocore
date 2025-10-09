@@ -20,6 +20,7 @@ Keywords: pwm
 ### dir:
 
  * direction: output
+ * optional: True
 
 
 ## Options:
@@ -36,7 +37,7 @@ pwm frequency
  * type: float
  * min: 1
  * max: 100000
- * default: 10000
+ * default: 100
  * unit: Hz
 
 ### scale:
@@ -45,7 +46,7 @@ scale
  * type: float
  * min: -10000.0
  * max: 10000.0
- * default: 1.0
+ * default: 100.0
  * unit: 
 
 ### offset:
@@ -71,8 +72,8 @@ maximum duty cycle
 
  * type: float
  * min: 0.0
- * max: 100.0
- * default: 100.0
+ * max: 1.0
+ * default: 1.0
  * unit: 
 
 ### dither-pwm:
@@ -94,6 +95,8 @@ name of this plugin instance
 
  * type: float
  * direction: output
+ * min: -100.0
+ * max: 100.0
 
 ### enable:
 
@@ -125,11 +128,11 @@ name of this plugin instance
 {
     "type": "pwmgen",
     "mode": "1",
-    "pwm-freq": 10000,
-    "scale": 1.0,
+    "pwm-freq": 100,
+    "scale": 100.0,
     "offset": 0.0,
     "min-dc": 0.0,
-    "max-dc": 100.0,
+    "max-dc": 1.0,
     "dither-pwm": false,
     "name": "",
     "pins": {

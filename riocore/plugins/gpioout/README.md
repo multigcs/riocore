@@ -1,86 +1,20 @@
-# pwmgen
+# gpioout
 
 <img align="right" width="320" src="image.png">
 
-**software PWM/PDM generation**
+**gpio output**
 
-pwmgen is used to generate PWM (pulse width modulation) or PDM (pulse density modulation) signals.
-The maximum PWM frequency and the resolution is quite limited compared to hardware-based approaches,
-but in many cases software PWM can be very useful. If better performance is needed,
-a hardware PWM generator is a better choice.
-
-Keywords: pwm
+Keywords: output
 
 ## Pins:
 *FPGA-pins*
-### pwm:
-
- * direction: output
-
-### dir:
+### bit:
 
  * direction: output
 
 
 ## Options:
 *user-options*
-### mode:
-Modus
-
- * type: select
- * default: 1
-
-### pwm-freq:
-pwm frequency
-
- * type: float
- * min: 1
- * max: 100000
- * default: 10000
- * unit: Hz
-
-### scale:
-scale
-
- * type: float
- * min: -10000.0
- * max: 10000.0
- * default: 1.0
- * unit: 
-
-### offset:
-offset
-
- * type: float
- * min: 0.0
- * max: 10000.0
- * default: 0.0
- * unit: 
-
-### min-dc:
-minimum duty cycle
-
- * type: float
- * min: 0.0
- * max: 100.0
- * default: 0.0
- * unit: 
-
-### max-dc:
-maximum duty cycle
-
- * type: float
- * min: 0.0
- * max: 100.0
- * default: 100.0
- * unit: 
-
-### dither-pwm:
-dither-pwm
-
- * type: bool
- * default: False
-
 ### name:
 name of this plugin instance
 
@@ -90,12 +24,7 @@ name of this plugin instance
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### value:
-
- * type: float
- * direction: output
-
-### enable:
+### bit:
 
  * type: bit
  * direction: output
@@ -108,13 +37,10 @@ name of this plugin instance
 ## Basic-Example:
 ```
 {
-    "type": "pwmgen",
+    "type": "gpioout",
     "pins": {
-        "pwm": {
+        "bit": {
             "pin": "0"
-        },
-        "dir": {
-            "pin": "1"
         }
     }
 }
@@ -123,26 +49,11 @@ name of this plugin instance
 ## Full-Example:
 ```
 {
-    "type": "pwmgen",
-    "mode": "1",
-    "pwm-freq": 10000,
-    "scale": 1.0,
-    "offset": 0.0,
-    "min-dc": 0.0,
-    "max-dc": 100.0,
-    "dither-pwm": false,
+    "type": "gpioout",
     "name": "",
     "pins": {
-        "pwm": {
+        "bit": {
             "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "dir": {
-            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
@@ -151,22 +62,11 @@ name of this plugin instance
         }
     },
     "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
+        "bit": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "display": {
-                "title": "enable",
+                "title": "bit",
                 "section": "outputs",
                 "type": "checkbox"
             }

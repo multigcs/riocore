@@ -26,6 +26,7 @@ Keywords: encoder quadencoder scale jog
 ### phase-Z:
 
  * direction: input
+ * optional: True
 
 
 ## Options:
