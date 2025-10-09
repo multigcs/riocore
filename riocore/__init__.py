@@ -647,6 +647,7 @@ class Project:
             project["modules"][module] = json.loads(mdata)
 
         # import module data
+        bname = project["board_data"]["name"]
         for slot_n, slot in enumerate(project["jdata"].get("slots", [])):
             spins = slot["pins"]
             slotname = slot.get("name", f"slot{slot_n}")
@@ -654,6 +655,7 @@ class Project:
                 if isinstance(spin_data, str):
                     spin_data = {"pin": spin_data}
                 pin_mapping[f"{slotname}:{spin}"] = spin_data["pin"]
+                pin_mapping[f"{bname}:{slotname}:{spin}"] = spin_data["pin"]
 
             modules = []
             # check old config style
@@ -709,19 +711,29 @@ class Project:
                     print(f"ERROR: module {module} not found")
                     exit(1)
 
-        for breakout_data in project["jdata"].get("breakouts", []):
-            breakout = breakout_data.get("breakout")
-            bslot_name = breakout_data.get("slot")
-            breakout_name = breakout_data.get("name")
-            breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
-            breakoutJsonStr = open(breakout_path, "r").read()
-            breakout_defaults = json.loads(breakoutJsonStr)
-            for slot in breakout_defaults["slots"]:
-                slot_name = slot["name"]
-                for pin_name, pin_data in slot["pins"].items():
-                    target = f"{bslot_name}:{pin_data['pin']}"
-                    if target in pin_mapping:
-                        pin_mapping[f"{breakout_name}:{slot_name}:{pin_name}"] = pin_mapping[target]
+        # resolve all mappings
+        for _tn in range(5):
+            unmapped = ""
+            for breakout_data in project["jdata"].get("breakouts", []):
+                breakout = breakout_data.get("breakout")
+                bslot_name = breakout_data.get("slot")
+                breakout_name = breakout_data.get("name")
+                breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
+                breakoutJsonStr = open(breakout_path, "r").read()
+                breakout_defaults = json.loads(breakoutJsonStr)
+                for slot in breakout_defaults["slots"]:
+                    slot_name = slot["name"]
+                    for pin_name, pin_data in slot["pins"].items():
+                        target = f"{bslot_name}:{pin_data['pin']}"
+                        if target in pin_mapping:
+                            pin_mapping[f"{breakout_name}:{slot_name}:{pin_name}"] = pin_mapping[target]
+                        else:
+                            unmapped = target
+            if unmapped == "":
+                break
+
+        if unmapped:
+            print(f"ERROR: unmapped ports: {unmapped}")
 
         # update plugin pins
         for plugin in project["plugins"]:

@@ -1631,9 +1631,6 @@ if __name__ == "__main__":
                         direction = plugin_instance.PINDEFAULTS[name]["direction"]
                         reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
                         pin = psetup["pin"]
-                        
-                        print(plugin_instance.instances_name, name, pin, direction)
-                        
                         hal_gpios[direction].append(pin)
                         if reset:
                             hal_gpios["reset"].append(pin)

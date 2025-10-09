@@ -3,10 +3,10 @@
     "boardcfg": "RPI5",
     "flow": {
         "view": {
-            "scale": 1.43,
+            "scale": 1.16,
             "pos": [
-                -30,
-                -78
+                -10,
+                -97
             ]
         },
         "board": {
@@ -18,24 +18,24 @@
         },
         "hal": {
             "misc": [
-                1130.0,
-                90.0
+                1420.0,
+                630.0
             ],
             "joint.0": [
-                1130.0,
-                250.0
+                1420.0,
+                790.0
             ],
             "joint.1": [
-                1130.0,
-                200.0
+                1420.0,
+                740.0
             ],
             "joint.2": [
-                1130.0,
-                150.0
+                1420.0,
+                690.0
             ],
             "spindle.0": [
-                1140.0,
-                570.0
+                1410.0,
+                60.0
             ]
         }
     },
@@ -44,8 +44,8 @@
             "type": "stepgen",
             "uid": "stepgen0",
             "pos": [
-                850.0,
-                510.0
+                1140.0,
+                380.0
             ],
             "signals": {
                 "position-cmd": {
@@ -64,10 +64,10 @@
             "is_joint": true,
             "pins": {
                 "step": {
-                    "pin": "rpi-db25hat0:DB25:P2"
+                    "pin": "china-bob5x0:X:step"
                 },
                 "dir": {
-                    "pin": "rpi-db25hat0:DB25:P3"
+                    "pin": "china-bob5x0:X:dir"
                 }
             }
         },
@@ -75,30 +75,25 @@
             "type": "stepgen",
             "uid": "stepgen1",
             "pos": [
-                850.0,
-                430.0
+                1140.0,
+                300.0
             ],
             "is_joint": true,
             "pins": {
                 "step": {
-                    "pin": "rpi-db25hat0:DB25:P4"
+                    "pin": "china-bob5x0:Y:step"
                 },
                 "dir": {
-                    "pin": "rpi-db25hat0:DB25:P5"
+                    "pin": "china-bob5x0:Y:dir"
                 }
             }
         },
         {
             "type": "gpioout",
-            "pins": {
-                "bit": {
-                    "pin": "rpi-db25hat0:DB25:P14"
-                }
-            },
             "uid": "gpioout0",
             "pos": [
-                850.0,
-                680.0
+                1140.0,
+                550.0
             ],
             "signals": {
                 "bit": {
@@ -106,19 +101,24 @@
                     "setp": ""
                 }
             },
-            "name": "enable"
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            }
         },
         {
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "rpi-db25hat0:DB25:P10"
+                    "pin": "china-bob5x0:OPTO:in0"
                 }
             },
             "uid": "gpioin0",
             "pos": [
-                850.0,
-                280.0
+                1140.0,
+                820.0
             ],
             "signals": {
                 "bit": {
@@ -132,16 +132,16 @@
             "type": "stepgen",
             "uid": "stepgen2",
             "pos": [
-                850.0,
-                350.0
+                1140.0,
+                220.0
             ],
             "is_joint": true,
             "pins": {
                 "step": {
-                    "pin": "rpi-db25hat0:DB25:P6"
+                    "pin": "china-bob5x0:Z:step"
                 },
                 "dir": {
-                    "pin": "rpi-db25hat0:DB25:P7"
+                    "pin": "china-bob5x0:Z:dir"
                 }
             },
             "signals": {
@@ -163,13 +163,13 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "rpi-db25hat0:DB25:P11"
+                    "pin": "china-bob5x0:OPTO:in1"
                 }
             },
             "uid": "gpioin1",
             "pos": [
-                850.0,
-                230.0
+                1140.0,
+                770.0
             ],
             "signals": {
                 "bit": {
@@ -183,13 +183,13 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "rpi-db25hat0:DB25:P12"
+                    "pin": "china-bob5x0:OPTO:in2"
                 }
             },
             "uid": "gpioin2",
             "pos": [
-                850.0,
-                180.0
+                1140.0,
+                720.0
             ],
             "signals": {
                 "bit": {
@@ -203,13 +203,13 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "rpi-db25hat0:DB25:P13"
+                    "pin": "china-bob5x0:OPTO:in3"
                 }
             },
             "uid": "gpioin3",
             "pos": [
-                850.0,
-                130.0
+                1140.0,
+                670.0
             ],
             "signals": {
                 "bit": {
@@ -223,13 +223,13 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "rpi-db25hat0:DB25:P15"
+                    "pin": "china-bob5x0:OPTO:in4"
                 }
             },
             "uid": "gpioin4",
             "pos": [
-                850.0,
-                80.0
+                1140.0,
+                620.0
             ],
             "signals": {
                 "bit": {
@@ -243,13 +243,13 @@
             "type": "pwmgen",
             "pins": {
                 "pwm": {
-                    "pin": "rpi-db25hat0:DB25:P1"
+                    "pin": "china-bob5x0:PWM:analog"
                 }
             },
             "uid": "pwmgen0",
             "pos": [
-                850.0,
-                610.0
+                1140.0,
+                60.0
             ],
             "signals": {
                 "value": {
@@ -266,12 +266,22 @@
     ],
     "breakouts": [
         {
-            "slot": "GPIO",
+            "slot": "rpi-db25hat0:DB25",
+            "breakout": "china-bob5x",
+            "name": "china-bob5x0",
+            "pos": [
+                720.0,
+                160.0
+            ],
+            "rotate": 0
+        },
+        {
+            "slot": "RPI5:GPIO",
             "breakout": "rpi-db25hat",
             "name": "rpi-db25hat0",
             "pos": [
-                400.0,
-                240.0
+                401.6536459692065,
+                239.99999999999994
             ],
             "rotate": 0
         }

@@ -1206,7 +1206,7 @@ class NodeViewer(QGraphicsView):
                             edge = NodeEdge(self.scene, f"breakout:{breakout_name}", source_node, bpin, target_node, pin, color=colors[color_n])
                             self.scene.addItem(edge)
                             color_n += 1
-                        target_node.breakout_setup["slot"] = slot
+                        target_node.breakout_setup["slot"] = f"{source_node.name}:{slot}"
 
                     else:
                         # remove old edges
@@ -1930,6 +1930,10 @@ class Window(QMainWindow):
         for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
             py += self.insert_breakout(breakout_config, py)
 
+        for item in self.scene.items():
+            if isinstance(item, BreakoutNode):
+                self.connect_breakout(item)
+
         # loading modules
         for module_id, module_config in enumerate(self.config.get("modules", [])):
             if "setup" not in module_config:
@@ -2015,19 +2019,37 @@ class Window(QMainWindow):
             hx = 850
             hy = py
         mnode = BreakoutNode(self.scene, hx, hy, breakout_config)
-        slot = breakout_config.get("slot", "")
+        self.scene.addItem(mnode)
+        return hy
+
+    def connect_breakout(self, mnode):
+        breakout_config = mnode.breakout_setup
+        slot_node = None
+        slot_nodename = ""
+        slot = ""
+        slotid = breakout_config.get("slot", "")
+        if slotid and ":" in slotid:
+            slot_nodename = slotid.split(":", 1)[0]
+            slot = slotid.split(":", 1)[1]
+            for item in self.scene.items():
+                if isinstance(item, BreakoutNode):
+                    if item.name == slot_nodename:
+                        slot_node = item
+        elif slotid:
+            slot = slotid
+
+        if not slot_node:
+            slot_node = self.bnode
+
         breakout_name = breakout_config["name"]
         self.breakout_uids.append(breakout_name)
         if slot:
             color_n = 0
             for pin, pin_data in mnode.jdata["main"].items():
                 bpin = f"{slot}:{pin}"
-                edge = NodeEdge(self.scene, f"breakout:{breakout_name}", self.bnode, bpin, mnode, pin, color=colors[color_n])
+                edge = NodeEdge(self.scene, f"breakout:{breakout_name}", slot_node, bpin, mnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
-
-        self.scene.addItem(mnode)
-        return hy
 
     def insert_module(self, module_config, py=100):
         if "pos" in module_config:
