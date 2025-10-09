@@ -6,7 +6,6 @@ import shutil
 import stat
 
 from riocore import halpins
-from riocore import gpios
 from riocore.generator.hal import hal_generator
 from riocore.generator.component import component
 from riocore.generator.pyvcp import pyvcp
@@ -1577,7 +1576,6 @@ if __name__ == "__main__":
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
-        gpio_config = self.project.config["jdata"].get("gpios", [])
         simulation = linuxcnc_config.get("simulation", False)
         gui = linuxcnc_config.get("gui", "axis")
         machinetype = linuxcnc_config.get("machinetype")
@@ -1607,10 +1605,6 @@ if __name__ == "__main__":
                 if plugin_instance.COMPONENT not in components:
                     components[plugin_instance.COMPONENT] = []
                 components[plugin_instance.COMPONENT].append(plugin_instance)
-
-        # loading gpio drivers (parport / rpi)
-        if gpio_config:
-            self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
 
         self.halg = hal_generator(halpin_info)
 
@@ -1819,23 +1813,16 @@ if __name__ == "__main__":
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
-        for gclass in dir(gpios):
-            if gclass.startswith("gpio_"):
-                ret = getattr(gpios, gclass).loader(gclass, gpio_config)
-                if ret:
-                    self.halg.fmt_add_top(ret)
-
-        self.gpio_pinmapping = {}
-        gpio_ids = {}
-        for gpio in gpio_config:
-            gtype = gpio.get("type")
-            if gtype not in gpio_ids:
-                gpio_ids[gtype] = 0
-            if hasattr(gpios, f"gpio_{gtype}"):
-                ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
-                self.gpionames += ginstance.inputs
-                self.gpionames += ginstance.outputs
-                self.gpio_pinmapping.update(ginstance.pinmapping())
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE == "gpio":
+                if hasattr(plugin_instance, "hal"):
+                    plugin_instance.hal(self)
+                if plugin_instance.NAME == "stepgen" and plugin_instance.plugin_setup.get("is_joint", False) is True:
+                    # ignore, is set by the axis/joint generator
+                    continue
+                jprefix = plugin_instance.PREFIX
+                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                    self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
