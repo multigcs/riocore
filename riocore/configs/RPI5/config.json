@@ -3,10 +3,10 @@
     "boardcfg": "RPI5",
     "flow": {
         "view": {
-            "scale": 1.16,
+            "scale": 1.14,
             "pos": [
-                -10,
-                -97
+                -20,
+                -108
             ]
         },
         "board": {
@@ -45,7 +45,7 @@
             "uid": "stepgen0",
             "pos": [
                 1140.0,
-                380.0
+                450.0
             ],
             "signals": {
                 "position-cmd": {
@@ -76,7 +76,7 @@
             "uid": "stepgen1",
             "pos": [
                 1140.0,
-                300.0
+                370.0
             ],
             "is_joint": true,
             "pins": {
@@ -133,7 +133,7 @@
             "uid": "stepgen2",
             "pos": [
                 1140.0,
-                220.0
+                290.0
             ],
             "is_joint": true,
             "pins": {
@@ -280,8 +280,8 @@
             "breakout": "rpi-db25hat",
             "name": "rpi-db25hat0",
             "pos": [
-                401.6536459692065,
-                239.99999999999994
+                400.0,
+                240.0
             ],
             "rotate": 0
         }
