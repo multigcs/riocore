@@ -16,7 +16,7 @@
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |  |
 |  | [riodrive](riodrive/README.md) | to control a riodrive via can-bus | <img src="riodrive/image.png" height="48"> | Experimental  |
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |  |
-|  | [stepgen](stepgen/README.md) | software step pulse generation | <img src="stepgen/image.png" height="48"> | gpio  |
+|  | [stepgen](stepgen/README.md) | software step pulse generation | <img src="stepgen/image.png" height="48"> | GPIO  |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |  |
 | IO | [as5600pwm](as5600pwm/README.md) | as5600 pwm input | <img src="as5600pwm/image.png" height="48"> |  |
 |  | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |  |
@@ -30,13 +30,13 @@
 |  | [demux](demux/README.md) | binary demultiplexer | <img src="demux/image.png" height="48"> |  |
 |  | [dis7seg](dis7seg/README.md) | 7segment display with buttons | <img src="dis7seg/image.png" height="48"> |  |
 |  | [ds18b20](ds18b20/README.md) | 1Wire Temperature sensor | <img src="ds18b20/image.png" height="48"> |  |
-|  | [encoder](encoder/README.md) | software counting of quadrature encoder signals | <img src="encoder/image.png" height="48"> | gpio  |
+|  | [encoder](encoder/README.md) | software counting of quadrature encoder signals | <img src="encoder/image.png" height="48"> | GPIO  |
 |  | [flipflop_in](flipflop_in/README.md) | flipflop input | <img src="flipflop_in/image.png" height="48"> |  |
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |  |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |  |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |  |
-|  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> | gpio  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | gpio  |
+|  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
 |  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |  |
 |  | [hx710](hx710/README.md) | 24bit adc | <img src="hx710/image.png" height="48"> |  |
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |  |
@@ -50,7 +50,7 @@
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
 |  | [panasonic_abs](panasonic_abs/README.md) | serial abs-encoder | <img src="panasonic_abs/image.png" height="48"> | Experimental  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
-|  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> | gpio  |
+|  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> | GPIO  |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
