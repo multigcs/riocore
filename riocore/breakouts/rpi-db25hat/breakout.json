@@ -309,7 +309,7 @@
                     "direction": "output"
                 },
                 "P17": {
-                    "pin": "P24",
+                    "pin": "P18",
                     "comment": "BDIR",
                     "pos": [
                         570,

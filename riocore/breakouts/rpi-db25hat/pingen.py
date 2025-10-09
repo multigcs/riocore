@@ -48,7 +48,7 @@ mapping = {
     "P14": ("ALLEN", "P37"),
     "P15": ("LIMIT5", "P33"),
     "P16": ("BSTEP", "P13"),
-    "P17": ("BDIR", "P24"),
+    "P17": ("BDIR", "P18"),
 }
 
 pins = (

@@ -3,10 +3,10 @@
     "boardcfg": "RPI5",
     "flow": {
         "view": {
-            "scale": 1.14,
+            "scale": 1.43,
             "pos": [
-                -20,
-                -108
+                -62,
+                -71
             ]
         },
         "board": {
@@ -262,6 +262,19 @@
                 }
             },
             "name": "spindle"
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:RELAIS:out"
+                }
+            },
+            "uid": "gpioout1",
+            "pos": [
+                888.4073378558398,
+                32.95591545321585
+            ]
         }
     ],
     "breakouts": [
