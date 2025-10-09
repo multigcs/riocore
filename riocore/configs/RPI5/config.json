@@ -3,18 +3,40 @@
     "boardcfg": "RPI5",
     "flow": {
         "view": {
-            "scale": 2.19,
+            "scale": 1.43,
             "pos": [
-                -7,
-                289
+                -30,
+                -78
             ]
         },
         "board": {
             "pos": [
-                120.0,
-                220.0
+                90.0,
+                120.0
             ],
-            "rotate": 0
+            "rotate": 180
+        },
+        "hal": {
+            "misc": [
+                1130.0,
+                90.0
+            ],
+            "joint.0": [
+                1130.0,
+                250.0
+            ],
+            "joint.1": [
+                1130.0,
+                200.0
+            ],
+            "joint.2": [
+                1130.0,
+                150.0
+            ],
+            "spindle.0": [
+                1140.0,
+                570.0
+            ]
         }
     },
     "plugins": [
@@ -22,8 +44,8 @@
             "type": "stepgen",
             "uid": "stepgen0",
             "pos": [
-                590.0,
-                250.0
+                850.0,
+                510.0
             ],
             "signals": {
                 "position-cmd": {
@@ -42,10 +64,10 @@
             "is_joint": true,
             "pins": {
                 "step": {
-                    "pin": "GPIO:P3"
+                    "pin": "rpi-db25hat0:DB25:P2"
                 },
                 "dir": {
-                    "pin": "GPIO:P5"
+                    "pin": "rpi-db25hat0:DB25:P3"
                 }
             }
         },
@@ -53,76 +75,205 @@
             "type": "stepgen",
             "uid": "stepgen1",
             "pos": [
-                590.0,
-                330.0
+                850.0,
+                430.0
             ],
             "is_joint": true,
             "pins": {
                 "step": {
-                    "pin": "GPIO:P7"
+                    "pin": "rpi-db25hat0:DB25:P4"
                 },
                 "dir": {
-                    "pin": "GPIO:P8"
+                    "pin": "rpi-db25hat0:DB25:P5"
                 }
             }
-        },
-        {
-            "type": "pwmgen",
-            "pins": {
-                "pwm": {
-                    "pin": "GPIO:P10"
-                },
-                "dir": {
-                    "pin": "GPIO:P12"
-                }
-            },
-            "uid": "pwmgen0",
-            "pos": [
-                590.0,
-                410.0
-            ]
-        },
-        {
-            "type": "encoder",
-            "pins": {
-                "phase-A": {
-                    "pin": "GPIO:P36"
-                },
-                "phase-B": {
-                    "pin": "GPIO:P38"
-                }
-            },
-            "uid": "encoder0",
-            "pos": [
-                590.0,
-                480.0
-            ]
         },
         {
             "type": "gpioout",
             "pins": {
                 "bit": {
-                    "pin": "GPIO:P37"
+                    "pin": "rpi-db25hat0:DB25:P14"
                 }
             },
             "uid": "gpioout0",
             "pos": [
-                586.3013698630136,
-                570.3196347031964
-            ]
+                850.0,
+                680.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "halui.machine.is-on",
+                    "setp": ""
+                }
+            },
+            "name": "enable"
         },
         {
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "GPIO:P40"
+                    "pin": "rpi-db25hat0:DB25:P10"
                 }
             },
             "uid": "gpioin0",
             "pos": [
-                586.3013698630136,
-                625.1141552511415
-            ]
+                850.0,
+                280.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "home_x"
+        },
+        {
+            "type": "stepgen",
+            "uid": "stepgen2",
+            "pos": [
+                850.0,
+                350.0
+            ],
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "rpi-db25hat0:DB25:P6"
+                },
+                "dir": {
+                    "pin": "rpi-db25hat0:DB25:P7"
+                }
+            },
+            "signals": {
+                "position-cmd": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-fb": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-scale": {
+                    "net": "",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "rpi-db25hat0:DB25:P11"
+                }
+            },
+            "uid": "gpioin1",
+            "pos": [
+                850.0,
+                230.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "home_y"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "rpi-db25hat0:DB25:P12"
+                }
+            },
+            "uid": "gpioin2",
+            "pos": [
+                850.0,
+                180.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "home_z"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "rpi-db25hat0:DB25:P13"
+                }
+            },
+            "uid": "gpioin3",
+            "pos": [
+                850.0,
+                130.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "name": "estop"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "rpi-db25hat0:DB25:P15"
+                }
+            },
+            "uid": "gpioin4",
+            "pos": [
+                850.0,
+                80.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input",
+                    "setp": ""
+                }
+            },
+            "name": "probe"
+        },
+        {
+            "type": "pwmgen",
+            "pins": {
+                "pwm": {
+                    "pin": "rpi-db25hat0:DB25:P1"
+                }
+            },
+            "uid": "pwmgen0",
+            "pos": [
+                850.0,
+                610.0
+            ],
+            "signals": {
+                "value": {
+                    "net": "spindle.0.speed-out",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "spindle.0.on",
+                    "setp": ""
+                }
+            },
+            "name": "spindle"
+        }
+    ],
+    "breakouts": [
+        {
+            "slot": "GPIO",
+            "breakout": "rpi-db25hat",
+            "name": "rpi-db25hat0",
+            "pos": [
+                400.0,
+                240.0
+            ],
+            "rotate": 0
         }
     ]
 }

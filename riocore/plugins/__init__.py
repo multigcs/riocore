@@ -241,7 +241,12 @@ class PluginBase:
             signals[name]["signal_prefix"] = signal_prefix
             signals[name]["var_prefix"] = signal_prefix.replace(".", "_").replace("-", "_").upper()
             signals[name]["plugin_instance"] = self
-            signals[name]["halname"] = halname
+
+            gpio_pin = self.plugin_setup.get("pins", {}).get(name, {}).get("pin")
+            if self.NAME in {"gpioout", "gpioin"} and gpio_pin:
+                signals[name]["halname"] = gpio_pin
+            else:
+                signals[name]["halname"] = halname
             signals[name]["varname"] = f"SIG{direction_short}_{halname.replace('.', '_').replace('-', '_').upper()}"
             signals[name]["userconfig"] = self.plugin_setup.get("signals", {}).get(name, {})
             net = self.plugin_setup.get("net")

@@ -1,7 +1,7 @@
 import json
 
 config = {
-    "comment": "rpi-byte2bot-db25hat",
+    "comment": "rpi-db25hat",
     "main": {},
     "slots": [
         {
@@ -45,7 +45,7 @@ mapping = {
     "P11": ("LIMIT2", "P24"),
     "P12": ("LIMIT3", "P26"),
     "P13": ("LIMIT4", "P32"),
-    "P14": ("ALLEN", "P26"),
+    "P14": ("ALLEN", "P37"),
     "P15": ("LIMIT5", "P33"),
     "P16": ("BSTEP", "P13"),
     "P17": ("BDIR", "P24"),
@@ -102,12 +102,12 @@ for n, pin in enumerate(pins, 1):
     pname = f"P{n}"
 
     px = 128
+    py = n // 2 * 25.3 + 82
     if si == 1:
         px += 25
-
-    py = n // 2 * 25.3 + 82
+        py -= 25.3
     if pin.startswith("GP"):
-        config["main"][pname] = {"pos": [px, py]}
+        config["main"][pname] = {"pos": [170 - px, 658 - py]}
 
     si = 1 - si
 
@@ -124,6 +124,6 @@ for n in range(17):
     direction = "output"
     if mapping[pname][0].startswith("LIMIT"):
         direction = "input"
-    config["slots"][0]["pins"][pname] = {"pin": mapping[pname][1], "comment": mapping[pname][0], "pos": [px, py], "direction": direction}
+    config["slots"][0]["pins"][pname] = {"pin": mapping[pname][1], "comment": mapping[pname][0], "pos": [1120 - px, 540 - py], "direction": direction}
 
 print(json.dumps(config, indent=4))

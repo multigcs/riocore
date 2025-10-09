@@ -1387,14 +1387,6 @@ if __name__ == "__main__":
                 hal_prefix = f"{self.hal_prefix}."
                 if plugin_instance.PLUGIN_TYPE == "gpio":
                     hal_prefix = ""
-
-                if plugin_instance.NAME in {"gpioout", "gpioin"}:
-                    # overwrite halname with direct pin
-                    for pin_name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                        if signal_name == pin_name:
-                            print(pin_name, psetup["pin"])
-                            signal_config["halname"] = psetup["pin"]
-
                 vcp_add(signal_config, hal_prefix, widgets)
 
         tablist = []
@@ -1639,6 +1631,9 @@ if __name__ == "__main__":
                         direction = plugin_instance.PINDEFAULTS[name]["direction"]
                         reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
                         pin = psetup["pin"]
+                        
+                        print(plugin_instance.instances_name, name, pin, direction)
+                        
                         hal_gpios[direction].append(pin)
                         if reset:
                             hal_gpios["reset"].append(pin)
@@ -1915,14 +1910,16 @@ if __name__ == "__main__":
                     direction = signal_config["direction"]
                     virtual = signal_config.get("virtual")
                     comp = signal_config.get("component")
-                    rprefix = "rio"
+                    rprefix = "rio."
                     if virtual:
-                        rprefix = "riov"
+                        rprefix = "riov."
+                    if plugin_instance.PLUGIN_TYPE == "gpio":
+                        rprefix = ""
 
                     if scale and not virtual:
-                        self.halg.setp_add(f"{rprefix}.{halname}-scale", scale)
+                        self.halg.setp_add(f"{rprefix}{halname}-scale", scale)
                     if offset and not virtual:
-                        self.halg.setp_add(f"{rprefix}.{halname}-offset", offset)
+                        self.halg.setp_add(f"{rprefix}{halname}-offset", offset)
 
                     if netname:
                         if direction == "inout":
@@ -1932,19 +1929,19 @@ if __name__ == "__main__":
                                 net = net.strip()
                                 net_type = halpins.LINUXCNC_SIGNALS[direction].get(net, {}).get("type", float)
                                 if net_type is int:
-                                    self.halg.net_add(f"{rprefix}.{halname}-s32", net)
+                                    self.halg.net_add(f"{rprefix}{halname}-s32", net)
                                 else:
-                                    self.halg.net_add(f"{rprefix}.{halname}", net)
+                                    self.halg.net_add(f"{rprefix}{halname}", net)
                         elif direction == "output":
-                            target = f"{rprefix}.{halname}"
-                            self.halg.net_add(netname, f"{rprefix}.{halname}")
+                            target = f"{rprefix}{halname}"
+                            self.halg.net_add(netname, f"{rprefix}{halname}")
                     elif setp:
-                        self.halg.setp_add(f"{rprefix}.{halname}", setp)
+                        self.halg.setp_add(f"{rprefix}{halname}", setp)
                     elif virtual and comp:
                         if direction == "input":
-                            self.halg.net_add(f"{rprefix}.{halname}", f"{self.hal_prefix}.{halname}")
+                            self.halg.net_add(f"{rprefix}{halname}", f"{self.hal_prefix}.{halname}")
                         else:
-                            self.halg.net_add(f"{self.hal_prefix}.{halname}", f"{rprefix}.{halname}")
+                            self.halg.net_add(f"{self.hal_prefix}.{halname}", f"{rprefix}{halname}")
 
         for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
