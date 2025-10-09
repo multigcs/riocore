@@ -1,52 +1,90 @@
-# bitout
+# stepgen
 
 <img align="right" width="320" src="image.png">
 
-**singe bit output pin**
+**software step pulse generation**
 
-to control relais, leds, valves, ....
+stepgen is used to control stepper motors.
+The maximum step rate depends on the CPU and other factors,
+and is usually in the range of 5 kHz to 25 kHz.
+If higher rates are needed, a hardware step generator is a better choice.
 
-Keywords: led relais valve lamp motor magnet
+Keywords: stepper
 
 ## Pins:
 *FPGA-pins*
-### bit:
+### step:
+
+ * direction: output
+
+### dir:
 
  * direction: output
 
 
 ## Options:
 *user-options*
+### mode:
+Modus
+
+ * type: select
+ * default: 0
+
 ### name:
 name of this plugin instance
 
  * type: str
  * default: 
 
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: False
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### bit:
+### position-cmd:
+set position
 
- * type: bit
+ * type: float
+ * direction: output
+
+### position-fb:
+position feedback
+
+ * type: float
+ * direction: input
+ * unit: steps
+
+### position-scale:
+steps / unit
+
+ * type: float
  * direction: output
 
 
 ## Interfaces:
 *transport layer*
-### bit:
-
- * size: 1 bit
- * direction: output
 
 
 ## Basic-Example:
 ```
 {
-    "type": "bitout",
+    "type": "stepgen",
     "pins": {
-        "bit": {
+        "step": {
             "pin": "0"
+        },
+        "dir": {
+            "pin": "1"
         }
     }
 }
@@ -55,11 +93,22 @@ name of this plugin instance
 ## Full-Example:
 ```
 {
-    "type": "bitout",
+    "type": "stepgen",
+    "mode": "0",
     "name": "",
+    "axis": "",
+    "is_joint": false,
     "pins": {
-        "bit": {
+        "step": {
             "pin": "0",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "dir": {
+            "pin": "1",
             "modifiers": [
                 {
                     "type": "invert"
@@ -68,13 +117,37 @@ name of this plugin instance
         }
     },
     "signals": {
-        "bit": {
+        "position-cmd": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
             "display": {
-                "title": "bit",
+                "title": "position-cmd",
                 "section": "outputs",
-                "type": "checkbox"
+                "type": "scale"
+            }
+        },
+        "position-fb": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "position-fb",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "position-scale": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "position-scale",
+                "section": "outputs",
+                "type": "scale"
             }
         }
     }
