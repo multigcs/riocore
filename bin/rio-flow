@@ -1672,6 +1672,7 @@ class Window(QMainWindow):
             if name[0]:
                 if not name[0].endswith(".json"):
                     name = [f"{name[0]}.json"]
+                self.config_file = name[0]
 
         if self.config_file:
             open(self.config_file, "w").write(jdata)

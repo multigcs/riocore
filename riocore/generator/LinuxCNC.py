@@ -6,7 +6,6 @@ import shutil
 import stat
 
 from riocore import halpins
-from riocore import components
 from riocore import gpios
 from riocore.generator.hal import hal_generator
 from riocore.generator.component import component
@@ -186,6 +185,18 @@ class LinuxCNC:
             self.hal_prefix = "lcec.0.rio"
         else:
             self.hal_prefix = "rio"
+
+        # update_prefixes for gpio plugins
+        components = {}
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE == "gpio":
+                if plugin_instance.COMPONENT not in components:
+                    components[plugin_instance.COMPONENT] = []
+                components[plugin_instance.COMPONENT].append(plugin_instance)
+        for component_type, instances in components.items():
+            if hasattr(instances[0], "update_prefixes"):
+                instances[0].update_prefixes(instances)
+
         self.create_axis_config()
         self.addons = {}
         self.gpionames = []
@@ -1376,19 +1387,6 @@ if __name__ == "__main__":
                     continue
                 vcp_add(signal_config, f"{self.hal_prefix}.", widgets)
 
-        component_nums = {}
-        for comp in linuxcnc_config.get("components", []):
-            comp_type = comp.get("type")
-            if comp_type not in component_nums:
-                component_nums[comp_type] = 0
-            comp["num"] = component_nums[comp_type]
-            component_nums[comp_type] += 1
-            if hasattr(components, f"comp_{comp_type}"):
-                cinstance = getattr(components, f"comp_{comp_type}")(comp)
-                if comp_type != "stepgen":
-                    for signal_name, signal_config in cinstance.signals().items():
-                        vcp_add(signal_config, "", widgets)
-
         tablist = []
         for tab in vcp_sections:
             if tab not in widgets:
@@ -1600,6 +1598,15 @@ if __name__ == "__main__":
                         "direction": direction,
                         "boolean": boolean,
                     }
+
+        components = {}
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE == "gpio":
+                self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
+
+                if plugin_instance.COMPONENT not in components:
+                    components[plugin_instance.COMPONENT] = []
+                components[plugin_instance.COMPONENT].append(plugin_instance)
 
         # loading gpio drivers (parport / rpi)
         if gpio_config:
@@ -1843,46 +1850,10 @@ if __name__ == "__main__":
             if net_source and net_target:
                 self.halg.net_add(f"({net_source})", net_target, net_name)
 
-        component_nums = {}
-        for comp in linuxcnc_config.get("components", []):
-            comp_type = comp.get("type")
-            if comp_type not in component_nums:
-                component_nums[comp_type] = 0
-            comp["num"] = component_nums[comp_type]
-            component_nums[comp_type] += 1
-
-            if hasattr(components, f"comp_{comp_type}"):
-                cinstance = getattr(components, f"comp_{comp_type}")(comp)
-                comp_pins = cinstance.setup.get("pins", {})
-                if comp_type != "stepgen":
-                    comp_pins = cinstance.setup.get("pins", {})
-                    options = cinstance.OPTIONS
-                    for option in options:
-                        if option in comp:
-                            self.halg.setp_add(f"{cinstance.PREFIX}.{option}", comp[option])
-                    for pin_name, pin_data in cinstance.PINDEFAULTS.items():
-                        pin_data["direction"]
-                        if pin_name in comp_pins:
-                            net_target = self.gpio_pinmapping.get(comp_pins[pin_name], comp_pins[pin_name])
-                            self.halg.net_add(f"{cinstance.PREFIX}.{pin_name}", net_target)
-
-                    for signal_name, signal_config in cinstance.signals().items():
-                        userconfig = signal_config.get("userconfig", {})
-                        net = userconfig.get("net")
-                        setp = userconfig.get("setp")
-                        direction = signal_config["direction"]
-                        halname = signal_config["halname"]
-                        if net:
-                            if direction == "output":
-                                self.halg.net_add(net, halname)
-                            else:
-                                self.halg.net_add(halname, net)
-
-        for comp in dir(components):
-            if comp.startswith("comp_"):
-                ret = getattr(components, comp).loader(None, linuxcnc_config.get("components", []))
-                if ret:
-                    self.halg.fmt_add_top(ret)
+        for component_type, instances in components.items():
+            ret = instances[0].loader(instances)
+            if ret:
+                self.halg.fmt_add_top(ret)
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1961,26 +1932,18 @@ if __name__ == "__main__":
                         self.halg.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb-{corexy_axis}")
                     else:
                         if joint_setup["type"] == "stepgen":
-                            snum = joint_setup["plugin_instance"].snum
-                            self.halg.setp_add(f"stepgen.{snum}.maxaccel", f"[JOINT_{joint}]STEPGEN_MAXACCEL")
-                            self.halg.setp_add(f"stepgen.{snum}.steplen", f"[JOINT_{joint}]STEPGEN_STEPLEN")
-                            self.halg.setp_add(f"stepgen.{snum}.stepspace", f"[JOINT_{joint}]STEPGEN_STEPSPACE")
-                            self.halg.setp_add(f"stepgen.{snum}.dirhold", f"[JOINT_{joint}]STEPGEN_DIRHOLD")
-                            self.halg.setp_add(f"stepgen.{snum}.dirsetup", f"[JOINT_{joint}]STEPGEN_DIRSETUP")
-                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"stepgen.{snum}.position-cmd", f"j{joint}pos-cmd")
-                            self.halg.net_add(f"stepgen.{snum}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
-                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"stepgen.{snum}.enable", f"j{joint}senable")
-                            comp_pins = joint_setup["plugin_instance"].component["pins"]
-                            for name, pin in comp_pins.items():
-                                pin = self.gpio_pinmapping.get(pin, pin)
-
-                                if pin not in self.gpionames:
-                                    print(f"ERROR: {name} pin not found: {pin}")
-                                if not pin.endswith("-out"):
-                                    print(f"ERROR: {name} pin in not an output: {pin}")
-                                if name == "step" and pin.startswith("parport."):
-                                    self.halg.setp_add(f"{pin}-reset", "1")
-                                self.halg.net_add(f"stepgen.{snum}.{name}", pin, f"j{joint}{name}-pin")
+                            jprefix = joint_setup["plugin_instance"].PREFIX
+                            self.halg.setp_add(f"{jprefix}.maxaccel", f"[JOINT_{joint}]STEPGEN_MAXACCEL")
+                            self.halg.setp_add(f"{jprefix}.steplen", f"[JOINT_{joint}]STEPGEN_STEPLEN")
+                            self.halg.setp_add(f"{jprefix}.stepspace", f"[JOINT_{joint}]STEPGEN_STEPSPACE")
+                            self.halg.setp_add(f"{jprefix}.dirhold", f"[JOINT_{joint}]STEPGEN_DIRHOLD")
+                            self.halg.setp_add(f"{jprefix}.dirsetup", f"[JOINT_{joint}]STEPGEN_DIRSETUP")
+                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{jprefix}.position-cmd", f"j{joint}pos-cmd")
+                            self.halg.net_add(f"{jprefix}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
+                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}senable")
+                            for name, psetup in joint_setup["plugin_instance"].plugin_setup.get("pins", {}).items():
+                                pin = psetup["pin"]
+                                self.halg.net_add(f"{jprefix}.{name}", pin, f"j{joint}{name}-pin")
                         else:
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
@@ -2067,36 +2030,6 @@ if __name__ == "__main__":
                     if feedback:
                         self.feedbacks.append(feedback.replace(":", "."))
                     self.num_joints += 1
-
-        # soft-component joints (parport/gpio)
-        stepgen_num = 0
-        for comp in linuxcnc_config.get("components", []):
-            comp_type = comp.get("type")
-            if comp_type == "stepgen":
-                comp["num"] = stepgen_num
-                axis_name = comp.get("axis")
-
-                if not axis_name:
-                    for name in self.AXIS_NAMES:
-                        if name not in self.project.axis_dict and name not in named_axis:
-                            axis_name = name
-                            break
-                if axis_name:
-                    if axis_name not in self.project.axis_dict:
-                        self.project.axis_dict[axis_name] = {"joints": {}}
-                    feedback = comp.get("joint", {}).get("feedback")
-                    self.project.axis_dict[axis_name]["joints"][self.num_joints] = {
-                        "type": "stepgen",
-                        "axis": axis_name,
-                        "joint": self.num_joints,
-                        "plugin_instance": components.comp_stepgen(comp),
-                        "feedback": feedback or True,
-                    }
-                    if feedback:
-                        self.feedbacks.append(feedback.replace(":", "."))
-                    self.num_joints += 1
-
-                stepgen_num += 1
 
         self.num_axis = len(self.project.axis_dict)
 

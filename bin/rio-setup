@@ -733,7 +733,7 @@ class WinForm(QWidget):
             if not board:
                 return
             # try to load list of pins from chipdb files
-            family = board.get("family")
+            family = board.get("family", "")
             fpga_type = board.get("type")
             package = board.get("package")
             check_name = family.lower().replace(" ", "_")

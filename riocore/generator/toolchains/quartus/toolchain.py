@@ -75,8 +75,8 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
             makefile_data.append("")
         makefile_data.append("PROJECT   := rio")
         makefile_data.append("TOP       := rio")
-        # makefile_data.append(f"NUM_CPUS  := $(shell nproc)")
-        makefile_data.append(f"NUM_CPUS  := $(shell grep 'cpu cores' /proc/cpuinfo | tail -n 1 | cut -d':' -f2)")
+        # makefile_data.append("NUM_CPUS  := $(shell nproc)")
+        makefile_data.append("NUM_CPUS  := $(shell grep 'cpu cores' /proc/cpuinfo | tail -n 1 | cut -d':' -f2)")
         makefile_data.append(f"PART      := {ftype}")
         makefile_data.append(f'FAMILY    := "{family}"')
         makefile_data.append(f"VERILOGS  := {verilogs}")
@@ -174,7 +174,6 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
         clock_speed = self.config["jdata"]["clock"]["speed"]
-        clock_name = "sysclk"
         osc_speed = self.config["jdata"]["clock"].get("osc", clock_speed)
         osc_name = "sysclk_in"
 

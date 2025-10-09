@@ -10,11 +10,13 @@ class PluginBase:
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.SIGNALS = {}
+        self.PREFIX = ""
         self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []
         self.VERILOGS_DATA = {}
         self.NAME = ""
+        self.PLUGIN_TYPE = "gateware"
         self.TYPE = "io"
         self.INFO = ""
         self.EXPERIMENTAL = False
@@ -233,7 +235,7 @@ class PluginBase:
             for key in setup:
                 if key in self.plugin_setup:
                     setup[key] = self.plugin_setup[key]
-            signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
+            signal_prefix = (self.PREFIX or self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
             halname = f"{signal_prefix}.{name}"
             direction_short = setup["direction"].upper().replace("PUT", "")
             signals[name]["signal_prefix"] = signal_prefix

@@ -39,7 +39,7 @@ class Pins:
                 data.append(f"NET {netstr:32s} {' | '.join(options)} ;")
                 if pin == "sysclk_in":
                     if self.config["osc_clock"]:
-                        data.append(f'NET "sysclk"                         TNM_NET = "sysclk";')
+                        data.append('NET "sysclk"                         TNM_NET = "sysclk";')
                         data.append(f'TIMESPEC TS_CLK1 = PERIOD "sysclk_in" {(self.config["osc_clock"] / 1000000):6.2f} MHz HIGH 50%;')
                         data.append(f'TIMESPEC TS_CLK2 = PERIOD "sysclk"    {(self.config["speed"] / 1000000):6.2f} MHz HIGH 50%;')
                     else:

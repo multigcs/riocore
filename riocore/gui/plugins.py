@@ -97,53 +97,57 @@ class GuiPlugins:
             else:
                 pin_cols.addWidget(QLabel(""), stretch=4)
 
-            # Modifiers
-            if "modifier" not in pin_config:
-                pin_config["modifier"] = []
-            modifier_list = pin_config["modifier"]
+            if plugin_instance.PLUGIN_TYPE == "gateware":
+                # Modifiers
+                if "modifier" not in pin_config:
+                    pin_config["modifier"] = []
+                modifier_list = pin_config["modifier"]
 
-            pin_cols = QHBoxLayout()
-            pin_rows.addLayout(pin_cols)
-            mod_label = QLabel("Modifiers:")
-            mod_label.setToolTip("list of pin-modifiers")
-            pin_cols.addWidget(mod_label)
-            mod_cols = QHBoxLayout()
-            pin_cols.addLayout(mod_cols)
-            add_button = QPushButton("+")
-            add_button.setToolTip("add an pin-modifiers")
-            add_button.clicked.connect(partial(self.parent.gui_modifiers.modifier_list_add, mod_cols, modifier_list))
-            add_button.setFixedWidth(20)
-            pin_cols.addWidget(add_button)
-            pin_cols.addStretch()
-            self.parent.gui_modifiers.modifier_list_update(mod_cols, modifier_list)
+                pin_cols = QHBoxLayout()
+                pin_rows.addLayout(pin_cols)
+                mod_label = QLabel("Modifiers:")
+                mod_label.setToolTip("list of pin-modifiers")
+                pin_cols.addWidget(mod_label)
+                mod_cols = QHBoxLayout()
+                pin_cols.addLayout(mod_cols)
+                add_button = QPushButton("+")
+                add_button.setToolTip("add an pin-modifiers")
+                add_button.clicked.connect(partial(self.parent.gui_modifiers.modifier_list_add, mod_cols, modifier_list))
+                add_button.setFixedWidth(20)
+                pin_cols.addWidget(add_button)
+                pin_cols.addStretch()
+                self.parent.gui_modifiers.modifier_list_update(mod_cols, modifier_list)
 
-            # IO-Standart
-            pin_cols = QHBoxLayout()
-            pin_rows.addLayout(pin_cols)
-            tooltip = "FPGA level IO config / optional / better do not use :)"
-            io_label = QLabel("IO-Standart:")
-            io_label.setToolTip(tooltip)
-            pin_cols.addWidget(io_label, stretch=1)
+                # IO-Standart
+                pin_cols = QHBoxLayout()
+                pin_rows.addLayout(pin_cols)
+                tooltip = "FPGA level IO config / optional / better do not use :)"
+                io_label = QLabel("IO-Standart:")
+                io_label.setToolTip(tooltip)
+                pin_cols.addWidget(io_label, stretch=1)
 
-            pin_cols.addWidget(
-                self.parent.edit_item(
-                    pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL", "help_text": tooltip}, cb=update
-                ),
-                stretch=3,
-            )
-            if direction == "output":
-                label = QLabel("Slew:")
-                label.setToolTip(tooltip)
-                pin_cols.addWidget(label, stretch=1)
-                pin_cols.addWidget(self.parent.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW", "help_text": tooltip}, cb=update), stretch=3)
-                label = QLabel("Drive:")
-                label.setToolTip(tooltip)
-                pin_cols.addWidget(label, stretch=1)
                 pin_cols.addWidget(
-                    self.parent.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4", "help_text": tooltip}, cb=update), stretch=3
+                    self.parent.edit_item(
+                        pin_config,
+                        "iostandard",
+                        {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL", "help_text": tooltip},
+                        cb=update,
+                    ),
+                    stretch=3,
                 )
-            else:
-                pin_cols.addWidget(QLabel(""), stretch=8)
+                if direction == "output":
+                    label = QLabel("Slew:")
+                    label.setToolTip(tooltip)
+                    pin_cols.addWidget(label, stretch=1)
+                    pin_cols.addWidget(self.parent.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW", "help_text": tooltip}, cb=update), stretch=3)
+                    label = QLabel("Drive:")
+                    label.setToolTip(tooltip)
+                    pin_cols.addWidget(label, stretch=1)
+                    pin_cols.addWidget(
+                        self.parent.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4", "help_text": tooltip}, cb=update), stretch=3
+                    )
+                else:
+                    pin_cols.addWidget(QLabel(""), stretch=8)
 
             frame.setLayout(pin_rows)
             pins.addWidget(frame)
