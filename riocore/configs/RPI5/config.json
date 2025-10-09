@@ -1,0 +1,70 @@
+{
+    "name": "RPI5",
+    "boardcfg": "RPI5",
+    "flow": {
+        "view": {
+            "scale": 1.12,
+            "pos": [
+                101,
+                205
+            ]
+        },
+        "board": {
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0
+        }
+    },
+    "plugins": [
+        {
+            "type": "stepgen",
+            "uid": "stepgen0",
+            "pos": [
+                550.9256403538125,
+                259.4432773109244
+            ],
+            "pins": {
+                "step": {
+                    "pin": "GPIO:P2"
+                },
+                "dir": {
+                    "pin": "GPIO:P4"
+                }
+            },
+            "signals": {
+                "position-cmd": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-fb": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-scale": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true
+        },
+        {
+            "type": "stepgen",
+            "uid": "stepgen1",
+            "pos": [
+                550.9256403538125,
+                339.4432773109244
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "GPIO:P6"
+                },
+                "step": {
+                    "pin": "GPIO:P7"
+                }
+            },
+            "is_joint": true
+        }
+    ]
+}

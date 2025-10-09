@@ -1,0 +1,250 @@
+{
+    "name": "RPI5",
+    "description": "RPI5",
+    "comment": "",
+    "url": "",
+    "type": "gpio",
+    "slots": [
+        {
+            "name": "GPIO",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "P2": {
+                    "pin": "GPIO2",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        107.3
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "GPIO3",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        132.6
+                    ],
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "GPIO4",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        157.9
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "GPIO14",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        157.9
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "GPIO15",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        183.2
+                    ],
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "GPIO17",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        208.5
+                    ],
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "GPIO18",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        208.5
+                    ],
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "GPIO27",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        233.8
+                    ],
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "GPIO22",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        259.1
+                    ],
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "GPIO23",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        259.1
+                    ],
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "GPIO24",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        284.4
+                    ],
+                    "direction": "all"
+                },
+                "P18": {
+                    "pin": "GPIO10",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        309.70000000000005
+                    ],
+                    "direction": "all"
+                },
+                "P20": {
+                    "pin": "GPIO9",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        335.0
+                    ],
+                    "direction": "all"
+                },
+                "P21": {
+                    "pin": "GPIO25",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        335.0
+                    ],
+                    "direction": "all"
+                },
+                "P22": {
+                    "pin": "GPIO11",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        360.3
+                    ],
+                    "direction": "all"
+                },
+                "P23": {
+                    "pin": "GPIO8",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        360.3
+                    ],
+                    "direction": "all"
+                },
+                "P25": {
+                    "pin": "GPIO7",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        385.6
+                    ],
+                    "direction": "all"
+                },
+                "P28": {
+                    "pin": "GPIO5",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        436.2
+                    ],
+                    "direction": "all"
+                },
+                "P30": {
+                    "pin": "GPIO6",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        461.5
+                    ],
+                    "direction": "all"
+                },
+                "P31": {
+                    "pin": "GPIO12",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        461.5
+                    ],
+                    "direction": "all"
+                },
+                "P32": {
+                    "pin": "GPIO13",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        486.8
+                    ],
+                    "direction": "all"
+                },
+                "P34": {
+                    "pin": "GPIO19",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        512.1
+                    ],
+                    "direction": "all"
+                },
+                "P35": {
+                    "pin": "GPIO16",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        512.1
+                    ],
+                    "direction": "all"
+                },
+                "P36": {
+                    "pin": "GPIO26",
+                    "rotate": true,
+                    "pos": [
+                        528,
+                        537.4000000000001
+                    ],
+                    "direction": "all"
+                },
+                "P37": {
+                    "pin": "GPIO20",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        537.4000000000001
+                    ],
+                    "direction": "all"
+                },
+                "P39": {
+                    "pin": "GPIO21",
+                    "rotate": true,
+                    "pos": [
+                        553,
+                        562.7
+                    ],
+                    "direction": "all"
+                }
+            }
+        }
+    ]
+}
