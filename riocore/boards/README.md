@@ -23,8 +23,6 @@ on my debian12, it works with openFPGAloader | xc6 / xc6slx9-csg324 | [ise](../g
 | [Numato-Spartan6](Numato-Spartan6/README.md) | Spartan6 - only for testing the toolchain | xc6 / xc6slx9-2tqg144 | [ise](../generator/toolchains/ise/README.md) | <img src="Numato-Spartan6/board.png" height="48"> |
 | [OctoBot](OctoBot/README.md) | RIO-OctoBot board | ice40 / hx8k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="OctoBot/board.png" height="48"> |
 | [Olimex-ICE40HX8K-EVB](Olimex-ICE40HX8K-EVB/README.md) | ICE40HX8K FPGA development board | ice40 / hx8k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="Olimex-ICE40HX8K-EVB/board.png" height="48"> |
-| [Parport](Parport/README.md) | PC with parallel port |  / parport | [](../generator/toolchains//README.md) | <img src="Parport/board.png" height="48"> |
-| [RPI5](RPI5/README.md) | RPI5 |  / hal_gpio | [](../generator/toolchains//README.md) | <img src="RPI5/board.png" height="48"> |
 | [Spartan6](Spartan6/README.md) | Spartan6 - only for testing the toolchain | xc6 / xc6slx9-2tqg144 | [ise](../generator/toolchains/ise/README.md) | |
 | [TangNano20K](TangNano20K/README.md) | TangNano20K - GW2AR-18 devboard | GW2AR-18C / GW2AR-LV18QN88C8/I7 | [gowin](../generator/toolchains/gowin/README.md), [icestorm](../generator/toolchains/icestorm/README.md) | <img src="TangNano20K/board.png" height="48"> |
 | [TangNano9K](TangNano9K/README.md) | TangNano9K - cheap GW1NR-9 Devboard | GW1N-9C / GW1NR-LV9QN88PC6/I5 | [gowin](../generator/toolchains/gowin/README.md), [icestorm](../generator/toolchains/icestorm/README.md) | <img src="TangNano9K/board.png" height="48"> |
