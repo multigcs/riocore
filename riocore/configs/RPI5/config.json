@@ -3,10 +3,10 @@
     "boardcfg": "RPI5",
     "flow": {
         "view": {
-            "scale": 1.43,
+            "scale": 1.06,
             "pos": [
-                -62,
-                -71
+                -76,
+                -199
             ]
         },
         "board": {

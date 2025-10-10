@@ -168,8 +168,8 @@
                     "pin": "P12",
                     "comment": "PWM",
                     "pos": [
-                        592,
-                        458
+                        568,
+                        200
                     ],
                     "direction": "output"
                 },
@@ -177,8 +177,8 @@
                     "pin": "P21",
                     "comment": "XSTEP",
                     "pos": [
-                        592,
-                        436
+                        568,
+                        222
                     ],
                     "direction": "output"
                 },
@@ -186,8 +186,8 @@
                     "pin": "P19",
                     "comment": "XDIR",
                     "pos": [
-                        592,
-                        414
+                        568,
+                        244
                     ],
                     "direction": "output"
                 },
@@ -195,8 +195,8 @@
                     "pin": "P23",
                     "comment": "YSTEP",
                     "pos": [
-                        592,
-                        392
+                        568,
+                        266
                     ],
                     "direction": "output"
                 },
@@ -204,8 +204,8 @@
                     "pin": "P29",
                     "comment": "YDIR",
                     "pos": [
-                        592,
-                        370
+                        568,
+                        288
                     ],
                     "direction": "output"
                 },
@@ -213,8 +213,8 @@
                     "pin": "P31",
                     "comment": "ZSTEP",
                     "pos": [
-                        592,
-                        348
+                        568,
+                        310
                     ],
                     "direction": "output"
                 },
@@ -222,8 +222,8 @@
                     "pin": "P35",
                     "comment": "ZDIR",
                     "pos": [
-                        592,
-                        326
+                        568,
+                        332
                     ],
                     "direction": "output"
                 },
@@ -231,8 +231,8 @@
                     "pin": "P11",
                     "comment": "ASTEP",
                     "pos": [
-                        592,
-                        304
+                        568,
+                        354
                     ],
                     "direction": "output"
                 },
@@ -240,8 +240,8 @@
                     "pin": "P16",
                     "comment": "ADIR",
                     "pos": [
-                        592,
-                        282
+                        568,
+                        376
                     ],
                     "direction": "output"
                 },
@@ -249,8 +249,8 @@
                     "pin": "P22",
                     "comment": "LIMIT1",
                     "pos": [
-                        592,
-                        260
+                        568,
+                        398
                     ],
                     "direction": "input"
                 },
@@ -258,8 +258,8 @@
                     "pin": "P24",
                     "comment": "LIMIT2",
                     "pos": [
-                        592,
-                        238
+                        568,
+                        420
                     ],
                     "direction": "input"
                 },
@@ -267,8 +267,8 @@
                     "pin": "P26",
                     "comment": "LIMIT3",
                     "pos": [
-                        592,
-                        216
+                        568,
+                        442
                     ],
                     "direction": "input"
                 },
@@ -276,8 +276,8 @@
                     "pin": "P32",
                     "comment": "LIMIT4",
                     "pos": [
-                        592,
-                        194
+                        568,
+                        464
                     ],
                     "direction": "input"
                 },
@@ -285,8 +285,8 @@
                     "pin": "P37",
                     "comment": "ALLEN",
                     "pos": [
-                        570,
-                        458
+                        590,
+                        200
                     ],
                     "direction": "output"
                 },
@@ -294,8 +294,8 @@
                     "pin": "P33",
                     "comment": "LIMIT5",
                     "pos": [
-                        570,
-                        436
+                        590,
+                        222
                     ],
                     "direction": "input"
                 },
@@ -303,8 +303,8 @@
                     "pin": "P13",
                     "comment": "BSTEP",
                     "pos": [
-                        570,
-                        414
+                        590,
+                        244
                     ],
                     "direction": "output"
                 },
@@ -312,8 +312,8 @@
                     "pin": "P18",
                     "comment": "BDIR",
                     "pos": [
-                        570,
-                        392
+                        590,
+                        266
                     ],
                     "direction": "output"
                 }

@@ -115,8 +115,8 @@ for n, pin in enumerate(pins, 1):
 for n in range(17):
     pname = f"P{n + 1}"
 
-    px = 528
-    py = n * 22 + 82
+    px = 568
+    py = n * 22 + 200
     if n > 12:
         px += 22
         py -= 13 * 22
@@ -124,6 +124,6 @@ for n in range(17):
     direction = "output"
     if mapping[pname][0].startswith("LIMIT"):
         direction = "input"
-    config["slots"][0]["pins"][pname] = {"pin": mapping[pname][1], "comment": mapping[pname][0], "pos": [1120 - px, 540 - py], "direction": direction}
+    config["slots"][0]["pins"][pname] = {"pin": mapping[pname][1], "comment": mapping[pname][0], "pos": [px, py], "direction": direction}
 
 print(json.dumps(config, indent=4))
