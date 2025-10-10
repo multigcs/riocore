@@ -1,4 +1,5 @@
 import os
+import glob
 import json
 
 import riocore
@@ -77,7 +78,10 @@ class GuiBreakouts:
 
         dialog.setLayout(dialog.layout)
 
-        breakouts = ["china-bob5x", "rpi-byte2bot-db25hat"]
+        breakouts = []
+        for breakout_path in sorted(glob.glob(os.path.join(riocore_path, "breakouts", "*", "breakout.json"))):
+            breakout_name = os.path.basename(os.path.dirname(breakout_path))
+            breakouts.append(breakout_name)
 
         def show_breakout_info(idx):
             if not breakout_table.item(idx, 1):
