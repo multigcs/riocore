@@ -628,13 +628,6 @@ class GuiPlugins:
             plugins = riocore.Plugins()
             plugins.load_plugins({"plugins": [{"type": plugin["name"]}]})
 
-            if not toolchain:
-                if plugins.plugin_instances[0].PLUGIN_TYPE == "gateware":
-                    continue
-            else:
-                if plugins.plugin_instances[0].PLUGIN_TYPE != "gateware":
-                    continue
-
             limit_boards = plugins.plugin_instances[0].LIMITATIONS.get("boards")
             if limit_boards and boardcfg not in limit_boards:
                 continue
