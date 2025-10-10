@@ -21,7 +21,7 @@
         }
     ],
     "linuxcnc": {
-        "debug_info": true,
+        "debug_info": false,
         "_gui": "flexgui",
         "_vcp_type": "gladevcp",
         "ini": {
@@ -59,7 +59,7 @@
             }
         ],
         "mxmpg": {
-            "enable": true,
+            "enable": false,
             "device": "/dev/ttyUSB0"
         }
     },
@@ -1369,8 +1369,8 @@
             },
             "uid": "w55000",
             "pos": [
-                -1887.7840733152937,
-                758.2150200011466
+                -1938.7206211379087,
+                700.4566130951458
             ],
             "speed": 20000000,
             "gw": "192.168.11.1",
@@ -1380,10 +1380,10 @@
     "flow": {
         "view": {
             "pos": [
-                -822,
-                -12
+                -1742,
+                -46
             ],
-            "scale": 0.34
+            "scale": 0.65
         },
         "board": {
             "pos": [

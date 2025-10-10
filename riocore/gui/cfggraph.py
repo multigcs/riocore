@@ -1,8 +1,5 @@
 import graphviz
 
-from riocore import gpios
-from riocore import components
-
 
 class ConfigGraph:
     def __init__(self, parent):
@@ -22,64 +19,6 @@ class ConfigGraph:
 
             lcports = []
             sports = []
-            gpio_config = self.parent.config.get("gpios", [])
-            gpio_map = {}
-            gpio_ids = {}
-            gpio_pinmapping = {}
-            for gpio in gpio_config:
-                gtype = gpio.get("type")
-                if gtype not in gpio_ids:
-                    gpio_ids[gtype] = 0
-                if hasattr(gpios, f"gpio_{gtype}"):
-                    ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
-                    gpio_pinmapping.update(ginstance.pinmapping())
-                    mportsl = []
-                    mportsr = []
-                    for key, pin in ginstance.slotpins().items():
-                        if pin["pin"]:
-                            pinname = pin["pin"].replace(f"{ginstance.NAME}.", "")
-                            gpio_map[pin["pin"]] = f"{ginstance.NAME}:{pinname}"
-                            mportsl.append(key)
-                            mportsr.append(f"<{pinname}>{pinname}")
-                    label = f"{{ {{ {ginstance.NAME}\\nGPIO-Pins |   {{ {{ {' | '.join(mportsl)} }} | {{ {' | '.join(mportsr)} }} }} }} }}"
-                    gAll.node(ginstance.NAME, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-            linuxcnc_config = self.parent.config.get("linuxcnc", {})
-            for net in linuxcnc_config.get("net", []):
-                net_source = net.get("source")
-                net_target = net.get("target")
-                net_source = gpio_pinmapping.get(net_source, net_source)
-                net_target = gpio_pinmapping.get(net_target, net_target)
-                if net_source and net_target:
-                    if net_source in gpio_map:
-                        hal_pin = net_target
-                        gAll.edge(f"{gpio_map[net_source]}", f"hal:{hal_pin}", dir="forward", color="green")
-                        lcports.append(f"<{hal_pin}>{hal_pin}")
-                    elif net_target in gpio_map:
-                        hal_pin = net_source
-                        gAll.edge(f"{gpio_map[net_target]}", f"hal:{hal_pin}", dir="back", color="red")
-                        lcports.append(f"<{hal_pin}>{hal_pin}")
-
-            component_nums = {}
-            for component in linuxcnc_config.get("components", []):
-                comp_type = component.get("type")
-                if comp_type not in component_nums:
-                    component_nums[comp_type] = 0
-                component["num"] = component_nums[comp_type]
-                component_nums[comp_type] += 1
-                if hasattr(components, f"comp_{comp_type}"):
-                    cinstance = getattr(components, f"comp_{comp_type}")(component)
-                    comp_pins = cinstance.setup.get("pins", {})
-                    ports = [f"<{p.split(':')[0]}>{p.split(':')[0]}" for p in cinstance.PINS]
-                    label = f"{{ {{ {'|'.join(ports)} }} | {{ {cinstance.TITLE} }} | {{ {'|'.join(cinstance.SIGNALS)} }} }}"
-                    gAll.node(cinstance.PREFIX, shape="record", label=label, fontsize="11pt", style="rounded, filled", fillcolor="yellow")
-                    for pin_name, pin_data in cinstance.PINDEFAULTS.items():
-                        if pin_name in comp_pins:
-                            comp_pin = gpio_pinmapping.get(comp_pins[pin_name], comp_pins[pin_name])
-                            if comp_pin in gpio_map:
-                                if pin_data["direction"] == "output":
-                                    gAll.edge(gpio_map[comp_pin], f"{cinstance.PREFIX}:{pin_name}", dir="back", color="red")
-                                else:
-                                    gAll.edge(gpio_map[comp_pin], f"{cinstance.PREFIX}:{pin_name}", dir="forward", color="green")
 
             # show slots
             for slot in self.parent.slots:

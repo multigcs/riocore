@@ -1,0 +1,292 @@
+{
+    "name": "Parport",
+    "boardcfg": "Parport",
+    "flow": {
+        "view": {
+            "scale": 1.07,
+            "pos": [
+                160,
+                -63
+            ]
+        },
+        "board": {
+            "pos": [
+                571.2118596739912,
+                275.4296422582918
+            ],
+            "rotate": 0
+        },
+        "hal": {
+            "misc": [
+                1420.0,
+                630.0
+            ],
+            "joint.0": [
+                1420.0,
+                790.0
+            ],
+            "joint.1": [
+                1420.0,
+                740.0
+            ],
+            "joint.2": [
+                1420.0,
+                690.0
+            ],
+            "spindle.0": [
+                1410.0,
+                60.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "stepgen",
+            "uid": "stepgen0",
+            "pos": [
+                1140.0,
+                450.0
+            ],
+            "signals": {
+                "position-cmd": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-fb": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-scale": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:X:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:X:dir"
+                }
+            }
+        },
+        {
+            "type": "stepgen",
+            "uid": "stepgen1",
+            "pos": [
+                1140.0,
+                370.0
+            ],
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Y:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Y:dir"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout0",
+            "pos": [
+                1140.0,
+                550.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "halui.machine.is-on",
+                    "setp": ""
+                }
+            },
+            "name": "enable",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in0"
+                }
+            },
+            "uid": "gpioin0",
+            "pos": [
+                1140.0,
+                820.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "home_x"
+        },
+        {
+            "type": "stepgen",
+            "uid": "stepgen2",
+            "pos": [
+                1140.0,
+                290.0
+            ],
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                }
+            },
+            "signals": {
+                "position-cmd": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-fb": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-scale": {
+                    "net": "",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in1"
+                }
+            },
+            "uid": "gpioin1",
+            "pos": [
+                1140.0,
+                770.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "home_y"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in2"
+                }
+            },
+            "uid": "gpioin2",
+            "pos": [
+                1140.0,
+                720.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in",
+                    "setp": ""
+                }
+            },
+            "name": "home_z"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in3"
+                }
+            },
+            "uid": "gpioin3",
+            "pos": [
+                1140.0,
+                670.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "",
+                    "setp": ""
+                }
+            },
+            "name": "estop"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in4"
+                }
+            },
+            "uid": "gpioin4",
+            "pos": [
+                1140.0,
+                620.0
+            ],
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input",
+                    "setp": ""
+                }
+            },
+            "name": "probe"
+        },
+        {
+            "type": "pwmgen",
+            "pins": {
+                "pwm": {
+                    "pin": "china-bob5x0:PWM:analog"
+                }
+            },
+            "uid": "pwmgen0",
+            "pos": [
+                1140.0,
+                60.0
+            ],
+            "signals": {
+                "value": {
+                    "net": "spindle.0.speed-out",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "spindle.0.on",
+                    "setp": ""
+                }
+            },
+            "name": "spindle"
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:RELAIS:out"
+                }
+            },
+            "uid": "gpioout1",
+            "pos": [
+                888.4073378558398,
+                32.95591545321585
+            ]
+        }
+    ],
+    "breakouts": [
+        {
+            "slot": "Parport:PORT0",
+            "breakout": "china-bob5x",
+            "name": "china-bob5x0",
+            "pos": [
+                720.0,
+                160.0
+            ],
+            "rotate": 0
+        }
+    ]
+}

@@ -1617,7 +1617,7 @@ if __name__ == "__main__":
         )
         self.halg.fmt_add_top("")
 
-        # load gpio drivers (rpi/parport)
+        # load gpio drivers (rpi)
         if self.project.config["type"] == "hal_gpio":
             hal_gpios = {
                 "input": [],
@@ -1631,14 +1631,21 @@ if __name__ == "__main__":
                         direction = plugin_instance.PINDEFAULTS[name]["direction"]
                         reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
                         pin = psetup["pin"]
+                        invert = 0
+                        for modifier in psetup.get("modifier", []):
+                            if modifier["type"] == "invert":
+                                invert = 1 - invert
+                            else:
+                                print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
                         hal_gpios[direction].append(pin)
                         if reset:
                             hal_gpios["reset"].append(pin)
+                        if invert:
+                            hal_gpios["invert"].append(pin)
                         if direction == "output":
                             psetup["pin"] = f"hal_gpio.{pin}-out"
                         elif direction == "input":
                             psetup["pin"] = f"hal_gpio.{pin}-in"
-            self.halg.fmt_add_top("# load hal_gpio")
             args = []
             if hal_gpios["input"]:
                 args.append(f"inputs={','.join(hal_gpios['input'])}")
@@ -1648,9 +1655,86 @@ if __name__ == "__main__":
                 args.append(f"invert={','.join(hal_gpios['invert'])}")
             if hal_gpios["reset"]:
                 args.append(f"reset={','.join(hal_gpios['reset'])}")
+            self.halg.fmt_add_top("# load hal_gpio")
             self.halg.fmt_add_top(f"loadrt hal_gpio {' '.join(args)}")
             self.halg.fmt_add_top("addf hal_gpio.read base-thread")
             self.halg.fmt_add_top("addf hal_gpio.write base-thread")
+            self.halg.fmt_add_top("")
+
+        # load gpio drivers (parport)
+        if self.project.config["type"] == "parport":
+            parports = []
+            mode_outputs = {
+                "in": [1, 14, 16, 17],
+                "out": [1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 16, 17],
+                "x": [2, 3, 4, 5, 6, 7, 8, 9],
+            }
+            for pport in range(2):
+                active = False
+                matching_errors = {"in": [], "out": [], "x": []}
+                for plugin_instance in self.project.plugin_instances:
+                    if plugin_instance.PLUGIN_TYPE == "gpio":
+                        for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                            pin = psetup["pin"]
+                            if ":" not in pin:
+                                continue
+                            port = int(pin.split(":")[0])
+                            if port != pport:
+                                continue
+                            active = True
+                            pin = int(pin.split(":")[1])
+                            direction = plugin_instance.PINDEFAULTS[name]["direction"]
+                            if direction == "output":
+                                for mode in mode_outputs:
+                                    if pin not in mode_outputs[mode]:
+                                        matching_errors[mode].append(f"{pin} must be input")
+                            else:
+                                for mode in mode_outputs:
+                                    if pin in mode_outputs[mode]:
+                                        matching_errors[mode].append(f"{pin} must be output")
+
+                            reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
+                            invert = 0
+                            for modifier in psetup.get("modifier", []):
+                                if modifier["type"] == "invert":
+                                    invert = 1 - invert
+                                else:
+                                    print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
+                            if direction == "output":
+                                psetup["pin"] = f"parport.{pport}.pin-{pin:02d}-out"
+                                if invert:
+                                    self.halg.setp_add(f"parport.{pport}.pin-{pin:02d}-out-invert", 1)
+                            elif direction == "input":
+                                if invert:
+                                    psetup["pin"] = f"parport.{pport}.pin-{pin:02d}-in-not"
+                                else:
+                                    psetup["pin"] = f"parport.{pport}.pin-{pin:02d}-in"
+                            if reset:
+                                self.halg.setp_add(f"parport.{pport}.pin-{pin:02d}-out-reset", 1)
+                if not active:
+                    continue
+
+                parport_mode = ""
+                for mode in matching_errors:
+                    if not matching_errors[mode]:
+                        parport_mode = mode
+
+                if parport_mode:
+                    parports.append(f"{pport} {parport_mode}")
+                else:
+                    print("ERROR: no usable parport mode found")
+                    for mode in matching_errors:
+                        if matching_errors[mode]:
+                            print(f"  mode({mode}): {', '.join(matching_errors[mode])}")
+                    exit(1)
+
+            self.halg.fmt_add_top(f"# parport component for {len(parports)} port(s)")
+            self.halg.fmt_add_top(f'loadrt hal_parport cfg="{" ".join(parports)}"')
+            for parport in parports:
+                self.halg.fmt_add_top(f"addf parport.{parport[0]}.read base-thread")
+                self.halg.fmt_add_top(f"addf parport.{parport[0]}.write base-thread")
+                self.halg.fmt_add_top(f"addf parport.{parport[0]}.reset base-thread")
+                self.halg.fmt_add_top(f"setp parport.{parport[0]}.reset-time 5000")
             self.halg.fmt_add_top("")
 
         if self.project.config["toolchain"]:
@@ -1872,8 +1956,6 @@ if __name__ == "__main__":
             net_source = net.get("source")
             net_target = net.get("target")
             net_name = net.get("name") or None
-            net_source = self.gpio_pinmapping.get(net_source, net_source)
-            net_target = self.gpio_pinmapping.get(net_target, net_target)
             if net_source and net_target:
                 self.halg.net_add(f"({net_source})", net_target, net_name)
 

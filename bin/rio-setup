@@ -22,21 +22,17 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 import riocore
 from riocore import halpins
-from riocore import gpios
 
 from riocore.gui import vcp
 from riocore.gui.loader import ConfigLoader
 from riocore.gui.plugins import GuiPlugins
-from riocore.gui.components import GuiComponents
 from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.modules import GuiModules
-from riocore.gui.gpios import GuiGpios
 
 from riocore.gui.tab_json import TabJson
 from riocore.gui.tab_axis import TabAxis
 from riocore.gui.tab_board import TabBoard
 from riocore.gui.tab_gateware import TabGateware
-from riocore.gui.tab_gpio import TabGpios
 from riocore.gui.tab_hal import TabHal
 from riocore.gui.tab_linuxcnc import TabLinuxCNC
 from riocore.gui.tab_overview import TabOverview
@@ -112,10 +108,8 @@ class WinForm(QWidget):
         self.args = args
 
         self.gui_plugins = GuiPlugins(self)
-        self.gui_components = GuiComponents(self)
         self.gui_modifiers = GuiModifiers(self)
         self.gui_modules = GuiModules(self)
-        self.gui_gpios = GuiGpios(self)
 
         self.listFile = QListWidget()
         layout = QVBoxLayout()
@@ -160,7 +154,6 @@ class WinForm(QWidget):
             self.tabs = {
                 "Config": TabPlugins(self),
                 "Board": TabBoard(self),
-                "GPIOs": TabGpios(self),
                 "Json": TabJson(self),
                 "LinuxCNC": TabLinuxCNC(self),
                 "Gateware": TabGateware(self),
@@ -169,7 +162,6 @@ class WinForm(QWidget):
             self.tabs = {
                 "Config": TabPlugins(self),
                 "Board": TabBoard(self),
-                "GPIOs": TabGpios(self),
                 "Overview": TabOverview(self),
                 "Hal": TabHal(self),
                 "Axis": TabAxis(self),
@@ -286,10 +278,7 @@ class WinForm(QWidget):
         self.treeview.resizeColumnToContents(1)
         self.treeview.collapseAll()
 
-        if self.board:
-            self.tree_expand("/Plugins/")
-        else:
-            self.tree_expand("/LinuxCNC/Components/")
+        self.tree_expand("/Plugins/")
 
         tree_width = self.treeview.header().sectionSize(0) + self.treeview.header().sectionSize(1)
         img_width = max(self.tabs["Board"].widget().width(), 400)
@@ -406,7 +395,6 @@ class WinForm(QWidget):
                 if not self.args.nographs:
                     self.tabs["Pins"].update()
                 self.tabs["Board"].update()
-            self.tabs["GPIOs"].update()
             self.request_pin_table_load = 0
 
         if self.request_sig_table_load > 1:
@@ -704,23 +692,6 @@ class WinForm(QWidget):
                     if target in self.pinmapping:
                         self.pinmapping[f"{breakout_name}:{slot_name}:{pin_name}"] = self.pinmapping[target]
 
-        gpio_ids = {}
-        gpio_config = self.config.get("gpios", [])
-        for gpio in gpio_config:
-            gtype = gpio.get("type")
-            if gtype not in gpio_ids:
-                gpio_ids[gtype] = 0
-            if hasattr(gpios, f"gpio_{gtype}"):
-                ginstance = getattr(gpios, f"gpio_{gtype}")(gpio_ids[gtype], gpio)
-                self.gpiolist += ginstance.inputs
-                self.gpiolist += ginstance.outputs
-                self.gpiolist += list(ginstance.pinmapping())
-
-        for component in self.config.get("linuxcnc", {}).get("components", []):
-            for pin_name, net in component.get("pins", {}).items():
-                if net not in self.gpiolist:
-                    self.gpiolist.append(net)
-
         def sort_key(value):
             if not value:
                 return ""
@@ -792,9 +763,6 @@ class WinForm(QWidget):
             if slot_name:
                 self.slotnames.append(slot_name)
 
-        # if self.config.get("gpios", []):
-        self.tabs["GPIOs"].update()
-
         if self.board:
             self.tabs["Board"].update()
             if not self.args.nographs:
@@ -806,9 +774,6 @@ class WinForm(QWidget):
 
     def display(self):
         disable = []
-        # if not self.config.get("gpios"):
-        #    disable.append("GPIOs")
-
         if not self.board:
             disable.append("Board")
             disable.append("Pins")
@@ -912,39 +877,6 @@ class WinForm(QWidget):
             return edit_combobox(self, obj, key, options, cb=cb, help_text=help_text, default=default)
 
         return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
-
-    def load_tree_linuxcnc_components(self, parent_tree, expand=None):
-        # linuxcnc components's (for host gpio's)
-        bitem = MyStandardItem()
-        parent_tree.appendRow(
-            [
-                MyStandardItem("Components"),
-                bitem,
-            ]
-        )
-        self.tree_comps = parent_tree.child(parent_tree.rowCount() - 1)
-
-        buttons_layout = QHBoxLayout()
-        buttons_layout.setContentsMargins(0, 0, 0, 0)
-        buttons_widget = QWidget()
-        buttons_widget.setLayout(buttons_layout)
-
-        button = QPushButton("add comp")
-        button.clicked.connect(self.gui_components.add_component)
-        button.setMaximumSize(button.sizeHint())
-        buttons_layout.addWidget(button)
-
-        buttons_layout.addStretch()
-        self.treeview.setIndexWidget(bitem.index(), buttons_widget)
-
-        component_nums = {}
-        for component in self.config.get("linuxcnc", {}).get("components", []):
-            comp_type = component.get("type")
-            if comp_type not in component_nums:
-                component_nums[comp_type] = 0
-            component["num"] = component_nums[comp_type]
-            self.gui_components.tree_add_component(self.tree_comps, component)
-            component_nums[comp_type] += 1
 
     def load_tree_linuxcnc_setp(self, parent_tree, expand=None):
         # linuxcnc-net
@@ -1228,7 +1160,6 @@ class WinForm(QWidget):
             )
             self.treeview.setIndexWidget(aitem.index(), self.edit_item(self.config["linuxcnc"], key, var_setup))
 
-        self.load_tree_linuxcnc_components(tree_lcnc, expand=expand)
         self.load_tree_linuxcnc_networks(tree_lcnc, expand=expand)
         self.load_tree_linuxcnc_setp(tree_lcnc, expand=expand)
         self.load_tree_linuxcnc_ini(tree_lcnc, expand=expand)
@@ -1382,10 +1313,8 @@ class WinForm(QWidget):
 
         if expand:
             self.tree_expand(expand)
-        elif self.board:
-            self.tree_expand("/Plugins/")
         else:
-            self.tree_expand("/LinuxCNC/Components/")
+            self.tree_expand("/Plugins/")
 
     def tree_expand(self, tpath):
         def iter_childs(entry, prefix=""):
