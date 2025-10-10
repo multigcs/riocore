@@ -47,7 +47,7 @@ class Plugin(PluginBase):
             "PORT0:P17": {"pin": f"{portaddr}:17", "comment": "in:out|out:out|x:in", "pos": [83.1, 179.35000000000002], "direction": "all"},
         }
 
-    def base_pins(self, parent):
+    def precheck(self, parent):
         portaddr = self.plugin_setup.get("portaddr", self.option_default("portaddr"))
         self.parport_mode = ""
         active = False

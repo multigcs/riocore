@@ -1,12 +1,12 @@
 {
     "name": "RPI5",
-    "boardcfg": "RPI5",
+    "boardcfg": "",
     "flow": {
         "view": {
-            "scale": 1.06,
+            "scale": 1.16,
             "pos": [
-                -76,
-                -199
+                -25,
+                -128
             ]
         },
         "board": {
@@ -69,7 +69,8 @@
                 "dir": {
                     "pin": "china-bob5x0:X:dir"
                 }
-            }
+            },
+            "rotate": 0
         },
         {
             "type": "stepgen",
@@ -86,7 +87,8 @@
                 "dir": {
                     "pin": "china-bob5x0:Y:dir"
                 }
-            }
+            },
+            "rotate": 0
         },
         {
             "type": "gpioout",
@@ -106,7 +108,8 @@
                 "bit": {
                     "pin": "china-bob5x0:ALL:en"
                 }
-            }
+            },
+            "rotate": 0
         },
         {
             "type": "gpioin",
@@ -126,7 +129,8 @@
                     "setp": ""
                 }
             },
-            "name": "home_x"
+            "name": "home_x",
+            "rotate": 0
         },
         {
             "type": "stepgen",
@@ -157,7 +161,8 @@
                     "net": "",
                     "setp": ""
                 }
-            }
+            },
+            "rotate": 0
         },
         {
             "type": "gpioin",
@@ -177,7 +182,8 @@
                     "setp": ""
                 }
             },
-            "name": "home_y"
+            "name": "home_y",
+            "rotate": 0
         },
         {
             "type": "gpioin",
@@ -197,7 +203,8 @@
                     "setp": ""
                 }
             },
-            "name": "home_z"
+            "name": "home_z",
+            "rotate": 0
         },
         {
             "type": "gpioin",
@@ -217,7 +224,8 @@
                     "setp": ""
                 }
             },
-            "name": "estop"
+            "name": "estop",
+            "rotate": 0
         },
         {
             "type": "gpioin",
@@ -237,7 +245,8 @@
                     "setp": ""
                 }
             },
-            "name": "probe"
+            "name": "probe",
+            "rotate": 0
         },
         {
             "type": "pwmgen",
@@ -261,7 +270,8 @@
                     "setp": ""
                 }
             },
-            "name": "spindle"
+            "name": "spindle",
+            "rotate": 0
         },
         {
             "type": "gpioout",
@@ -274,7 +284,17 @@
             "pos": [
                 888.4073378558398,
                 32.95591545321585
-            ]
+            ],
+            "rotate": 0
+        },
+        {
+            "type": "rpigpio",
+            "uid": "rpigpio0",
+            "pos": [
+                56.47278539728123,
+                127.36368121118517
+            ],
+            "rotate": 180
         }
     ],
     "breakouts": [
@@ -289,7 +309,7 @@
             "rotate": 0
         },
         {
-            "slot": "RPI5:GPIO",
+            "slot": "rpigpio0:GPIO",
             "breakout": "rpi-db25hat",
             "name": "rpi-db25hat0",
             "pos": [
