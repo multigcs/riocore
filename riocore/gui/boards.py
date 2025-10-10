@@ -25,10 +25,14 @@ class GuiBoards:
             self.parent.display()
 
         board_config = self.parent.board
-        toolchain = self.parent.config.get("toolchain") or board_config.get("toolchain")
-        toolchains = board_config.get("toolchains", [toolchain])
-        protocol = self.parent.config.get("protocol") or "SPI"
-        protocols = ["SPI", "UDP", "UART"]
+        if board_config.get("toolchain"):
+            toolchain = self.parent.config.get("toolchain") or board_config.get("toolchain")
+            toolchains = board_config.get("toolchains", [toolchain])
+            protocol = self.parent.config.get("protocol") or "SPI"
+            protocols = ["SPI", "UDP", "UART"]
+            gpio_mode = False
+        else:
+            gpio_mode = True
 
         dialog = QDialog()
         dialog.setWindowTitle("edit board")
@@ -44,12 +48,12 @@ class GuiBoards:
 
         dialog.layout.addWidget(QLabel("Description:"))
         dialog.layout.addWidget(self.parent.edit_item(self.parent.config, "description", {"type": str}, cb=None))
+        if not gpio_mode:
+            dialog.layout.addWidget(QLabel("Toolchain:"))
+            dialog.layout.addWidget(self.parent.edit_item(self.parent.config, "toolchain", {"type": "select", "options": toolchains, "default": toolchain}, cb=None))
 
-        dialog.layout.addWidget(QLabel("Toolchain:"))
-        dialog.layout.addWidget(self.parent.edit_item(self.parent.config, "toolchain", {"type": "select", "options": toolchains, "default": toolchain}, cb=None))
-
-        dialog.layout.addWidget(QLabel("Protocol:"))
-        dialog.layout.addWidget(self.parent.edit_item(self.parent.config, "protocol", {"type": "select", "options": protocols, "default": protocol}, cb=None))
+            dialog.layout.addWidget(QLabel("Protocol:"))
+            dialog.layout.addWidget(self.parent.edit_item(self.parent.config, "protocol", {"type": "select", "options": protocols, "default": protocol}, cb=None))
 
         dialog.mlabel = QLabel("")
         dialog.layout.addWidget(dialog.mlabel)
