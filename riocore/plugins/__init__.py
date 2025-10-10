@@ -4,8 +4,6 @@ from riocore.modifiers import Modifiers
 
 
 class PluginBase:
-    expansions = []
-
     def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
@@ -94,10 +92,7 @@ class PluginBase:
         self.signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
 
         if self.TYPE == "expansion":
-            expansion_id = len(self.expansions)
-            ename = (self.plugin_setup.get("name") or f"EXPANSION{expansion_id}").replace(" ", "_")
-            self.expansion_prefix = ename.upper()
-            self.expansions.append(self.expansion_prefix)
+            self.expansion_prefix = self.instances_name.upper()
 
     def cfg_info(self):
         return ""

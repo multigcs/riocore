@@ -806,6 +806,16 @@ class PluginNode(MyNode):
         self.ports_right = {}
         for key, value in self.signals.items():
             self.ports_right[f"sig_{key}"] = value
+
+        if hasattr(self, "plugin_instance"):
+            if self.plugin_instance.TYPE == "expansion":
+                prefix = f"{self.plugin_instance.instances_name.upper()}_"
+                for exansion_pin in self.plugin_instance.expansion_outputs():
+                    title = exansion_pin.replace(prefix, "")
+                    self.ports_right[f"{exansion_pin}"] = {"direction": "output", "title": title, "type": "expansion"}
+                for exansion_pin in self.plugin_instance.expansion_inputs():
+                    title = exansion_pin.replace(prefix, "")
+                    self.ports_right[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "expansion"}
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
 
         if hasattr(self.plugin_instance, "flow"):
@@ -2148,6 +2158,7 @@ class Window(QMainWindow):
         color_n = 0
         if plugin_config.get("pins"):
             for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                expansion = None
                 pindata = plugin_config.get("pins", {}).get(pin)
                 if pindata is None or "pin" not in pindata or not pindata["pin"]:
                     continue
@@ -2156,14 +2167,21 @@ class Window(QMainWindow):
                     splitted = pindata["pin"].split(":")
                     bpin = ":".join(splitted[1:])
                     breakout_name = splitted[0]
-
                     bnode = self.breakout_by_name(breakout_name)
                     if not bnode:
                         continue
-
                     last_con = (bnode, bpin)
                 else:
-                    last_con = (self.bnode, pindata["pin"])
+                    if pindata["pin"][-1] == "]":
+                        prefix = pindata["pin"].split("_")[0]
+                        for item in self.scene.items():
+                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "expansion" and item.name.upper() == prefix:
+                                expansion = item
+                    if expansion:
+                        epin = pindata["pin"]
+                        last_con = (expansion, epin)
+                    else:
+                        last_con = (self.bnode, pindata["pin"])
 
                 if pindata.get("modifier"):
                     if pin_defaults["direction"] == "input":

@@ -1376,7 +1376,7 @@ if __name__ == "__main__":
                         "displayconfig": displayconfig,
                     }
                 )
-            elif dtype != "none":
+            elif dtype not in {"none", "None", None}:
                 print(f"WARNING: 'draw_{dtype}' not found")
 
         widgets = {}

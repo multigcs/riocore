@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.5
+### Genaral
+* changing component/gpio stuff into boards and plugin
+* expansions: using instance name for expansion pin names
+
+
 ## v0.9.4
 
 ### Gui and Generator

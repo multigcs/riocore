@@ -490,6 +490,25 @@ class Project:
         self.duration = 0
         self.load_config(configuration, output_path)
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
+
+        # expansion mapping after plugin load
+        expansion_mapping = {}
+        for plugin_instance in self.plugin_instances:
+            if plugin_instance.TYPE == "expansion":
+                for exp_pin in plugin_instance.expansion_inputs():
+                    source = f"{plugin_instance.instances_name}:{exp_pin}"
+                    expansion_mapping[source] = exp_pin
+                for exp_pin in plugin_instance.expansion_outputs():
+                    source = f"{plugin_instance.instances_name}:{exp_pin}"
+                    expansion_mapping[source] = exp_pin
+
+        for plugin_instance in self.plugin_instances:
+            for pin, pdata in plugin_instance.pins().items():
+                source_pin = pdata.get("pin")
+                target_pin = expansion_mapping.get(source_pin)
+                if target_pin:
+                    plugin_instance.plugin_setup["pins"][pin]["pin"] = target_pin
+
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
         if self.config["toolchain"]:
