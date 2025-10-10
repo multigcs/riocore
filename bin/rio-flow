@@ -10,9 +10,11 @@ import sys
 from math import floor, ceil
 from functools import partial
 
-from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF, QSize
+from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
+    QSplitter,
+    QPlainTextEdit,
     QFileDialog,
     QStyle,
     QMainWindow,
@@ -25,7 +27,6 @@ from PyQt5.QtWidgets import (
     QGraphicsItem,
     QGraphicsScene,
     QGraphicsView,
-    QHBoxLayout,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -144,7 +145,7 @@ class NodeEdgePath(QGraphicsPathItem):
         if self.etype == "pin":
             self.scene.parent.add_modifier()
         else:
-            print("# edge mouseDoubleClickEvent", self.etype)
+            riocore.log("# edge mouseDoubleClickEvent: {self.etype}")
 
     def hoverEnterEvent(self, event):
         self.hover = True
@@ -1460,9 +1461,6 @@ class Window(QMainWindow):
         self.gui_breakouts = GuiBreakouts(self)
         self.gui_modifiers = GuiModifiers(self)
 
-        vbox = QVBoxLayout()
-        vbox.addStretch()
-
         self.view = NodeViewer(self.scene)
         self.jsontab = TabJson(self)
 
@@ -1470,13 +1468,17 @@ class Window(QMainWindow):
         self.tabwidget.addTab(self.view, "Drawing")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
 
-        hbox = QHBoxLayout()
-        hbox.addLayout(vbox)
+        hbox = QSplitter(Qt.Horizontal)
         hbox.addWidget(self.tabwidget)
+
+        self.infobox = QPlainTextEdit(self)
+        self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.infobox.setMinimumWidth(400)
+        hbox.addWidget(self.infobox)
 
         vboxMain = QVBoxLayout()
         vboxMain.addWidget(self.toolbar())
-        vboxMain.addLayout(hbox)
+        vboxMain.addWidget(hbox)
         self.info = QLabel("---")
         vboxMain.addWidget(self.info)
 
@@ -1499,9 +1501,16 @@ class Window(QMainWindow):
         elif self.config_file and os.path.exists(self.config_file):
             self.cfg_reload()
         else:
-            print(f"ERROR: file not found: {self.config_file}")
+            riocore.log(f"ERROR: file not found: {self.config_file}")
             exit(1)
         self.snapshot()
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.runTimer)
+        self.timer.start(1000)
+
+    def runTimer(self):
+        self.infobox.setPlainText(riocore.log_get())
 
     def load(self):
         self.snapshots = []
@@ -1541,6 +1550,7 @@ class Window(QMainWindow):
         icon = self.style().standardIcon(QStyle.SP_ArrowLeft)
         undo_action = QAction(icon, "&Undo", self)
         undo_action.setStatusTip("Undo")
+        # load_action.setShortcut("Ctrl+Z")
         undo_action.triggered.connect(self.undo)
         toolbar.addAction(undo_action)
 
@@ -1567,7 +1577,7 @@ class Window(QMainWindow):
         for path in pathes:
             if os.path.exists(path):
                 return path
-        print(f"can not find board: {board}")
+        riocore.log(f"can not find board: {board}")
         exit(1)
 
     def struct_clean(self, data):
@@ -1577,7 +1587,7 @@ class Window(QMainWindow):
                 for pn, part in enumerate(data[key]):
                     if isinstance(part, dict):
                         if not part:
-                            print("DEL1", key, pn, data[key][pn])
+                            riocore.log(f"DEL1 {key} {pn} {data[key][pn]}")
                             del data[key][pn]
                         else:
                             self.struct_clean(data[key][pn])
@@ -1622,6 +1632,8 @@ class Window(QMainWindow):
     def keyPressEvent(self, event):
         if event.key() in {Qt.Key_Escape, Qt.Key_Backspace}:
             self.undo()
+        elif event.key() in {Qt.Key_Escape, Qt.Key_Backspace}:
+            self.undo()
         elif event.key() == Qt.Key_Delete:
             self.delete_selection()
         elif event.key() == Qt.Key_Asterisk:
@@ -1645,7 +1657,7 @@ class Window(QMainWindow):
             elif self.config:
                 self.config_original = self.clean_config(self.config)
             else:
-                print("ERROR: can not load configuration")
+                riocore.log("ERROR: can not load configuration")
                 self.config = {}
         else:
             self.config = config
@@ -1898,7 +1910,7 @@ class Window(QMainWindow):
             return path
         elif os.path.exists(os.path.join(riocore_path, path)):
             return os.path.join(riocore_path, path)
-        print(f"can not find path: {path}")
+        riocore.log(f"can not find path: {path}")
         exit(1)
 
     def redraw(self):
@@ -2366,7 +2378,7 @@ class Window(QMainWindow):
 
 
 if __name__ == "__main__":
-    print("######## WIP - only for testing ########")
+    riocore.log("######## WIP - only for testing ########")
 
     app = QApplication(sys.argv)
     parser = argparse.ArgumentParser()

@@ -24,6 +24,21 @@ from riocore.generator.documentation import documentation
 
 riocore_path = os.path.dirname(__file__)
 
+loginfo = []
+
+
+def log(text):
+    print(text)
+    loginfo.append(text)
+
+
+def log_get(lines=100):
+    return "\n".join(loginfo[:lines])
+
+
+def log_clear():
+    return "\n".join(loginfo)
+
 
 class Plugins:
     def __init__(self):

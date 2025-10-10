@@ -1,5 +1,6 @@
 import time
 
+import riocore
 from riocore.modifiers import Modifiers
 
 
@@ -187,30 +188,30 @@ class PluginBase:
         pins = {}
         for pin_name, pin_config in self.PINDEFAULTS.items():
             if "pin" in self.plugin_setup and "pins" not in self.plugin_setup:
-                print(f"WARNING: old style pin config found ({self.instances_name})")
+                riocore.log(f"WARNING: old style pin config found ({self.instances_name})")
                 self.plugin_setup["pins"] = {pin_name: {"pin": self.plugin_setup["pin"]}}
 
             if "pins" not in self.plugin_setup:
-                # print(f"WARNING: no pins found in config ({self.instances_name})")
+                # riocore.log(f"WARNING: no pins found in config ({self.instances_name})")
                 continue
 
             if pin_name.upper() in self.plugin_setup["pins"]:
-                print(f"WARNING: please use lowercase for pinnames: {pin_name} ({self.instances_name})")
+                riocore.log(f"WARNING: please use lowercase for pinnames: {pin_name} ({self.instances_name})")
                 self.plugin_setup["pins"][pin_name] = self.plugin_setup["pins"][pin_name.upper()]
 
             if pin_name in self.plugin_setup["pins"]:
                 pins[pin_name] = pin_config.copy()
                 for pincfg in pins[pin_name]:
                     if isinstance(self.plugin_setup["pins"][pin_name], str):
-                        print(f"WARNING: please use dict for the pin setup: {self.plugin_setup['pins'][pin_name]}")
+                        riocore.log(f"WARNING: please use dict for the pin setup: {self.plugin_setup['pins'][pin_name]}")
                         self.plugin_setup["pins"][pin_name] = {"pin": self.plugin_setup["pins"][pin_name]}
-                        print(f"WARNING: -> {self.plugin_setup['pins'][pin_name]}")
-                        print("")
+                        riocore.log(f"WARNING: -> {self.plugin_setup['pins'][pin_name]}")
+                        riocore.log("")
                 pins[pin_name].update(self.plugin_setup["pins"][pin_name])
                 direction = pin_config["direction"].upper().replace("PUT", "")
                 pins[pin_name]["varname"] = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
             elif pin_config.get("optional") is not True:
-                print(f"ERROR: MISSING PIN CONFIGURATION for '{pin_name}' ({self.NAME})")
+                riocore.log(f"ERROR: MISSING PIN CONFIGURATION for '{pin_name}' ({self.NAME})")
                 # exit(1)
             elif pin_config["direction"] != "output":
                 pins[pin_name] = pin_config.copy()
