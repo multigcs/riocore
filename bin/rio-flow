@@ -116,6 +116,8 @@ class NodeEdgePath(QGraphicsPathItem):
         painter.drawPath(self.path())
 
     def update_edge_path(self):
+        if not self._source_node or not self._target_node:
+            return
         source_pos = self._source_node.port_pos(self._source_port)
         des_pos = self._target_node.port_pos(self._target_port)
         path = QPainterPath(source_pos)
@@ -301,19 +303,16 @@ class MyNode(QGraphicsItem):
     def port_selected(self, mouse_pos):
         mouse_x = mouse_pos.x()
         mouse_y = mouse_pos.y()
-
         py = self.port_top
         for port in self.ports_left:
             if abs(mouse_x - (self.border_size / 2) - (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
                 return port
             py += self.port_diff
-
         py = self.port_top
         for port in self.ports_right:
             if abs(mouse_x + (self.border_size / 2) - self.width + (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
                 return port
             py += self.port_diff
-
         return None
 
     def paint(self, painter, option, widget):
@@ -788,7 +787,6 @@ class SubNode(MyNode):
 
 
 class PluginNode(MyNode):
-    show_signals = True
     border_color = QColor(150, 250, 150)
 
     def __init__(self, scene, x, y, plugin_instance):
@@ -808,6 +806,18 @@ class PluginNode(MyNode):
         for key, value in self.signals.items():
             self.ports_right[f"sig_{key}"] = value
 
+        if self.plugin_instance.TYPE == "base":
+            self.setZValue(1)
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+            image = os.path.join(plugin_path, "image.png")
+            pixmap = QPixmap.fromImage(QImage(image))
+            pixmap = pixmap.transformed(QTransform().rotate(plugin_instance.plugin_setup.get("rotate", 0)))
+            pixmap_width = pixmap.width()
+            pixmap_height = pixmap.height()
+            self.width = pixmap_width // 2
+            self.height = pixmap_height // 2
+            self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
         if hasattr(self, "plugin_instance"):
             if self.plugin_instance.TYPE == "expansion":
                 prefix = f"{self.plugin_instance.instances_name.upper()}_"
@@ -817,6 +827,10 @@ class PluginNode(MyNode):
                 for exansion_pin in self.plugin_instance.expansion_inputs():
                     title = exansion_pin.replace(prefix, "")
                     self.ports_right[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "expansion"}
+
+            for gpio_pin, gpio_data in self.plugin_instance.GPIODEFAULTS.items():
+                self.ports_right[gpio_pin] = gpio_data
+
         self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
 
         if hasattr(self.plugin_instance, "flow"):
@@ -841,6 +855,7 @@ class PluginNode(MyNode):
                 for port, psetup in ports.items():
                     psetup["sub"] = snode
                 py += snode.height + 5
+        self.ports = self.ports_right
 
     def sub_update(self, sub):
         self.plugin_instance.plugin_setup["sub_pos"] = {}
@@ -856,9 +871,23 @@ class PluginNode(MyNode):
         pos_y = pos.y()
         info = self.plugin_instance.cfg_info()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
-        self.paintBg(painter, self.name, info=info)
-        painter.setPen(QPen(Qt.GlobalColor.black, 1))
-        self.paintPorts(painter)
+        if self.plugin_instance.TYPE == "base":
+            painter.drawRect(self.boundingRect())
+            painter.drawPixmap(0, 0, self.pixmap)
+            for port in self.ports:
+                if not self.ports[port]["pos"]:
+                    continue
+                pos_x = self.ports[port]["pos"][0] // 2
+                pos_y = self.ports[port]["pos"][1] // 2
+                if (self, port) == self.scene.selection_source:
+                    painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.red)
+                else:
+                    painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
+                painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
+        else:
+            self.paintBg(painter, self.name, info=info)
+            painter.setPen(QPen(Qt.GlobalColor.black, 1))
+            self.paintPorts(painter)
 
     def delete(self):
         for sub_item in self.subNodes:
@@ -926,6 +955,65 @@ class PluginNode(MyNode):
         pos_y = pos.y()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
         QGraphicsItem.mouseReleaseEvent(self, event)
+
+    def port_pos(self, port):
+        if self.plugin_instance.TYPE == "base":
+            pos = self.pos()
+            pos_x = pos.x()
+            pos_y = pos.y()
+            if port in self.ports and self.ports[port]["pos"]:
+                pos_x += self.ports[port]["pos"][0] // 2
+                pos_y += self.ports[port]["pos"][1] // 2
+            return QPointF(pos_x, pos_y)
+        else:
+            pos = self.pos()
+            pos_x = pos.x()
+            pos_y = pos.y()
+            for sport, sport_setup in self.ports_right.items():
+                if "sub" in sport_setup:
+                    spos = sport_setup["sub"].pos()
+                    ports = list(sport_setup["sub"].ports_right)
+                    if port in ports:
+                        pos_x = spos.x() + sport_setup["sub"].width
+                        pos_y = spos.y() + ports.index(port) * sport_setup["sub"].port_diff + sport_setup["sub"].port_top
+
+            ports = list(self.ports_left)
+            if port in ports:
+                pos_y += ports.index(port) * self.port_diff + self.port_top
+
+            ports = list(self.ports_right)
+            if port in ports:
+                pos_x = pos.x() + self.width
+                pos_y += ports.index(port) * self.port_diff + self.port_top
+
+            return QPointF(pos_x, pos_y)
+
+    def port_selected(self, mouse_pos):
+        if self.plugin_instance.TYPE == "base":
+            mouse_x = mouse_pos.x()
+            mouse_y = mouse_pos.y()
+            for port in self.ports:
+                if not self.ports[port]["pos"]:
+                    continue
+                x = self.ports[port]["pos"][0] // 2
+                y = self.ports[port]["pos"][1] // 2
+                if abs(mouse_x - x) < 5 and abs(mouse_y - y) < 5:
+                    return port
+        else:
+            mouse_x = mouse_pos.x()
+            mouse_y = mouse_pos.y()
+            py = self.port_top
+            for port in self.ports_left:
+                if abs(mouse_x - (self.border_size / 2) - (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+                    return port
+                py += self.port_diff
+            py = self.port_top
+            for port in self.ports_right:
+                if abs(mouse_x + (self.border_size / 2) - self.width + (self.port_size / 2)) < (self.port_size / 2) and abs(mouse_y - py) < (self.port_size / 2):
+                    return port
+                py += self.port_diff
+            return None
+        return None
 
 
 class ModuleNode(MyNode):
@@ -1419,15 +1507,12 @@ class NodeScene(QGraphicsScene):
 
     def drawBackground(self, painter, rect):
         super().drawBackground(painter, rect)
-
         left, right = floor(rect.left()), ceil(rect.right())
         top, bottom = floor(rect.top()), ceil(rect.bottom())
-
         grid_points = []
         for x in range(left - (left % grid_size), right, grid_size):
             for y in range(top - (top % grid_size), bottom, grid_size):
                 grid_points.append(QPoint(x, y))
-
         if len(grid_points) > 0:
             pen = QPen(grid_color)
             pen.setWidthF(1)
@@ -1440,6 +1525,7 @@ class Window(QMainWindow):
         super().__init__()
         self.args = args
         self.HAS_INVERTS = {"rio": "-not"}
+        self.bnode = None
         self.logic_ids = {}
         self.hal_logics = {}
         self.hal_calcs = {}
@@ -1762,6 +1848,8 @@ class Window(QMainWindow):
                     if source:
                         if isinstance(source[0], BreakoutNode):
                             plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
+                        elif isinstance(source[0], PluginNode) and source[0].plugin_instance.TYPE == "base":
+                            plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
                         else:
                             plugin_config["pins"][port]["pin"] = source[1]
 
@@ -1921,23 +2009,21 @@ class Window(QMainWindow):
             self.scene.removeItem(item)
         self.pinlist = []
         boardcfg = self.config.get("boardcfg")
-        if "board" not in self.config["flow"]:
-            self.config["flow"]["board"] = {}
-        if "pos" not in self.config["flow"]["board"]:
-            self.config["flow"]["board"]["pos"] = (120, 220)
-        if "rotate" not in self.config["flow"]["board"]:
-            self.config["flow"]["board"]["rotate"] = 0
-        self.bnode = None
-        board_setup = {"board": boardcfg, "config": self.config}
-        if os.path.exists(os.path.join(riocore_path, "boards", boardcfg, "board.json")):
-            px = self.config["flow"]["board"]["pos"][0]
-            py = self.config["flow"]["board"]["pos"][1]
-            self.bnode = BoardNode(self.scene, px, py, board_setup)
-            self.scene.addItem(self.bnode)
-            self.board = self.bnode.jdata
-
-        if "gpios" in self.config:
-            pass
+        if boardcfg:
+            if "board" not in self.config["flow"]:
+                self.config["flow"]["board"] = {}
+            if "pos" not in self.config["flow"]["board"]:
+                self.config["flow"]["board"]["pos"] = (120, 220)
+            if "rotate" not in self.config["flow"]["board"]:
+                self.config["flow"]["board"]["rotate"] = 0
+            self.bnode = None
+            board_setup = {"board": boardcfg, "config": self.config}
+            if os.path.exists(os.path.join(riocore_path, "boards", boardcfg, "board.json")):
+                px = self.config["flow"]["board"]["pos"][0]
+                py = self.config["flow"]["board"]["pos"][1]
+                self.bnode = BoardNode(self.scene, px, py, board_setup)
+                self.scene.addItem(self.bnode)
+                self.board = self.bnode.jdata
 
         py = 100
         if "plugins" not in self.config:
@@ -1951,10 +2037,6 @@ class Window(QMainWindow):
         self.breakout_uids = []
         for breakout_id, breakout_config in enumerate(self.config.get("breakouts", [])):
             py += self.insert_breakout(breakout_config, py)
-
-        for item in self.scene.items():
-            if isinstance(item, BreakoutNode):
-                self.connect_breakout(item)
 
         # loading modules
         for module_id, module_config in enumerate(self.config.get("modules", [])):
@@ -1978,6 +2060,10 @@ class Window(QMainWindow):
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
+
+        for item in self.scene.items():
+            if isinstance(item, BreakoutNode):
+                self.connect_breakout(item)
 
         hnodes_y = 100
         hnodes = {}
@@ -2055,6 +2141,9 @@ class Window(QMainWindow):
             slot = slotid.split(":", 1)[1]
             for item in self.scene.items():
                 if isinstance(item, BreakoutNode):
+                    if item.name == slot_nodename:
+                        slot_node = item
+                elif isinstance(item, PluginNode):
                     if item.name == slot_nodename:
                         slot_node = item
         elif slotid:
@@ -2181,6 +2270,11 @@ class Window(QMainWindow):
                     breakout_name = splitted[0]
                     bnode = self.breakout_by_name(breakout_name)
                     if not bnode:
+                        for item in self.scene.items():
+                            prefix = ""
+                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base" and item.name == breakout_name:
+                                bnode = item
+                    if not bnode:
                         continue
                     last_con = (bnode, bpin)
                 else:
@@ -2189,6 +2283,7 @@ class Window(QMainWindow):
                         for item in self.scene.items():
                             if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "expansion" and item.name.upper() == prefix:
                                 expansion = item
+
                     if expansion:
                         epin = pindata["pin"]
                         last_con = (expansion, epin)

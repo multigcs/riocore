@@ -22,7 +22,7 @@ a hardware PWM generator is a better choice."""
                     "1|pwm/direction",
                     "2|up/down",
                 ],
-                "description": "Modus",
+                "description": "modus",
             },
             "pwm-freq": {
                 "default": 100,

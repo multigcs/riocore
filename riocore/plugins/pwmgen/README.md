@@ -26,7 +26,7 @@ Keywords: pwm
 ## Options:
 *user-options*
 ### mode:
-Modus
+modus
 
  * type: select
  * default: 1

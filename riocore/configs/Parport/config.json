@@ -1,12 +1,12 @@
 {
     "name": "Parport",
-    "boardcfg": "Parport",
+    "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 1.07,
+            "scale": 1.34,
             "pos": [
-                160,
-                -63
+                483,
+                -21
             ]
         },
         "board": {
@@ -40,6 +40,30 @@
         }
     },
     "plugins": [
+        {
+            "type": "pwmgen",
+            "pins": {
+                "pwm": {
+                    "pin": "china-bob5x0:PWM:analog"
+                }
+            },
+            "uid": "pwmgen0",
+            "pos": [
+                1146.8181818181818,
+                85.75757575757575
+            ],
+            "signals": {
+                "value": {
+                    "net": "spindle.0.speed-out",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "spindle.0.on",
+                    "setp": ""
+                }
+            },
+            "name": "spindle"
+        },
         {
             "type": "stepgen",
             "uid": "stepgen0",
@@ -240,30 +264,6 @@
             "name": "probe"
         },
         {
-            "type": "pwmgen",
-            "pins": {
-                "pwm": {
-                    "pin": "china-bob5x0:PWM:analog"
-                }
-            },
-            "uid": "pwmgen0",
-            "pos": [
-                1140.0,
-                60.0
-            ],
-            "signals": {
-                "value": {
-                    "net": "spindle.0.speed-out",
-                    "setp": ""
-                },
-                "enable": {
-                    "net": "spindle.0.on",
-                    "setp": ""
-                }
-            },
-            "name": "spindle"
-        },
-        {
             "type": "gpioout",
             "pins": {
                 "bit": {
@@ -275,11 +275,19 @@
                 888.4073378558398,
                 32.95591545321585
             ]
+        },
+        {
+            "type": "parport",
+            "uid": "parport0",
+            "pos": [
+                524.6268656716419,
+                270.89552238805965
+            ]
         }
     ],
     "breakouts": [
         {
-            "slot": "Parport:PORT0",
+            "slot": "parport0:PORT0",
             "breakout": "china-bob5x",
             "name": "china-bob5x0",
             "pos": [

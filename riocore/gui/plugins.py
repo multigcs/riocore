@@ -654,6 +654,7 @@ class GuiPlugins:
                 "opt_inputs": 0,
                 "opt_outputs": 0,
                 "opt_inouts": 0,
+                "alls": 0,
             }
             for pin_name, pin_defaults in plugins.plugin_instances[0].PINDEFAULTS.items():
                 direction = pin_defaults["direction"]

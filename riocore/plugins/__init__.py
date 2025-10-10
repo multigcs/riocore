@@ -7,6 +7,7 @@ from riocore.modifiers import Modifiers
 class PluginBase:
     def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
         self.PINDEFAULTS = {}
+        self.GPIODEFAULTS = {}
         self.INTERFACE = {}
         self.SIGNALS = {}
         self.PREFIX = ""

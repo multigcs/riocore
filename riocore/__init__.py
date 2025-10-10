@@ -500,6 +500,7 @@ class Plugins:
 class Project:
     def __init__(self, configuration, output_path=None):
         plugins = Plugins()
+        self.pin_mapping = {}
         self.timestamp = 0
         self.timestamp_last = 0
         self.duration = 0
@@ -509,7 +510,12 @@ class Project:
         # expansion mapping after plugin load
         expansion_mapping = {}
         for plugin_instance in self.plugin_instances:
-            if plugin_instance.TYPE == "expansion":
+            if plugin_instance.TYPE == "base":
+                for gpio_pin, gpio_data in plugin_instance.GPIODEFAULTS.items():
+                    source = f"{plugin_instance.instances_name}:{gpio_pin}"
+                    self.pin_mapping[source] = gpio_data["pin"]
+
+            elif plugin_instance.TYPE == "expansion":
                 for exp_pin in plugin_instance.expansion_inputs():
                     source = f"{plugin_instance.instances_name}:{exp_pin}"
                     expansion_mapping[source] = exp_pin
@@ -523,6 +529,35 @@ class Project:
                 target_pin = expansion_mapping.get(source_pin)
                 if target_pin:
                     plugin_instance.plugin_setup["pins"][pin]["pin"] = target_pin
+
+        # resolve all mappings
+        for _tn in range(5):
+            unmapped = ""
+            for breakout_data in self.config["jdata"].get("breakouts", []):
+                breakout = breakout_data.get("breakout")
+                bslot_name = breakout_data.get("slot")
+                breakout_name = breakout_data.get("name")
+                breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
+                breakoutJsonStr = open(breakout_path, "r").read()
+                breakout_defaults = json.loads(breakoutJsonStr)
+                for slot in breakout_defaults["slots"]:
+                    slot_name = slot["name"]
+                    for pin_name, pin_data in slot["pins"].items():
+                        target = f"{bslot_name}:{pin_data['pin']}"
+                        if target in self.pin_mapping:
+                            self.pin_mapping[f"{breakout_name}:{slot_name}:{pin_name}"] = self.pin_mapping[target]
+                        else:
+                            unmapped = target
+            if unmapped == "":
+                break
+        if unmapped:
+            print(f"ERROR: unmapped ports: {unmapped}")
+
+        # update plugin pins
+        for plugin in self.config["plugins"]:
+            for pin_name, pin_data in plugin.get("pins", {}).items():
+                if "pin" in pin_data and pin_data["pin"] in self.pin_mapping:
+                    pin_data["pin"] = self.pin_mapping[pin_data["pin"]]
 
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
@@ -651,7 +686,9 @@ class Project:
             project["json_path"] = os.path.dirname(configuration)
 
         project["plugins"] = copy.deepcopy(project["jdata"].get("plugins", []))
-        project["board_data"] = {}
+        project["board_data"] = {
+            "name": "UNKNOWN",
+        }
 
         # loading board data
         board = project["jdata"].get("boardcfg")
@@ -666,11 +703,10 @@ class Project:
             for key, value in project["board_data"].items():
                 if key not in project["jdata"]:
                     project["jdata"][key] = value
+            if "flashcmd" in project["jdata"]:
+                project["flashcmd"] = project["jdata"]["flashcmd"]
 
-        if "flashcmd" in project["jdata"]:
-            project["flashcmd"] = project["jdata"]["flashcmd"]
-
-        pin_mapping = {}
+        self.pin_mapping = {}
 
         # loading modules
         project["modules"] = {}
@@ -688,8 +724,8 @@ class Project:
             for spin, spin_data in spins.items():
                 if isinstance(spin_data, str):
                     spin_data = {"pin": spin_data}
-                pin_mapping[f"{slotname}:{spin}"] = spin_data["pin"]
-                pin_mapping[f"{bname}:{slotname}:{spin}"] = spin_data["pin"]
+                self.pin_mapping[f"{slotname}:{spin}"] = spin_data["pin"]
+                self.pin_mapping[f"{bname}:{slotname}:{spin}"] = spin_data["pin"]
 
             modules = []
             # check old config style
@@ -745,38 +781,8 @@ class Project:
                     print(f"ERROR: module {module} not found")
                     exit(1)
 
-        # resolve all mappings
-        for _tn in range(5):
-            unmapped = ""
-            for breakout_data in project["jdata"].get("breakouts", []):
-                breakout = breakout_data.get("breakout")
-                bslot_name = breakout_data.get("slot")
-                breakout_name = breakout_data.get("name")
-                breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
-                breakoutJsonStr = open(breakout_path, "r").read()
-                breakout_defaults = json.loads(breakoutJsonStr)
-                for slot in breakout_defaults["slots"]:
-                    slot_name = slot["name"]
-                    for pin_name, pin_data in slot["pins"].items():
-                        target = f"{bslot_name}:{pin_data['pin']}"
-                        if target in pin_mapping:
-                            pin_mapping[f"{breakout_name}:{slot_name}:{pin_name}"] = pin_mapping[target]
-                        else:
-                            unmapped = target
-            if unmapped == "":
-                break
-
-        if unmapped:
-            print(f"ERROR: unmapped ports: {unmapped}")
-
-        # update plugin pins
-        for plugin in project["plugins"]:
-            for pin_name, pin_data in plugin.get("pins", {}).items():
-                if "pin" in pin_data and pin_data["pin"] in pin_mapping:
-                    pin_data["pin"] = pin_mapping[pin_data["pin"]]
-
         self.config = project
-        self.config["pin_mapping"] = pin_mapping
+        self.config["pin_mapping"] = self.pin_mapping
         self.config["board_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]

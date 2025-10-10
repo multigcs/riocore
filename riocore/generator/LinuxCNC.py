@@ -1661,6 +1661,11 @@ if __name__ == "__main__":
             self.halg.fmt_add_top("addf hal_gpio.write base-thread")
             self.halg.fmt_add_top("")
 
+        # update pins on base plugins
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.TYPE == "base":
+                plugin_instance.base_pins(self)
+
         # load gpio drivers (parport)
         if self.project.config["type"] == "parport":
             parports = []
@@ -1936,18 +1941,6 @@ if __name__ == "__main__":
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                if hasattr(plugin_instance, "hal"):
-                    plugin_instance.hal(self)
-                if plugin_instance.NAME == "stepgen" and plugin_instance.plugin_setup.get("is_joint", False) is True:
-                    # ignore, is set by the axis/joint generator
-                    continue
-                jprefix = plugin_instance.PREFIX
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    if plugin_instance.NAME not in {"gpioout", "gpioin"}:
-                        self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
-
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
             self.halg.setp_add(f"{key}", value)
@@ -1963,6 +1956,21 @@ if __name__ == "__main__":
             ret = instances[0].loader(instances)
             if ret:
                 self.halg.fmt_add_top(ret)
+
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE == "gpio":
+                if hasattr(plugin_instance, "hal"):
+                    plugin_instance.hal(self)
+
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE == "gpio":
+                if plugin_instance.NAME == "stepgen" and plugin_instance.plugin_setup.get("is_joint", False) is True:
+                    # ignore, is set by the axis/joint generator
+                    continue
+                jprefix = plugin_instance.PREFIX
+                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                    if plugin_instance.NAME not in {"gpioout", "gpioin"}:
+                        self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
