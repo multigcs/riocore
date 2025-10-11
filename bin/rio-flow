@@ -3,6 +3,7 @@
 #
 
 import argparse
+import subprocess
 import copy
 import os
 import json
@@ -1619,6 +1620,23 @@ class Window(QMainWindow):
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
 
+    def generator_run(self):
+        bin_path = os.path.dirname(__file__)
+        generator_path = os.path.join(bin_path, "rio-generator")
+        cmd = f"{generator_path} {self.config_file}"
+        riocore.log("")
+        riocore.log("--- running generator ---")
+        riocore.log(cmd)
+        riocore.log("-------------------------")
+        run = subprocess.run(f"{cmd} 2>&1", shell=True, close_fds=True, capture_output=True)
+        riocore.log(run.stdout.decode())
+        riocore.log("-------------------------")
+        if run.returncode == 0:
+            riocore.log("DONE")
+        else:
+            riocore.log(f"FAILED: {run.returncode}")
+        riocore.log("-------------------------")
+
     def runTimer(self):
         self.infobox.setPlainText(riocore.log_get())
 
@@ -1632,7 +1650,7 @@ class Window(QMainWindow):
     def toolbar(self):
         toolbar = QToolBar("Main ToolBar")
         self.addToolBar(toolbar)
-        toolbar.setIconSize(QSize(16, 16))
+        toolbar.setIconSize(QSize(32, 32))
 
         icon = self.style().standardIcon(QStyle.SP_DialogOpenButton)
         load_action = QAction(icon, "&Load", self)
@@ -1663,6 +1681,15 @@ class Window(QMainWindow):
         # load_action.setShortcut("Ctrl+Z")
         undo_action.triggered.connect(self.undo)
         toolbar.addAction(undo_action)
+
+        toolbar.addSeparator()
+
+        icon = self.style().standardIcon(QStyle.SP_MediaPlay)
+        run_action = QAction(icon, "&Generator", self)
+        run_action.setStatusTip("Generator")
+        run_action.setShortcut("F5")
+        run_action.triggered.connect(self.generator_run)
+        toolbar.addAction(run_action)
 
         toolbar.addSeparator()
 
