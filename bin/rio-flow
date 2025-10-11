@@ -1525,6 +1525,10 @@ class NodeScene(QGraphicsScene):
         add_grid.triggered.connect(self.parent.grid_align)
         menu.addAction(add_grid)
 
+        add_nesting = QAction("Nesting", None)
+        add_nesting.triggered.connect(self.parent.nesting)
+        menu.addAction(add_nesting)
+
         add_redraw = QAction("Redraw", None)
         add_redraw.triggered.connect(self.parent.redraw)
         menu.addAction(add_redraw)
@@ -1705,8 +1709,24 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
+        icon = self.style().standardIcon(QStyle.SP_FileDialogListView)
+        align_action = QAction(icon, "&Align (F7)", self)
+        align_action.setStatusTip("Align")
+        align_action.setShortcut("F7")
+        align_action.triggered.connect(self.grid_align)
+        toolbar.addAction(align_action)
+
+        icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+        nesting_action = QAction(icon, "&nesting (F8)", self)
+        nesting_action.setStatusTip("Nesting")
+        nesting_action.setShortcut("F8")
+        nesting_action.triggered.connect(self.nesting)
+        toolbar.addAction(nesting_action)
+
+        toolbar.addSeparator()
+
         icon = self.style().standardIcon(QStyle.SP_MediaPlay)
-        run_action = QAction(icon, "&Generator", self)
+        run_action = QAction(icon, "&Generator (F5)", self)
         run_action.setStatusTip("Generator")
         run_action.setShortcut("F5")
         run_action.triggered.connect(self.generator_run)
@@ -2164,7 +2184,6 @@ class Window(QMainWindow):
                 edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[color_n])
                 color_n += 1
                 self.scene.addItem(edge)
-
         ph = 1
         pv = 1
         zoom = 1.0
@@ -2178,13 +2197,52 @@ class Window(QMainWindow):
         self.view.verticalScrollBar().setSliderPosition(pv)
 
     def grid_align(self):
-        for item in self.scene.items():
+        items = self.scene.selectedItems()
+        if not items:
+            items = self.scene.items()
+        for item in items:
             if not isinstance(item, NodeEdge):
                 px = item.pos().x()
                 py = item.pos().y()
                 px = (px + grid_size / 2) // grid_size * grid_size
                 py = (py + grid_size / 2) // grid_size * grid_size
                 item.setPos(px, py)
+        self.snapshot()
+
+    def nesting(self):
+        items = {}
+        top = 999999999
+        min_x = 999999999
+        max_x = -999999999
+        for item in self.scene.selectedItems():
+            px = item.pos().x()
+            py = item.pos().y()
+            top = min(top, py)
+            min_x = min((max_x, px))
+            max_x = max(max_x, px)
+            if not isinstance(item, NodeEdge):
+                x_pos_list = []
+                y_pos_list = []
+                for edge_item in self.scene.items():
+                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item:
+                        pos = edge_item._source_node.port_pos(edge_item._source_port)
+                        x_pos_list.append(pos.x())
+                        y_pos_list.append(pos.y())
+                x_avg = sum(x_pos_list) / len(x_pos_list)
+                y_avg = sum(y_pos_list) / len(y_pos_list)
+                weight = y_avg * 100000 + x_avg
+                if weight not in items:
+                    items[weight] = []
+                items[weight].append(item)
+
+        left = min_x + (max_x - min_x) / 2
+        for key in sorted(items.keys()):
+            for item in items[key]:
+                left = (left + grid_size / 2) // grid_size * grid_size
+                top = (top + grid_size / 2) // grid_size * grid_size
+                item.setPos(left, top)
+                top += item.height + grid_size / 3 * 2
+
         self.snapshot()
 
     def insert_breakout(self, breakout_config, py=100):
