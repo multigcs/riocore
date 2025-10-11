@@ -22,6 +22,7 @@ class Plugin(PluginBase):
                 "options": [
                     "pcf8574",
                     "ads1115",
+                    "lm75",
                 ],
                 "description": "i2c device",
             },
@@ -55,6 +56,21 @@ class Plugin(PluginBase):
                 "IO:P2": {"pin": f"{self.instances_name}:2", "comment": "", "pos": [140, 296.0], "direction": "all"},
                 "IO:P1": {"pin": f"{self.instances_name}:1", "comment": "", "pos": [140, 320.0], "direction": "all"},
                 "IO:P0": {"pin": f"{self.instances_name}:0", "comment": "", "pos": [140, 344.0], "direction": "all"},
+            }
+        elif device == "lm75":
+            self.SIGNALS = {
+                "temp_c": {
+                    "direction": "input",
+                    "format": "0.2f",
+                    "unit": "°C",
+                    "pos": [145, 69],
+                },
+                "temp_f": {
+                    "direction": "input",
+                    "format": "0.2f",
+                    "unit": "°F",
+                    "pos": [145, 91],
+                },
             }
         elif device == "ads1115":
             self.SIGNALS = {}

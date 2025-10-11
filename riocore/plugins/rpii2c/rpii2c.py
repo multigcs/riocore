@@ -45,6 +45,9 @@ for expander in expanders:
             h.newpin(f"{instance}.p{pn:02d}-in-not", hal.HAL_BIT, hal.HAL_OUT)
             h.newpin(f"{instance}.p{pn:02d}-out", hal.HAL_BIT, hal.HAL_IN)
             h[f"{instance}.p{pn:02d}-out"] = True
+    elif device == "lm75":
+        h.newpin(f"{instance}.temp_c", hal.HAL_FLOAT, hal.HAL_OUT)
+        h.newpin(f"{instance}.temp_f", hal.HAL_FLOAT, hal.HAL_OUT)
     elif device == "ads1115":
         for an in range(4):
             h.newpin(f"{instance}.adc{an}", hal.HAL_FLOAT, hal.HAL_OUT)
@@ -53,6 +56,15 @@ h.ready()
 bus = smbus.SMBus(1)
 
 while True:
+    for expander in expanders:
+        instance, device, addr, invert_mask = expander
+        try:
+            if device == "lm75":
+                bus.write_byte_data(int(addr[2:], 16), 0x01, 0x00)
+
+        except Exception as error:
+            print(f"ERROR: expander {expander}: {error}")
+
     for expander in expanders:
         instance, device, addr, invert_mask = expander
         try:
@@ -80,6 +92,14 @@ while True:
                         value = not value
                     h[f"{instance}.p{pn:02d}-in"] = value
                     h[f"{instance}.p{pn:02d}-in-not"] = not value
+
+            elif device == "lm75":
+                data = bus.read_i2c_block_data(int(addr[2:], 16), 0x00, 2)
+                cTemp = (data[0] * 256 + (data[1] & 0x80)) / 128
+                if cTemp > 255:
+                    cTemp -= 512
+                h[f"{instance}.temp_c"] = cTemp * 0.5
+                h[f"{instance}.temp_f"] = cTemp * 1.8 + 32
 
             elif device == "ads1115":
                 for an in range(4):
