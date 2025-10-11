@@ -792,7 +792,8 @@ class PluginNode(MyNode):
     def __init__(self, scene, x, y, plugin_instance):
         super().__init__(scene, x, y)
         self.plugin_instance = plugin_instance
-        self.name = plugin_instance.title
+        self.title = plugin_instance.title
+        self.name = plugin_instance.instances_name
         self.pins = plugin_instance.PINDEFAULTS
         self.signals = plugin_instance.SIGNALS
         self.width = 200
@@ -908,7 +909,7 @@ class PluginNode(MyNode):
                     painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
                 painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
         else:
-            self.paintBg(painter, self.name, info=info)
+            self.paintBg(painter, self.title, info=info)
             painter.setPen(QPen(Qt.GlobalColor.black, 1))
             self.paintPorts(painter)
 

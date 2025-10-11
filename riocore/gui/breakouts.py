@@ -45,8 +45,9 @@ class GuiBreakouts:
         dialog_buttonBox.accepted.connect(dialog.accept)
 
         slots = []
-        for slot in self.parent.bnode.jdata["slots"]:
-            slots.append(slot["name"])
+        if self.parent.bnode:
+            for slot in self.parent.bnode.jdata["slots"]:
+                slots.append(slot["name"])
 
         dialog.layout.addWidget(QLabel("Name:"))
         dialog.layout.addWidget(self.parent.edit_item(breakout_setup, "name", {"type": str}, cb=None))

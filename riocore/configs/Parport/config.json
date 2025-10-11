@@ -280,15 +280,16 @@
             "type": "parport",
             "uid": "parport0",
             "pos": [
-                524.6268656716419,
-                270.89552238805965
+                523.8805970149256,
+                270.8955223880596
             ],
-            "rotate": 0
+            "rotate": 0,
+            "name": "pport"
         }
     ],
     "breakouts": [
         {
-            "slot": "parport0:PORT0",
+            "slot": "parport0:DB25",
             "breakout": "china-bob5x",
             "name": "china-bob5x0",
             "pos": [

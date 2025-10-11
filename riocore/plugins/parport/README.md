@@ -2,11 +2,11 @@
 
 <img align="right" width="320" src="image.png">
 
-**parport**
+**parallel port**
 
-parport
+PC parallel port used as gpio
 
-Keywords: parport
+Keywords: parport gpio
 
 ## Pins:
 *FPGA-pins*

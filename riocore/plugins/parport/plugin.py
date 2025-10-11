@@ -5,9 +5,9 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "parport"
         self.COMPONENT = "parport"
-        self.INFO = "parport"
-        self.DESCRIPTION = "parport"
-        self.KEYWORDS = "parport"
+        self.INFO = "parallel port"
+        self.DESCRIPTION = "PC parallel port used as gpio"
+        self.KEYWORDS = "parport gpio"
         self.TYPE = "base"
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
@@ -28,23 +28,23 @@ class Plugin(PluginBase):
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
         self.GPIODEFAULTS = {
-            "PORT0:P1": {"pin": f"{portaddr}:1", "comment": "in:out|out:out|x:in", "pos": [57, 88.0], "direction": "all"},
-            "PORT0:P2": {"pin": f"{portaddr}:2", "comment": "in:in|out:out|x:out", "pos": [57, 114.1], "direction": "all"},
-            "PORT0:P3": {"pin": f"{portaddr}:3", "comment": "in:in|out:out|x:out", "pos": [57, 140.2], "direction": "all"},
-            "PORT0:P4": {"pin": f"{portaddr}:4", "comment": "in:in|out:out|x:out", "pos": [57, 166.3], "direction": "all"},
-            "PORT0:P5": {"pin": f"{portaddr}:5", "comment": "in:in|out:out|x:out", "pos": [57, 192.4], "direction": "all"},
-            "PORT0:P6": {"pin": f"{portaddr}:6", "comment": "in:in|out:out|x:out", "pos": [57, 218.5], "direction": "all"},
-            "PORT0:P7": {"pin": f"{portaddr}:7", "comment": "in:in|out:out|x:out", "pos": [57, 244.60000000000002], "direction": "all"},
-            "PORT0:P8": {"pin": f"{portaddr}:8", "comment": "in:in|out:out|x:out", "pos": [57, 270.70000000000005], "direction": "all"},
-            "PORT0:P9": {"pin": f"{portaddr}:9", "comment": "in:in|out:out|x:out", "pos": [57, 296.8], "direction": "all"},
-            "PORT0:P10": {"pin": f"{portaddr}:10", "comment": "", "pos": [57, 322.9], "direction": "input"},
-            "PORT0:P11": {"pin": f"{portaddr}:11", "comment": "", "pos": [57, 349.0], "direction": "input"},
-            "PORT0:P12": {"pin": f"{portaddr}:12", "comment": "", "pos": [57, 375.1], "direction": "input"},
-            "PORT0:P13": {"pin": f"{portaddr}:13", "comment": "", "pos": [57, 401.20000000000005], "direction": "input"},
-            "PORT0:P14": {"pin": f"{portaddr}:14", "comment": "in:out|out:out|x:in", "pos": [83.1, 101.05], "direction": "all"},
-            "PORT0:P15": {"pin": f"{portaddr}:15", "comment": "", "pos": [83.1, 127.15000000000002], "direction": "input"},
-            "PORT0:P16": {"pin": f"{portaddr}:16", "comment": "in:out|out:out|x:in", "pos": [83.1, 153.25], "direction": "all"},
-            "PORT0:P17": {"pin": f"{portaddr}:17", "comment": "in:out|out:out|x:in", "pos": [83.1, 179.35000000000002], "direction": "all"},
+            "DB25:P1": {"pin": f"{portaddr}:1", "comment": "in:out|out:out|x:in", "pos": [57, 88.0], "direction": "all"},
+            "DB25:P2": {"pin": f"{portaddr}:2", "comment": "in:in|out:out|x:out", "pos": [57, 114.1], "direction": "all"},
+            "DB25:P3": {"pin": f"{portaddr}:3", "comment": "in:in|out:out|x:out", "pos": [57, 140.2], "direction": "all"},
+            "DB25:P4": {"pin": f"{portaddr}:4", "comment": "in:in|out:out|x:out", "pos": [57, 166.3], "direction": "all"},
+            "DB25:P5": {"pin": f"{portaddr}:5", "comment": "in:in|out:out|x:out", "pos": [57, 192.4], "direction": "all"},
+            "DB25:P6": {"pin": f"{portaddr}:6", "comment": "in:in|out:out|x:out", "pos": [57, 218.5], "direction": "all"},
+            "DB25:P7": {"pin": f"{portaddr}:7", "comment": "in:in|out:out|x:out", "pos": [57, 244.60000000000002], "direction": "all"},
+            "DB25:P8": {"pin": f"{portaddr}:8", "comment": "in:in|out:out|x:out", "pos": [57, 270.70000000000005], "direction": "all"},
+            "DB25:P9": {"pin": f"{portaddr}:9", "comment": "in:in|out:out|x:out", "pos": [57, 296.8], "direction": "all"},
+            "DB25:P10": {"pin": f"{portaddr}:10", "comment": "", "pos": [57, 322.9], "direction": "input"},
+            "DB25:P11": {"pin": f"{portaddr}:11", "comment": "", "pos": [57, 349.0], "direction": "input"},
+            "DB25:P12": {"pin": f"{portaddr}:12", "comment": "", "pos": [57, 375.1], "direction": "input"},
+            "DB25:P13": {"pin": f"{portaddr}:13", "comment": "", "pos": [57, 401.20000000000005], "direction": "input"},
+            "DB25:P14": {"pin": f"{portaddr}:14", "comment": "in:out|out:out|x:in", "pos": [83.1, 101.05], "direction": "all"},
+            "DB25:P15": {"pin": f"{portaddr}:15", "comment": "", "pos": [83.1, 127.15000000000002], "direction": "input"},
+            "DB25:P16": {"pin": f"{portaddr}:16", "comment": "in:out|out:out|x:in", "pos": [83.1, 153.25], "direction": "all"},
+            "DB25:P17": {"pin": f"{portaddr}:17", "comment": "in:out|out:out|x:in", "pos": [83.1, 179.35000000000002], "direction": "all"},
         }
 
     def precheck(self, parent):

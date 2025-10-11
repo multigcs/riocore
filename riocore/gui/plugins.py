@@ -483,9 +483,15 @@ class GuiPlugins:
         label.setFont(myFont)
         options.addWidget(label)
 
+        title_row = QHBoxLayout()
+        title_row.addWidget(QLabel("Title"), stretch=1)
+        title_label = QLabel(plugin_instance.title)
+        title_row.addWidget(title_label, stretch=3)
+        options.addLayout(title_row)
+
         iname_row = QHBoxLayout()
         iname_row.addWidget(QLabel("Instance-Name"), stretch=1)
-        iname_label = QLabel(plugin_instance.title)
+        iname_label = QLabel(plugin_instance.instances_name)
         iname_row.addWidget(iname_label, stretch=3)
         options.addLayout(iname_row)
 
@@ -554,7 +560,7 @@ class GuiPlugins:
         if signal_selected is None and pin_selected is None:
             tab_widget.addTab(options_tab, "Plugin")
 
-        if not nopins:
+        if not nopins and plugin_instance.PINDEFAULTS:
             pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config, pin_selected=pin_selected)
             if signal_selected is None:
                 tab_widget.addTab(pins_tab, "Pins")
