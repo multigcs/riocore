@@ -5,14 +5,13 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rpigpio"
         self.COMPONENT = "rpigpio"
-        self.INFO = "rpigpio"
-        self.DESCRIPTION = "rpigpio"
-        self.KEYWORDS = "rpigpio"
+        self.INFO = "gpio support"
+        self.DESCRIPTION = "gpio support for Raspberry PI4/5 and maybe other boards"
+        self.KEYWORDS = "rpi gpio raspberry rpi4 rpi5"
         self.TYPE = "base"
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
         self.OPTIONS = {}
-
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
         self.GPIODEFAULTS = {

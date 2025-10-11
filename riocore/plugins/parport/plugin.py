@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "parport"
         self.COMPONENT = "parport"
-        self.INFO = "parallel port"
+        self.INFO = "gpio support over parallel port"
         self.DESCRIPTION = "PC parallel port used as gpio"
         self.KEYWORDS = "parport gpio"
         self.TYPE = "base"
