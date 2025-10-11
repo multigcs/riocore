@@ -981,6 +981,26 @@ class PluginNode(MyNode):
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
         QGraphicsItem.mouseReleaseEvent(self, event)
 
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if event.pos().x() > self.width / 2 or self.plugin_instance.TYPE == "base":
+                if self.scene.selection_source == (self, self.port_selected(event.pos())):
+                    self.scene.selection_source = None
+                else:
+                    self.scene.selection_source = (self, self.port_selected(event.pos()))
+            else:
+                if self.scene.selection_target == (self, self.port_selected(event.pos())):
+                    self.scene.selection_target = None
+                else:
+                    self.scene.selection_target = (self, self.port_selected(event.pos()))
+
+            if self.selected_port != self.port_selected(event.pos()):
+                self.selected_port = self.port_selected(event.pos())
+            else:
+                self.selected_port = None
+            self.update()
+            QGraphicsItem.mousePressEvent(self, event)
+
     def port_pos(self, port):
         if self.plugin_instance.TYPE == "base":
             pos = self.pos()

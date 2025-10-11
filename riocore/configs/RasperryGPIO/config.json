@@ -2,10 +2,10 @@
     "name": "RasperryGPIO",
     "flow": {
         "view": {
-            "scale": 1.16,
+            "scale": 1.83,
             "pos": [
-                -25,
-                -128
+                33,
+                623
             ]
         },
         "board": {
@@ -294,6 +294,15 @@
                 127.36368121118517
             ],
             "rotate": 180
+        },
+        {
+            "type": "parport",
+            "uid": "parport0",
+            "rotate": 0,
+            "pos": [
+                238.63199006071454,
+                649.2830079779978
+            ]
         }
     ],
     "breakouts": [
