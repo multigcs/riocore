@@ -932,7 +932,7 @@ class PluginNode(MyNode):
 
     def clone(self, xoff=0, yoff=0, redraw=True):
         plugin_config = copy.deepcopy(self.plugin_instance.plugin_setup)
-        plugin_config["name"] = f"{plugin_config.get('name', plugin_config['uid'])}-clone"
+        # plugin_config["name"] = f"{plugin_config.get('name', plugin_config['uid'])}-clone"
         plugin_config["uid"] = ""
         if xoff == 0 and yoff == 0:
             yoff = self.height + 5
@@ -1616,6 +1616,7 @@ class Window(QMainWindow):
         vboxMain.addWidget(self.toolbar())
         vboxMain.addWidget(hbox)
         self.info = QLabel("---")
+        self.info.setStyleSheet("QLabel{border: 1px solid; font-size:18px;}")
         vboxMain.addWidget(self.info)
 
         self.main = QWidget()
@@ -1648,7 +1649,7 @@ class Window(QMainWindow):
     def generator_run(self):
         bin_path = os.path.dirname(__file__)
         generator_path = os.path.join(bin_path, "rio-generator")
-        cmd = f"{generator_path} {self.config_file}"
+        cmd = f"{generator_path} -s {self.config_file}"
         riocore.log("")
         riocore.log("--- running generator ---")
         riocore.log(cmd)

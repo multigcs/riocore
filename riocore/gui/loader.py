@@ -55,12 +55,27 @@ class ConfigLoader:
                 exit(1)
             dialog.accept()
 
+        def select_empty():
+            self.parent.config = {
+                "name": "Empty",
+                "plugins": [],
+            }
+            dialog.accept()
+
         def select_file():
             self.load_config_from()
             dialog.accept()
 
         def select_exit():
             exit(1)
+
+        button_empty = QPushButton(" Empty Config")
+        button_empty.setIcon(self.parent.style().standardIcon(QStyle.SP_FileIcon))
+        button_empty.setIconSize(QSize(48, 48))
+        button_empty.setFixedSize(300, 100)
+        button_empty.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
+        button_empty.clicked.connect(select_empty)
+        dialog.layout.addWidget(button_empty)
 
         button_config = QPushButton(" Select Config")
         button_config.setIcon(self.parent.style().standardIcon(QStyle.SP_ComputerIcon))
