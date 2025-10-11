@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 #
-# loadusr -Wn rpii2c ./rpii2c.py 0x20
+# loadusr -Wn rpii2c ./rpii2c.py PREFIX TYPE ADDR CFG [PREFIX TYPE ADDR CFG [...]]
+# loadusr -Wn rpii2c ./rpii2c.py rpii2c0 pcf8574 0x20 00000000 rpii2c1 pcf8574 0x21 11111111 rpii2c2 ads1115 0x48 0
+#  pcf8574 CFG: 8bit invert-mask
+#  ads1115 CFG: unused
 #
+
 
 import sys
 import time
