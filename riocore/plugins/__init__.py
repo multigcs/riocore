@@ -9,12 +9,14 @@ class PluginBase:
         self.PINDEFAULTS = {}
         self.GPIODEFAULTS = {}
         self.INTERFACE = {}
+        self.IMAGE = ""
         self.SIGNALS = {}
         self.PREFIX = ""
         self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []
         self.VERILOGS_DATA = {}
+        self.FILES = []
         self.NAME = ""
         self.PLUGIN_TYPE = "gateware"
         self.TYPE = "io"

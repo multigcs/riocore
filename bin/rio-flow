@@ -812,7 +812,8 @@ class PluginNode(MyNode):
                 self.plugin_instance.plugin_setup["rotate"] = 0
             self.setZValue(1)
             plugin_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME)
-            image = os.path.join(plugin_path, "image.png")
+            imagefile = self.plugin_instance.IMAGE or "image.png"
+            image = os.path.join(plugin_path, imagefile)
 
             pixmap = QPixmap.fromImage(QImage(image))
             pixmap = pixmap.transformed(QTransform().rotate(plugin_instance.plugin_setup["rotate"]))
@@ -2443,7 +2444,14 @@ class Window(QMainWindow):
         return
 
     def add_modifier(self):
-        modifier_type = self.gui_modifiers.modifier_list_add()
+        modifier_type = ""
+        for item in self.scene.selectedItems():
+            if isinstance(item, NodeEdge):
+                if isinstance(item._target_node, PluginNode) and item._target_node.plugin_instance.PLUGIN_TYPE:
+                    print(item._target_node.plugin_instance.PLUGIN_TYPE)
+                    modifier_type = "invert"
+        if not modifier_type:
+            modifier_type = self.gui_modifiers.modifier_list_add()
         if not modifier_type:
             return
 

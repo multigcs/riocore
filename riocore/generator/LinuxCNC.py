@@ -1832,6 +1832,18 @@ if __name__ == "__main__":
             if net_source and net_target:
                 self.halg.net_add(f"({net_source})", net_target, net_name)
 
+        for plugin_instance in self.project.plugin_instances:
+            for name in plugin_instance.FILES:
+                plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+                source = os.path.join(plugin_path, name)
+                target = os.path.join(self.configuration_path, name)
+                if os.path.isfile(source):
+                    shutil.copy(source, target)
+                    if source.endswith((".py", ".sh")):
+                        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+                elif not os.path.isdir(target):
+                    shutil.copytree(source, target)
+
         for component_type, instances in components.items():
             ret = instances[0].loader(instances)
             if ret:
@@ -1882,7 +1894,6 @@ if __name__ == "__main__":
                         rprefix = "riov."
                     if plugin_instance.PLUGIN_TYPE == "gpio":
                         rprefix = ""
-
                     if scale and not virtual:
                         self.halg.setp_add(f"{rprefix}{halname}-scale", scale)
                     if offset and not virtual:

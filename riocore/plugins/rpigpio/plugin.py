@@ -15,32 +15,32 @@ class Plugin(PluginBase):
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
         self.GPIODEFAULTS = {
-            "GPIO:P3": {"pin": "GPIO2", "pos": [528, 107.3], "direction": "all"},
-            "GPIO:P5": {"pin": "GPIO3", "pos": [528, 132.6], "direction": "all"},
-            "GPIO:P7": {"pin": "GPIO4", "pos": [528, 157.9], "direction": "all"},
-            "GPIO:P8": {"pin": "GPIO14", "pos": [553, 157.89999999999998], "direction": "all"},
-            "GPIO:P10": {"pin": "GPIO15", "pos": [553, 183.2], "direction": "all"},
-            "GPIO:P11": {"pin": "GPIO17", "pos": [528, 208.5], "direction": "all"},
-            "GPIO:P12": {"pin": "GPIO18", "pos": [553, 208.5], "direction": "all"},
-            "GPIO:P13": {"pin": "GPIO27", "pos": [528, 233.8], "direction": "all"},
-            "GPIO:P15": {"pin": "GPIO22", "pos": [528, 259.1], "direction": "all"},
-            "GPIO:P16": {"pin": "GPIO23", "pos": [553, 259.09999999999997], "direction": "all"},
-            "GPIO:P18": {"pin": "GPIO24", "pos": [553, 284.40000000000003], "direction": "all"},
-            "GPIO:P19": {"pin": "GPIO10", "pos": [528, 309.70000000000005], "direction": "all"},
-            "GPIO:P21": {"pin": "GPIO9", "pos": [528, 335.0], "direction": "all"},
-            "GPIO:P22": {"pin": "GPIO25", "pos": [553, 335.0], "direction": "all"},
-            "GPIO:P23": {"pin": "GPIO11", "pos": [528, 360.3], "direction": "all"},
-            "GPIO:P24": {"pin": "GPIO8", "pos": [553, 360.3], "direction": "all"},
-            "GPIO:P26": {"pin": "GPIO7", "pos": [553, 385.6], "direction": "all"},
-            "GPIO:P29": {"pin": "GPIO5", "pos": [528, 436.2], "direction": "all"},
-            "GPIO:P31": {"pin": "GPIO6", "pos": [528, 461.5], "direction": "all"},
-            "GPIO:P32": {"pin": "GPIO12", "pos": [553, 461.5], "direction": "all"},
-            "GPIO:P33": {"pin": "GPIO13", "pos": [528, 486.8], "direction": "all"},
-            "GPIO:P35": {"pin": "GPIO19", "pos": [528, 512.1], "direction": "all"},
-            "GPIO:P36": {"pin": "GPIO16", "pos": [553, 512.1000000000001], "direction": "all"},
-            "GPIO:P37": {"pin": "GPIO26", "pos": [528, 537.4000000000001], "direction": "all"},
-            "GPIO:P38": {"pin": "GPIO20", "pos": [553, 537.4000000000001], "direction": "all"},
-            "GPIO:P40": {"pin": "GPIO21", "pos": [553, 562.7], "direction": "all"},
+            "GPIO:P3": {"pin": f"{self.instances_name}:GPIO2", "pos": [528, 107.3], "direction": "all"},
+            "GPIO:P5": {"pin": f"{self.instances_name}:GPIO3", "pos": [528, 132.6], "direction": "all"},
+            "GPIO:P7": {"pin": f"{self.instances_name}:GPIO4", "pos": [528, 157.9], "direction": "all"},
+            "GPIO:P8": {"pin": f"{self.instances_name}:GPIO14", "pos": [553, 157.89999999999998], "direction": "all"},
+            "GPIO:P10": {"pin": f"{self.instances_name}:GPIO15", "pos": [553, 183.2], "direction": "all"},
+            "GPIO:P11": {"pin": f"{self.instances_name}:GPIO17", "pos": [528, 208.5], "direction": "all"},
+            "GPIO:P12": {"pin": f"{self.instances_name}:GPIO18", "pos": [553, 208.5], "direction": "all"},
+            "GPIO:P13": {"pin": f"{self.instances_name}:GPIO27", "pos": [528, 233.8], "direction": "all"},
+            "GPIO:P15": {"pin": f"{self.instances_name}:GPIO22", "pos": [528, 259.1], "direction": "all"},
+            "GPIO:P16": {"pin": f"{self.instances_name}:GPIO23", "pos": [553, 259.09999999999997], "direction": "all"},
+            "GPIO:P18": {"pin": f"{self.instances_name}:GPIO24", "pos": [553, 284.40000000000003], "direction": "all"},
+            "GPIO:P19": {"pin": f"{self.instances_name}:GPIO10", "pos": [528, 309.70000000000005], "direction": "all"},
+            "GPIO:P21": {"pin": f"{self.instances_name}:GPIO9", "pos": [528, 335.0], "direction": "all"},
+            "GPIO:P22": {"pin": f"{self.instances_name}:GPIO25", "pos": [553, 335.0], "direction": "all"},
+            "GPIO:P23": {"pin": f"{self.instances_name}:GPIO11", "pos": [528, 360.3], "direction": "all"},
+            "GPIO:P24": {"pin": f"{self.instances_name}:GPIO8", "pos": [553, 360.3], "direction": "all"},
+            "GPIO:P26": {"pin": f"{self.instances_name}:GPIO7", "pos": [553, 385.6], "direction": "all"},
+            "GPIO:P29": {"pin": f"{self.instances_name}:GPIO5", "pos": [528, 436.2], "direction": "all"},
+            "GPIO:P31": {"pin": f"{self.instances_name}:GPIO6", "pos": [528, 461.5], "direction": "all"},
+            "GPIO:P32": {"pin": f"{self.instances_name}:GPIO12", "pos": [553, 461.5], "direction": "all"},
+            "GPIO:P33": {"pin": f"{self.instances_name}:GPIO13", "pos": [528, 486.8], "direction": "all"},
+            "GPIO:P35": {"pin": f"{self.instances_name}:GPIO19", "pos": [528, 512.1], "direction": "all"},
+            "GPIO:P36": {"pin": f"{self.instances_name}:GPIO16", "pos": [553, 512.1000000000001], "direction": "all"},
+            "GPIO:P37": {"pin": f"{self.instances_name}:GPIO26", "pos": [528, 537.4000000000001], "direction": "all"},
+            "GPIO:P38": {"pin": f"{self.instances_name}:GPIO20", "pos": [553, 537.4000000000001], "direction": "all"},
+            "GPIO:P40": {"pin": f"{self.instances_name}:GPIO21", "pos": [553, 562.7], "direction": "all"},
         }
 
     def precheck(self, parent):
@@ -55,7 +55,13 @@ class Plugin(PluginBase):
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
                     direction = plugin_instance.PINDEFAULTS[name]["direction"]
                     reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
-                    pin = psetup["pin"]
+                    if ":" not in psetup["pin"]:
+                        continue
+                    prefix = psetup["pin"].split(":", 1)[0]
+                    pin = psetup["pin"].split(":", 1)[1]
+                    if self.instances_name != prefix:
+                        continue
+
                     invert = 0
                     for modifier in psetup.get("modifier", []):
                         if modifier["type"] == "invert":
@@ -73,7 +79,12 @@ class Plugin(PluginBase):
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
                     direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    pin = psetup["pin"]
+                    if ":" not in psetup["pin"]:
+                        continue
+                    prefix = psetup["pin"].split(":", 1)[0]
+                    pin = psetup["pin"].split(":", 1)[1]
+                    if self.instances_name != prefix:
+                        continue
                     if direction == "output":
                         psetup["pin"] = f"hal_gpio.{pin}-out"
                     elif direction == "input":
