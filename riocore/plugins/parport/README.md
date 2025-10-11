@@ -2,7 +2,7 @@
 
 <img align="right" width="320" src="image.png">
 
-**parallel port**
+**gpio support over parallel port**
 
 PC parallel port used as gpio
 

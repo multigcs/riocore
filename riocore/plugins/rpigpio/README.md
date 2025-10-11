@@ -2,11 +2,11 @@
 
 <img align="right" width="320" src="image.png">
 
-**rpigpio**
+**gpio support**
 
-rpigpio
+gpio support for Raspberry PI4/5 and maybe other boards
 
-Keywords: rpigpio
+Keywords: rpi gpio raspberry rpi4 rpi5
 
 ## Pins:
 *FPGA-pins*
