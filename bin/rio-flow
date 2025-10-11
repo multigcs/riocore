@@ -62,6 +62,7 @@ from riocore.gui.widgets import (
     edit_bool,
     edit_combobox,
     edit_avgfilter,
+    edit_multiline,
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -2544,8 +2545,11 @@ class Window(QMainWindow):
             var_setup = {}
         if help_text is None:
             help_text = var_setup.get("help_text", var_setup.get("description"))
+
         if var_setup["type"] == "select":
             return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
+        elif var_setup["type"] == "multiline":
+            return edit_multiline(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"), mul=111)
         elif var_setup["type"] is int:
             return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] is float:

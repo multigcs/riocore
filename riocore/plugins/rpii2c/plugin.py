@@ -1,4 +1,7 @@
+import re
 from riocore.plugins import PluginBase
+
+fmt_pattern = re.compile(r"\{(?P<val>[a-z0-9]*)[:a-z0-9\.]*\}")
 
 
 class Plugin(PluginBase):
@@ -23,6 +26,7 @@ class Plugin(PluginBase):
                     "pcf8574",
                     "ads1115",
                     "lm75",
+                    "hd44780",
                 ],
                 "description": "i2c device",
             },
@@ -72,6 +76,21 @@ class Plugin(PluginBase):
                     "pos": [145, 91],
                 },
             }
+        elif device == "hd44780":
+            self.OPTIONS["fmt"] = {
+                "default": "Value 1:   {value1:09.3f}\nValue 2:   {value2:09.3f}\nValue 3:   {value3:09.3f}\nval4:{v4:04.1f}  val5={v5:04.1f}",
+                "type": "multiline",
+            }
+            self.SIGNALS = {}
+            fmtstring = self.plugin_setup.get("fmt", self.option_default("fmt"))
+            names = fmt_pattern.findall(fmtstring)
+            if names is not None:
+                for val_n, name in enumerate(sorted(set(names))):
+                    self.SIGNALS[name] = {
+                        "direction": "output",
+                        "pos": [930, 135 + val_n * 24],
+                    }
+
         elif device == "ads1115":
             self.SIGNALS = {}
             for channel in range(4):
@@ -87,7 +106,8 @@ class Plugin(PluginBase):
             instance.PREFIX = f"rpii2c.{instance.instances_name}"
 
     def precheck(self, parent):
-        self.invert_mask = ""
+        device = self.plugin_setup.get("device", self.option_default("device"))
+        self.cfgstring = ""
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
@@ -103,11 +123,13 @@ class Plugin(PluginBase):
                         else:
                             print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
                     if invert:
-                        self.invert_mask += "1"
+                        self.cfgstring += "1"
                     else:
-                        self.invert_mask += "0"
-        if not self.invert_mask:
-            self.invert_mask = "00000000"
+                        self.cfgstring += "0"
+        if not self.cfgstring:
+            self.cfgstring = "00000000"
+        if device == "hd44780":
+            self.cfgstring = self.plugin_setup.get("fmt", self.option_default("fmt")).replace("\n", "|")
 
     def hal(self, parent):
         for plugin_instance in parent.project.plugin_instances:
@@ -132,8 +154,9 @@ class Plugin(PluginBase):
         for instance in instances:
             device = instance.plugin_setup.get("device", instance.option_default("device"))
             address = instance.plugin_setup.get("address", instance.option_default("address"))
-            args.append(f"{instance.instances_name} {device} {address} {instance.invert_mask}")
+            args.append(f'{instance.instances_name} {device} {address} "{instance.cfgstring}"')
         output.append("# load rpii2c")
-        output.append(f"loadusr -Wn rpii2c ./rpii2c.py {' '.join(args)}")
+        sep = " \\\n    "
+        output.append(f"loadusr -Wn rpii2c ./rpii2c.py \\\n    {sep.join(args)}")
         output.append("")
         return "\n".join(output)

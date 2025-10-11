@@ -15,8 +15,9 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
-    QLineEdit,
     QSpinBox,
+    QLineEdit,
+    QPlainTextEdit,
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -341,7 +342,7 @@ class edit_avgfilter(QSpinBox):
 class edit_text(QLineEdit):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
         super().__init__()
-        self.setMaxLength(50)
+        # self.setMaxLength(150)
         self.win = win
         self.cb = cb
         self.obj = obj
@@ -356,10 +357,6 @@ class edit_text(QLineEdit):
             self.setText(str(default))
         self.textChanged.connect(self.change)
 
-    # def mousePressEvent(self, QMouseEvent):
-    #    print("###")
-    #    self.clicked.emit()
-
     def change(self):
         if self.no_update:
             return
@@ -369,6 +366,36 @@ class edit_text(QLineEdit):
             del self.obj[self.key]
         if self.cb:
             self.cb(self.text())
+        else:
+            self.win.display()
+
+
+class edit_multiline(QPlainTextEdit):
+    def __init__(self, win, obj, key, cb=None, help_text=None, default=None, mul=0):
+        super().__init__()
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.no_update = False
+        if help_text:
+            self.setToolTip(help_text)
+        if key in obj:
+            self.setPlainText(str(obj[key]))
+        elif default is not None:
+            self.setPlainText(str(default))
+        self.textChanged.connect(self.change)
+
+    def change(self):
+        if self.no_update:
+            return
+        if self.toPlainText() != self.default:
+            self.obj[self.key] = self.toPlainText()
+        elif self.key in self.obj:
+            del self.obj[self.key]
+        if self.cb:
+            self.cb(self.toPlainText())
         else:
             self.win.display()
 

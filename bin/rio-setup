@@ -48,6 +48,7 @@ from riocore.gui.widgets import (
     edit_bool,
     edit_combobox,
     edit_avgfilter,
+    edit_multiline,
     STYLESHEET,
     STYLESHEET_CHECKBOX_GREEN_RED,
     STYLESHEET_BUTTON,
@@ -852,6 +853,8 @@ class WinForm(QWidget):
             help_text = var_setup.get("help_text", var_setup.get("description"))
         if var_setup["type"] == "select":
             return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
+        elif var_setup["type"] == "multiline":
+            return edit_multiline(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] is int:
             return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"))
         elif var_setup["type"] is float:
@@ -1306,7 +1309,7 @@ class WinForm(QWidget):
 
         if self.board:
             self.load_tree_modules(self.model, expand=expand)
-            self.load_tree_plugins(self.model, expand=expand)
+        self.load_tree_plugins(self.model, expand=expand)
 
         self.treeview.header().resizeSection(0, 300)
         self.treeview.header().resizeSection(1, 200)
