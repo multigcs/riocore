@@ -515,8 +515,8 @@ class GuiPlugins:
 
         if plugin_instance.PLUGIN_CONFIG:
             button_config = QPushButton("config")
-            cb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
-            button_config.clicked.connect(cb)
+            bcb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
+            button_config.clicked.connect(bcb)
             button_config.setMaximumSize(button_config.sizeHint())
             options.addWidget(button_config)
 
@@ -1058,22 +1058,22 @@ class GuiPlugins:
         # buttons_layout.addWidget(ilabel)
 
         button_edit = QPushButton("edit")
-        cb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
-        button_edit.clicked.connect(cb)
+        bcb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
+        button_edit.clicked.connect(bcb)
         button_edit.setMaximumSize(button_edit.sizeHint())
         buttons_layout.addWidget(button_edit)
 
         if not nopins:
             button_delete = QPushButton("delete")
-            cb = partial(self.del_plugin, plugin_instance)
-            button_delete.clicked.connect(cb)
+            bcb = partial(self.del_plugin, plugin_instance)
+            button_delete.clicked.connect(bcb)
             button_delete.setMaximumSize(button_delete.sizeHint())
             buttons_layout.addWidget(button_delete)
 
         if plugin_instance.PLUGIN_CONFIG:
             button_config = QPushButton("config")
-            cb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
-            button_config.clicked.connect(cb)
+            bcb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
+            button_config.clicked.connect(bcb)
             button_config.setMaximumSize(button_config.sizeHint())
             buttons_layout.addWidget(button_config)
         buttons_layout.addStretch()

@@ -848,9 +848,6 @@ class PluginNode(MyNode):
                 self.ports_right[gpio_pin] = gpio_data
                 self.ports_right[gpio_pin]["pos"] = pos
 
-        if self.plugin_instance.TYPE != "base":
-            self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
-
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
             for device, ports in devices.items():
@@ -874,6 +871,9 @@ class PluginNode(MyNode):
                     psetup["sub"] = snode
                 py += snode.height + 5
         self.ports = self.ports_right
+
+        if self.plugin_instance.TYPE != "base":
+            self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
 
     def boundingRect(self):
         # if self.plugin_instance.TYPE == "base":
