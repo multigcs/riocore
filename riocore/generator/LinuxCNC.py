@@ -1262,7 +1262,8 @@ if __name__ == "__main__":
             initval = signal_config.get("default", 0)
             if not displayconfig and initval:
                 displayconfig["initval"] = initval
-
+            if not displayconfig.get("title"):
+                displayconfig["title"] = f"{plugin_instance.title}-{signal_name}"
             if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
                 return
             if function and not virtual:

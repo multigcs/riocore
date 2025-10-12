@@ -120,7 +120,6 @@ for config in configs:
                 name = parts[0]
                 vfmt = parts[1]
                 vtype = parts[2]
-                print(vfmt, vtype)
                 if vfmt == "1" and vtype == "d":
                     h.newpin(f"{instance}.{name}", hal.HAL_BIT, hal.HAL_IN)
                 elif vtype == "d":
