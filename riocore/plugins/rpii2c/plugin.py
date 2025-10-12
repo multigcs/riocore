@@ -84,7 +84,8 @@ class Plugin(PluginBase):
             }
         elif device == "hd44780":
             self.OPTIONS["fmt"] = {
-                "default": "Value 1:   {value1:09.3f}\nValue 2:   {value2:09.3f}\nValue 3:   {value3:09.3f}\nval4:{v4:04.1f}  val5={v5:04.1f}",
+                # "default": "Value 1:   {value1:09.3f}\nValue 2:   {value2:09.3f}\nValue 3:   {value3:09.3f}\nval4:{v4:04.1f}  val5={v5:04.1f}",
+                "default": "Value1:{value1:09.3f}\nValue2:{value2:09.3f}",
                 "type": "multiline",
             }
             self.SIGNALS = {}

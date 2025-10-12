@@ -477,18 +477,23 @@ class BoardNode(QGraphicsItem):
         self.setAcceptHoverEvents(True)
         board = board_setup["board"]
         image = os.path.join(riocore_path, "boards", board, "board.png")
-        pixmap = QPixmap.fromImage(QImage(image))
-        pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
-        pixmap_width = pixmap.width()
-        pixmap_height = pixmap.height()
-        self.name = board
-        self.width = pixmap_width // 2
-        self.height = pixmap_height // 2
-        self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        if os.path.exists(image):
+            pixmap = QPixmap.fromImage(QImage(image))
+            pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
+            pixmap_width = pixmap.width()
+            pixmap_height = pixmap.height()
+            self.name = board
+            self.width = pixmap_width // 2
+            self.height = pixmap_height // 2
+            self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        else:
+            self.pixmap = None
+            self.width = 400
+            self.height = 300
         self.ports = {}
         data = open(os.path.join(riocore_path, "boards", board, "board.json"), "r").read()
         self.jdata = json.loads(data)
-        for slot in self.jdata["slots"]:
+        for slot in self.jdata.get("slots", []):
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 if isinstance(pin_data, str):
@@ -549,11 +554,15 @@ class BoardNode(QGraphicsItem):
         pos_x = pos.x()
         pos_y = pos.y()
         self.board_setup["config"]["flow"]["board"]["pos"] = (pos_x, pos_y)
+        if self.pixmap:
+            painter.drawPixmap(0, 0, self.pixmap)
+        else:
+            painter.fillRect(self.boundingRect(), Qt.GlobalColor.gray)
+            painter.drawRect(self.boundingRect())
 
-        painter.drawRect(self.boundingRect())
-        painter.drawPixmap(0, 0, self.pixmap)
         for port in self.ports:
-            if not self.ports[port]["pos"]:
+            print(port, self.ports[port])
+            if not self.ports[port].get("pos"):
                 continue
             if ":" not in port:
                 continue
