@@ -67,6 +67,12 @@ class HalGraph:
                 source_value = parts.get("source_value", "")
                 source_group = ".".join(source_parts[:-1])
                 source_pin = source_parts[-1]
+                if source_group.startswith("halui."):
+                    source_group = ".".join(source_parts[0:1])
+                    source_pin = ".".join(source_parts[1:])
+                elif "vcp." in source_group or "qtdragon" in source_group:
+                    source_group = ".".join(source_parts[0:1])
+                    source_pin = ".".join(source_parts[1:])
 
                 if not source_group:
                     source_group = source_pin
@@ -89,6 +95,12 @@ class HalGraph:
                     target_parts = target.split(".")
                     target_group = ".".join(target_parts[:-1])
                     target_pin = target_parts[-1]
+                    if target_group.startswith("halui."):
+                        target_group = ".".join(target_parts[0:1])
+                        target_pin = ".".join(target_parts[1:])
+                    elif "vcp." in target_group or "qtdragon" in target_group:
+                        target_group = ".".join(target_parts[0:1])
+                        target_pin = ".".join(target_parts[1:])
                     target_name = f"{target_group}:{target_pin}"
 
                     if not target_group:
