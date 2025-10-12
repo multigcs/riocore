@@ -15,7 +15,7 @@ import time
 import hal
 import smbus
 
-fmt_pattern = re.compile(r"\{(?P<val>[a-z0-9]*)[:a-z0-9\.]*\}")
+fmt_pattern = re.compile(r"\{(?P<val>[a-z0-9_-]*):(?P<fmt>[0-9\.]*)(?P<type>[a-z])\}")
 
 
 class hd44780:
@@ -110,9 +110,23 @@ for config in configs:
     elif device == "hd44780":
         names = fmt_pattern.findall(cfgstring)
         if names is not None:
-            devices[instance]["keys"] = set(names)
-            for name in set(names):
-                h.newpin(f"{instance}.{name}", hal.HAL_FLOAT, hal.HAL_IN)
+            vdict = {}
+            keys = set()
+            for val_n, parts in enumerate(sorted(set(names))):
+                vdict[parts[0]] = parts
+                keys.add(parts[0])
+            devices[instance]["keys"] = keys
+            for parts in vdict.values():
+                name = parts[0]
+                vfmt = parts[1]
+                vtype = parts[2]
+                print(vfmt, vtype)
+                if vfmt == "1" and vtype == "d":
+                    h.newpin(f"{instance}.{name}", hal.HAL_BIT, hal.HAL_IN)
+                elif vtype == "d":
+                    h.newpin(f"{instance}.{name}", hal.HAL_U32, hal.HAL_IN)
+                else:
+                    h.newpin(f"{instance}.{name}", hal.HAL_FLOAT, hal.HAL_IN)
 
     elif device == "ads1115":
         for an in range(4):
@@ -167,6 +181,7 @@ while True:
                 values = {}
                 for key in devices[instance]["keys"]:
                     values[key] = h[f"{instance}.{key}"]
+                cfgstring = cfgstring.replace("\\n", "|")
                 for ln, formatstr in enumerate(cfgstring.split("|")):
                     text = formatstr.format(**values)
                     devices[instance]["lib"].display(0, ln, text)

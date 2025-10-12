@@ -1,7 +1,10 @@
 import re
 from riocore.plugins import PluginBase
 
-fmt_pattern = re.compile(r"\{(?P<val>[a-z0-9]*)[:a-z0-9\.]*\}")
+from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtGui import QFont
+
+fmt_pattern = re.compile(r"\{(?P<val>[a-z0-9_-]*):(?P<fmt>[0-9\.]*)(?P<type>[a-z])\}")
 
 
 class Plugin(PluginBase):
@@ -48,6 +51,9 @@ class Plugin(PluginBase):
                 "description": "slave address",
             },
         }
+        self.update()
+
+    def update(self):
         device = self.plugin_setup.get("device", self.option_default("device"))
         self.IMAGE = f"{device}.png"
         if device == "pcf8574":
@@ -85,11 +91,18 @@ class Plugin(PluginBase):
             fmtstring = self.plugin_setup.get("fmt", self.option_default("fmt"))
             names = fmt_pattern.findall(fmtstring)
             if names is not None:
-                for val_n, name in enumerate(sorted(set(names))):
+                for val_n, parts in enumerate(sorted(set(names))):
+                    name = parts[0]
+                    vfmt = parts[1]
+                    vtype = parts[2]
                     self.SIGNALS[name] = {
                         "direction": "output",
                         "pos": [930, 135 + val_n * 24],
                     }
+                    if vfmt == "1" and vtype == "d":
+                        self.SIGNALS[name]["bool"] = True
+                    elif vtype == "d":
+                        self.SIGNALS[name]["u32"] = True
 
         elif device == "ads1115":
             self.SIGNALS = {}
@@ -100,6 +113,33 @@ class Plugin(PluginBase):
                     "unit": "V",
                     "pos": [152, 30 + channel * 24],
                 }
+
+    def paint_overlay(self, painter):
+        device = self.plugin_setup.get("device", self.option_default("device"))
+        if device == "hd44780":
+            fmtstring = self.plugin_setup.get("fmt", self.option_default("fmt"))
+            fmtstring = fmtstring.replace("\\n", "|").replace("\n", "|")
+            names = fmt_pattern.findall(fmtstring)
+            values = {}
+            for val_n, parts in enumerate(sorted(set(names))):
+                name = parts[0]
+                vfmt = parts[1]
+                vtype = parts[2]
+                if vfmt == "1" and vtype == "d":
+                    values[name] = True
+                elif vtype == "d":
+                    values[name] = 0
+                else:
+                    values[name] = 0.0
+
+            painter.setFont(QFont("Monospace", 17))
+            for ln, formatstr in enumerate(fmtstring.split("|")):
+                text = formatstr.format(**values)
+                painter.drawText(
+                    QRectF(63.0, 80.0 + ln * 30, 400, 100),
+                    Qt.AlignmentFlag.AlignLeft,
+                    text,
+                )
 
     def update_prefixes(cls, instances):
         for instance in instances:

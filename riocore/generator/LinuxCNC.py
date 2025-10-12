@@ -1253,6 +1253,7 @@ if __name__ == "__main__":
             direction = signal_config["direction"]
             userconfig = signal_config.get("userconfig", {})
             boolean = signal_config.get("bool")
+            u32 = signal_config.get("u32")
             virtual = signal_config.get("virtual")
             mapping = signal_config.get("mapping")
             setp = userconfig.get("setp")
@@ -1323,10 +1324,12 @@ if __name__ == "__main__":
                     section = displayconfig.get("section", "inputs").lower()
                 elif direction == "output":
                     section = displayconfig.get("section", "outputs").lower()
-                if not boolean:
-                    dtype = displayconfig.get("type", "number")
-                else:
+                if boolean:
                     dtype = displayconfig.get("type", "led")
+                elif u32:
+                    dtype = displayconfig.get("type", "number_u32")
+                else:
+                    dtype = displayconfig.get("type", "number")
 
             elif virtual:
                 section = displayconfig.get("section", "virtual").lower()

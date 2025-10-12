@@ -37,10 +37,10 @@ class GuiPlugins:
     def __init__(self, parent):
         self.parent = parent
 
-    def edit_plugin_pins(self, plugin_instance, plugin_config, pin_selected=None):
+    def edit_plugin_pins(self, plugin_instance, plugin_config, pin_selected=None, cb=None):
         def update(arg):
-            pass
-            # print("#update", arg, plugin_config)
+            if cb:
+                cb(arg)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -164,10 +164,12 @@ class GuiPlugins:
 
         return pins_tab
 
-    def edit_plugin_joints(self, plugin_instance, plugin_config):
+    def edit_plugin_joints(self, plugin_instance, plugin_config, cb=None):
         def update(arg):
             if hasattr(self.parent, "draw_joint_home"):
                 svgWidget.load(self.parent.draw_joint_home(joints_setup, joint_options))
+            if cb:
+                cb(arg)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -280,10 +282,10 @@ class GuiPlugins:
 
         return joint_tabs
 
-    def edit_plugin_signals(self, plugin_instance, plugin_config, signal_selected=None):
+    def edit_plugin_signals(self, plugin_instance, plugin_config, signal_selected=None, cb=None):
         def update(arg):
-            pass
-            # print("#update", arg, plugin_config)
+            if cb:
+                cb(arg)
 
         def toggleGroup(ctrl):
             state = ctrl.isChecked()
@@ -466,10 +468,13 @@ class GuiPlugins:
         signals_tab.setWidget(signals_widget)
         return signals_tab
 
-    def edit_plugin_options(self, plugin_instance, plugin_config):
+    def edit_plugin_options(self, plugin_instance, plugin_config, cb=None):
         def update(arg):
             plugin_instance.update_title()
-            iname_label.setText(plugin_instance.title)
+            title_label.setText(plugin_instance.title)
+            iname_label.setText(plugin_instance.instances_name)
+            if cb:
+                cb(arg)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -530,7 +535,7 @@ class GuiPlugins:
         options_tab.setWidget(options_widget)
         return options_tab
 
-    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None):
+    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None, cb=None):
         plugin_config = plugin_instance.plugin_setup
         plugin_config_backup = copy.deepcopy(plugin_config)
 
@@ -556,24 +561,24 @@ class GuiPlugins:
             if "position" in plugin_instance.SIGNALS:
                 plugin_config["is_joint"] = True
 
-        options_tab = self.edit_plugin_options(plugin_instance, plugin_config)
+        options_tab = self.edit_plugin_options(plugin_instance, plugin_config, cb=cb)
         if signal_selected is None and pin_selected is None:
             tab_widget.addTab(options_tab, "Plugin")
 
         if not nopins and plugin_instance.PINDEFAULTS:
-            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config, pin_selected=pin_selected)
+            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config, pin_selected=pin_selected, cb=cb)
             if signal_selected is None:
                 tab_widget.addTab(pins_tab, "Pins")
                 if is_new:
                     tab_widget.setCurrentWidget(pins_tab)
 
         if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
-            joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
+            joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config, cb=cb)
             if pin_selected is None:
                 tab_widget.addTab(joint_tab, "Joint")
         if plugin_instance.TYPE != "interface":
             if plugin_instance.SIGNALS:
-                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config, signal_selected=signal_selected)
+                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config, signal_selected=signal_selected, cb=cb)
                 if pin_selected is None:
                     tab_widget.addTab(signals_tab, "Signals")
                     if signal_selected is not None:

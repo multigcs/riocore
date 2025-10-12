@@ -4,7 +4,7 @@ import riocore
 
 from PyQt5 import QtGui, QtSvg
 from PyQt5.QtCore import QRect, Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QStandardItem, QPixmap
+from PyQt5.QtGui import QStandardItem, QPixmap, QFont
 from PyQt5.QtWidgets import (
     QVBoxLayout,
     QFileDialog,
@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QSpinBox,
     QLineEdit,
-    QPlainTextEdit,
+    QTextEdit,
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -370,9 +370,11 @@ class edit_text(QLineEdit):
             self.win.display()
 
 
-class edit_multiline(QPlainTextEdit):
+class edit_multiline(QTextEdit):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None, mul=0):
         super().__init__()
+        self.setFont(QFont("Monospace"))
+        self.setLineWrapMode(QTextEdit.NoWrap)
         self.win = win
         self.cb = cb
         self.obj = obj
@@ -382,9 +384,9 @@ class edit_multiline(QPlainTextEdit):
         if help_text:
             self.setToolTip(help_text)
         if key in obj:
-            self.setPlainText(str(obj[key]))
+            self.setText(str(obj[key]))
         elif default is not None:
-            self.setPlainText(str(default))
+            self.setText(str(default))
         self.textChanged.connect(self.change)
 
     def change(self):
