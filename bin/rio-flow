@@ -481,7 +481,8 @@ class BoardNode(QGraphicsItem):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.setAcceptHoverEvents(True)
         board = board_setup["board"]
-        image = os.path.join(riocore_path, "boards", board, "board.png")
+        image = os.path.join(os.path.dirname(self.board_setup["path"]), "board.png")
+        print(image)
         if os.path.exists(image):
             pixmap = QPixmap.fromImage(QImage(image))
             pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
@@ -496,7 +497,7 @@ class BoardNode(QGraphicsItem):
             self.width = grid(400)
             self.height = grid(300)
         self.ports = {}
-        data = open(os.path.join(riocore_path, "boards", board, "board.json"), "r").read()
+        data = open(self.board_setup["path"], "r").read()
         self.jdata = json.loads(data)
         for slot in self.jdata.get("slots", []):
             slot_name = slot["name"]
@@ -1320,8 +1321,6 @@ class NodeViewer(QGraphicsView):
         self.scene.insert_position = None
 
     def save_png(self, filename):
-        w = self.width()
-        h = self.height()
         pixmap = self.grab(QRect(QPoint(0, 0), QSize(-1, -1)))
         pixmap.save(filename, "PNG", -1)
 
@@ -1658,10 +1657,10 @@ class Window(QMainWindow):
 
         vboxMain = QVBoxLayout()
         vboxMain.addWidget(self.toolbar())
-        vboxMain.addWidget(hbox)
+        vboxMain.addWidget(hbox, stretch=1)
         self.info = QLabel("---")
-        self.info.setStyleSheet("QLabel{border: 1px solid; font-size:18px;}")
-        vboxMain.addWidget(self.info)
+        self.info.setStyleSheet("QLabel{font-size:24px;}")
+        vboxMain.addWidget(self.info, stretch=0)
 
         self.main = QWidget()
         self.setCentralWidget(self.main)
@@ -2179,8 +2178,10 @@ class Window(QMainWindow):
             if "rotate" not in self.config["flow"]["board"]:
                 self.config["flow"]["board"]["rotate"] = 0
             self.bnode = None
-            board_setup = {"board": boardcfg, "config": self.config}
-            if os.path.exists(os.path.join(riocore_path, "boards", boardcfg, "board.json")):
+
+            boardpath = self.get_boardpath(boardcfg)
+            board_setup = {"board": boardcfg, "config": self.config, "path": boardpath}
+            if os.path.exists(boardpath):
                 px = self.config["flow"]["board"]["pos"][0]
                 py = self.config["flow"]["board"]["pos"][1]
                 self.bnode = BoardNode(self.scene, px, py, board_setup)
