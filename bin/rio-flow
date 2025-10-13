@@ -11,7 +11,7 @@ import sys
 from math import floor, ceil
 from functools import partial
 
-from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QLineF, QSize, QTimer
+from PyQt5.QtCore import Qt, QPoint, QPointF, QLineF, QRectF, QRect, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
     QSplitter,
@@ -1319,6 +1319,12 @@ class NodeViewer(QGraphicsView):
         self.mouse_selection_end = None
         self.scene.insert_position = None
 
+    def save_png(self, filename):
+        w = self.width()
+        h = self.height()
+        pixmap = self.grab(QRect(QPoint(0, 0), QSize(-1, -1)))
+        pixmap.save(filename, "PNG", -1)
+
     def getZoom(self):
         transform = self.transform()
         return transform.m11()
@@ -1686,6 +1692,11 @@ class Window(QMainWindow):
 
         self.fit_view()
         self.snapshot()
+
+        if self.args.png:
+            print(f"saving view to png file: {self.args.png}")
+            self.view.save_png(self.args.png)
+            exit(0)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
@@ -2780,6 +2791,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     parser = argparse.ArgumentParser()
     parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
+    parser.add_argument("-p", "--png", help="save view to png", type=str, default=None)
     args = parser.parse_args()
 
     Window(args)
