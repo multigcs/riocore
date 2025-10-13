@@ -70,6 +70,7 @@ riocore_path = os.path.dirname(riocore.__file__)
 grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)
+max_size = 99999
 cn = 7
 colors = []
 for o in range(0, 10):
@@ -2273,9 +2274,9 @@ class Window(QMainWindow):
             return self.nesting_all()
 
         items = {}
-        top = 999999999
-        min_x = 999999999
-        max_x = -999999999
+        top = max_size
+        min_x = max_size
+        max_x = -max_size
         for item in self.scene.selectedItems():
             px = item.pos().x()
             py = item.pos().y()
@@ -2311,8 +2312,8 @@ class Window(QMainWindow):
         left = 0.0
         for group in (BoardNode, "base", BreakoutNode, ModifierNode, PluginNode, SubNode, HalNode):
             items = {}
-            top = 999999999
-            max_x = -999999999
+            top = max_size
+            max_x = -max_size
             for item in self.scene.items():
                 if isinstance(item, NodeEdge):
                     continue
@@ -2374,10 +2375,10 @@ class Window(QMainWindow):
         self.fit_view()
 
     def fit_view(self):
-        min_x = 9999999999
-        min_y = 9999999999
-        max_x = -9999999999
-        max_y = -9999999999
+        min_x = max_size
+        min_y = max_size
+        max_x = -max_size
+        max_y = -max_size
         for item in self.scene.items():
             if isinstance(item, NodeEdge):
                 continue
@@ -2388,6 +2389,11 @@ class Window(QMainWindow):
             max_x = max(max_x, px + item.width)
             max_y = max(max_y, py + item.height)
         # calc scale and offsets
+        if min_x == max_size:
+            min_x = 0
+            max_x = 800
+            min_y = 0
+            max_y = 800
         w = max_x - min_x
         h = max_y - min_y
         vw = self.view.width()
