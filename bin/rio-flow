@@ -67,6 +67,7 @@ from riocore.gui.widgets import (
 
 riocore_path = os.path.dirname(riocore.__file__)
 
+grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)
 cn = 7
@@ -208,7 +209,7 @@ NodeEdge = NodeEdgePath
 
 
 def grid(pos):
-    return (pos + grid_size / 3 * 2) // grid_size * grid_size
+    return (pos + grid_size / 2) // grid_size * grid_size
 
 
 class AreaMarker(QGraphicsItem):
@@ -246,9 +247,9 @@ class MyNode(QGraphicsItem):
     port_toff_x = 2
     port_toff_y = 2
     port_boarder = 2
-    port_top = 25
+    port_top = grid(25)
     port_bottom = 5
-    port_diff = 15
+    port_diff = grid(15)
 
     def __init__(self, scene, x=None, y=None):
         super().__init__()
@@ -1233,7 +1234,7 @@ class HalNode(MyNode):
 
 
 class ModifierNode(MyNode):
-    port_top = 13
+    port_top = grid(13)
     port_bottom = 2
 
     def __init__(self, scene, x, y, modifier):
@@ -1350,9 +1351,16 @@ class NodeViewer(QGraphicsView):
             self.scene.addItem(self.selection_marker)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        # auto grid
+        if grid_auto:
+            for item in self.scene.selectedItems():
+                pos = item.pos()
+                item.setPos(grid(pos.x()), grid(pos.y()))
+
         for item in self.scene.items():
             if isinstance(item, AreaMarker):
                 self.scene.removeItem(item)
+                self.scene.update()
         self.selection_marker = None
         self.mouse_selection_start = None
         self.mouse_selection_end = None
@@ -1671,6 +1679,12 @@ class Window(QMainWindow):
         else:
             riocore.log(f"ERROR: file not found: {self.config_file}")
             exit(1)
+
+        if self.config_file:
+            self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
+        else:
+            self.setWindowTitle("RIO - Flow-GUI")
+
         self.fit_view()
         self.snapshot()
 
@@ -1932,6 +1946,9 @@ class Window(QMainWindow):
             open(self.config_file, "w").write(jdata)
             self.config_original = self.clean_config(self.config)
             self.cfg_check()
+            self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
+        else:
+            self.setWindowTitle("RIO - Flow-GUI")
 
     def update_halpins_from_edges(self):
         for item in self.scene.items():
@@ -2247,9 +2264,7 @@ class Window(QMainWindow):
             if not isinstance(item, NodeEdge):
                 px = item.pos().x()
                 py = item.pos().y()
-                px = (px + grid_size / 2) // grid_size * grid_size
-                py = (py + grid_size / 2) // grid_size * grid_size
-                item.setPos(px, py)
+                item.setPos(grid(px), grid(py))
         self.snapshot()
 
     def nesting(self):
