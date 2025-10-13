@@ -207,6 +207,10 @@ class NodeEdgeLine(QGraphicsLineItem):
 NodeEdge = NodeEdgePath
 
 
+def grid(pos):
+    return (pos + grid_size / 3 * 2) // grid_size * grid_size
+
+
 class AreaMarker(QGraphicsItem):
     def __init__(self, scene, x, y):
         super().__init__()
@@ -245,24 +249,23 @@ class MyNode(QGraphicsItem):
     port_top = 25
     port_bottom = 5
     port_diff = 15
-    width = 180
-    height = 50
 
     def __init__(self, scene, x=None, y=None):
         super().__init__()
         if x is not None and y is not None:
             self.setPos(x, y)
+        self.width = grid(180)
+        self.height = grid(50)
         self.scene = scene
         self.ports_left = {}
         self.ports_right = {}
         self.selected_port = None
-        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
         self.setAcceptHoverEvents(True)
         self.hover = False
 
     def boundingRect(self):
         if not hasattr(self, "pixmap"):
-            self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+            self.height = grid(self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom)
         return QRectF(0, 0, self.width, self.height)
 
     def port_info(self, port):
@@ -324,7 +327,7 @@ class MyNode(QGraphicsItem):
 
     def paintPorts(self, painter):
         if not hasattr(self, "pixmap"):
-            self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+            self.height = grid(self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom)
         py = self.port_top
         for port, data in self.ports_left.items():
             direction = data.get("direction") or "all"
@@ -483,13 +486,13 @@ class BoardNode(QGraphicsItem):
             pixmap_width = pixmap.width()
             pixmap_height = pixmap.height()
             self.name = board
-            self.width = pixmap_width // 2
-            self.height = pixmap_height // 2
-            self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.width = grid(pixmap_width // 2)
+            self.height = grid(pixmap_height // 2)
+            self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         else:
             self.pixmap = None
-            self.width = 400
-            self.height = 300
+            self.width = grid(400)
+            self.height = grid(300)
         self.ports = {}
         data = open(os.path.join(riocore_path, "boards", board, "board.json"), "r").read()
         self.jdata = json.loads(data)
@@ -627,9 +630,9 @@ class BreakoutNode(QGraphicsItem):
         pixmap = pixmap.transformed(QTransform().rotate(self.breakout_setup["rotate"]))
         pixmap_width = pixmap.width()
         pixmap_height = pixmap.height()
-        self.width = pixmap_width // 2
-        self.height = pixmap_height // 2
-        self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.width = grid(pixmap_width // 2)
+        self.height = grid(pixmap_height // 2)
+        self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         self.ports = {}
         for pin_name, pin_data in self.jdata["main"].items():
@@ -831,9 +834,9 @@ class PluginNode(MyNode):
             pixmap = pixmap.transformed(QTransform().rotate(self.plugin_instance.plugin_setup["rotate"]))
             pixmap_width = pixmap.width()
             pixmap_height = pixmap.height()
-            self.width = pixmap_width // 2
-            self.height = pixmap_height // 2
-            self.pixmap = pixmap.scaled(self.width, self.height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.width = grid(pixmap_width // 2)
+            self.height = grid(pixmap_height // 2)
+            self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         if hasattr(self, "plugin_instance"):
             if self.plugin_instance.TYPE == "expansion":
@@ -881,7 +884,7 @@ class PluginNode(MyNode):
         self.ports = self.ports_right
 
         if self.plugin_instance.TYPE != "base":
-            self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+            self.height = grid(self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom)
 
     def boundingRect(self):
         # if self.plugin_instance.TYPE == "base":
@@ -1119,8 +1122,8 @@ class ModuleNode(MyNode):
         self.pins = {}
         self.port_positions = {}
         self.signals = {}
-        self.width = 250
-        self.height = 50
+        self.width = grid(250)
+        self.height = grid(50)
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -1180,7 +1183,7 @@ class ModuleNode(MyNode):
                 sph += self.port_diff
 
             py += max(pph, sph)
-            self.height = self.port_top + py + self.port_bottom
+            self.height = grid(self.port_top + py + self.port_bottom)
 
     def mouseReleaseEvent(self, event):
         self.update()
@@ -1204,10 +1207,10 @@ class HalNode(MyNode):
 
     def add_signal(self, pin, signal):
         self.ports_left[pin] = signal
-        self.height = self.port_top + len(self.ports_left) * self.port_diff + self.port_bottom
+        self.height = grid(self.port_top + len(self.ports_left) * self.port_diff + self.port_bottom)
 
     def paintPorts(self, painter):
-        self.height = self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom
+        self.height = grid(self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom)
         py = self.port_top
         for port, data in self.ports_left.items():
             title = data.get("target") or port
@@ -1237,8 +1240,8 @@ class ModifierNode(MyNode):
         super().__init__(scene, x, y)
         self.modifier = modifier
         self.name = modifier["type"]
-        self.width = 100
-        self.height = 20
+        self.width = grid(100)
+        self.height = grid(20)
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -1553,6 +1556,10 @@ class NodeScene(QGraphicsScene):
         add_nesting.triggered.connect(self.parent.nesting)
         menu.addAction(add_nesting)
 
+        add_nesting = QAction("Fit", None)
+        add_nesting.triggered.connect(self.parent.fit_view)
+        menu.addAction(add_nesting)
+
         add_redraw = QAction("Redraw", None)
         add_redraw.triggered.connect(self.parent.redraw)
         menu.addAction(add_redraw)
@@ -1664,6 +1671,7 @@ class Window(QMainWindow):
         else:
             riocore.log(f"ERROR: file not found: {self.config_file}")
             exit(1)
+        self.fit_view()
         self.snapshot()
 
         self.timer = QTimer()
@@ -1747,6 +1755,13 @@ class Window(QMainWindow):
         nesting_action.setShortcut("F8")
         nesting_action.triggered.connect(self.nesting)
         toolbar.addAction(nesting_action)
+
+        icon = self.style().standardIcon(QStyle.SP_TitleBarMaxButton)
+        fit_action = QAction(icon, "&fit (F9)", self)
+        fit_action.setStatusTip("Fit to view")
+        fit_action.setShortcut("F9")
+        fit_action.triggered.connect(self.fit_view)
+        toolbar.addAction(fit_action)
 
         toolbar.addSeparator()
 
@@ -1871,6 +1886,9 @@ class Window(QMainWindow):
             self.config["flow"]["view"] = {}
         if "hal" not in self.config["flow"]:
             self.config["flow"]["hal"] = {}
+
+        self.nesting_all()
+
         self.redraw()
         self.cfg_check()
 
@@ -2275,7 +2293,7 @@ class Window(QMainWindow):
         self.snapshot()
 
     def nesting_all(self):
-        gpx = 0.0
+        left = 0.0
         for group in (BoardNode, "base", BreakoutNode, ModifierNode, PluginNode, SubNode, HalNode):
             items = {}
             top = 999999999
@@ -2286,7 +2304,6 @@ class Window(QMainWindow):
                 if group == "base":
                     if not isinstance(item, PluginNode) or item.plugin_instance.TYPE != "base":
                         continue
-                    print(item, item.plugin_instance.TYPE, item.plugin_instance.NAME)
                 elif not isinstance(item, group):
                     continue
                 elif isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base":
@@ -2315,23 +2332,61 @@ class Window(QMainWindow):
                     items[weight] = []
                 items[weight].append(item)
 
-            left = gpx
-            top = 0.0
-            group_w = 0
+            # check sizes
+            group_h = 0.0
+            group_w = 0.0
             for key in sorted(items.keys()):
                 for item in items[key]:
-                    left = (left + grid_size / 2) // grid_size * grid_size
-                    top = (top + grid_size / 2) // grid_size * grid_size
-
                     group_w = max(group_w, item.width)
+                    group_h += item.height + grid_size
 
+            # center y
+            # top = grid(-group_h / 2)
+            top = 0.0
+
+            # set positions
+            for key in sorted(items.keys()):
+                for item in items[key]:
                     item.setPos(left, top)
-                    top += item.height + grid_size / 3 * 2
+                    top += item.height + grid_size
 
-            gpx += group_w + 10
+            if group_w:
+                left += grid(group_w)
+            elif group == ModifierNode:
+                left += grid(100)
+            left += grid(20)
 
-        self.scene.parent.config["flow"]["view"]["scale"] = 1.0
-        self.scene.parent.config["flow"]["view"]["pos"] = (-60, -50)
+        self.fit_view()
+
+    def fit_view(self):
+        min_x = 9999999999
+        min_y = 9999999999
+        max_x = -9999999999
+        max_y = -9999999999
+        for item in self.scene.items():
+            if isinstance(item, NodeEdge):
+                continue
+            px = item.pos().x()
+            py = item.pos().y()
+            min_x = min((min_x, px))
+            min_y = min((min_y, py))
+            max_x = max(max_x, px + item.width)
+            max_y = max(max_y, py + item.height)
+        # calc scale and offsets
+        w = max_x - min_x
+        h = max_y - min_y
+        vw = self.view.width()
+        vh = self.view.height()
+        offset = 100
+        scale = min((vw - offset) / w, (vh - offset) / h)
+        pos_x = int(min_x * scale) - offset // 2
+        pos_y = int(min_y * scale) - offset // 2
+        self.scene.parent.config["flow"]["view"]["scale"] = scale
+        self.scene.parent.config["flow"]["view"]["pos"] = (pos_x, pos_y)
+        self.view.setZoom(scale)
+        self.view.horizontalScrollBar().setSliderPosition(pos_x)
+        self.view.verticalScrollBar().setSliderPosition(pos_y)
+
         self.update()
 
     def insert_breakout(self, breakout_config, py=100):
