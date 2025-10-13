@@ -561,7 +561,6 @@ class BoardNode(QGraphicsItem):
             painter.drawRect(self.boundingRect())
 
         for port in self.ports:
-            print(port, self.ports[port])
             if not self.ports[port].get("pos"):
                 continue
             if ":" not in port:
@@ -1634,7 +1633,7 @@ class Window(QMainWindow):
 
         self.infobox = QPlainTextEdit(self)
         self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.infobox.setMinimumWidth(400)
+        self.infobox.setMinimumWidth(200)
         hbox.addWidget(self.infobox)
 
         vboxMain = QVBoxLayout()
@@ -1701,7 +1700,7 @@ class Window(QMainWindow):
     def toolbar(self):
         toolbar = QToolBar("Main ToolBar")
         self.addToolBar(toolbar)
-        toolbar.setIconSize(QSize(32, 32))
+        toolbar.setIconSize(QSize(16, 16))
 
         icon = self.style().standardIcon(QStyle.SP_DialogOpenButton)
         load_action = QAction(icon, "&Load", self)
@@ -2236,6 +2235,10 @@ class Window(QMainWindow):
         self.snapshot()
 
     def nesting(self):
+        items = self.scene.selectedItems()
+        if not items:
+            return self.nesting_all()
+
         items = {}
         top = 999999999
         min_x = 999999999
@@ -2270,6 +2273,66 @@ class Window(QMainWindow):
                 top += item.height + grid_size / 3 * 2
 
         self.snapshot()
+
+    def nesting_all(self):
+        gpx = 0.0
+        for group in (BoardNode, "base", BreakoutNode, ModifierNode, PluginNode, SubNode, HalNode):
+            items = {}
+            top = 999999999
+            max_x = -999999999
+            for item in self.scene.items():
+                if isinstance(item, NodeEdge):
+                    continue
+                if group == "base":
+                    if not isinstance(item, PluginNode) or item.plugin_instance.TYPE != "base":
+                        continue
+                    print(item, item.plugin_instance.TYPE, item.plugin_instance.NAME)
+                elif not isinstance(item, group):
+                    continue
+                elif isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base":
+                    continue
+
+                px = item.pos().x()
+                py = item.pos().y()
+                top = min(top, py)
+                max_x = max(max_x, px)
+
+                x_pos_list = []
+                y_pos_list = []
+                for edge_item in self.scene.items():
+                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item:
+                        pos = edge_item._source_node.port_pos(edge_item._source_port)
+                        x_pos_list.append(pos.x())
+                        y_pos_list.append(pos.y())
+                if x_pos_list:
+                    x_avg = sum(x_pos_list) / len(x_pos_list)
+                    y_avg = sum(y_pos_list) / len(y_pos_list)
+                else:
+                    x_avg = 0
+                    y_avg = 0
+                weight = y_avg * 100000 + x_avg
+                if weight not in items:
+                    items[weight] = []
+                items[weight].append(item)
+
+            left = gpx
+            top = 0.0
+            group_w = 0
+            for key in sorted(items.keys()):
+                for item in items[key]:
+                    left = (left + grid_size / 2) // grid_size * grid_size
+                    top = (top + grid_size / 2) // grid_size * grid_size
+
+                    group_w = max(group_w, item.width)
+
+                    item.setPos(left, top)
+                    top += item.height + grid_size / 3 * 2
+
+            gpx += group_w + 10
+
+        self.scene.parent.config["flow"]["view"]["scale"] = 1.0
+        self.scene.parent.config["flow"]["view"]["pos"] = (-60, -50)
+        self.update()
 
     def insert_breakout(self, breakout_config, py=100):
         if "pos" in breakout_config:
@@ -2532,7 +2595,6 @@ class Window(QMainWindow):
         for item in self.scene.selectedItems():
             if isinstance(item, NodeEdge):
                 if isinstance(item._target_node, PluginNode) and item._target_node.plugin_instance.PLUGIN_TYPE:
-                    print(item._target_node.plugin_instance.PLUGIN_TYPE)
                     modifier_type = "invert"
         if not modifier_type:
             modifier_type = self.gui_modifiers.modifier_list_add()
