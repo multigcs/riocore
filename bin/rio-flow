@@ -708,8 +708,6 @@ class BreakoutNode(QGraphicsItem):
         pos_x = pos.x()
         pos_y = pos.y()
         self.breakout_setup["pos"] = (pos_x, pos_y)
-
-        painter.drawRect(self.boundingRect())
         painter.drawPixmap(0, 0, self.pixmap)
         for port in self.ports:
             if not self.ports[port]["pos"]:
