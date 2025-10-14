@@ -1314,8 +1314,10 @@ class HalLogicNode(MyNode):
         super().__init__(scene, x, y)
         self.hal_config = hal_config
         self.type = hal_config["type"]
-        self.name = self.type
-        self.width = grid(100)
+        self.name = self.type.upper()
+        self.width = grid(150)
+        if self.type in {"and", "or", "xor", "nand", "nor"}:
+            self.width = grid(80)
         self.height = grid(20)
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
@@ -1326,17 +1328,17 @@ class HalLogicNode(MyNode):
         self.reload()
 
     def reload(self):
+        for signal_name, signal_data in self.hal_config.get("signals", {}).items():
+            net = signal_data.get("net")
+            if net:
+                if signal_name.startswith("in"):
+                    self.ports_left[signal_name] = {"title": signal_name, "type": ""}
+                else:
+                    self.ports_right[f"sig_{signal_name}"] = {"title": self.type, "type": "hallogic"}
         if self.type in {"and", "or", "xor", "nand", "nor"}:
-            for signal_name, signal_data in self.hal_config.get("signals", {}).items():
-                net = signal_data.get("net")
-                if net:
-                    if signal_name.startswith("in"):
-                        self.ports_left[signal_name] = {"title": signal_name, "type": ""}
-                    else:
-                        self.ports_right[f"sig_{signal_name}"] = {"title": self.type, "type": "hallogic"}
             self.ports_left["sig_inN"] = {"title": "inN", "type": "hallogic"}
-            if "sig_out" not in self.ports_right:
-                self.ports_right["sig_out"] = {"title": self.type, "type": "hallogic"}
+        if "sig_out" not in self.ports_right:
+            self.ports_right["sig_out"] = {"title": self.type, "type": "hallogic"}
 
     def paint(self, painter, option, widget):
         pos = self.pos()
@@ -1358,6 +1360,10 @@ class HalLogicNode(MyNode):
             symb = "~&"
         elif self.type == "nor":
             symb = "~|"
+        elif self.type == "delay":
+            painter.setFont(QFont(self.text_font, 16))
+            delay = self.hal_config.get("delay", 1.0)
+            symb = f"{delay}ms"
         painter.drawText(QRectF(0, self.border_size / 2, self.width, self.height - self.border_size), Qt.AlignmentFlag.AlignCenter, symb)
 
         painter.setPen(QPen(Qt.GlobalColor.black, 1))
@@ -2288,7 +2294,7 @@ class Window(QMainWindow):
 
         # loading hal-logics
         hnodes = {}
-        for hal_id, hal_config in enumerate(self.config.get("hal", [])):
+        for hal_id, hal_config in enumerate(self.config.get("halcomp", [])):
             hnodes[hal_id] = HalLogicNode(self.scene, 600, py, hal_config)
             pos = hal_config.get("pos")
             if pos:
@@ -2315,7 +2321,7 @@ class Window(QMainWindow):
                             "source": (hnodes[hal_id], signal_name),
                         }
 
-        for hal_id, hal_config in enumerate(self.config.get("hal", [])):
+        for hal_id, hal_config in enumerate(self.config.get("halcomp", [])):
             color_n = 0
             signals = hal_config.get("signals")
             if signals:
@@ -2333,8 +2339,8 @@ class Window(QMainWindow):
 
             py += 100
 
-        for key, value in self.halpins.items():
-            print(key, value)
+        # for key, value in self.halpins.items():
+        #     print(key, value)
 
         hnodes_y = 100
         hnodes = {}
