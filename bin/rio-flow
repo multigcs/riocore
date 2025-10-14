@@ -2519,7 +2519,7 @@ class Window(QMainWindow):
             if plugin_instance.SIGNALS and is_joint:
                 for signal_name, signal in plugin_instance.SIGNALS.items():
                     halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-                    if is_joint and signal_name in {"velocity", "position"}:
+                    if is_joint and signal_name in {"velocity", "position", "position-cmd", "position-fb", "position-scale"}:
                         if halname not in self.halpins:
                             self.halpins[halname] = {
                                 "type": "",
@@ -2647,7 +2647,7 @@ class Window(QMainWindow):
         if plugin_instance.SIGNALS and is_joint:
             for signal_name, signal in plugin_instance.SIGNALS.items():
                 halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-                if is_joint and signal_name in {"velocity", "position"}:
+                if is_joint and signal_name in {"velocity", "position", "position-cmd", "position-fb", "position-scale"}:
                     if halname not in self.halpins:
                         self.halpins[halname] = {
                             "type": "",
