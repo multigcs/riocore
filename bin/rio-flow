@@ -1306,6 +1306,64 @@ class ModifierNode(MyNode):
         return True
 
 
+class HalLogicNode(MyNode):
+    port_top = grid(25)
+    port_bottom = 2
+
+    def __init__(self, scene, x, y, hal_config):
+        super().__init__(scene, x, y)
+        self.hal_config = hal_config
+        self.type = hal_config["type"]
+        self.name = self.type
+        self.width = grid(100)
+        self.height = grid(20)
+        self.setZValue(9)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.selected_port = None
+        self.ports_left = {}
+        self.ports_right = {}
+        self.reload()
+
+    def reload(self):
+        if self.type in {"and", "or", "xor", "nand", "nor"}:
+            for signal_name, signal_data in self.hal_config.get("signals", {}).items():
+                net = signal_data.get("net")
+                if net:
+                    if signal_name.startswith("in"):
+                        self.ports_left[signal_name] = {"title": signal_name, "type": ""}
+                    else:
+                        self.ports_right[f"sig_{signal_name}"] = {"title": self.type, "type": "hallogic"}
+            self.ports_left["sig_inN"] = {"title": "inN", "type": "hallogic"}
+            if "sig_out" not in self.ports_right:
+                self.ports_right["sig_out"] = {"title": self.type, "type": "hallogic"}
+
+    def paint(self, painter, option, widget):
+        pos = self.pos()
+        pos_x = pos.x()
+        pos_y = pos.y()
+        self.hal_config["pos"] = (pos_x, pos_y)
+        self.paintBg(painter, self.name)
+
+        painter.setPen(QPen(self.info_color, 1))
+        painter.setFont(QFont(self.text_font, 24))
+        symb = ""
+        if self.type == "and":
+            symb = "&"
+        elif self.type == "or":
+            symb = "|"
+        elif self.type == "xor":
+            symb = "^"
+        elif self.type == "nand":
+            symb = "~&"
+        elif self.type == "nor":
+            symb = "~|"
+        painter.drawText(QRectF(0, self.border_size / 2, self.width, self.height - self.border_size), Qt.AlignmentFlag.AlignCenter, symb)
+
+        painter.setPen(QPen(Qt.GlobalColor.black, 1))
+        self.paintPorts(painter)
+
+
 class NodeViewer(QGraphicsView):
     def __init__(self, scene):
         super().__init__()
@@ -2228,6 +2286,56 @@ class Window(QMainWindow):
             if isinstance(item, BreakoutNode):
                 self.connect_breakout(item)
 
+        # loading hal-logics
+        hnodes = {}
+        for hal_id, hal_config in enumerate(self.config.get("hal", [])):
+            hnodes[hal_id] = HalLogicNode(self.scene, 600, py, hal_config)
+            pos = hal_config.get("pos")
+            if pos:
+                hnodes[hal_id].setPos(grid(pos[0]), grid(pos[1]))
+            signals = hal_config.get("signals")
+            if signals:
+                for signal_name, signal in signals.items():
+                    net = signal.get("net")
+                    if net:
+                        if not self.halpins.get(net):
+                            uid = hal_config.get("uid")
+                            halname = f"func.{uid}.{signal_name}"
+                            self.halpins[halname] = {
+                                "type": "net",
+                                "target": net,
+                                "source": (hnodes[hal_id], signal_name),
+                            }
+                    else:
+                        uid = hal_config.get("uid")
+                        halname = f"func.{uid}.{signal_name}"
+                        self.halpins[halname] = {
+                            "type": "net",
+                            "target": "",
+                            "source": (hnodes[hal_id], signal_name),
+                        }
+
+        for hal_id, hal_config in enumerate(self.config.get("hal", [])):
+            color_n = 0
+            signals = hal_config.get("signals")
+            if signals:
+                for signal_name, signal in signals.items():
+                    net = signal.get("net")
+                    if net:
+                        if self.halpins.get(net):
+                            source = self.halpins[net].get("source")
+                            spin = f"sig_{source[1]}"
+                            edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[hal_id], signal_name, color=colors[color_n])
+                            color_n += 1
+                            self.scene.addItem(edge)
+
+            self.scene.addItem(hnodes[hal_id])
+
+            py += 100
+
+        for key, value in self.halpins.items():
+            print(key, value)
+
         hnodes_y = 100
         hnodes = {}
         color_n = 0
@@ -2622,26 +2730,24 @@ class Window(QMainWindow):
                 self.scene.addItem(edge)
                 color_n += 1
 
-        signals = plugin_config.get("signals")
-        if signals:
-            for signal_name, signal in signals.items():
-                if signal_name not in plugin_instance.SIGNALS:
-                    continue
-                halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-                if halname not in self.halpins:
-                    self.halpins[halname] = {
-                        "type": "",
-                        "target": "",
-                        "source": (pnode, signal_name),
-                    }
-                net = signal.get("net")
-                if net:
-                    self.halpins[halname]["type"] = "net"
-                    self.halpins[halname]["target"] = net
-                setp = signal.get("setp")
-                if setp:
-                    self.halpins[halname]["type"] = "setp"
-                    self.halpins[halname]["target"] = setp
+        for signal_name, signal in plugin_config.get("signals", {}).items():
+            if signal_name not in plugin_instance.SIGNALS:
+                continue
+            halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
+            if halname not in self.halpins:
+                self.halpins[halname] = {
+                    "type": "",
+                    "target": "",
+                    "source": (pnode, signal_name),
+                }
+            net = signal.get("net")
+            if net:
+                self.halpins[halname]["type"] = "net"
+                self.halpins[halname]["target"] = net
+            setp = signal.get("setp")
+            if setp:
+                self.halpins[halname]["type"] = "setp"
+                self.halpins[halname]["target"] = setp
 
         is_joint = plugin_config.get("is_joint")
         if plugin_instance.SIGNALS and is_joint:
