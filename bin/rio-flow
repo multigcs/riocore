@@ -1306,7 +1306,7 @@ class ModifierNode(MyNode):
         return True
 
 
-class HalLogicNode(MyNode):
+class HalcompNode(MyNode):
     port_top = grid(25)
     port_bottom = 2
 
@@ -1330,15 +1330,16 @@ class HalLogicNode(MyNode):
     def reload(self):
         for signal_name, signal_data in self.hal_config.get("signals", {}).items():
             net = signal_data.get("net")
-            if net:
-                if signal_name.startswith("in"):
+            setp = signal_data.get("setp")
+            if net or setp:
+                if signal_name.startswith("in") or setp:
                     self.ports_left[signal_name] = {"title": signal_name, "type": ""}
                 else:
-                    self.ports_right[f"sig_{signal_name}"] = {"title": self.type, "type": "hallogic"}
+                    self.ports_right[f"sig_{signal_name}"] = {"title": signal_name, "type": "halcomp"}
         if self.type in {"and", "or", "xor", "nand", "nor"}:
-            self.ports_left["sig_inN"] = {"title": "inN", "type": "hallogic"}
+            self.ports_left["sig_inN"] = {"title": "inN", "type": "halcomp"}
         if "sig_out" not in self.ports_right:
-            self.ports_right["sig_out"] = {"title": self.type, "type": "hallogic"}
+            self.ports_right["sig_out"] = {"title": self.type, "type": "halcomp"}
 
     def paint(self, painter, option, widget):
         pos = self.pos()
@@ -2292,10 +2293,10 @@ class Window(QMainWindow):
             if isinstance(item, BreakoutNode):
                 self.connect_breakout(item)
 
-        # loading hal-logics
+        # loading Halcomponents
         hnodes = {}
         for hal_id, hal_config in enumerate(self.config.get("halcomp", [])):
-            hnodes[hal_id] = HalLogicNode(self.scene, 600, py, hal_config)
+            hnodes[hal_id] = HalcompNode(self.scene, 600, py, hal_config)
             pos = hal_config.get("pos")
             if pos:
                 hnodes[hal_id].setPos(grid(pos[0]), grid(pos[1]))
