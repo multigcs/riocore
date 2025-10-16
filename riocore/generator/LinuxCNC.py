@@ -1395,7 +1395,7 @@ if __name__ == "__main__":
 
         tablist = []
         for tab in vcp_sections:
-            if tab not in widgets:
+            if tab not in widgets and tab != "status":
                 continue
             tablist.append(tab)
         gui_gen.draw_tabs_begin([tab.title() for tab in tablist])

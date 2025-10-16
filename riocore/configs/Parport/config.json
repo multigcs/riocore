@@ -3,10 +3,10 @@
     "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 1.0,
+            "scale": 1.32,
             "pos": [
-                -17,
-                -393
+                -24,
+                -551
             ]
         },
         "board": {
@@ -19,19 +19,19 @@
         "hal": {
             "misc": [
                 800.0,
-                -90.0
+                60.0
             ],
             "joint.0": [
                 800.0,
-                -20.0
+                280.0
             ],
             "joint.1": [
                 800.0,
-                40.0
+                150.0
             ],
             "joint.2": [
                 800.0,
-                100.0
+                -70.0
             ],
             "spindle.0": [
                 800.0,
@@ -50,7 +50,7 @@
             "uid": "pwmgen0",
             "pos": [
                 560.0,
-                -320.0
+                -310.0
             ],
             "signals": {
                 "value": {
@@ -69,7 +69,7 @@
             "uid": "stepgen0",
             "pos": [
                 560.0,
-                -10.0
+                70.0
             ],
             "signals": {
                 "position-cmd": {
@@ -93,6 +93,14 @@
                 "dir": {
                     "pin": "china-bob5x0:X:dir"
                 }
+            },
+            "joint": {
+                "scale": 800.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "min_limit": 0.0,
+                "max_limit": 260.0,
+                "max_velocity": 15.0
             }
         },
         {
@@ -100,7 +108,7 @@
             "uid": "stepgen1",
             "pos": [
                 560.0,
-                -100.0
+                -40.0
             ],
             "is_joint": true,
             "pins": {
@@ -110,6 +118,67 @@
                 "dir": {
                     "pin": "china-bob5x0:Y:dir"
                 }
+            },
+            "joint": {
+                "scale": -800.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "min_limit": 0.0,
+                "max_limit": 160.0,
+                "max_velocity": 20.0
+            },
+            "signals": {
+                "position-cmd": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-fb": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-scale": {
+                    "net": "",
+                    "setp": ""
+                }
+            }
+        },
+        {
+            "type": "stepgen",
+            "uid": "stepgen2",
+            "pos": [
+                560.0,
+                -150.0
+            ],
+            "is_joint": true,
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                }
+            },
+            "joint": {
+                "scale": 1600.0,
+                "home_search_vel": 10.0,
+                "home_final_vel": 20.0,
+                "min_limit": -32.0,
+                "max_limit": 0.0,
+                "max_velocity": 10.0
+            },
+            "signals": {
+                "position-cmd": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-fb": {
+                    "net": "",
+                    "setp": ""
+                },
+                "position-scale": {
+                    "net": "",
+                    "setp": ""
+                }
             }
         },
         {
@@ -117,7 +186,7 @@
             "uid": "gpioout0",
             "pos": [
                 560.0,
-                -250.0
+                -220.0
             ],
             "signals": {
                 "bit": {
@@ -136,13 +205,22 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "china-bob5x0:OPTO:in0"
+                    "pin": "china-bob5x0:OPTO:in0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                430.0,
+                                110.0
+                            ]
+                        }
+                    ]
                 }
             },
             "uid": "gpioin0",
             "pos": [
                 560.0,
-                80.0
+                180.0
             ],
             "signals": {
                 "bit": {
@@ -153,47 +231,25 @@
             "name": "home_x"
         },
         {
-            "type": "stepgen",
-            "uid": "stepgen2",
-            "pos": [
-                560.0,
-                -190.0
-            ],
-            "is_joint": true,
-            "pins": {
-                "step": {
-                    "pin": "china-bob5x0:Z:step"
-                },
-                "dir": {
-                    "pin": "china-bob5x0:Z:dir"
-                }
-            },
-            "signals": {
-                "position-cmd": {
-                    "net": "",
-                    "setp": ""
-                },
-                "position-fb": {
-                    "net": "",
-                    "setp": ""
-                },
-                "position-scale": {
-                    "net": "",
-                    "setp": ""
-                }
-            }
-        },
-        {
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "china-bob5x0:OPTO:in1"
+                    "pin": "china-bob5x0:OPTO:in1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                430.0,
+                                150.0
+                            ]
+                        }
+                    ]
                 }
             },
             "uid": "gpioin1",
             "pos": [
                 560.0,
-                140.0
+                390.0
             ],
             "signals": {
                 "bit": {
@@ -207,13 +263,22 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "china-bob5x0:OPTO:in2"
+                    "pin": "china-bob5x0:OPTO:in2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                430.0,
+                                190.0
+                            ]
+                        }
+                    ]
                 }
             },
             "uid": "gpioin2",
             "pos": [
                 560.0,
-                200.0
+                460.0
             ],
             "signals": {
                 "bit": {
@@ -233,7 +298,7 @@
             "uid": "gpioin3",
             "pos": [
                 560.0,
-                260.0
+                250.0
             ],
             "signals": {
                 "bit": {
@@ -293,10 +358,17 @@
             "breakout": "china-bob5x",
             "name": "china-bob5x0",
             "pos": [
-                110.0,
-                -200.0
+                100.0,
+                -250.0
             ],
             "rotate": 0
         }
-    ]
+    ],
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "DEFAULT_LINEAR_VELOCITY": 20.0
+            }
+        }
+    }
 }
