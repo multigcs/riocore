@@ -71,7 +71,7 @@ class Plugin(PluginBase):
                     self.hal_gpios[direction].append(pin)
                     if reset:
                         self.hal_gpios["reset"].append(pin)
-                    if invert:
+                    if invert and direction == "output":
                         self.hal_gpios["invert"].append(pin)
 
     def hal(self, parent):
@@ -83,12 +83,23 @@ class Plugin(PluginBase):
                         continue
                     prefix = psetup["pin"].split(":", 1)[0]
                     pin = psetup["pin"].split(":", 1)[1]
+
+                    invert = 0
+                    for modifier in psetup.get("modifier", []):
+                        if modifier["type"] == "invert":
+                            invert = 1 - invert
+                        else:
+                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
+
                     if self.instances_name != prefix:
                         continue
                     if direction == "output":
                         psetup["pin"] = f"hal_gpio.{pin}-out"
                     elif direction == "input":
-                        psetup["pin"] = f"hal_gpio.{pin}-in"
+                        if invert:
+                            psetup["pin"] = f"hal_gpio.{pin}-in-not"
+                        else:
+                            psetup["pin"] = f"hal_gpio.{pin}-in"
         return
 
     def loader(cls, instances):

@@ -210,8 +210,8 @@
                         {
                             "type": "invert",
                             "pos": [
-                                430.0,
-                                110.0
+                                410.0,
+                                330.0
                             ]
                         }
                     ]
@@ -220,7 +220,7 @@
             "uid": "gpioin0",
             "pos": [
                 560.0,
-                180.0
+                320.0
             ],
             "signals": {
                 "bit": {
@@ -239,8 +239,8 @@
                         {
                             "type": "invert",
                             "pos": [
-                                430.0,
-                                150.0
+                                410.0,
+                                370.0
                             ]
                         }
                     ]
@@ -268,8 +268,8 @@
                         {
                             "type": "invert",
                             "pos": [
-                                430.0,
-                                190.0
+                                410.0,
+                                410.0
                             ]
                         }
                     ]
@@ -292,13 +292,13 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "china-bob5x0:OPTO:in3"
+                    "pin": "china-bob5x0:OPTO:in4"
                 }
             },
             "uid": "gpioin3",
             "pos": [
                 560.0,
-                250.0
+                180.0
             ],
             "signals": {
                 "bit": {
@@ -312,13 +312,22 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "china-bob5x0:OPTO:in4"
+                    "pin": "china-bob5x0:OPTO:in3",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                410.0,
+                                290.0
+                            ]
+                        }
+                    ]
                 }
             },
             "uid": "gpioin4",
             "pos": [
                 560.0,
-                320.0
+                250.0
             ],
             "signals": {
                 "bit": {
@@ -339,7 +348,14 @@
             "pos": [
                 560.0,
                 -380.0
-            ]
+            ],
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on",
+                    "setp": ""
+                }
+            },
+            "name": "spindle-on"
         },
         {
             "type": "parport",
