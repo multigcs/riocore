@@ -13,10 +13,10 @@ from math import floor, ceil
 from functools import partial
 
 from PyQt5.QtCore import Qt, QPoint, QPointF, QLineF, QRectF, QRect, QSize, QTimer
-from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
+from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform, QStandardItemModel
 from PyQt5.QtWidgets import (
     QSplitter,
-    QGroupBox,
+    QTreeView,
     QPlainTextEdit,
     QFileDialog,
     QStyle,
@@ -54,7 +54,6 @@ from riocore.gui.plugins import GuiPlugins
 from riocore.gui.boards import GuiBoards
 from riocore.gui.breakouts import GuiBreakouts
 from riocore.gui.modifiers import GuiModifiers
-# from riocore.halpins import LINUXCNC_SIGNALS
 
 
 from riocore.gui.widgets import (
@@ -66,6 +65,7 @@ from riocore.gui.widgets import (
     edit_combobox,
     edit_avgfilter,
     edit_multiline,
+    MyStandardItem,
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -1685,10 +1685,23 @@ class TabOptions:
         self.parent = parent
         self.config = config
         self.items = {}
-        self.tab_widget = QWidget()
 
-        self.layout = QVBoxLayout()
-        self.tab_widget.setLayout(self.layout)
+        self.tab_misc = QWidget()
+        self.layout_misc = QVBoxLayout()
+        self.tab_misc.setLayout(self.layout_misc)
+
+        self.tab_linuxcnc = QWidget()
+        self.layout_linuxcnc = QVBoxLayout()
+        self.tab_linuxcnc.setLayout(self.layout_linuxcnc)
+
+        self.tab_ini = QWidget()
+        self.layout_ini = QVBoxLayout()
+        self.tab_ini.setLayout(self.layout_ini)
+
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(self.tab_misc, "Misc")
+        self.tab_widget.addTab(self.tab_linuxcnc, "LinuxCNC")
+        self.tab_widget.addTab(self.tab_ini, "INI")
 
     def update(self, config):
         self.config = config
@@ -1705,6 +1718,57 @@ class TabOptions:
         print(f"can not find path: {path}")
         exit(1)
 
+    def load_tree_linuxcnc_ini(self, parent_tree):
+        tree_lcncini = parent_tree
+        if "ini" not in self.config["linuxcnc"]:
+            self.config["linuxcnc"]["ini"] = {}
+        ini_config = self.config["linuxcnc"]["ini"]
+
+        ini_data = riocore.generator.LinuxCNC.LinuxCNC.ini_defaults(self.config)
+        for section, section_data in ini_data.items():
+            if section not in ini_config:
+                ini_config[section] = {}
+            section_config = ini_config[section]
+
+            aitem = MyStandardItem()
+            tree_lcncini.appendRow(
+                [
+                    MyStandardItem(section),
+                    MyStandardItem(""),
+                ]
+            )
+            lcncsec_view = tree_lcncini.item(tree_lcncini.rowCount() - 1)
+            for key, value in section_data.items():
+                if value is not None and not isinstance(value, list):
+                    var_setup = {"type": type(value), "default": value}
+                    if section == "DISPLAY" and key == "POSITION_OFFSET":
+                        var_setup["type"] = "select"
+                        var_setup["options"] = ["RELATIVE", "MACHINE"]
+                    if section == "DISPLAY" and key == "POSITION_FEEDBACK":
+                        var_setup["type"] = "select"
+                        var_setup["options"] = ["COMMANDED", "ACTUAL"]
+                    if section == "HAL" and key == "TWOPASS":
+                        var_setup["type"] = "select"
+                        var_setup["options"] = ["ON", "OFF"]
+                    if section == "DISPLAY" and key == "PYVCP_POSITION":
+                        var_setup["type"] = "select"
+                        var_setup["options"] = ["RIGHT", "BOTTOM"]
+
+                    if section in riocore.halpins.INI_HELPTEXT and key in riocore.halpins.INI_HELPTEXT[section]:
+                        var_setup["tooltip"] = riocore.halpins.INI_HELPTEXT[section][key]
+
+                    key_title = key
+                    if "|" in key:
+                        key_title = f"{key.split('|')[0]} ({key.split('|')[1]})"
+                    aitem = MyStandardItem()
+                    lcncsec_view.appendRow(
+                        [
+                            MyStandardItem(key_title, help_text=var_setup.get("tooltip")),
+                            aitem,
+                        ]
+                    )
+                    self.treeview.setIndexWidget(aitem.index(), self.parent.edit_item(section_config, key, var_setup))
+
     def load(self):
         boards_path = self.get_path("boards")
         self.boards = [""]
@@ -1720,11 +1784,6 @@ class TabOptions:
         toolchain = self.parent.board.get("toolchain")
         toolchains = self.parent.board.get("toolchains", [toolchain])
 
-        frame = QGroupBox("Misc")
-        frame_layout = QVBoxLayout()
-        self.layout.addWidget(frame)
-        frame.setLayout(frame_layout)
-
         options = {
             "name": {"type": str},
             "description": {"type": str},
@@ -1739,16 +1798,12 @@ class TabOptions:
 
         for key, var_setup in options.items():
             row = QHBoxLayout()
-            frame_layout.addLayout(row)
+            self.layout_misc.addLayout(row)
             row.addWidget(QLabel(key.title()))
             item = self.parent.edit_item(self.config, key, var_setup)
             row.addWidget(item)
             self.items[key] = {"item": item}
-
-        frame = QGroupBox("LinuxCNC")
-        frame_layout = QVBoxLayout()
-        self.layout.addWidget(frame)
-        frame.setLayout(frame_layout)
+        self.layout_misc.addStretch()
 
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
@@ -1768,12 +1823,22 @@ class TabOptions:
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
         }.items():
             row = QHBoxLayout()
-            frame_layout.addLayout(row)
+            self.layout_linuxcnc.addLayout(row)
             row.addWidget(QLabel(key.title()))
             item = self.parent.edit_item(self.config["linuxcnc"], key, var_setup)
             row.addWidget(item)
             self.items[key] = {"item": item}
-        self.layout.addStretch()
+
+        self.layout_linuxcnc.addStretch()
+
+        self.treeview = QTreeView()
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(["Name", "Value"])
+        self.treeview.setModel(self.model)
+        self.treeview.setUniformRowHeights(True)
+        self.layout_ini.addWidget(self.treeview)
+        self.load_tree_linuxcnc_ini(self.model)
+        self.treeview.setColumnWidth(0, 280)
 
     def widget(self):
         return self.tab_widget
