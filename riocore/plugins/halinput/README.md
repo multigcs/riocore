@@ -36,32 +36,32 @@ Keywords: jog joypad usb
 
 ### x:
 
- * type: float
+ * type: str
  * default: abs-x
 
 ### y:
 
- * type: float
+ * type: str
  * default: -abs-y
 
 ### z:
 
- * type: float
+ * type: str
  * default: -abs-rz
 
 ### a:
 
- * type: float
+ * type: str
  * default: 
 
 ### b:
 
- * type: float
+ * type: str
  * default: 
 
 ### c:
 
- * type: float
+ * type: str
  * default: 
 
 ### name:
