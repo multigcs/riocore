@@ -214,6 +214,13 @@ class edit_float(QDoubleSpinBox):
         self.editingFinished.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
 
+    def update(self, obj):
+        self.obj = obj
+        if self.key in self.obj:
+            self.setValue(float(self.obj[self.key]))
+        elif self.default is not None:
+            self.setValue(float(self.default))
+
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
             return QSpinBox.wheelEvent(self, *args, **kwargs)
@@ -257,6 +264,13 @@ class edit_int(QSpinBox):
         self.valueChanged.connect(self.change)
         self.editingFinished.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def update(self, obj):
+        self.obj = obj
+        if self.key in self.obj:
+            self.setValue(int(self.obj[self.key]))
+        elif self.default is not None:
+            self.setValue(int(self.default))
 
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
@@ -302,6 +316,12 @@ class edit_avgfilter(QSpinBox):
         self.valueChanged.connect(self.change)
         self.editingFinished.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def update(self, obj):
+        self.obj = obj
+        if self.key in self.obj:
+            if self.obj[self.key]:
+                self.setValue(self.obj[self.key][0].get("depth", 0))
 
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
@@ -357,6 +377,13 @@ class edit_text(QLineEdit):
             self.setText(str(default))
         self.textChanged.connect(self.change)
 
+    def update(self, obj):
+        self.obj = obj
+        if self.key in self.obj:
+            self.setText(str(self.obj[self.key]))
+        elif self.default is not None:
+            self.setText(str(self.default))
+
     def change(self):
         if self.no_update:
             return
@@ -388,6 +415,13 @@ class edit_multiline(QTextEdit):
         elif default is not None:
             self.setText(str(default))
         self.textChanged.connect(self.change)
+
+    def update(self, obj):
+        self.obj = obj
+        if self.key in self.obj:
+            self.setText(str(self.obj[self.key]))
+        elif self.default is not None:
+            self.setText(str(self.default))
 
     def change(self):
         if self.no_update:
@@ -471,6 +505,13 @@ class edit_bool(QCheckBox):
             self.setChecked(default)
         self.stateChanged.connect(self.change)
 
+    def update(self, obj):
+        self.obj = obj
+        if self.key in self.obj:
+            self.setChecked(self.obj[self.key])
+        elif self.default is not None:
+            self.setChecked(self.default)
+
     def change(self):
         if self.no_update:
             return
@@ -493,43 +534,58 @@ class edit_combobox(QComboBox):
         self.key = key
         self.default = default
         self.no_update = False
-        options = options.copy()
-        options_clean = []
-        for opt in options:
+        self.options = options.copy()
+        self.options_clean = []
+        for opt in self.options:
             if opt:
-                options_clean.append(opt.split("|")[0])
+                self.options_clean.append(opt.split("|")[0])
             else:
-                options_clean.append(opt)
+                self.options_clean.append(opt)
         if help_text:
             self.setToolTip(help_text)
         if key in obj:
-            if str(obj[key]) not in options_clean:
-                options.append(str(obj[key]))
-                options_clean.append(str(obj[key]))
+            if str(obj[key]) not in self.options_clean:
+                self.options.append(str(obj[key]))
+                self.options_clean.append(str(obj[key]))
         else:
-            options.append("")
-            options_clean.append("")
-        for option in options:
+            self.options.append("")
+            self.options_clean.append("")
+        for option in self.options:
             self.addItem(option)
         self.setEditable(True)
         if key in obj:
-            if str(obj[key]) in options_clean:
-                self.setCurrentIndex(options_clean.index(str(obj[key])))
+            if str(obj[key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(obj[key])))
             else:
                 print(f"ERROR: {obj[key]} is not a option")
         elif default is not None:
-            if default in options_clean:
-                self.setCurrentIndex(options_clean.index(default))
+            if default in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(default))
             else:
                 print(f"ERROR: {default} is not a option")
         else:
-            self.setCurrentIndex(options_clean.index(""))
+            self.setCurrentIndex(self.options_clean.index(""))
         if need_enter:
             self.currentIndexChanged.connect(self.change)
             self.textActivated.connect(self.change)
         else:
             self.editTextChanged.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def update(self, obj):
+        self.obj = obj
+        if self.key in self.obj:
+            if str(self.obj[self.key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.obj[self.key])))
+            else:
+                print(f"ERROR: {self.obj[self.key]} is not a option")
+        elif self.default is not None:
+            if self.default in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(self.default))
+            else:
+                print(f"ERROR: {self.default} is not a option")
+        else:
+            self.setCurrentIndex(self.options_clean.index(""))
 
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():

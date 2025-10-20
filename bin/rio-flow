@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
     QGraphicsView,
     QPushButton,
     QVBoxLayout,
+    QHBoxLayout,
     QWidget,
     QGraphicsPathItem,
     QGraphicsLineItem,
@@ -1678,6 +1679,53 @@ class NodeScene(QGraphicsScene):
             painter.drawPoints(grid_points)
 
 
+class TabLinuxCNC:
+    def __init__(self, config, parent=None):
+        self.parent = parent
+        self.config = config
+        self.items = {}
+        self.tab_widget = QWidget()
+
+        self.layout = QVBoxLayout()
+        self.tab_widget.setLayout(self.layout)
+
+    def update(self, config):
+        self.config = config
+        if "linuxcnc" not in self.config:
+            self.config["linuxcnc"] = {}
+        for key, data in self.items.items():
+            data["item"].update(self.config["linuxcnc"])
+
+    def load(self):
+        if "linuxcnc" not in self.config:
+            self.config["linuxcnc"] = {}
+        for key, var_setup in {
+            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
+            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the mashine"},
+            "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
+            "gui": {
+                "type": "select",
+                "options": ["axis", "qtdragon", "qtdragon_hd", "tklinuxcnc", "touchy", "probe_basic", "probe_basic_lathe", "gmoccapy", "gscreen", "tnc"],
+                "default": "axis",
+                "help_text": "linuxcnc gui to use",
+            },
+            "vcp_mode": {"type": "select", "options": ["ALL", "CONFIGURED", "NONE"], "default": "ALL", "help_text": "pyvcp gui generate mode"},
+            "vcp_pos": {"type": "select", "options": ["RIGHT", "BOTTOM", "TAB"], "default": "RIGHT", "help_text": "position of the vcp gui for extra controls"},
+            "vcp_type": {"type": "select", "options": ["auto", "pyvcp", "qtvcp", "gladevcp"], "default": "auto", "help_text": "vcp type, depends on the gui"},
+            "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
+        }.items():
+            row = QHBoxLayout()
+            self.layout.addLayout(row)
+            row.addWidget(QLabel(key.title()))
+            item = self.parent.edit_item(self.config["linuxcnc"], key, var_setup)
+            row.addWidget(item)
+            self.items[key] = {"item": item}
+        self.layout.addStretch()
+
+    def widget(self):
+        return self.tab_widget
+
+
 class Window(QMainWindow):
     def __init__(self, args):
         super().__init__()
@@ -1708,8 +1756,12 @@ class Window(QMainWindow):
         self.view = NodeViewer(self.scene)
         self.jsontab = TabJson(self)
 
+        self.linuxcnc_cfg = TabLinuxCNC(self.config, parent=self)
+        self.linuxcnc_tab = self.linuxcnc_cfg.widget()
+
         self.tabwidget = QTabWidget()
         self.tabwidget.addTab(self.view, "Drawing")
+        self.tabwidget.addTab(self.linuxcnc_tab, "LinuxCNC")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
 
         hbox = QSplitter(Qt.Horizontal)
@@ -1748,6 +1800,8 @@ class Window(QMainWindow):
         else:
             riocore.log(f"ERROR: file not found: {self.config_file}")
             exit(1)
+
+        self.linuxcnc_cfg.load()
 
         if self.config_file:
             self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
@@ -1976,7 +2030,7 @@ class Window(QMainWindow):
             self.config["flow"]["hal"] = {}
 
         self.nesting_all()
-
+        self.linuxcnc_cfg.update(self.config)
         self.redraw()
         self.cfg_check()
 
@@ -1993,9 +2047,9 @@ class Window(QMainWindow):
     def cfg_check(self):
         self.jsontab.update(flow=True)
         if self.jsontab.found_diffs:
-            self.tabwidget.tabBar().setTabTextColor(1, QColor(250, 0, 0))
+            self.tabwidget.tabBar().setTabTextColor(2, QColor(250, 0, 0))
         else:
-            self.tabwidget.tabBar().setTabTextColor(1, QColor(0, 0, 0))
+            self.tabwidget.tabBar().setTabTextColor(2, QColor(0, 0, 0))
 
     def undo(self):
         if len(self.snapshots) > 1:

@@ -3,10 +3,10 @@
     "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 1.32,
+            "scale": 0.5477777777777778,
             "pos": [
-                -24,
-                -551
+                -40,
+                -50
             ]
         },
         "board": {
@@ -385,6 +385,7 @@
             "DISPLAY": {
                 "DEFAULT_LINEAR_VELOCITY": 20.0
             }
-        }
+        },
+        "machinetype": "mill"
     }
 }
