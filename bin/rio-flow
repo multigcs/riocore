@@ -5,6 +5,7 @@
 import argparse
 import subprocess
 import copy
+import glob
 import os
 import json
 import sys
@@ -483,7 +484,6 @@ class BoardNode(QGraphicsItem):
         self.setAcceptHoverEvents(True)
         board = board_setup["board"]
         image = os.path.join(os.path.dirname(self.board_setup["path"]), "board.png")
-        print(image)
         if os.path.exists(image):
             pixmap = QPixmap.fromImage(QImage(image))
             pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
@@ -1696,7 +1696,53 @@ class TabLinuxCNC:
         for key, data in self.items.items():
             data["item"].update(self.config["linuxcnc"])
 
+    def get_path(self, path):
+        if os.path.exists(path):
+            return path
+        elif os.path.exists(os.path.join(riocore_path, path)):
+            return os.path.join(riocore_path, path)
+        print(f"can not find path: {path}")
+        exit(1)
+
     def load(self):
+        boards_path = self.get_path("boards")
+        self.boards = [""]
+        for path in sorted(glob.glob(os.path.join(boards_path, "*", "board.json"))):
+            self.boards.append(path.split(os.sep)[-2].replace(".json", ""))
+        for path in sorted(glob.glob(os.path.join(boards_path, "*.json"))):
+            self.boards.append(path.split(os.sep)[-1].replace(".json", ""))
+
+        self.interfaces = []
+        for path in sorted(glob.glob(os.path.join(riocore_path, "interfaces", "*"))):
+            self.interfaces.append(path.split(os.sep)[-1])
+
+        toolchain = self.parent.board.get("toolchain")
+        toolchains = self.parent.board.get("toolchains", [toolchain])
+
+        self.layout.addWidget(QLabel("--- Misc ---"))
+
+        options = {
+            "name": {"type": str},
+            "description": {"type": str},
+            "boardcfg": {"type": "select", "options": self.boards},
+        }
+        options.update(
+            {
+                "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
+                "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
+            }
+        )
+
+        for key, var_setup in options.items():
+            row = QHBoxLayout()
+            self.layout.addLayout(row)
+            row.addWidget(QLabel(key.title()))
+            item = self.parent.edit_item(self.config, key, var_setup)
+            row.addWidget(item)
+            self.items[key] = {"item": item}
+
+        self.layout.addWidget(QLabel("--- LinuxCNC ---"))
+
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
         for key, var_setup in {
