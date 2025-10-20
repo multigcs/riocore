@@ -16,6 +16,7 @@ from PyQt5.QtCore import Qt, QPoint, QPointF, QLineF, QRectF, QRect, QSize, QTim
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
     QSplitter,
+    QGroupBox,
     QPlainTextEdit,
     QFileDialog,
     QStyle,
@@ -1719,7 +1720,10 @@ class TabLinuxCNC:
         toolchain = self.parent.board.get("toolchain")
         toolchains = self.parent.board.get("toolchains", [toolchain])
 
-        self.layout.addWidget(QLabel("--- Misc ---"))
+        frame = QGroupBox("Misc")
+        frame_layout = QVBoxLayout()
+        self.layout.addWidget(frame)
+        frame.setLayout(frame_layout)
 
         options = {
             "name": {"type": str},
@@ -1735,13 +1739,16 @@ class TabLinuxCNC:
 
         for key, var_setup in options.items():
             row = QHBoxLayout()
-            self.layout.addLayout(row)
+            frame_layout.addLayout(row)
             row.addWidget(QLabel(key.title()))
             item = self.parent.edit_item(self.config, key, var_setup)
             row.addWidget(item)
             self.items[key] = {"item": item}
 
-        self.layout.addWidget(QLabel("--- LinuxCNC ---"))
+        frame = QGroupBox("LinuxCNC")
+        frame_layout = QVBoxLayout()
+        self.layout.addWidget(frame)
+        frame.setLayout(frame_layout)
 
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
@@ -1761,7 +1768,7 @@ class TabLinuxCNC:
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
         }.items():
             row = QHBoxLayout()
-            self.layout.addLayout(row)
+            frame_layout.addLayout(row)
             row.addWidget(QLabel(key.title()))
             item = self.parent.edit_item(self.config["linuxcnc"], key, var_setup)
             row.addWidget(item)
