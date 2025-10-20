@@ -126,7 +126,6 @@ class Plugin(PluginBase):
         modes = []
         instance_num = 0
         for instance in instances:
-            print("###", instance, "-", instance.parport_mode)
             if instance.parport_mode:
                 instance.instance_num = instance_num
                 portaddr = instance.plugin_setup.get("portaddr", instance.option_default("portaddr"))
