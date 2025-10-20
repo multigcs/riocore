@@ -42,7 +42,7 @@ class Plugin(PluginBase):
             "c": "",
         }.items():
             self.OPTIONS[axis] = {
-                "type": float,
+                "type": str,
                 "default": default,
             }
 
