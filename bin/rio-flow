@@ -1680,7 +1680,7 @@ class NodeScene(QGraphicsScene):
             painter.drawPoints(grid_points)
 
 
-class TabLinuxCNC:
+class TabOptions:
     def __init__(self, config, parent=None):
         self.parent = parent
         self.config = config
@@ -1809,12 +1809,12 @@ class Window(QMainWindow):
         self.view = NodeViewer(self.scene)
         self.jsontab = TabJson(self)
 
-        self.linuxcnc_cfg = TabLinuxCNC(self.config, parent=self)
-        self.linuxcnc_tab = self.linuxcnc_cfg.widget()
+        self.options_cfg = TabOptions(self.config, parent=self)
+        self.options_tab = self.options_cfg.widget()
 
         self.tabwidget = QTabWidget()
         self.tabwidget.addTab(self.view, "Drawing")
-        self.tabwidget.addTab(self.linuxcnc_tab, "LinuxCNC")
+        self.tabwidget.addTab(self.options_tab, "Options")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
 
         hbox = QSplitter(Qt.Horizontal)
@@ -1854,7 +1854,7 @@ class Window(QMainWindow):
             riocore.log(f"ERROR: file not found: {self.config_file}")
             exit(1)
 
-        self.linuxcnc_cfg.load()
+        self.options_cfg.load()
 
         if self.config_file:
             self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
@@ -2083,7 +2083,7 @@ class Window(QMainWindow):
             self.config["flow"]["hal"] = {}
 
         self.nesting_all()
-        self.linuxcnc_cfg.update(self.config)
+        self.options_cfg.update(self.config)
         self.redraw()
         self.cfg_check()
 
