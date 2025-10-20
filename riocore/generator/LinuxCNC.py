@@ -616,6 +616,11 @@ class LinuxCNC:
             if hasattr(addon, "ini"):
                 addon.ini(self, ini_setup)
 
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE == "gpio":
+                if hasattr(plugin_instance, "ini"):
+                    plugin_instance.ini(self, ini_setup)
+
         output = []
         for section, setup in ini_setup.items():
             output.append(f"[{section}]")
@@ -1624,7 +1629,8 @@ if __name__ == "__main__":
         # precheck on base plugins
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.TYPE == "base":
-                plugin_instance.precheck(self)
+                if hasattr(plugin_instance, "precheck"):
+                    plugin_instance.precheck(self)
 
         if self.project.config["toolchain"]:
             if self.protocol == "ETHERCAT":

@@ -69,7 +69,6 @@ class Plugin(PluginBase):
                 axis_config = parent.project.axis_dict.get(axis.upper())
                 joints = axis_config["joints"]
                 for joint, joint_setup in joints.items():
-                    parent.halg.setp_add(f"spacenav.axis.{axis}.scale", spacenav_scale[axis])
                     parent.halg.net_add(f"spacenav.axis.{axis}.jog-counts", f"joint.{joint}.jog-counts")
                     parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
                     parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
