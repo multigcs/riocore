@@ -1691,6 +1691,8 @@ class TabOptions:
         self.update_flag = False
         self.ini_items = {}
         self.items = {}
+        self.help_img1 = None
+        self.help_img2 = None
 
         self.tab_misc = QWidget()
         self.layout_misc = QVBoxLayout()
@@ -1771,6 +1773,18 @@ class TabOptions:
         self.hal_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.hal_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.hal_table.itemChanged.connect(self.table_updated)
+
+        machinetype = self.config["linuxcnc"].get("machinetype", "mill")
+        image_path = os.path.join(riocore_path, "files", "images", f"{machinetype}.png")
+        if self.help_img1 is not None and os.path.isfile(image_path):
+            pixmap = QPixmap(image_path)
+            self.help_img1.setPixmap(pixmap)
+
+        gui = self.config["linuxcnc"].get("gui", "axis")
+        image_path = os.path.join(riocore_path, "files", "images", f"{gui}.png")
+        if self.help_img2 is not None and os.path.isfile(image_path):
+            pixmap = QPixmap(image_path)
+            self.help_img2.setPixmap(pixmap)
 
         self.update_flag = False
 
@@ -1874,18 +1888,24 @@ class TabOptions:
                 "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
             }
         )
-
         for key, var_setup in options.items():
             row = QHBoxLayout()
             self.layout_misc.addLayout(row)
             row.addWidget(QLabel(key.title()))
-            item = self.parent.edit_item(self.config, key, var_setup)
+            item = self.parent.edit_item(self.config, key, var_setup, cb=self.updated)
             row.addWidget(item)
             self.items[key] = {"item2": item}
         self.layout_misc.addStretch()
 
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
+
+        hbox = QHBoxLayout()
+        self.layout_linuxcnc.addLayout(hbox)
+
+        vbox = QVBoxLayout()
+        hbox.addLayout(vbox, stretch=3)
+
         for key, var_setup in {
             "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
             "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the mashine"},
@@ -1904,16 +1924,23 @@ class TabOptions:
             "simulation": {"type": bool, "help_text": "Enables the board simulator / no hardware needed", "default": False},
         }.items():
             row = QHBoxLayout()
-            self.layout_linuxcnc.addLayout(row)
+            vbox.addLayout(row)
             label = QLabel(key.title())
             if "help_text" in var_setup:
                 label.setToolTip(var_setup["help_text"])
             row.addWidget(label)
-            item = self.parent.edit_item(self.config["linuxcnc"], key, var_setup)
+            item = self.parent.edit_item(self.config["linuxcnc"], key, var_setup, cb=self.updated)
             row.addWidget(item)
             self.items[key] = {"item": item}
+        vbox.addStretch()
 
-        self.layout_linuxcnc.addStretch()
+        vbox2 = QVBoxLayout()
+        hbox.addLayout(vbox2, stretch=1)
+        self.help_img1 = QLabel()
+        vbox2.addWidget(self.help_img1)
+        self.help_img2 = QLabel()
+        vbox2.addWidget(self.help_img2)
+        vbox2.addStretch()
 
     def table_updated(self):
         if self.update_flag:
@@ -2022,6 +2049,7 @@ class Window(QMainWindow):
             exit(1)
 
         self.options_cfg.load()
+        self.options_cfg.update(self.config)
 
         if self.config_file:
             self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
