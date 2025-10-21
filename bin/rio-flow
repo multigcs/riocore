@@ -2040,19 +2040,23 @@ class Window(QMainWindow):
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
 
-    def prebuild(self):
+    def generate(self):
         output_dir = "/tmp/rio-test-build"
         if os.path.exists(output_dir):
             shutil.rmtree(output_dir)
-        project = riocore.Project(self.config, output_dir)
+        project = riocore.Project(copy.deepcopy(self.config), output_dir)
         project.generator(preview=False)
+        return project
+
+    def prebuild(self):
+        project = self.generate()
         index_html = os.path.join(project.config["output_path"], "DOC", "index.html")
         subprocess.run(f"open {index_html} &", shell=True, close_fds=True)
 
     def generator_run(self):
-        bin_path = os.path.dirname(__file__)
-        generator_path = os.path.join(bin_path, "rio-generator")
-        cmd = f"{generator_path} -s {self.config_file}"
+        project = self.generate()
+        start_sh = os.path.join(project.config["output_path"], "LinuxCNC", "start.sh")
+        cmd = f"/bin/sh {start_sh}"
         riocore.log("")
         riocore.log("--- running generator ---")
         riocore.log(cmd)
