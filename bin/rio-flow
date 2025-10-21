@@ -1687,6 +1687,8 @@ class TabOptions:
     def __init__(self, config, parent=None):
         self.parent = parent
         self.config = config
+        self.update_flag = False
+        self.ini_items = {}
         self.items = {}
 
         self.tab_misc = QWidget()
@@ -1725,6 +1727,8 @@ class TabOptions:
         self.layout_hal.addWidget(self.hal_table)
 
     def update(self, config):
+        self.update_flag = True
+
         self.config = config
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
@@ -1733,6 +1737,36 @@ class TabOptions:
                 data["item"].update(self.config["linuxcnc"])
             if "item2" in data:
                 data["item2"].update(self.config)
+
+        # ini
+        self.load_tree_linuxcnc_ini(self.model)
+        self.treeview.setColumnWidth(0, 280)
+
+        # hal
+        row = 0
+        self.hal_table.setRowCount(1 + len(self.config["linuxcnc"].get("net", [])) + len(self.config["linuxcnc"].get("setp", {}).keys()))
+        for entry in self.config["linuxcnc"].get("net", []):
+            source = entry.get("source", "")
+            target = entry.get("target", "")
+            self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem(source)))
+            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(target)))
+            row += 1
+
+        for pin, value in self.config["linuxcnc"].get("setp", {}).items():
+            self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem(pin)))
+            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(value)))
+            row += 1
+
+        self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem("")))
+        self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem("")))
+
+        # self.hal_table.resizeColumnToContents(0)
+        # self.hal_table.resizeColumnToContents(1)
+        self.hal_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.hal_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.hal_table.itemChanged.connect(self.table_updated)
+
+        self.update_flag = False
 
     def get_path(self, path):
         if os.path.exists(path):
@@ -1743,12 +1777,26 @@ class TabOptions:
         exit(1)
 
     def load_tree_linuxcnc_ini(self, parent_tree):
-        tree_lcncini = parent_tree
         if "ini" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["ini"] = {}
         ini_config = self.config["linuxcnc"]["ini"]
-
         ini_data = riocore.generator.LinuxCNC.LinuxCNC.ini_defaults(self.config)
+
+        if self.ini_items:
+            print(self.ini_items)
+            for section, section_data in ini_data.items():
+                if section not in ini_config:
+                    ini_config[section] = {}
+                section_config = ini_config[section]
+                for key, value in section_data.items():
+                    if value is not None and not isinstance(value, list):
+                        if f"{section}_{key}" not in self.ini_items:
+                            continue
+                        self.ini_items[f"{section}_{key}"].update(section_config)
+
+            return
+
+        tree_lcncini = parent_tree
         for section, section_data in ini_data.items():
             if section not in ini_config:
                 ini_config[section] = {}
@@ -1791,7 +1839,9 @@ class TabOptions:
                             aitem,
                         ]
                     )
-                    self.treeview.setIndexWidget(aitem.index(), self.parent.edit_item(section_config, key, var_setup))
+                    widget = self.parent.edit_item(section_config, key, var_setup, cb=self.updated)
+                    self.treeview.setIndexWidget(aitem.index(), widget)
+                    self.ini_items[f"{section}_{key}"] = widget
 
     def load(self):
         boards_path = self.get_path("boards")
@@ -1860,55 +1910,32 @@ class TabOptions:
 
         self.layout_linuxcnc.addStretch()
 
-        # ini
-        self.load_tree_linuxcnc_ini(self.model)
-        self.treeview.setColumnWidth(0, 280)
-
-        # hal
-        row = 0
-        self.hal_table.setRowCount(1 + len(self.config["linuxcnc"].get("net", [])) + len(self.config["linuxcnc"].get("setp", {}).keys()))
-        for entry in self.config["linuxcnc"].get("net", []):
-            source = entry.get("source", "")
-            target = entry.get("target", "")
-            self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem(source)))
-            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(target)))
-            row += 1
-
-        for pin, value in self.config["linuxcnc"].get("setp", {}).items():
-            self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem(pin)))
-            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(value)))
-            row += 1
-
-        self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem("")))
-        self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem("")))
-
-        # self.hal_table.resizeColumnToContents(0)
-        # self.hal_table.resizeColumnToContents(1)
-        self.hal_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.hal_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.hal_table.itemChanged.connect(self.table_updated)
-
     def table_updated(self):
+        if self.update_flag:
+            return
         nrows = self.hal_table.rowCount()
-        nets = []
-        setps = {}
+        self.config["linuxcnc"]["net"] = []
+        self.config["linuxcnc"]["setp"] = {}
         for row in range(0, nrows):
             if self.hal_table.item(row, 0) and self.hal_table.item(row, 1):
-                source = self.hal_table.item(row, 0).text()
-                target = self.hal_table.item(row, 1).text()
-                print(source, target)
-                if not source and not target:
+                source = str(self.hal_table.item(row, 0).text())
+                target = str(self.hal_table.item(row, 1).text())
+                if source or target:
                     if target.replace(".", "").isnumeric():
-                        setps[source] = target
+                        self.config["linuxcnc"]["setp"][source] = target
                     else:
-                        nets.append(
+                        self.config["linuxcnc"]["net"].append(
                             {
                                 "source": source,
                                 "target": target,
                             }
                         )
-        self.config["linuxcnc"]["net"] = nets
-        self.config["linuxcnc"]["setp"] = setps
+        self.updated()
+
+    def updated(self, tmp=None):
+        self.parent.redraw()
+        self.parent.cfg_check()
+        self.update(self.config)
 
     def widget(self):
         return self.tab_widget
