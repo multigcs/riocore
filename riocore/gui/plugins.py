@@ -741,6 +741,9 @@ class GuiPlugins:
 
         dialog.setLayout(dialog.layout)
 
+        def plugin_enter(idx=0):
+            dialog.accept()
+
         def show_plugin_info(idx):
             if not plugin_table.item(idx, 1):
                 return
@@ -806,8 +809,12 @@ class GuiPlugins:
         plugin_table.setHorizontalHeaderItem(1, QTableWidgetItem("Name"))
         plugin_table.setRowCount(len(possible_plugins))
         for row, plugin_name in enumerate(possible_plugins):
-            plugin_table.setItem(row, 0, QTableWidgetItem(""))
-            plugin_table.setItem(row, 1, QTableWidgetItem(plugin_name))
+            item = QTableWidgetItem("")
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            plugin_table.setItem(row, 0, item)
+            item = QTableWidgetItem(plugin_name)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            plugin_table.setItem(row, 1, item)
             plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
             image_path = os.path.join(plugin_path, "image.png")
             if os.path.isfile(image_path):
@@ -820,7 +827,7 @@ class GuiPlugins:
 
         plugin_table.setFixedWidth(200)
         plugin_table.cellClicked.connect(show_plugin_info)
-        plugin_table.currentCellChanged.connect(show_plugin_info)
+        plugin_table.doubleClicked.connect(plugin_enter)
         header = plugin_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.Stretch)

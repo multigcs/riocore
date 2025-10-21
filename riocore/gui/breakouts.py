@@ -84,6 +84,9 @@ class GuiBreakouts:
             breakout_name = os.path.basename(os.path.dirname(breakout_path))
             breakouts.append(breakout_name)
 
+        def breakout_enter(idx=0):
+            dialog.accept()
+
         def show_breakout_info(idx):
             if not breakout_table.item(idx, 1):
                 return
@@ -136,8 +139,12 @@ class GuiBreakouts:
         breakout_table.setHorizontalHeaderItem(1, QTableWidgetItem("Name"))
         breakout_table.setRowCount(len(breakouts))
         for row, breakout_name in enumerate(breakouts):
-            breakout_table.setItem(row, 0, QTableWidgetItem(""))
-            breakout_table.setItem(row, 1, QTableWidgetItem(breakout_name))
+            item = QTableWidgetItem("")
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            breakout_table.setItem(row, 0, item)
+            item = QTableWidgetItem(breakout_name)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            breakout_table.setItem(row, 1, item)
             breakout_path = os.path.join(riocore_path, "breakouts", breakout_name)
             image_path = os.path.join(breakout_path, "image.png")
             if os.path.isfile(image_path):
@@ -150,7 +157,7 @@ class GuiBreakouts:
 
         breakout_table.setFixedWidth(200)
         breakout_table.cellClicked.connect(show_breakout_info)
-        breakout_table.currentCellChanged.connect(show_breakout_info)
+        breakout_table.doubleClicked.connect(breakout_enter)
         header = breakout_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.Stretch)
