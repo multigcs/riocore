@@ -5,6 +5,7 @@ import os
 import shutil
 import stat
 
+import riocore
 from riocore import halpins
 from riocore.generator.hal import hal_generator
 from riocore.generator.component import component
@@ -18,7 +19,6 @@ riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 
 class LinuxCNC:
-    AXIS_NAMES = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
     AXIS_DEFAULTS = {
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
@@ -176,7 +176,7 @@ class LinuxCNC:
         self.halextras = []
         self.mqtt_publisher = []
         self.project = project
-        self.protocol = project.config["jdata"].get("protocol", "SPI")
+        self.protocol = self.project.config["jdata"].get("protocol", "SPI")
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
@@ -196,7 +196,12 @@ class LinuxCNC:
             if hasattr(instances[0], "update_prefixes"):
                 instances[0].update_prefixes(instances)
 
-        self.create_axis_config()
+        self.project.axis_dict = self.create_axis_config(self.project, f"{self.hal_prefix}.")
+        num_joints = 0
+        for _axis, values in self.project.axis_dict.items():
+            num_joints += len(values["joints"])
+        self.num_joints = num_joints
+
         self.addons = {}
         self.gpionames = []
         for addon_path in glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "linuxcnc.py")):
@@ -215,7 +220,7 @@ class LinuxCNC:
             os.makedirs(target_dir, exist_ok=True)
             os.symlink(source, target_file)
         except Exception as error:
-            print(f"ERROR(cgflink): {error}")
+            riocore.log(f"ERROR(cgflink): {error}")
 
     def readme(self):
         os.makedirs(self.component_path, exist_ok=True)
@@ -326,7 +331,7 @@ class LinuxCNC:
         open(os.path.join(self.configuration_path, "custom_postgui.hal"), "w").write("\n".join(output_postgui))
 
         if (gui == "gmoccapy" or gui == "gscreen") and self.gui_type == "gladevcp":
-            print("## INFO: custom_postgui.hal will be load by gladevcp")
+            riocore.log("## INFO: custom_postgui.hal will be load by gladevcp")
             self.postgui_call_rm.append("custom_postgui.hal")
         else:
             self.postgui_call_list.append("custom_postgui.hal")
@@ -365,7 +370,7 @@ class LinuxCNC:
             cl_output.append(line)
         open(os.path.join(self.configuration_path, "pregui_call_list.hal"), "w").write("\n".join(cl_output))
 
-        print(f"writing linuxcnc files to: {self.base_path}")
+        riocore.log(f"writing linuxcnc files to: {self.base_path}")
 
     def ini_mdi_command(self, command, title=None):
         """Used by addons to add mdi-command's and prevent doubles"""
@@ -595,9 +600,9 @@ class LinuxCNC:
         aios = self.halg.get_aios()
 
         if dios > 64:
-            print("ERROR: you can only configure up to 64 motion.digital-in-NN/motion.digital-out-NN")
+            riocore.log("ERROR: you can only configure up to 64 motion.digital-in-NN/motion.digital-out-NN")
         if aios > 64:
-            print("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
+            riocore.log("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
 
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type)
 
@@ -875,10 +880,10 @@ class LinuxCNC:
 
                 # TODO: using mux-gen ?
                 if speed_selector_mux > 4:
-                    print("ERROR: only two speed selectors are supported")
+                    riocore.log("ERROR: only two speed selectors are supported")
                     speed_selector_mux = 4
                 elif speed_selector_mux == 1:
-                    print("ERROR: no speed selectors found")
+                    riocore.log("ERROR: no speed selectors found")
 
                 if speed_selector_mux in {2, 4}:
                     self.halg.fmt_add(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
@@ -988,10 +993,10 @@ class LinuxCNC:
                         speed_selector_mux *= 2
 
                 if speed_selector_mux > 4:
-                    print("ERROR: only two speed selectors are supported")
+                    riocore.log("ERROR: only two speed selectors are supported")
                     speed_selector_mux = 4
                 elif speed_selector_mux == 1:
-                    print("ERROR: no speed selectors found")
+                    riocore.log("ERROR: no speed selectors found")
 
                 if speed_selector_mux in {2, 4}:
                     self.halg.fmt_add(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
@@ -1193,7 +1198,7 @@ if __name__ == "__main__":
                 os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
                 shutil.copy(os.path.join(tnc_path, "ui", "window.ui"), os.path.join(self.configuration_path, "ui", "window.ui"))
             except Exception:
-                print("ERROR: no tnc installation found")
+                riocore.log("ERROR: no tnc installation found")
 
         gui_gen = None
         if vcp_mode != "NONE":
@@ -1216,7 +1221,7 @@ if __name__ == "__main__":
             return
 
         if not gui_gen.check(self.configuration_path):
-            print("ERROR: vcp: vcp-gui is disabled")
+            riocore.log("ERROR: vcp: vcp-gui is disabled")
             return
 
         gui_gen.draw_begin()
@@ -1386,7 +1391,7 @@ if __name__ == "__main__":
                     }
                 )
             elif dtype not in {"none", "None", None}:
-                print(f"WARNING: 'draw_{dtype}' not found")
+                riocore.log(f"WARNING: 'draw_{dtype}' not found")
 
         widgets = {}
         for plugin_instance in self.project.plugin_instances:
@@ -2009,53 +2014,50 @@ if __name__ == "__main__":
                     else:
                         self.halg.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pin_num}.enable", f"j{joint}enable")
 
-    def create_axis_config(self):
-        linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
+    def create_axis_config(self, project, prefix="rio."):
+        linuxcnc_config = project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
         pin_num = 0
-        self.num_joints = 0
-        self.num_axis = 0
-        self.project.axis_dict = {}
-
+        num_joints = 0
+        axis_dict = {}
+        axis_names = "XYZACBUVW"
         if machinetype in {"melfa", "melfa_nogl", "puma"}:
-            self.AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C"]
+            axis_names = "XYZABC"
 
         named_axis = []
-        for plugin_instance in self.project.plugin_instances:
+        for plugin_instance in project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint"):
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if axis_name:
                     named_axis.append(axis_name)
 
         # rio joints
-        for plugin_instance in self.project.plugin_instances:
+        for plugin_instance in project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint"):
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if not axis_name:
-                    for name in self.AXIS_NAMES:
-                        if name not in self.project.axis_dict and name not in named_axis:
+                    for name in axis_names:
+                        if name not in axis_dict and name not in named_axis:
                             axis_name = name
                             break
                 if axis_name:
-                    if axis_name not in self.project.axis_dict:
-                        self.project.axis_dict[axis_name] = {"joints": {}}
+                    if axis_name not in axis_dict:
+                        axis_dict[axis_name] = {"joints": {}}
                     feedback = plugin_instance.plugin_setup.get("joint", {}).get("feedback")
-                    self.project.axis_dict[axis_name]["joints"][self.num_joints] = {
+                    axis_dict[axis_name]["joints"][num_joints] = {
                         "type": plugin_instance.NAME,
                         "axis": axis_name,
-                        "joint": self.num_joints,
+                        "joint": num_joints,
                         "plugin_instance": plugin_instance,
                         "feedback": feedback or True,
                     }
                     if feedback:
                         self.feedbacks.append(feedback.replace(":", "."))
-                    self.num_joints += 1
-
-        self.num_axis = len(self.project.axis_dict)
+                    num_joints += 1
 
         # getting all home switches
         joint_homeswitches = []
-        for plugin_instance in self.project.plugin_instances:
+        for plugin_instance in project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     userconfig = signal_config.get("userconfig")
@@ -2063,9 +2065,9 @@ if __name__ == "__main__":
                     if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
                         joint_homeswitches.append(int(net.split(".")[1]))
 
-        for axis_name, axis_config in self.project.axis_dict.items():
+        for axis_name, axis_config in axis_dict.items():
             joints = axis_config["joints"]
-            # print(f"  # Axis: {axis_name}")
+            # riocore.log(f"  # Axis: {axis_name}")
             for joint, joint_setup in joints.items():
                 position_halname = None
                 position_scale_halname = None
@@ -2113,7 +2115,6 @@ if __name__ == "__main__":
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
 
-                prefix = f"{self.hal_prefix}."
                 if enable:
                     enable_halname = f"{prefix}{enable['halname']}"
                 if velocity:
@@ -2140,7 +2141,7 @@ if __name__ == "__main__":
                     if position is not None:
                         feedback_halname = f"{prefix}{position['halname']}"
                     else:
-                        print("ERROR: missing feedback:", axis_name, joint)
+                        riocore.log("ERROR: missing feedback:", axis_name, joint)
                         continue
                 elif position_mode == "relative":
                     if ":" in feedback:
@@ -2149,14 +2150,14 @@ if __name__ == "__main__":
                         fb_plugin_name = feedback
                         fb_signal_name = "position"
                     found = False
-                    for sub_instance in self.project.plugin_instances:
+                    for sub_instance in project.plugin_instances:
                         if sub_instance.title == fb_plugin_name:
                             for sub_signal_name, sub_signal_config in sub_instance.signals().items():
                                 if fb_signal_name != sub_signal_name:
                                     continue
                                 sub_direction = sub_signal_config["direction"]
                                 if sub_direction != "input":
-                                    print("ERROR: can not use this as feedback (no input signal):", sub_signal_config)
+                                    riocore.log("ERROR: can not use this as feedback (no input signal):", sub_signal_config)
                                     exit(1)
                                 feedback_halname = f"{prefix}{sub_signal_config['halname']}"
                                 feedback_signal = feedback_halname.split(".")[-1]
@@ -2164,7 +2165,7 @@ if __name__ == "__main__":
                                 found = True
                                 break
                     if not found:
-                        print(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint} not found")
+                        riocore.log(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint} not found")
                         continue
 
                 joint_setup["position_mode"] = position_mode
@@ -2228,3 +2229,4 @@ if __name__ == "__main__":
             for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
                 key = key.upper()
                 axis_config[key] = value
+        return axis_dict

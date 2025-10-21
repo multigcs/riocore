@@ -4,6 +4,7 @@
 
 import argparse
 import subprocess
+import shutil
 import copy
 import glob
 import os
@@ -1778,7 +1779,7 @@ class TabOptions:
             return path
         elif os.path.exists(os.path.join(riocore_path, path)):
             return os.path.join(riocore_path, path)
-        print(f"can not find path: {path}")
+        riocore.log(f"can not find path: {path}")
         exit(1)
 
     def load_tree_linuxcnc_ini(self, parent_tree):
@@ -2031,13 +2032,22 @@ class Window(QMainWindow):
         self.snapshot()
 
         if self.args.png:
-            print(f"saving view to png file: {self.args.png}")
+            riocore.log(f"saving view to png file: {self.args.png}")
             self.view.save_png(self.args.png)
             exit(0)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
+
+    def prebuild(self):
+        output_dir = "/tmp/rio-test-build"
+        if os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
+        project = riocore.Project(self.config, output_dir)
+        project.generator(preview=False)
+        index_html = os.path.join(project.config["output_path"], "DOC", "index.html")
+        subprocess.run(f"open {index_html} &", shell=True, close_fds=True)
 
     def generator_run(self):
         bin_path = os.path.dirname(__file__)
@@ -2131,6 +2141,15 @@ class Window(QMainWindow):
         run_action.setStatusTip("Generator")
         run_action.setShortcut("F5")
         run_action.triggered.connect(self.generator_run)
+        toolbar.addAction(run_action)
+
+        toolbar.addSeparator()
+
+        icon = self.style().standardIcon(QStyle.SP_MessageBoxInformation)
+        run_action = QAction(icon, "&Prebuild (F12)", self)
+        run_action.setStatusTip("Prebuild")
+        run_action.setShortcut("F12")
+        run_action.triggered.connect(self.prebuild)
         toolbar.addAction(run_action)
 
         toolbar.addSeparator()
@@ -2614,7 +2633,7 @@ class Window(QMainWindow):
             py += 100
 
         # for key, value in self.halpins.items():
-        #     print(key, value)
+        #     riocore.log(key, value)
 
         hnodes_y = 100
         hnodes = {}

@@ -5,6 +5,8 @@ import shutil
 import stat
 import json
 
+import riocore
+
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -55,7 +57,7 @@ class Gateware:
             if self.config["toolchains_json"]:
                 for toolchain, path in self.config["toolchains_json"].items():
                     if path and not os.path.isdir(path):
-                        print(f"WARNING: toolchains.json: path for '{toolchain}' not found: {path}")
+                        riocore.log(f"WARNING: toolchains.json: path for '{toolchain}' not found: {path}")
         else:
             open(toolchains_json_path, "w").write(
                 json.dumps(
@@ -74,7 +76,7 @@ class Gateware:
 
         self.generate_pll = generate_pll
         self.toolchain = self.project.config["toolchain"]
-        print(f"loading toolchain {self.toolchain}")
+        riocore.log(f"loading toolchain {self.toolchain}")
         self.toolchain_generator = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{self.toolchain}").Toolchain(self.config)
 
         for plugin_instance in self.project.plugin_instances:
@@ -108,7 +110,7 @@ class Gateware:
                 flashcmd_script = flashcmd.split()[0].replace("./", "")
                 json_path = self.project.config["json_path"]
                 flashcmd_script_path = os.path.join(json_path, flashcmd_script)
-                print(flashcmd_script_path)
+                riocore.log(flashcmd_script_path)
                 if os.path.isfile(flashcmd_script_path):
                     target = os.path.join(self.gateware_path, flashcmd_script)
                     shutil.copy(flashcmd_script_path, target)
@@ -124,7 +126,7 @@ class Gateware:
                     # fallback to shared files
                     ipv_path = os.path.join(riocore_path, "files", "verilog", verilog)
                 if not os.path.isfile(ipv_path):
-                    print(f"ERROR: can not found verilog file: {verilog}")
+                    riocore.log(f"ERROR: can not found verilog file: {verilog}")
                     exit(1)
                 target = os.path.join(self.gateware_path, verilog)
                 shutil.copy(ipv_path, target)
@@ -182,7 +184,7 @@ class Gateware:
                     if pin_config["pin"] not in pinnames:
                         pinnames[pin_config["pin"]] = plugin_instance.instances_name
                     else:
-                        print(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
+                        riocore.log(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
 
         self.toolchain_generator.generate(self.gateware_path)
 
@@ -281,7 +283,7 @@ class Gateware:
             output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
 
         if output_pos != diff:
-            print("ERROR: wrong buffer sizes")
+            riocore.log("ERROR: wrong buffer sizes")
             exit(1)
 
         arguments_list = ["input sysclk_in"]
@@ -364,10 +366,10 @@ class Gateware:
                 if hasattr(self.toolchain_generator, "pll"):
                     self.toolchain_generator.pll(float(osc_clock), float(speed))
                 else:
-                    print(f"WARNING: can not generate pll for this platform: set speed to: {speed} Hz")
+                    riocore.log(f"WARNING: can not generate pll for this platform: set speed to: {speed} Hz")
                     self.config["speed"] = speed
             else:
-                print("INFO: preview-mode / no pll generated")
+                riocore.log("INFO: preview-mode / no pll generated")
 
             if self.project.config["jdata"]["family"] == "Trion":
                 output.append("    wire sysclk;")
@@ -428,12 +430,12 @@ class Gateware:
                     output.append(f"    wire {varname};")
                     output.append(f"    assign {varname} = {existing_pins[pin]};")
                     if not existing_pins[pin].startswith("PININ_"):
-                        print(f"ERROR: can not share input pin with output pin: {existing_pins[pin]} -> {pin} -> {varname}")
+                        riocore.log(f"ERROR: can not share input pin with output pin: {existing_pins[pin]} -> {pin} -> {varname}")
                     else:
-                        print(f"WARNING: input pin ({pin}) assigned to multiple plugins: {varname} / {existing_pins[pin]}")
+                        riocore.log(f"WARNING: input pin ({pin}) assigned to multiple plugins: {varname} / {existing_pins[pin]}")
                     self.linked_pins.append(varname)
                 else:
-                    print(f"ERROR: can not assign output pin to multiple plugins: {varname} / {existing_pins[pin]} -> {pin}")
+                    riocore.log(f"ERROR: can not assign output pin to multiple plugins: {varname} / {existing_pins[pin]} -> {pin}")
 
         # virtual pins
         for pin in self.virtual_pins:
@@ -636,7 +638,7 @@ class Gateware:
                                 if argument_value in varmapping:
                                     argument_value = varmapping[argument_value]
                                 else:
-                                    print(f"ERROR: no mapping found: {argument_value}")
+                                    riocore.log(f"ERROR: no mapping found: {argument_value}")
                             arguments_list.append(f".{argument_name}({argument_value})")
 
                         arguments_string = ",\n        ".join(arguments_list)
@@ -648,7 +650,7 @@ class Gateware:
         output.append("")
         output.append("endmodule")
         output.append("")
-        print(f"writing gateware to: {self.gateware_path}")
+        riocore.log(f"writing gateware to: {self.gateware_path}")
         open(os.path.join(self.gateware_path, "rio.v"), "w").write("\n".join(output))
 
         # write hash of rio.v to filesystem
@@ -669,8 +671,8 @@ class Gateware:
         hash_new = hash_md5.hexdigest()
 
         if hash_compiled != hash_new:
-            print("!!! gateware changed: needs to be build and flash |||")
+            riocore.log("!!! gateware changed: needs to be build and flash |||")
         elif hash_flashed != hash_new:
-            print("!!! gateware changed: needs to flash |||")
+            riocore.log("!!! gateware changed: needs to flash |||")
         hash_file_new = os.path.join(self.gateware_path, "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)

@@ -140,7 +140,7 @@ class Plugins:
                     if self.plugin_builder(plugin_type, os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v"), plugin_config):
                         self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
                 elif not plugin_type or plugin_type[0] != "_":
-                    print(f"WARNING: plugin not found: {plugin_type}", os.path.join(riocore_path, "plugins", plugin_type, "plugin.py"))
+                    log(f"WARNING: plugin not found: {plugin_type}", os.path.join(riocore_path, "plugins", plugin_type, "plugin.py"))
 
             if plugin_type in self.plugin_modules:
                 plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup, subfix=subfix)
@@ -148,16 +148,16 @@ class Plugins:
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
                         if pin_config["pin"] == "" or pin_config["pin"] is None:
-                            print(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
+                            log(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
                             del pin_config["pin"]
                 self.plugin_instances.append(plugin_instance)
 
                 return plugin_instance
         except Exception:
-            print(f"ERROR: loading plugin: {plugin_id} / {plugin_config}")
-            print("##################################")
+            log(f"ERROR: loading plugin: {plugin_id} / {plugin_config}")
+            log("##################################")
             traceback.print_exc(file=sys.stdout)
-            print("##################################")
+            log("##################################")
             return False
         return True
 
@@ -170,7 +170,7 @@ class Plugins:
         return []
 
     def testbench_builder(self, plugin_type, plugin_instance):
-        print(f"try to build testbench for {plugin_type}")
+        log(f"try to build testbench for {plugin_type}")
 
         speed = int(plugin_instance.system_setup["jdata"]["clock"]["speed"])
         time_steps = 50
@@ -322,19 +322,19 @@ class Plugins:
             makefile.append("")
             open(os.path.join(riocore_path, "plugins", plugin_type, "Makefile"), "w").write("\n".join(makefile))
 
-            print(f"(cd {os.path.join(riocore_path, 'plugins', plugin_type)} ; make)")
+            log(f"(cd {os.path.join(riocore_path, 'plugins', plugin_type)} ; make)")
 
             return True
 
         return False
 
     def plugin_builder(self, plugin_name, verilog_file, plugin_config):
-        print(f"try to autoload plugin from {plugin_name}.v")
+        log(f"try to autoload plugin from {plugin_name}.v")
         verilog_data = open(verilog_file, "r").read()
         x = re.search(r"(module\s+)(?P<name>[a-z0-9_]+)\s+(?P<parameters>#\([^\).]*\))?\s*(?P<arguments>\([^\).]*\));", verilog_data)
         if x is not None:
             if plugin_name != x.group("name"):
-                print(f"ERROR: wrong toplevel name: {x.group('name')}, needs: {plugin_name}")
+                log(f"ERROR: wrong toplevel name: {x.group('name')}, needs: {plugin_name}")
                 return False
 
             arguments = x.group("arguments")
@@ -374,7 +374,7 @@ class Plugins:
                         if argument_size_end.isnumeric() and argument_size_start.isnumeric():
                             argument_size = int(argument_size_end) - int(argument_size_start) + 1
                         else:
-                            print(f"WARNING: can not parse size: {part}, using 32")
+                            log(f"WARNING: can not parse size: {part}, using 32")
                             argument_size = 32
                     elif part in {"reg", "wire", "=", "signed", "unsigned"}:
                         pass
@@ -383,7 +383,7 @@ class Plugins:
                     elif not argument_name:
                         argument_name = part
 
-                print(argument_name, argument_size, argument_name in plugin_config.get("pins", {}))
+                log(argument_name, argument_size, argument_name in plugin_config.get("pins", {}))
 
                 if argument_name in {"clk"}:
                     has_clock = True
@@ -409,11 +409,11 @@ class Plugins:
                         "direction": {"input": "output", "output": "input"}.get(argument_direction),
                     }
             if not has_clock:
-                print("FAILED: can not find clock pin")
+                log("FAILED: can not find clock pin")
             elif not pindefaults:
-                print("FAILED: can not find io pin's")
+                log("FAILED: can not find io pin's")
             elif not interface and not signals and not is_interface:
-                print("FAILED: can not find interface/signals")
+                log("FAILED: can not find interface/signals")
             else:
                 initfile = []
                 initfile.append("")
@@ -469,31 +469,31 @@ class Plugins:
                     initfile.append("        return instances")
                     initfile.append("")
                 if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py")):
-                    print(f"WARNING: file allready exsits: {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')}")
-                    print("\n".join(initfile))
-                    print("")
+                    log(f"WARNING: file allready exsits: {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')}")
+                    log("\n".join(initfile))
+                    log("")
                 else:
-                    print(f"INFO: writing plugin setup to {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')} (please edit)")
+                    log(f"INFO: writing plugin setup to {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')} (please edit)")
                     open(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py"), "w").write("\n".join(initfile))
-                    print("")
+                    log("")
 
                 if plugin_config.get("init") is True:
-                    print("# config example:")
-                    print("    {")
-                    print(f'        "type": "{plugin_name}",')
-                    print('        "pins": {')
+                    log("# config example:")
+                    log("    {")
+                    log(f'        "type": "{plugin_name}",')
+                    log('        "pins": {')
                     pn = 0
                     for pin_name, pin_setup in pindefaults.items():
-                        print(f'            "{pin_name}": {{')
-                        print(f'                "pin": "{pn}",')
-                        print("            },")
+                        log(f'            "{pin_name}": {{')
+                        log(f'                "pin": "{pn}",')
+                        log("            },")
                         pn += 1
-                    print("        }")
-                    print("    },")
-                    print("")
-                    print(".... OK")
+                    log("        }")
+                    log("    },")
+                    log("")
+                    log(".... OK")
                 return True
-        print(".... Failed")
+        log(".... Failed")
         return False
 
 
@@ -550,7 +550,7 @@ class Project:
             if unmapped == "":
                 break
         if unmapped:
-            print(f"ERROR: unmapped breakout ports: {unmapped}")
+            log(f"ERROR: unmapped breakout ports: {unmapped}")
 
         # update plugin pins
         for plugin in self.config["plugins"]:
@@ -579,7 +579,7 @@ class Project:
                 if varname not in varnames:
                     varnames[varname] = plugin_instance.instances_name
                 else:
-                    print(f"ERROR: varname allready exist: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
+                    log(f"ERROR: varname allready exist: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
 
     def info(self):
         jdata = self.config["jdata"]
@@ -635,7 +635,7 @@ class Project:
             return path
         elif os.path.exists(os.path.join(riocore_path, path)):
             return os.path.join(riocore_path, path)
-        print(f"path not found: {path} or {os.path.join(riocore_path, path)}")
+        log(f"path not found: {path} or {os.path.join(riocore_path, path)}")
         exit(1)
 
     def get_boardpath(self, board):
@@ -643,7 +643,7 @@ class Project:
         for path in pathes:
             if os.path.exists(path):
                 return path
-        print(f"can not find board: {board}")
+        log(f"can not find board: {board}")
         exit(1)
 
     def load_config(self, configuration, output_path=None):
@@ -655,31 +655,36 @@ class Project:
             output_path = "Output"
 
         # project["config"] = configuration
-        if isinstance(configuration, str) and configuration[0] == "{":
+        if isinstance(configuration, dict):
+            project = {"jdata": configuration}
+            project["json_file"] = None
+            project["json_path"] = ""
+        elif isinstance(configuration, str) and configuration[0] == "{":
             project = {"jdata": json.loads(configuration)}
             project["json_file"] = None
+            project["json_path"] = ""
         else:
             if not os.path.isfile(configuration):
-                print("")
-                print(f"this is not a file: {configuration}")
-                print("")
+                log("")
+                log(f"this is not a file: {configuration}")
+                log("")
                 exit(1)
             try:
                 with open(configuration, "r") as f:
                     data = f.read()
             except IOError as err:
-                print("")
-                print(err)
-                print("")
+                log("")
+                log(err)
+                log("")
                 exit(1)
 
             try:
                 project["jdata"] = json.loads(data)
             except ValueError as err:
-                print("")
-                print(f"JSON error: {err}")
-                print("please check your json syntax")
-                print("")
+                log("")
+                log(f"JSON error: {err}")
+                log("please check your json syntax")
+                log("")
                 exit(1)
             project["json_file"] = configuration
             project["json_path"] = os.path.dirname(configuration)
@@ -692,7 +697,7 @@ class Project:
         # loading board data
         board = project["jdata"].get("boardcfg")
         if board:
-            print(f"loading board setup: {board}")
+            log(f"loading board setup: {board}")
             board_file = self.get_boardpath(board)
             bdata = open(board_file, "r").read()
             project["boardcfg_path"] = os.path.dirname(board_file)
@@ -731,7 +736,7 @@ class Project:
             if "module" in slot:
                 module = slot.get("module")
                 ssetup = slot.get("setup")
-                print(f"WARNING: found old config style for slot modules, please update: {module}")
+                log(f"WARNING: found old config style for slot modules, please update: {module}")
                 modules.append(
                     {
                         "slot": slotname,
@@ -777,7 +782,7 @@ class Project:
                         # merge into jdata
                         project["plugins"] += module_data["plugins"]
                 else:
-                    print(f"ERROR: module {module} not found")
+                    log(f"ERROR: module {module} not found")
                     exit(1)
 
         self.config = project
@@ -794,6 +799,7 @@ class Project:
         self.config["type"] = project["jdata"].get("type", "UNKNOWN")
         self.config["package"] = project["jdata"].get("package", "UNKNOWN")
         self.config["timing_model"] = project["jdata"].get("timing_model", "UNKNOWN")
+        self.config["json_path"] = project["json_path"]
 
     def setup_merge(self, setup, defaults):
         for key, value in defaults.items():
@@ -851,9 +857,9 @@ class Project:
         self.buffer_bytes = self.buffer_size // 8
         self.config["buffer_size"] = self.buffer_size
 
-        # print("# PC->FPGA", self.output_size)
-        # print("# FPGA->PC", self.input_size)
-        # print("# MAX", self.buffer_size)
+        # log("# PC->FPGA", self.output_size)
+        # log("# FPGA->PC", self.input_size)
+        # log("# MAX", self.buffer_size)
 
     def get_bype_pos(self, bitpos, variable_size):
         byte_pos = (bitpos + 7) // 8
@@ -884,12 +890,12 @@ class Project:
             plugin = os.path.basename(os.path.dirname(ppath))
             interface = importlib.import_module(".interface", f"riocore.interfaces.{plugin}")
             if interface.Interface.check(cstr):
-                print(f"connection via: {plugin}")
+                log(f"connection via: {plugin}")
                 connection = interface.Interface(cstr)
                 break
 
         if connection is None:
-            print(f"ERROR: no interface found for connection-string: {cstr}")
+            log(f"ERROR: no interface found for connection-string: {cstr}")
             exit(1)
         self.connection = connection
         return connection
@@ -1092,7 +1098,7 @@ class Project:
 
                 if plugin_instance.TYPE == "frameio":
                     value = rxdata[byte_start - (byte_size - 1) : byte_start + 1][0:byte_size]
-                    # print(value)
+                    # log(value)
                 elif variable_size > 1:
                     byte_pack = rxdata[byte_start - (byte_size - 1) : byte_start + 1]
                     if len(byte_pack) < 4:
@@ -1143,5 +1149,6 @@ class Project:
                 jslib(self)
             documentation(self)
 
-        target = os.path.join(self.config["output_path"], ".config.json")
-        shutil.copy(self.config["json_file"], target)
+        if self.config["json_file"]:
+            target = os.path.join(self.config["output_path"], ".config.json")
+            shutil.copy(self.config["json_file"], target)
