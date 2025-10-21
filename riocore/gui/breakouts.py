@@ -146,7 +146,7 @@ class GuiBreakouts:
             item.setFlags(Qt.ItemFlag.ItemIsEnabled)
             breakout_table.setItem(row, 1, item)
             breakout_path = os.path.join(riocore_path, "breakouts", breakout_name)
-            image_path = os.path.join(breakout_path, "image.png")
+            image_path = os.path.join(breakout_path, "breakout.png")
             if os.path.isfile(image_path):
                 ilabel = QLabel()
                 ilabel.setFixedSize(24, 24)
