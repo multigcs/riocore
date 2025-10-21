@@ -1783,7 +1783,6 @@ class TabOptions:
         ini_data = riocore.generator.LinuxCNC.LinuxCNC.ini_defaults(self.config)
 
         if self.ini_items:
-            print(self.ini_items)
             for section, section_data in ini_data.items():
                 if section not in ini_config:
                     ini_config[section] = {}
