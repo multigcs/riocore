@@ -1971,7 +1971,7 @@ class TabOptions:
 
         for pin, value in self.config["linuxcnc"].get("setp", {}).items():
             self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem(pin)))
-            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(value)))
+            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(str(value))))
             self.hal_table.setItem(row, 2, QTableWidgetItem(QTableWidgetItem("setp")))
             row += 1
 
