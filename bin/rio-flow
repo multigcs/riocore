@@ -1841,15 +1841,24 @@ class TabOptions:
                     if section == "DISPLAY" and key == "POSITION_OFFSET":
                         var_setup["type"] = "select"
                         var_setup["options"] = ["RELATIVE", "MACHINE"]
-                    if section == "DISPLAY" and key == "POSITION_FEEDBACK":
+                    elif section == "DISPLAY" and key == "POSITION_FEEDBACK":
                         var_setup["type"] = "select"
                         var_setup["options"] = ["COMMANDED", "ACTUAL"]
-                    if section == "HAL" and key == "TWOPASS":
+                    elif section == "HAL" and key == "TWOPASS":
                         var_setup["type"] = "select"
                         var_setup["options"] = ["ON", "OFF"]
-                    if section == "DISPLAY" and key == "PYVCP_POSITION":
+                    elif section == "DISPLAY" and key == "PYVCP_POSITION":
                         var_setup["type"] = "select"
                         var_setup["options"] = ["RIGHT", "BOTTOM"]
+                    elif section == "TRAJ" and key == "LINEAR_UNITS":
+                        var_setup["type"] = "select"
+                        var_setup["options"] = ["in", "inch", "imperial", "metric", "mm"]
+                    elif section == "TRAJ" and key == "ANGULAR_UNITS":
+                        var_setup["type"] = "select"
+                        var_setup["options"] = ["deg", "degree", "rad", "radian", "grad", "gon"]
+                    elif section == "MQTT" and key == "DRYRUN":
+                        var_setup["type"] = "select"
+                        var_setup["options"] = ["", "--dryrun"]
 
                     if section in riocore.halpins.INI_HELPTEXT and key in riocore.halpins.INI_HELPTEXT[section]:
                         var_setup["tooltip"] = riocore.halpins.INI_HELPTEXT[section][key]
@@ -1867,6 +1876,7 @@ class TabOptions:
                     widget = self.parent.edit_item(section_config, key, var_setup, cb=self.updated)
                     self.treeview.setIndexWidget(aitem.index(), widget)
                     self.ini_items[f"{section}_{key}"] = widget
+        self.treeview.expandAll()
 
     def load(self):
         boards_path = self.get_path("boards")
@@ -1897,9 +1907,9 @@ class TabOptions:
         for key, var_setup in options.items():
             row = QHBoxLayout()
             self.layout_misc.addLayout(row)
-            row.addWidget(QLabel(key.title()))
+            row.addWidget(QLabel(key.title()), stretch=1)
             item = self.parent.edit_item(self.config, key, var_setup, cb=self.updated)
-            row.addWidget(item)
+            row.addWidget(item, stretch=1)
             self.items[key] = {"item2": item}
         self.layout_misc.addStretch()
 
