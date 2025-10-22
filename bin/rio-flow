@@ -1737,15 +1737,20 @@ class TabAxis:
             axis_box_axis.addWidget(label)
 
             for joint, jdata in adata["joints"].items():
-                # print(joint, jdata)
                 plugin_instance = None
                 plugin_setup = {}
+                plugin_instance_home = None
+                plugin_setup_home = {}
                 for item in self.parent.scene.items():
                     if isinstance(item, PluginNode):
                         if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
                             plugin_instance = item.plugin_instance
                             plugin_setup = plugin_instance.plugin_setup
-                            break
+
+                        signal = item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
+                        if signal == f"joint.{joint}.home-sw-in":
+                            plugin_instance_home = item.plugin_instance
+                            plugin_setup_home = plugin_instance.plugin_setup
 
                 if plugin_setup:
                     joint_setup = plugin_setup.get("joint", {})
@@ -1763,14 +1768,25 @@ class TabAxis:
 
                     row.addWidget(label, stretch=1)
 
-                    info = QLabel(f"Mode: {position_mode}\nJoint-Type: {jtype}\nPlugin-Type: {ptype}\nScale: {scale}")
-                    row.addWidget(info, stretch=2)
-                    button = QPushButton("edit")
-                    button.clicked.connect(partial(jedit, plugin_instance))
-                    row.addWidget(button, stretch=1)
-                    axis_box_joints.addLayout(row)
+                    home_sw = " --- "
+                    if plugin_setup_home:
+                        home_sw = plugin_instance_home.instances_name
 
-        self.tab_layout.addStretch()
+                    info = QLabel(f"Mode: {position_mode}\nJoint-Type: {jtype}\nPlugin-Type: {ptype}\nScale: {scale}\nHome-Switch: {home_sw}")
+                    row.addWidget(info, stretch=2)
+
+                    buttons = QVBoxLayout()
+                    row.addLayout(buttons, stretch=1)
+                    button = QPushButton("joint")
+                    button.clicked.connect(partial(jedit, plugin_instance))
+                    buttons.addWidget(button, stretch=1)
+                    button = QPushButton("home")
+                    if plugin_setup_home:
+                        button.clicked.connect(partial(jedit, plugin_instance_home))
+                    else:
+                        button.setEnabled(False)
+                    buttons.addWidget(button, stretch=1)
+                    axis_box_joints.addLayout(row)
 
     def widget(self):
         return self.tab_axis
