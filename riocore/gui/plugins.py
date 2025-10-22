@@ -211,8 +211,7 @@ class GuiPlugins:
             option_row = QHBoxLayout()
             option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
-            option_row.addWidget(option_label, stretch=1)
-
+            option_row.addWidget(option_label, stretch=3)
             if option == "feedback":
                 options = [""]
                 for plugin_instance in self.parent.plugins.plugin_instances:
@@ -223,8 +222,8 @@ class GuiPlugins:
                 option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             else:
                 option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
-
             option_row.addWidget(option_widget, stretch=3)
+            option_row.addWidget(QLabel(option_setup.get("unit", "")), stretch=1)
             general_layout.addLayout(option_row)
 
         general_tab = QWidget()
@@ -243,11 +242,12 @@ class GuiPlugins:
             option_row = QHBoxLayout()
             option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
-            option_row.addWidget(option_label, stretch=1)
+            option_row.addWidget(option_label, stretch=3)
             if option == "home_sequence":
                 option_setup = {"default": "auto", "type": "select", "options": ["auto"] + [str(n) for n in range(-9, 9)]}
             option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             option_row.addWidget(option_widget, stretch=3)
+            option_row.addWidget(QLabel(option_setup.get("unit", "")), stretch=1)
             homing_layout.addLayout(option_row)
 
         svgWidget = QtSvg.QSvgWidget()
@@ -510,8 +510,9 @@ class GuiPlugins:
             options.addLayout(option_row)
             option_label = QLabel(title)
             option_label.setToolTip(help_text)
-            option_row.addWidget(option_label, stretch=1)
+            option_row.addWidget(option_label, stretch=3)
             option_row.addWidget(self.parent.edit_item(plugin_config, option_name, option_defaults, cb=update), stretch=3)
+            option_row.addWidget(QLabel(option_defaults.get("unit", "")), stretch=1)
 
         if plugin_instance.PLUGIN_CONFIG:
             button_config = QPushButton("config")

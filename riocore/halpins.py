@@ -8,24 +8,31 @@ JOINT_OPTIONS = {
     },
     "ferror": {
         "type": float,
+        "unit": "units",
     },
     "min_ferror": {
         "type": float,
+        "unit": "units",
     },
     "min_limit": {
         "type": float,
+        "unit": "units",
     },
     "max_limit": {
         "type": float,
+        "unit": "units",
     },
     "max_velocity": {
         "type": float,
+        "unit": "units/s",
     },
     "max_acceleration": {
         "type": float,
+        "unit": "units/s^2",
     },
     "stepgen_maxaccel": {
         "type": float,
+        "unit": "units/s^2",
     },
     "feedback": {
         "type": str,
@@ -35,18 +42,23 @@ JOINT_OPTIONS = {
     },
     "home": {
         "type": float,
+        "unit": "units",
     },
     "home_offset": {
         "type": float,
+        "unit": "units",
     },
     "home_search_vel": {
         "type": float,
+        "unit": "units/s",
     },
     "home_latch_vel": {
         "type": float,
+        "unit": "units/s",
     },
     "home_final_vel": {
         "type": float,
+        "unit": "units/s",
     },
     "home_ignore_limits": {
         "type": "select",
