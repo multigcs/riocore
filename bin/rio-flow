@@ -1700,8 +1700,6 @@ class TabAxis:
         self.tab_axis.setWidgetResizable(True)
         self.tab_axis.setWidget(self.tab_widget)
 
-        self.tab_layout.addWidget(QLabel("ddd"))
-
     def update(self, config):
         self.config = config
         if not self.config.get("name"):
@@ -1725,13 +1723,17 @@ class TabAxis:
         project = riocore.Project(copy.deepcopy(self.config), "")
         for axis, adata in project.axis_dict.items():
             axis_box = QHBoxLayout()
-            self.tab_layout.addLayout(axis_box, stretch=1)
+            self.tab_layout.addLayout(axis_box, stretch=0)
+
             axis_box_axis = QVBoxLayout()
             axis_box.addLayout(axis_box_axis, stretch=1)
+
             axis_box_joints = QVBoxLayout()
-            axis_box.addLayout(axis_box_joints, stretch=3)
+            axis_box.addLayout(axis_box_joints, stretch=5)
+
             label = QLabel(f"{axis}")
             label.setStyleSheet("QLabel{font-size:32px;}")
+            # label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
             axis_box_axis.addWidget(label)
 
             for joint, jdata in adata["joints"].items():
@@ -1754,12 +1756,21 @@ class TabAxis:
                     scale = joint_setup.get("SCALE_OUT", jdata.get("SCALE_OUT", ""))
 
                     row = QHBoxLayout()
-                    info = QLabel(f"Joint: #{joint}\n Mode: {position_mode}\n Joint-Type: {jtype}\n Plugin-Type: {ptype}\n Scale: {scale}")
+
+                    label = QLabel(f"Joint-{joint}")
+                    label.setStyleSheet("QLabel{font-size:27px;}")
+                    # label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+                    row.addWidget(label, stretch=1)
+
+                    info = QLabel(f"Mode: {position_mode}\nJoint-Type: {jtype}\nPlugin-Type: {ptype}\nScale: {scale}")
                     row.addWidget(info, stretch=2)
                     button = QPushButton("edit")
                     button.clicked.connect(partial(jedit, plugin_instance))
                     row.addWidget(button, stretch=1)
                     axis_box_joints.addLayout(row)
+
+        self.tab_layout.addStretch()
 
     def widget(self):
         return self.tab_axis
