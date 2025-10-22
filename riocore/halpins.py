@@ -38,7 +38,9 @@ JOINT_OPTIONS = {
         "type": str,
     },
     "home_sequence": {
-        "type": int,
+        "type": "select",
+        "options": ["auto"] + [str(n) for n in range(-9, 9)],
+        "default": "auto",
     },
     "home": {
         "type": float,

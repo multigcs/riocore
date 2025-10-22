@@ -194,10 +194,10 @@ class edit_float(QDoubleSpinBox):
             decimals = 5
         self.setDecimals(decimals)
         steps = 1.0
-        if decimals > 1:
-            for dn in range(decimals - 1):
-                steps /= 10.0
-            self.setSingleStep(steps)
+        # if decimals > 1:
+        #    for dn in range(decimals - 1):
+        #        steps /= 10.0
+        self.setSingleStep(steps)
         if vmin:
             self.setMinimum(vmin)
         else:

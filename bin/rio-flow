@@ -1689,6 +1689,8 @@ class TabAxis:
     def __init__(self, config, parent=None):
         self.parent = parent
         self.config = config
+        self.signature = []
+        self.widgets = {}
 
         self.tab_widget = QWidget()
         self.tab_layout = QVBoxLayout()
@@ -1701,6 +1703,74 @@ class TabAxis:
         self.tab_axis.setWidget(self.tab_widget)
 
     def update(self, config):
+        self.config = config
+        if not self.widgets:
+            return
+
+        signature = []
+        project = riocore.Project(copy.deepcopy(self.config), "")
+        for axis, adata in project.axis_dict.items():
+            signature.append(axis)
+            for joint, jdata in adata["joints"].items():
+                plugin_instance = None
+                plugin_setup = {}
+                for item in self.parent.scene.items():
+                    if isinstance(item, PluginNode):
+                        if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
+                            plugin_instance = item.plugin_instance
+                            plugin_setup = plugin_instance.plugin_setup
+
+                        signal = item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
+                        if signal == f"joint.{joint}.home-sw-in":
+                            plugin_instance_home = item.plugin_instance
+                            plugin_setup_home = plugin_instance_home.plugin_setup
+
+                if plugin_setup:
+                    signature.append(joint)
+
+                    if "joint" not in plugin_setup:
+                        plugin_setup["joint"] = {}
+                    joint_setup = plugin_setup["joint"]
+
+                    position_mode = joint_setup.get("position_mode", jdata.get("position_mode", ""))
+                    ptype = joint_setup.get("type", jdata.get("type", ""))
+                    scale = joint_setup.get("SCALE_OUT", jdata.get("SCALE_OUT", ""))
+                    max_velocity = joint_setup.get("max_velocity", 40.0)
+
+                    home_sw = " --- "
+                    if plugin_setup_home:
+                        home_sw = plugin_instance_home.instances_name
+
+                    text = []
+                    text.append(f"Mode: {position_mode}")
+                    text.append(f"Plugin-Type: {ptype}")
+                    text.append(f"Home-Switch: {home_sw}")
+                    text.append(f"Max-Velocity: {max_velocity * 60:0.2f} units/min")
+                    max_freq = abs(max_velocity * scale)
+                    if max_freq > 1500:
+                        text.append(f"Max-Frequency: {max_freq / 1000:0.2f} kHz")
+                    else:
+                        text.append(f"Max-Frequency: {max_freq:0.2f} Hz")
+                    self.widgets[f"{joint}_info"].setText("\n".join(text))
+
+                    if "joint" not in plugin_setup:
+                        plugin_setup["joint"] = {}
+                    joint_setup = plugin_setup["joint"]
+
+                    for key in ("type", "scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
+                        self.widgets[f"{joint}_{key}"].update(joint_setup)
+                    for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
+                        self.widgets[f"{joint}_{key}"].update(joint_setup)
+
+                    if plugin_setup_home:
+                        signature.append("h")
+
+        if signature != self.signature:
+            self.reload(config)
+
+    def reload(self, config):
+        self.widgets = {}
+        self.signature = []
         self.config = config
         if not self.config.get("name"):
             return
@@ -1722,21 +1792,22 @@ class TabAxis:
 
         project = riocore.Project(copy.deepcopy(self.config), "")
         for axis, adata in project.axis_dict.items():
+            self.signature.append(axis)
             axis_box = QHBoxLayout()
             self.tab_layout.addLayout(axis_box, stretch=0)
 
             axis_box_axis = QVBoxLayout()
-            axis_box.addLayout(axis_box_axis, stretch=1)
+            axis_box.addLayout(axis_box_axis, stretch=0)
 
             axis_box_joints = QVBoxLayout()
-            axis_box.addLayout(axis_box_joints, stretch=5)
+            axis_box.addLayout(axis_box_joints, stretch=0)
 
-            label = QLabel(f"{axis}")
+            label = QLabel(f"   {axis}   ")
             label.setStyleSheet("QLabel{font-size:32px;}")
-            # label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-            axis_box_axis.addWidget(label)
+            axis_box_axis.addWidget(label, stretch=0)
 
             for joint, jdata in adata["joints"].items():
+                self.signature.append(joint)
                 plugin_instance = None
                 plugin_setup = {}
                 plugin_instance_home = None
@@ -1750,42 +1821,69 @@ class TabAxis:
                         signal = item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
                         if signal == f"joint.{joint}.home-sw-in":
                             plugin_instance_home = item.plugin_instance
-                            plugin_setup_home = plugin_instance.plugin_setup
+                            plugin_setup_home = plugin_instance_home.plugin_setup
 
                 if plugin_setup:
-                    joint_setup = plugin_setup.get("joint", {})
-
-                    position_mode = joint_setup.get("position_mode", jdata.get("position_mode", ""))
-                    jtype = joint_setup.get("TYPE", jdata.get("TYPE", ""))
-                    ptype = joint_setup.get("type", jdata.get("type", ""))
-                    scale = joint_setup.get("SCALE_OUT", jdata.get("SCALE_OUT", ""))
+                    if "joint" not in plugin_setup:
+                        plugin_setup["joint"] = {}
+                    joint_setup = plugin_setup["joint"]
 
                     row = QHBoxLayout()
-
-                    label = QLabel(f"Joint-{joint}")
+                    label = QLabel(f"   Joint-{joint}   ")
                     label.setStyleSheet("QLabel{font-size:27px;}")
-                    # label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+                    row.addWidget(label, stretch=0)
 
-                    row.addWidget(label, stretch=1)
+                    info = QLabel("---")
+                    self.widgets[f"{joint}_info"] = info
+                    row.addWidget(info, stretch=1)
 
-                    home_sw = " --- "
-                    if plugin_setup_home:
-                        home_sw = plugin_instance_home.instances_name
-
-                    info = QLabel(f"Mode: {position_mode}\nJoint-Type: {jtype}\nPlugin-Type: {ptype}\nScale: {scale}\nHome-Switch: {home_sw}")
-                    row.addWidget(info, stretch=2)
-
-                    buttons = QVBoxLayout()
-                    row.addLayout(buttons, stretch=1)
-                    button = QPushButton("joint")
+                    joint_edits = QVBoxLayout()
+                    for key in ("type", "scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
+                        options = riocore.halpins.JOINT_OPTIONS[key]
+                        unit = options.get("unit", "")
+                        default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
+                        if default:
+                            options["default"] = default
+                        widget = self.parent.edit_item(joint_setup, key, options)
+                        self.widgets[f"{joint}_{key}"] = widget
+                        ulabel = QLabel(unit)
+                        ulabel.setStyleSheet("QLabel{font-size:12px;}")
+                        erow = QHBoxLayout()
+                        erow.addWidget(QLabel(key.title()), stretch=2)
+                        erow.addWidget(widget, stretch=4)
+                        erow.addWidget(ulabel, stretch=1)
+                        joint_edits.addLayout(erow)
+                    button = QPushButton("joint-plugin")
                     button.clicked.connect(partial(jedit, plugin_instance))
-                    buttons.addWidget(button, stretch=1)
-                    button = QPushButton("home")
+                    joint_edits.addWidget(button)
+                    row.addLayout(joint_edits, stretch=2)
+
+                    home_edits = QVBoxLayout()
+                    for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
+                        options = riocore.halpins.JOINT_OPTIONS[key]
+                        unit = options.get("unit", "")
+                        default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
+                        if default:
+                            options["default"] = default
+                        widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key])
+                        self.widgets[f"{joint}_{key}"] = widget
+                        ulabel = QLabel(unit)
+                        ulabel.setStyleSheet("QLabel{font-size:12px;}")
+                        erow = QHBoxLayout()
+                        erow.addWidget(QLabel(key.title()), stretch=2)
+                        erow.addWidget(widget, stretch=4)
+                        erow.addWidget(ulabel, stretch=1)
+                        home_edits.addLayout(erow)
+                    button = QPushButton("home-plugin")
+                    button.clicked.connect(partial(jedit, plugin_instance))
                     if plugin_setup_home:
+                        self.signature.append("h")
                         button.clicked.connect(partial(jedit, plugin_instance_home))
                     else:
                         button.setEnabled(False)
-                    buttons.addWidget(button, stretch=1)
+                    home_edits.addWidget(button)
+                    row.addLayout(home_edits, stretch=2)
+
                     axis_box_joints.addLayout(row)
 
     def widget(self):
@@ -2140,6 +2238,7 @@ class Window(QMainWindow):
         self.axis_tab = self.axis_cfg.widget()
 
         self.tabwidget = QTabWidget()
+        # self.tabwidget.setTabPosition(QTabWidget.West)
         self.tabwidget.addTab(self.view, "Drawing")
         self.tabwidget.addTab(self.axis_tab, "Axis/Joints")
         self.tabwidget.addTab(self.options_tab, "Options")
@@ -2184,6 +2283,7 @@ class Window(QMainWindow):
 
         self.options_cfg.load()
         self.options_cfg.update(self.config)
+        self.axis_cfg.reload(self.config)
         self.axis_cfg.update(self.config)
 
         if self.config_file:

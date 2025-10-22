@@ -170,15 +170,16 @@ class GuiPlugins:
             max_velocity = plugin_config.get("joint", {}).get("max_velocity", 40.0)
             max_acceleration = plugin_config.get("joint", {}).get("max_acceleration", 500.0)
             text = []
-            max_freq = max_velocity * scale
+            max_freq = abs(max_velocity * scale)
             if max_freq > 1500:
                 text.append(f"Max-Frequency: {max_freq / 1000:0.2f} kHz")
             else:
                 text.append(f"Max-Frequency: {max_freq:0.2f} Hz")
-            t_to_max = max_velocity / max_acceleration
-            text.append(f"Time to max speed: {t_to_max:0.4f} s")
-            d_to_max = 0.5 * max_acceleration * t_to_max * t_to_max
-            text.append(f"Distance to max speed: {d_to_max:0.4f} units")
+            if max_acceleration != 0.0:
+                t_to_max = max_velocity / max_acceleration
+                text.append(f"Time to max speed: {t_to_max:0.4f} s")
+                d_to_max = 0.5 * max_acceleration * t_to_max * t_to_max
+                text.append(f"Distance to max speed: {d_to_max:0.4f} units")
             self.genral_info_label.setText("\n".join(text))
 
             if hasattr(self.parent, "draw_joint_home"):
