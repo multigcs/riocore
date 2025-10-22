@@ -1776,8 +1776,11 @@ class TabOptions:
 
         machinetype = self.config["linuxcnc"].get("machinetype", "mill")
         image_path = os.path.join(riocore_path, "files", "images", f"{machinetype}.png")
-        if self.help_img1 is not None and os.path.isfile(image_path):
-            pixmap = QPixmap(image_path)
+        if self.help_img1 is not None:
+            if os.path.isfile(image_path):
+                pixmap = QPixmap(image_path)
+            else:
+                pixmap = QPixmap(None)
             self.help_img1.setPixmap(pixmap)
 
         gui = self.config["linuxcnc"].get("gui", "axis")
@@ -1908,7 +1911,7 @@ class TabOptions:
 
         for key, var_setup in {
             "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
-            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the mashine"},
+            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the machine"},
             "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
             "gui": {
                 "type": "select",
