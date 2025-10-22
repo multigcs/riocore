@@ -1685,6 +1685,86 @@ class NodeScene(QGraphicsScene):
             painter.drawPoints(grid_points)
 
 
+class TabAxis:
+    def __init__(self, config, parent=None):
+        self.parent = parent
+        self.config = config
+
+        self.tab_widget = QWidget()
+        self.tab_layout = QVBoxLayout()
+        self.tab_widget.setLayout(self.tab_layout)
+
+        self.tab_axis = QScrollArea()
+        self.tab_axis.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.tab_axis.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.tab_axis.setWidgetResizable(True)
+        self.tab_axis.setWidget(self.tab_widget)
+
+        self.tab_layout.addWidget(QLabel("ddd"))
+
+    def update(self, config):
+        self.config = config
+        if not self.config.get("name"):
+            return
+
+        def cleanLayout(layout):
+            for widget_no in range(0, layout.count()):
+                if layout.itemAt(widget_no) and layout.itemAt(widget_no).widget():
+                    layout.itemAt(widget_no).widget().deleteLater()
+                elif layout.itemAt(widget_no) and layout.itemAt(widget_no).layout():
+                    cleanLayout(layout.itemAt(widget_no).layout())
+                    layout.itemAt(widget_no).layout().deleteLater()
+
+        cleanLayout(self.tab_layout)
+
+        def jedit(plugin_instance):
+            self.parent.scene.parent.gui_plugins.edit_plugin(plugin_instance, None)
+            self.parent.scene.parent.redraw()
+            self.parent.scene.parent.snapshot()
+
+        project = riocore.Project(copy.deepcopy(self.config), "")
+        for axis, adata in project.axis_dict.items():
+            axis_box = QHBoxLayout()
+            self.tab_layout.addLayout(axis_box, stretch=1)
+            axis_box_axis = QVBoxLayout()
+            axis_box.addLayout(axis_box_axis, stretch=1)
+            axis_box_joints = QVBoxLayout()
+            axis_box.addLayout(axis_box_joints, stretch=3)
+            label = QLabel(f"{axis}")
+            label.setStyleSheet("QLabel{font-size:32px;}")
+            axis_box_axis.addWidget(label)
+
+            for joint, jdata in adata["joints"].items():
+                # print(joint, jdata)
+                plugin_instance = None
+                plugin_setup = {}
+                for item in self.parent.scene.items():
+                    if isinstance(item, PluginNode):
+                        if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
+                            plugin_instance = item.plugin_instance
+                            plugin_setup = plugin_instance.plugin_setup
+                            break
+
+                if plugin_setup:
+                    joint_setup = plugin_setup.get("joint", {})
+
+                    position_mode = joint_setup.get("position_mode", jdata.get("position_mode", ""))
+                    jtype = joint_setup.get("TYPE", jdata.get("TYPE", ""))
+                    ptype = joint_setup.get("type", jdata.get("type", ""))
+                    scale = joint_setup.get("SCALE_OUT", jdata.get("SCALE_OUT", ""))
+
+                    row = QHBoxLayout()
+                    info = QLabel(f"Joint: #{joint}\n Mode: {position_mode}\n Joint-Type: {jtype}\n Plugin-Type: {ptype}\n Scale: {scale}")
+                    row.addWidget(info, stretch=2)
+                    button = QPushButton("edit")
+                    button.clicked.connect(partial(jedit, plugin_instance))
+                    row.addWidget(button, stretch=1)
+                    axis_box_joints.addLayout(row)
+
+    def widget(self):
+        return self.tab_axis
+
+
 class TabOptions:
     def __init__(self, config, parent=None):
         self.parent = parent
@@ -1715,16 +1795,9 @@ class TabOptions:
         self.layout_axis = QVBoxLayout()
         tab_axis_widget.setLayout(self.layout_axis)
 
-        self.tab_axis = QScrollArea()
-        self.tab_axis.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.tab_axis.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.tab_axis.setWidgetResizable(True)
-        self.tab_axis.setWidget(tab_axis_widget)
-
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(self.tab_misc, "Misc")
         self.tab_widget.addTab(self.tab_linuxcnc, "LinuxCNC")
-        self.tab_widget.addTab(self.tab_axis, "Joints/Axis")
         self.tab_widget.addTab(self.tab_ini, "INI-Defaults")
         self.tab_widget.addTab(self.tab_hal, "HAL-Signals")
 
@@ -1972,104 +2045,6 @@ class TabOptions:
         vbox2.addWidget(self.help_img2)
         vbox2.addStretch()
 
-        def jedit(plugin_instance):
-            print("##", plugin_instance)
-            self.parent.scene.parent.gui_plugins.edit_plugin(plugin_instance, None)
-            self.parent.scene.parent.redraw()
-            self.parent.scene.parent.snapshot()
-
-        project = riocore.Project(copy.deepcopy(self.config), "")
-        for axis, adata in project.axis_dict.items():
-            axis_box = QHBoxLayout()
-            self.layout_axis.addLayout(axis_box, stretch=1)
-            axis_box_axis = QVBoxLayout()
-            axis_box.addLayout(axis_box_axis, stretch=1)
-            axis_box_joints = QVBoxLayout()
-            axis_box.addLayout(axis_box_joints, stretch=3)
-            label = QLabel(f"{axis}")
-            label.setStyleSheet("QLabel{font-size:32px;}")
-            axis_box_axis.addWidget(label)
-
-            for joint, jdata in adata["joints"].items():
-                # print(joint, jdata)
-                plugin_instance = None
-                plugin_setup = {}
-                for item in self.parent.scene.items():
-                    if isinstance(item, PluginNode):
-                        if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
-                            plugin_instance = item.plugin_instance
-                            plugin_setup = plugin_instance.plugin_setup
-                            break
-
-                if plugin_setup:
-                    row = QHBoxLayout()
-                    info = QLabel(
-                        f"Joint: #{joint}\n Mode: {jdata.get('position_mode', '')}\n Axis-Type: {jdata.get('TYPE', '')}\n Plugin-Type: {jdata.get('type', '')}\n Scale: {jdata.get('SCALE_OUT', '')}"
-                    )
-                    row.addWidget(info, stretch=2)
-                    button = QPushButton("edit")
-                    button.clicked.connect(partial(jedit, plugin_instance))
-                    row.addWidget(button, stretch=1)
-                    axis_box_joints.addLayout(row)
-
-                """
-                tab_widget = QTabWidget()
-                options = QWidget()
-                options_layout = QVBoxLayout()
-                options.setLayout(options_layout)
-                tab_widget.addTab(options, f"Joint ({joint})")
-
-                homing = QWidget()
-                homing_layout = QVBoxLayout()
-                homing.setLayout(homing_layout)
-                tab_widget.addTab(homing, "Homing")
-
-                axis_box_joints.addWidget(tab_widget)
-
-                if plugin_setup:
-                    if "joint" not in plugin_setup:
-                        plugin_setup["joint"] = {}
-                    for key in (
-                        "scale",
-                        "ferror",
-                        "min_ferror",
-                        "min_limit",
-                        "max_limit",
-                        "max_velocity",
-                        "max_acceleration",
-                        "stepgen_maxaccel",
-                        "home",
-                        "home_offset",
-                        "home_search_vel",
-                        "home_latch_vel",
-                        "home_final_vel",
-                        "home_sequence",
-                    ):
-                        ukey = key.upper()
-                        if ukey == "SCALE":
-                            ukey = "SCALE_OUT"
-                        if ukey == "MIN_FERROR":
-                            ukey = "FERROR"
-                        default = None
-                        if key not in plugin_setup["joint"] and ukey.upper() in jdata:
-                            default = jdata[ukey]
-
-                        row = QHBoxLayout()
-                        label = QLabel(key.replace("_", "-").title())
-                        row.addWidget(label, stretch=1)
-                        var_setup = {"type": float, "default": default}
-                        if key == "home_sequence":
-                            var_setup["type"] = int
-                        item = self.parent.edit_item(plugin_setup["joint"], key, var_setup, cb=self.updated)
-                        row.addWidget(item, stretch=1)
-                        self.items[key] = {"item3": item, "instance": plugin_instance}
-
-                        if key.startswith("home"):
-                            homing_layout.addLayout(row)
-                        else:
-                            options_layout.addLayout(row)
-                """
-
     def table_updated(self):
         if self.update_flag:
             return
@@ -2134,8 +2109,12 @@ class Window(QMainWindow):
         self.options_cfg = TabOptions(self.config, parent=self)
         self.options_tab = self.options_cfg.widget()
 
+        self.axis_cfg = TabAxis(self.config, parent=self)
+        self.axis_tab = self.axis_cfg.widget()
+
         self.tabwidget = QTabWidget()
         self.tabwidget.addTab(self.view, "Drawing")
+        self.tabwidget.addTab(self.axis_tab, "Axis/Joints")
         self.tabwidget.addTab(self.options_tab, "Options")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
 
@@ -2178,6 +2157,7 @@ class Window(QMainWindow):
 
         self.options_cfg.load()
         self.options_cfg.update(self.config)
+        self.axis_cfg.update(self.config)
 
         if self.config_file:
             self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
@@ -2445,9 +2425,9 @@ class Window(QMainWindow):
     def cfg_check(self):
         self.jsontab.update(flow=True)
         if self.jsontab.found_diffs:
-            self.tabwidget.tabBar().setTabTextColor(2, QColor(250, 0, 0))
+            self.tabwidget.tabBar().setTabTextColor(3, QColor(250, 0, 0))
         else:
-            self.tabwidget.tabBar().setTabTextColor(2, QColor(0, 0, 0))
+            self.tabwidget.tabBar().setTabTextColor(3, QColor(0, 0, 0))
 
     def undo(self):
         if len(self.snapshots) > 1:
@@ -2833,6 +2813,8 @@ class Window(QMainWindow):
         self.view.setZoom(zoom)
         self.view.horizontalScrollBar().setSliderPosition(ph)
         self.view.verticalScrollBar().setSliderPosition(pv)
+
+        self.axis_cfg.update(self.config)
 
     def grid_align(self):
         items = self.scene.selectedItems()
