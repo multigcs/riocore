@@ -16,7 +16,6 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QLineF, QRectF, QRect, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform, QStandardItemModel
 from PyQt5.QtWidgets import (
-    QGroupBox,
     QScrollArea,
     QTableWidget,
     QTableWidgetItem,
@@ -1973,6 +1972,12 @@ class TabOptions:
         vbox2.addWidget(self.help_img2)
         vbox2.addStretch()
 
+        def jedit(plugin_instance):
+            print("##", plugin_instance)
+            self.parent.scene.parent.gui_plugins.edit_plugin(plugin_instance, None)
+            self.parent.scene.parent.redraw()
+            self.parent.scene.parent.snapshot()
+
         project = riocore.Project(copy.deepcopy(self.config), "")
         for axis, adata in project.axis_dict.items():
             axis_box = QHBoxLayout()
@@ -1987,20 +1992,39 @@ class TabOptions:
 
             for joint, jdata in adata["joints"].items():
                 # print(joint, jdata)
-
-                frame = QGroupBox()
-                frame.setTitle(f"J{joint}")
-                layout = QVBoxLayout()
-                frame.setLayout(layout)
-
-                axis_box_joints.addWidget(frame)
-
-                plugin_instance = jdata["plugin_instance"]
-
+                plugin_instance = None
                 plugin_setup = {}
-                for plugin in self.config["plugins"]:
-                    if plugin["uid"] == plugin_instance.plugin_setup["uid"]:
-                        plugin_setup = plugin
+                for item in self.parent.scene.items():
+                    if isinstance(item, PluginNode):
+                        if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
+                            plugin_instance = item.plugin_instance
+                            plugin_setup = plugin_instance.plugin_setup
+                            break
+
+                if plugin_setup:
+                    row = QHBoxLayout()
+                    info = QLabel(
+                        f"Joint: #{joint}\n Mode: {jdata.get('position_mode', '')}\n Axis-Type: {jdata.get('TYPE', '')}\n Plugin-Type: {jdata.get('type', '')}\n Scale: {jdata.get('SCALE_OUT', '')}"
+                    )
+                    row.addWidget(info, stretch=2)
+                    button = QPushButton("edit")
+                    button.clicked.connect(partial(jedit, plugin_instance))
+                    row.addWidget(button, stretch=1)
+                    axis_box_joints.addLayout(row)
+
+                """
+                tab_widget = QTabWidget()
+                options = QWidget()
+                options_layout = QVBoxLayout()
+                options.setLayout(options_layout)
+                tab_widget.addTab(options, f"Joint ({joint})")
+
+                homing = QWidget()
+                homing_layout = QVBoxLayout()
+                homing.setLayout(homing_layout)
+                tab_widget.addTab(homing, "Homing")
+
+                axis_box_joints.addWidget(tab_widget)
 
                 if plugin_setup:
                     if "joint" not in plugin_setup:
@@ -2031,7 +2055,7 @@ class TabOptions:
                             default = jdata[ukey]
 
                         row = QHBoxLayout()
-                        label = QLabel(key.title())
+                        label = QLabel(key.replace("_", "-").title())
                         row.addWidget(label, stretch=1)
                         var_setup = {"type": float, "default": default}
                         if key == "home_sequence":
@@ -2039,7 +2063,12 @@ class TabOptions:
                         item = self.parent.edit_item(plugin_setup["joint"], key, var_setup, cb=self.updated)
                         row.addWidget(item, stretch=1)
                         self.items[key] = {"item3": item, "instance": plugin_instance}
-                        layout.addLayout(row)
+
+                        if key.startswith("home"):
+                            homing_layout.addLayout(row)
+                        else:
+                            options_layout.addLayout(row)
+                """
 
     def table_updated(self):
         if self.update_flag:
