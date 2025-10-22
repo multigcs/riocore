@@ -1713,8 +1713,8 @@ class TabOptions:
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(self.tab_misc, "Misc")
         self.tab_widget.addTab(self.tab_linuxcnc, "LinuxCNC")
-        self.tab_widget.addTab(self.tab_ini, "INI")
-        self.tab_widget.addTab(self.tab_hal, "HAL")
+        self.tab_widget.addTab(self.tab_ini, "INI-Defaults")
+        self.tab_widget.addTab(self.tab_hal, "HAL-Signals")
 
         self.treeview = QTreeView()
         self.model = QStandardItemModel()
@@ -1785,8 +1785,11 @@ class TabOptions:
 
         gui = self.config["linuxcnc"].get("gui", "axis")
         image_path = os.path.join(riocore_path, "files", "images", f"{gui}.png")
-        if self.help_img2 is not None and os.path.isfile(image_path):
-            pixmap = QPixmap(image_path)
+        if self.help_img2 is not None:
+            if os.path.isfile(image_path):
+                pixmap = QPixmap(image_path)
+            else:
+                pixmap = QPixmap(None)
             self.help_img2.setPixmap(pixmap)
 
         self.update_flag = False
