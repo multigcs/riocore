@@ -697,7 +697,7 @@ class Project:
         # loading board data
         board = project["jdata"].get("boardcfg")
         if board:
-            log(f"loading board setup: {board}")
+            # log(f"loading board setup: {board}")
             board_file = self.get_boardpath(board)
             bdata = open(board_file, "r").read()
             project["boardcfg_path"] = os.path.dirname(board_file)
