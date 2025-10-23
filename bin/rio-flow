@@ -1778,6 +1778,7 @@ class TabAxis:
     def scale_calc(self, scale_key):
         dialog = QDialog()
         dialog.setWindowTitle("Scale-Calculator")
+        dialog.setMinimumWidth(400)
         dialog.scale_value = 320.0
         dialog.layout = QVBoxLayout()
         dialog.setLayout(dialog.layout)
@@ -1852,13 +1853,14 @@ class TabAxis:
             driver_microsteps = defaults["driver_microsteps"]["widget"].value()
             driver_steps_per_rev = motor_steps_per_rev * driver_microsteps
             defaults["driver_steps_per_rev"]["widget"].setValue(driver_steps_per_rev)
+            angle_label.setText(f"Full Step angle = {360.0 / motor_steps_per_rev:0.3f} deg/rev")
 
         def update_scale(misc):
             driver_steps_per_rev = defaults["driver_steps_per_rev"]["widget"].value()
             spindle_pitch = defaults["spindle_pitch"]["widget"].value()
             gear_ratio = defaults["gear_ratio"]["widget"].value()
             dialog.scale_value = driver_steps_per_rev * gear_ratio / spindle_pitch
-            scale_label.setText(f"Scale = {dialog.scale_value}")
+            scale_label.setText(f"Joint-Scale = {dialog.scale_value:0.3f} steps/unit")
 
         for key, var_setup in defaults.items():
             erow = QHBoxLayout()
@@ -1873,7 +1875,10 @@ class TabAxis:
             erow.addWidget(QLabel(var_setup["unit"]), stretch=1)
             dialog.layout.addLayout(erow)
 
-        scale_label = QLabel("Scale = 320")
+        angle_label = QLabel("Full Step angle = 1.8 deg/rev")
+        dialog.layout.addWidget(angle_label)
+
+        scale_label = QLabel("Joint-Scale = 320  steps/unit")
         dialog.layout.addWidget(scale_label)
         dialog.layout.addWidget(dialog_buttonBox)
         if dialog.exec():
