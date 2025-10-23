@@ -25,7 +25,7 @@ class Plugin(PluginBase):
             "image": {
                 "default": "generic",
                 "type": "select",
-                "options": ["generic", "proximity", "estop", "probe"],
+                "options": ["generic", "proximity", "estop", "probe", "switch"],
                 "description": "hardware type",
             },
         }
@@ -46,6 +46,11 @@ class Plugin(PluginBase):
             self.IMAGE = "probe.png"
             self.PINDEFAULTS["bit"]["pos"] = (10, 160)
             self.SIGNALS["bit"]["pos"] = (280, 160)
+        elif image == "switch":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "switch.png"
+            self.PINDEFAULTS["bit"]["pos"] = (90, 100)
+            self.SIGNALS["bit"]["pos"] = (270, 100)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):

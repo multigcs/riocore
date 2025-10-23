@@ -1147,7 +1147,7 @@ class Project:
                 rosbridge(self)
                 mqttbridge(self)
                 jslib(self)
-            documentation(self)
+        documentation(self)
 
         if self.config["json_file"]:
             target = os.path.join(self.config["output_path"], ".config.json")
