@@ -38,7 +38,7 @@ If higher rates are needed, a hardware step generator is a better choice."""
                 ],
                 "description": "Modus",
             },
-            "htype": {
+            "image": {
                 "default": "generic",
                 "type": "select",
                 "options": ["generic", "stepper"],
@@ -84,8 +84,8 @@ If higher rates are needed, a hardware step generator is a better choice."""
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
 
-        htype = self.plugin_setup.get("htype", self.option_default("htype"))
-        if htype == "stepper":
+        image = self.plugin_setup.get("image", self.option_default("image"))
+        if image == "stepper":
             self.IMAGE_SHOW = True
             self.IMAGE = "stepper.png"
             self.PINDEFAULTS["step"]["pos"] = (30, 380)

@@ -1,4 +1,3 @@
-
 import sys
 import json
 
@@ -29,10 +28,8 @@ else:
         exit(0)
 
 
-data = json.dumps(jdata, indent=4) 
+data = json.dumps(jdata, indent=4)
 
 print(data)
 
 open(json_file, "w").write(data)
-
-

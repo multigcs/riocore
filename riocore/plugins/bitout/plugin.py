@@ -28,7 +28,7 @@ class Plugin(PluginBase):
             },
         }
         self.OPTIONS = {
-            "htype": {
+            "image": {
                 "default": "generic",
                 "type": "select",
                 "options": ["generic", "relay"],
@@ -36,8 +36,8 @@ class Plugin(PluginBase):
             },
         }
 
-        htype = self.plugin_setup.get("htype", self.option_default("htype"))
-        if htype == "relay":
+        image = self.plugin_setup.get("image", self.option_default("image"))
+        if image == "relay":
             self.IMAGE_SHOW = True
             self.IMAGE = "relay.png"
             self.PINDEFAULTS["bit"]["pos"] = (15, 150)

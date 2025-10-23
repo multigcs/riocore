@@ -22,7 +22,7 @@ class Plugin(PluginBase):
             },
         }
         self.OPTIONS = {
-            "htype": {
+            "image": {
                 "default": "generic",
                 "type": "select",
                 "options": ["generic", "proximity", "estop", "probe"],
@@ -30,18 +30,18 @@ class Plugin(PluginBase):
             },
         }
 
-        htype = self.plugin_setup.get("htype", self.option_default("htype"))
-        if htype == "proximity":
+        image = self.plugin_setup.get("image", self.option_default("image"))
+        if image == "proximity":
             self.IMAGE_SHOW = True
             self.IMAGE = "proximity.png"
             self.PINDEFAULTS["bit"]["pos"] = (10, 60)
             self.SIGNALS["bit"]["pos"] = (360, 60)
-        elif htype == "estop":
+        elif image == "estop":
             self.IMAGE_SHOW = True
             self.IMAGE = "estop.png"
             self.PINDEFAULTS["bit"]["pos"] = (10, 160)
             self.SIGNALS["bit"]["pos"] = (360, 160)
-        elif htype == "probe":
+        elif image == "probe":
             self.IMAGE_SHOW = True
             self.IMAGE = "probe.png"
             self.PINDEFAULTS["bit"]["pos"] = (10, 160)
