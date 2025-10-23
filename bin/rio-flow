@@ -891,13 +891,14 @@ class PluginNode(MyNode):
                     psetup["sub"] = snode
                 py += snode.height + 5
         self.ports = self.ports_right
-        self.ports.update(self.ports_left)
+        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
+            self.ports.update(self.ports_left)
 
         if self.plugin_instance.TYPE != "base":
             self.height = grid(self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom)
 
     def boundingRect(self):
-        # if self.plugin_instance.TYPE == "base":
+        # if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
         #    return QRectF(0, 0, self.width + 50, self.height + 50)
         return QRectF(0, 0, self.width, self.height)
 
@@ -1072,7 +1073,7 @@ class PluginNode(MyNode):
             return QPointF(pos_x, pos_y)
 
     def port_selected(self, mouse_pos):
-        if self.plugin_instance.TYPE == "base":
+        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
             mouse_x = mouse_pos.x()
             mouse_y = mouse_pos.y()
             for port in self.ports:
