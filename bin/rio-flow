@@ -838,14 +838,16 @@ class PluginNode(MyNode):
             plugin_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME)
             imagefile = self.plugin_instance.IMAGE or "image.png"
             image = os.path.join(plugin_path, imagefile)
-
-            pixmap = QPixmap.fromImage(QImage(image))
-            pixmap = pixmap.transformed(QTransform().rotate(self.plugin_instance.plugin_setup["rotate"]))
-            pixmap_width = pixmap.width()
-            pixmap_height = pixmap.height()
-            self.width = grid(pixmap_width // 2)
-            self.height = grid(pixmap_height // 2)
-            self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            if os.path.exists(image):
+                pixmap = QPixmap.fromImage(QImage(image))
+                pixmap = pixmap.transformed(QTransform().rotate(self.plugin_instance.plugin_setup["rotate"]))
+                pixmap_width = pixmap.width()
+                pixmap_height = pixmap.height()
+                self.width = grid(pixmap_width // 2)
+                self.height = grid(pixmap_height // 2)
+                self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            else:
+                self.plugin_instance.IMAGE_SHOW = False
 
         if hasattr(self, "plugin_instance"):
             if self.plugin_instance.TYPE == "expansion":
@@ -857,6 +859,18 @@ class PluginNode(MyNode):
                     title = exansion_pin.replace(prefix, "")
                     self.ports_right[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "expansion"}
 
+        if "rotate" in self.plugin_instance.plugin_setup:
+            for gpio_pin, gpio_data in self.plugin_instance.PINDEFAULTS.items():
+                pos = gpio_data.get("pos", (0, 0))
+                if self.plugin_instance.plugin_setup["rotate"] == 90:
+                    pos = [pixmap_width - pos[1], pos[0]]
+                elif self.plugin_instance.plugin_setup["rotate"] == -90:
+                    pos = [pos[1], pixmap_height - pos[0]]
+                elif self.plugin_instance.plugin_setup["rotate"] == 180:
+                    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+                self.ports_left[gpio_pin] = gpio_data
+                self.ports_left[gpio_pin]["pos"] = pos
+
             for gpio_pin, gpio_data in self.plugin_instance.GPIODEFAULTS.items():
                 pos = gpio_data.get("pos", (0, 0))
                 if self.plugin_instance.plugin_setup["rotate"] == 90:
@@ -867,6 +881,16 @@ class PluginNode(MyNode):
                     pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
                 self.ports_right[gpio_pin] = gpio_data
                 self.ports_right[gpio_pin]["pos"] = pos
+
+            for key, value in self.plugin_instance.SIGNALS.items():
+                pos = value.get("pos", (0, 0))
+                if self.plugin_instance.plugin_setup["rotate"] == 90:
+                    pos = [pixmap_width - pos[1], pos[0]]
+                elif self.plugin_instance.plugin_setup["rotate"] == -90:
+                    pos = [pos[1], pixmap_height - pos[0]]
+                elif self.plugin_instance.plugin_setup["rotate"] == 180:
+                    pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+                self.ports_right[f"sig_{key}"]["pos"] = pos
 
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
@@ -891,15 +915,13 @@ class PluginNode(MyNode):
                     psetup["sub"] = snode
                 py += snode.height + 5
         self.ports = self.ports_right
-        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
+        if self.plugin_instance.IMAGE_SHOW:
             self.ports.update(self.ports_left)
 
-        if self.plugin_instance.TYPE != "base":
+        if self.plugin_instance.TYPE != "base" and not self.plugin_instance.IMAGE_SHOW:
             self.height = grid(self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom)
 
     def boundingRect(self):
-        # if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
-        #    return QRectF(0, 0, self.width + 50, self.height + 50)
         return QRectF(0, 0, self.width, self.height)
 
     def rotate_cw(self):
@@ -2726,6 +2748,7 @@ class Window(QMainWindow):
             self.setWindowTitle("RIO - Flow-GUI")
 
     def update_halpins_from_edges(self):
+        return
         for item in self.scene.items():
             if isinstance(item, PluginNode):
                 plugin_config = item.plugin_instance.plugin_setup
@@ -3044,33 +3067,34 @@ class Window(QMainWindow):
         # for key, value in self.halpins.items():
         #     riocore.log(key, value)
 
-        hnodes_y = 100
-        hnodes = {}
-        color_n = 0
-        for signal_name, signal in self.halpins.items():
-            source = signal["source"]
-            target = signal["target"]
-            tsplit = target.split(".")
-            group = tsplit[0]
+        if False:
+            hnodes_y = 100
+            hnodes = {}
+            color_n = 0
+            for signal_name, signal in self.halpins.items():
+                source = signal["source"]
+                target = signal["target"]
+                tsplit = target.split(".")
+                group = tsplit[0]
 
-            if source is None:
-                group = "unused"
-            elif group in {"joint", "spindle"}:
-                group = ".".join(tsplit[0:2])
-            else:
-                group = "misc"
+                if source is None:
+                    group = "unused"
+                elif group in {"joint", "spindle"}:
+                    group = ".".join(tsplit[0:2])
+                else:
+                    group = "misc"
 
-            if source and target:
-                if group not in hnodes:
-                    pos = self.config["flow"]["hal"].get(group, (1100, hnodes_y))
-                    hnodes[group] = HalNode(self.scene, pos[0], pos[1], group)
-                    self.scene.addItem(hnodes[group])
-                    hnodes_y += hnodes[group].height + 10
-                hnodes[group].add_signal(target, signal)
-                spin = f"sig_{source[1]}"
-                edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[color_n])
-                color_n += 1
-                self.scene.addItem(edge)
+                if source and target:
+                    if group not in hnodes:
+                        pos = self.config["flow"]["hal"].get(group, (1100, hnodes_y))
+                        hnodes[group] = HalNode(self.scene, pos[0], pos[1], group)
+                        self.scene.addItem(hnodes[group])
+                        hnodes_y += hnodes[group].height + 10
+                    hnodes[group].add_signal(target, signal)
+                    spin = f"sig_{source[1]}"
+                    edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[color_n])
+                    color_n += 1
+                    self.scene.addItem(edge)
         ph = 1
         pv = 1
         zoom = 1.0

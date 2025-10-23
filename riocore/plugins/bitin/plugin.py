@@ -29,49 +29,28 @@ class Plugin(PluginBase):
             "htype": {
                 "default": "generic",
                 "type": "select",
-                "options": ["generic", "proximity12mm"],
+                "options": ["generic", "proximity", "estop", "probe"],
                 "description": "hardware type",
             },
         }
 
         htype = self.plugin_setup.get("htype", self.option_default("htype"))
-        if htype == "proximity12mm":
+        if htype == "proximity":
             self.IMAGE_SHOW = True
-            self.IMAGE = "proximity12mm"
-            self.PINDEFAULTS["bit"]["pos"] = (10, 36)
-            self.SIGNALS["bit"]["pos"] = (200, 36)
+            self.IMAGE = "proximity.png"
+            self.PINDEFAULTS["bit"]["pos"] = (10, 60)
+            self.SIGNALS["bit"]["pos"] = (360, 60)
+        elif htype == "estop":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "estop.png"
+            self.PINDEFAULTS["bit"]["pos"] = (10, 160)
+            self.SIGNALS["bit"]["pos"] = (360, 160)
+        elif htype == "probe":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "probe.png"
+            self.PINDEFAULTS["bit"]["pos"] = (10, 160)
+            self.SIGNALS["bit"]["pos"] = (280, 160)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)
         return instances
-
-    def firmware_defines(self):
-        output = []
-        for pin_name, pin_config in self.pins().items():
-            pin = pin_config["pin"]
-            direction = pin_config["direction"]
-            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
-            output.append(f"#define {pin_define_name} {pin}")
-        return "\n".join(output)
-
-    def firmware_setup(self):
-        output = []
-        for pin_name, pin_config in self.pins().items():
-            pull = pin_config.get("pull")
-            direction = pin_config["direction"]
-            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
-            if pull:
-                output.append(f"    pinMode({pin_define_name}, {direction.upper()}_PULL{pull.upper()});")
-            else:
-                output.append(f"    pinMode({pin_define_name}, {direction.upper()});")
-        return "\n".join(output)
-
-    def firmware_loop(self):
-        output = []
-        for pin_name, pin_config in self.pins().items():
-            direction = pin_config["direction"]
-            interface_data = self.interface_data()
-            pin_define_name = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
-            bit_var = interface_data["bit"]["variable"]
-            output.append(f"    {bit_var} = digitalRead({pin_define_name});")
-        return "\n".join(output)

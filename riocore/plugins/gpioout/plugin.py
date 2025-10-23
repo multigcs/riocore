@@ -12,7 +12,6 @@ class Plugin(PluginBase):
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
         self.OPTIONS = {}
-
         self.SIGNALS = {
             "bit": {
                 "direction": "output",
@@ -24,6 +23,21 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
+        self.OPTIONS = {
+            "htype": {
+                "default": "generic",
+                "type": "select",
+                "options": ["generic", "relay"],
+                "description": "hardware type",
+            },
+        }
+
+        htype = self.plugin_setup.get("htype", self.option_default("htype"))
+        if htype == "relay":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "relay.png"
+            self.PINDEFAULTS["bit"]["pos"] = (15, 150)
+            self.SIGNALS["bit"]["pos"] = (355, 150)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):

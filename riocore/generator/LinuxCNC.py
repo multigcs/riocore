@@ -1860,9 +1860,10 @@ if __name__ == "__main__":
                     shutil.copytree(source, target)
 
         for component_type, instances in components.items():
-            ret = instances[0].loader(instances)
-            if ret:
-                self.halg.fmt_add_top(ret)
+            if hasattr(instances[0], "loader"):
+                ret = instances[0].loader(instances)
+                if ret:
+                    self.halg.fmt_add_top(ret)
 
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":

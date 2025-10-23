@@ -38,6 +38,12 @@ If higher rates are needed, a hardware step generator is a better choice."""
                 ],
                 "description": "Modus",
             },
+            "htype": {
+                "default": "generic",
+                "type": "select",
+                "options": ["generic", "stepper"],
+                "description": "hardware type",
+            },
         }
         self.SIGNALS = {
             "position-cmd": {
@@ -77,6 +83,16 @@ If higher rates are needed, a hardware step generator is a better choice."""
         }
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
+
+        htype = self.plugin_setup.get("htype", self.option_default("htype"))
+        if htype == "stepper":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "stepper.png"
+            self.PINDEFAULTS["step"]["pos"] = (30, 380)
+            self.PINDEFAULTS["dir"]["pos"] = (30, 320)
+            self.SIGNALS["position-cmd"]["pos"] = (360, 240)
+            self.SIGNALS["position-fb"]["pos"] = (360, 270)
+            self.SIGNALS["position-scale"]["pos"] = (360, 300)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):
