@@ -16,6 +16,7 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QLineF, QRectF, QRect, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform, QStandardItemModel
 from PyQt5.QtWidgets import (
+    QDialogButtonBox,
     QScrollArea,
     QTableWidget,
     QTableWidgetItem,
@@ -1771,6 +1772,111 @@ class TabAxis:
     def scale_invert(self, key):
         self.widgets[key].setValue(-self.widgets[key].value())
 
+    def scale_calc(self, scale_key):
+        dialog = QDialog()
+        dialog.setWindowTitle("Scale-Calculator")
+        dialog.scale_value = 320.0
+        dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+
+        data = {
+            "motor_steps_per_rev": 200,
+            "driver_microsteps": 8,
+            "driver_steps_per_rev": 1600,
+            "gear_teeth_in": 0,
+            "gear_teeth_out": 0,
+            "gear_ratio": 1.0,
+            "spindle_pitch": 5.0,
+        }
+        defaults = {
+            "motor_steps_per_rev": {
+                "title": "Stepper-Motor",
+                "type": int,
+                "unit": "steps/rev",
+                "widget": None,
+            },
+            "driver_microsteps": {
+                "title": "Microsteps",
+                "type": int,
+                "unit": "steps",
+                "widget": None,
+            },
+            "driver_steps_per_rev": {
+                "title": "Driver",
+                "type": float,
+                "unit": "steps/rev",
+                "widget": None,
+            },
+            "gear_teeth_in": {
+                "title": "Gear-In",
+                "type": int,
+                "unit": "teeth",
+                "widget": None,
+            },
+            "gear_teeth_out": {
+                "title": "Gear-Out",
+                "type": int,
+                "unit": "teeth",
+                "widget": None,
+            },
+            "gear_ratio": {
+                "title": "Gear-Ratio",
+                "type": float,
+                "unit": "1:n",
+                "widget": None,
+            },
+            "spindle_pitch": {
+                "title": "Leadscrew",
+                "type": float,
+                "unit": "units/rev",
+                "widget": None,
+            },
+        }
+
+        def update_ratio(misc):
+            gear_teeth_in = defaults["gear_teeth_in"]["widget"].value()
+            gear_teeth_out = defaults["gear_teeth_out"]["widget"].value()
+            ratio = 1.0
+            if gear_teeth_in and gear_teeth_out:
+                ratio = gear_teeth_out / gear_teeth_in
+            defaults["gear_ratio"]["widget"].setValue(ratio)
+
+        def update_revs(misc):
+            motor_steps_per_rev = defaults["motor_steps_per_rev"]["widget"].value()
+            driver_microsteps = defaults["driver_microsteps"]["widget"].value()
+            driver_steps_per_rev = motor_steps_per_rev * driver_microsteps
+            defaults["driver_steps_per_rev"]["widget"].setValue(driver_steps_per_rev)
+
+        def update_scale(misc):
+            driver_steps_per_rev = defaults["driver_steps_per_rev"]["widget"].value()
+            spindle_pitch = defaults["spindle_pitch"]["widget"].value()
+            gear_ratio = defaults["gear_ratio"]["widget"].value()
+            dialog.scale_value = driver_steps_per_rev * gear_ratio / spindle_pitch
+            scale_label.setText(f"Scale = {dialog.scale_value}")
+
+        for key, var_setup in defaults.items():
+            erow = QHBoxLayout()
+            erow.addWidget(QLabel(var_setup["title"]), stretch=2)
+            cb = update_scale
+            if key in {"motor_steps_per_rev", "driver_microsteps"}:
+                cb = update_revs
+            elif key in {"gear_teeth_in", "gear_teeth_out"}:
+                cb = update_ratio
+            var_setup["widget"] = self.parent.edit_item(data, key, var_setup, cb=cb)
+            erow.addWidget(var_setup["widget"], stretch=2)
+            erow.addWidget(QLabel(var_setup["unit"]), stretch=1)
+            dialog.layout.addLayout(erow)
+
+        scale_label = QLabel("Scale = 320")
+        dialog.layout.addWidget(scale_label)
+        dialog.layout.addWidget(dialog_buttonBox)
+        if dialog.exec():
+            self.widgets[scale_key].setValue(dialog.scale_value)
+        return
+
     def reload(self, config):
         self.widgets = {}
         self.signature = []
@@ -1789,6 +1895,11 @@ class TabAxis:
         cleanLayout(self.tab_layout)
 
         def jedit(plugin_instance):
+            self.parent.scene.parent.gui_plugins.edit_plugin(plugin_instance, None)
+            self.parent.scene.parent.redraw()
+            self.parent.scene.parent.snapshot()
+
+        def scale_calc(plugin_instance):
             self.parent.scene.parent.gui_plugins.edit_plugin(plugin_instance, None)
             self.parent.scene.parent.redraw()
             self.parent.scene.parent.snapshot()
@@ -1861,7 +1972,7 @@ class TabAxis:
                         if key == "scale":
                             text = "INV."
                             button = QPushButton(text)
-                            width = button.fontMetrics().boundingRect(text).width() + 3
+                            width = button.fontMetrics().boundingRect(text).width()
                             button.setMinimumWidth(width)
                             button.clicked.connect(partial(self.scale_invert, f"{joint}_{key}"))
                             erow.addWidget(button, stretch=1)
@@ -1869,9 +1980,16 @@ class TabAxis:
                             erow.addWidget(ulabel, stretch=1)
 
                         joint_edits.addLayout(erow)
+
+                    brow = QHBoxLayout()
                     button = QPushButton("joint-plugin")
                     button.clicked.connect(partial(jedit, plugin_instance))
-                    joint_edits.addWidget(button)
+                    brow.addWidget(button)
+                    button = QPushButton("scale-calc")
+                    button.clicked.connect(partial(self.scale_calc, f"{joint}_scale"))
+                    brow.addWidget(button)
+                    joint_edits.addLayout(brow)
+
                     row.addLayout(joint_edits, stretch=2)
 
                     home_edits = QVBoxLayout()
