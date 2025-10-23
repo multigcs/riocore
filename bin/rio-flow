@@ -1768,6 +1768,9 @@ class TabAxis:
         if signature != self.signature:
             self.reload(config)
 
+    def scale_invert(self, key):
+        self.widgets[key].setValue(-self.widgets[key].value())
+
     def reload(self, config):
         self.widgets = {}
         self.signature = []
@@ -1802,7 +1805,7 @@ class TabAxis:
             axis_box_joints = QVBoxLayout()
             axis_box.addLayout(axis_box_joints, stretch=0)
 
-            label = QLabel(f"   {axis}   ")
+            label = QLabel(f"{axis} ")
             label.setStyleSheet("QLabel{font-size:32px;}")
             axis_box_axis.addWidget(label, stretch=0)
 
@@ -1829,7 +1832,7 @@ class TabAxis:
                     joint_setup = plugin_setup["joint"]
 
                     row = QHBoxLayout()
-                    label = QLabel(f"   Joint-{joint}   ")
+                    label = QLabel(f" Joint-{joint} ")
                     label.setStyleSheet("QLabel{font-size:27px;}")
                     row.addWidget(label, stretch=0)
 
@@ -1841,7 +1844,10 @@ class TabAxis:
                     for key in ("type", "scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
                         options = riocore.halpins.JOINT_OPTIONS[key]
                         unit = options.get("unit", "")
-                        default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
+                        dkey = key.upper()
+                        if key == "scale":
+                            dkey = "SCALE_OUT"
+                        default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(dkey)
                         if default:
                             options["default"] = default
                         widget = self.parent.edit_item(joint_setup, key, options)
@@ -1851,7 +1857,17 @@ class TabAxis:
                         erow = QHBoxLayout()
                         erow.addWidget(QLabel(key.title()), stretch=2)
                         erow.addWidget(widget, stretch=4)
-                        erow.addWidget(ulabel, stretch=1)
+
+                        if key == "scale":
+                            text = "INV."
+                            button = QPushButton(text)
+                            width = button.fontMetrics().boundingRect(text).width() + 3
+                            button.setMinimumWidth(width)
+                            button.clicked.connect(partial(self.scale_invert, f"{joint}_{key}"))
+                            erow.addWidget(button, stretch=1)
+                        else:
+                            erow.addWidget(ulabel, stretch=1)
+
                         joint_edits.addLayout(erow)
                     button = QPushButton("joint-plugin")
                     button.clicked.connect(partial(jedit, plugin_instance))
