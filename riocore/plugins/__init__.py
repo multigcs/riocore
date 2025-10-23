@@ -10,6 +10,7 @@ class PluginBase:
         self.GPIODEFAULTS = {}
         self.INTERFACE = {}
         self.IMAGE = ""
+        self.IMAGE_SHOW = False
         self.SIGNALS = {}
         self.PREFIX = ""
         self.TIMING_CONSTRAINTS = {}

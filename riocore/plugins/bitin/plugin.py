@@ -25,6 +25,21 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
+        self.OPTIONS = {
+            "htype": {
+                "default": "generic",
+                "type": "select",
+                "options": ["generic", "proximity12mm"],
+                "description": "hardware type",
+            },
+        }
+
+        htype = self.plugin_setup.get("htype", self.option_default("htype"))
+        if htype == "proximity12mm":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "proximity12mm"
+            self.PINDEFAULTS["bit"]["pos"] = (10, 36)
+            self.SIGNALS["bit"]["pos"] = (200, 36)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)

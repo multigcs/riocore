@@ -831,7 +831,7 @@ class PluginNode(MyNode):
         for key, value in self.plugin_instance.SIGNALS.items():
             self.ports_right[f"sig_{key}"] = value
 
-        if self.plugin_instance.TYPE == "base":
+        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
             if "rotate" not in self.plugin_instance.plugin_setup:
                 self.plugin_instance.plugin_setup["rotate"] = 0
             self.setZValue(1)
@@ -891,6 +891,7 @@ class PluginNode(MyNode):
                     psetup["sub"] = snode
                 py += snode.height + 5
         self.ports = self.ports_right
+        self.ports.update(self.ports_left)
 
         if self.plugin_instance.TYPE != "base":
             self.height = grid(self.port_top + max(len(self.ports_left), len(self.ports_right)) * self.port_diff + self.port_bottom)
@@ -922,7 +923,7 @@ class PluginNode(MyNode):
         pos_y = pos.y()
         info = self.plugin_instance.cfg_info()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
-        if self.plugin_instance.TYPE == "base":
+        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
             painter.drawPixmap(0, 0, self.pixmap)
             for port in self.ports:
                 if not self.ports[port]["pos"]:
@@ -1039,7 +1040,7 @@ class PluginNode(MyNode):
             QGraphicsItem.mousePressEvent(self, event)
 
     def port_pos(self, port):
-        if self.plugin_instance.TYPE == "base":
+        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
             pos = self.pos()
             pos_x = pos.x()
             pos_y = pos.y()
@@ -1715,6 +1716,8 @@ class TabAxis:
             for joint, jdata in adata["joints"].items():
                 plugin_instance = None
                 plugin_setup = {}
+                plugin_instance_home = None
+                plugin_setup_home = {}
                 for item in self.parent.scene.items():
                     if isinstance(item, PluginNode):
                         if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
@@ -2009,7 +2012,6 @@ class TabAxis:
                         erow.addWidget(ulabel, stretch=1)
                         home_edits.addLayout(erow)
                     button = QPushButton("home-plugin")
-                    button.clicked.connect(partial(jedit, plugin_instance))
                     if plugin_setup_home:
                         self.signature.append("h")
                         button.clicked.connect(partial(jedit, plugin_instance_home))
