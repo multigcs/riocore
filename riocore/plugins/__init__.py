@@ -71,8 +71,9 @@ class PluginBase:
             self.frame_tx = None
             self.frame_tx_overwride = None
 
+        NEW_OPTIONS = {}
         if "name" not in self.OPTIONS:
-            self.OPTIONS["name"] = {
+            NEW_OPTIONS["name"] = {
                 "type": str,
                 "description": "name of this plugin instance",
                 "default": "",
@@ -80,17 +81,22 @@ class PluginBase:
 
         if self.TYPE == "joint":
             if "axis" not in self.OPTIONS:
-                self.OPTIONS["axis"] = {
+                NEW_OPTIONS["axis"] = {
                     "type": "select",
                     "description": "axis name (X,Y,Z,...)",
                     "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
                 }
             if "is_joint" not in self.OPTIONS:
-                self.OPTIONS["is_joint"] = {
+                NEW_OPTIONS["is_joint"] = {
                     "type": bool,
                     "default": False,
                     "description": "configure as joint",
                 }
+
+        # add new options at top of dict
+        if NEW_OPTIONS:
+            NEW_OPTIONS.update(self.OPTIONS)
+            self.OPTIONS = NEW_OPTIONS
 
         self.update_title()
 

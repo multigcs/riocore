@@ -127,7 +127,6 @@ a hardware PWM generator is a better choice."""
             else:
                 self.PINDEFAULTS["up"]["pos"] = (20, 60)
                 self.PINDEFAULTS["down"]["pos"] = (20, 90)
-            self.PINDEFAULTS["en"]["pos"] = (20, 120)
             self.SIGNALS["value"]["pos"] = (375, 75)
             self.SIGNALS["enable"]["pos"] = (375, 105)
 
