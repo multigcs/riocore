@@ -2102,6 +2102,14 @@ class TabOptions:
         self.treeview.setUniformRowHeights(True)
         self.layout_ini.addWidget(self.treeview)
 
+        self.phal_table = QTableWidget()
+        self.phal_table.setColumnCount(4)
+        self.phal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugin"))
+        self.phal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Signal"))
+        self.phal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Target"))
+        self.phal_table.setHorizontalHeaderItem(3, QTableWidgetItem("Type"))
+        self.layout_hal.addWidget(self.phal_table)
+
         self.hal_table = QTableWidget()
         self.hal_table.setColumnCount(3)
         self.hal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Source"))
@@ -2133,28 +2141,63 @@ class TabOptions:
         for entry in self.config["linuxcnc"].get("net", []):
             source = entry.get("source", "")
             target = entry.get("target", "")
-            self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem(source)))
-            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(target)))
-            self.hal_table.setItem(row, 2, QTableWidgetItem(QTableWidgetItem("net")))
+            self.hal_table.setItem(row, 0, QTableWidgetItem(source))
+            self.hal_table.setItem(row, 1, QTableWidgetItem(target))
+            item = QTableWidgetItem("net")
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            self.hal_table.setItem(row, 2, item)
             row += 1
 
         for pin, value in self.config["linuxcnc"].get("setp", {}).items():
-            self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem(pin)))
-            self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem(str(value))))
-            self.hal_table.setItem(row, 2, QTableWidgetItem(QTableWidgetItem("setp")))
+            self.hal_table.setItem(row, 0, QTableWidgetItem(pin))
+            self.hal_table.setItem(row, 1, QTableWidgetItem(str(value)))
+            item = QTableWidgetItem("setp")
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            self.hal_table.setItem(row, 2, item)
             row += 1
 
-        self.hal_table.setItem(row, 0, QTableWidgetItem(QTableWidgetItem("")))
-        self.hal_table.setItem(row, 1, QTableWidgetItem(QTableWidgetItem("")))
-        self.hal_table.setItem(row, 2, QTableWidgetItem(QTableWidgetItem("")))
-
-        # self.hal_table.resizeColumnToContents(0)
-        # self.hal_table.resizeColumnToContents(1)
+        self.hal_table.setItem(row, 0, QTableWidgetItem(""))
+        self.hal_table.setItem(row, 1, QTableWidgetItem(""))
+        self.hal_table.setItem(row, 2, QTableWidgetItem(""))
         self.hal_table.resizeColumnToContents(2)
         self.hal_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.hal_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.hal_table.itemChanged.connect(self.table_updated)
 
+        row = 0
+        for sitem in self.parent.scene.items():
+            if isinstance(sitem, PluginNode):
+                plugin_config = sitem.plugin_instance.plugin_setup
+                uid = sitem.plugin_instance.plugin_setup["uid"]
+                for signal, sconf in plugin_config.get("signals", {}).items():
+                    self.phal_table.setRowCount(row + 1)
+                    net = sconf.get("net")
+                    setp = sconf.get("setp")
+                    item = QTableWidgetItem(uid)
+                    item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+                    self.phal_table.setItem(row, 0, item)
+                    item = QTableWidgetItem(signal)
+                    item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+                    self.phal_table.setItem(row, 1, item)
+                    if net:
+                        self.phal_table.setItem(row, 2, QTableWidgetItem(str(net)))
+                        item = QTableWidgetItem("net")
+                    elif setp:
+                        self.phal_table.setItem(row, 2, QTableWidgetItem(str(setp)))
+                        item = QTableWidgetItem("setp")
+                    else:
+                        item = QTableWidgetItem("")
+                    item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+                    self.phal_table.setItem(row, 3, item)
+                    row += 1
+
+        self.phal_table.resizeColumnToContents(0)
+        self.phal_table.resizeColumnToContents(1)
+        self.phal_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
+        self.phal_table.resizeColumnToContents(3)
+        self.phal_table.itemChanged.connect(self.table_updated)
+
+        # Misc
         machinetype = self.config["linuxcnc"].get("machinetype", "mill")
         image_path = os.path.join(riocore_path, "files", "images", f"{machinetype}.png")
         if self.help_img1 is not None:
@@ -2342,6 +2385,8 @@ class TabOptions:
     def table_updated(self):
         if self.update_flag:
             return
+
+        # nets/setps
         nrows = self.hal_table.rowCount()
         self.config["linuxcnc"]["net"] = []
         self.config["linuxcnc"]["setp"] = {}
@@ -2359,6 +2404,31 @@ class TabOptions:
                                 "target": target,
                             }
                         )
+        # plugin signals
+        nrows = self.phal_table.rowCount()
+        signals = {}
+        for row in range(0, nrows):
+            if self.phal_table.item(row, 1) and self.phal_table.item(row, 2):
+                uid = str(self.phal_table.item(row, 0).text())
+                source = str(self.phal_table.item(row, 1).text())
+                target = str(self.phal_table.item(row, 2).text())
+                if target:
+                    if uid not in signals:
+                        signals[uid] = {}
+                    signals[uid][source] = target
+        for item in self.parent.scene.items():
+            if isinstance(item, PluginNode):
+                plugin_config = item.plugin_instance.plugin_setup
+                uid = item.plugin_instance.plugin_setup["uid"]
+                if uid in signals:
+                    for source, target in signals[uid].items():
+                        if "signals" not in plugin_config:
+                            plugin_config["signals"] = {}
+                        if target.replace(".", "").isnumeric():
+                            plugin_config["signals"][source] = {"setp": target}
+                        else:
+                            plugin_config["signals"][source] = {"net": target}
+
         self.updated()
 
     def updated(self, tmp=None):
@@ -3123,6 +3193,7 @@ class Window(QMainWindow):
         self.view.verticalScrollBar().setSliderPosition(pv)
 
         self.axis_cfg.update(self.config)
+        self.options_cfg.update(self.config)
 
     def grid_align(self):
         items = self.scene.selectedItems()

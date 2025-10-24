@@ -2,10 +2,10 @@
     "name": "RasperryGPIO",
     "flow": {
         "view": {
-            "scale": 1.11,
+            "scale": 0.7468468468468469,
             "pos": [
-                -21,
-                -124
+                -6,
+                -109
             ]
         },
         "board": {
@@ -43,8 +43,8 @@
             "type": "stepgen",
             "uid": "stepgen0",
             "pos": [
-                1090.0,
-                520.0
+                1350.0,
+                510.0
             ],
             "signals": {
                 "position-cmd": {
@@ -69,14 +69,15 @@
                     "pin": "china-bob5x0:X:dir"
                 }
             },
-            "rotate": 0
+            "rotate": 0,
+            "image": "stepper"
         },
         {
             "type": "stepgen",
             "uid": "stepgen1",
             "pos": [
-                1090.0,
-                430.0
+                1350.0,
+                240.0
             ],
             "is_joint": true,
             "pins": {
@@ -87,14 +88,15 @@
                     "pin": "china-bob5x0:Y:dir"
                 }
             },
-            "rotate": 0
+            "rotate": 0,
+            "image": "stepper"
         },
         {
             "type": "gpioout",
             "uid": "gpioout0",
             "pos": [
-                1090.0,
-                280.0
+                1070.0,
+                120.0
             ],
             "signals": {
                 "bit": {
@@ -119,8 +121,8 @@
             },
             "uid": "gpioin0",
             "pos": [
-                1090.0,
-                610.0
+                900.0,
+                970.0
             ],
             "signals": {
                 "bit": {
@@ -129,14 +131,15 @@
                 }
             },
             "name": "home_x",
-            "rotate": 0
+            "rotate": 0,
+            "image": "proximity"
         },
         {
             "type": "stepgen",
             "uid": "stepgen2",
             "pos": [
-                1090.0,
-                340.0
+                1350.0,
+                -30.0
             ],
             "is_joint": true,
             "pins": {
@@ -161,7 +164,8 @@
                     "setp": ""
                 }
             },
-            "rotate": 0
+            "rotate": 0,
+            "image": "stepper"
         },
         {
             "type": "gpioin",
@@ -172,8 +176,8 @@
             },
             "uid": "gpioin1",
             "pos": [
-                1090.0,
-                670.0
+                900.0,
+                900.0
             ],
             "signals": {
                 "bit": {
@@ -182,7 +186,8 @@
                 }
             },
             "name": "home_y",
-            "rotate": 0
+            "rotate": 0,
+            "image": "proximity"
         },
         {
             "type": "gpioin",
@@ -193,8 +198,8 @@
             },
             "uid": "gpioin2",
             "pos": [
-                1090.0,
-                730.0
+                900.0,
+                830.0
             ],
             "signals": {
                 "bit": {
@@ -203,7 +208,8 @@
                 }
             },
             "name": "home_z",
-            "rotate": 0
+            "rotate": 0,
+            "image": "proximity"
         },
         {
             "type": "gpioin",
@@ -214,8 +220,8 @@
             },
             "uid": "gpioin3",
             "pos": [
-                1090.0,
-                790.0
+                910.0,
+                660.0
             ],
             "signals": {
                 "bit": {
@@ -224,7 +230,8 @@
                 }
             },
             "name": "estop",
-            "rotate": 0
+            "rotate": 0,
+            "image": "estop"
         },
         {
             "type": "gpioin",
@@ -235,8 +242,8 @@
             },
             "uid": "gpioin4",
             "pos": [
-                1090.0,
-                850.0
+                1130.0,
+                640.0
             ],
             "signals": {
                 "bit": {
@@ -245,7 +252,8 @@
                 }
             },
             "name": "probe",
-            "rotate": 0
+            "rotate": 0,
+            "image": "probe"
         },
         {
             "type": "pwmgen",
@@ -256,8 +264,8 @@
             },
             "uid": "pwmgen0",
             "pos": [
-                1090.0,
-                100.0
+                910.0,
+                0.0
             ],
             "signals": {
                 "value": {
@@ -270,7 +278,8 @@
                 }
             },
             "name": "spindle",
-            "rotate": 0
+            "rotate": 0,
+            "image": "spindle500w"
         },
         {
             "type": "gpioout",
@@ -281,10 +290,11 @@
             },
             "uid": "gpioout1",
             "pos": [
-                1090.0,
-                40.0
+                750.0,
+                -80.0
             ],
-            "rotate": 0
+            "rotate": -90,
+            "image": "relay"
         },
         {
             "type": "rpigpio",
