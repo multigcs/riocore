@@ -1169,7 +1169,9 @@
                     "setp": ""
                 }
             },
-            "name": "sdr1"
+            "name": "ssr1",
+            "image": "ssr",
+            "rotate": 0
         },
         {
             "type": "bitout",
@@ -1190,15 +1192,17 @@
             "uid": "bitout3",
             "pos": [
                 -1150.0,
-                1710.0
+                1770.0
             ],
-            "name": "sdr2",
+            "name": "ssr2",
             "signals": {
                 "bit": {
                     "net": "",
                     "setp": ""
                 }
-            }
+            },
+            "image": "ssr",
+            "rotate": 0
         },
         {
             "type": "bitout",
@@ -1226,7 +1230,7 @@
             "uid": "bitout4",
             "pos": [
                 -1150.0,
-                1780.0
+                1900.0
             ],
             "name": "Cooling-Water",
             "signals": {
@@ -1234,7 +1238,9 @@
                     "net": "iocontrol.0.user-enable-out",
                     "setp": ""
                 }
-            }
+            },
+            "image": "ssr",
+            "rotate": 0
         },
         {
             "type": "bitout",
@@ -1255,7 +1261,7 @@
             "uid": "bitout5",
             "pos": [
                 -1150.0,
-                1850.0
+                2030.0
             ],
             "name": "Cooling-Air",
             "signals": {
@@ -1263,7 +1269,9 @@
                     "net": "iocontrol.0.coolant-mist",
                     "setp": ""
                 }
-            }
+            },
+            "image": "ssr",
+            "rotate": 0
         },
         {
             "name": "Waterflow",
@@ -1327,7 +1335,7 @@
             },
             "pos": [
                 -1150.0,
-                1920.0
+                2160.0
             ]
         },
         {
@@ -1369,19 +1377,21 @@
             },
             "uid": "w55000",
             "pos": [
-                -1940.0,
-                700.0
+                -1650.0,
+                690.0
             ],
             "speed": 20000000,
             "gw": "192.168.11.1",
-            "ip": "192.168.11.194"
+            "ip": "192.168.11.194",
+            "image": "w5500",
+            "rotate": 0
         }
     ],
     "flow": {
         "view": {
             "pos": [
-                -2450,
-                -418
+                -1379,
+                1209
             ],
             "scale": 0.76
         },

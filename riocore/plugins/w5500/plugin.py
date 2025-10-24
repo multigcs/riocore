@@ -10,8 +10,6 @@ class Plugin(PluginBase):
         self.ORIGIN = "https://github.com/harout/concurrent-data-capture"
         self.TYPE = "interface"
         self.VERILOGS = ["w5500.v"]
-        self.IMAGE_SHOW = True
-        self.IMAGE = "w5500.png"
 
         self.PINDEFAULTS = {
             "mosi": {
@@ -85,7 +83,7 @@ class Plugin(PluginBase):
             "image": {
                 "default": "generic",
                 "type": "select",
-                "options": ["w5500-mini", "w5500"],
+                "options": ["generic", "w5500-mini", "w5500"],
                 "description": "hardware type",
             },
         }
