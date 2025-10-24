@@ -10,36 +10,45 @@ class Plugin(PluginBase):
         self.ORIGIN = "https://github.com/harout/concurrent-data-capture"
         self.TYPE = "interface"
         self.VERILOGS = ["w5500.v"]
+        self.IMAGE_SHOW = True
+        self.IMAGE = "w5500.png"
+
         self.PINDEFAULTS = {
             "mosi": {
                 "direction": "output",
                 "invert": False,
                 "pull": None,
                 "slew": "fast",
+                "pos": (200, 126),
             },
             "miso": {
                 "direction": "input",
                 "invert": False,
                 "pull": None,
+                "pos": (15, 60),
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
                 "pull": None,
                 "slew": "fast",
+                "pos": (200, 104),
             },
             "sel": {
                 "direction": "output",
                 "invert": False,
                 "pull": None,
+                "pos": (200, 82),
             },
             "rst": {
                 "direction": "output",
                 "optional": True,
+                "pos": (15, 82),
             },
             "intr": {
                 "direction": "input",
                 "optional": True,
+                "pos": (200, 60),
             },
         }
         self.OPTIONS = {
@@ -73,11 +82,30 @@ class Plugin(PluginBase):
                 "type": int,
                 "description": "SPI clock",
             },
+            "image": {
+                "default": "generic",
+                "type": "select",
+                "options": ["w5500-mini", "w5500"],
+                "description": "hardware type",
+            },
         }
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.TIMING_CONSTRAINTS = {
             "mclk": speed,
         }
+        image = self.plugin_setup.get("image", self.option_default("image"))
+        if image == "w5500-mini":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "w5500-mini.png"
+        elif image == "w5500":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "w5500.png"
+            self.PINDEFAULTS["mosi"]["pos"] = (44, 184)
+            self.PINDEFAULTS["miso"]["pos"] = (44, 206)
+            self.PINDEFAULTS["sclk"]["pos"] = (44, 140)
+            self.PINDEFAULTS["sel"]["pos"] = (44, 162)
+            self.PINDEFAULTS["rst"]["pos"] = (22, 184)
+            self.PINDEFAULTS["intr"]["pos"] = (22, 160)
 
     def cfg_info(self):
         ip = self.plugin_setup.get("ip", self.option_default("ip"))
