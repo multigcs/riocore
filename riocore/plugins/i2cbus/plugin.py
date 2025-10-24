@@ -370,7 +370,6 @@ graph LR;
         if "config" in self.plugin_setup:
             deletes = []
             for sub_name, sub_setup in self.plugin_setup["config"].get("devices", {}).items():
-                print(device, sub_name, sub_setup.get("address"))
                 sub_address = sub_setup.get("address")
                 if f"dev-{sub_name}({sub_address})" == device:
                     deletes.append(sub_name)
@@ -394,7 +393,9 @@ graph LR;
                 if dev_device_id != device_id:
                     continue
                 ports[f"sig_{signal_name}"] = {"title": signal_name}
-            devices[f"dev-{device_id}"] = ports
+            devices[f"dev-{device_id}"] = {
+                "ports": ports,
+            }
 
         return devices
 

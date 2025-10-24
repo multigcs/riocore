@@ -922,7 +922,9 @@ class PluginNode(MyNode):
 
             py = self.y
             devices = self.plugin_instance.flow()
-            for device, ports in devices.items():
+            for device, device_data in devices.items():
+                ports = device_data.get("ports", {})
+                image = device_data.get("image")
                 spos = self.plugin_instance.plugin_setup.get("sub_pos", {}).get(device, [self.x + self.width + 50, py])
                 snode = SubNode(self.scene, spos[0], spos[1], self, device, {"bus": {"title": "bus"}}, ports)
                 self.scene.addItem(snode)

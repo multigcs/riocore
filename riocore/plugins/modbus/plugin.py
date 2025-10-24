@@ -293,12 +293,18 @@ class Plugin(PluginBase):
                 addresses.append(address)
         for address in addresses:
             ports = {}
+            image = None
             for signal_name, signal_defaults in self.SIGNALS.items():
                 dev_address = signal_defaults.get("plugin_setup", {}).get("address")
                 if dev_address != address:
                     continue
                 ports[f"sig_{signal_name}"] = {"title": signal_name}
-            devices[f"dev-{address}"] = ports
+            if signal_defaults.get("plugin_setup", {}).get("type") == 101:
+                image = "hy_vfd.png"
+            devices[f"dev-{address}"] = {
+                "ports": ports,
+                "image": image,
+            }
         return devices
 
     def gateware_instances(self):
