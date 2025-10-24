@@ -39,6 +39,12 @@ class Plugin(PluginBase):
                 "unit": "Hz",
                 "description": "PWM frequency",
             },
+            "image": {
+                "default": "generic",
+                "type": "select",
+                "options": ["generic", "spindle500w"],
+                "description": "hardware type",
+            },
         }
         # all the values that needs to transfare betweed PC and FPGA
         self.INTERFACE = {
@@ -87,6 +93,16 @@ class Plugin(PluginBase):
         # here is an example how to modify the above dictionarys depends on the configured options (self.OPTIONS)
         if "dir" in self.plugin_setup.get("pins", {}):
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
+        # add positions if image is selected for rio-flow
+        image = self.plugin_setup.get("image", self.option_default("image"))
+        if image == "spindle500w":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "spindle500w.png"
+            self.PINDEFAULTS["pwm"]["pos"] = (120, 40)
+            self.PINDEFAULTS["dir"]["pos"] = (120, 70)
+            self.PINDEFAULTS["en"]["pos"] = (120, 100)
+            self.SIGNALS["dty"]["pos"] = (425, 60)
+            self.SIGNALS["enable"]["pos"] = (425, 90)
 
     def cfg_info(self):
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))

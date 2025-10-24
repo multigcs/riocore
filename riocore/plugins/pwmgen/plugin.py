@@ -69,6 +69,12 @@ a hardware PWM generator is a better choice."""
                 "type": bool,
                 "description": "dither-pwm",
             },
+            "image": {
+                "default": "generic",
+                "type": "select",
+                "options": ["generic", "spindle500w"],
+                "description": "hardware type",
+            },
         }
 
         self.SIGNALS = {
@@ -100,6 +106,18 @@ a hardware PWM generator is a better choice."""
         }
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
+        image = self.plugin_setup.get("image", self.option_default("image"))
+        if image == "spindle500w":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "spindle500w.png"
+            if mode == "1":
+                self.PINDEFAULTS["pwm"]["pos"] = (120, 60)
+                self.PINDEFAULTS["dir"]["pos"] = (120, 90)
+            else:
+                self.PINDEFAULTS["up"]["pos"] = (120, 60)
+                self.PINDEFAULTS["down"]["pos"] = (120, 90)
+            self.SIGNALS["value"]["pos"] = (425, 60)
+            self.SIGNALS["enable"]["pos"] = (425, 90)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):
