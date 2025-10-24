@@ -840,7 +840,7 @@ class PluginNode(MyNode):
         self.reload()
 
     def reload(self):
-        self.name = self.plugin_instance.instances_name
+        self.name = self.plugin_instance.title
         self.width = 200
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
