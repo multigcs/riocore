@@ -27,7 +27,7 @@ class Plugin(PluginBase):
             "image": {
                 "default": "generic",
                 "type": "select",
-                "options": ["generic", "relay"],
+                "options": ["generic", "relay", "ssr"],
                 "description": "hardware type",
             },
         }
@@ -38,6 +38,11 @@ class Plugin(PluginBase):
             self.IMAGE = "relay.png"
             self.PINDEFAULTS["bit"]["pos"] = (15, 150)
             self.SIGNALS["bit"]["pos"] = (355, 150)
+        elif image == "ssr":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "ssr.png"
+            self.PINDEFAULTS["bit"]["pos"] = (36, 36)
+            self.SIGNALS["bit"]["pos"] = (278, 40)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):
