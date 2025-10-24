@@ -31,7 +31,7 @@ class Plugin(PluginBase):
             "image": {
                 "default": "generic",
                 "type": "select",
-                "options": ["generic", "relay", "ssr"],
+                "options": ["generic", "relay", "ssr", "ssr2a"],
                 "description": "hardware type",
             },
         }
@@ -47,6 +47,11 @@ class Plugin(PluginBase):
             self.IMAGE = "ssr.png"
             self.PINDEFAULTS["bit"]["pos"] = (36, 36)
             self.SIGNALS["bit"]["pos"] = (278, 40)
+        elif image == "ssr2a":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "ssr2a.png"
+            self.PINDEFAULTS["bit"]["pos"] = (40, 58)
+            self.SIGNALS["bit"]["pos"] = (278, 58)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)
