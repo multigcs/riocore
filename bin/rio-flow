@@ -950,7 +950,7 @@ class PluginNode(MyNode):
         pos_y = pos.y()
         info = self.plugin_instance.cfg_info()
         self.plugin_instance.plugin_setup["pos"] = (pos_x, pos_y)
-        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
+        if self.pixmap:
             painter.drawPixmap(0, 0, self.pixmap)
             for port in self.ports:
                 if not self.ports[port]["pos"]:
@@ -1082,7 +1082,7 @@ class PluginNode(MyNode):
             QGraphicsItem.mousePressEvent(self, event)
 
     def port_pos(self, port):
-        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
+        if self.pixmap:
             pos = self.pos()
             pos_x = pos.x()
             pos_y = pos.y()
@@ -1114,7 +1114,7 @@ class PluginNode(MyNode):
             return QPointF(pos_x, pos_y)
 
     def port_selected(self, mouse_pos):
-        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
+        if self.pixmap:
             mouse_x = mouse_pos.x()
             mouse_y = mouse_pos.y()
             for port in self.ports:
