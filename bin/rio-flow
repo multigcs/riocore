@@ -422,7 +422,6 @@ class MyNode(QGraphicsItem):
         else:
             pen = QPen(self.border_color, self.border_size)
             brush = QBrush(self.bg_color)
-
         painter.setPen(pen)
         painter.setBrush(brush)
 
@@ -963,6 +962,21 @@ class PluginNode(MyNode):
                 else:
                     painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
                 painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
+
+            painter.setRenderHint(QPainter.Antialiasing)
+            path = QPainterPath()
+            pen = None
+            if self.isSelected():
+                pen = QPen(self.border_color_selected, self.border_size)
+            elif self.hover:
+                pen = QPen(self.border_color_hover, self.border_size)
+            if pen:
+                painter.setPen(pen)
+                rect = self.boundingRect()
+                path.addRoundedRect(rect, self.radius, self.radius)
+                painter.setClipPath(path)
+                painter.strokePath(path, painter.pen())
+
         else:
             self.paintBg(painter, self.plugin_instance.title, info=info)
             painter.setPen(QPen(Qt.GlobalColor.black, 1))
