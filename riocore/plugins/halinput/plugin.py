@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "halinput joypad support"
         self.KEYWORDS = "jog joypad usb"
         self.TYPE = "base"
+        self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.IMAGE = ""
         self.ORIGIN = ""

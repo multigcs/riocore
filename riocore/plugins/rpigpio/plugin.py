@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "gpio support for Raspberry PI4/5 and maybe other boards"
         self.KEYWORDS = "rpi gpio raspberry rpi4 rpi5"
         self.TYPE = "base"
+        self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
         self.OPTIONS = {}

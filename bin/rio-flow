@@ -533,6 +533,14 @@ class BoardNode(QGraphicsItem):
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
+    def rotate_ccw(self):
+        if self.board_setup["config"]["flow"]["board"]["rotate"] > -90:
+            self.board_setup["config"]["flow"]["board"]["rotate"] -= 90
+        else:
+            self.board_setup["config"]["flow"]["board"]["rotate"] = 180
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
 
@@ -682,6 +690,14 @@ class BreakoutNode(QGraphicsItem):
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
+    def rotate_ccw(self):
+        if self.breakout_setup["rotate"] > -90:
+            self.breakout_setup["rotate"] -= 90
+        else:
+            self.breakout_setup["rotate"] = 180
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
     def boundingRect(self):
         return QRectF(0, 0, self.width, self.height)
 
@@ -826,13 +842,14 @@ class PluginNode(MyNode):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.selected_port = None
+        self.subNodes = []
         self.pixmap = None
         self.ports_left = self.plugin_instance.PINDEFAULTS
         self.ports_right = {}
         for key, value in self.plugin_instance.SIGNALS.items():
             self.ports_right[f"sig_{key}"] = value
 
-        if self.plugin_instance.TYPE == "base" or self.plugin_instance.IMAGE_SHOW:
+        if self.plugin_instance.IMAGE_SHOW:
             if "rotate" not in self.plugin_instance.plugin_setup:
                 self.plugin_instance.plugin_setup["rotate"] = 0
             self.setZValue(1)
@@ -903,9 +920,7 @@ class PluginNode(MyNode):
                     if port in self.ports_right:
                         del self.ports_right[port]
 
-        py = self.y
-        self.subNodes = []
-        if hasattr(self.plugin_instance, "flow"):
+            py = self.y
             devices = self.plugin_instance.flow()
             for device, ports in devices.items():
                 spos = self.plugin_instance.plugin_setup.get("sub_pos", {}).get(device, [self.x + self.width + 50, py])
@@ -918,6 +933,7 @@ class PluginNode(MyNode):
                 for port, psetup in ports.items():
                     psetup["sub"] = snode
                 py += snode.height + 5
+
         self.ports = self.ports_right
         if self.plugin_instance.IMAGE_SHOW:
             self.ports.update(self.ports_left)
@@ -933,6 +949,14 @@ class PluginNode(MyNode):
             self.plugin_instance.plugin_setup["rotate"] += 90
         else:
             self.plugin_instance.plugin_setup["rotate"] = -90
+        self.scene.parent.redraw()
+        self.scene.parent.snapshot()
+
+    def rotate_ccw(self):
+        if self.plugin_instance.plugin_setup["rotate"] > -90:
+            self.plugin_instance.plugin_setup["rotate"] -= 90
+        else:
+            self.plugin_instance.plugin_setup["rotate"] = 180
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
@@ -1063,7 +1087,7 @@ class PluginNode(MyNode):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            if event.pos().x() > self.width / 2 or self.plugin_instance.TYPE == "base":
+            if event.pos().x() > self.width / 2 or self.plugin_instance.IMAGE_SHOW:
                 if self.scene.selection_source == (self, self.port_selected(event.pos())):
                     self.scene.selection_source = None
                 else:
@@ -1646,9 +1670,21 @@ class NodeScene(QGraphicsScene):
                 clone.triggered.connect(self.menu_selection.clone)
                 menu.addAction(clone)
             if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode) or isinstance(self.menu_selection, PluginNode):
-                rotate = QAction("rotate", None)
-                rotate.triggered.connect(self.menu_selection.rotate_cw)
-                menu.addAction(rotate)
+                rotate_cw = QAction("rotate_cw", None)
+                if self.selectedItems():
+                    for item in self.selectedItems():
+                        rotate_cw.triggered.connect(item.rotate_cw)
+                else:
+                    rotate_cw.triggered.connect(self.menu_selection.rotate_cw)
+                menu.addAction(rotate_cw)
+            if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode) or isinstance(self.menu_selection, PluginNode):
+                rotate_ccw = QAction("rotate_ccw", None)
+                if self.selectedItems():
+                    for item in self.selectedItems():
+                        rotate_ccw.triggered.connect(item.rotate_ccw)
+                else:
+                    rotate_ccw.triggered.connect(self.menu_selection.rotate_ccw)
+                menu.addAction(rotate_ccw)
             if not isinstance(self.menu_selection, BoardNode):
                 delete = QAction("delete", None)
                 delete.triggered.connect(self.delete)
@@ -2643,12 +2679,14 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
+        """
         icon = self.style().standardIcon(QStyle.SP_FileDialogListView)
         align_action = QAction(icon, "&Align (F7)", self)
         align_action.setStatusTip("Align")
         align_action.setShortcut("F7")
         align_action.triggered.connect(self.grid_align)
         toolbar.addAction(align_action)
+        """
 
         icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
         nesting_action = QAction(icon, "&nesting (F8)", self)
@@ -2824,6 +2862,7 @@ class Window(QMainWindow):
             self.snapshots.pop()
         self.cfg_reload(config=copy.deepcopy(self.snapshots[-1]))
         self.cfg_check()
+        self.fit_view()
 
     def json_save(self):
         self.cfg_save()
@@ -3160,51 +3199,7 @@ class Window(QMainWindow):
                             self.scene.addItem(edge)
 
             self.scene.addItem(hnodes[hal_id])
-
             py += 100
-
-        # for key, value in self.halpins.items():
-        #     riocore.log(key, value)
-
-        if False:
-            hnodes_y = 100
-            hnodes = {}
-            color_n = 0
-            for signal_name, signal in self.halpins.items():
-                source = signal["source"]
-                target = signal["target"]
-                tsplit = target.split(".")
-                group = tsplit[0]
-
-                if source is None:
-                    group = "unused"
-                elif group in {"joint", "spindle"}:
-                    group = ".".join(tsplit[0:2])
-                else:
-                    group = "misc"
-
-                if source and target:
-                    if group not in hnodes:
-                        pos = self.config["flow"]["hal"].get(group, (1100, hnodes_y))
-                        hnodes[group] = HalNode(self.scene, pos[0], pos[1], group)
-                        self.scene.addItem(hnodes[group])
-                        hnodes_y += hnodes[group].height + 10
-                    hnodes[group].add_signal(target, signal)
-                    spin = f"sig_{source[1]}"
-                    edge = NodeEdge(self.scene, "hal", source[0], spin, hnodes[group], signal["target"], color=colors[color_n])
-                    color_n += 1
-                    self.scene.addItem(edge)
-        ph = 1
-        pv = 1
-        zoom = 1.0
-        if "pos" in self.config["flow"]["view"]:
-            ph = self.config["flow"]["view"]["pos"][0]
-            pv = self.config["flow"]["view"]["pos"][1]
-        if "scale" in self.config["flow"]["view"]:
-            zoom = self.config["flow"]["view"]["scale"]
-        self.view.setZoom(zoom)
-        self.view.horizontalScrollBar().setSliderPosition(ph)
-        self.view.verticalScrollBar().setSliderPosition(pv)
 
         self.axis_cfg.update(self.config)
         self.options_cfg.update(self.config)
@@ -3246,7 +3241,7 @@ class Window(QMainWindow):
                 if x_pos_list:
                     x_avg = sum(x_pos_list) / len(x_pos_list)
                     y_avg = sum(y_pos_list) / len(y_pos_list)
-                    weight = y_avg * 100000 + x_avg
+                    weight = y_avg * 100000 - x_avg
                 else:
                     weight = 1
                 if weight not in items:

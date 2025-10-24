@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "spacenav 3d mouse jog support"
         self.KEYWORDS = "jog usb"
         self.TYPE = "base"
+        self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.IMAGE = ""
         self.ORIGIN = ""

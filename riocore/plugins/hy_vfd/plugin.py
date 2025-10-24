@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "This component connects the Huanyang VFD to the LinuxCNC HAL via a serial (RS-485) connection."
         self.KEYWORDS = "jog usb"
         self.TYPE = "base"
+        self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.IMAGE = ""
         self.ORIGIN = ""

@@ -15,6 +15,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "gpio support over i2c port"
         self.KEYWORDS = "ii2c gpio"
         self.TYPE = "base"
+        self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.IMAGE = ""
         self.ORIGIN = ""

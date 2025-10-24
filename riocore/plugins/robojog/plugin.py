@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.KEYWORDS = "jog gui robot"
         self.TYPE = "base"
+        self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.IMAGE = ""
         self.ORIGIN = ""
