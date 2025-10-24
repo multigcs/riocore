@@ -74,7 +74,23 @@ class Plugin(PluginBase):
                 "unit": "us",
                 "description": "delay after dir change",
             },
+            "image": {
+                "default": "generic",
+                "type": "select",
+                "options": ["generic", "stepper"],
+                "description": "hardware type",
+            },
         }
+        image = self.plugin_setup.get("image", self.option_default("image"))
+        if image == "stepper":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "stepper.png"
+            self.PINDEFAULTS["step"]["pos"] = (30, 380)
+            self.PINDEFAULTS["dir"]["pos"] = (30, 320)
+            self.PINDEFAULTS["en"]["pos"] = (30, 260)
+            self.SIGNALS["velocity"]["pos"] = (360, 240)
+            self.SIGNALS["position"]["pos"] = (360, 270)
+            self.SIGNALS["enable"]["pos"] = (360, 300)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

@@ -99,8 +99,8 @@
             },
             "uid": "stepdir0",
             "pos": [
-                -1150.0,
-                330.0
+                -900.0,
+                440.0
             ],
             "signals": {
                 "velocity": {
@@ -128,7 +128,9 @@
                 "max_limit": 900.0
             },
             "axis": "X",
-            "name": "X1"
+            "name": "X1",
+            "image": "stepper",
+            "rotate": 0
         },
         {
             "type": "stepdir",
@@ -141,8 +143,8 @@
                 }
             },
             "pos": [
-                -1150.0,
-                220.0
+                -910.0,
+                160.0
             ],
             "uid": "stepdir1",
             "signals": {
@@ -171,7 +173,9 @@
                 "max_limit": 900.0
             },
             "axis": "X",
-            "name": "X2"
+            "name": "X2",
+            "image": "stepper",
+            "rotate": 0
         },
         {
             "type": "stepdir",
@@ -184,8 +188,8 @@
                 }
             },
             "pos": [
-                -1150.0,
-                110.0
+                -910.0,
+                -100.0
             ],
             "uid": "stepdir2",
             "signals": {
@@ -215,7 +219,9 @@
                 "max_limit": 450.0
             },
             "axis": "Y",
-            "name": "Y"
+            "name": "Y",
+            "image": "stepper",
+            "rotate": 0
         },
         {
             "type": "stepdir",
@@ -228,8 +234,8 @@
                 }
             },
             "pos": [
-                -1150.0,
-                0.0
+                -910.0,
+                -360.0
             ],
             "uid": "stepdir3",
             "signals": {
@@ -259,7 +265,9 @@
                 "max_limit": 100.0
             },
             "axis": "Z",
-            "name": "Z"
+            "name": "Z",
+            "image": "stepper",
+            "rotate": 0
         },
         {
             "type": "bitout",
@@ -306,15 +314,17 @@
             },
             "uid": "bitout1",
             "pos": [
-                -1150.0,
-                -140.0
+                -1850.0,
+                -180.0
             ],
             "signals": {
                 "bit": {
                     "net": "",
                     "setp": ""
                 }
-            }
+            },
+            "image": "relay",
+            "rotate": -90
         },
         {
             "type": "bitin",
@@ -334,7 +344,9 @@
                     "setp": ""
                 }
             },
-            "name": "homeX1"
+            "name": "homeX1",
+            "image": "proximity",
+            "rotate": 0
         },
         {
             "type": "bitin",
@@ -354,7 +366,9 @@
             "pos": [
                 -1150.0,
                 510.0
-            ]
+            ],
+            "image": "proximity",
+            "rotate": 0
         },
         {
             "type": "bitin",
@@ -375,7 +389,9 @@
             "pos": [
                 -1150.0,
                 580.0
-            ]
+            ],
+            "image": "proximity",
+            "rotate": 0
         },
         {
             "type": "bitin",
@@ -395,7 +411,9 @@
             "pos": [
                 -1150.0,
                 650.0
-            ]
+            ],
+            "image": "proximity",
+            "rotate": 0
         },
         {
             "type": "bitin",
@@ -893,7 +911,9 @@
                     "setp": ""
                 }
             },
-            "name": "touchprobe"
+            "name": "touchprobe",
+            "image": "probe",
+            "rotate": 0
         },
         {
             "type": "signal",
@@ -915,8 +935,8 @@
             "dir": "output",
             "name": "Mainpower",
             "pos": [
-                -760.0,
-                680.0
+                -470.0,
+                820.0
             ]
         },
         {
@@ -940,8 +960,8 @@
             "dir": "output",
             "name": "Waterflow",
             "pos": [
-                -760.0,
-                540.0
+                -470.0,
+                680.0
             ]
         },
         {
@@ -964,8 +984,8 @@
             "dir": "output",
             "name": "Spindlespeed",
             "pos": [
-                -760.0,
-                610.0
+                -470.0,
+                750.0
             ]
         },
         {
@@ -988,8 +1008,8 @@
             "dir": "output",
             "name": "Spindleload",
             "pos": [
-                -760.0,
-                470.0
+                -470.0,
+                610.0
             ]
         },
         {
@@ -1349,8 +1369,8 @@
             },
             "uid": "bitout6",
             "pos": [
-                -1150.0,
-                -70.0
+                -1410.0,
+                -270.0
             ],
             "signals": {
                 "bit": {
@@ -1392,10 +1412,10 @@
     "flow": {
         "view": {
             "pos": [
-                -1214,
-                771
+                -1071,
+                -57
             ],
-            "scale": 0.54
+            "scale": 0.88
         },
         "board": {
             "pos": [
