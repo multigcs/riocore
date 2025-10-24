@@ -76,6 +76,7 @@ from riocore.gui.widgets import (
 
 riocore_path = os.path.dirname(riocore.__file__)
 
+show_signals = False
 grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)
@@ -796,7 +797,10 @@ class SubNode(MyNode):
         self.name = title
 
         self.ports_left = ports_left
-        self.ports_right = ports_right
+        if show_signals:
+            self.ports_right = ports_right
+        else:
+            self.ports_right = {}
 
         self.width = 200
         self.setZValue(9)
@@ -846,8 +850,9 @@ class PluginNode(MyNode):
         self.pixmap = None
         self.ports_left = self.plugin_instance.PINDEFAULTS
         self.ports_right = {}
-        for key, value in self.plugin_instance.SIGNALS.items():
-            self.ports_right[f"sig_{key}"] = value
+        if show_signals:
+            for key, value in self.plugin_instance.SIGNALS.items():
+                self.ports_right[f"sig_{key}"] = value
 
         if self.plugin_instance.IMAGE_SHOW:
             if "rotate" not in self.plugin_instance.plugin_setup:
@@ -902,16 +907,17 @@ class PluginNode(MyNode):
                 self.ports_right[gpio_pin] = gpio_data
                 self.ports_right[gpio_pin]["pos"] = pos
 
-            for key, value in self.plugin_instance.SIGNALS.items():
-                pos = value.get("pos", (0, 0))
-                if self.pixmap:
-                    if self.plugin_instance.plugin_setup["rotate"] == 90:
-                        pos = [pixmap_width - pos[1], pos[0]]
-                    elif self.plugin_instance.plugin_setup["rotate"] == -90:
-                        pos = [pos[1], pixmap_height - pos[0]]
-                    elif self.plugin_instance.plugin_setup["rotate"] == 180:
-                        pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
-                self.ports_right[f"sig_{key}"]["pos"] = pos
+            if show_signals:
+                for key, value in self.plugin_instance.SIGNALS.items():
+                    pos = value.get("pos", (0, 0))
+                    if self.pixmap:
+                        if self.plugin_instance.plugin_setup["rotate"] == 90:
+                            pos = [pixmap_width - pos[1], pos[0]]
+                        elif self.plugin_instance.plugin_setup["rotate"] == -90:
+                            pos = [pos[1], pixmap_height - pos[0]]
+                        elif self.plugin_instance.plugin_setup["rotate"] == 180:
+                            pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
+                    self.ports_right[f"sig_{key}"]["pos"] = pos
 
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
