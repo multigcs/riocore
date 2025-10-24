@@ -72,7 +72,7 @@ a hardware PWM generator is a better choice."""
             "image": {
                 "default": "generic",
                 "type": "select",
-                "options": ["generic", "spindle500w"],
+                "options": ["generic", "spindle500w", "laser"],
                 "description": "hardware type",
             },
         }
@@ -118,6 +118,18 @@ a hardware PWM generator is a better choice."""
                 self.PINDEFAULTS["down"]["pos"] = (120, 90)
             self.SIGNALS["value"]["pos"] = (425, 60)
             self.SIGNALS["enable"]["pos"] = (425, 90)
+        elif image == "laser":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "laser.png"
+            if mode == "1":
+                self.PINDEFAULTS["pwm"]["pos"] = (20, 60)
+                self.PINDEFAULTS["dir"]["pos"] = (20, 90)
+            else:
+                self.PINDEFAULTS["up"]["pos"] = (20, 60)
+                self.PINDEFAULTS["down"]["pos"] = (20, 90)
+            self.PINDEFAULTS["en"]["pos"] = (20, 120)
+            self.SIGNALS["value"]["pos"] = (375, 75)
+            self.SIGNALS["enable"]["pos"] = (375, 105)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):

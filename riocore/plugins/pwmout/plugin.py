@@ -42,7 +42,7 @@ class Plugin(PluginBase):
             "image": {
                 "default": "generic",
                 "type": "select",
-                "options": ["generic", "spindle500w"],
+                "options": ["generic", "spindle500w", "laser"],
                 "description": "hardware type",
             },
         }
@@ -103,6 +103,14 @@ class Plugin(PluginBase):
             self.PINDEFAULTS["en"]["pos"] = (120, 100)
             self.SIGNALS["dty"]["pos"] = (425, 60)
             self.SIGNALS["enable"]["pos"] = (425, 90)
+        elif image == "laser":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "laser.png"
+            self.PINDEFAULTS["pwm"]["pos"] = (20, 60)
+            self.PINDEFAULTS["dir"]["pos"] = (20, 90)
+            self.PINDEFAULTS["en"]["pos"] = (20, 120)
+            self.SIGNALS["dty"]["pos"] = (375, 75)
+            self.SIGNALS["enable"]["pos"] = (375, 105)
 
     def cfg_info(self):
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
