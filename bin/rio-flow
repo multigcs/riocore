@@ -1195,7 +1195,7 @@ class PluginNode(MyNode):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            if event.pos().x() > self.width / 2 or self.plugin_instance.IMAGE_SHOW:
+            if event.pos().x() > self.width / 2 and not self.plugin_instance.IMAGE_SHOW:
                 if self.scene.selection_source == (self, self.port_selected(event.pos())):
                     self.scene.selection_source = None
                 else:
@@ -1645,6 +1645,9 @@ class NodeViewer(QGraphicsView):
                         self.scene.disconnect_port(source_node, source_port)
                         self.scene.disconnect_port(target_node, target_port)
                         # add new edge
+                        
+                        print("#######", source_node, source_port, target_node, target_port)
+                        
                         color_idx = target_node.port_index(target_port)
                         color = Qt.GlobalColor.green
                         if color_idx >= 0 and color_idx < len(colors):
