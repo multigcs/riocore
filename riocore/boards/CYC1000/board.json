@@ -22,7 +22,7 @@
                     "rotate": true,
                     "pos": [
                         126,
-                        18
+                        22
                     ],
                     "direction": "output"
                 },
@@ -31,7 +31,7 @@
                     "rotate": true,
                     "pos": [
                         144,
-                        18
+                        22
                     ],
                     "direction": "output"
                 },
@@ -40,7 +40,7 @@
                     "rotate": true,
                     "pos": [
                         162,
-                        18
+                        22
                     ],
                     "direction": "output"
                 },
@@ -49,7 +49,7 @@
                     "rotate": true,
                     "pos": [
                         180,
-                        18
+                        22
                     ],
                     "direction": "output"
                 },
@@ -58,7 +58,7 @@
                     "rotate": true,
                     "pos": [
                         198,
-                        18
+                        22
                     ],
                     "direction": "output"
                 },
@@ -67,7 +67,7 @@
                     "rotate": true,
                     "pos": [
                         216,
-                        18
+                        22
                     ],
                     "direction": "output"
                 },
@@ -76,7 +76,7 @@
                     "rotate": true,
                     "pos": [
                         234,
-                        18
+                        22
                     ],
                     "direction": "output"
                 },
@@ -85,7 +85,7 @@
                     "rotate": true,
                     "pos": [
                         252,
-                        18
+                        22
                     ],
                     "direction": "output"
                 }
@@ -99,8 +99,8 @@
                 "S1": {
                     "pin": "PIN_N6",
                     "pos": [
-                        73,
-                        8
+                        88,
+                        16
                     ],
                     "direction": "all"
                 }
@@ -115,7 +115,7 @@
                     "pin": "PIN_R7",
                     "pos": [
                         126,
-                        100
+                        112
                     ],
                     "direction": "all"
                 },
@@ -123,7 +123,7 @@
                     "pin": "PIN_T7",
                     "pos": [
                         126,
-                        115
+                        127
                     ],
                     "direction": "all"
                 },
@@ -131,7 +131,7 @@
                     "pin": "PIN_R6",
                     "pos": [
                         126,
-                        130
+                        142
                     ],
                     "direction": "all"
                 },
@@ -139,7 +139,7 @@
                     "pin": "PIN_T6",
                     "pos": [
                         126,
-                        145
+                        157
                     ],
                     "direction": "all"
                 },
@@ -147,7 +147,7 @@
                     "pin": "PIN_R5",
                     "pos": [
                         126,
-                        160
+                        172
                     ],
                     "direction": "all"
                 },
@@ -155,7 +155,7 @@
                     "pin": "PIN_T5",
                     "pos": [
                         126,
-                        175
+                        187
                     ],
                     "direction": "all"
                 }
@@ -165,69 +165,74 @@
             "name": "PMOD",
             "comment": "",
             "default": "",
-            "rect": [1740, 60, 70, 200],
+            "rect": [
+                1740,
+                60,
+                70,
+                200
+            ],
             "pins": {
                 "P1": {
                     "pin": "PIN_F13",
                     "pos": [
-                        745,
-                        70
+                        753,
+                        80
                     ],
                     "direction": "all"
                 },
                 "P2": {
                     "pin": "PIN_F15",
                     "pos": [
-                        745,
-                        100
+                        753,
+                        110
                     ],
                     "direction": "all"
                 },
                 "P3": {
                     "pin": "PIN_F16",
                     "pos": [
-                        745,
-                        130
+                        753,
+                        140
                     ],
                     "direction": "all"
                 },
                 "P4": {
                     "pin": "PIN_D16",
                     "pos": [
-                        745,
-                        160
+                        753,
+                        170
                     ],
                     "direction": "all"
                 },
                 "P7": {
                     "pin": "PIN_D15",
                     "pos": [
-                        775,
-                        70
+                        783,
+                        80
                     ],
                     "direction": "all"
                 },
                 "P8": {
                     "pin": "PIN_C15",
                     "pos": [
-                        775,
-                        100
+                        783,
+                        110
                     ],
                     "direction": "all"
                 },
                 "P9": {
                     "pin": "PIN_B16",
                     "pos": [
-                        775,
-                        130
+                        783,
+                        140
                     ],
                     "direction": "all"
                 },
                 "P10": {
                     "pin": "PIN_C16",
                     "pos": [
-                        775,
-                        160
+                        783,
+                        170
                     ],
                     "direction": "all"
                 }
@@ -241,210 +246,203 @@
                 "AI": {
                     "pin": "T12",
                     "pos": [
-                        275,
-                        250
+                        290.93762499999997,
+                        254.0
                     ],
                     "direction": "all"
                 },
                 "A7": {
                     "pin": "R11",
                     "pos": [
-                        345,
-                        250
+                        360.06437500000004,
+                        254.0
                     ],
                     "direction": "all"
                 },
-
                 "AREF": {
                     "pin": "P11",
                     "pos": [
-                        270,
-                        290
+                        286.0,
+                        294.0
                     ],
                     "direction": "all"
                 },
-
                 "A0": {
                     "pin": "PIN_R12",
                     "pos": [
-                        310,
-                        290
+                        325.501,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "A1": {
                     "pin": "PIN_T13",
                     "pos": [
-                        345,
-                        290
+                        360.06437500000004,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "A2": {
                     "pin": "PIN_R13",
                     "pos": [
-                        380,
-                        290
+                        394.62775,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "A3": {
                     "pin": "PIN_T14",
                     "pos": [
-                        415,
-                        290
+                        429.191125,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "A4": {
                     "pin": "PIN_P14",
                     "pos": [
-                        450,
-                        290
+                        463.7545,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "A5": {
                     "pin": "PIN_R14",
                     "pos": [
-                        482,
-                        290
+                        495.35529999999994,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "A6": {
                     "pin": "PIN_T15",
                     "pos": [
-                        515,
-                        290
+                        527.9436249999999,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "D0": {
                     "pin": "PIN_N16",
                     "pos": [
-                        550,
-                        290
+                        562.5070000000001,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "D1": {
                     "pin": "PIN_L15",
                     "pos": [
-                        580,
-                        290
+                        592.13275,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "D2": {
                     "pin": "PIN_L16",
                     "pos": [
-                        610,
-                        290
+                        621.7584999999999,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "D3": {
                     "pin": "PIN_K15",
                     "pos": [
-                        645,
-                        290
+                        656.3218750000001,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "D4": {
                     "pin": "PIN_K16",
                     "pos": [
-                        680,
-                        290
+                        690.88525,
+                        294.0
                     ],
                     "direction": "all"
                 },
                 "D5": {
                     "pin": "PIN_J14",
                     "pos": [
-                        710,
-                        290
+                        720.511,
+                        294.0
                     ],
                     "direction": "all"
                 },
-
-
-
                 "D14": {
                     "pin": "PIN_R1",
                     "pos": [
-                        450,
-                        25
+                        463.7545,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D13": {
                     "pin": "PIN_P1",
                     "pos": [
-                        482,
-                        25
+                        495.35529999999994,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D12": {
                     "pin": "PIN_L2",
                     "pos": [
-                        515,
-                        25
+                        527.9436249999999,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D11": {
                     "pin": "PIN_K2",
                     "pos": [
-                        550,
-                        25
+                        562.5070000000001,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D10": {
                     "pin": "PIN_J2",
                     "pos": [
-                        580,
-                        25
+                        592.13275,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D9": {
                     "pin": "PIN_J1",
                     "pos": [
-                        610,
-                        25
+                        621.7584999999999,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D8": {
                     "pin": "PIN_P2",
                     "pos": [
-                        645,
-                        25
+                        656.3218750000001,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D7": {
                     "pin": "PIN_N1",
                     "pos": [
-                        680,
-                        25
+                        690.88525,
+                        29.0
                     ],
                     "direction": "all"
                 },
                 "D6": {
                     "pin": "PIN_N2",
                     "pos": [
-                        710,
-                        25
+                        720.511,
+                        29.0
                     ],
                     "direction": "all"
                 }
-
-
             }
         }
     ]

@@ -11,8 +11,9 @@ jdata = json.loads(open(json_file, "r").read())
 
 if slot_selection == "main":
     for pin, pdata in jdata[slot_selection].items():
-        pdata["pos"][0] += xoff
-        pdata["pos"][1] += yoff
+        # pdata["pos"][0] += xoff
+        # pdata["pos"][1] += yoff
+        pass
 
 else:
     found = False
@@ -24,7 +25,6 @@ else:
             for pin, pdata in slot["pins"].items():
                 min_x = min(min_x, pdata["pos"][0])
                 min_y = min(min_x, pdata["pos"][1])
-
 
     for slot in jdata["slots"]:
         if slot_selection == slot["name"]:

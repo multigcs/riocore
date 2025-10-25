@@ -2284,8 +2284,10 @@ class TabOptions:
             return path
         elif os.path.exists(os.path.join(riocore_path, path)):
             return os.path.join(riocore_path, path)
+        elif os.path.exists(os.path.join(riocore_path, "riocore", path)):
+            return os.path.join(riocore_path, path)
         riocore.log(f"can not find path: {path}")
-        exit(1)
+        # exit(1)
 
     def load_tree_linuxcnc_ini(self, parent_tree):
         if "ini" not in self.config["linuxcnc"]:
@@ -3097,8 +3099,10 @@ class Window(QMainWindow):
             return path
         elif os.path.exists(os.path.join(riocore_path, path)):
             return os.path.join(riocore_path, path)
+        elif os.path.exists(os.path.join(riocore_path, "riocore", path)):
+            return os.path.join(riocore_path, path)
         riocore.log(f"can not find path: {path}")
-        exit(1)
+        # exit(1)
 
     def redraw(self):
         # cleanup
