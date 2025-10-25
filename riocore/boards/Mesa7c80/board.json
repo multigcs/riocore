@@ -54,7 +54,7 @@
                 "MOSI": {
                     "pin": "P16",
                     "pos": [
-                        446,
+                        468,
                         614
                     ],
                     "direction": "all"
@@ -62,7 +62,7 @@
                 "MISO": {
                     "pin": "P15",
                     "pos": [
-                        427,
+                        449,
                         614
                     ],
                     "direction": "all"
@@ -70,7 +70,7 @@
                 "SCLK": {
                     "pin": "P14",
                     "pos": [
-                        408,
+                        430,
                         614
                     ],
                     "direction": "all"
@@ -78,7 +78,7 @@
                 "SEL": {
                     "pin": "P132",
                     "pos": [
-                        408,
+                        430,
                         634
                     ],
                     "direction": "all"
@@ -93,7 +93,7 @@
                 "GPIO14": {
                     "pin": "P29",
                     "pos": [
-                        560,
+                        582,
                         634
                     ],
                     "direction": "all"
@@ -101,7 +101,7 @@
                 "GPIO15": {
                     "pin": "P27",
                     "pos": [
-                        541,
+                        563,
                         634
                     ],
                     "direction": "all"
@@ -109,7 +109,7 @@
                 "GPIO18": {
                     "pin": "P24",
                     "pos": [
-                        522,
+                        544,
                         634
                     ],
                     "direction": "all"
@@ -117,7 +117,7 @@
                 "GPIO23": {
                     "pin": "P21",
                     "pos": [
-                        484,
+                        506,
                         634
                     ],
                     "direction": "all"
@@ -125,7 +125,7 @@
                 "GPIO24": {
                     "pin": "P17",
                     "pos": [
-                        465,
+                        487,
                         634
                     ],
                     "direction": "all"
@@ -133,7 +133,7 @@
                 "GPIO25": {
                     "pin": "P12",
                     "pos": [
-                        427,
+                        449,
                         634
                     ],
                     "direction": "all"
