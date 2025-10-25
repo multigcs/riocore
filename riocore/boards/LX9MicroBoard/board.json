@@ -31,15 +31,15 @@
                 "RX": {
                     "pin": "R7",
                     "pos": [
-                        581,
-                        45
+                        661,
+                        58
                     ]
                 },
                 "TX": {
                     "pin": "T7",
                     "pos": [
-                        581,
-                        65
+                        661,
+                        78
                     ]
                 }
             }
@@ -48,8 +48,12 @@
             "name": "I2C",
             "comment": "I2C for the CDCE913",
             "pins": {
-                "SCL": {"pin":  "P12"},
-                "SDA": {"pin":  "U13"}
+                "SCL": {
+                    "pin": "P12"
+                },
+                "SDA": {
+                    "pin": "U13"
+                }
             }
         },
         {
@@ -60,32 +64,32 @@
                     "pin": "P4",
                     "rotate": true,
                     "pos": [
-                        310,
-                        200
+                        350,
+                        240
                     ]
                 },
                 "D2": {
                     "pin": "L6",
                     "rotate": true,
                     "pos": [
-                        328,
-                        200
+                        368,
+                        240
                     ]
                 },
                 "D3": {
                     "pin": "F5",
                     "rotate": true,
                     "pos": [
-                        323,
-                        5
+                        363,
+                        15
                     ]
                 },
                 "D4": {
                     "pin": "C2",
                     "rotate": true,
                     "pos": [
-                        341,
-                        5
+                        381,
+                        15
                     ]
                 }
             }
@@ -98,39 +102,39 @@
                     "pin": "B3",
                     "rotate": true,
                     "pos": [
-                        210,
-                        100
+                        250,
+                        120
                     ]
                 },
                 "S1": {
                     "pin": "A3",
                     "rotate": true,
                     "pos": [
-                        223,
-                        100
+                        263,
+                        120
                     ]
                 },
                 "S2": {
                     "pin": "B4",
                     "rotate": true,
                     "pos": [
-                        236,
-                        100
+                        276,
+                        120
                     ]
                 },
                 "S3": {
                     "pin": "A4",
                     "rotate": true,
                     "pos": [
-                        249,
-                        100
+                        289,
+                        120
                     ]
                 },
                 "S5": {
                     "pin": "V4",
                     "pos": [
-                        489,
-                        67
+                        545,
+                        80
                     ]
                 }
             }
@@ -143,8 +147,8 @@
                     "pin": "F15",
                     "rotate": true,
                     "pos": [
-                        210,
-                        40
+                        240,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -152,8 +156,8 @@
                     "pin": "F16",
                     "rotate": true,
                     "pos": [
-                        230,
-                        40
+                        260,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -161,8 +165,8 @@
                     "pin": "C17",
                     "rotate": true,
                     "pos": [
-                        250,
-                        40
+                        280,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -170,8 +174,8 @@
                     "pin": "C18",
                     "rotate": true,
                     "pos": [
-                        270,
-                        40
+                        300,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -179,8 +183,8 @@
                     "pin": "F14",
                     "rotate": true,
                     "pos": [
-                        210,
-                        2
+                        240,
+                        26
                     ],
                     "direction": "all"
                 },
@@ -188,8 +192,8 @@
                     "pin": "G14",
                     "rotate": true,
                     "pos": [
-                        230,
-                        2
+                        260,
+                        26
                     ],
                     "direction": "all"
                 },
@@ -197,8 +201,8 @@
                     "pin": "D17",
                     "rotate": true,
                     "pos": [
-                        250,
-                        2
+                        280,
+                        26
                     ],
                     "direction": "all"
                 },
@@ -206,8 +210,8 @@
                     "pin": "D18",
                     "rotate": true,
                     "pos": [
-                        270,
-                        2
+                        300,
+                        26
                     ],
                     "direction": "all"
                 }
@@ -221,8 +225,8 @@
                     "pin": "H12",
                     "rotate": true,
                     "pos": [
-                        365,
-                        40
+                        411,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -230,8 +234,8 @@
                     "pin": "G13",
                     "rotate": true,
                     "pos": [
-                        385,
-                        40
+                        431,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -239,8 +243,8 @@
                     "pin": "E16",
                     "rotate": true,
                     "pos": [
-                        405,
-                        40
+                        451,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -248,8 +252,8 @@
                     "pin": "E18",
                     "rotate": true,
                     "pos": [
-                        425,
-                        40
+                        471,
+                        46
                     ],
                     "direction": "all"
                 },
@@ -257,8 +261,8 @@
                     "pin": "K12",
                     "rotate": true,
                     "pos": [
-                        365,
-                        2
+                        411,
+                        26
                     ],
                     "direction": "all"
                 },
@@ -266,8 +270,8 @@
                     "pin": "K13",
                     "rotate": true,
                     "pos": [
-                        385,
-                        2
+                        431,
+                        26
                     ],
                     "direction": "all"
                 },
@@ -275,8 +279,8 @@
                     "pin": "F17",
                     "rotate": true,
                     "pos": [
-                        405,
-                        2
+                        451,
+                        26
                     ],
                     "direction": "all"
                 },
@@ -284,8 +288,8 @@
                     "pin": "F18",
                     "rotate": true,
                     "pos": [
-                        425,
-                        2
+                        471,
+                        26
                     ],
                     "direction": "all"
                 }

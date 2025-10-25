@@ -12,7 +12,11 @@
                     "pin": "UART:TX"
                 }
             },
-            "uid": "uart0"
+            "uid": "uart0",
+            "pos": [
+                850.0,
+                100.0
+            ]
         },
         {
             "type": "blink",
@@ -21,7 +25,11 @@
                     "pin": "LED:D1"
                 }
             },
-            "uid": "blink0"
+            "uid": "blink0",
+            "pos": [
+                850.0,
+                205.0
+            ]
         },
         {
             "type": "bitin",
@@ -30,7 +38,11 @@
                     "pin": "SW:S5"
                 }
             },
-            "uid": "bitin1"
+            "uid": "bitin1",
+            "pos": [
+                850.0,
+                270.0
+            ]
         },
         {
             "type": "bitout",
@@ -39,7 +51,27 @@
                     "pin": "LED:D2"
                 }
             },
-            "uid": "bitout0"
+            "uid": "bitout0",
+            "pos": [
+                850.0,
+                335.0
+            ]
         }
-    ]
+    ],
+    "flow": {
+        "view": {
+            "scale": 2.39,
+            "pos": [
+                471,
+                133
+            ]
+        },
+        "board": {
+            "pos": [
+                380.0,
+                200.0
+            ],
+            "rotate": 0
+        }
+    }
 }
