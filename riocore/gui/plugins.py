@@ -39,6 +39,7 @@ class GuiPlugins:
 
     def edit_plugin_pins(self, plugin_instance, plugin_config, pin_selected=None, cb=None):
         def update(arg):
+            print("##", arg, cb)
             if cb:
                 cb(arg)
 
