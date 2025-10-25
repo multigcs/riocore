@@ -210,6 +210,22 @@ class PluginImages:
         }
         return setup
 
+    def servo42(self):
+        setup = {
+            "image": "servo42.png",
+            "pins": [
+                (373, 235),
+                (373, 260),
+                (373, 210),
+            ],
+            "signals": [
+                (160, 240),
+                (160, 270),
+                (160, 300),
+            ],
+        }
+        return setup
+
     def flow(self):
         setup = {
             "image": "flow.png",

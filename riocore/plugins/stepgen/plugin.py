@@ -11,7 +11,7 @@ The maximum step rate depends on the CPU and other factors,
 and is usually in the range of 5 kHz to 25 kHz.
 If higher rates are needed, a hardware step generator is a better choice."""
         self.KEYWORDS = "stepper"
-        self.IMAGES = ["stepper"]
+        self.IMAGES = ["stepper", "servo42"]
         self.TYPE = "joint"
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""

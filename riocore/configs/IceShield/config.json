@@ -11,7 +11,14 @@
                     "pin": "LED:G"
                 }
             },
-            "frequency": 1.0
+            "frequency": 1.0,
+            "uid": "blink0",
+            "pos": [
+                340.0,
+                280.0
+            ],
+            "image": "led",
+            "rotate": 0
         },
         {
             "type": "spi",
@@ -28,7 +35,12 @@
                 "sel": {
                     "pin": "32"
                 }
-            }
+            },
+            "uid": "spi0",
+            "pos": [
+                60.0,
+                810.0
+            ]
         },
         {
             "type": "bitout",
@@ -38,14 +50,27 @@
                     "pin": "45",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                630.0,
+                                220.0
+                            ]
                         },
                         {
-                            "type": "onerror"
+                            "type": "onerror",
+                            "pos": [
+                                490.0,
+                                220.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout0",
+            "pos": [
+                760.0,
+                210.0
+            ]
         },
         {
             "name": "Stepper1",
@@ -63,7 +88,14 @@
                 "scale": 320.0,
                 "ferror": 10.0,
                 "max_velocity": 80.0
-            }
+            },
+            "uid": "stepdir0",
+            "pos": [
+                840.0,
+                1350.0
+            ],
+            "image": "servo42",
+            "rotate": 0
         },
         {
             "name": "Stepper2",
@@ -81,7 +113,14 @@
                 "scale": 320.0,
                 "ferror": 10.0,
                 "max_velocity": 80.0
-            }
+            },
+            "uid": "stepdir1",
+            "pos": [
+                840.0,
+                1140.0
+            ],
+            "image": "servo42",
+            "rotate": 0
         },
         {
             "name": "Stepper3",
@@ -99,7 +138,14 @@
                 "scale": 320.0,
                 "ferror": 10.0,
                 "max_velocity": 80.0
-            }
+            },
+            "uid": "stepdir2",
+            "pos": [
+                840.0,
+                930.0
+            ],
+            "image": "servo42",
+            "rotate": 0
         },
         {
             "name": "Stepper4",
@@ -117,7 +163,14 @@
                 "scale": 320.0,
                 "ferror": 10.0,
                 "max_velocity": 80.0
-            }
+            },
+            "uid": "stepdir3",
+            "pos": [
+                840.0,
+                720.0
+            ],
+            "image": "servo42",
+            "rotate": 0
         },
         {
             "name": "Stepper5",
@@ -130,7 +183,14 @@
                     "pin": "48"
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "uid": "stepdir4",
+            "pos": [
+                840.0,
+                510.0
+            ],
+            "image": "servo42",
+            "rotate": 0
         },
         {
             "name": "Stepper6",
@@ -143,7 +203,14 @@
                     "pin": "46"
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "uid": "stepdir5",
+            "pos": [
+                840.0,
+                300.0
+            ],
+            "image": "servo42",
+            "rotate": 0
         },
         {
             "type": "bitout",
@@ -153,11 +220,20 @@
                     "pin": "44",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                1160.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout1",
+            "pos": [
+                540.0,
+                1330.0
+            ]
         },
         {
             "type": "bitout",
@@ -167,11 +243,20 @@
                     "pin": "43",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                1080.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout2",
+            "pos": [
+                540.0,
+                1190.0
+            ]
         },
         {
             "type": "bitout",
@@ -181,11 +266,22 @@
                     "pin": "LED:R",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                230.0,
+                                230.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout3",
+            "pos": [
+                340.0,
+                230.0
+            ],
+            "image": "led",
+            "rotate": 0
         },
         {
             "type": "bitin",
@@ -195,12 +291,21 @@
                     "pin": "41",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                1200.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin0",
+            "pos": [
+                540.0,
+                1400.0
+            ]
         },
         {
             "type": "bitin",
@@ -210,12 +315,21 @@
                     "pin": "40",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                1120.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin1",
+            "pos": [
+                540.0,
+                1260.0
+            ]
         },
         {
             "type": "bitin",
@@ -225,12 +339,21 @@
                     "pin": "39",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                1040.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin2",
+            "pos": [
+                540.0,
+                1120.0
+            ]
         },
         {
             "type": "bitin",
@@ -240,12 +363,21 @@
                     "pin": "38",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                1000.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin3",
+            "pos": [
+                540.0,
+                1050.0
+            ]
         },
         {
             "type": "bitin",
@@ -255,12 +387,21 @@
                     "pin": "37",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                960.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin4",
+            "pos": [
+                540.0,
+                980.0
+            ]
         },
         {
             "type": "bitin",
@@ -270,12 +411,21 @@
                     "pin": "36",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                920.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin5",
+            "pos": [
+                540.0,
+                910.0
+            ]
         },
         {
             "type": "bitin",
@@ -285,12 +435,21 @@
                     "pin": "42",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                880.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
+            },
+            "uid": "bitin6",
+            "pos": [
+                540.0,
+                840.0
+            ]
         },
         {
             "type": "bitin",
@@ -300,27 +459,21 @@
                     "pin": "34",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                330.0,
+                                840.0
+                            ]
                         }
                     ],
                     "pull": "up"
                 }
-            }
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "display": {
-                        "section": "debug",
-                        "title": "readwrite time",
-                        "type": "number_s32"
-                    },
-                    "net": "rio.readwrite.time"
-                }
             },
-            "dir": "output",
-            "name": "riotime"
+            "uid": "bitin7",
+            "pos": [
+                540.0,
+                770.0
+            ]
         }
     ],
     "linuxcnc": {
@@ -333,5 +486,21 @@
             }
         },
         "machinetype": "mill"
+    },
+    "flow": {
+        "view": {
+            "scale": 0.7,
+            "pos": [
+                -691,
+                -106
+            ]
+        },
+        "board": {
+            "pos": [
+                150.0,
+                350.0
+            ],
+            "rotate": -90
+        }
     }
 }
