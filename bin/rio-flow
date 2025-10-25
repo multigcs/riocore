@@ -1830,18 +1830,18 @@ class NodeScene(QGraphicsScene):
         menu.addAction(add_breakout)
 
         menu.addSection("View")
+        if len(self.selectedItems()) > 1:
+            add_nesting_lr = QAction("Nesting Left->Right", None)
+            add_nesting_lr.triggered.connect(self.parent.nesting_lr)
+            menu.addAction(add_nesting_lr)
 
-        add_grid = QAction("align to Grid", None)
-        add_grid.triggered.connect(self.parent.grid_align)
-        menu.addAction(add_grid)
+            add_nesting_ud = QAction("Nesting Up->Down", None)
+            add_nesting_ud.triggered.connect(self.parent.nesting_ud)
+            menu.addAction(add_nesting_ud)
 
-        add_nesting = QAction("Nesting", None)
-        add_nesting.triggered.connect(self.parent.nesting)
-        menu.addAction(add_nesting)
-
-        add_nesting = QAction("Fit", None)
-        add_nesting.triggered.connect(self.parent.fit_view)
-        menu.addAction(add_nesting)
+        add_fit = QAction("Fit", None)
+        add_fit.triggered.connect(self.parent.fit_view)
+        menu.addAction(add_fit)
 
         add_redraw = QAction("Redraw", None)
         add_redraw.triggered.connect(self.parent.redraw)
@@ -2800,21 +2800,19 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-        """
-        icon = self.style().standardIcon(QStyle.SP_FileDialogListView)
-        align_action = QAction(icon, "&Align (F7)", self)
-        align_action.setStatusTip("Align")
-        align_action.setShortcut("F7")
-        align_action.triggered.connect(self.grid_align)
-        toolbar.addAction(align_action)
-        """
+        icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+        nesting_lr_action = QAction(icon, "Nesting &Left/Right (F7)", self)
+        nesting_lr_action.setStatusTip("Nesting Left/Right")
+        nesting_lr_action.setShortcut("F7")
+        nesting_lr_action.triggered.connect(self.nesting_lr)
+        toolbar.addAction(nesting_lr_action)
 
         icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
-        nesting_action = QAction(icon, "&nesting (F8)", self)
-        nesting_action.setStatusTip("Nesting")
-        nesting_action.setShortcut("F8")
-        nesting_action.triggered.connect(self.nesting)
-        toolbar.addAction(nesting_action)
+        nesting_ud_action = QAction(icon, "Nesting &Up/Down (F8)", self)
+        nesting_ud_action.setStatusTip("Nesting Up/Down")
+        nesting_ud_action.setShortcut("F8")
+        nesting_ud_action.triggered.connect(self.nesting_ud)
+        toolbar.addAction(nesting_ud_action)
 
         icon = self.style().standardIcon(QStyle.SP_TitleBarMaxButton)
         fit_action = QAction(icon, "&fit (F9)", self)
@@ -3339,9 +3337,49 @@ class Window(QMainWindow):
                 item.setPos(grid(px), grid(py))
         self.snapshot()
 
-    def nesting(self):
-        items = self.scene.selectedItems()
-        if not items:
+    def nesting_lr(self):
+        if len(self.scene.selectedItems()) < 2:
+            return
+        items = {}
+        left = max_size
+        min_y = max_size
+        max_y = -max_size
+        for item in self.scene.selectedItems():
+            px = item.pos().x()
+            py = item.pos().y()
+            left = min(left, px)
+            min_y = min((max_y, py))
+            max_y = max(max_y, py)
+            if not isinstance(item, NodeEdge):
+                x_pos_list = []
+                y_pos_list = []
+                for edge_item in self.scene.items():
+                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item:
+                        pos = edge_item._source_node.port_pos(edge_item._source_port)
+                        x_pos_list.append(pos.x())
+                        y_pos_list.append(pos.y())
+                if x_pos_list:
+                    x_avg = sum(x_pos_list) / len(x_pos_list)
+                    y_avg = sum(y_pos_list) / len(y_pos_list)
+                    weight = x_avg * 100000 - y_avg
+                else:
+                    weight = 1
+                if weight not in items:
+                    items[weight] = []
+                items[weight].append(item)
+
+        top = min_y + (max_y - min_y) / 2
+        for key in sorted(items.keys()):
+            for item in items[key]:
+                left = (left + grid_size / 2) // grid_size * grid_size
+                top = (top + grid_size / 2) // grid_size * grid_size
+                item.setPos(left, top)
+                left += item.width + grid_size / 3 * 2
+
+        self.snapshot()
+
+    def nesting_ud(self):
+        if len(self.scene.selectedItems()) < 2:
             return self.nesting_all()
 
         items = {}
