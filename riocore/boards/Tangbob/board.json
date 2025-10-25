@@ -5,7 +5,10 @@
     "board": "TangNano9K",
     "type": "GW1NR-LV9QN88PC6/I5",
     "family": "GW1N-9C",
-    "toolchains": ["gowin", "icestorm"],
+    "toolchains": [
+        "gowin",
+        "icestorm"
+    ],
     "toolchain": "gowin",
     "package": "",
     "clock": {
@@ -83,7 +86,7 @@
                 "RX": {
                     "pin": "18",
                     "pos": [
-                        370,
+                        382,
                         38
                     ],
                     "direction": "input"
@@ -91,7 +94,7 @@
                 "TX": {
                     "pin": "17",
                     "pos": [
-                        390,
+                        402,
                         38
                     ],
                     "direction": "output"
@@ -171,7 +174,7 @@
                 "MOSI": {
                     "pin": "32",
                     "pos": [
-                        716,
+                        712,
                         515
                     ],
                     "direction": "all"
@@ -179,7 +182,7 @@
                 "SCLK": {
                     "pin": "31",
                     "pos": [
-                        716,
+                        712,
                         494
                     ],
                     "direction": "all"
@@ -187,7 +190,7 @@
                 "SEL": {
                     "pin": "49",
                     "pos": [
-                        716,
+                        712,
                         476
                     ],
                     "direction": "all"
@@ -195,7 +198,7 @@
                 "MISO": {
                     "pin": "48",
                     "pos": [
-                        537,
+                        533,
                         452
                     ],
                     "direction": "all"
@@ -207,13 +210,16 @@
             "comment": "right bob adapter",
             "default_module": "china-bob5x",
             "rect": [
-                640, 20, 70, 360
+                640,
+                20,
+                70,
+                360
             ],
             "pins": {
                 "P1": {
                     "pin": "63",
                     "pos": [
-                        650,
+                        658,
                         50
                     ],
                     "direction": "all"
@@ -221,7 +227,7 @@
                 "P2": {
                     "pin": "85",
                     "pos": [
-                        650,
+                        658,
                         74
                     ],
                     "direction": "all"
@@ -229,7 +235,7 @@
                 "P3": {
                     "pin": "83",
                     "pos": [
-                        650,
+                        658,
                         98
                     ],
                     "direction": "all"
@@ -237,7 +243,7 @@
                 "P4": {
                     "pin": "81",
                     "pos": [
-                        650,
+                        658,
                         122
                     ],
                     "direction": "all"
@@ -245,7 +251,7 @@
                 "P5": {
                     "pin": "79",
                     "pos": [
-                        650,
+                        658,
                         146
                     ],
                     "direction": "all"
@@ -253,7 +259,7 @@
                 "P6": {
                     "pin": "77",
                     "pos": [
-                        650,
+                        658,
                         170
                     ],
                     "direction": "all"
@@ -261,7 +267,7 @@
                 "P7": {
                     "pin": "76",
                     "pos": [
-                        650,
+                        658,
                         194
                     ],
                     "direction": "all"
@@ -269,7 +275,7 @@
                 "P8": {
                     "pin": "75",
                     "pos": [
-                        650,
+                        658,
                         218
                     ],
                     "direction": "all"
@@ -277,7 +283,7 @@
                 "P9": {
                     "pin": "74",
                     "pos": [
-                        650,
+                        658,
                         242
                     ],
                     "direction": "all"
@@ -285,7 +291,7 @@
                 "P10": {
                     "pin": "73",
                     "pos": [
-                        650,
+                        658,
                         266
                     ],
                     "direction": "all"
@@ -293,7 +299,7 @@
                 "P11": {
                     "pin": "72",
                     "pos": [
-                        650,
+                        658,
                         290
                     ],
                     "direction": "all"
@@ -301,7 +307,7 @@
                 "P12": {
                     "pin": "71",
                     "pos": [
-                        650,
+                        658,
                         314
                     ],
                     "direction": "all"
@@ -309,7 +315,7 @@
                 "P13": {
                     "pin": "51",
                     "pos": [
-                        650,
+                        658,
                         338
                     ],
                     "direction": "all"
@@ -317,7 +323,7 @@
                 "P14": {
                     "pin": "86",
                     "pos": [
-                        674,
+                        682,
                         50
                     ],
                     "direction": "all"
@@ -325,7 +331,7 @@
                 "P15": {
                     "pin": "84",
                     "pos": [
-                        674,
+                        682,
                         74
                     ],
                     "direction": "all"
@@ -333,7 +339,7 @@
                 "P16": {
                     "pin": "82",
                     "pos": [
-                        674,
+                        682,
                         98
                     ],
                     "direction": "all"
@@ -341,20 +347,22 @@
                 "P17": {
                     "pin": "80",
                     "pos": [
-                        674,
+                        682,
                         122
                     ],
                     "direction": "all"
                 }
             }
-
         },
         {
             "name": "LEFT",
             "comment": "left  bob adapter",
             "default_module": "china-bob5x",
             "rect": [
-                75, 20, 70, 360
+                75,
+                20,
+                70,
+                360
             ],
             "pins": {
                 "P1": {
