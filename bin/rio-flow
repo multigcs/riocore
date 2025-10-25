@@ -859,9 +859,9 @@ class PluginNode(MyNode):
             if "rotate" not in self.plugin_instance.plugin_setup:
                 self.plugin_instance.plugin_setup["rotate"] = 0
             self.setZValue(1)
-            image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
-            if not os.path.exists(image):
-                image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
+            image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
+            if self.plugin_instance.IMAGE:
+                image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
             if os.path.exists(image):
                 pixmap = QPixmap.fromImage(QImage(image))
                 pixmap = pixmap.transformed(QTransform().rotate(self.plugin_instance.plugin_setup["rotate"]))
