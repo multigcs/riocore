@@ -39,6 +39,18 @@ Keywords: ethernet network udp interface
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 ### mac:
 MAC-Address
 
@@ -74,12 +86,6 @@ SPI clock
 
  * type: int
  * default: 10000000
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -121,13 +127,14 @@ name of this plugin instance
 ```
 {
     "type": "w5500",
+    "name": "",
+    "image": "generic",
     "mac": "AA:AF:FA:CC:E3:1C",
     "ip": "192.168.10.194",
     "mask": "255.255.255.0",
     "gw": "192.168.10.1",
     "port": 2390,
     "speed": 10000000,
-    "name": "",
     "pins": {
         "mosi": {
             "pin": "0",

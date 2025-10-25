@@ -14,17 +14,17 @@ Keywords: parport gpio
 
 ## Options:
 *user-options*
-### portaddr:
-parport address
-
- * type: select
- * default: 0
-
 ### name:
 name of this plugin instance
 
  * type: str
  * default: 
+
+### portaddr:
+parport address
+
+ * type: select
+ * default: 0
 
 
 ## Signals:
@@ -47,8 +47,8 @@ name of this plugin instance
 ```
 {
     "type": "parport",
-    "portaddr": "0",
     "name": "",
+    "portaddr": "0",
     "pins": {},
     "signals": {}
 }

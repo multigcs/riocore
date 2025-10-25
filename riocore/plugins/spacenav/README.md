@@ -14,6 +14,12 @@ Keywords: jog usb
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### jointjog:
 
  * type: bool
@@ -59,12 +65,6 @@ Keywords: jog usb
  * type: float
  * default: 0.02
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -86,6 +86,7 @@ name of this plugin instance
 ```
 {
     "type": "spacenav",
+    "name": "",
     "jointjog": false,
     "botton-0": "halui.spindle.0.start",
     "botton-1": "halui.spindle.0.stop",
@@ -95,7 +96,6 @@ name of this plugin instance
     "a-scale": 0.02,
     "b-scale": 0.02,
     "c-scale": 0.02,
-    "name": "",
     "pins": {},
     "signals": {}
 }

@@ -53,6 +53,12 @@ Keywords: absolute angle bldc
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### delay:
 clock delay for next manchester bit
 
@@ -70,12 +76,6 @@ clock delay for center of the next manchester bit
  * max: 100
  * default: 4
  * unit: clocks
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -172,9 +172,9 @@ name of this plugin instance
 ```
 {
     "type": "yaskawa_abs",
+    "name": "",
     "delay": 3,
     "delay_next": 4,
-    "name": "",
     "pins": {
         "rx": {
             "pin": "0",

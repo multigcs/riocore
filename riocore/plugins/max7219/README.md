@@ -25,6 +25,12 @@ Keywords: info display
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### brightness:
 display brightness
 
@@ -40,12 +46,6 @@ interface clock frequency
  * min: 100000
  * max: 10000000
  * default: 1000000
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -88,9 +88,9 @@ name of this plugin instance
 ```
 {
     "type": "max7219",
+    "name": "",
     "brightness": 15,
     "frequency": 1000000,
-    "name": "",
     "pins": {
         "mosi": {
             "pin": "0",

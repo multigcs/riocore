@@ -14,6 +14,12 @@ Keywords: ii2c gpio
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### device:
 i2c device
 
@@ -25,12 +31,6 @@ slave address
 
  * type: select
  * default: 0x20
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -53,9 +53,9 @@ name of this plugin instance
 ```
 {
     "type": "rpii2c",
+    "name": "",
     "device": "pcf8574",
     "address": "0x20",
-    "name": "",
     "pins": {},
     "signals": {}
 }

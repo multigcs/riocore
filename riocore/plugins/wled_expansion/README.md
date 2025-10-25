@@ -17,6 +17,12 @@ Keywords: expansion led rgb status info
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### leds:
 number of LED's
 
@@ -32,12 +38,6 @@ LED brighness
  * min: 0
  * max: 255
  * default: 127
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -64,9 +64,9 @@ name of this plugin instance
 ```
 {
     "type": "wled",
+    "name": "",
     "leds": 1,
     "level": 127,
-    "name": "",
     "pins": {
         "data": {
             "pin": "0",

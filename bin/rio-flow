@@ -76,6 +76,7 @@ from riocore.gui.widgets import (
 
 riocore_path = os.path.dirname(riocore.__file__)
 
+dev_mode = False
 show_signals = False
 grid_auto = True
 grid_size = 10
@@ -490,13 +491,18 @@ class BoardNode(QGraphicsItem):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.setAcceptHoverEvents(True)
         board = board_setup["board"]
+        self.name = board
+        self.reload()
+
+    def reload(self):
+        data = open(self.board_setup["path"], "r").read()
+        self.jdata = json.loads(data)
         image = os.path.join(os.path.dirname(self.board_setup["path"]), "board.png")
         if os.path.exists(image):
             pixmap = QPixmap.fromImage(QImage(image))
             pixmap = pixmap.transformed(QTransform().rotate(self.board_setup["config"]["flow"]["board"]["rotate"]))
             pixmap_width = pixmap.width()
             pixmap_height = pixmap.height()
-            self.name = board
             self.width = grid(pixmap_width // 2)
             self.height = grid(pixmap_height // 2)
             self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -505,8 +511,6 @@ class BoardNode(QGraphicsItem):
             self.width = grid(400)
             self.height = grid(300)
         self.ports = {}
-        data = open(self.board_setup["path"], "r").read()
-        self.jdata = json.loads(data)
         for slot in self.jdata.get("slots", []):
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
@@ -533,6 +537,101 @@ class BoardNode(QGraphicsItem):
             self.board_setup["config"]["flow"]["board"]["rotate"] = -90
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
+
+    def add_pin(self):
+        pos = self.pos()
+        pos_x = self.scene.insert_position.x() - pos.x()
+        pos_y = self.scene.insert_position.y() - pos.y()
+        dialog = QDialog()
+        dialog.setWindowTitle("add Board-Pin")
+        dialog.setMinimumWidth(400)
+        dialog.scale_value = 320.0
+        dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+        pin_data = {}
+        defaults = {
+            "slot": {
+                "title": "Slot",
+                "type": str,
+                "default": "STEPDIR",
+            },
+            "name": {
+                "title": "Name",
+                "type": str,
+                "default": "STEP DIR",
+            },
+            "pin": {
+                "title": "FPGA-Pin",
+                "type": str,
+                "default": "IO12 IO13",
+            },
+            "diff_x": {
+                "title": "X-Diff",
+                "type": int,
+                "default": 60,
+                "min": 0,
+                "max": 400,
+            },
+            "diff_y": {
+                "title": "Y-Diff",
+                "type": int,
+                "default": 0,
+                "min": 0,
+                "max": 400,
+            },
+        }
+
+        for key, var_setup in defaults.items():
+            erow = QHBoxLayout()
+            erow.addWidget(QLabel(var_setup["title"]), stretch=2)
+            erow.addWidget(self.scene.parent.edit_item(pin_data, key, var_setup), stretch=2)
+            dialog.layout.addLayout(erow)
+
+        dialog.layout.addWidget(dialog_buttonBox)
+        if dialog.exec():
+            for key, var_setup in defaults.items():
+                if key not in pin_data:
+                    pin_data[key] = var_setup["default"]
+            slot = pin_data["slot"]
+            names = pin_data["name"].split()
+            pins = pin_data["pin"].split()
+            diff_x = pin_data["diff_x"]
+            diff_y = pin_data["diff_y"]
+            multi = len(names)
+
+            if "slots" not in self.jdata:
+                self.jdata["slots"] = []
+
+            slotdata = {
+                "name": slot.title(),
+                "comment": "",
+                "default": "",
+                "pins": {},
+            }
+            self.jdata["slots"].append(slotdata)
+
+            if "pins" not in slotdata:
+                slotdata["pins"] = {}
+
+            px = pos_x
+            py = pos_y
+            for n in range(multi):
+                slotdata["pins"][names[n]] = {
+                    "pin": pins[n],
+                    "pos": [
+                        px * 2,
+                        py * 2,
+                    ],
+                    "direction": "all",
+                }
+                px += diff_x / 2
+                py += diff_y / 2
+
+        open(self.board_setup["path"], "w").write(json.dumps(self.jdata, indent=4))
+        self.reload()
 
     def rotate_ccw(self):
         if self.board_setup["config"]["flow"]["board"]["rotate"] > -90:
@@ -1619,8 +1718,10 @@ class NodeViewer(QGraphicsView):
                 if port:
                     pinfo = self.scene.hover.port_info(port)
                     self.scene.parent.info.setText(f"{hovername} - {port} ({pinfo})")
+                elif dev_mode:
+                    self.scene.parent.info.setText(f"{hovername} ({position.x():0.1f} {position.y():0.1f})")
                 else:
-                    self.scene.parent.info.setText(hovername)
+                    self.scene.parent.info.setText(f"{hovername}")
             else:
                 self.scene.parent.info.setText("")
 
@@ -1688,7 +1789,7 @@ class NodeScene(QGraphicsScene):
                 else:
                     rotate_cw.triggered.connect(self.menu_selection.rotate_cw)
                 menu.addAction(rotate_cw)
-            if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode) or isinstance(self.menu_selection, PluginNode):
+
                 rotate_ccw = QAction("rotate_ccw", None)
                 if self.selectedItems():
                     for item in self.selectedItems():
@@ -1696,6 +1797,12 @@ class NodeScene(QGraphicsScene):
                 else:
                     rotate_ccw.triggered.connect(self.menu_selection.rotate_ccw)
                 menu.addAction(rotate_ccw)
+
+                if dev_mode and isinstance(self.menu_selection, BoardNode):
+                    add_pin = QAction("add_pin", None)
+                    add_pin.triggered.connect(self.menu_selection.add_pin)
+                    menu.addAction(add_pin)
+
             if not isinstance(self.menu_selection, BoardNode):
                 delete = QAction("delete", None)
                 delete.triggered.connect(self.delete)

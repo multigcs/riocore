@@ -710,6 +710,9 @@ class Project:
             if "flashcmd" in project["jdata"]:
                 project["flashcmd"] = project["jdata"]["flashcmd"]
 
+            # adding invisible plugins
+            project["plugins"] += project["board_data"].get("plugins", [])
+
         self.pin_mapping = {}
 
         # loading modules

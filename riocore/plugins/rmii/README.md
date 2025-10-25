@@ -62,6 +62,12 @@ Keywords: interface network ethernet udp
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### mac:
 MAC-Address
 
@@ -91,12 +97,6 @@ UDP-Port
 
  * type: int
  * default: 2390
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -150,12 +150,12 @@ name of this plugin instance
 ```
 {
     "type": "rmii",
+    "name": "",
     "mac": "AA:AF:FA:CC:E3:1C",
     "ip": "192.168.10.194",
     "mask": "255.255.255.0",
     "gw": "192.168.10.1",
     "port": 2390,
-    "name": "",
     "pins": {
         "netrmii_clk50m": {
             "pin": "0",

@@ -104,6 +104,12 @@ Keywords: network ethernet interface udp
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### mac:
 MAC-Address
 
@@ -121,12 +127,6 @@ UDP-Port
 
  * type: int
  * default: 2390
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -201,10 +201,10 @@ name of this plugin instance
 ```
 {
     "type": "arty_mii",
+    "name": "",
     "mac": "AA:AF:FA:CC:E3:1C",
     "ip": "192.168.10.194",
     "port": 2390,
-    "name": "",
     "pins": {
         "phy_rx_clk": {
             "pin": "F15",

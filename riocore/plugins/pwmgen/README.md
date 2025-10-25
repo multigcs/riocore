@@ -25,6 +25,18 @@ Keywords: pwm
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 ### mode:
 modus
 
@@ -82,12 +94,6 @@ dither-pwm
  * type: bool
  * default: False
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -127,6 +133,8 @@ name of this plugin instance
 ```
 {
     "type": "pwmgen",
+    "name": "",
+    "image": "generic",
     "mode": "1",
     "pwm-freq": 100,
     "scale": 100.0,
@@ -134,7 +142,6 @@ name of this plugin instance
     "min-dc": 0.0,
     "max-dc": 1.0,
     "dither-pwm": false,
-    "name": "",
     "pins": {
         "pwm": {
             "pin": "0",

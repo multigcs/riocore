@@ -40,6 +40,12 @@ graph LR;
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### subconfig:
 sub json-config file
 
@@ -55,12 +61,6 @@ serial baud rate
  * max: 10000000
  * default: 1000000
  * unit: bit/s
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -101,9 +101,9 @@ name of this plugin instance
 ```
 {
     "type": "riosub",
+    "name": "",
     "subconfig": "",
     "baud": 1000000,
-    "name": "",
     "pins": {
         "tx": {
             "pin": "0",

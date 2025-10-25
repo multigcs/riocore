@@ -21,6 +21,12 @@ Keywords: adc analog
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### zero:
 zero value
 
@@ -32,12 +38,6 @@ scale value
 
  * type: float
  * default: 1e-05
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -77,9 +77,9 @@ name of this plugin instance
 ```
 {
     "type": "hx710",
+    "name": "",
     "zero": 1379496,
     "scale": 1e-05,
-    "name": "",
     "pins": {
         "miso": {
             "pin": "0",

@@ -22,15 +22,6 @@ Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
 
 ## Options:
 *user-options*
-### resolution:
-PDM Resolution
-
- * type: int
- * min: 8
- * max: 32
- * default: 8
- * unit: bit
-
 ### name:
 name of this plugin instance
 
@@ -48,6 +39,15 @@ configure as joint
 
  * type: bool
  * default: False
+
+### resolution:
+PDM Resolution
+
+ * type: int
+ * min: 8
+ * max: 32
+ * default: 8
+ * unit: bit
 
 
 ## Signals:
@@ -98,10 +98,10 @@ configure as joint
 ```
 {
     "type": "pdmout",
-    "resolution": 8,
     "name": "",
     "axis": "",
     "is_joint": false,
+    "resolution": 8,
     "pins": {
         "pdm": {
             "pin": "0",

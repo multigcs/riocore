@@ -24,12 +24,6 @@ Keywords: stepper
 
 ## Options:
 *user-options*
-### mode:
-Modus
-
- * type: select
- * default: 0
-
 ### name:
 name of this plugin instance
 
@@ -47,6 +41,18 @@ configure as joint
 
  * type: bool
  * default: False
+
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
+### mode:
+Modus
+
+ * type: select
+ * default: 0
 
 
 ## Signals:
@@ -94,10 +100,11 @@ steps / unit
 ```
 {
     "type": "stepgen",
-    "mode": "0",
     "name": "",
     "axis": "",
     "is_joint": false,
+    "image": "generic",
+    "mode": "0",
     "pins": {
         "step": {
             "pin": "0",

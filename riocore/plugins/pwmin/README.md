@@ -17,6 +17,12 @@ Keywords: pulse digital
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### freq_min:
 minimum measured frequency (for faster updates)
 
@@ -25,12 +31,6 @@ minimum measured frequency (for faster updates)
  * max: 10000
  * default: 10
  * unit: Hz
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -76,8 +76,8 @@ name of this plugin instance
 ```
 {
     "type": "pwmin",
-    "freq_min": 10,
     "name": "",
+    "freq_min": 10,
     "pins": {
         "pwm": {
             "pin": "0",

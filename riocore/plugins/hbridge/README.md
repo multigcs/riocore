@@ -26,15 +26,6 @@ Keywords: joint dcservo
 
 ## Options:
 *user-options*
-### frequency:
-PWM frequency
-
- * type: int
- * min: 10
- * max: 1000000
- * default: 10000
- * unit: Hz
-
 ### name:
 name of this plugin instance
 
@@ -52,6 +43,15 @@ configure as joint
 
  * type: bool
  * default: False
+
+### frequency:
+PWM frequency
+
+ * type: int
+ * min: 10
+ * max: 1000000
+ * default: 10000
+ * unit: Hz
 
 
 ## Signals:
@@ -105,10 +105,10 @@ configure as joint
 ```
 {
     "type": "hbridge",
-    "frequency": 10000,
     "name": "",
     "axis": "",
     "is_joint": false,
+    "frequency": 10000,
     "pins": {
         "out1": {
             "pin": "0",

@@ -27,6 +27,24 @@ URL: https://github.com/multigcs/riodrive
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: False
+
 ### baud:
 can-bus baud rate
 
@@ -56,24 +74,6 @@ trigger error on connection/drive problems
 
  * type: bool
  * default: True
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
-### is_joint:
-configure as joint
-
- * type: bool
- * default: False
 
 
 ## Signals:
@@ -222,13 +222,13 @@ configure as joint
 ```
 {
     "type": "riodrive",
+    "name": "",
+    "axis": "",
+    "is_joint": false,
     "baud": 500000,
     "interval": 400,
     "sync": true,
     "error": true,
-    "name": "",
-    "axis": "",
-    "is_joint": false,
     "pins": {
         "tx": {
             "pin": "0",

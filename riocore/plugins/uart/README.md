@@ -26,6 +26,12 @@ Keywords: serial uart interface
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### baud:
 serial baud rate
 
@@ -40,12 +46,6 @@ activate checksums
 
  * type: bool
  * default: False
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -78,9 +78,9 @@ name of this plugin instance
 ```
 {
     "type": "uart",
+    "name": "",
     "baud": 1000000,
     "csum": false,
-    "name": "",
     "pins": {
         "rx": {
             "pin": "0",

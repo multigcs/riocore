@@ -17,6 +17,18 @@ Keywords: frequency
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 ### freq_min:
 minimum measured frequency (for faster updates)
 
@@ -34,12 +46,6 @@ maximum measured frequency (for filtering)
  * max: 10000000
  * default: 1000000
  * unit: Hz
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -85,9 +91,10 @@ name of this plugin instance
 ```
 {
     "type": "freqin",
+    "name": "",
+    "image": "generic",
     "freq_min": 10,
     "freq_max": 1000000,
-    "name": "",
     "pins": {
         "freq": {
             "pin": "0",

@@ -27,15 +27,6 @@ Keywords: joint dcservo acservo 10v 5v dac analog
 
 ## Options:
 *user-options*
-### frequency:
-PWM frequency
-
- * type: int
- * min: 10
- * max: 1000000
- * default: 10000
- * unit: Hz
-
 ### name:
 name of this plugin instance
 
@@ -53,6 +44,21 @@ configure as joint
 
  * type: bool
  * default: False
+
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
+### frequency:
+PWM frequency
+
+ * type: int
+ * min: 10
+ * max: 1000000
+ * default: 10000
+ * unit: Hz
 
 
 ## Signals:
@@ -106,10 +112,11 @@ configure as joint
 ```
 {
     "type": "pwmout",
-    "frequency": 10000,
     "name": "",
     "axis": "",
     "is_joint": false,
+    "image": "generic",
+    "frequency": 10000,
     "pins": {
         "pwm": {
             "pin": "0",

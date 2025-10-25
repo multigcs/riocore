@@ -14,6 +14,12 @@ Keywords: jog joypad usb
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### joypad_name:
 
  * type: str
@@ -64,12 +70,6 @@ Keywords: jog joypad usb
  * type: str
  * default: 
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -91,6 +91,7 @@ name of this plugin instance
 ```
 {
     "type": "halinput",
+    "name": "",
     "joypad_name": "Joystick",
     "slow": "btn-top2",
     "medium": "btn-base",
@@ -101,7 +102,6 @@ name of this plugin instance
     "a": "",
     "b": "",
     "c": "",
-    "name": "",
     "pins": {},
     "signals": {}
 }

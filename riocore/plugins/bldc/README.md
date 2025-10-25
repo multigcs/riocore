@@ -65,6 +65,24 @@ Keywords: joint brushless
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: False
+
 ### frequency:
 PWM frequency
 
@@ -116,24 +134,6 @@ encoder resolution
  * max: 100000
  * default: 4096
  * unit: 
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
-### is_joint:
-configure as joint
-
- * type: bool
- * default: False
 
 
 ## Signals:
@@ -226,15 +226,15 @@ configure as joint
 ```
 {
     "type": "bldc",
+    "name": "",
+    "axis": "",
+    "is_joint": false,
     "frequency": 50000,
     "halsensor": "",
     "poles": 4,
     "sine_len": 6,
     "sine_res": 12,
     "feedback_res": 4096,
-    "name": "",
-    "axis": "",
-    "is_joint": false,
     "pins": {
         "u_p": {
             "pin": "0",

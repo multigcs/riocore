@@ -14,6 +14,12 @@ Keywords: jog usb
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### spindle:
 
  * type: int
@@ -36,12 +42,6 @@ Keywords: jog usb
  * type: select
  * default: even
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -63,11 +63,11 @@ name of this plugin instance
 ```
 {
     "type": "hy_vfd",
+    "name": "",
     "spindle": 0,
     "device": "/dev/ttyUSB0",
     "baud": "9600",
     "parity": "even",
-    "name": "",
     "pins": {},
     "signals": {}
 }

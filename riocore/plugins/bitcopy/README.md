@@ -28,17 +28,17 @@ graph LR;
 
 ## Options:
 *user-options*
-### origin:
-Origin Bit/Pin
-
- * type: vpins
- * default: ERROR
-
 ### name:
 name of this plugin instance
 
  * type: str
  * default: 
+
+### origin:
+Origin Bit/Pin
+
+ * type: vpins
+ * default: ERROR
 
 
 ## Signals:
@@ -65,8 +65,8 @@ name of this plugin instance
 ```
 {
     "type": "bitcopy",
-    "origin": "ERROR",
     "name": "",
+    "origin": "ERROR",
     "pins": {
         "bit": {
             "pin": "0",

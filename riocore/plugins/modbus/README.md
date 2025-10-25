@@ -26,6 +26,12 @@ Keywords: modbus vfd spindle expansion analog digital
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### baud:
 serial baud rate
 
@@ -52,12 +58,6 @@ max tx buffer size
  * max: 255
  * default: 128
  * unit: bits
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -100,10 +100,10 @@ the signals of this plugin are user configurable
 ```
 {
     "type": "modbus",
+    "name": "",
     "baud": 9600,
     "rx_buffersize": 128,
     "tx_buffersize": 128,
-    "name": "",
     "pins": {
         "tx": {
             "pin": "0",

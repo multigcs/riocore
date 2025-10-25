@@ -23,6 +23,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -57,6 +63,7 @@ name of this plugin instance
 {
     "type": "bitin",
     "name": "",
+    "image": "generic",
     "pins": {
         "bit": {
             "pin": "0",

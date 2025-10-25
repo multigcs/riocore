@@ -22,6 +22,12 @@ Keywords: sine wave pwm bldc stepper
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### pwmfreq:
 pwm frequency
 
@@ -48,12 +54,6 @@ number of output phases
  * max: 10
  * default: 1
  * unit: 
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -104,10 +104,10 @@ name of this plugin instance
 ```
 {
     "type": "sinepwm",
+    "name": "",
     "pwmfreq": 25000,
     "start": 0,
     "phases": 1,
-    "name": "",
     "pins": {
         "en": {
             "pin": "0",

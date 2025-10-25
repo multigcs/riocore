@@ -61,6 +61,12 @@ input data (SH/LD on 74HC165/ ST_CP/RCLK on 74HC595)
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### speed:
 interface clock
 
@@ -76,12 +82,6 @@ number of bits (IO's)
  * min: 8
  * max: 1024
  * default: 8
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -117,9 +117,9 @@ name of this plugin instance
 ```
 {
     "type": "shiftreg",
+    "name": "",
     "speed": 1000000,
     "bits": 8,
-    "name": "",
     "pins": {
         "out": {
             "pin": "0",

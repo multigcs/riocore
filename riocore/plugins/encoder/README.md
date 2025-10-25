@@ -31,6 +31,12 @@ Keywords: encoder quadencoder scale jog
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### counter-mode:
 counter-mode
 
@@ -62,12 +68,6 @@ scale
  * max: 10000.0
  * default: 1.0
  * unit: 
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -117,11 +117,11 @@ calculates revolutions per minute
 ```
 {
     "type": "encoder",
+    "name": "",
     "counter-mode": false,
     "x4-mode": false,
     "missing-teeth": 0,
     "position-scale": 1.0,
-    "name": "",
     "pins": {
         "phase-A": {
             "pin": "0",

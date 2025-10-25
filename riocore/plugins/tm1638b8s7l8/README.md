@@ -28,17 +28,17 @@ Data-Pin (DIO)
 
 ## Options:
 *user-options*
-### speed:
-Data-clock
-
- * type: int
- * default: 1000000
-
 ### name:
 name of this plugin instance
 
  * type: str
  * default: 
+
+### speed:
+Data-clock
+
+ * type: int
+ * default: 1000000
 
 
 ## Signals:
@@ -273,8 +273,8 @@ first 2 digits (0 -> 99)
 ```
 {
     "type": "tm1638b8s7l8",
-    "speed": 1000000,
     "name": "",
+    "speed": 1000000,
     "pins": {
         "sel": {
             "pin": "0",

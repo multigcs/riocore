@@ -17,18 +17,18 @@ Keywords: sr-flipflop
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### default:
 default value after startup
 
  * type: bool
  * default: 0
  * unit: 
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -73,8 +73,8 @@ name of this plugin instance
 ```
 {
     "type": "flipflop_out",
-    "default": 0,
     "name": "",
+    "default": 0,
     "pins": {
         "outbit": {
             "pin": "0",

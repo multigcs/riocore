@@ -29,6 +29,12 @@ Keywords: binary multiplexer
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### bits:
 number of inputs
 
@@ -37,12 +43,6 @@ number of inputs
  * max: 32
  * default: 2
  * unit: bits
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -96,8 +96,8 @@ name of this plugin instance
 ```
 {
     "type": "mux",
-    "bits": 2,
     "name": "",
+    "bits": 2,
     "pins": {
         "pin0": {
             "pin": "0",

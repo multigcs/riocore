@@ -51,6 +51,12 @@ graph LR;
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### speed:
 I2C-Clockspeed
 
@@ -64,12 +70,6 @@ I2C-Clockspeed
 Sub-Bus multiplexer address (pca9548)
 
  * type: select
- * default: 
-
-### name:
-name of this plugin instance
-
- * type: str
  * default: 
 
 
@@ -100,9 +100,9 @@ name of this plugin instance
 ```
 {
     "type": "i2cbus",
+    "name": "",
     "speed": 100000,
     "multiplexer": "",
-    "name": "",
     "pins": {
         "sda": {
             "pin": "0",

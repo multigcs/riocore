@@ -97,7 +97,6 @@ jitter measured with a EPM240 as 40bit Shiftreg:
         if "in" not in self.plugin_setup.get("pins", {}):
             del instance_arguments["data_in"]
         if "out" not in self.plugin_setup.get("pins", {}):
-            print("del out")
             del instance_arguments["data_out"]
 
         return instances

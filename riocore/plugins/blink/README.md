@@ -17,18 +17,24 @@ Keywords: led blinking
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 ### frequency:
 blink frequency in Hz
 
  * type: float
  * default: 1.0
  * unit: Hz
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -55,8 +61,9 @@ name of this plugin instance
 ```
 {
     "type": "blink",
-    "frequency": 1.0,
     "name": "",
+    "image": "generic",
+    "frequency": 1.0,
     "pins": {
         "led": {
             "pin": "0",

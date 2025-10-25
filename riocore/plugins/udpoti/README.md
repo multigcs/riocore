@@ -21,6 +21,12 @@ Keywords: analog dac poti
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### resolution:
 number of steps from min to maximum value
 
@@ -37,12 +43,6 @@ interface frequency
  * max: 100000
  * default: 100
  * unit: Hz
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -80,9 +80,9 @@ name of this plugin instance
 ```
 {
     "type": "udpoti",
+    "name": "",
     "resolution": 100,
     "frequency": 100,
-    "name": "",
     "pins": {
         "updown": {
             "pin": "0",

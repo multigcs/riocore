@@ -17,14 +17,6 @@ Keywords: joint rcservo
 
 ## Options:
 *user-options*
-### frequency:
-update frequency
-
- * type: int
- * min: 20
- * max: 150
- * default: 100
-
 ### name:
 name of this plugin instance
 
@@ -42,6 +34,14 @@ configure as joint
 
  * type: bool
  * default: False
+
+### frequency:
+update frequency
+
+ * type: int
+ * min: 20
+ * max: 150
+ * default: 100
 
 
 ## Signals:
@@ -89,10 +89,10 @@ absolute position (-100 = 1ms / 100 = 2ms)
 ```
 {
     "type": "rcservo",
-    "frequency": 100,
     "name": "",
     "axis": "",
     "is_joint": false,
+    "frequency": 100,
     "pins": {
         "pwm": {
             "pin": "0",

@@ -26,6 +26,12 @@ index pin
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### quad_type:
 The count from the encoder will be bitshifted by the value of QUAD_TYPE.  Use 0 for 4x mode.  The position-scale should match.  For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.
 
@@ -41,12 +47,6 @@ number of collected values before calculate the rps value
  * min: 0
  * max: 100
  * default: 10
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -120,9 +120,9 @@ calculates revolutions per minute
 ```
 {
     "type": "quadencoderz",
+    "name": "",
     "quad_type": 2,
     "rps_sum": 10,
-    "name": "",
     "pins": {
         "a": {
             "pin": "0",

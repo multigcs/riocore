@@ -21,6 +21,12 @@ Keywords: adc analog weight
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### zero:
 zero value
 
@@ -38,12 +44,6 @@ sensor mode
 
  * type: select
  * default: CHA_128
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -93,10 +93,10 @@ name of this plugin instance
 ```
 {
     "type": "hx711",
+    "name": "",
     "zero": 0,
     "scale": 1.0,
     "mode": "CHA_128",
-    "name": "",
     "pins": {
         "miso": {
             "pin": "0",

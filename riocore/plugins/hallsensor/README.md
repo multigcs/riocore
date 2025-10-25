@@ -28,6 +28,12 @@ Keywords: feedback encoder rotary bldc brushless
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### poles:
 number of motor poles
 
@@ -43,12 +49,6 @@ number of collected values before calculate the rps value
  * min: 0
  * max: 100
  * default: 10
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -113,9 +113,9 @@ calculates revolutions per minute
 ```
 {
     "type": "hallsensor",
+    "name": "",
     "poles": 7,
     "rps_sum": 10,
-    "name": "",
     "pins": {
         "a": {
             "pin": "0",

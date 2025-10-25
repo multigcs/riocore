@@ -18,6 +18,7 @@
 | [IceShield](IceShield/README.md) | RIO-IceShield board for Raspberry PI4 | ice40 / up5k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="IceShield/board.png" height="48"> |
 | [LX9MicroBoard](LX9MicroBoard/README.md) | LX9MicroBoard - Spartan6 devboard
 on my debian12, it works with openFPGAloader | xc6 / xc6slx9-csg324 | [ise](../generator/toolchains/ise/README.md) | <img src="LX9MicroBoard/board.png" height="48"> |
+| [Mesa7c80](Mesa7c80/README.md) | Mesa7c80 over SPI - untested, i have no hardware | xc6 / xc6slx9-2tqg144 | [ise](../generator/toolchains/ise/README.md) | <img src="Mesa7c80/board.png" height="48"> |
 | [Mesa7c81](Mesa7c81/README.md) | Mesa7c81 over SPI - WIP | xc6 / xc6slx9-2tqg144 | [ise](../generator/toolchains/ise/README.md) | <img src="Mesa7c81/board.png" height="48"> |
 | [MotoMan](MotoMan/README.md) | RIO-MotoMan board | ice40 / hx8k | [icestorm](../generator/toolchains/icestorm/README.md) | <img src="MotoMan/board.png" height="48"> |
 | [Numato-Spartan6](Numato-Spartan6/README.md) | Spartan6 - only for testing the toolchain | xc6 / xc6slx9-2tqg144 | [ise](../generator/toolchains/ise/README.md) | <img src="Numato-Spartan6/board.png" height="48"> |

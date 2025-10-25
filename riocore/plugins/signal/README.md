@@ -14,6 +14,12 @@ Keywords: virtual
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### dir:
 signal direction
 
@@ -25,12 +31,6 @@ signal type
 
  * type: select
  * default: float
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -57,9 +57,9 @@ name of this plugin instance
 ```
 {
     "type": "signal",
+    "name": "",
     "dir": "input",
     "vtype": "float",
-    "name": "",
     "pins": {},
     "signals": {
         "value": {

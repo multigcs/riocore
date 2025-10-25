@@ -4,9 +4,9 @@
 
 **singe bit output pin**
 
-to control relais, leds, valves, ....
+to control relay, leds, valves, ....
 
-Keywords: led relais valve lamp motor magnet
+Keywords: led relais relay valve lamp motor magnet
 
 ## Pins:
 *FPGA-pins*
@@ -22,6 +22,12 @@ name of this plugin instance
 
  * type: str
  * default: 
+
+### image:
+hardware type
+
+ * type: select
+ * default: generic
 
 
 ## Signals:
@@ -57,6 +63,7 @@ name of this plugin instance
 {
     "type": "bitout",
     "name": "",
+    "image": "generic",
     "pins": {
         "bit": {
             "pin": "0",

@@ -30,6 +30,12 @@ Keywords: serial uart
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### baud:
 serial baud rate
 
@@ -68,12 +74,6 @@ rx frame format
 
  * type: str
  * default: rx1:u8|rx2:u8
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -116,12 +116,12 @@ the signals of this plugin are user configurable
 ```
 {
     "type": "uartbridge",
+    "name": "",
     "baud": 9600,
     "rx_buffersize": 40,
     "tx_buffersize": 32,
     "tx_frame": "tx1:u8|tx2:u8",
     "rx_frame": "rx1:u8|rx2:u8",
-    "name": "",
     "pins": {
         "tx": {
             "pin": "0",

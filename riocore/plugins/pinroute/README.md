@@ -28,6 +28,12 @@ graph LR;
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### inputs:
 number of inputs
 
@@ -43,12 +49,6 @@ number of channels
  * min: 1
  * max: 16
  * default: 1
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -93,9 +93,9 @@ input selector
 ```
 {
     "type": "pinroute",
+    "name": "",
     "inputs": 2,
     "channels": 1,
-    "name": "",
     "pins": {
         "outA": {
             "pin": "0",

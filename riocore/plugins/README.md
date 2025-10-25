@@ -70,7 +70,8 @@
 |  | [yaskawa_abs](yaskawa_abs/README.md) | serial abs-encoder | <img src="yaskawa_abs/image.png" height="48"> | Experimental  |
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | Experimental  |
-| Expansions | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
+| Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
+|  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
 | Misc | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
