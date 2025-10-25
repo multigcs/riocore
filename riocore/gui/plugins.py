@@ -36,10 +36,16 @@ riocore_path = os.path.dirname(riocore.__file__)
 class GuiPlugins:
     def __init__(self, parent):
         self.parent = parent
+        self.options_tab = None
+        self.pins_tab = None
+        self.joint_tab = None
+        self.signals_tab = None
 
-    def edit_plugin_pins(self, plugin_instance, plugin_config, pin_selected=None, cb=None):
+    def edit_plugin_pins(self, pin_selected=None, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
         def update(arg):
-            print("##", arg, cb)
             if cb:
                 cb(arg)
 
@@ -165,7 +171,10 @@ class GuiPlugins:
 
         return pins_tab
 
-    def edit_plugin_joints(self, plugin_instance, plugin_config, cb=None):
+    def edit_plugin_joints(self, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
         def update(arg):
             scale = plugin_config.get("joint", {}).get("scale", 320.0)
             max_velocity = plugin_config.get("joint", {}).get("max_velocity", 40.0)
@@ -303,7 +312,10 @@ class GuiPlugins:
 
         return joint_tabs
 
-    def edit_plugin_signals(self, plugin_instance, plugin_config, signal_selected=None, cb=None):
+    def edit_plugin_signals(self, signal_selected=None, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
         def update(arg):
             if cb:
                 cb(arg)
@@ -489,7 +501,10 @@ class GuiPlugins:
         signals_tab.setWidget(signals_widget)
         return signals_tab
 
-    def edit_plugin_options(self, plugin_instance, plugin_config, cb=None):
+    def edit_plugin_options(self, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
         def update(arg):
             plugin_instance.update_title()
             title_label.setText(plugin_instance.title)
@@ -557,13 +572,73 @@ class GuiPlugins:
         options_tab.setWidget(options_widget)
         return options_tab
 
+    def reload(self, is_new=False, nopins=False, signal_selected=None, pin_selected=None, cb=None):
+        def cleanLayout(layout):
+            if isinstance(layout, QWidget):
+                for child in layout.children():
+                    if child.layout():
+                        cleanLayout(child.layout())
+                    child.deleteLater()
+                layout.deleteLater()
+                return
+
+            for widget_no in range(0, layout.count()):
+                if layout.itemAt(widget_no) and layout.itemAt(widget_no).widget():
+                    layout.itemAt(widget_no).widget().deleteLater()
+                elif layout.itemAt(widget_no) and layout.itemAt(widget_no).layout():
+                    cleanLayout(layout.itemAt(widget_no).layout())
+                    layout.itemAt(widget_no).layout().deleteLater()
+
+        if self.pins_tab is not None:
+            cleanLayout(self.pins_tab)
+            self.pins_tab = None
+
+        if self.joint_tab is not None:
+            cleanLayout(self.joint_tab)
+            self.joint_tab = None
+
+        if self.signals_tab is not None:
+            cleanLayout(self.signals_tab)
+            self.signals_tab = None
+
+        if not nopins and self.plugin_instance.PINDEFAULTS:
+            self.pins_tab = self.edit_plugin_pins(pin_selected=pin_selected, cb=cb)
+            if signal_selected is None:
+                self.tab_widget.addTab(self.pins_tab, "Pins")
+                if is_new:
+                    self.tab_widget.setCurrentWidget(self.pins_tab)
+
+        if self.plugin_instance.TYPE == "joint" and self.plugin_config.get("is_joint", False):
+            self.joint_tab = self.edit_plugin_joints(cb=cb)
+            if pin_selected is None:
+                self.tab_widget.addTab(self.joint_tab, "Joint")
+
+        if self.plugin_instance.TYPE != "interface":
+            if self.plugin_instance.SIGNALS:
+                self.signals_tab = self.edit_plugin_signals(signal_selected=signal_selected, cb=cb)
+                if pin_selected is None:
+                    self.tab_widget.addTab(self.signals_tab, "Signals")
+                    if signal_selected is not None:
+                        self.tab_widget.setCurrentWidget(self.signals_tab)
+
     def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None, cb=None):
+        self.pins_tab = None
+        self.joint_tab = None
+        self.signals_tab = None
+
+        def update(arg):
+            if cb:
+                cb(arg)
+            # self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
+
+        self.plugin_instance = plugin_instance
         plugin_config = plugin_instance.plugin_setup
-        plugin_config_backup = copy.deepcopy(plugin_config)
+        self.plugin_config = plugin_config
+        self.plugin_config_backup = copy.deepcopy(plugin_config)
 
         dialog = QDialog()
         dialog.is_removed = False
-        dialog.setWindowTitle(f"edit plugin {plugin_instance.NAME}")
+        dialog.setWindowTitle(f"edit plugin {self.plugin_instance.NAME}")
         if hasattr(self.parent, "STYLESHEET"):
             dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
@@ -572,42 +647,25 @@ class GuiPlugins:
 
         if not nopins:
             remove_button = QPushButton(self.parent.tr("Remove"))
-            remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
+            remove_button.clicked.connect(partial(self.del_plugin, self.plugin_instance, dialog=dialog))
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
-        tab_widget = QTabWidget()
+        self.tab_widget = QTabWidget()
         if hasattr(self.parent, "STYLESHEET_TABBAR"):
-            tab_widget.setStyleSheet(self.parent.STYLESHEET_TABBAR)
+            self.tab_widget.setStyleSheet(self.parent.STYLESHEET_TABBAR)
 
-        if is_new and plugin_instance.TYPE == "joint":
-            if "position" in plugin_instance.SIGNALS:
-                plugin_config["is_joint"] = True
+        if is_new and self.plugin_instance.TYPE == "joint":
+            if "position" in self.plugin_instance.SIGNALS:
+                self.plugin_config["is_joint"] = True
 
-        options_tab = self.edit_plugin_options(plugin_instance, plugin_config, cb=cb)
+        self.options_tab = self.edit_plugin_options(cb=update)
         if signal_selected is None and pin_selected is None:
-            tab_widget.addTab(options_tab, "Plugin")
+            self.tab_widget.addTab(self.options_tab, "Plugin")
 
-        if not nopins and plugin_instance.PINDEFAULTS:
-            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config, pin_selected=pin_selected, cb=cb)
-            if signal_selected is None:
-                tab_widget.addTab(pins_tab, "Pins")
-                if is_new:
-                    tab_widget.setCurrentWidget(pins_tab)
-
-        if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
-            joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config, cb=cb)
-            if pin_selected is None:
-                tab_widget.addTab(joint_tab, "Joint")
-        if plugin_instance.TYPE != "interface":
-            if plugin_instance.SIGNALS:
-                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config, signal_selected=signal_selected, cb=cb)
-                if pin_selected is None:
-                    tab_widget.addTab(signals_tab, "Signals")
-                    if signal_selected is not None:
-                        tab_widget.setCurrentWidget(signals_tab)
+        self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
 
         right_layout = QVBoxLayout()
-        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+        plugin_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME)
         image_path = os.path.join(plugin_path, "image.png")
         if os.path.isfile(image_path):
             ilabel = QLabel()
@@ -617,7 +675,7 @@ class GuiPlugins:
             right_layout.addStretch()
 
         hlayout = QHBoxLayout()
-        hlayout.addWidget(tab_widget)
+        hlayout.addWidget(self.tab_widget)
         hlayout.addLayout(right_layout)
 
         dialog_layout = QVBoxLayout()
@@ -631,11 +689,11 @@ class GuiPlugins:
                 # self.parent.display()
             return
         if not dialog.is_removed:
-            for key in list(plugin_config.keys()):
-                if key not in plugin_config_backup:
-                    del plugin_config[key]
-            for key in plugin_config_backup:
-                plugin_config[key] = plugin_config_backup[key]
+            for key in list(self.plugin_config.keys()):
+                if key not in self.plugin_config_backup:
+                    del self.plugin_config[key]
+            for key in self.plugin_config_backup:
+                self.plugin_config[key] = self.plugin_config_backup[key]
 
     def config_plugin(self, plugin_instance, plugin_id, widget=None):
         if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):

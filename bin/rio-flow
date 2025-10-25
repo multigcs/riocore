@@ -1952,16 +1952,19 @@ class TabAxis:
                         text.append(f"Max-Frequency: {max_freq / 1000:0.2f} kHz")
                     else:
                         text.append(f"Max-Frequency: {max_freq:0.2f} Hz")
-                    self.widgets[f"{joint}_info"].setText("\n".join(text))
+                    if f"{joint}_info" in self.widgets:
+                        self.widgets[f"{joint}_info"].setText("\n".join(text))
 
                     if "joint" not in plugin_setup:
                         plugin_setup["joint"] = {}
                     joint_setup = plugin_setup["joint"]
 
                     for key in ("type", "scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
-                        self.widgets[f"{joint}_{key}"].update(joint_setup)
+                        if f"{joint}_{key}" in self.widgets:
+                            self.widgets[f"{joint}_{key}"].update(joint_setup)
                     for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
-                        self.widgets[f"{joint}_{key}"].update(joint_setup)
+                        if f"{joint}_{key}" in self.widgets:
+                            self.widgets[f"{joint}_{key}"].update(joint_setup)
 
                     if plugin_setup_home:
                         signature.append("h")
