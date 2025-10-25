@@ -1114,6 +1114,7 @@ class PluginNode(MyNode):
             painter.setPen(QPen(Qt.GlobalColor.black, 1))
             self.paintPorts(painter)
         if hasattr(self.plugin_instance, "paint_overlay"):
+            painter.setPen(QPen(Qt.GlobalColor.black, 1))
             try:
                 self.plugin_instance.paint_overlay(painter)
             except Exception:
