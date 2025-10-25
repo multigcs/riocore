@@ -9,7 +9,12 @@
                 "led": {
                     "pin": "LEDS:LED1"
                 }
-            }
+            },
+            "uid": "blink0",
+            "pos": [
+                650.0,
+                390.0
+            ]
         },
         {
             "name": "w5500",
@@ -30,7 +35,14 @@
                 "miso": {
                     "pin": "PMOD_JA:P4"
                 }
-            }
+            },
+            "uid": "w55000",
+            "pos": [
+                -20.0,
+                550.0
+            ],
+            "image": "w5500",
+            "rotate": 180
         },
         {
             "type": "dis7seg",
@@ -51,7 +63,11 @@
                     "pin": "7SEG:A",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                380.0,
+                                -40.0
+                            ]
                         }
                     ]
                 },
@@ -59,7 +75,11 @@
                     "pin": "7SEG:B",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                380.0,
+                                0.0
+                            ]
                         }
                     ]
                 },
@@ -67,7 +87,11 @@
                     "pin": "7SEG:C",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                380.0,
+                                40.0
+                            ]
                         }
                     ]
                 },
@@ -75,7 +99,11 @@
                     "pin": "7SEG:D",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                380.0,
+                                80.0
+                            ]
                         }
                     ]
                 },
@@ -83,7 +111,11 @@
                     "pin": "7SEG:E",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                380.0,
+                                120.0
+                            ]
                         }
                     ]
                 },
@@ -91,7 +123,11 @@
                     "pin": "7SEG:F",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                380.0,
+                                160.0
+                            ]
                         }
                     ]
                 },
@@ -99,11 +135,20 @@
                     "pin": "7SEG:G",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                380.0,
+                                200.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "dis7seg0",
+            "pos": [
+                510.0,
+                -40.0
+            ]
         },
         {
             "type": "bitin",
@@ -111,7 +156,12 @@
                 "bit": {
                     "pin": "BUTTONS:BTN1"
                 }
-            }
+            },
+            "uid": "bitin0",
+            "pos": [
+                770.0,
+                80.0
+            ]
         },
         {
             "type": "bitin",
@@ -119,7 +169,12 @@
                 "bit": {
                     "pin": "BUTTONS:BTN2"
                 }
-            }
+            },
+            "uid": "bitin1",
+            "pos": [
+                770.0,
+                150.0
+            ]
         },
         {
             "type": "bitin",
@@ -127,7 +182,12 @@
                 "bit": {
                     "pin": "BUTTONS:BTN3"
                 }
-            }
+            },
+            "uid": "bitin2",
+            "pos": [
+                770.0,
+                220.0
+            ]
         },
         {
             "type": "bitin",
@@ -135,7 +195,12 @@
                 "bit": {
                     "pin": "BUTTONS:BTN4"
                 }
-            }
+            },
+            "uid": "bitin3",
+            "pos": [
+                770.0,
+                290.0
+            ]
         },
         {
             "type": "bitin",
@@ -143,7 +208,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW1"
                 }
-            }
+            },
+            "uid": "bitin4",
+            "pos": [
+                890.0,
+                400.0
+            ]
         },
         {
             "type": "bitin",
@@ -151,7 +221,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW2"
                 }
-            }
+            },
+            "uid": "bitin5",
+            "pos": [
+                890.0,
+                470.0
+            ]
         },
         {
             "type": "bitin",
@@ -159,7 +234,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW3"
                 }
-            }
+            },
+            "uid": "bitin6",
+            "pos": [
+                890.0,
+                540.0
+            ]
         },
         {
             "type": "bitin",
@@ -167,7 +247,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW4"
                 }
-            }
+            },
+            "uid": "bitin7",
+            "pos": [
+                890.0,
+                610.0
+            ]
         },
         {
             "type": "bitin",
@@ -175,7 +260,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW5"
                 }
-            }
+            },
+            "uid": "bitin8",
+            "pos": [
+                890.0,
+                680.0
+            ]
         },
         {
             "type": "bitin",
@@ -183,7 +273,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW6"
                 }
-            }
+            },
+            "uid": "bitin9",
+            "pos": [
+                890.0,
+                750.0
+            ]
         },
         {
             "type": "bitin",
@@ -191,7 +286,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW7"
                 }
-            }
+            },
+            "uid": "bitin10",
+            "pos": [
+                890.0,
+                820.0
+            ]
         },
         {
             "type": "bitin",
@@ -199,7 +299,12 @@
                 "bit": {
                     "pin": "SWITCHES:SW8"
                 }
-            }
+            },
+            "uid": "bitin11",
+            "pos": [
+                890.0,
+                890.0
+            ]
         },
         {
             "type": "bitout",
@@ -207,7 +312,12 @@
                 "bit": {
                     "pin": "LEDS:LED2"
                 }
-            }
+            },
+            "uid": "bitout0",
+            "pos": [
+                650.0,
+                460.0
+            ]
         },
         {
             "type": "bitout",
@@ -215,7 +325,12 @@
                 "bit": {
                     "pin": "LEDS:LED3"
                 }
-            }
+            },
+            "uid": "bitout1",
+            "pos": [
+                650.0,
+                530.0
+            ]
         },
         {
             "type": "bitout",
@@ -223,7 +338,12 @@
                 "bit": {
                     "pin": "LEDS:LED4"
                 }
-            }
+            },
+            "uid": "bitout2",
+            "pos": [
+                650.0,
+                600.0
+            ]
         },
         {
             "type": "bitout",
@@ -231,7 +351,12 @@
                 "bit": {
                     "pin": "LEDS:LED5"
                 }
-            }
+            },
+            "uid": "bitout3",
+            "pos": [
+                650.0,
+                670.0
+            ]
         },
         {
             "type": "bitout",
@@ -239,7 +364,12 @@
                 "bit": {
                     "pin": "LEDS:LED6"
                 }
-            }
+            },
+            "uid": "bitout4",
+            "pos": [
+                650.0,
+                740.0
+            ]
         },
         {
             "type": "bitout",
@@ -247,7 +377,12 @@
                 "bit": {
                     "pin": "LEDS:LED7"
                 }
-            }
+            },
+            "uid": "bitout5",
+            "pos": [
+                650.0,
+                810.0
+            ]
         },
         {
             "type": "bitout",
@@ -255,7 +390,28 @@
                 "bit": {
                     "pin": "LEDS:LED8"
                 }
-            }
+            },
+            "uid": "bitout6",
+            "pos": [
+                650.0,
+                880.0
+            ]
         }
-    ]
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.04,
+            "pos": [
+                -238,
+                -142
+            ]
+        },
+        "board": {
+            "pos": [
+                290.0,
+                250.0
+            ],
+            "rotate": -90
+        }
+    }
 }

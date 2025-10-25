@@ -2851,6 +2851,7 @@ class Window(QMainWindow):
         self.nesting_all()
         self.options_cfg.update(self.config)
         self.redraw()
+        self.fit_view()
         self.cfg_check()
 
     def rotate(self, item):
