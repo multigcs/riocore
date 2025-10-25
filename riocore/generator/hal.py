@@ -517,11 +517,29 @@ class hal_generator:
 
     def net_write(self):
         hal_data = []
+        hal_data_addf_read = []
+        hal_data_addf_other = []
+        hal_data_addf_write = []
+        hal_data = []
         postgui_data = []
 
         hal_data.append("")
         for line in self.preformated_top:
-            hal_data.append(line)
+            if line.startswith("addf "):
+                function = line.split()[1]
+                if "read" in function:
+                    hal_data_addf_read.append(line)
+                elif "write" in function:
+                    hal_data_addf_write.append(line)
+                else:
+                    hal_data_addf_other.append(line)
+            else:
+                hal_data.append(line)
+
+        hal_data += hal_data_addf_read
+        hal_data += hal_data_addf_other
+        hal_data += hal_data_addf_write
+        hal_data.append("")
 
         # resolv all expressions
         for output, data in self.signals_out.items():
