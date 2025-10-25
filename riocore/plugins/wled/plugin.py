@@ -31,6 +31,8 @@ class Plugin(PluginBase):
                 "description": "LED brighness",
             },
         }
+        self.SIGNALS = {}
+        self.INTERFACE = {}
         num_leds = self.plugin_setup.get("leds", 1)
         for led in range(num_leds):
             for color in ("green", "blue", "red"):

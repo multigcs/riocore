@@ -32,6 +32,8 @@ from PyQt5.QtWidgets import (
 
 riocore_path = os.path.dirname(riocore.__file__)
 
+autoreload = True
+
 
 class GuiPlugins:
     def __init__(self, parent):
@@ -626,15 +628,17 @@ class GuiPlugins:
         self.joint_tab = None
         self.signals_tab = None
 
-        def update(arg):
-            if cb:
-                cb(arg)
-            # self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
-
         self.plugin_instance = plugin_instance
         plugin_config = plugin_instance.plugin_setup
         self.plugin_config = plugin_config
         self.plugin_config_backup = copy.deepcopy(plugin_config)
+
+        def update(arg):
+            if cb:
+                cb(arg)
+            if autoreload:
+                self.plugin_instance.setup()
+                self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
 
         dialog = QDialog()
         dialog.is_removed = False
