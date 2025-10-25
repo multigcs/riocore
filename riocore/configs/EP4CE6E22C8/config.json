@@ -11,9 +11,11 @@
             },
             "uid": "blink1",
             "pos": [
-                850.0,
-                100.0
-            ]
+                500.0,
+                210.0
+            ],
+            "image": "led",
+            "rotate": 0
         },
         {
             "type": "blink",
@@ -24,10 +26,12 @@
             },
             "uid": "blink2",
             "pos": [
-                850.0,
-                150.0
+                500.0,
+                240.0
             ],
-            "frequency": 2.0
+            "frequency": 2.0,
+            "image": "led",
+            "rotate": 0
         },
         {
             "type": "blink",
@@ -38,10 +42,12 @@
             },
             "uid": "blink3",
             "pos": [
-                850.0,
-                200.0
+                500.0,
+                270.0
             ],
-            "frequency": 3.0
+            "frequency": 3.0,
+            "image": "led",
+            "rotate": 0
         },
         {
             "type": "blink",
@@ -52,10 +58,12 @@
             },
             "uid": "blink4",
             "pos": [
-                850.0,
-                250.0
+                500.0,
+                300.0
             ],
-            "frequency": 4.0
+            "frequency": 4.0,
+            "image": "led",
+            "rotate": 0
         },
         {
             "type": "blink",
@@ -66,18 +74,20 @@
             },
             "uid": "blink5",
             "pos": [
-                850.0,
-                300.0
+                500.0,
+                330.0
             ],
-            "frequency": 5.0
+            "frequency": 5.0,
+            "image": "led",
+            "rotate": 0
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.5,
+            "scale": 0.88,
             "pos": [
-                394,
-                65
+                149,
+                143
             ]
         },
         "board": {

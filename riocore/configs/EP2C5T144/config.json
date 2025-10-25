@@ -8,7 +8,14 @@
                 "led": {
                     "pin": "LED:D1"
                 }
-            }
+            },
+            "uid": "blink0",
+            "pos": [
+                190.0,
+                -10.0
+            ],
+            "image": "led",
+            "rotate": -90
         },
         {
             "type": "bitout",
@@ -16,7 +23,14 @@
                 "bit": {
                     "pin": "LED:D2"
                 }
-            }
+            },
+            "uid": "bitout0",
+            "pos": [
+                220.0,
+                -10.0
+            ],
+            "image": "led",
+            "rotate": -90
         },
         {
             "type": "pwmout",
@@ -24,7 +38,14 @@
                 "pwm": {
                     "pin": "LED:D3"
                 }
-            }
+            },
+            "uid": "pwmout0",
+            "pos": [
+                260.0,
+                -10.0
+            ],
+            "image": "led",
+            "rotate": -90
         },
         {
             "type": "bitin",
@@ -32,7 +53,28 @@
                 "bit": {
                     "pin": "SW:S1"
                 }
-            }
+            },
+            "uid": "bitin0",
+            "pos": [
+                100.0,
+                -100.0
+            ]
         }
-    ]
+    ],
+    "flow": {
+        "view": {
+            "scale": 2.327450980392157,
+            "pos": [
+                89,
+                -282
+            ]
+        },
+        "board": {
+            "pos": [
+                60.0,
+                40.0
+            ],
+            "rotate": 0
+        }
+    }
 }
