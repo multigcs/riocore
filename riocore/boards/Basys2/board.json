@@ -21,7 +21,7 @@
                 "LED1": {
                     "pin": "M5",
                     "pos": [
-                        450,
+                        470,
                         390
                     ],
                     "direction": "output"
@@ -29,7 +29,7 @@
                 "LED2": {
                     "pin": "M11",
                     "pos": [
-                        397,
+                        417,
                         390
                     ],
                     "direction": "output"
@@ -37,7 +37,7 @@
                 "LED3": {
                     "pin": "P7",
                     "pos": [
-                        345,
+                        365,
                         390
                     ],
                     "direction": "output"
@@ -45,7 +45,7 @@
                 "LED4": {
                     "pin": "P6",
                     "pos": [
-                        290,
+                        310,
                         390
                     ],
                     "direction": "output"
@@ -53,7 +53,7 @@
                 "LED5": {
                     "pin": "N5",
                     "pos": [
-                        239,
+                        259,
                         390
                     ],
                     "direction": "output"
@@ -61,7 +61,7 @@
                 "LED6": {
                     "pin": "N4",
                     "pos": [
-                        185,
+                        205,
                         390
                     ],
                     "direction": "output"
@@ -69,7 +69,7 @@
                 "LED7": {
                     "pin": "P4",
                     "pos": [
-                        132,
+                        152,
                         390
                     ],
                     "direction": "output"
@@ -77,7 +77,7 @@
                 "LED8": {
                     "pin": "G1",
                     "pos": [
-                        81,
+                        101,
                         390
                     ],
                     "direction": "output"
@@ -91,7 +91,7 @@
                 "BTN1": {
                     "pin": "G12",
                     "pos": [
-                        696,
+                        716,
                         480
                     ],
                     "direction": "input"
@@ -99,7 +99,7 @@
                 "BTN2": {
                     "pin": "C11",
                     "pos": [
-                        635,
+                        655,
                         480
                     ],
                     "direction": "input"
@@ -107,7 +107,7 @@
                 "BTN3": {
                     "pin": "M4",
                     "pos": [
-                        573,
+                        593,
                         480
                     ],
                     "direction": "input"
@@ -115,7 +115,7 @@
                 "BTN4": {
                     "pin": "A7",
                     "pos": [
-                        512,
+                        532,
                         480
                     ],
                     "direction": "input"
@@ -129,7 +129,7 @@
                 "SW1": {
                     "pin": "P11",
                     "pos": [
-                        450,
+                        470,
                         470
                     ],
                     "direction": "input"
@@ -137,7 +137,7 @@
                 "SW2": {
                     "pin": "L3",
                     "pos": [
-                        397,
+                        417,
                         470
                     ],
                     "direction": "input"
@@ -145,7 +145,7 @@
                 "SW3": {
                     "pin": "K3",
                     "pos": [
-                        345,
+                        365,
                         470
                     ],
                     "direction": "input"
@@ -153,7 +153,7 @@
                 "SW4": {
                     "pin": "B4",
                     "pos": [
-                        290,
+                        310,
                         470
                     ],
                     "direction": "input"
@@ -161,7 +161,7 @@
                 "SW5": {
                     "pin": "G3",
                     "pos": [
-                        239,
+                        259,
                         470
                     ],
                     "direction": "input"
@@ -169,7 +169,7 @@
                 "SW6": {
                     "pin": "F3",
                     "pos": [
-                        185,
+                        205,
                         470
                     ],
                     "direction": "input"
@@ -177,7 +177,7 @@
                 "SW7": {
                     "pin": "E2",
                     "pos": [
-                        132,
+                        152,
                         470
                     ],
                     "direction": "input"
@@ -185,7 +185,7 @@
                 "SW8": {
                     "pin": "N3",
                     "pos": [
-                        81,
+                        101,
                         470
                     ],
                     "direction": "input"
@@ -354,51 +354,99 @@
             "pins": {
                 "EN1": {
                     "pin": "F12",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        760,
+                        420
+                    ]
                 },
                 "EN2": {
                     "pin": "J12",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        700,
+                        420
+                    ]
                 },
                 "EN3": {
                     "pin": "M13",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        640,
+                        420
+                    ]
                 },
                 "EN4": {
                     "pin": "K14",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        580,
+                        420
+                    ]
                 },
                 "A": {
                     "pin": "L14",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        770,
+                        377
+                    ]
                 },
                 "B": {
                     "pin": "H12",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        750,
+                        377
+                    ]
                 },
                 "C": {
                     "pin": "N14",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        730,
+                        377
+                    ]
                 },
                 "D": {
                     "pin": "N11",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        710,
+                        377
+                    ]
                 },
                 "E": {
                     "pin": "P12",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        690,
+                        377
+                    ]
                 },
                 "F": {
                     "pin": "L13",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        670,
+                        377
+                    ]
                 },
                 "G": {
                     "pin": "M12",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        650,
+                        377
+                    ]
                 },
                 "DP": {
                     "pin": "N13",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        630,
+                        377
+                    ]
                 }
             }
         },
