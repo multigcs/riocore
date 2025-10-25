@@ -11,6 +11,7 @@ The maximum PWM frequency and the resolution is quite limited compared to hardwa
 but in many cases software PWM can be very useful. If better performance is needed,
 a hardware PWM generator is a better choice."""
         self.KEYWORDS = "pwm"
+        self.IMAGES = ["spindle500w", "laser", "led"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
@@ -69,12 +70,6 @@ a hardware PWM generator is a better choice."""
                 "type": bool,
                 "description": "dither-pwm",
             },
-            "image": {
-                "default": "generic",
-                "type": "select",
-                "options": ["generic", "spindle500w", "laser"],
-                "description": "hardware type",
-            },
         }
 
         self.SIGNALS = {
@@ -106,29 +101,6 @@ a hardware PWM generator is a better choice."""
         }
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
-        image = self.plugin_setup.get("image", self.option_default("image"))
-        if image == "spindle500w":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "spindle500w.png"
-            if mode == "1":
-                self.PINDEFAULTS["pwm"]["pos"] = (120, 60)
-                self.PINDEFAULTS["dir"]["pos"] = (120, 90)
-            else:
-                self.PINDEFAULTS["up"]["pos"] = (120, 60)
-                self.PINDEFAULTS["down"]["pos"] = (120, 90)
-            self.SIGNALS["value"]["pos"] = (425, 60)
-            self.SIGNALS["enable"]["pos"] = (425, 90)
-        elif image == "laser":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "laser.png"
-            if mode == "1":
-                self.PINDEFAULTS["pwm"]["pos"] = (20, 60)
-                self.PINDEFAULTS["dir"]["pos"] = (20, 90)
-            else:
-                self.PINDEFAULTS["up"]["pos"] = (20, 60)
-                self.PINDEFAULTS["down"]["pos"] = (20, 90)
-            self.SIGNALS["value"]["pos"] = (375, 75)
-            self.SIGNALS["enable"]["pos"] = (375, 105)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):

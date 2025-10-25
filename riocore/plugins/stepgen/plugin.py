@@ -11,6 +11,7 @@ The maximum step rate depends on the CPU and other factors,
 and is usually in the range of 5 kHz to 25 kHz.
 If higher rates are needed, a hardware step generator is a better choice."""
         self.KEYWORDS = "stepper"
+        self.IMAGES = ["stepper"]
         self.TYPE = "joint"
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
@@ -37,12 +38,6 @@ If higher rates are needed, a hardware step generator is a better choice."""
                     "15|user-specified",
                 ],
                 "description": "Modus",
-            },
-            "image": {
-                "default": "generic",
-                "type": "select",
-                "options": ["generic", "stepper"],
-                "description": "hardware type",
             },
         }
         self.SIGNALS = {
@@ -83,16 +78,6 @@ If higher rates are needed, a hardware step generator is a better choice."""
         }
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
-
-        image = self.plugin_setup.get("image", self.option_default("image"))
-        if image == "stepper":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "stepper.png"
-            self.PINDEFAULTS["step"]["pos"] = (30, 380)
-            self.PINDEFAULTS["dir"]["pos"] = (30, 320)
-            self.SIGNALS["position-cmd"]["pos"] = (360, 240)
-            self.SIGNALS["position-fb"]["pos"] = (360, 270)
-            self.SIGNALS["position-scale"]["pos"] = (360, 300)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):

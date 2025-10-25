@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "frequency input"
         self.DESCRIPTION = "to messurement digital frequencies"
         self.KEYWORDS = "frequency"
+        self.IMAGES = ["flow", "proximity"]
         self.ORIGIN = ""
         self.VERILOGS = ["freqin.v"]
         self.PINDEFAULTS = {
@@ -33,12 +34,6 @@ class Plugin(PluginBase):
                 "unit": "Hz",
                 "description": "maximum measured frequency (for filtering)",
             },
-            "image": {
-                "default": "generic",
-                "type": "select",
-                "options": ["generic", "flow"],
-                "description": "hardware type",
-            },
         }
         self.INTERFACE = {
             "frequency": {
@@ -62,13 +57,6 @@ class Plugin(PluginBase):
             },
         }
         self.vlast = 0
-        image = self.plugin_setup.get("image", self.option_default("image"))
-        if image == "flow":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "flow.png"
-            self.PINDEFAULTS["freq"]["pos"] = (100, 100)
-            self.SIGNALS["frequency"]["pos"] = (175, 20)
-            self.SIGNALS["valid"]["pos"] = (175, 50)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

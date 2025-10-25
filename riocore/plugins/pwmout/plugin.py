@@ -9,6 +9,8 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to control AC/DC-Motors or for analog outputs"
         # search strings for the rio-setup gui, but it search also over name, info and description (add new plugin)
         self.KEYWORDS = "joint dcservo acservo 10v 5v dac analog"
+        # optional list of possible images (for the flow frontend)
+        self.IMAGES = ["spindle500w", "laser", "led"]
         # a link to the orign sources of the verilog code (empty for own code)
         self.ORIGIN = ""
         # list of verilog files in the plugin folder to copy to the GATEWARE folder while generate the Output
@@ -38,12 +40,6 @@ class Plugin(PluginBase):
                 "max": 1000000,
                 "unit": "Hz",
                 "description": "PWM frequency",
-            },
-            "image": {
-                "default": "generic",
-                "type": "select",
-                "options": ["generic", "spindle500w", "laser"],
-                "description": "hardware type",
             },
         }
         # all the values that needs to transfare betweed PC and FPGA
@@ -93,24 +89,6 @@ class Plugin(PluginBase):
         # here is an example how to modify the above dictionarys depends on the configured options (self.OPTIONS)
         if "dir" in self.plugin_setup.get("pins", {}):
             self.SIGNALS["dty"]["min"] = -self.SIGNALS["dty"]["max"]
-        # add positions if image is selected for rio-flow
-        image = self.plugin_setup.get("image", self.option_default("image"))
-        if image == "spindle500w":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "spindle500w.png"
-            self.PINDEFAULTS["pwm"]["pos"] = (120, 40)
-            self.PINDEFAULTS["dir"]["pos"] = (120, 70)
-            self.PINDEFAULTS["en"]["pos"] = (120, 100)
-            self.SIGNALS["dty"]["pos"] = (425, 60)
-            self.SIGNALS["enable"]["pos"] = (425, 90)
-        elif image == "laser":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "laser.png"
-            self.PINDEFAULTS["pwm"]["pos"] = (20, 60)
-            self.PINDEFAULTS["dir"]["pos"] = (20, 90)
-            self.PINDEFAULTS["en"]["pos"] = (20, 120)
-            self.SIGNALS["dty"]["pos"] = (375, 75)
-            self.SIGNALS["enable"]["pos"] = (375, 105)
 
     def cfg_info(self):
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))

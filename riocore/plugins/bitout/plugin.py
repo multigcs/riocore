@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "singe bit output pin"
         self.DESCRIPTION = "to control relay, leds, valves, ...."
         self.KEYWORDS = "led relais relay valve lamp motor magnet"
+        self.IMAGES = ["relay", "ssr", "ssr2a", "led"]
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {
@@ -27,31 +28,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.OPTIONS = {
-            "image": {
-                "default": "generic",
-                "type": "select",
-                "options": ["generic", "relay", "ssr", "ssr2a"],
-                "description": "hardware type",
-            },
-        }
-
-        image = self.plugin_setup.get("image", self.option_default("image"))
-        if image == "relay":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "relay.png"
-            self.PINDEFAULTS["bit"]["pos"] = (15, 150)
-            self.SIGNALS["bit"]["pos"] = (355, 150)
-        elif image == "ssr":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "ssr.png"
-            self.PINDEFAULTS["bit"]["pos"] = (36, 36)
-            self.SIGNALS["bit"]["pos"] = (278, 40)
-        elif image == "ssr2a":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "ssr2a.png"
-            self.PINDEFAULTS["bit"]["pos"] = (40, 58)
-            self.SIGNALS["bit"]["pos"] = (278, 58)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)

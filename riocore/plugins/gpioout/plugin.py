@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "gpio output"
         self.DESCRIPTION = ""
         self.KEYWORDS = "output"
+        self.IMAGES = ["relay", "ssr", "ssr2a", "led"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
@@ -23,31 +24,6 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
-        self.OPTIONS = {
-            "image": {
-                "default": "generic",
-                "type": "select",
-                "options": ["generic", "relay", "ssr", "ssr2a"],
-                "description": "hardware type",
-            },
-        }
-
-        image = self.plugin_setup.get("image", self.option_default("image"))
-        if image == "relay":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "relay.png"
-            self.PINDEFAULTS["bit"]["pos"] = (15, 150)
-            self.SIGNALS["bit"]["pos"] = (355, 150)
-        elif image == "ssr":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "ssr.png"
-            self.PINDEFAULTS["bit"]["pos"] = (36, 36)
-            self.SIGNALS["bit"]["pos"] = (278, 40)
-        elif image == "ssr2a":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "ssr2a.png"
-            self.PINDEFAULTS["bit"]["pos"] = (40, 58)
-            self.SIGNALS["bit"]["pos"] = (278, 58)
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):

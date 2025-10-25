@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "single input pin"
         self.DESCRIPTION = "to read switches or other 1bit signals"
         self.KEYWORDS = "switch limit estop keyboard"
+        self.IMAGES = ["proximity", "estop", "probe", "switch", "opto"]
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {
@@ -25,36 +26,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.OPTIONS = {
-            "image": {
-                "default": "generic",
-                "type": "select",
-                "options": ["generic", "proximity", "estop", "probe", "switch"],
-                "description": "hardware type",
-            },
-        }
-
-        image = self.plugin_setup.get("image", self.option_default("image"))
-        if image == "proximity":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "proximity.png"
-            self.PINDEFAULTS["bit"]["pos"] = (10, 60)
-            self.SIGNALS["bit"]["pos"] = (360, 60)
-        elif image == "estop":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "estop.png"
-            self.PINDEFAULTS["bit"]["pos"] = (10, 160)
-            self.SIGNALS["bit"]["pos"] = (360, 160)
-        elif image == "probe":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "probe.png"
-            self.PINDEFAULTS["bit"]["pos"] = (10, 160)
-            self.SIGNALS["bit"]["pos"] = (280, 160)
-        elif image == "switch":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "switch.png"
-            self.PINDEFAULTS["bit"]["pos"] = (10, 160)
-            self.SIGNALS["bit"]["pos"] = (280, 160)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base(direct=True)

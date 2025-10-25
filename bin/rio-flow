@@ -840,7 +840,8 @@ class PluginNode(MyNode):
         self.reload()
 
     def reload(self):
-        self.name = self.plugin_instance.title
+        self.title = self.plugin_instance.title
+        self.name = self.plugin_instance.instances_name
         self.width = 200
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
@@ -858,9 +859,9 @@ class PluginNode(MyNode):
             if "rotate" not in self.plugin_instance.plugin_setup:
                 self.plugin_instance.plugin_setup["rotate"] = 0
             self.setZValue(1)
-            plugin_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME)
-            imagefile = self.plugin_instance.IMAGE or "image.png"
-            image = os.path.join(plugin_path, imagefile)
+            image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
+            if not os.path.exists(image):
+                image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
             if os.path.exists(image):
                 pixmap = QPixmap.fromImage(QImage(image))
                 pixmap = pixmap.transformed(QTransform().rotate(self.plugin_instance.plugin_setup["rotate"]))
@@ -1610,6 +1611,8 @@ class NodeViewer(QGraphicsView):
                 position = QPoint(event.pos())
                 position = self.mapToScene(position.x(), position.y())
                 hovername = self.scene.hover.name
+                if hasattr(self.scene.hover, "title") and self.scene.hover.title != self.scene.hover.name:
+                    hovername = f"{self.scene.hover.title} ({self.scene.hover.name})"
                 hoverpos = self.scene.hover.pos()
                 position = QPointF(position.x() - hoverpos.x(), position.y() - hoverpos.y())
                 port = self.scene.hover.port_selected(position)

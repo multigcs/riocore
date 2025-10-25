@@ -4,12 +4,233 @@ import riocore
 from riocore.modifiers import Modifiers
 
 
+class PluginImages:
+    def __init__(self):
+        pass
+
+    def relay(self):
+        setup = {
+            "image": "relay.png",
+            "pins": [
+                (15, 150),
+            ],
+            "signals": [
+                (355, 150),
+            ],
+        }
+        return setup
+
+    def ssr(self):
+        setup = {
+            "image": "ssr.png",
+            "pins": [
+                (36, 36),
+            ],
+            "signals": [
+                (278, 40),
+            ],
+        }
+        return setup
+
+    def ssr2a(self):
+        setup = {
+            "image": "ssr2a.png",
+            "pins": [
+                (40, 58),
+            ],
+            "signals": [
+                (278, 58),
+            ],
+        }
+        return setup
+
+    def led(self):
+        setup = {
+            "image": "led.png",
+            "pins": [
+                (10, 10),
+                (10, 30),
+            ],
+            "signals": [
+                (60, 10),
+                (60, 30),
+            ],
+        }
+        return setup
+
+    def wled(self):
+        setup = {
+            "image": "wled.png",
+            "pins": [
+                (10, 36),
+            ],
+            "signals": [],
+        }
+        px = 50
+        for led in range(3):
+            py = 10
+            for color in range(3):
+                setup["signals"].append((px, py))
+                py += 26
+            px += 137
+        return setup
+
+    def proximity(self):
+        setup = {
+            "image": "proximity.png",
+            "pins": [
+                (10, 60),
+            ],
+            "signals": [
+                (360, 60),
+                (340, 60),
+            ],
+        }
+        return setup
+
+    def estop(self):
+        setup = {
+            "image": "estop.png",
+            "pins": [
+                (10, 160),
+            ],
+            "signals": [
+                (360, 160),
+            ],
+        }
+        return setup
+
+    def probe(self):
+        setup = {
+            "image": "probe.png",
+            "pins": [
+                (10, 160),
+            ],
+            "signals": [
+                (280, 160),
+            ],
+        }
+        return setup
+
+    def switch(self):
+        setup = {
+            "image": "switch.png",
+            "pins": [
+                (90, 100),
+            ],
+            "signals": [
+                (270, 100),
+            ],
+        }
+        return setup
+
+    def opto(self):
+        setup = {
+            "image": "opto.png",
+            "pins": [
+                (50, 27),
+            ],
+            "signals": [
+                (345, 27),
+            ],
+        }
+        return setup
+
+    def w5500mini(self):
+        setup = {
+            "image": "w5500-mini.png",
+            "pins": [
+                (200, 126),
+                (15, 60),
+                (200, 104),
+                (200, 82),
+                (15, 82),
+                (200, 60),
+            ],
+        }
+        return setup
+
+    def w5500(self):
+        setup = {
+            "image": "w5500.png",
+            "pins": [
+                (44, 184),
+                (44, 206),
+                (44, 140),
+                (44, 162),
+                (22, 184),
+                (22, 160),
+            ],
+        }
+        return setup
+
+    def spindle500w(self):
+        setup = {
+            "image": "spindle500w.png",
+            "pins": [
+                (120, 40),
+                (120, 70),
+                (120, 100),
+            ],
+            "signals": [
+                (425, 60),
+                (425, 90),
+            ],
+        }
+        return setup
+
+    def laser(self):
+        setup = {
+            "image": "laser.png",
+            "pins": [
+                (20, 60),
+                (20, 90),
+                (20, 120),
+            ],
+            "signals": [
+                (375, 75),
+                (375, 105),
+            ],
+        }
+        return setup
+
+    def stepper(self):
+        setup = {
+            "image": "stepper.png",
+            "pins": [
+                (30, 380),
+                (30, 320),
+                (30, 260),
+            ],
+            "signals": [
+                (360, 240),
+                (360, 270),
+                (360, 300),
+            ],
+        }
+        return setup
+
+    def flow(self):
+        setup = {
+            "image": "flow.png",
+            "pins": [
+                (100, 100),
+            ],
+            "signals": [
+                (175, 20),
+                (175, 50),
+            ],
+        }
+        return setup
+
+
 class PluginBase:
     def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
         self.PINDEFAULTS = {}
         self.GPIODEFAULTS = {}
         self.INTERFACE = {}
         self.IMAGE = ""
+        self.IMAGES = []
         self.IMAGE_SHOW = False
         self.SIGNALS = {}
         self.PREFIX = ""
@@ -92,6 +313,31 @@ class PluginBase:
                     "default": False,
                     "description": "configure as joint",
                 }
+
+        if self.IMAGES:
+            NEW_OPTIONS["image"] = {
+                "default": "generic",
+                "type": "select",
+                "options": ["generic"] + self.IMAGES,
+                "description": "hardware type",
+            }
+            image = self.plugin_setup.get("image", self.option_default("image"))
+            self.plugin_images = PluginImages()
+            if image:
+                if hasattr(self.plugin_images, image):
+                    image_setup = getattr(self.plugin_images, image)()
+                    self.IMAGE_SHOW = True
+                    self.IMAGE = image_setup["image"]
+                    pins_max = len(image_setup.get("pins", []))
+                    signals_max = len(image_setup.get("signals", []))
+                    for pn, pin in enumerate(self.PINDEFAULTS):
+                        if pn < pins_max:
+                            self.PINDEFAULTS[pin]["pos"] = image_setup["pins"][pn]
+                    for pn, pin in enumerate(self.SIGNALS):
+                        if pn < signals_max:
+                            self.SIGNALS[pin]["pos"] = image_setup["signals"][pn]
+                else:
+                    riocore.log(f"ERROR: image-config not found for: ({image})")
 
         # add new options at top of dict
         if NEW_OPTIONS:
