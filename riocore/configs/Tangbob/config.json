@@ -126,7 +126,7 @@
     ],
     "modules": [
         {
-            "slot": "LEFT",
+            "slot": "RIGHT",
             "module": "china-bob5x",
             "setup": {
                 "enable": {
@@ -295,7 +295,7 @@
     ],
     "flow": {
         "view": {
-            "scale": 1.9236543470441727,
+            "scale": 1.92,
             "pos": [
                 -242,
                 315

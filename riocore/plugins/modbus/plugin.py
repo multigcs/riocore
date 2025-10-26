@@ -298,7 +298,7 @@ class Plugin(PluginBase):
                 dev_address = signal_defaults.get("plugin_setup", {}).get("address")
                 if dev_address != address:
                     continue
-                ports[f"sig_{signal_name}"] = {"title": signal_name}
+                ports[f"sig_{signal_name}"] = {"title": signal_name, "edge": "source", "type": "SIGNAL"}
             if signal_defaults.get("plugin_setup", {}).get("type") == 101:
                 image = "hy_vfd.png"
             devices[f"dev-{address}"] = {

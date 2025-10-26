@@ -503,7 +503,7 @@
             "uid": "mb0",
             "pos": [
                 -1920.0,
-                1180.0
+                1190.0
             ],
             "signals": {
                 "spindle_speed_command": {
@@ -1473,10 +1473,10 @@
     "flow": {
         "view": {
             "pos": [
-                -2566,
-                164
+                -2785,
+                404
             ],
-            "scale": 1.24
+            "scale": 1.04
         },
         "board": {
             "pos": [

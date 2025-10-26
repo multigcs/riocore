@@ -392,7 +392,7 @@ graph LR;
                 dev_device_id = signal_defaults.get("device_id")
                 if dev_device_id != device_id:
                     continue
-                ports[f"sig_{signal_name}"] = {"title": signal_name}
+                ports[f"sig_{signal_name}"] = {"title": signal_name, "edge": "source", "type": "SIGNAL"}
             devices[f"dev-{device_id}"] = {
                 "ports": ports,
             }
