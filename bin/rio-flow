@@ -485,6 +485,9 @@ class MyNode(QGraphicsItem):
                 self.plugin_instance.paint_overlay(painter)
             except Exception:
                 pass
+        if hasattr(self, "sub_update"):
+            self.sub_update()
+
 
     def rotate_cw(self):
         if "rotate" not in self.flow_cfg:
@@ -615,7 +618,7 @@ class PluginNode(MyNode):
 
         self.update_size()
 
-    def sub_update(self, sub):
+    def sub_update(self):
         self.flow_cfg["sub_pos"] = {}
         for sub_item in self.subNodes:
             pos = sub_item.pos()
