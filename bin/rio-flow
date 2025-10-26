@@ -1185,6 +1185,7 @@ class NodeViewer(QGraphicsView):
 
                     else:
                         # check type and dir
+                        # TODO: check type of parent source (before breakouts and modifiers)
                         source_port_type = source_node.ports.get(source_port, {}).get("type")
                         source_port_direction = source_node.ports.get(source_port, {}).get("direction")
                         target_port_type = target_node.ports.get(target_port, {}).get("type")
