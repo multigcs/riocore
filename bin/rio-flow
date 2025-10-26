@@ -259,9 +259,9 @@ class MyNode(QGraphicsItem):
     port_toff_x = 2
     port_toff_y = 2
     port_border = 2
-    port_top = grid(25)
-    port_bottom = 5
-    port_diff = grid(15)
+    port_top = 10
+    port_bottom = 10
+    port_diff = 30
 
     def __init__(self, scene, x=None, y=None):
         super().__init__()
@@ -381,14 +381,14 @@ class MyNode(QGraphicsItem):
             if pin_data["edge"] == "target":
                 np_left += 1
                 if not self.pixmap:
-                    pin_data["pos"] = (self.port_border + self.port_size / 2 + 10, self.port_top + np_left * (self.port_diff + self.port_size))
+                    pin_data["pos"] = (self.port_border + self.port_size / 2 + 10, self.port_top + np_left * (self.port_diff))
             else:
                 np_right += 1
                 if not self.pixmap:
-                    pin_data["pos"] = (self.width * 2 - self.port_border - self.port_size / 2 - 10, self.port_top + np_right * (self.port_diff + self.port_size))
+                    pin_data["pos"] = (self.width * 2 - self.port_border - self.port_size / 2 - 10, self.port_top + np_right * (self.port_diff))
 
         if not self.pixmap:
-            self.height = grid(self.port_top + max(np_left, np_right) * self.port_diff + self.port_bottom)
+            self.height = grid(self.port_top + max(np_left, np_right) * (self.port_diff / 2) + self.port_bottom)
 
     def boundingRect(self):
         self.update_size()
@@ -900,7 +900,9 @@ class SubNode(MyNode):
         super().__init__(scene, x, y)
         self.parent = parent
         self.name = title
-        self.ports = ports
+        self.ports = {}
+        if show_signals or True:
+            self.ports = ports
         self.width = 200
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
@@ -973,7 +975,7 @@ class ModuleNode(MyNode):
 
         for plugin_instance in self.plugins.plugin_instances:
             plugin_name = plugin_instance.instances_name
-            if show_signals or True:
+            if show_signals:
                 for pin_name, pin_data in plugin_instance.SIGNALS.items():
                     edge_type = pin_data.get("edge")
                     if not edge_type:
@@ -987,45 +989,10 @@ class ModuleNode(MyNode):
                     pin_data["title"] = f"{plugin_name} - {pin_data['title']}"
                     self.ports[f"{plugin_name}:sig_{pin_name}"] = pin_data
 
-    def paintPlugins(self, painter=None):
-        py = self.port_top
-        if painter:
-            painter.setPen(QPen(self.text_color, 1))
-            painter.setFont(QFont(self.text_font, self.port_tsize))
-
-        for plugin_instance in self.plugins.plugin_instances:
-            plugin_name = plugin_instance.instances_name
-            if painter:
-                plugin_title = plugin_instance.plugin_setup.get("name") or plugin_name
-                painter.drawText(
-                    QRectF(0, py - (self.port_tsize * self.text_scale / 2) - self.port_toff_y, self.width, self.port_tsize * self.text_scale),
-                    Qt.AlignmentFlag.AlignCenter,
-                    plugin_title,
-                )
-            pph = 0
-            for pin_name, pin_data in plugin_instance.pins().items():
-                pin = pin_data.get("pin")
-                if pin:
-                    if painter:
-                        self.paintPort(painter, "left", py + pph, f"{pin}({pin_name})", Qt.GlobalColor.yellow)
-                    self.port_positions[pin] = (0, py + pph)
-                    pph += self.port_diff
-
-            sph = 0
-            for signal_name, signal_data in plugin_instance.SIGNALS.items():
-                key = f"sig_{plugin_name}:{signal_name}"
-                if painter:
-                    self.paintPort(painter, "right", py + sph, signal_name, Qt.GlobalColor.yellow)
-                self.port_positions[key] = (self.width, py + sph)
-                sph += self.port_diff
-
-            py += max(pph, sph)
-            self.height = grid(self.port_top + py + self.port_bottom)
-
 
 class ModifierNode(MyNode):
-    port_top = grid(13)
-    port_bottom = 2
+    port_top = 2
+    port_bottom = 12
 
     def __init__(self, scene, x, y, modifier):
         super().__init__(scene, x, y)
