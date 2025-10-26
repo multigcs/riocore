@@ -16,7 +16,6 @@ class Plugin(PluginBase):
         self.OPTIONS = {}
         self.SIGNALS = {}
         self.mode_pins = {}
-
         self.OPTIONS = {
             "node_type": {
                 "default": "1",
@@ -42,12 +41,30 @@ class Plugin(PluginBase):
         if node_type == "0":
             self.TYPE = "base"
             self.IMAGE_SHOW = True
-            self.GPIODEFAULTS = {
-                "out": {"pin": f"{self.instances_name}:master", "comment": "ethercat-master", "pos": [100, 110], "direction": "all", "type": "source"},
+            self.PINDEFAULTS = {
+                "out": {
+                    "pin": f"{self.instances_name}:master",
+                    "comment": "ethercat-master",
+                    "pos": [100, 110],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "ETHERCAT",
+                },
             }
         elif node_type == "1":
             self.TYPE = "joint"
-            self.PINDEFAULTS = {"in": {"direction": "input", "type": "target"}, "out": {"direction": "output", "type": "source"}}
+            self.PINDEFAULTS = {
+                "in": {
+                    "direction": "input",
+                    "edge": "target",
+                    "type": "ETHERCAT",
+                },
+                "out": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "ETHERCAT",
+                },
+            }
             self.SIGNALS = {
                 "position-cmd": {
                     "direction": "output",
@@ -67,7 +84,18 @@ class Plugin(PluginBase):
                 },
             }
         elif node_type == "2":
-            self.PINDEFAULTS = {"in": {"direction": "input", "type": "target"}, "out": {"direction": "output", "type": "source"}}
+            self.PINDEFAULTS = {
+                "in": {
+                    "direction": "input",
+                    "edge": "target",
+                    "type": "ETHERCAT",
+                },
+                "out": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "ETHERCAT",
+                },
+            }
             self.SIGNALS = {}
             for pin in range(32):
                 self.SIGNALS[f"in{pin}"] = {
@@ -75,7 +103,18 @@ class Plugin(PluginBase):
                     "bool": True,
                 }
         else:
-            self.PINDEFAULTS = {"in": {"direction": "input", "type": "target"}, "out": {"direction": "output", "type": "source"}}
+            self.PINDEFAULTS = {
+                "in": {
+                    "direction": "input",
+                    "edge": "target",
+                    "type": "ETHERCAT",
+                },
+                "out": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "ETHERCAT",
+                },
+            }
 
     def update_prefixes(cls, instances):
         for num, instance in enumerate(instances):

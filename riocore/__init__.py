@@ -512,18 +512,17 @@ class Project:
         # expansion mapping after plugin load
         expansion_mapping = {}
         for plugin_instance in self.plugin_instances:
-            if plugin_instance.TYPE == "base":
-                for gpio_pin, gpio_data in plugin_instance.GPIODEFAULTS.items():
-                    source = f"{plugin_instance.instances_name}:{gpio_pin}"
-                    self.pin_mapping[source] = gpio_data["pin"]
-
-            elif plugin_instance.TYPE == "expansion":
+            if plugin_instance.TYPE == "expansion":
                 for exp_pin in plugin_instance.expansion_inputs():
                     source = f"{plugin_instance.instances_name}:{exp_pin}"
                     expansion_mapping[source] = exp_pin
                 for exp_pin in plugin_instance.expansion_outputs():
                     source = f"{plugin_instance.instances_name}:{exp_pin}"
                     expansion_mapping[source] = exp_pin
+            elif plugin_instance.TYPE == "base":
+                for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
+                    source = f"{plugin_instance.instances_name}:{gpio_pin}"
+                    self.pin_mapping[source] = gpio_data["pin"]
 
         for plugin_instance in self.plugin_instances:
             for pin, pdata in plugin_instance.pins().items():

@@ -85,17 +85,29 @@ a hardware PWM generator is a better choice."""
         }
         self.mode_pins = {
             "1": {
-                "pwm": {"direction": "output"},
+                "pwm": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": "GPIO",
+                },
                 "dir": {
                     "direction": "output",
                     "optional": True,
+                    "edge": "target",
+                    "type": "GPIO",
                 },
             },
             "2": {
-                "up": {"direction": "output"},
+                "up": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": "GPIO",
+                },
                 "down": {
                     "direction": "output",
                     "optional": True,
+                    "edge": "target",
+                    "type": "GPIO",
                 },
             },
         }

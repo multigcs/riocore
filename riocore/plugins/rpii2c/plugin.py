@@ -58,15 +58,71 @@ class Plugin(PluginBase):
         device = self.plugin_setup.get("device", self.option_default("device"))
         self.IMAGE = f"{device}.png"
         if device == "pcf8574":
-            self.GPIODEFAULTS = {
-                "IO:P7": {"pin": f"{self.instances_name}:7", "comment": "", "pos": [140, 176.0], "direction": "all"},
-                "IO:P6": {"pin": f"{self.instances_name}:6", "comment": "", "pos": [140, 200.0], "direction": "all"},
-                "IO:P5": {"pin": f"{self.instances_name}:5", "comment": "", "pos": [140, 224.0], "direction": "all"},
-                "IO:P4": {"pin": f"{self.instances_name}:4", "comment": "", "pos": [140, 248.0], "direction": "all"},
-                "IO:P3": {"pin": f"{self.instances_name}:3", "comment": "", "pos": [140, 272.0], "direction": "all"},
-                "IO:P2": {"pin": f"{self.instances_name}:2", "comment": "", "pos": [140, 296.0], "direction": "all"},
-                "IO:P1": {"pin": f"{self.instances_name}:1", "comment": "", "pos": [140, 320.0], "direction": "all"},
-                "IO:P0": {"pin": f"{self.instances_name}:0", "comment": "", "pos": [140, 344.0], "direction": "all"},
+            self.PINDEFAULTS = {
+                "IO:P7": {
+                    "pin": f"{self.instances_name}:7",
+                    "comment": "",
+                    "pos": [140, 176.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
+                "IO:P6": {
+                    "pin": f"{self.instances_name}:6",
+                    "comment": "",
+                    "pos": [140, 200.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
+                "IO:P5": {
+                    "pin": f"{self.instances_name}:5",
+                    "comment": "",
+                    "pos": [140, 224.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
+                "IO:P4": {
+                    "pin": f"{self.instances_name}:4",
+                    "comment": "",
+                    "pos": [140, 248.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
+                "IO:P3": {
+                    "pin": f"{self.instances_name}:3",
+                    "comment": "",
+                    "pos": [140, 272.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
+                "IO:P2": {
+                    "pin": f"{self.instances_name}:2",
+                    "comment": "",
+                    "pos": [140, 296.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
+                "IO:P1": {
+                    "pin": f"{self.instances_name}:1",
+                    "comment": "",
+                    "pos": [140, 320.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
+                "IO:P0": {
+                    "pin": f"{self.instances_name}:0",
+                    "comment": "",
+                    "pos": [140, 344.0],
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "GPIO",
+                },
             }
         elif device == "lm75":
             self.SIGNALS = {

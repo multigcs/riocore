@@ -65,6 +65,8 @@ class GuiPlugins:
         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
             if pin_selected is not None and pin_name != pin_selected:
                 continue
+            if pin_defaults.get("edge") == "source":
+                continue
 
             if pin_name not in plugin_config["pins"]:
                 plugin_config["pins"][pin_name] = {}
@@ -602,6 +604,16 @@ class GuiPlugins:
         if self.signals_tab is not None:
             cleanLayout(self.signals_tab)
             self.signals_tab = None
+
+        target_pins = False
+        for pin_name, pin_defaults in self.plugin_instance.PINDEFAULTS.items():
+            if pin_selected is not None and pin_name != pin_selected:
+                continue
+            if pin_defaults.get("edge") == "source":
+                continue
+            target_pins = True
+        if not target_pins:
+            nopins = True
 
         if not nopins and self.plugin_instance.PINDEFAULTS:
             self.pins_tab = self.edit_plugin_pins(pin_selected=pin_selected, cb=cb)

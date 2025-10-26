@@ -258,7 +258,6 @@ class PluginImages:
 class PluginBase:
     def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
         self.PINDEFAULTS = {}
-        self.GPIODEFAULTS = {}
         self.INTERFACE = {}
         self.IMAGE = ""
         self.IMAGES = []
@@ -480,6 +479,9 @@ class PluginBase:
 
             if "pins" not in self.plugin_setup:
                 # riocore.log(f"WARNING: no pins found in config ({self.instances_name})")
+                continue
+
+            if pin_config.get("edge") == "source":
                 continue
 
             if pin_name.upper() in self.plugin_setup["pins"]:

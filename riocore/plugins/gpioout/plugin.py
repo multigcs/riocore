@@ -22,6 +22,8 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "bit": {
                 "direction": "output",
+                "edge": "target",
+                "type": "GPIO",
             },
         }
 
