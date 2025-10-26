@@ -28,6 +28,8 @@ loginfo = []
 
 
 def log(text):
+    if text in loginfo:
+        return
     print(text)
     loginfo.append(text)
 
@@ -37,7 +39,7 @@ def log_get(lines=100):
 
 
 def log_clear():
-    return "\n".join(loginfo)
+    loginfo.clear()
 
 
 class Plugins:

@@ -1196,7 +1196,20 @@ class PluginNode(MyNode):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            if event.pos().x() > self.width / 2 and not self.plugin_instance.IMAGE_SHOW:
+            pname = self.port_selected(event.pos())
+            ptype = None
+            if pname and pname in self.ports:
+                ptype = self.ports[pname].get("type")
+
+            if ptype is None:
+                if self.plugin_instance.TYPE == "base":
+                    ptype = "source"
+                elif event.pos().x() > self.width / 2 and not self.plugin_instance.IMAGE_SHOW:
+                    ptype = "source"
+                else:
+                    ptype = "target"
+
+            if ptype == "source":
                 if self.scene.selection_source == (self, self.port_selected(event.pos())):
                     self.scene.selection_source = None
                 else:
@@ -2757,7 +2770,17 @@ class Window(QMainWindow):
         riocore.log("-------------------------")
 
     def runTimer(self):
-        self.infobox.setPlainText(riocore.log_get())
+        infotext = []
+        if self.scene.selection_source and self.scene.selection_source[0]:
+            source_node = self.scene.selection_source[0]
+            source_port = self.scene.selection_source[1]
+            infotext.append(f"source: {source_node.name} {source_port}")
+        if self.scene.selection_target and self.scene.selection_target[0]:
+            target_node = self.scene.selection_target[0]
+            target_port = self.scene.selection_target[1]
+            infotext.append(f"target: {target_node.name} {target_port}")
+        infotext.append(riocore.log_get())
+        self.infobox.setPlainText("\n".join(infotext))
 
     def load(self):
         self.snapshots = []
@@ -3036,6 +3059,9 @@ class Window(QMainWindow):
                             plugin_config["signals"][source_port]["setp"] = item._target_port
 
     def cfg_save(self):
+        # update config by drawing/edges
+        ethercat_node_found = False
+        ethercat_master_found = False
         for item in self.scene.items():
             if isinstance(item, BoardNode):
                 pass
@@ -3044,36 +3070,69 @@ class Window(QMainWindow):
                 pos_x = pos.x()
                 pos_y = pos.y()
                 self.config["flow"]["hal"][item.name] = (pos_x, pos_y)
-
             elif isinstance(item, PluginNode):
                 plugin_instance = item.plugin_instance
-                plugin_config = plugin_instance.plugin_setup
-                for port, pin_data in plugin_instance.PINDEFAULTS.items():
-                    if "pins" not in plugin_config:
-                        plugin_config["pins"] = {}
-                    if port not in plugin_config["pins"]:
-                        plugin_config["pins"][port] = {}
-
-                    modifiers = []
-                    source = self.get_source(item, port, modifiers)
-                    if source:
-                        if isinstance(source[0], BreakoutNode):
-                            plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
-                        elif isinstance(source[0], PluginNode) and source[0].plugin_instance.TYPE == "base":
-                            plugin_config["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
-                        else:
-                            plugin_config["pins"][port]["pin"] = source[1]
-
-                        if pin_data["direction"] == "input":
-                            plugin_config["pins"][port]["modifier"] = list(reversed(modifiers))
-                        else:
-                            plugin_config["pins"][port]["modifier"] = list(modifiers)
-
+                plugin_setup = plugin_instance.plugin_setup
+                ptype = plugin_setup.get("type")
+                if ptype == "ethercat":
+                    ethercat_node_found = True
+                    if plugin_setup.get("node_type", "1") == "0":
+                        # the master node
+                        plugin_setup["idx"] = -1
+                        ethercat_master_found = True
                     else:
-                        if plugin_config.get("pins") and port in plugin_config["pins"]:
-                            del plugin_config["pins"][port]
+                        parents = []
+                        master = self.get_parents(item, "in", parents)
+                        bus_idx = len(parents) - 1
+                        if master is None:
+                            # if no master than not connected
+                            bus_idx = -2
+                        plugin_setup["idx"] = bus_idx
+                else:
+                    for port, pin_data in plugin_instance.PINDEFAULTS.items():
+                        if "pins" not in plugin_setup:
+                            plugin_setup["pins"] = {}
+                        if port not in plugin_setup["pins"]:
+                            plugin_setup["pins"][port] = {}
+
+                        modifiers = []
+                        source = self.get_source(item, port, modifiers)
+                        if source:
+                            if isinstance(source[0], BreakoutNode):
+                                plugin_setup["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
+                            elif isinstance(source[0], PluginNode) and source[0].plugin_instance.TYPE == "base":
+                                plugin_setup["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
+                            else:
+                                plugin_setup["pins"][port]["pin"] = source[1]
+
+                            if pin_data["direction"] == "input":
+                                plugin_setup["pins"][port]["modifier"] = list(reversed(modifiers))
+                            else:
+                                plugin_setup["pins"][port]["modifier"] = list(modifiers)
+
+                        else:
+                            if plugin_setup.get("pins") and port in plugin_setup["pins"]:
+                                del plugin_setup["pins"][port]
+
+        if ethercat_node_found and not ethercat_master_found:
+            riocore.log("ERROR: no Ethercat-Master found in config")
 
         self.cfg_check()
+
+    def get_parents(self, node, port, parents):
+        for item in self.scene.items():
+            if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
+                if isinstance(item._source_node, PluginNode) and item._source_node.plugin_instance.plugin_setup.get("type") == "ethercat":
+                    parents.append(item._source_node.name)
+                    if item._source_node.plugin_instance.plugin_setup.get("node_type", "1") == "0":
+                        # this is the master node
+                        return item._source_node
+                    else:
+                        source = self.get_parents(item._source_node, "in", parents)
+                        return source
+                else:
+                    return (item._source_node, item._source_port)
+        return None
 
     def display(self):
         self.redraw()
@@ -3215,6 +3274,8 @@ class Window(QMainWindow):
         # exit(1)
 
     def redraw(self):
+        riocore.log_clear()
+
         # cleanup
         self.halpins = {}
         self.joints = 0
@@ -3276,9 +3337,22 @@ class Window(QMainWindow):
             plugin_instance = self.plugins.plugin_instances[-1]
             py += self.insert_plugin(plugin_instance, py)
 
+        # connect breakouts
         for item in self.scene.items():
             if isinstance(item, BreakoutNode):
                 self.connect_breakout(item)
+
+        # connect ethercat bus by idx
+        ethercat_ids = {}
+        for item in self.scene.items():
+            if isinstance(item, PluginNode) and item.plugin_instance.plugin_setup.get("type") == "ethercat":
+                idx = item.plugin_instance.plugin_setup.get("idx", -2)
+                ethercat_ids[idx] = item
+        for idx, item in ethercat_ids.items():
+            if idx > -1 and idx - 1 in ethercat_ids:
+                source = ethercat_ids[idx - 1]
+                edge = NodeEdge(self.scene, "bus", source, "out", item, "in", color=colors[0])
+                self.scene.addItem(edge)
 
         # loading Halcomponents
         hnodes = {}

@@ -226,6 +226,21 @@ class PluginImages:
         }
         return setup
 
+    def ethercatservo(self):
+        setup = {
+            "image": "ethercat-servo.png",
+            "pins": [
+                (90, 270),
+                (170, 270),
+            ],
+            "signals": [
+                (160, 240),
+                (160, 270),
+                (160, 300),
+            ],
+        }
+        return setup
+
     def flow(self):
         setup = {
             "image": "flow.png",

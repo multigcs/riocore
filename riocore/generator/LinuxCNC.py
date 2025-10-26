@@ -180,10 +180,7 @@ class LinuxCNC:
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
-        if self.protocol == "ETHERCAT":
-            self.hal_prefix = "lcec.0.rio"
-        else:
-            self.hal_prefix = "rio"
+        self.hal_prefix = "rio"
 
         # update_prefixes for gpio plugins
         components = {}
@@ -303,8 +300,7 @@ class LinuxCNC:
         self.startscript()
         self.readme()
         if self.project.config["toolchain"]:
-            if self.protocol != "ETHERCAT":
-                component(self.project)
+            component(self.project)
         self.hal()
         self.riof()
         self.misc()
@@ -806,12 +802,10 @@ class LinuxCNC:
 
         if "chargepump" in self.rio_functions:
             outputs = self.rio_functions["chargepump"]
-            self.halg.fmt_add_top("#################################################################################")
             self.halg.fmt_add_top("# charge_pump / watchdog output")
-            self.halg.fmt_add_top("#################################################################################")
             self.halg.fmt_add_top("loadrt charge_pump")
-            self.halg.fmt_add_top("addf charge-pump servo-thread")
             self.halg.fmt_add_top("")
+            self.halg.fmt_add_top("addf charge-pump servo-thread")
             for output in outputs:
                 self.halg.net_add("charge-pump.out-4", f"rio.{output}")
 
@@ -1638,46 +1632,31 @@ if __name__ == "__main__":
                     plugin_instance.precheck(self)
 
         if self.project.config["toolchain"]:
-            if self.protocol == "ETHERCAT":
-                self.halg.fmt_add_top("loadusr -W lcec_conf ethercat-conf.xml")
-                self.halg.fmt_add_top("loadrt lcec")
+            self.halg.fmt_add_top("loadrt rio")
+            self.halg.fmt_add_top("")
+            self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
+            if simulation:
+                self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 1")
             else:
-                self.halg.fmt_add_top("loadrt rio")
-                self.halg.fmt_add_top("")
-                self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
-                if simulation:
-                    self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 1")
-                else:
-                    self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 0")
+                self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 0")
             self.halg.fmt_add_top("")
 
         num_pids = self.num_joints
+        self.halg.fmt_add_top("# pid controller")
         self.halg.fmt_add_top(f"loadrt pid num_chan={num_pids}")
+        self.halg.fmt_add_top("")
         for pidn in range(num_pids):
             self.halg.fmt_add_top(f"addf pid.{pidn}.do-pid-calcs servo-thread")
-        self.halg.fmt_add_top("")
 
-        self.halg.fmt_add_top("# add the rio and motion functions to threads")
         self.halg.fmt_add_top("addf motion-command-handler servo-thread")
         self.halg.fmt_add_top("addf motion-controller servo-thread")
 
         if self.project.config["toolchain"]:
-            if self.protocol == "ETHERCAT":
-                self.halg.fmt_add_top("addf	lcec.read-all			servo-thread")
-                self.halg.fmt_add_top("addf	lcec.write-all			servo-thread")
-            else:
-                self.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
-
-        self.halg.fmt_add_top("")
-
-        if self.project.config["toolchain"]:
-            if self.protocol == "ETHERCAT":
-                self.halg.fmt_add_top("setp iocontrol.0.emc-enable-in 1")
-            else:
-                self.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
-                self.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
-                self.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
-                self.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
+            self.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
+            self.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
+            self.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
+            self.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
+            self.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
         else:
             self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
 
@@ -1693,11 +1672,11 @@ if __name__ == "__main__":
         if wcomps:
             self.halg.fmt_add_top("# wcomp for saturated pid check")
             self.halg.fmt_add_top(f"loadrt wcomp names={''.join(list(wcomps))}")
+            self.halg.fmt_add_top("")
             for name, wcomp in wcomps.items():
                 self.halg.fmt_add_top(f"addf {name} servo-thread")
                 self.halg.setp_add(f"{name}.min", -1.0)
                 self.halg.setp_add(f"{name}.max", wcomp)
-            self.halg.fmt_add_top("")
 
         if gui not in {"qtdragon", "qtdragon_hd"}:
             if toolchange == "manual":
@@ -1707,6 +1686,7 @@ if __name__ == "__main__":
                     self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
                     self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
                 elif gui != "woodpecker":
+                    self.halg.fmt_add_top("# manual toolchanger")
                     self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
                     self.halg.fmt_add_top("")
                     self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
@@ -1767,8 +1747,8 @@ if __name__ == "__main__":
         if machinetype == "corexy":
             self.halg.fmt_add_top("# machinetype is corexy")
             self.halg.fmt_add_top("loadrt corexy_by_hal names=corexy")
-            self.halg.fmt_add_top("addf corexy servo-thread")
             self.halg.fmt_add_top("")
+            self.halg.fmt_add_top("addf corexy servo-thread")
         elif machinetype == "ldelta":
             self.halg.fmt_add_top("# loading lineardelta gl-view")
             self.halg.fmt_add_top("loadusr -W lineardelta MIN_JOINT=-420")
@@ -1784,7 +1764,6 @@ if __name__ == "__main__":
                 self.halg.fmt_add_top("")
 
             self.halg.fmt_add_top("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
-            self.halg.fmt_add_top("")
             os.makedirs(self.configuration_path, exist_ok=True)
 
             for source in glob.glob(os.path.join(riocore_path, "files", "melfa", "*")):
@@ -1865,6 +1844,10 @@ if __name__ == "__main__":
                 if ret:
                     self.halg.fmt_add_top(ret)
 
+        for component_type, instances in components.items():
+            if hasattr(instances[0], "extra_files"):
+                instances[0].extra_files(self, instances)
+
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 if hasattr(plugin_instance, "hal"):
@@ -1877,7 +1860,7 @@ if __name__ == "__main__":
                     continue
                 jprefix = plugin_instance.PREFIX
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    if plugin_instance.NAME not in {"gpioout", "gpioin"}:
+                    if plugin_instance.NAME not in {"gpioout", "gpioin", "ethercat"} and "pin" in psetup:
                         self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
 
         for addon_name, addon in self.addons.items():
@@ -1966,10 +1949,22 @@ if __name__ == "__main__":
                             self.halg.setp_add(f"{jprefix}.dirsetup", f"[JOINT_{joint}]STEPGEN_DIRSETUP")
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{jprefix}.position-cmd", f"j{joint}pos-cmd")
                             self.halg.net_add(f"{jprefix}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
-                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}senable")
+                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}enable")
                             for name, psetup in joint_setup["plugin_instance"].plugin_setup.get("pins", {}).items():
                                 pin = psetup["pin"]
                                 self.halg.net_add(f"{jprefix}.{name}", pin, f"j{joint}{name}-pin")
+                        elif joint_setup["type"] == "ethercat":
+                            jprefix = joint_setup["plugin_instance"].PREFIX
+                            lcec_prefix = joint_setup["plugin_instance"].PREFIX_LCEC
+                            self.halg.setp_add(f"{jprefix}.csp-mode", "1")
+                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{jprefix}.pos-cmd", f"j{joint}pos-cmd")
+                            self.halg.net_add(f"{jprefix}.pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
+                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}enable")
+                            self.halg.net_add(f"{jprefix}.drv-fault", f"joint.{joint}.amp-fault-in", f"j{joint}fault")
+                            self.halg.net_add(f"{lcec_prefix}.status-word", f"{jprefix}.statusword", f"j{joint}statusword")
+                            self.halg.net_add(f"{lcec_prefix}.pos-actual", f"{jprefix}.drv-actual-position", f"j{joint}drv-pos")
+                            self.halg.net_add(f"{jprefix}.controlword", f"{lcec_prefix}.control-word", f"j{joint}control")
+                            self.halg.net_add(f"{jprefix}.drv-target-position", f"{lcec_prefix}.target-position", f"j{joint}target-pos")
                         else:
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
                             self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
@@ -2078,6 +2073,7 @@ if __name__ == "__main__":
                 position_scale = float(
                     joint_config.get("scale_out", joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"])))
                 )
+
                 if machinetype == "lathe":
                     home_sequence_default = 2
                     if axis_name == "X":
@@ -2112,7 +2108,6 @@ if __name__ == "__main__":
                 velocity = joint_signals.get("velocity")
                 position = joint_signals.get("position")
                 positioncmd = joint_signals.get("position-cmd")
-
                 dty = joint_signals.get("dty")
                 enable = joint_signals.get("enable")
 
@@ -2125,6 +2120,8 @@ if __name__ == "__main__":
                     position_scale_halname = f"{positioncmd['halname'].replace('-cmd', '-scale')}"
                     position_halname = f"{positioncmd}['halname']"
                     position_mode = "absolute"
+                    if joint_setup.get("type") == "ethercat":
+                        position_scale_halname = position_scale_halname.replace("position-", "pos-")
                 elif position:
                     position_halname = f"{prefix}{position['halname']}"
                     position_mode = "absolute"

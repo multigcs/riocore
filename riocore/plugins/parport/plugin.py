@@ -58,6 +58,8 @@ class Plugin(PluginBase):
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                    if "pin" not in psetup:
+                        continue
                     pin = psetup["pin"]
                     if ":" not in pin:
                         continue
@@ -94,6 +96,8 @@ class Plugin(PluginBase):
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                    if "pin" not in psetup:
+                        continue
                     pin = psetup["pin"]
                     if ":" not in pin:
                         continue

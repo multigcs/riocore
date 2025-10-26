@@ -441,9 +441,10 @@ class hal_generator:
         return bool
 
     def net_add(self, input_pin, output_pin, signal_name=None):
+        if not input_pin or not output_pin:
+            return
         # replace some command/operation words
         input_pin = input_pin.replace("abs(", "abs'(").replace("not(", "!(")
-
         if output_pin[0] == "!":
             output_pin = output_pin[1:]
             input_pin = f"!{input_pin}"
@@ -524,20 +525,24 @@ class hal_generator:
         postgui_data = []
 
         hal_data.append("")
-        for line in self.preformated_top:
-            if line.startswith("addf "):
-                function = line.split()[1]
-                if "read" in function:
-                    hal_data_addf_read.append(line)
-                elif "write" in function:
-                    hal_data_addf_write.append(line)
+        for part in self.preformated_top:
+            for line in part.split("\n"):
+                if line.startswith("addf"):
+                    function = line.split()[1]
+                    if "read" in function:
+                        hal_data_addf_read.append(line)
+                    elif "write" in function:
+                        hal_data_addf_write.append(line)
+                    else:
+                        hal_data_addf_other.append(line)
                 else:
-                    hal_data_addf_other.append(line)
-            else:
-                hal_data.append(line)
+                    hal_data.append(line)
 
+        hal_data.append("# read")
         hal_data += hal_data_addf_read
+        hal_data.append("# process")
         hal_data += hal_data_addf_other
+        hal_data.append("# write")
         hal_data += hal_data_addf_write
         hal_data.append("")
 
@@ -581,9 +586,7 @@ class hal_generator:
         postgui_data.append("# networks")
         postgui_data.append("#################################################################################")
         for target in self.signals_out:
-            hal_data.append("#################################################################################")
-            hal_data.append(f"# {self.signals_out[target]['expression']} --> {target}")
-            hal_data.append("#################################################################################")
+            section = []
             # non function input
             for pin, data in self.inputs2signals.items():
                 if data["signal"].startswith("j"):
@@ -591,12 +594,12 @@ class hal_generator:
                 if data["target"] == target and not pin.startswith("func."):
                     component = pin.split(".", 1)[0]
                     if component in self.POSTGUI_COMPONENTS:
-                        hal_data.append(f"# net {data['signal']:30s} <= {pin} (in postgui)")
+                        section.append(f"# net {data['signal']:30s} <= {pin} (in postgui)")
                         postgui_data.append(f"net {data['signal']:30s} <= {pin}")
                     elif component in self.VIRTUAL_COMPONENTS:
-                        hal_data.append(f"# net {data['signal']:30s} <= {pin} (virtual pin)")
+                        section.append(f"# net {data['signal']:30s} <= {pin} (virtual pin)")
                     else:
-                        hal_data.append(f"net {data['signal']:30s} <= {pin}")
+                        section.append(f"net {data['signal']:30s} <= {pin}")
 
             # group by function prefix
             prefixes = []
@@ -610,17 +613,17 @@ class hal_generator:
                 for pin, data in self.outputs2signals.items():
                     if data["target"] == target and pin.startswith(prefix):
                         if isinstance(data["signals"], int):
-                            hal_data.append(f"setp {pin:32s} {data['signals']}")
+                            section.append(f"setp {pin:32s} {data['signals']}")
                             continue
                         for signal in data["signals"]:
                             if signal.startswith("j"):
                                 continue
 
-                            hal_data.append(f"net {signal:30s} => {pin}")
+                            section.append(f"net {signal:30s} => {pin}")
                 # function outputs
                 for pin, data in self.inputs2signals.items():
                     if data["target"] == target and pin.startswith(prefix):
-                        hal_data.append(f"net {data['signal']:30s} <= {pin}")
+                        section.append(f"net {data['signal']:30s} <= {pin}")
 
             # non function output
             for pin, data in self.outputs2signals.items():
@@ -630,13 +633,19 @@ class hal_generator:
                         if signal.startswith("j"):
                             continue
                         if component in self.POSTGUI_COMPONENTS:
-                            hal_data.append(f"# net {signal:30s} => {pin} (in postgui)")
+                            section.append(f"# net {signal:30s} => {pin} (in postgui)")
                             postgui_data.append(f"net {signal:30s} => {pin}")
                         elif component in self.VIRTUAL_COMPONENTS:
-                            hal_data.append(f"# net {signal:30s} => {pin} (virtual pin)")
+                            section.append(f"# net {signal:30s} => {pin} (virtual pin)")
                         else:
-                            hal_data.append(f"net {signal:30s} => {pin}")
-            hal_data.append("")
+                            section.append(f"net {signal:30s} => {pin}")
+            if section:
+                hal_data.append("#################################################################################")
+                hal_data.append(f"# {self.signals_out[target]['expression']} --> {target}")
+                hal_data.append("#################################################################################")
+                hal_data += section
+                hal_data.append("")
+
         postgui_data.append("")
 
         # joints only
