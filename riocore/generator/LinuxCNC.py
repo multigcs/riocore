@@ -1873,12 +1873,6 @@ if __name__ == "__main__":
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
                     if plugin_instance.NAME not in {"gpioout", "gpioin", "ethercat"} and "pin" in psetup:
                         self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
-                    elif "pin" in psetup and psetup["pin"].startswith("hm2_"):
-                        if plugin_instance.PINDEFAULTS.get(name, {}).get("direction") == "output":
-                            self.halg.setp_add(f"{psetup['pin']}.is_output", "true")
-                            psetup["pin"] = f"{psetup['pin']}.out"
-                        else:
-                            psetup["pin"] = f"{psetup['pin']}.in"
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):

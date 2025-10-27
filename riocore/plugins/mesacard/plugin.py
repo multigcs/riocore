@@ -216,13 +216,13 @@ class Plugin(PluginBase):
                     channel = ""
                     direction = "all"
                     ptype = "GPIO"
-                    halname = f"hm2_{board}.0.gpio.{int(io):03d}"
+                    halname = f"{self.instances_name}:gpio.{int(io):03d}"
                 else:
                     pinfunc = line.split()[5].split("/")[0]
                     channel = line.split()[4].replace("None", "GPIO")
                     direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
                     ptype = f"MESA{func}{pinfunc}-{channel}"
-                    halname = f"hm2_{board}.0.{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
+                    halname = f"{self.instances_name}:{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
 
                 # print(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                 if pos:
@@ -237,11 +237,49 @@ class Plugin(PluginBase):
                         "type": ptype,
                     }
 
+        cardtype = self.plugin_setup.get("cardtype", self.option_default("cardtype"))
+        board = cardtype.split("_")[0]
+        self.instance_num = 0
+        self.hm2_prefix = f"hm2_{board}.{self.instance_num}"
+
     def precheck(self, parent):
         pass
 
     def hal(self, parent):
-        pass
+        for plugin_instance in parent.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
+                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                    if "pin" not in psetup:
+                        continue
+                    pin = psetup["pin"]
+                    if ":" not in pin:
+                        continue
+                    prefix = pin.split(":")[0]
+                    if prefix != self.instances_name:
+                        continue
+                    pin = pin.split(":")[1]
+
+                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
+                    invert = 0
+                    for modifier in psetup.get("modifier", []):
+                        if modifier["type"] == "invert":
+                            invert = 1 - invert
+                        else:
+                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
+
+                    if pin.endswith(".step") or pin.endswith(".dir"):
+                        pin = pin.replace(".step", "").replace(".dir", "")
+                        psetup["pin"] = f"{self.hm2_prefix}.{pin}.out"
+                    elif direction == "output":
+                        psetup["pin"] = f"{self.hm2_prefix}.{pin}.out"
+                        parent.halg.setp_add(f"{self.hm2_prefix}.{pin}.is_output", 1)
+                        if invert:
+                            parent.halg.setp_add(f"{self.hm2_prefix}.{pin}.invert_output", 1)
+                    elif direction == "input":
+                        if invert:
+                            psetup["pin"] = f"{self.hm2_prefix}.{pin}.in_not"
+                        else:
+                            psetup["pin"] = f"{self.hm2_prefix}.{pin}.in"
 
     def loader(cls, instances):
         output = []
