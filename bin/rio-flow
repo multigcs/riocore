@@ -560,7 +560,9 @@ class PluginNode(MyNode):
             self.setZValue(1)
             image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
             if self.plugin_instance.IMAGE:
-                image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
+                image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)
+                if not os.path.exists(image):
+                    image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
             self.load_image(image)
 
         if hasattr(self, "plugin_instance"):
