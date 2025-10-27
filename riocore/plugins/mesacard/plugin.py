@@ -25,10 +25,37 @@ class Plugin(PluginBase):
                 ],
                 "description": "card configuration",
             },
+            "num_pwms": {
+                "default": 1,
+                "type": int,
+                "min": 0,
+                "max": 10,
+                "description": "number of pwm's",
+            },
+            "num_encoders": {
+                "default": 0,
+                "type": int,
+                "min": 0,
+                "max": 10,
+                "description": "number of encoder's",
+            },
+            "num_stepgens": {
+                "default": 3,
+                "type": int,
+                "min": 0,
+                "max": 10,
+                "description": "number of stepgen's",
+            },
+            "num_serials": {
+                "default": 0,
+                "type": int,
+                "min": 0,
+                "max": 10,
+                "description": "number of serial's",
+            },
         }
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
-
         pinpos = {
             "7c81": {
                 "P1": {
@@ -147,6 +174,12 @@ class Plugin(PluginBase):
         slot = None
         pin_n = 0
         pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board, f"{cardtype}.pin")
+
+        num_pwms = self.plugin_setup.get("num_pwms", self.option_default("num_pwms"))
+        num_encoders = self.plugin_setup.get("num_encoders", self.option_default("num_encoders"))
+        num_stepgens = self.plugin_setup.get("num_stepgens", self.option_default("num_stepgens"))
+        num_serials = self.plugin_setup.get("num_serial", self.option_default("num_serials"))
+
         # print(pinfile)
         pindata = open(pinfile, "r").read()
         for line in pindata.split("\n"):
@@ -159,6 +192,25 @@ class Plugin(PluginBase):
                 io = line.split()[1]
                 pos = pinpos.get(board, {}).get(slot, {}).get("pins", {}).get(f"IO{io}", {}).get("pos")
                 func = line.split()[3].replace("None", "GPIO")
+
+                # filter unused pwm/encoder
+                if func == "QCount":
+                    channel = line.split()[4].replace("None", "GPIO")
+                    if int(channel) >= num_encoders:
+                        func = "GPIO"
+                elif func == "PWM":
+                    channel = line.split()[4].replace("None", "GPIO")
+                    if int(channel) >= num_pwms:
+                        func = "GPIO"
+                elif func == "StepGen":
+                    channel = line.split()[4].replace("None", "GPIO")
+                    if int(channel) >= num_stepgens:
+                        func = "GPIO"
+                elif func == "SSerial":
+                    channel = line.split()[4].replace("None", "GPIO")
+                    if int(channel) >= num_serials:
+                        func = "GPIO"
+
                 if func != "GPIO":
                     pinfunc = line.split()[5].split("/")[0]
                     channel = line.split()[4].replace("None", "GPIO")
@@ -171,7 +223,7 @@ class Plugin(PluginBase):
                     direction = "all"
                     ptype = "GPIO"
                     halname = f"hm2_{board}.0.gpio.{int(io):03d}"
-                # print(slot, f"IO{io}", func, pinfunc, direction, pos)
+                # print(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                 if pos:
                     self.PINDEFAULTS[f"{slot}:P{pin_n}"] = {
                         "pin": halname,
@@ -194,14 +246,17 @@ class Plugin(PluginBase):
 
         for num, instance in enumerate(instances):
             cardtype = instance.plugin_setup.get("cardtype", instance.option_default("cardtype"))
+            num_pwms = instance.plugin_setup.get("num_pwm", instance.option_default("num_pwm"))
+            num_encoders = instance.plugin_setup.get("num_encoders", instance.option_default("num_encoders"))
+            num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
+            # num_serials = instance.plugin_setup.get("num_serial", instance.option_default("num_serial"))
+
             board = cardtype.split("_")[0]
-            card_bitfile = cardtype.split("_")[1]
-            component = "hm2_rpspi"
+            # card_bitfile = cardtype.split("_")[1]
+            # component = "hm2_rpspi"
             component = "hm2_eth"
             prefix = f"hm2_{board}.0"
-            # output.append(f'loadrt {component} config="firmware=hm2/{board}/{card_bitfile}.BIT num_encoders=3 num_pwmgens=3 num_stepgens=12"')
-            output.append(f'loadrt {component} config="firmware=hm2/{board}/{card_bitfile}.BIT"')
-            output.append(f'loadrt {component} board_ip="10.10.10.10" config="firmware=hm2/{board}/{card_bitfile}.BIT"')
+            output.append(f'loadrt {component} board_ip="192.168.10.15" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
             output.append(f"setp {prefix}.watchdog.timeout_ns 5000000")
             output.append(f"setp {prefix}.dpll.01.timer-us -50")
             output.append(f"setp {prefix}.stepgen.timer-number 1")
