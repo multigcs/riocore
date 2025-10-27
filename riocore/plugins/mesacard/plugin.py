@@ -1,3 +1,5 @@
+import os
+
 from riocore.plugins import PluginBase
 
 
@@ -143,21 +145,20 @@ class Plugin(PluginBase):
         board = cardtype.split("_")[0]
         self.IMAGE = f"{board}.png"
 
-        print(f"/usr/src/MXM/riocore/mesact_firmware/{board}/{cardtype}.pin")
-
         slot = None
         pin_n = 0
-        pindata = open(f"/usr/src/MXM/riocore/mesact_firmware/{board}/{cardtype}.pin", "r").read()
+        pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board, f"{cardtype}.pin")
+        # print(pinfile)
+        pindata = open(pinfile, "r").read()
         for line in pindata.split("\n"):
             if line.startswith("IO Connections for "):
                 slot = line.split()[3].split("+")[0]
                 pin_n = 0
-                print(f"------- {slot} -------")
+                # print(f"------- {slot} -------")
             elif slot is not None and "IOPort" in line:
                 pin_n += 1
                 io = line.split()[1]
                 pos = pinpos.get(board, {}).get(slot, {}).get("pins", {}).get(f"IO{io}", {}).get("pos")
-
                 func = line.split()[3].replace("None", "GPIO")
                 if func != "GPIO":
                     pinfunc = line.split()[5].split("/")[0]
@@ -165,15 +166,13 @@ class Plugin(PluginBase):
                     direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
                     ptype = f"MESA{func}{pinfunc}-{channel}"
                     halname = f"hm2_7c81.0.{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
-
                 else:
                     pinfunc = ""
                     channel = ""
                     direction = "all"
                     ptype = "GPIO"
                     halname = f"hm2_7c81.0.gpio.{int(io):03d}"
-
-                print(slot, f"IO{io}", func, pinfunc, direction, pos)
+                # print(slot, f"IO{io}", func, pinfunc, direction, pos)
                 if pos:
                     self.PINDEFAULTS[f"{slot}:P{pin_n}"] = {
                         "pin": halname,

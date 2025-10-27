@@ -1,0 +1,126 @@
+Configuration Name: HOSTMOT2
+
+General configuration information:
+
+  BoardName : MESA7I92
+  FPGA Size: 9 KGates
+  FPGA Pins: 144
+  Number of IO Ports: 2
+  Width of one I/O port: 17
+  Clock Low frequency: 100.0000 MHz
+  Clock High frequency: 200.0000 MHz
+  IDROM Type: 3
+  Instance Stride 0: 4
+  Instance Stride 1: 64
+  Register Stride 0: 256
+  Register Stride 1: 256
+
+Modules in configuration:
+
+  Module: DPLL
+  There are 1 of DPLL in configuration
+  Version: 0
+  Registers: 7
+  BaseAddress: 7000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: WatchDog
+  There are 1 of WatchDog in configuration
+  Version: 0
+  Registers: 3
+  BaseAddress: 0C00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: IOPort
+  There are 2 of IOPort in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 1000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: PWM
+  There are 2 of PWM in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 4100
+  ClockFrequency: 200.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: QCount
+  There are 2 of QCount in configuration
+  Version: 2
+  Registers: 5
+  BaseAddress: 3000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: StepGen
+  There are 10 of StepGen in configuration
+  Version: 2
+  Registers: 10
+  BaseAddress: 2000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: LED
+  There are 1 of LED in configuration
+  Version: 0
+  Registers: 1
+  BaseAddress: 0200
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+Configuration pin-out:
+
+IO Connections for P2
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 1      0   IOPort       None           
+14      1   IOPort       PWM              0        PWM             (Out)
+ 2      2   IOPort       StepGen          0        Step/Table1     (Out)
+15      3   IOPort       None           
+ 3      4   IOPort       StepGen          0        Dir/Table2      (Out)
+16      5   IOPort       None           
+ 4      6   IOPort       StepGen          1        Step/Table1     (Out)
+17      7   IOPort       StepGen          4        Step/Table1     (Out)
+ 5      8   IOPort       StepGen          1        Dir/Table2      (Out)
+ 6      9   IOPort       StepGen          2        Step/Table1     (Out)
+ 7     10   IOPort       StepGen          2        Dir/Table2      (Out)
+ 8     11   IOPort       StepGen          3        Step/Table1     (Out)
+ 9     12   IOPort       StepGen          3        Dir/Table2      (Out)
+10     13   IOPort       QCount           0        Quad-A          (In)
+11     14   IOPort       QCount           0        Quad-B          (In)
+12     15   IOPort       QCount           0        Quad-IDX        (In)
+13     16   IOPort       None           
+
+IO Connections for P1
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 1     17   IOPort       None           
+14     18   IOPort       PWM              1        PWM             (Out)
+ 2     19   IOPort       StepGen          5        Step/Table1     (Out)
+15     20   IOPort       None           
+ 3     21   IOPort       StepGen          5        Dir/Table2      (Out)
+16     22   IOPort       None           
+ 4     23   IOPort       StepGen          6        Step/Table1     (Out)
+17     24   IOPort       StepGen          9        Step/Table1     (Out)
+ 5     25   IOPort       StepGen          6        Dir/Table2      (Out)
+ 6     26   IOPort       StepGen          7        Step/Table1     (Out)
+ 7     27   IOPort       StepGen          7        Dir/Table2      (Out)
+ 8     28   IOPort       StepGen          8        Step/Table1     (Out)
+ 9     29   IOPort       StepGen          8        Dir/Table2      (Out)
+10     30   IOPort       QCount           1        Quad-A          (In)
+11     31   IOPort       QCount           1        Quad-B          (In)
+12     32   IOPort       QCount           1        Quad-IDX        (In)
+13     33   IOPort       None           
+

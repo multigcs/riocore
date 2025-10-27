@@ -1,0 +1,117 @@
+Configuration Name: HOSTMOT2
+
+General configuration information:
+
+  BoardName : MESA5I25
+  FPGA Size: 9 KGates
+  FPGA Pins: 144
+  Number of IO Ports: 2
+  Width of one I/O port: 17
+  Clock Low frequency: 33.3333 MHz
+  Clock High frequency: 200.0000 MHz
+  IDROM Type: 3
+  Instance Stride 0: 4
+  Instance Stride 1: 64
+  Register Stride 0: 256
+  Register Stride 1: 256
+  IDROM Type: 3
+
+Modules in configuration: 
+
+  Module: WatchDog
+  There are 1 of WatchDog in configuration
+  Version: 0
+  Registers: 3
+  BaseAddress: 0C00
+  ClockFrequency: 33.333 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: IOPort
+  There are 2 of IOPort in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 1000
+  ClockFrequency: 33.333 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: MuxedQCount
+  There are 12 of MuxedQCount in configuration
+  Version: 3
+  Registers: 5
+  BaseAddress: 3500
+  ClockFrequency: 33.333 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: MuxedQCountSel
+  There are 1 of MuxedQCountSel in configuration
+  Version: 0
+  Registers: 0
+  BaseAddress: 0000
+  ClockFrequency: 33.333 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: SSerial
+  There are 1 of SSerial in configuration
+  Version: 0
+  Registers: 6
+  BaseAddress: 5A00
+  ClockFrequency: 33.333 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 64 bytes
+
+  Module: LED
+  There are 1 of LED in configuration
+  Version: 0
+  Registers: 1
+  BaseAddress: 0200
+  ClockFrequency: 33.333 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+Configuration pin-out: 
+
+IO Connections for P3
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 1      0   IOPort       SSerial          0        TXEn3           (Out)
+14      1   IOPort       SSerial          0        TXData3         (Out)
+ 2      2   IOPort       SSerial          0        RXData3         (In)
+15      3   IOPort       SSerial          0        TXData2         (Out)
+ 3      4   IOPort       SSerial          0        RXData2         (In)
+16      5   IOPort       SSerial          0        TXData1         (Out)
+ 4      6   IOPort       SSerial          0        RXData1         (In)
+17      7   IOPort       MuxedQCountSel   0        MuxSel0         (Out)
+ 5      8   IOPort       MuxedQCount      0        MuxQ-A          (In)
+ 6      9   IOPort       MuxedQCount      0        MuxQ-B          (In)
+ 7     10   IOPort       MuxedQCount      0        MuxQ-IDX        (In)
+ 8     11   IOPort       MuxedQCount      1        MuxQ-A          (In)
+ 9     12   IOPort       MuxedQCount      1        MuxQ-B          (In)
+10     13   IOPort       MuxedQCount      1        MuxQ-IDX        (In)
+11     14   IOPort       MuxedQCount      2        MuxQ-A          (In)
+12     15   IOPort       MuxedQCount      2        MuxQ-B          (In)
+13     16   IOPort       MuxedQCount      2        MuxQ-IDX        (In)
+
+IO Connections for P2
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 1     17   IOPort       SSerial          0        TXEn6           (Out)
+14     18   IOPort       SSerial          0        TXData6         (Out)
+ 2     19   IOPort       SSerial          0        RXData6         (In)
+15     20   IOPort       SSerial          0        TXData5         (Out)
+ 3     21   IOPort       SSerial          0        RXData5         (In)
+16     22   IOPort       SSerial          0        TXData4         (Out)
+ 4     23   IOPort       SSerial          0        RXData4         (In)
+17     24   IOPort       MuxedQCountSel   6        MuxSel0         (Out)
+ 5     25   IOPort       MuxedQCount      3        MuxQ-A          (In)
+ 6     26   IOPort       MuxedQCount      3        MuxQ-B          (In)
+ 7     27   IOPort       MuxedQCount      3        MuxQ-IDX        (In)
+ 8     28   IOPort       MuxedQCount      4        MuxQ-A          (In)
+ 9     29   IOPort       MuxedQCount      4        MuxQ-B          (In)
+10     30   IOPort       MuxedQCount      4        MuxQ-IDX        (In)
+11     31   IOPort       MuxedQCount      5        MuxQ-A          (In)
+12     32   IOPort       MuxedQCount      5        MuxQ-B          (In)
+13     33   IOPort       MuxedQCount      5        MuxQ-IDX        (In)

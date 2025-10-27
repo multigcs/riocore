@@ -1,0 +1,182 @@
+Configuration Name: HOSTMOT2
+
+General configuration information:
+
+  BoardName : MESA7C80
+  FPGA Size: 9 KGates
+  FPGA Pins: 144
+  Number of IO Ports: 2
+  Width of one I/O port: 27
+  Clock Low frequency: 100.0000 MHz
+  Clock High frequency: 200.0000 MHz
+  IDROM Type: 3
+  Instance Stride 0: 4
+  Instance Stride 1: 64
+  Register Stride 0: 256
+  Register Stride 1: 256
+
+Modules in configuration:
+
+  Module: DPLL
+  There are 1 of DPLL in configuration
+  Version: 0
+  Registers: 7
+  BaseAddress: 7000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: WatchDog
+  There are 1 of WatchDog in configuration
+  Version: 0
+  Registers: 3
+  BaseAddress: 0C00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: IOPort
+  There are 2 of IOPort in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 1000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: MuxedQCount
+  There are 10 of MuxedQCount in configuration
+  Version: 4
+  Registers: 5
+  BaseAddress: 3600
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: MuxedQCountSel
+  There are 1 of MuxedQCountSel in configuration
+  Version: 0
+  Registers: 0
+  BaseAddress: 0000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: StepGen
+  There are 6 of StepGen in configuration
+  Version: 2
+  Registers: 10
+  BaseAddress: 2000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: SSerial
+  There are 1 of SSerial in configuration
+  Version: 0
+  Registers: 6
+  BaseAddress: 5B00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 64 bytes
+
+  Module: PWM
+  There are 1 of PWM in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 4100
+  ClockFrequency: 200.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: SSR
+  There are 1 of SSR in configuration
+  Version: 0
+  Registers: 2
+  BaseAddress: 7D00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: InMux
+  There are 1 of InMux in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 8000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: LED
+  There are 1 of LED in configuration
+  Version: 0
+  Registers: 1
+  BaseAddress: 0200
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+Configuration pin-out:
+
+IO Connections for StepGens+Misc
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 0      0   IOPort       StepGen          0        Step/Table1     (Out)
+ 0      1   IOPort       StepGen          0        Dir/Table2      (Out)
+ 0      2   IOPort       StepGen          1        Step/Table1     (Out)
+ 0      3   IOPort       StepGen          1        Dir/Table2      (Out)
+ 0      4   IOPort       StepGen          2        Step/Table1     (Out)
+ 0      5   IOPort       StepGen          2        Dir/Table2      (Out)
+ 0      6   IOPort       StepGen          3        Step/Table1     (Out)
+ 0      7   IOPort       StepGen          3        Dir/Table2      (Out)
+ 0      8   IOPort       StepGen          4        Step/Table1     (Out)
+ 0      9   IOPort       StepGen          4        Dir/Table2      (Out)
+ 0     10   IOPort       StepGen          5        Step/Table1     (Out)
+ 0     11   IOPort       StepGen          5        Dir/Table2      (Out)
+ 0     12   IOPort       SSerial          0        RXData0         (In)
+ 0     13   IOPort       SSerial          0        TXData0         (Out)
+ 0     14   IOPort       SSerial          0        TXEn0           (Out)
+ 0     15   IOPort       MuxedQCount      4        MuxQ-A          (In)
+ 0     16   IOPort       MuxedQCount      4        MuxQ-B          (In)
+ 0     17   IOPort       MuxedQCount      4        MuxQ-IDX        (In)
+ 0     18   IOPort       PWM              0        PWM             (Out)
+ 0     19   IOPort       PWM              0        /Enable         (Out)
+ 0     20   IOPort       None           
+ 0     21   IOPort       None           
+ 0     22   IOPort       InMux            0        Addr0           (Out)
+ 0     23   IOPort       InMux            0        Addr1           (Out)
+ 0     24   IOPort       InMux            0        Addr2           (Out)
+ 0     25   IOPort       InMux            0        Addr3           (Out)
+ 0     26   IOPort       InMux            0        Addr4           (Out)
+
+IO Connections for Outputs+P1
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 0     27   IOPort       InMux            0        Data0           (In)
+ 0     28   IOPort       SSR              0        Out-00          (Out)
+ 0     29   IOPort       SSR              0        Out-01          (Out)
+ 0     30   IOPort       SSR              0        Out-02          (Out)
+ 0     31   IOPort       SSR              0        Out-03          (Out)
+ 0     32   IOPort       SSR              0        Out-04          (Out)
+ 0     33   IOPort       SSR              0        Out-05          (Out)
+ 0     34   IOPort       SSR              0        Out-06          (Out)
+ 0     35   IOPort       SSR              0        Out-07          (Out)
+ 0     36   IOPort       SSR              0        AC Ref          (Out)
+ 0     37   IOPort       MuxedQCount      0        MuxQ-A          (In)
+ 0     38   IOPort       MuxedQCount      0        MuxQ-B          (In)
+ 0     39   IOPort       MuxedQCount      0        MuxQ-IDX        (In)
+ 0     40   IOPort       MuxedQCount      1        MuxQ-A          (In)
+ 0     41   IOPort       MuxedQCount      1        MuxQ-B          (In)
+ 0     42   IOPort       MuxedQCount      1        MuxQ-IDX        (In)
+ 0     43   IOPort       MuxedQCount      2        MuxQ-A          (In)
+ 0     44   IOPort       MuxedQCount      2        MuxQ-B          (In)
+ 0     45   IOPort       MuxedQCount      2        MuxQ-IDX        (In)
+ 0     46   IOPort       MuxedQCount      3        MuxQ-A          (In)
+ 0     47   IOPort       MuxedQCount      3        MuxQ-B          (In)
+ 0     48   IOPort       MuxedQCount      3        MuxQ-IDX        (In)
+ 0     49   IOPort       MuxedQCountSel   0        MuxSel0         (Out)
+ 0     50   IOPort       None           
+ 0     51   IOPort       SSerial          0        RXData1         (In)
+ 0     52   IOPort       SSerial          0        TXData1         (Out)
+ 0     53   IOPort       SSerial          0        TXEn1           (Out)
+

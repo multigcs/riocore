@@ -1,0 +1,111 @@
+Configuration Name: HOSTMOT2
+
+General configuration information:
+
+  BoardName : MESA7I96
+  FPGA Size: 9 KGates
+  FPGA Pins: 144
+  Number of IO Ports: 3
+  Width of one I/O port: 17
+  Clock Low frequency: 100.0000 MHz
+  Clock High frequency: 200.0000 MHz
+  IDROM Type: 3
+  Instance Stride 0: 4
+  Instance Stride 1: 64
+  Register Stride 0: 256
+  Register Stride 1: 256
+
+Modules in configuration:
+
+  Module: WatchDog
+  There are 1 of WatchDog in configuration
+  Version: 0
+  Registers: 3
+  BaseAddress: 0C00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: IOPort
+  There are 3 of IOPort in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 1000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: LED
+  There are 1 of LED in configuration
+  Version: 0
+  Registers: 1
+  BaseAddress: 0200
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+Configuration pin-out:
+
+IO Connections for TB3
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 1      0   IOPort       None           
+14      1   IOPort       None           
+ 2      2   IOPort       None           
+15      3   IOPort       None           
+ 3      4   IOPort       None           
+16      5   IOPort       None           
+ 4      6   IOPort       None           
+17      7   IOPort       None           
+ 5      8   IOPort       None           
+ 6      9   IOPort       None           
+ 7     10   IOPort       None           
+ 8     11   IOPort       None           
+ 9     12   IOPort       None           
+10     13   IOPort       None           
+11     14   IOPort       None           
+12     15   IOPort       None           
+13     16   IOPort       None           
+
+IO Connections for TB1/TB2
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 1     17   IOPort       None           
+14     18   IOPort       None           
+ 2     19   IOPort       None           
+15     20   IOPort       None           
+ 3     21   IOPort       None           
+16     22   IOPort       None           
+ 4     23   IOPort       None           
+17     24   IOPort       None           
+ 5     25   IOPort       None           
+ 6     26   IOPort       None           
+ 7     27   IOPort       None           
+ 8     28   IOPort       None           
+ 9     29   IOPort       None           
+10     30   IOPort       None           
+11     31   IOPort       None           
+12     32   IOPort       None           
+13     33   IOPort       None           
+
+IO Connections for P1
+Pin#  I/O   Pri. func    Sec. func       Chan      Pin func        Pin Dir
+
+ 1     34   IOPort       None           
+14     35   IOPort       None           
+ 2     36   IOPort       None           
+15     37   IOPort       None           
+ 3     38   IOPort       None           
+16     39   IOPort       None           
+ 4     40   IOPort       None           
+17     41   IOPort       None           
+ 5     42   IOPort       None           
+ 6     43   IOPort       None           
+ 7     44   IOPort       None           
+ 8     45   IOPort       None           
+ 9     46   IOPort       None           
+10     47   IOPort       None           
+11     48   IOPort       None           
+12     49   IOPort       None           
+13     50   IOPort       None           
+

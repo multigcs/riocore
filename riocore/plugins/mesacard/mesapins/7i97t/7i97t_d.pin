@@ -1,0 +1,174 @@
+Configuration Name: HOSTMOT2
+
+General configuration information:
+
+  BoardName : MESA7I97
+  FPGA Size: 20 KGates
+  FPGA Pins: 256
+  Number of IO Ports: 3
+  Width of one I/O port: 17
+  Clock Low frequency: 100.0000 MHz
+  Clock High frequency: 160.0000 MHz
+  IDROM Type: 3
+  Instance Stride 0: 4
+  Instance Stride 1: 64
+  Register Stride 0: 256
+  Register Stride 1: 256
+
+Modules in configuration:
+
+  Module: DPLL
+  There are 1 of DPLL in configuration
+  Version: 0
+  Registers: 7
+  BaseAddress: 7000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: WatchDog
+  There are 1 of WatchDog in configuration
+  Version: 0
+  Registers: 3
+  BaseAddress: 0C00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: IOPort
+  There are 3 of IOPort in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 1000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: MuxedQCount
+  There are 6 of MuxedQCount in configuration
+  Version: 4
+  Registers: 5
+  BaseAddress: 3600
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: MuxedQCountSel
+  There are 1 of MuxedQCountSel in configuration
+  Version: 0
+  Registers: 0
+  BaseAddress: 0000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: SSerial
+  There are 1 of SSerial in configuration
+  Version: 0
+  Registers: 6
+  BaseAddress: 5B00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 64 bytes
+
+  Module: PWM
+  There are 6 of PWM in configuration
+  Version: 1
+  Registers: 5
+  BaseAddress: 4100
+  ClockFrequency: 160.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: SSR
+  There are 1 of SSR in configuration
+  Version: 0
+  Registers: 2
+  BaseAddress: 7D00
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: InMux
+  There are 1 of InMux in configuration
+  Version: 0
+  Registers: 5
+  BaseAddress: 8000
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+  Module: LED
+  There are 1 of LED in configuration
+  Version: 0
+  Registers: 1
+  BaseAddress: 0200
+  ClockFrequency: 100.000 MHz
+  Register Stride: 256 bytes
+  Instance Stride: 4 bytes
+
+Configuration pin-out:
+
+IO Connections for TB1/TB2/TB3 -> 7I97_0
+Pin#                  I/O   Pri. func    Sec. func        Chan     Sec. Pin func   Sec. Pin Dir
+
+TB3-4                   0   IOPort       PWM              0        PWM             (Out)
+TB3-8                   1   IOPort       PWM              1        PWM             (Out)
+TB3-12                  2   IOPort       PWM              2        PWM             (Out)
+TB3-16                  3   IOPort       PWM              3        PWM             (Out)
+TB3-20                  4   IOPort       PWM              4        PWM             (Out)
+TB3-20                  5   IOPort       PWM              4        /Enable         (Out)
+TB3-24                  6   IOPort       PWM              5        PWM             (Out)
+TB3-24                  7   IOPort       PWM              5        /Enable         (Out)
+TB3-4,8,12,16           8   IOPort       PWM              0        /Enable         (Out)
+TB1-1,2,9,10            9   IOPort       MuxedQCount      0        MuxQ-A          (In)
+TB1-4,5,12,13          10   IOPort       MuxedQCount      0        MuxQ-B          (In)
+TB1-7,8,15,16          11   IOPort       MuxedQCount      0        MuxQ-IDX        (In)
+TB1-17,18,TB2-1,2      12   IOPort       MuxedQCount      1        MuxQ-A          (In)
+TB1-20,21,TB2-4,5      13   IOPort       MuxedQCount      1        MuxQ-B          (In)
+TB1-23,24,TB2-7,8      14   IOPort       MuxedQCount      1        MuxQ-IDX        (In)
+TB2-9,10,17,18         15   IOPort       MuxedQCount      2        MuxQ-A          (In)
+TB2-12,13,20,21        16   IOPort       MuxedQCount      2        MuxQ-B          (In)
+
+IO Connections for TB4/TB5 -> 7I97_1
+Pin#                  I/O   Pri. func    Sec. func        Chan     Sec. Pin func   Sec. Pin Dir
+
+TB2-15,16,23,24        17   IOPort       MuxedQCount      2        MuxQ-IDX        (In)
+Internal-EncMux        18   IOPort       MuxedQCountSel   0        MuxSel0         (Out)
+TB5-13,14              19   IOPort       SSR              0        Out-00          (Out)
+TB5-15,16              20   IOPort       SSR              0        Out-01          (Out)
+TB5-17,18              21   IOPort       SSR              0        Out-02          (Out)
+TB5-19,20              22   IOPort       SSR              0        Out-03          (Out)
+TB5-21,22              23   IOPort       SSR              0        Out-04          (Out)
+TB5-23,24              24   IOPort       SSR              0        Out-05          (Out)
+Internal               25   IOPort       SSR              0        AC Ref          (Out)
+Internal               26   IOPort       InMux            0        Addr0           (Out)
+Internal               27   IOPort       InMux            0        Addr1           (Out)
+Internal               28   IOPort       InMux            0        Addr2           (Out)
+Internal               29   IOPort       InMux            0        Addr3           (Out)
+Internal               30   IOPort       InMux            0        Data0           (In)
+TB4-15,16              31   IOPort       SSerial          0        RXData0         (In)
+TB4-17,18              32   IOPort       SSerial          0        TXData0         (Out)
+Internal-TXEn          33   IOPort       SSerial          0        TXEn0           (Out)
+
+IO Connections for P1 -> 7I97_2
+Pin#                  I/O   Pri. func    Sec. func        Chan     Sec. Pin func   Sec. Pin Dir
+
+P1-01/DB25-01          34   IOPort       None           
+P1-02/DB25-14          35   IOPort       None           
+P1-03/DB25-02          36   IOPort       None           
+P1-04/DB25-15          37   IOPort       None           
+P1-05/DB25-03          38   IOPort       None           
+P1-06/DB25-16          39   IOPort       None           
+P1-07/DB25-04          40   IOPort       None           
+P1-08/DB25-17          41   IOPort       None           
+P1-09/DB25-05          42   IOPort       None           
+P1-11/DB25-06          43   IOPort       None           
+P1-13/DB25-07          44   IOPort       None           
+P1-15/DB25-08          45   IOPort       None           
+P1-17/DB25-09          46   IOPort       None           
+P1-19/DB25-10          47   IOPort       None           
+P1-21/DB25-11          48   IOPort       None           
+P1-23/DB25-12          49   IOPort       None           
+P1-25/DB25-13          50   IOPort       None           
+
