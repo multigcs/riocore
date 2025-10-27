@@ -142,7 +142,8 @@ class Plugins:
                     if self.plugin_builder(plugin_type, os.path.join(riocore_path, "plugins", plugin_type, f"{plugin_type}.v"), plugin_config):
                         self.plugin_modules[plugin_type] = importlib.import_module(".plugin", f"riocore.plugins.{plugin_type}")
                 elif not plugin_type or plugin_type[0] != "_":
-                    log(f"WARNING: plugin not found: {plugin_type}", os.path.join(riocore_path, "plugins", plugin_type, "plugin.py"))
+                    ppath = os.path.join(riocore_path, "plugins", plugin_type, "plugin.py")
+                    log(f"WARNING: plugin not found: {plugin_type}: {ppath}")
 
             if plugin_type in self.plugin_modules:
                 plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup, subfix=subfix)

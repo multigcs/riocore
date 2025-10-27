@@ -488,7 +488,6 @@ class MyNode(QGraphicsItem):
         if hasattr(self, "sub_update"):
             self.sub_update()
 
-
     def rotate_cw(self):
         if "rotate" not in self.flow_cfg:
             self.flow_cfg["rotate"] = 0
@@ -1156,7 +1155,7 @@ class NodeViewer(QGraphicsView):
                     else:
                         # check type and dir
                         # TODO: check type of parent source (before breakouts and modifiers)
-                        source_port_type = source_node.ports.get(source_port, {}).get("type")
+                        source_port_type = source_node.ports.get(source_port, {}).get("type").split("-")[0]
                         source_port_direction = source_node.ports.get(source_port, {}).get("direction")
                         target_port_type = target_node.ports.get(target_port, {}).get("type")
                         target_port_direction = target_node.ports.get(target_port, {}).get("direction")

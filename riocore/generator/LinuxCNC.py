@@ -54,6 +54,12 @@ class LinuxCNC:
         "STEPGEN_DIRSETUP": 35000,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
+        "MESA_DIRSETUP": 10000,
+        "MESA_DIRHOLD": 10000,
+        "MESA_STEPLEN": 5000,
+        "MESA_STEPSPACE": 5000,
+        "MESA_STEPGEN_MAXVEL": 1000,
+        "MESA_STEPGEN_MAXACCEL": 1000,
         "HOME_SEARCH_VEL": -30.0,
         "HOME_LATCH_VEL": 5.0,
         "HOME_FINAL_VEL": 100.0,
@@ -185,7 +191,7 @@ class LinuxCNC:
         # update_prefixes for gpio plugins
         components = {}
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
+            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
                 if plugin_instance.COMPONENT not in components:
                     components[plugin_instance.COMPONENT] = []
                 components[plugin_instance.COMPONENT].append(plugin_instance)
@@ -1849,19 +1855,24 @@ if __name__ == "__main__":
                 instances[0].extra_files(self, instances)
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                if hasattr(plugin_instance, "hal"):
-                    plugin_instance.hal(self)
+            if hasattr(plugin_instance, "hal"):
+                plugin_instance.hal(self)
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                if plugin_instance.NAME == "stepgen" and plugin_instance.plugin_setup.get("is_joint", False) is True:
+            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
+                if plugin_instance.NAME in {"stepgen", "mesastepgen"} and plugin_instance.plugin_setup.get("is_joint", False) is True:
                     # ignore, is set by the axis/joint generator
                     continue
                 jprefix = plugin_instance.PREFIX
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
                     if plugin_instance.NAME not in {"gpioout", "gpioin", "ethercat"} and "pin" in psetup:
                         self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
+                    elif "pin" in psetup and psetup["pin"].startswith("hm2_"):
+                        if plugin_instance.PINDEFAULTS.get(name, {}).get("direction") == "output":
+                            self.halg.setp_add(f"{psetup['pin']}.is_output", "true")
+                            psetup["pin"] = f"{psetup['pin']}.out"
+                        else:
+                            psetup["pin"] = f"{psetup['pin']}.in"
 
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
@@ -1973,6 +1984,21 @@ if __name__ == "__main__":
                         self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{enable_halname}", f"j{joint}enable")
 
                 elif position_halname and feedback_halname:
+                    if joint_setup["type"] == "mesastepgen":
+                        stepgen_prefix = ".".join(joint_setup["plugin_instance"].plugin_setup.get("pins", {}).get("step", {}).get("pin", "").split(".")[:-1])
+                        position_halname = f"{stepgen_prefix}.velocity-cmd"
+                        feedback_halname = f"{stepgen_prefix}.position-fb"
+                        enable_halname = f"{stepgen_prefix}.enable"
+                        position_scale_halname = f"{stepgen_prefix}.position-scale"
+                        self.halg.setp_add(f"{stepgen_prefix}.dirsetup", f"[JOINT_{joint}]MESA_DIRSETUP")
+                        self.halg.setp_add(f"{stepgen_prefix}.dirhold", f"[JOINT_{joint}]MESA_DIRHOLD")
+                        self.halg.setp_add(f"{stepgen_prefix}.steplen", f"[JOINT_{joint}]MESA_STEPLEN")
+                        self.halg.setp_add(f"{stepgen_prefix}.stepspace", f"[JOINT_{joint}]MESA_STEPSPACE")
+                        self.halg.setp_add(f"{stepgen_prefix}.maxaccel", f"[JOINT_{joint}]MESA_STEPGEN_MAXACCEL")
+                        self.halg.setp_add(f"{stepgen_prefix}.maxvel", f"[JOINT_{joint}]MESA_STEPGEN_MAXVEL")
+                        self.halg.setp_add(f"{stepgen_prefix}.step_type", "0")
+                        self.halg.setp_add(f"{stepgen_prefix}.control-type", "1")
+
                     self.halg.setp_add(f"pid.{pin_num}.Pgain", f"[JOINT_{joint}]P")
                     self.halg.setp_add(f"pid.{pin_num}.Igain", f"[JOINT_{joint}]I")
                     self.halg.setp_add(f"pid.{pin_num}.Dgain", f"[JOINT_{joint}]D")
@@ -2133,13 +2159,14 @@ if __name__ == "__main__":
 
                 feedback_scale = float(joint_config.get("scale_in", position_scale))
                 feedback_halname = None
-                feedback = joint_config.get("feedback")
                 feedback = joint_setup.get("feedback")
                 if position_mode == "relative" and feedback is True:
                     if position is not None:
                         feedback_halname = f"{prefix}{position['halname']}"
                     else:
-                        riocore.log("ERROR: missing feedback:", axis_name, joint)
+                        riocore.log(
+                            f"ERROR: missing feedback for axis:{axis_name} joint:{joint}",
+                        )
                         continue
                 elif position_mode == "relative":
                     if ":" in feedback:

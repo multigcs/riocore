@@ -12,6 +12,7 @@
 | Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | Experimental  |
 |  | [ethercat](ethercat/README.md) | experimental ethercat driver | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
 |  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |  |
+|  | [mesastepgen](mesastepgen/README.md) | software step pulse generation | <img src="mesastepgen/image.png" height="48"> |  |
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |  |
 |  | [pwmout](pwmout/README.md) | pwm output | <img src="pwmout/image.png" height="48"> |  |
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |  |
@@ -76,6 +77,7 @@
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
 | Misc | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
+|  | [mesacard](mesacard/README.md) | mesacard | <img src="mesacard/image.png" height="48"> | GPIO  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> | GPIO  |
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> | GPIO  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> | GPIO  |
