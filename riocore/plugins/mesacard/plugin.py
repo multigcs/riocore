@@ -211,18 +211,19 @@ class Plugin(PluginBase):
                     if int(channel) >= num_serials:
                         func = "GPIO"
 
-                if func != "GPIO":
-                    pinfunc = line.split()[5].split("/")[0]
-                    channel = line.split()[4].replace("None", "GPIO")
-                    direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
-                    ptype = f"MESA{func}{pinfunc}-{channel}"
-                    halname = f"hm2_{board}.0.{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
-                else:
+                if func == "GPIO":
                     pinfunc = ""
                     channel = ""
                     direction = "all"
                     ptype = "GPIO"
                     halname = f"hm2_{board}.0.gpio.{int(io):03d}"
+                else:
+                    pinfunc = line.split()[5].split("/")[0]
+                    channel = line.split()[4].replace("None", "GPIO")
+                    direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
+                    ptype = f"MESA{func}{pinfunc}-{channel}"
+                    halname = f"hm2_{board}.0.{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
+
                 # print(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                 if pos:
                     self.PINDEFAULTS[f"{slot}:P{pin_n}"] = {
@@ -244,6 +245,10 @@ class Plugin(PluginBase):
         output = []
         output.append("loadrt hostmot2")
 
+        # mesaflash --device 7C81 --addr /dev/spidev0.0 --spi --fix-boot-block --write 7c81_5abobx3d.bit
+        # is_opendrain
+        # invert_output
+
         for num, instance in enumerate(instances):
             cardtype = instance.plugin_setup.get("cardtype", instance.option_default("cardtype"))
             num_pwms = instance.plugin_setup.get("num_pwm", instance.option_default("num_pwm"))
@@ -253,10 +258,15 @@ class Plugin(PluginBase):
 
             board = cardtype.split("_")[0]
             # card_bitfile = cardtype.split("_")[1]
-            # component = "hm2_rpspi"
-            component = "hm2_eth"
             prefix = f"hm2_{board}.0"
-            output.append(f'loadrt {component} board_ip="192.168.10.15" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
+
+            if cardtype.startswith("7c81"):
+                component = "hm2_rpspi"
+                output.append(f'loadrt {component} spi_probe=1 spiclk_rate=11250 config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
+            else:
+                component = "hm2_eth"
+                output.append(f'loadrt {component} board_ip="192.168.10.15" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
+
             output.append(f"setp {prefix}.watchdog.timeout_ns 5000000")
             output.append(f"setp {prefix}.dpll.01.timer-us -50")
             output.append(f"setp {prefix}.stepgen.timer-number 1")

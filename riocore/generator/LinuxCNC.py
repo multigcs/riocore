@@ -54,11 +54,11 @@ class LinuxCNC:
         "STEPGEN_DIRSETUP": 35000,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
-        "MESA_DIRSETUP": 10000,
-        "MESA_DIRHOLD": 10000,
-        "MESA_STEPLEN": 5000,
-        "MESA_STEPSPACE": 5000,
-        "MESA_STEPGEN_MAXVEL": 1000,
+        "MESA_DIRSETUP": 2000,
+        "MESA_DIRHOLD": 2000,
+        "MESA_STEPLEN": 2000,
+        "MESA_STEPSPACE": 2000,
+        "MESA_STEPGEN_MAXVEL": 200,
         "MESA_STEPGEN_MAXACCEL": 1000,
         "HOME_SEARCH_VEL": -30.0,
         "HOME_LATCH_VEL": 5.0,
@@ -373,6 +373,12 @@ class LinuxCNC:
         open(os.path.join(self.configuration_path, "pregui_call_list.hal"), "w").write("\n".join(cl_output))
 
         riocore.log(f"writing linuxcnc files to: {self.base_path}")
+
+        syncto = self.project.config["jdata"].get("syncto")
+        if syncto:
+            syc_cmd = f"rsync -avr {self.project.config['output_path']}/ {syncto}"
+            riocore.log(f"INFO: {syc_cmd}")
+            os.system(syc_cmd)
 
     def ini_mdi_command(self, command, title=None):
         """Used by addons to add mdi-command's and prevent doubles"""
@@ -2009,7 +2015,8 @@ if __name__ == "__main__":
                     self.halg.setp_add(f"pid.{pin_num}.deadband", f"[JOINT_{joint}]DEADBAND")
                     self.halg.setp_add(f"pid.{pin_num}.maxoutput", f"[JOINT_{joint}]MAXOUTPUT")
                     self.halg.setp_add(f"{position_scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
-                    self.halg.setp_add(f"{feedback_halname}-scale", f"[JOINT_{joint}]SCALE_IN")
+                    if joint_setup["type"] != "mesastepgen":
+                        self.halg.setp_add(f"{feedback_halname}-scale", f"[JOINT_{joint}]SCALE_IN")
 
                     if machinetype == "corexy" and axis_name in {"X", "Y"}:
                         corexy_axis = "beta"

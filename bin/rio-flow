@@ -325,8 +325,6 @@ class MyNode(QGraphicsItem):
 
     def mouseReleaseEvent(self, event):
         self.update()
-        pos = self.pos()
-        self.flow_cfg["pos"] = (pos.x(), pos.y())
         QGraphicsItem.mouseReleaseEvent(self, event)
 
     def load_image(self, image):
@@ -338,14 +336,19 @@ class MyNode(QGraphicsItem):
             self.width = pixmap_width // 2
             self.height = pixmap_height // 2
             self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        else:
+            self.pixmap = None
 
     def port_pos(self, port):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
         if port in self.ports and self.ports[port].get("pos"):
-            pos_x += self.ports[port]["pos"][0] // 2
-            pos_y += self.ports[port]["pos"][1] // 2
+            ppos_x = self.ports[port]["pos"][0] // 2
+            ppos_y = self.ports[port]["pos"][1] // 2
+            ppos_x, ppos_y = self.rotate_xy((ppos_x, ppos_y))
+            pos_x += ppos_x
+            pos_y += ppos_y
 
         return QPointF(pos_x, pos_y)
 
@@ -361,9 +364,10 @@ class MyNode(QGraphicsItem):
         for port in self.ports:
             if not self.ports[port]["pos"]:
                 continue
-            x = self.ports[port]["pos"][0] // 2
-            y = self.ports[port]["pos"][1] // 2
-            if abs(mouse_x - x) < 5 and abs(mouse_y - y) < 5:
+            pos_x = self.ports[port]["pos"][0] // 2
+            pos_y = self.ports[port]["pos"][1] // 2
+            pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
+            if abs(mouse_x - pos_x) < 5 and abs(mouse_y - pos_y) < 5:
                 return port
         return None
 
@@ -430,6 +434,7 @@ class MyNode(QGraphicsItem):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
+        self.flow_cfg["pos"] = (pos_x, pos_y)
         if self.pixmap:
             painter.drawPixmap(0, 0, self.pixmap)
             painter.setRenderHint(QPainter.Antialiasing)
@@ -454,6 +459,7 @@ class MyNode(QGraphicsItem):
                 continue
             pos_x = port_data["pos"][0] // 2
             pos_y = port_data["pos"][1] // 2
+            pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
             key = f"{pos_x}-{pos_y}"
             if (self, port_name) == self.scene.selection_source or (self, port_name) == self.scene.selection_target:
                 painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.red)
@@ -488,27 +494,36 @@ class MyNode(QGraphicsItem):
         if hasattr(self, "sub_update"):
             self.sub_update()
 
+    def rotate_xy(self, pos):
+        rotate = self.flow_cfg.get("rotate", 0)
+        if self.pixmap:
+            if rotate == 90:
+                pos = [self.width - pos[1], pos[0]]
+            elif rotate == -90:
+                pos = [pos[1], self.height - pos[0]]
+            elif rotate == 180:
+                pos = [self.width - pos[0], self.height - pos[1]]
+        return pos
+
     def rotate_cw(self):
         if "rotate" not in self.flow_cfg:
             self.flow_cfg["rotate"] = 0
-
         if self.flow_cfg["rotate"] < 180:
             self.flow_cfg["rotate"] += 90
         else:
             self.flow_cfg["rotate"] = -90
-        self.scene.parent.redraw()
-        self.scene.parent.snapshot()
+        if hasattr(self, "reload"):
+            self.reload()
 
     def rotate_ccw(self):
         if "rotate" not in self.flow_cfg:
             self.flow_cfg["rotate"] = 0
-
         if self.flow_cfg["rotate"] > -90:
             self.flow_cfg["rotate"] -= 90
         else:
             self.flow_cfg["rotate"] = 180
-        self.scene.parent.redraw()
-        self.scene.parent.snapshot()
+        if hasattr(self, "reload"):
+            self.reload()
 
 
 class PluginNode(MyNode):
@@ -574,18 +589,6 @@ class PluginNode(MyNode):
                 for exansion_pin in self.plugin_instance.expansion_inputs():
                     title = exansion_pin.replace(prefix, "")
                     self.ports[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "expansion", "edge": "source"}
-
-        if self.flow_cfg.get("rotate"):
-            for pin_name, pin_data in self.ports.items():
-                pos = pin_data.get("pos", (0, 0))
-                if self.pixmap:
-                    if self.flow_cfg["rotate"] == 90:
-                        pos = [self.width * 2 - pos[1], pos[0]]
-                    elif self.flow_cfg["rotate"] == -90:
-                        pos = [pos[1], self.height * 2 - pos[0]]
-                    elif self.flow_cfg["rotate"] == 180:
-                        pos = [self.width * 2 - pos[0], self.height * 2 - pos[1]]
-                pin_data["pos"] = pos
 
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
@@ -704,16 +707,8 @@ class BoardNode(MyNode):
         data = open(self.board_setup["path"], "r").read()
         self.jdata = json.loads(data)
         image = os.path.join(os.path.dirname(self.board_setup["path"]), "board.png")
-        if os.path.exists(image):
-            pixmap = QPixmap.fromImage(QImage(image))
-            pixmap = pixmap.transformed(QTransform().rotate(self.flow_cfg.get("rotate", 0)))
-            pixmap_width = pixmap.width()
-            pixmap_height = pixmap.height()
-            self.width = grid(pixmap_width // 2)
-            self.height = grid(pixmap_height // 2)
-            self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        else:
-            self.pixmap = None
+        self.load_image(image)
+        if not self.pixmap:
             self.width = grid(400)
             self.height = grid(300)
         self.ports = {}
@@ -728,15 +723,6 @@ class BoardNode(MyNode):
                 pin_type = pin_data.get("type")
                 if not pin_type:
                     pin_data["type"] = "FPGA"
-                pos = pin_data.get("pos") or slot.get("pos")
-                if self.pixmap:
-                    if self.board_setup["config"]["flow"]["board"]["rotate"] == 90:
-                        pos = [pixmap_width - pos[1], pos[0]]
-                    elif self.board_setup["config"]["flow"]["board"]["rotate"] == -90:
-                        pos = [pos[1], pixmap_height - pos[0]]
-                    elif self.board_setup["config"]["flow"]["board"]["rotate"] == 180:
-                        pos = [pixmap_width - pos[0], pixmap_height - pos[1]]
-                pin_data["pos"] = pos
                 self.ports[f"{slot_name}:{pin_name}"] = pin_data
                 self.ports[pin_data.get("pin")] = pin_data
 
@@ -873,18 +859,6 @@ class BreakoutNode(MyNode):
                 if not edge_type:
                     pin_data["edge"] = "source"
                 self.ports[f"{slot_name}:{pin_name}"] = pin_data
-
-        if self.flow_cfg.get("rotate"):
-            for pin_name, pin_data in self.ports.items():
-                pos = pin_data.get("pos", (0, 0))
-                if self.pixmap:
-                    if self.flow_cfg["rotate"] == 90:
-                        pos = [self.width * 2 - pos[1], pos[0]]
-                    elif self.flow_cfg["rotate"] == -90:
-                        pos = [pos[1], self.height * 2 - pos[0]]
-                    elif self.flow_cfg["rotate"] == 180:
-                        pos = [self.width * 2 - pos[0], self.height * 2 - pos[1]]
-                pin_data["pos"] = pos
 
     def edit(self, port=None):
         self.scene.parent.gui_breakouts.edit_breakout(self.breakout_setup)
@@ -1157,9 +1131,9 @@ class NodeViewer(QGraphicsView):
                     else:
                         # check type and dir
                         # TODO: check type of parent source (before breakouts and modifiers)
-                        source_port_type = source_node.ports.get(source_port, {}).get("type").split("-")[0]
+                        source_port_type = source_node.ports.get(source_port, {}).get("type", "").split("-")[0]
                         source_port_direction = source_node.ports.get(source_port, {}).get("direction")
-                        target_port_type = target_node.ports.get(target_port, {}).get("type")
+                        target_port_type = target_node.ports.get(target_port, {}).get("type", "")
                         target_port_direction = target_node.ports.get(target_port, {}).get("direction")
                         check_type = target_port_type and source_port_type
                         check_dir = target_port_direction and source_port_direction
@@ -1312,18 +1286,18 @@ class NodeScene(QGraphicsScene):
             if isinstance(self.menu_selection, BoardNode) or isinstance(self.menu_selection, BreakoutNode) or isinstance(self.menu_selection, PluginNode):
                 rotate_cw = QAction("rotate_cw", None)
                 if self.selectedItems():
-                    for item in self.selectedItems():
-                        rotate_cw.triggered.connect(item.rotate_cw)
+                    items = self.selectedItems()
                 else:
-                    rotate_cw.triggered.connect(self.menu_selection.rotate_cw)
+                    items = [self.menu_selection]
+                rotate_cw.triggered.connect(partial(self.rotate, "cw", items))
                 menu.addAction(rotate_cw)
 
                 rotate_ccw = QAction("rotate_ccw", None)
                 if self.selectedItems():
-                    for item in self.selectedItems():
-                        rotate_ccw.triggered.connect(item.rotate_ccw)
+                    items = self.selectedItems()
                 else:
-                    rotate_ccw.triggered.connect(self.menu_selection.rotate_ccw)
+                    items = [self.menu_selection]
+                rotate_ccw.triggered.connect(partial(self.rotate, "ccw", items))
                 menu.addAction(rotate_ccw)
 
                 if dev_mode and isinstance(self.menu_selection, BoardNode):
@@ -1379,6 +1353,14 @@ class NodeScene(QGraphicsScene):
         menu.addAction(add_undo)
 
         menu.exec_(event.screenPos())
+
+    def rotate(self, direction, items):
+        for item in items:
+            func = f"rotate_{direction}"
+            if hasattr(item, func):
+                getattr(item, func)()
+        self.update()
+        self.parent.snapshot()
 
     def disconnect_port(self, node, port):
         for item in self.items():
@@ -2470,8 +2452,14 @@ class Window(QMainWindow):
                 self.gui_plugins.add_plugin(None)
             elif selection == "add Breakout":
                 self.gui_breakouts.add_breakout(None)
-        elif event.modifiers() & Qt.ControlModifier:
-            if event.key() == Qt.Key_S:
+        elif event.key() in {Qt.Key_R}:
+            if self.scene.selectedItems():
+                if event.modifiers() & Qt.ShiftModifier:
+                    self.scene.rotate("ccw", self.scene.selectedItems())
+                else:
+                    self.scene.rotate("cw", self.scene.selectedItems())
+        elif event.key() == Qt.Key_S:
+            if event.modifiers() & Qt.ControlModifier:
                 self.json_save()
 
     def cfg_reload(self, widget=None, config=None):
@@ -2501,10 +2489,10 @@ class Window(QMainWindow):
         self.fit_view()
         self.cfg_check()
 
-    def rotate(self, item):
-        self.cfg_save()
-        if not self.snapshots or self.config != self.snapshots[-1]:
-            self.snapshots.append(copy.deepcopy(self.config))
+    # def rotate(self, item):
+    #     self.cfg_save()
+    #     if not self.snapshots or self.config != self.snapshots[-1]:
+    #        self.snapshots.append(copy.deepcopy(self.config))
 
     def snapshot(self):
         self.cfg_save()
@@ -2996,7 +2984,7 @@ class Window(QMainWindow):
                 x_pos_list = []
                 y_pos_list = []
                 for edge_item in self.scene.items():
-                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item:
+                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item and edge_item._source_node:
                         pos = edge_item._source_node.port_pos(edge_item._source_port)
                         x_pos_list.append(pos.x())
                         y_pos_list.append(pos.y())
