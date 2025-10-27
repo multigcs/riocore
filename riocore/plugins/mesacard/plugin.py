@@ -226,7 +226,9 @@ class Plugin(PluginBase):
 
                 # print(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                 if pos:
-                    self.PINDEFAULTS[f"{slot}:P{pin_n}"] = {
+                    mapping_to_db25 = [0, 1, 14, 2, 15, 3, 16, 4, 17, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+                    mpin_n = mapping_to_db25[pin_n]
+                    self.PINDEFAULTS[f"{slot}:P{mpin_n}"] = {
                         "pin": halname,
                         "comment": f"{func}({channel}) - {pinfunc}",
                         "pos": pos,

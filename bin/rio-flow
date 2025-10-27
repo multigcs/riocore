@@ -355,8 +355,12 @@ class MyNode(QGraphicsItem):
     def port_info(self, port):
         pin_data = self.ports.get(port)
         if pin_data:
-            return f"{pin_data.get('pin', '')} {pin_data.get('direction', '')} {pin_data.get('comment', '')}"
-        return ""
+            info = {}
+            for key in ("pin", "direction", "type", "comment", "comment2"):
+                if key in pin_data:
+                    info[key] = pin_data[key]
+            return info
+        return {}
 
     def port_selected(self, mouse_pos):
         mouse_x = mouse_pos.x()
@@ -634,7 +638,6 @@ class PluginNode(MyNode):
         for sub_item in self.subNodes:
             self.scene.disconnect_node(sub_item)
             self.scene.removeItem(sub_item)
-
         # remove plugin from cfg
         plugin_config = self.plugin_instance.plugin_setup
         for pn, plugin in enumerate(self.scene.parent.config["plugins"]):
@@ -1120,13 +1123,8 @@ class NodeViewer(QGraphicsView):
                                 if subitem.etype == f"breakout:{breakout_name}":
                                     self.scene.removeItem(subitem)
                         # connect all main wires
-                        color_n = 0
-                        for pin, pin_data in target_node.jdata["main"].items():
-                            bpin = f"{slot}:{pin}"
-                            edge = NodeEdge(self.scene, f"breakout:{breakout_name}", source_node, bpin, target_node, pin, color=colors[color_n])
-                            self.scene.addItem(edge)
-                            color_n += 1
                         target_node.breakout_setup["slot"] = f"{source_node.name}:{slot}"
+                        self.scene.parent.connect_breakout(target_node)
 
                     else:
                         # check type and dir
@@ -1219,7 +1217,13 @@ class NodeViewer(QGraphicsView):
                 port = self.scene.hover.port_selected(position)
                 if port:
                     pinfo = self.scene.hover.port_info(port)
-                    self.scene.parent.info.setText(f"{hovername} - {port} ({pinfo})")
+                    info_text = []
+                    info_text.append(f"node: {hovername}")
+                    info_text.append(f"port: {port}")
+                    for key, value in pinfo.items():
+                        info_text.append(f"{key.title()}: {value}")
+                    self.scene.parent.pininfo.setText("\n".join(info_text))
+                    self.scene.parent.info.setText(f"{hovername} - {port}")
                 elif dev_mode:
                     self.scene.parent.info.setText(f"{hovername} ({position.x():0.1f} {position.y():0.1f})")
                 else:
@@ -2169,10 +2173,18 @@ class Window(QMainWindow):
         hbox = QSplitter(Qt.Horizontal)
         hbox.addWidget(self.tabwidget)
 
+        info_vbox_widget = QWidget()
+        info_vbox = QVBoxLayout()
+        info_vbox_widget.setLayout(info_vbox)
+        hbox.addWidget(info_vbox_widget)
+
+        self.pininfo = QLabel("")
+        info_vbox.addWidget(self.pininfo)
+
         self.infobox = QPlainTextEdit(self)
         self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.infobox.setMinimumWidth(200)
-        hbox.addWidget(self.infobox)
+        self.infobox.setMinimumWidth(300)
+        info_vbox.addWidget(self.infobox)
 
         vboxMain = QVBoxLayout()
         vboxMain.addWidget(self.toolbar())
@@ -3104,6 +3116,13 @@ class Window(QMainWindow):
             color_n = 0
             for pin, pin_data in mnode.jdata["main"].items():
                 bpin = f"{slot}:{pin}"
+                source_type = slot_node.ports.get(bpin, {}).get("type")
+                source_comment = slot_node.ports.get(bpin, {}).get("comment")
+                for port_name, port_data in mnode.ports.items():
+                    if pin == port_data.get("pin"):
+                        port_data["type"] = source_type
+                        port_data["comment2"] = source_comment
+
                 edge = NodeEdge(self.scene, f"breakout:{breakout_name}", slot_node, bpin, mnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
