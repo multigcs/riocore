@@ -219,10 +219,11 @@ class Plugin(PluginBase):
                     halname = f"{self.instances_name}:gpio.{int(io):03d}"
                 else:
                     pinfunc = line.split()[5].split("/")[0]
+                    func_halname = func.replace("PWM", "pwmgen").lower()
                     channel = line.split()[4].replace("None", "GPIO")
                     direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
                     ptype = f"MESA{func}{pinfunc}-{channel}"
-                    halname = f"{self.instances_name}:{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
+                    halname = f"{self.instances_name}:{func_halname}.{int(channel):02d}.{pinfunc.lower()}"
 
                 # print(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                 if pos:
@@ -249,7 +250,9 @@ class Plugin(PluginBase):
         # mapping halnames to real prefix
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                # for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                for name in list(plugin_instance.plugin_setup.get("pins", {}).keys()):
+                    psetup = plugin_instance.plugin_setup["pins"][name]
                     if "pin" not in psetup:
                         continue
                     pin = psetup["pin"]
@@ -268,7 +271,15 @@ class Plugin(PluginBase):
                         else:
                             print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
 
-                    if pin.endswith(".step") or pin.endswith(".dir"):
+                    if pin.endswith(".pwm"):
+                        postfix = plugin_instance.plugin_setup["pins"][name]["pin"].split(":")[1].replace(".pwm", "")
+                        plugin_instance.PREFIX = f"{self.hm2_prefix}.{postfix}"
+                        del plugin_instance.plugin_setup["pins"][name]
+
+                        if invert:
+                            parent.halg.setp_add(f"{self.hm2_prefix}.{postfix}.out0.invert_output", 1)
+
+                    elif pin.endswith(".step") or pin.endswith(".dir"):
                         pin = pin.replace(".step", "").replace(".dir", "")
                         psetup["pin"] = f"{self.hm2_prefix}.{pin}.out"
                     elif direction == "output":
@@ -292,14 +303,11 @@ class Plugin(PluginBase):
 
         for num, instance in enumerate(instances):
             cardtype = instance.plugin_setup.get("cardtype", instance.option_default("cardtype"))
-            num_pwms = instance.plugin_setup.get("num_pwm", instance.option_default("num_pwm"))
+            num_pwms = instance.plugin_setup.get("num_pwms", instance.option_default("num_pwms"))
             num_encoders = instance.plugin_setup.get("num_encoders", instance.option_default("num_encoders"))
             num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
             # num_serials = instance.plugin_setup.get("num_serial", instance.option_default("num_serial"))
-
-            board = cardtype.split("_")[0]
             # card_bitfile = cardtype.split("_")[1]
-            prefix = f"hm2_{board}.0"
 
             if cardtype.startswith("7c81"):
                 component = "hm2_rpspi"
@@ -308,10 +316,14 @@ class Plugin(PluginBase):
                 component = "hm2_eth"
                 output.append(f'loadrt {component} board_ip="192.168.10.15" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
 
-            output.append(f"setp {prefix}.watchdog.timeout_ns 5000000")
-            output.append(f"setp {prefix}.dpll.01.timer-us -50")
-            output.append(f"setp {prefix}.stepgen.timer-number 1")
+            output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
+            output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
+            output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
+            output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
+            output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 5000000")
+            output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
+            output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
             output.append("")
-            output.append(f"addf {prefix}.read servo-thread")
-            output.append(f"addf {prefix}.write servo-thread")
+            output.append(f"addf {instance.hm2_prefix}.read servo-thread")
+            output.append(f"addf {instance.hm2_prefix}.write servo-thread")
         return "\n".join(output)

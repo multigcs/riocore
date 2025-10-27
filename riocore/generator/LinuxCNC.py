@@ -630,7 +630,7 @@ class LinuxCNC:
                 addon.ini(self, ini_setup)
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
+            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
                 if hasattr(plugin_instance, "ini"):
                     plugin_instance.ini(self, ini_setup)
 
@@ -1405,7 +1405,7 @@ if __name__ == "__main__":
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "position-scale", "position-fb", "velocity", "position-cmd", "enable", "dty"}:
                     continue
                 hal_prefix = f"{self.hal_prefix}."
-                if plugin_instance.PLUGIN_TYPE == "gpio":
+                if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
                     hal_prefix = ""
                 vcp_add(signal_config, hal_prefix, widgets)
 
@@ -1902,7 +1902,7 @@ if __name__ == "__main__":
                     rprefix = "rio."
                     if virtual:
                         rprefix = "riov."
-                    if plugin_instance.PLUGIN_TYPE == "gpio":
+                    if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
                         rprefix = ""
                     if scale and not virtual:
                         self.halg.setp_add(f"{rprefix}{halname}-scale", scale)

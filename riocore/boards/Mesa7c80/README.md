@@ -14,6 +14,7 @@ Smartserial is not supported by RIO, but the 2 ports can be used for Modbus.
 * Package: tqg144
 * Flashcmd: openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit
 * Clock: 50.000Mhz -> PLL -> 100.000Mhz (Pin:P50)
+* Example-Configs: [Mesa7c80](../../configs/Mesa7c80)
 
 ![board.png](board.png)
 

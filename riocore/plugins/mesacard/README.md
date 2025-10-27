@@ -14,7 +14,15 @@ Keywords: mesacard gpio
 
  * direction: output
 
+### P1:P14:
+
+ * direction: all
+
 ### P1:P2:
+
+ * direction: output
+
+### P1:P15:
 
  * direction: all
 
@@ -22,7 +30,15 @@ Keywords: mesacard gpio
 
  * direction: output
 
+### P1:P16:
+
+ * direction: all
+
 ### P1:P4:
+
+ * direction: output
+
+### P1:P17:
 
  * direction: all
 
@@ -32,7 +48,7 @@ Keywords: mesacard gpio
 
 ### P1:P6:
 
- * direction: all
+ * direction: output
 
 ### P1:P7:
 
@@ -44,59 +60,59 @@ Keywords: mesacard gpio
 
 ### P1:P9:
 
- * direction: output
+ * direction: all
 
 ### P1:P10:
 
- * direction: output
+ * direction: all
 
 ### P1:P11:
 
- * direction: output
+ * direction: all
 
 ### P1:P12:
 
- * direction: output
+ * direction: all
 
 ### P1:P13:
 
- * direction: output
-
-### P1:P14:
-
  * direction: all
-
-### P1:P15:
-
- * direction: input
-
-### P1:P16:
-
- * direction: input
-
-### P1:P17:
-
- * direction: input
 
 ### P2:P1:
 
- * direction: output
+ * direction: all
+
+### P2:P14:
+
+ * direction: all
 
 ### P2:P2:
 
  * direction: all
 
+### P2:P15:
+
+ * direction: all
+
 ### P2:P3:
 
- * direction: output
+ * direction: all
+
+### P2:P16:
+
+ * direction: all
 
 ### P2:P4:
 
  * direction: all
 
+### P2:P17:
+
+ * direction: all
+
 ### P2:P5:
 
- * direction: output
+ * direction: all
 
 ### P2:P6:
 
@@ -104,7 +120,7 @@ Keywords: mesacard gpio
 
 ### P2:P7:
 
- * direction: output
+ * direction: all
 
 ### P2:P8:
 
@@ -112,59 +128,59 @@ Keywords: mesacard gpio
 
 ### P2:P9:
 
- * direction: output
+ * direction: all
 
 ### P2:P10:
 
- * direction: output
+ * direction: all
 
 ### P2:P11:
 
- * direction: output
+ * direction: all
 
 ### P2:P12:
 
- * direction: output
+ * direction: all
 
 ### P2:P13:
 
- * direction: output
-
-### P2:P14:
-
  * direction: all
-
-### P2:P15:
-
- * direction: input
-
-### P2:P16:
-
- * direction: input
-
-### P2:P17:
-
- * direction: input
 
 ### P7:P1:
 
- * direction: output
+ * direction: all
+
+### P7:P14:
+
+ * direction: all
 
 ### P7:P2:
 
  * direction: all
 
+### P7:P15:
+
+ * direction: all
+
 ### P7:P3:
 
- * direction: output
+ * direction: all
+
+### P7:P16:
+
+ * direction: all
 
 ### P7:P4:
 
  * direction: all
 
+### P7:P17:
+
+ * direction: all
+
 ### P7:P5:
 
- * direction: output
+ * direction: all
 
 ### P7:P6:
 
@@ -172,7 +188,7 @@ Keywords: mesacard gpio
 
 ### P7:P7:
 
- * direction: output
+ * direction: all
 
 ### P7:P8:
 
@@ -180,39 +196,23 @@ Keywords: mesacard gpio
 
 ### P7:P9:
 
- * direction: output
+ * direction: all
 
 ### P7:P10:
 
- * direction: output
+ * direction: all
 
 ### P7:P11:
 
- * direction: output
+ * direction: all
 
 ### P7:P12:
 
- * direction: output
+ * direction: all
 
 ### P7:P13:
 
- * direction: output
-
-### P7:P14:
-
  * direction: all
-
-### P7:P15:
-
- * direction: input
-
-### P7:P16:
-
- * direction: input
-
-### P7:P17:
-
- * direction: input
 
 
 ## Options:
@@ -228,6 +228,38 @@ card configuration
 
  * type: select
  * default: 7c81_5abobx3d
+
+### num_pwms:
+number of pwm's
+
+ * type: int
+ * min: 0
+ * max: 10
+ * default: 1
+
+### num_encoders:
+number of encoder's
+
+ * type: int
+ * min: 0
+ * max: 10
+ * default: 0
+
+### num_stepgens:
+number of stepgen's
+
+ * type: int
+ * min: 0
+ * max: 10
+ * default: 3
+
+### num_serials:
+number of serial's
+
+ * type: int
+ * min: 0
+ * max: 10
+ * default: 0
 
 
 ## Signals:
@@ -246,154 +278,154 @@ card configuration
         "P1:P1": {
             "pin": "0"
         },
-        "P1:P2": {
+        "P1:P14": {
             "pin": "1"
         },
-        "P1:P3": {
+        "P1:P2": {
             "pin": "2"
         },
-        "P1:P4": {
+        "P1:P15": {
             "pin": "3"
         },
-        "P1:P5": {
+        "P1:P3": {
             "pin": "4"
         },
-        "P1:P6": {
+        "P1:P16": {
             "pin": "5"
         },
-        "P1:P7": {
+        "P1:P4": {
             "pin": "6"
         },
-        "P1:P8": {
+        "P1:P17": {
             "pin": "7"
         },
-        "P1:P9": {
+        "P1:P5": {
             "pin": "8"
         },
-        "P1:P10": {
+        "P1:P6": {
             "pin": "9"
         },
-        "P1:P11": {
+        "P1:P7": {
             "pin": "10"
         },
-        "P1:P12": {
+        "P1:P8": {
             "pin": "11"
         },
-        "P1:P13": {
+        "P1:P9": {
             "pin": "12"
         },
-        "P1:P14": {
+        "P1:P10": {
             "pin": "13"
         },
-        "P1:P15": {
+        "P1:P11": {
             "pin": "14"
         },
-        "P1:P16": {
+        "P1:P12": {
             "pin": "15"
         },
-        "P1:P17": {
+        "P1:P13": {
             "pin": "16"
         },
         "P2:P1": {
             "pin": "17"
         },
-        "P2:P2": {
+        "P2:P14": {
             "pin": "18"
         },
-        "P2:P3": {
+        "P2:P2": {
             "pin": "19"
         },
-        "P2:P4": {
+        "P2:P15": {
             "pin": "20"
         },
-        "P2:P5": {
+        "P2:P3": {
             "pin": "21"
         },
-        "P2:P6": {
+        "P2:P16": {
             "pin": "22"
         },
-        "P2:P7": {
+        "P2:P4": {
             "pin": "23"
         },
-        "P2:P8": {
+        "P2:P17": {
             "pin": "24"
         },
-        "P2:P9": {
+        "P2:P5": {
             "pin": "25"
         },
-        "P2:P10": {
+        "P2:P6": {
             "pin": "26"
         },
-        "P2:P11": {
+        "P2:P7": {
             "pin": "27"
         },
-        "P2:P12": {
+        "P2:P8": {
             "pin": "28"
         },
-        "P2:P13": {
+        "P2:P9": {
             "pin": "29"
         },
-        "P2:P14": {
+        "P2:P10": {
             "pin": "30"
         },
-        "P2:P15": {
+        "P2:P11": {
             "pin": "31"
         },
-        "P2:P16": {
+        "P2:P12": {
             "pin": "32"
         },
-        "P2:P17": {
+        "P2:P13": {
             "pin": "33"
         },
         "P7:P1": {
             "pin": "34"
         },
-        "P7:P2": {
+        "P7:P14": {
             "pin": "35"
         },
-        "P7:P3": {
+        "P7:P2": {
             "pin": "36"
         },
-        "P7:P4": {
+        "P7:P15": {
             "pin": "37"
         },
-        "P7:P5": {
+        "P7:P3": {
             "pin": "38"
         },
-        "P7:P6": {
+        "P7:P16": {
             "pin": "39"
         },
-        "P7:P7": {
+        "P7:P4": {
             "pin": "40"
         },
-        "P7:P8": {
+        "P7:P17": {
             "pin": "41"
         },
-        "P7:P9": {
+        "P7:P5": {
             "pin": "42"
         },
-        "P7:P10": {
+        "P7:P6": {
             "pin": "43"
         },
-        "P7:P11": {
+        "P7:P7": {
             "pin": "44"
         },
-        "P7:P12": {
+        "P7:P8": {
             "pin": "45"
         },
-        "P7:P13": {
+        "P7:P9": {
             "pin": "46"
         },
-        "P7:P14": {
+        "P7:P10": {
             "pin": "47"
         },
-        "P7:P15": {
+        "P7:P11": {
             "pin": "48"
         },
-        "P7:P16": {
+        "P7:P12": {
             "pin": "49"
         },
-        "P7:P17": {
+        "P7:P13": {
             "pin": "50"
         }
     }
@@ -406,6 +438,10 @@ card configuration
     "type": "mesacard",
     "name": "",
     "cardtype": "7c81_5abobx3d",
+    "num_pwms": 1,
+    "num_encoders": 0,
+    "num_stepgens": 3,
+    "num_serials": 0,
     "pins": {
         "P1:P1": {
             "pin": "0",
@@ -415,7 +451,7 @@ card configuration
                 }
             ]
         },
-        "P1:P2": {
+        "P1:P14": {
             "pin": "1",
             "modifiers": [
                 {
@@ -423,7 +459,7 @@ card configuration
                 }
             ]
         },
-        "P1:P3": {
+        "P1:P2": {
             "pin": "2",
             "modifiers": [
                 {
@@ -431,7 +467,7 @@ card configuration
                 }
             ]
         },
-        "P1:P4": {
+        "P1:P15": {
             "pin": "3",
             "modifiers": [
                 {
@@ -439,7 +475,7 @@ card configuration
                 }
             ]
         },
-        "P1:P5": {
+        "P1:P3": {
             "pin": "4",
             "modifiers": [
                 {
@@ -447,7 +483,7 @@ card configuration
                 }
             ]
         },
-        "P1:P6": {
+        "P1:P16": {
             "pin": "5",
             "modifiers": [
                 {
@@ -455,7 +491,7 @@ card configuration
                 }
             ]
         },
-        "P1:P7": {
+        "P1:P4": {
             "pin": "6",
             "modifiers": [
                 {
@@ -463,7 +499,7 @@ card configuration
                 }
             ]
         },
-        "P1:P8": {
+        "P1:P17": {
             "pin": "7",
             "modifiers": [
                 {
@@ -471,7 +507,7 @@ card configuration
                 }
             ]
         },
-        "P1:P9": {
+        "P1:P5": {
             "pin": "8",
             "modifiers": [
                 {
@@ -479,7 +515,7 @@ card configuration
                 }
             ]
         },
-        "P1:P10": {
+        "P1:P6": {
             "pin": "9",
             "modifiers": [
                 {
@@ -487,7 +523,7 @@ card configuration
                 }
             ]
         },
-        "P1:P11": {
+        "P1:P7": {
             "pin": "10",
             "modifiers": [
                 {
@@ -495,7 +531,7 @@ card configuration
                 }
             ]
         },
-        "P1:P12": {
+        "P1:P8": {
             "pin": "11",
             "modifiers": [
                 {
@@ -503,7 +539,7 @@ card configuration
                 }
             ]
         },
-        "P1:P13": {
+        "P1:P9": {
             "pin": "12",
             "modifiers": [
                 {
@@ -511,7 +547,7 @@ card configuration
                 }
             ]
         },
-        "P1:P14": {
+        "P1:P10": {
             "pin": "13",
             "modifiers": [
                 {
@@ -519,34 +555,25 @@ card configuration
                 }
             ]
         },
-        "P1:P15": {
+        "P1:P11": {
             "pin": "14",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "P1:P16": {
+        "P1:P12": {
             "pin": "15",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "P1:P17": {
+        "P1:P13": {
             "pin": "16",
             "modifiers": [
-                {
-                    "type": "debounce"
-                },
                 {
                     "type": "invert"
                 }
@@ -560,7 +587,7 @@ card configuration
                 }
             ]
         },
-        "P2:P2": {
+        "P2:P14": {
             "pin": "18",
             "modifiers": [
                 {
@@ -568,7 +595,7 @@ card configuration
                 }
             ]
         },
-        "P2:P3": {
+        "P2:P2": {
             "pin": "19",
             "modifiers": [
                 {
@@ -576,7 +603,7 @@ card configuration
                 }
             ]
         },
-        "P2:P4": {
+        "P2:P15": {
             "pin": "20",
             "modifiers": [
                 {
@@ -584,7 +611,7 @@ card configuration
                 }
             ]
         },
-        "P2:P5": {
+        "P2:P3": {
             "pin": "21",
             "modifiers": [
                 {
@@ -592,7 +619,7 @@ card configuration
                 }
             ]
         },
-        "P2:P6": {
+        "P2:P16": {
             "pin": "22",
             "modifiers": [
                 {
@@ -600,7 +627,7 @@ card configuration
                 }
             ]
         },
-        "P2:P7": {
+        "P2:P4": {
             "pin": "23",
             "modifiers": [
                 {
@@ -608,7 +635,7 @@ card configuration
                 }
             ]
         },
-        "P2:P8": {
+        "P2:P17": {
             "pin": "24",
             "modifiers": [
                 {
@@ -616,7 +643,7 @@ card configuration
                 }
             ]
         },
-        "P2:P9": {
+        "P2:P5": {
             "pin": "25",
             "modifiers": [
                 {
@@ -624,7 +651,7 @@ card configuration
                 }
             ]
         },
-        "P2:P10": {
+        "P2:P6": {
             "pin": "26",
             "modifiers": [
                 {
@@ -632,7 +659,7 @@ card configuration
                 }
             ]
         },
-        "P2:P11": {
+        "P2:P7": {
             "pin": "27",
             "modifiers": [
                 {
@@ -640,7 +667,7 @@ card configuration
                 }
             ]
         },
-        "P2:P12": {
+        "P2:P8": {
             "pin": "28",
             "modifiers": [
                 {
@@ -648,7 +675,7 @@ card configuration
                 }
             ]
         },
-        "P2:P13": {
+        "P2:P9": {
             "pin": "29",
             "modifiers": [
                 {
@@ -656,7 +683,7 @@ card configuration
                 }
             ]
         },
-        "P2:P14": {
+        "P2:P10": {
             "pin": "30",
             "modifiers": [
                 {
@@ -664,34 +691,25 @@ card configuration
                 }
             ]
         },
-        "P2:P15": {
+        "P2:P11": {
             "pin": "31",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "P2:P16": {
+        "P2:P12": {
             "pin": "32",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "P2:P17": {
+        "P2:P13": {
             "pin": "33",
             "modifiers": [
-                {
-                    "type": "debounce"
-                },
                 {
                     "type": "invert"
                 }
@@ -705,7 +723,7 @@ card configuration
                 }
             ]
         },
-        "P7:P2": {
+        "P7:P14": {
             "pin": "35",
             "modifiers": [
                 {
@@ -713,7 +731,7 @@ card configuration
                 }
             ]
         },
-        "P7:P3": {
+        "P7:P2": {
             "pin": "36",
             "modifiers": [
                 {
@@ -721,7 +739,7 @@ card configuration
                 }
             ]
         },
-        "P7:P4": {
+        "P7:P15": {
             "pin": "37",
             "modifiers": [
                 {
@@ -729,7 +747,7 @@ card configuration
                 }
             ]
         },
-        "P7:P5": {
+        "P7:P3": {
             "pin": "38",
             "modifiers": [
                 {
@@ -737,7 +755,7 @@ card configuration
                 }
             ]
         },
-        "P7:P6": {
+        "P7:P16": {
             "pin": "39",
             "modifiers": [
                 {
@@ -745,7 +763,7 @@ card configuration
                 }
             ]
         },
-        "P7:P7": {
+        "P7:P4": {
             "pin": "40",
             "modifiers": [
                 {
@@ -753,7 +771,7 @@ card configuration
                 }
             ]
         },
-        "P7:P8": {
+        "P7:P17": {
             "pin": "41",
             "modifiers": [
                 {
@@ -761,7 +779,7 @@ card configuration
                 }
             ]
         },
-        "P7:P9": {
+        "P7:P5": {
             "pin": "42",
             "modifiers": [
                 {
@@ -769,7 +787,7 @@ card configuration
                 }
             ]
         },
-        "P7:P10": {
+        "P7:P6": {
             "pin": "43",
             "modifiers": [
                 {
@@ -777,7 +795,7 @@ card configuration
                 }
             ]
         },
-        "P7:P11": {
+        "P7:P7": {
             "pin": "44",
             "modifiers": [
                 {
@@ -785,7 +803,7 @@ card configuration
                 }
             ]
         },
-        "P7:P12": {
+        "P7:P8": {
             "pin": "45",
             "modifiers": [
                 {
@@ -793,7 +811,7 @@ card configuration
                 }
             ]
         },
-        "P7:P13": {
+        "P7:P9": {
             "pin": "46",
             "modifiers": [
                 {
@@ -801,7 +819,7 @@ card configuration
                 }
             ]
         },
-        "P7:P14": {
+        "P7:P10": {
             "pin": "47",
             "modifiers": [
                 {
@@ -809,34 +827,25 @@ card configuration
                 }
             ]
         },
-        "P7:P15": {
+        "P7:P11": {
             "pin": "48",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "P7:P16": {
+        "P7:P12": {
             "pin": "49",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "P7:P17": {
+        "P7:P13": {
             "pin": "50",
             "modifiers": [
-                {
-                    "type": "debounce"
-                },
                 {
                     "type": "invert"
                 }

@@ -2,7 +2,7 @@
 
 <img align="right" width="320" src="image.png">
 
-**software step pulse generation**
+**masa step pulse generation**
 
 Keywords: stepper
 

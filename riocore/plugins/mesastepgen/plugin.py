@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "mesastepgen"
         self.COMPONENT = "mesastepgen"
-        self.INFO = "software step pulse generation"
+        self.INFO = "masa step pulse generation"
         self.DESCRIPTION = ""
         self.KEYWORDS = "stepper"
         self.IMAGES = ["stepper", "servo42"]
