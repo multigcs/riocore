@@ -144,7 +144,6 @@ class Plugin(PluginBase):
         cardtype = self.plugin_setup.get("cardtype", self.option_default("cardtype"))
         board = cardtype.split("_")[0]
         self.IMAGE = f"{board}.png"
-
         slot = None
         pin_n = 0
         pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board, f"{cardtype}.pin")
@@ -165,13 +164,13 @@ class Plugin(PluginBase):
                     channel = line.split()[4].replace("None", "GPIO")
                     direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
                     ptype = f"MESA{func}{pinfunc}-{channel}"
-                    halname = f"hm2_7c81.0.{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
+                    halname = f"hm2_{board}.0.{func.lower()}.{int(channel):02d}.{pinfunc.lower()}"
                 else:
                     pinfunc = ""
                     channel = ""
                     direction = "all"
                     ptype = "GPIO"
-                    halname = f"hm2_7c81.0.gpio.{int(io):03d}"
+                    halname = f"hm2_{board}.0.gpio.{int(io):03d}"
                 # print(slot, f"IO{io}", func, pinfunc, direction, pos)
                 if pos:
                     self.PINDEFAULTS[f"{slot}:P{pin_n}"] = {
@@ -198,9 +197,11 @@ class Plugin(PluginBase):
             board = cardtype.split("_")[0]
             card_bitfile = cardtype.split("_")[1]
             component = "hm2_rpspi"
+            component = "hm2_eth"
             prefix = f"hm2_{board}.0"
             # output.append(f'loadrt {component} config="firmware=hm2/{board}/{card_bitfile}.BIT num_encoders=3 num_pwmgens=3 num_stepgens=12"')
             output.append(f'loadrt {component} config="firmware=hm2/{board}/{card_bitfile}.BIT"')
+            output.append(f'loadrt {component} board_ip="10.10.10.10" config="firmware=hm2/{board}/{card_bitfile}.BIT"')
             output.append(f"setp {prefix}.watchdog.timeout_ns 5000000")
             output.append(f"setp {prefix}.dpll.01.timer-us -50")
             output.append(f"setp {prefix}.stepgen.timer-number 1")

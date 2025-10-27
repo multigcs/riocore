@@ -2832,6 +2832,8 @@ class Window(QMainWindow):
         # loading plugins
         self.plugin_uids = []
         self.plugins = riocore.Plugins()
+
+        pluginlist = []
         for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
             uid = plugin_config.get("uid")
             if not uid:
@@ -2844,7 +2846,16 @@ class Window(QMainWindow):
             self.plugin_uids.append(uid)
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
             plugin_instance = self.plugins.plugin_instances[-1]
-            py += self.insert_plugin(plugin_instance, py)
+            pluginlist.append(plugin_instance)
+
+        # load base and expansion plugins first
+        first = ["base", "expansion"]
+        for ptype in first + [""]:
+            for plugin_instance in pluginlist:
+                if plugin_instance.TYPE == ptype:
+                    py += self.insert_plugin(plugin_instance, py)
+                elif not ptype and plugin_instance.TYPE not in first:
+                    py += self.insert_plugin(plugin_instance, py)
 
         # connect breakouts
         for item in self.scene.items():
