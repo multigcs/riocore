@@ -211,6 +211,7 @@ class Plugin(PluginBase):
             self.parport_mode = ""
 
     def hal(self, parent):
+        # mapping halnames to real prefix
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():

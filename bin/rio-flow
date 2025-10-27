@@ -978,6 +978,7 @@ class ModifierNode(MyNode):
     def __init__(self, scene, x, y, modifier):
         super().__init__(scene, x, y)
         self.modifier = modifier
+        self.flow_cfg = self.modifier
         self.name = modifier["type"]
         self.width = grid(100)
         self.height = grid(20)

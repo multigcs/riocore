@@ -246,6 +246,7 @@ class Plugin(PluginBase):
         pass
 
     def hal(self, parent):
+        # mapping halnames to real prefix
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
