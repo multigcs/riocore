@@ -82,15 +82,18 @@ grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)
 max_size = 99999
-cn = 7
+
+# generate different colors with different styles
 colors = []
-for o in range(0, 10):
+cn = 7
+for s in (Qt.SolidLine, Qt.DashLine, Qt.DotLine, Qt.DashDotLine, Qt.DashDotDotLine):
+    o = 0
     for i in range(0, cn):
         hue = i / cn + 1 / cn * o / 10
         lightness = 0.7
         saturation = 0.9 / 5 * (10 - o) / 2
         color = QColor.fromHslF(hue, saturation, lightness)
-        colors.append(color)
+        colors.append((color, s))
 
 
 class NodeEdgePath(QGraphicsPathItem):
@@ -105,9 +108,12 @@ class NodeEdgePath(QGraphicsPathItem):
         self._source_port = source_port
         self._target_node = des_node
         self._target_port = des_port
-        self.color = color
-        if self.color is None:
-            self.color = Qt.GlobalColor.green
+        self.color = Qt.GlobalColor.green
+        self.style = Qt.SolidLine
+        if color:
+            self.color = color[0]
+            self.style = color[1]
+
         self._pen_default = QPen(self.color)
         self._pen_default.setWidthF(2)
         self.setZValue(5)
@@ -125,6 +131,10 @@ class NodeEdgePath(QGraphicsPathItem):
             self._pen_default.setWidthF(self.width)
         if self.hover:
             self._pen_default.setWidthF(self.width_selected + 2)
+
+        if self.style:
+            self._pen_default.setStyle(self.style)
+
         painter.setPen(self._pen_default)
         self.update_edge_path()
         painter.setBrush(Qt.NoBrush)
