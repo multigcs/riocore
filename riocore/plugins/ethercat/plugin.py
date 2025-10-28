@@ -117,19 +117,24 @@ class Plugin(PluginBase):
             }
 
     def update_prefixes(cls, instances):
-        for num, instance in enumerate(instances):
+        cia402_num = 0
+        lcec_num = 0
+        for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "1":
-                instance.PREFIX = f"cia402.{num}"
+                instance.PREFIX = f"cia402.{cia402_num}"
                 instance.PREFIX_LCEC = f"lcec.0.{instance.title}"
+                cia402_num += 1
             elif node_type == "2":
-                instance.PREFIX = f"lcec.0.{instance.title}"
+                instance.PREFIX = f"lcec.{lcec_num}.{instance.title}"
                 # instance.PREFIX_LCEC = f"lcec.0.{instance.title}"
+                lcec_num += 1
 
     def extra_files(cls, parent, instances):
         output = []
         output.append("<masters>")
-        output.append('  <master idx="0" appTimePeriod="1000000" refClockSyncCycles="1">')
+        servo_period = parent.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).get("EMCMOT", {}).get("SERVO_PERIOD", 1000000)
+        output.append(f'  <master idx="0" appTimePeriod="{servo_period}" refClockSyncCycles="1">')
         for num, instance in enumerate(instances):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             idx = instance.plugin_setup.get("idx", instance.option_default("idx"))
@@ -182,11 +187,24 @@ class Plugin(PluginBase):
         output.append("# ethercat component")
         output.append("loadusr -W lcec_conf ethercat-conf.xml")
         output.append("loadrt lcec")
-        output.append(f"loadrt cia402 count={len(instances)}")
+
+        cia402_num = 0
+        lcec_num = 0
+        for instance in instances:
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            if node_type == "1":
+                cia402_num += 1
+
+        output.append(f"loadrt cia402 count={cia402_num}")
         output.append("addf lcec.read-all servo-thread")
-        for num, instance in enumerate(instances):
-            output.append(f"addf cia402.{num}.read-all servo-thread")
-            output.append(f"addf cia402.{num}.write-all servo-thread")
+        cia402_num = 0
+        lcec_num = 0
+        for instance in instances:
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            if node_type == "1":
+                output.append(f"addf cia402.{cia402_num}.read-all servo-thread")
+                output.append(f"addf cia402.{cia402_num}.write-all servo-thread")
+                cia402_num += 1
         output.append("addf lcec.write-all servo-thread")
         output.append("")
         return "\n".join(output)

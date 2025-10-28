@@ -826,6 +826,8 @@ class Project:
         self.multiplexed_output_size = 0
         self.multiplexed_output_id = 0
         for plugin_instance in self.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for data_name, data_config in plugin_instance.interface_data().items():
                 self.interface_sizes.add(data_config["size"])
                 variable_size = data_config["size"]
@@ -878,6 +880,8 @@ class Project:
         interface_data = []
         for size in sorted(self.interface_sizes, reverse=True):
             for plugin_instance in self.plugin_instances:
+                if plugin_instance.PLUGIN_TYPE != "gateware":
+                    continue
                 for data_name, data_config in plugin_instance.interface_data().items():
                     if data_config["size"] == size:
                         interface_data.append([size, plugin_instance, data_name, data_config])
@@ -911,6 +915,8 @@ class Project:
 
     def signal_value_set(self, name, value):
         for plugin_instance in self.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 direction = signal_config["direction"]
                 virtual = signal_config.get("virtual", False)
@@ -926,6 +932,8 @@ class Project:
 
     def interface_value_set(self, name, value):
         for plugin_instance in self.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for interface_name, interface_config in plugin_instance.interface_data().items():
                 direction = interface_config["direction"]
                 virtual = interface_config.get("virtual", False)
@@ -971,6 +979,8 @@ class Project:
         output_pos = self.buffer_size - self.header_size
         # convert signals to interface variables
         for plugin_instance in self.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             plugin_instance.convert2interface()
 
         if self.multiplexed_output:
@@ -1127,6 +1137,8 @@ class Project:
 
         # convert interface variables to signals
         for plugin_instance in self.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             plugin_instance.convert2signals()
 
     def generator(self, preview=False):

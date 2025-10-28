@@ -311,7 +311,8 @@ class Plugin(PluginBase):
 
             if cardtype.startswith("7c81"):
                 component = "hm2_rpspi"
-                output.append(f'loadrt {component} spi_probe=1 spiclk_rate=11250 config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
+                component = "hm2_spix"
+                output.append(f'loadrt {component} spi_probe=1 spiclk_rate=21250 config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
             else:
                 component = "hm2_eth"
                 output.append(f'loadrt {component} board_ip="192.168.10.15" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
@@ -320,7 +321,8 @@ class Plugin(PluginBase):
             output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
             output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
             output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
-            output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 5000000")
+            output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
+            # output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 0")
             output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
             output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
             output.append("")

@@ -16,6 +16,8 @@ class Gateware:
 
         # clean None pins
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin_name, pin_config in plugin_instance.plugin_setup.get("pins", {}).items():
                 if "pin" in pin_config and not pin_config["pin"]:
                     del pin_config["pin"]
@@ -80,10 +82,14 @@ class Gateware:
         self.toolchain_generator = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{self.toolchain}").Toolchain(self.config)
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             plugin_instance.post_setup(self.project)
 
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin in plugin_instance.expansion_outputs():
                 self.expansion_pins.append(pin)
             for pin in plugin_instance.expansion_inputs():
@@ -91,6 +97,8 @@ class Gateware:
 
         self.virtual_pins = []
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
@@ -117,6 +125,8 @@ class Gateware:
                     os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for verilog in plugin_instance.gateware_files():
                 if verilog in self.verilogs:
                     continue
@@ -153,6 +163,8 @@ class Gateware:
         self.config["timing_constraints"] = {}
         self.config["timing_constraints_instance"] = {}
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for key, value in plugin_instance.timing_constraints().items():
                 if ":" in key:
                     pre, post = key.split(":")
@@ -176,6 +188,8 @@ class Gateware:
 
         pinnames = {}
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             self.config["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins and pin_config["pin"] not in self.virtual_pins and pin_config["varname"] not in self.linked_pins:
@@ -290,6 +304,8 @@ class Gateware:
         existing_pins = {}
         double_pins = {}
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins and pin_config["pin"] not in self.virtual_pins:
                     if pin_config["pin"] in existing_pins:
@@ -309,6 +325,8 @@ class Gateware:
         output.append(f"    Clock     : {(self.project.config['speed'] / 1000000)} Mhz")
         output.append("")
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] not in self.expansion_pins:
                     pull = f"PULL{pin_config.get('pull').upper()}" if pin_config.get("pull") else ""
@@ -326,6 +344,8 @@ class Gateware:
         output.append("module rio (")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             if plugin_instance.PASSTHROUGH:
                 output.append(f"        // {plugin_instance.instances_name}")
                 for name, data in plugin_instance.PASSTHROUGH.items():
@@ -348,6 +368,8 @@ class Gateware:
 
         error_signals = ["INTERFACE_TIMEOUT"]
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for data_name, interface_setup in plugin_instance.interface_data().items():
                 error_on = interface_setup.get("error_on")
                 if error_on is True:
@@ -443,6 +465,8 @@ class Gateware:
             output.append(f"    wire {pinname};")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] in self.virtual_pins:
                     pinname = pin_config["pin"].replace(":", "_")
@@ -462,6 +486,8 @@ class Gateware:
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for data_name, data_config in plugin_instance.interface_data().items():
                 if not data_config.get("expansion"):
                     variable_name = data_config["variable"]
@@ -492,6 +518,8 @@ class Gateware:
 
         # gateware_defines
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             define_string = "\n    ".join(plugin_instance.gateware_defines())
             if define_string:
                 output.append(f"    {define_string}")
@@ -500,12 +528,16 @@ class Gateware:
         # expansion assignments
         used_expansion_outputs = []
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config:
                     if pin_config["pin"] in self.expansion_pins:
                         output.append(f"    wire {pin_config['varname']};")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config:
                     if pin_config["pin"] in self.expansion_pins:
@@ -518,6 +550,8 @@ class Gateware:
             output_exp = []
             # update expansion output pins
             for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.PLUGIN_TYPE != "gateware":
+                    continue
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config:
                         if pin_config["pin"] in self.expansion_pins:
@@ -525,6 +559,8 @@ class Gateware:
                                 output_exp.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
             # set expansion output pins without driver
             for plugin_instance in self.project.plugin_instances:
+                if plugin_instance.PLUGIN_TYPE != "gateware":
+                    continue
                 for data_name, data_config in plugin_instance.interface_data().items():
                     if data_config.get("expansion"):
                         direction = data_config["direction"]
@@ -594,6 +630,8 @@ class Gateware:
 
         varmapping = {}
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             for signal, signal_config in plugin_instance.SIGNALS.items():
                 if signal in plugin_instance.INTERFACE:
                     iface = plugin_instance.INTERFACE[signal]
@@ -601,6 +639,8 @@ class Gateware:
 
         # gateware instances
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE != "gateware":
+                continue
             if not plugin_instance.gateware_instances():
                 continue
             output.append("")

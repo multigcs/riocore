@@ -75,6 +75,8 @@ if ! grep -s -q "autologin-user" /usr/share/lightdm/lightdm.conf.d/01_debian.con
 then
     echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
 fi
+
+echo "	ethercat \"install ethercat master\" OFF \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
@@ -258,13 +260,33 @@ EOF
 
 fi
 
+if grep -s -q '"ethercat"' in $TEMPFILE
+then
+	sudo apt-get install -y ethercat-master ethercat-dkms linuxcnc-ethercat
+	# cat <<EOF > /etc/ethercat.conf 
+	# MASTER0_DEVICE="00:e0:4c:69:65:9f"
+	# DEVICE_MODULES="generic"
+	# UPDOWN_INTERFACES=""
+	# EOF
+	# sudo systemctl stop ethercat.service
+	# sudo systemctl enable ethercat.service
+	# sudo systemctl start ethercat.service
+	(
+		cd /tmp/
+		git clone https://github.com/dbraun1981/hal-cia402
+		cd hal-cia402/
+		sudo halcompile --install cia402.comp
+	)
+fi
+
+
 if grep -s -q '"turbonc"' in $TEMPFILE
 then
 	echo 'deb [arch=$SYSTEM2] https://repository.qtpyvcp.com/apt stable main' | sudo tee /etc/apt/sources.list.d/kcjengr.list
 	curl -sS https://repository.qtpyvcp.com/repo/kcjengr.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/kcjengr.gpg > /dev/null
 	gpg --keyserver keys.openpgp.org --recv-key 2DEC041F290DF85A
 	sudo apt update
-	sudo apt install -f python3-qtpyvcp python3-turbonc
+	sudo apt install -y python3-qtpyvcp python3-turbonc
 fi
 
 if grep -s -q '"probe_basic"' in $TEMPFILE

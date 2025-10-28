@@ -74,7 +74,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         else:
             family_gowin = family
         board_id = board.lower()
-        if board_id == "tangoboard":
+        if board_id in {"tangoboard", "tangbob"}:
             board_id = "tangnano9k"
 
         makefile_data = []
