@@ -222,14 +222,14 @@ class MyNode(QGraphicsItem):
     text_color = QColor(220, 220, 220)
     title_color = QColor(255, 255, 255)
     info_color = QColor(200, 200, 200)
-    port_size = 8
+    port_size = 10
     port_tsize = 9
     port_toff_x = 2
     port_toff_y = 2
     port_border = 2
     port_top = 10
     port_bottom = 10
-    port_diff = 30
+    port_diff = 15
 
     def __init__(self, scene, x=None, y=None):
         super().__init__()
@@ -357,14 +357,14 @@ class MyNode(QGraphicsItem):
             if pin_data["edge"] == "target":
                 np_left += 1
                 if not self.pixmap:
-                    pin_data["pos"] = (self.port_border + self.port_size / 2 + 10, self.port_top + np_left * (self.port_diff))
+                    pin_data["pos"] = (self.border_size + self.port_size / 2, self.port_top + np_left * (self.port_diff))
             else:
                 np_right += 1
                 if not self.pixmap:
-                    pin_data["pos"] = (self.width * 2 - self.port_border - self.port_size / 2 - 10, self.port_top + np_right * (self.port_diff))
+                    pin_data["pos"] = (self.width * 2 - self.border_size - self.port_size / 2, self.port_top + np_right * (self.port_diff))
 
         if not self.pixmap:
-            self.height = grid(self.port_top + max(np_left, np_right) * (self.port_diff / 2) + self.port_bottom)
+            self.height = grid(self.port_top + (max(np_left, np_right) * self.port_diff) / 2 + self.port_bottom)
 
     def boundingRect(self):
         self.update_size()
@@ -402,6 +402,12 @@ class MyNode(QGraphicsItem):
             th = self.title_size * self.text_scale
             painter.drawText(QRectF(0, self.border_size / 2 + th, self.width, self.height - self.border_size - th), Qt.AlignmentFlag.AlignCenter, info)
 
+    def paint_port(self, painter, px, py, color):
+        size = self.port_size
+        painter.fillRect(QRectF(px - size / 2, py - size / 2, size, size), color)
+        size = self.port_size - self.port_border - self.port_border
+        painter.fillRect(QRectF(px - size / 2, py - size / 2, size, size), Qt.GlobalColor.black)
+
     def paint(self, painter, option, widget):
         pos = self.pos()
         pos_x = pos.x()
@@ -433,13 +439,13 @@ class MyNode(QGraphicsItem):
             pos_y = port_data["pos"][1] // 2
             pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
             key = f"{pos_x}-{pos_y}"
-            if (self, port_name) == self.scene.selection_source or (self, port_name) == self.scene.selection_target:
-                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.red)
-            elif key not in painted_ports:
-                # do not overwrite selected ports
-                painter.fillRect(QRectF(pos_x - 5, pos_y - 5, 10, 10), Qt.GlobalColor.yellow)
+            selected = (self, port_name) == self.scene.selection_source or (self, port_name) == self.scene.selection_target
+            if key not in painted_ports:
+                if selected:
+                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red)
+                else:  # do not overwrite selected ports
+                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow)
             painted_ports.append(key)
-            painter.fillRect(QRectF(pos_x - 2, pos_y - 2, 4, 4), Qt.GlobalColor.black)
 
             if not self.pixmap:
                 name = port_data.get("title") or port_name
