@@ -99,13 +99,13 @@ class documentation:
         if os.path.exists(flow_path):
             image = '<img align="right" height="320" src="flow.png">'
             output.append(image)
-
-        img_path = os.path.join(riocore_path, "boards", boardcfg, "board.png")
-        if os.path.exists(img_path):
-            target = os.path.join(self.doc_path, "board.png")
-            shutil.copy(img_path, target)
-            image = '<img align="right" height="320" src="board.png">'
-            output.append(image)
+        else:
+            img_path = os.path.join(riocore_path, "boards", boardcfg, "board.png")
+            if os.path.exists(img_path):
+                target = os.path.join(self.doc_path, "board.png")
+                shutil.copy(img_path, target)
+                image = '<img align="right" height="320" src="board.png">'
+                output.append(image)
 
         output.append(jdata.get("description", ""))
         output.append("")
