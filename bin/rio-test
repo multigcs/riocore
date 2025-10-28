@@ -187,6 +187,8 @@ class WinForm(QWidget):
             # tabs by instance
             tab_num = 0
             for plugin_instance, haldata in self.haldata.items():
+                if plugin_instance.PLUGIN_TYPE != "gateware":
+                    continue
                 plugin_type = plugin_instance.NAME
                 if args.instance_name and plugin_instance.title != args.instance_name:
                     continue
@@ -202,6 +204,8 @@ class WinForm(QWidget):
             # tabs by plugin type
             plugin_types = set()
             for plugin_instance, haldata in self.haldata.items():
+                if plugin_instance.PLUGIN_TYPE != "gateware":
+                    continue
                 if args.instance_name and plugin_instance.title != args.instance_name:
                     continue
                 if haldata.get("input") or haldata.get("output"):
@@ -212,6 +216,8 @@ class WinForm(QWidget):
 
                 tab_layout = self.add_tab(plugin_type.title(), plugin_type=plugin_type)
                 for plugin_instance, haldata in self.haldata.items():
+                    if plugin_instance.PLUGIN_TYPE != "gateware":
+                        continue
                     if plugin_instance.NAME != plugin_type:
                         continue
                     if args.instance_name and plugin_instance.title != args.instance_name:
@@ -518,6 +524,8 @@ class WinForm(QWidget):
 
             if protocol == "UDP":
                 for plugin_instance in self.project.plugin_instances:
+                    if plugin_instance.PLUGIN_TYPE != "gateware":
+                        continue
                     if plugin_instance.TYPE == "interface":
                         if "ip" in plugin_instance.plugin_setup:
                             ip = plugin_instance.plugin_setup["ip"]
@@ -565,6 +573,8 @@ class WinForm(QWidget):
                 self.ucount += 1
 
             for plugin_instance, haldata in self.haldata.items():
+                if plugin_instance.PLUGIN_TYPE != "gateware":
+                    continue
                 for halname, signal in haldata.get("output", {}).items():
                     if f"widget_{plugin_instance.title}" not in signal:
                         continue
@@ -653,6 +663,8 @@ class WinForm(QWidget):
                 self.time.append(self.time[-1] + 1)
 
             for plugin_instance, haldata in self.haldata.items():
+                if plugin_instance.PLUGIN_TYPE != "gateware":
+                    continue
                 # if f"widget_{plugin_instance.title}" not in signal:
                 #    continue
 
