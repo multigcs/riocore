@@ -30,7 +30,7 @@ from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.modules import GuiModules
 
 from riocore.gui.tab_json import TabJson
-from riocore.gui.tab_axis import TabAxis
+from riocore.gui.tab_axisgraph import TabAxisGraph
 from riocore.gui.tab_board import TabBoard
 from riocore.gui.tab_gateware import TabGateware
 from riocore.gui.tab_hal import TabHal
@@ -165,7 +165,7 @@ class WinForm(QWidget):
                 "Board": TabBoard(self),
                 "Overview": TabOverview(self),
                 "Hal": TabHal(self),
-                "Axis": TabAxis(self),
+                "Axis": TabAxisGraph(self),
                 "Pins": TabPins(self),
                 "Signals": TabSignals(self),
                 "Json": TabJson(self),

@@ -108,14 +108,14 @@
                 "wled_bar",
                 "wled_expansion"
             ],
-            "pos": [
-                79,
-                446
-            ],
             "pins": {
                 "DATA": {
                     "pin": "54",
-                    "direction": "output"
+                    "direction": "output",
+                    "pos": [
+                        79,
+                        446
+                    ]
                 }
             }
         },
@@ -125,21 +125,29 @@
                 "modbus",
                 "uartbridge"
             ],
-            "pos": [
-                150,
-                603
-            ],
             "pins": {
                 "RX": {
                     "pin": "69",
+                    "pos": [
+                        150,
+                        603
+                    ],
                     "direction": "input"
                 },
                 "TX": {
                     "pin": "57",
+                    "pos": [
+                        150,
+                        623
+                    ],
                     "direction": "output"
                 },
                 "TX_ENABLE": {
                     "pin": "68",
+                    "pos": [
+                        150,
+                        643
+                    ],
                     "direction": "output"
                 }
             }

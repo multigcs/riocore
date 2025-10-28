@@ -13,7 +13,7 @@ from riocore.gui.widgets import (
 )
 
 
-class TabAxis:
+class TabAxisGraph:
     last_x = -1
     last_y = -1
     last_action = 0

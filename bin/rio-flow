@@ -334,7 +334,7 @@ class MyNode(QGraphicsItem):
         mouse_x = mouse_pos.x()
         mouse_y = mouse_pos.y()
         for port in self.ports:
-            if not self.ports[port]["pos"]:
+            if not self.ports[port].get("pos"):
                 continue
             pos_x = self.ports[port]["pos"][0] // 2
             pos_y = self.ports[port]["pos"][1] // 2
@@ -433,7 +433,7 @@ class MyNode(QGraphicsItem):
 
         painted_ports = []
         for port_name, port_data in self.ports.items():
-            if not port_data["pos"]:
+            if not port_data.get("pos"):
                 continue
             pos_x = port_data["pos"][0] // 2
             pos_y = port_data["pos"][1] // 2
