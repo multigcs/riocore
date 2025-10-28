@@ -3,6 +3,7 @@
 #
 
 import argparse
+import math
 import subprocess
 import shutil
 import copy
@@ -292,8 +293,9 @@ class MyNode(QGraphicsItem):
 
     def load_image(self, image):
         if os.path.exists(image):
+            rotate = self.flow_cfg.get("rotate", 0)
             pixmap = QPixmap.fromImage(QImage(image))
-            pixmap = pixmap.transformed(QTransform().rotate(self.flow_cfg.get("rotate", 0)))
+            pixmap = pixmap.transformed(QTransform().rotate(rotate))
             pixmap_width = pixmap.width()
             pixmap_height = pixmap.height()
             self.width = pixmap_width // 2
@@ -479,22 +481,36 @@ class MyNode(QGraphicsItem):
         return pos
 
     def rotate_cw(self):
+        if not self.pixmap:
+            return
         if "rotate" not in self.flow_cfg:
             self.flow_cfg["rotate"] = 0
         if self.flow_cfg["rotate"] < 180:
             self.flow_cfg["rotate"] += 90
         else:
             self.flow_cfg["rotate"] = -90
+
+        # rotate around the center
+        pos = self.pos()
+        self.setPos(pos.x() + (self.width - self.height) / 2, pos.y() - (self.width - self.height) / 2)
+
         if hasattr(self, "reload"):
             self.reload()
 
     def rotate_ccw(self):
+        if not self.pixmap:
+            return
         if "rotate" not in self.flow_cfg:
             self.flow_cfg["rotate"] = 0
         if self.flow_cfg["rotate"] > -90:
             self.flow_cfg["rotate"] -= 90
         else:
             self.flow_cfg["rotate"] = 180
+
+        # rotate around the center
+        pos = self.pos()
+        self.setPos(pos.x() + (self.width - self.height) / 2, pos.y() - (self.width - self.height) / 2)
+
         if hasattr(self, "reload"):
             self.reload()
 
@@ -1328,11 +1344,47 @@ class NodeScene(QGraphicsScene):
 
         menu.exec_(event.screenPos())
 
+    def rotate_point(self, origin, point, angle):
+        ox, oy = origin
+        px, py = point
+        radians = math.radians(angle)
+        qx = ox + math.cos(angle) * (px - ox) - math.sin(radians) * (py - oy)
+        qy = oy + math.sin(angle) * (px - ox) + math.cos(radians) * (py - oy)
+        return qx, qy
+
     def rotate(self, direction, items):
+        min_x = max_size
+        min_y = max_size
+        max_x = -max_size
+        max_y = -max_size
         for item in items:
-            func = f"rotate_{direction}"
+            pos = item.pos()
+            min_x = min(min_x, pos.x())
+            max_x = max(max_x, pos.x() + item.width)
+            min_y = min(min_y, pos.y())
+            max_y = max(max_y, pos.y() + item.height)
+        center_x = min_x + (max_x - min_x) / 2
+        center_y = min_y + (max_y - min_y) / 2
+
+        rotate = 90
+        if direction == "ccw":
+            rotate = -90
+
+        func = f"rotate_{direction}"
+        for item in items:
             if hasattr(item, func):
                 getattr(item, func)()
+
+        if len(items) > 1:
+            for item in items:
+                pos = item.pos()
+                pos_x = pos.x()  # + item.width / 2
+                pos_y = pos.y()  # + item.height / 2
+                px, py = self.rotate_point((center_x, center_y), (pos_x, pos_y), rotate)
+                # px -= item.width / 2
+                # py -= item.height / 2
+                item.setPos(px, py)
+
         self.update()
         self.parent.snapshot()
 
@@ -1637,7 +1689,7 @@ class Window(QMainWindow):
             if os.path.exists(path):
                 return path
         riocore.log(f"can not find board: {board}")
-        exit(1)
+        return
 
     def struct_clean(self, data):
         # removing empty lists and dicts
@@ -2042,8 +2094,8 @@ class Window(QMainWindow):
             self.bnode = None
 
             boardpath = self.get_boardpath(boardcfg)
-            board_setup = {"board": boardcfg, "config": self.config, "path": boardpath}
-            if os.path.exists(boardpath):
+            if boardpath and os.path.exists(boardpath):
+                board_setup = {"board": boardcfg, "config": self.config, "path": boardpath}
                 px = self.config["flow"]["board"]["pos"][0]
                 py = self.config["flow"]["board"]["pos"][1]
                 self.bnode = BoardNode(self.scene, px, py, board_setup)
@@ -2349,6 +2401,8 @@ class Window(QMainWindow):
 
         if not slot_node:
             slot_node = self.bnode
+        if not slot_node:
+            return
 
         breakout_name = breakout_config["name"]
         self.breakout_uids.append(breakout_name)

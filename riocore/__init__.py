@@ -641,12 +641,14 @@ class Project:
         exit(1)
 
     def get_boardpath(self, board):
+        if not board:
+            return None
         pathes = [f"{board}.json", os.path.join(riocore_path, "boards", f"{board}.json"), os.path.join(riocore_path, "boards", board, "board.json")]
         for path in pathes:
             if os.path.exists(path):
                 return path
         log(f"can not find board: {board}")
-        exit(1)
+        return None
 
     def load_config(self, configuration, output_path=None):
         project = {}
@@ -698,9 +700,8 @@ class Project:
 
         # loading board data
         board = project["jdata"].get("boardcfg")
-        if board:
-            # log(f"loading board setup: {board}")
-            board_file = self.get_boardpath(board)
+        board_file = self.get_boardpath(board)
+        if board and board_file:
             bdata = open(board_file, "r").read()
             project["boardcfg_path"] = os.path.dirname(board_file)
             project["board_data"] = json.loads(bdata)
