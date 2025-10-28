@@ -987,7 +987,7 @@ class ModifierNode(MyNode):
         target = self.scene.parent.get_next(self, "out")
         if source and target:
             # reconnect source and target
-            edge = NodeEdge(self.scene, "pin", source[0], source[1], target[0], target[1], color=target[2].color)
+            edge = NodeEdge(self.scene, "pin", source[0], source[1], target[0], target[1], color=(target[2].color, target[2].style))
             self.scene.addItem(edge)
         return True
 
@@ -1230,13 +1230,13 @@ class NodeScene(QGraphicsScene):
         if item.delete():
             self.disconnect_node(item)
             self.removeItem(item)
-            self.parent.cfg_save()
-            self.parent.snapshot()
-            self.parent.redraw()
 
     def delete(self):
         if self.menu_selection:
             self.delete_item(self.menu_selection)
+            self.parent.cfg_save()
+            self.parent.snapshot()
+            self.parent.redraw()
 
     def contextMenuEvent(self, event):
         self.menu_selection = None
@@ -3324,7 +3324,7 @@ class Window(QMainWindow):
                 source_y = item._source_node.port_pos(item._source_port).y()
                 des_x = item._target_node.port_pos(item._target_port).x()
                 des_y = item._target_node.port_pos(item._target_port).y()
-                color = item.color
+                color = (item.color, item.style)
                 self.scene.removeItem(item)
                 # pos between source and des
                 x = source_x + (des_x - source_x) / 2 - 50
@@ -3392,6 +3392,9 @@ class Window(QMainWindow):
     def delete_selection(self):
         for item in self.scene.selectedItems():
             self.scene.delete_item(item)
+        self.cfg_save()
+        self.snapshot()
+        self.redraw()
 
     def get_next(self, node, port):
         for item in self.scene.items():
