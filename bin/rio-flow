@@ -222,7 +222,7 @@ class MyNode(QGraphicsItem):
     port_toff_x = 2
     port_toff_y = 2
     port_border = 2
-    port_top = 10
+    port_top = 40
     port_bottom = 10
     port_diff = 15
 
