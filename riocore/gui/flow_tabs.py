@@ -55,7 +55,10 @@ class TabAxis:
 
         signature = []
         project = riocore.Project(copy.deepcopy(self.config), "")
-        for axis, adata in project.axis_dict.items():
+        for axis in "XYZABCUVW":
+            if axis not in project.axis_dict:
+                continue
+            adata = project.axis_dict[axis]
             signature.append(axis)
             for joint, jdata in adata["joints"].items():
                 plugin_instance = None
@@ -92,6 +95,7 @@ class TabAxis:
                     text = []
                     text.append(f"Mode: {position_mode}")
                     text.append(f"Plugin-Type: {ptype}")
+                    text.append(f"Plugin-Name: {plugin_instance.instances_name}")
                     text.append(f"Home-Switch: {home_sw}")
                     text.append(f"Max-Velocity: {max_velocity * 60:0.2f} units/min")
                     max_freq = abs(max_velocity * scale)
@@ -260,7 +264,10 @@ class TabAxis:
             self.parent.scene.parent.snapshot()
 
         project = riocore.Project(copy.deepcopy(self.config), "")
-        for axis, adata in project.axis_dict.items():
+        for axis in "XYZABCUVW":
+            if axis not in project.axis_dict:
+                continue
+            adata = project.axis_dict[axis]
             self.signature.append(axis)
             axis_box = QHBoxLayout()
             self.tab_layout.addLayout(axis_box, stretch=0)

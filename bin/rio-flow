@@ -1554,6 +1554,7 @@ class Window(QMainWindow):
 
     def generator_run(self):
         project = self.generate()
+        return
         start_sh = os.path.join(project.config["output_path"], "LinuxCNC", "start.sh")
         cmd = f"/bin/sh {start_sh}"
         riocore.log("")
