@@ -13,7 +13,7 @@ import sys
 from math import floor, ceil
 from functools import partial
 
-from PyQt5.QtCore import Qt, QPoint, QPointF, QLineF, QRectF, QRect, QSize, QTimer
+from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QRect, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform, QStandardItemModel
 from PyQt5.QtWidgets import (
     QDialogButtonBox,
@@ -41,7 +41,6 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget,
     QGraphicsPathItem,
-    QGraphicsLineItem,
     QDialog,
 )
 
@@ -96,7 +95,7 @@ for s in (Qt.SolidLine, Qt.DashLine, Qt.DotLine, Qt.DashDotLine, Qt.DashDotDotLi
         colors.append((color, s))
 
 
-class NodeEdgePath(QGraphicsPathItem):
+class NodeEdge(QGraphicsPathItem):
     width = 2
     width_selected = 4
 
@@ -187,47 +186,6 @@ class NodeEdgePath(QGraphicsPathItem):
 
     def delete(self):
         return True
-
-
-class NodeEdgeLine(QGraphicsLineItem):
-    def __init__(self, source_node, source_port, des_node, des_port, color=None):
-        super().__init__(None)
-        self._source_node = source_node
-        self._source_port = source_port
-        self._target_node = des_node
-        self._target_port = des_port
-        self.color = color
-        if self.color is None:
-            self.color = Qt.GlobalColor.green
-        self._pen_default = QPen(self.color)
-        self._pen_default.setWidthF(2)
-        self.setZValue(5)
-        self.setFlags(QGraphicsItem.ItemIsSelectable)
-        self.update_edge_path()
-
-    def paint(self, painter: QPainter, option, widget):
-        self.update_edge_path()
-        super().paint(painter, option, widget)
-
-    def update_edge_path(self):
-        if self.isSelected():
-            self._pen_default = QPen(Qt.GlobalColor.yellow)
-            self._pen_default.setWidthF(7)
-        else:
-            self._pen_default = QPen(self.color)
-            self._pen_default.setWidthF(5)
-        self.setPen(self._pen_default)
-
-        self.prepareGeometryChange()
-        source_pos = self._source_node.port_pos(self._source_port)
-        des_pos = self._target_node.port_pos(self._target_port)
-        self.setLine(QLineF(source_pos, des_pos))
-
-    def delete(self):
-        return True
-
-
-NodeEdge = NodeEdgePath
 
 
 def grid(pos):
