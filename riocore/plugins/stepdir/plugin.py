@@ -76,6 +76,9 @@ class Plugin(PluginBase):
                 "description": "delay after dir change",
             },
         }
+        print(dir(self))
+        self.PREFIX = f"{self.instances_name}"
+
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -103,3 +106,21 @@ class Plugin(PluginBase):
             }
             """
         return ""
+
+
+    def hal(self, parent):
+        if "joint_data" in self.plugin_setup:
+            joint_data = self.plugin_setup["joint_data"]
+            axis_name = joint_data["axis"]
+            joint_n = joint_data["num"]
+            pid_num = joint_n
+            print(self.PREFIX)
+            cmd_halname = f"{self.PREFIX}.velocity"
+            feedback_halname = f"{self.PREFIX}.position"
+            enable_halname = f"{self.PREFIX}.enable"
+            scale_halname = f"{self.PREFIX}.velocity-scale"
+            feedback_scale_halname = f"{self.PREFIX}.position-scale"
+            parent.halg.joint_add(parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, feedback_scale_halname=feedback_scale_halname, enable_halname=enable_halname, pid_num=pid_num)
+
+
+

@@ -764,22 +764,6 @@ class hal_generator:
                 self.net_add(f"corexy.{corexy_axis}-cmd", f"corexy.{corexy_axis}-fb", f"j{joint}pos-cmd-{corexy_axis}")
                 self.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb-{corexy_axis}")
             else:
-                """
-                if joint_setup["type"] == "stepgen":
-                    jprefix = joint_setup["plugin_instance"].PREFIX
-                    self.setp_add(f"{jprefix}.maxaccel", f"[JOINT_{joint}]STEPGEN_MAXACCEL")
-                    self.setp_add(f"{jprefix}.steplen", f"[JOINT_{joint}]STEPGEN_STEPLEN")
-                    self.setp_add(f"{jprefix}.stepspace", f"[JOINT_{joint}]STEPGEN_STEPSPACE")
-                    self.setp_add(f"{jprefix}.dirhold", f"[JOINT_{joint}]STEPGEN_DIRHOLD")
-                    self.setp_add(f"{jprefix}.dirsetup", f"[JOINT_{joint}]STEPGEN_DIRSETUP")
-                    self.net_add(f"joint.{joint}.motor-pos-cmd", f"{jprefix}.position-cmd", f"j{joint}pos-cmd")
-                    self.net_add(f"{jprefix}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
-                    self.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}enable")
-                    for name, psetup in joint_setup["plugin_instance"].plugin_setup.get("pins", {}).items():
-                        pin = psetup["pin"]
-                        self.net_add(f"{jprefix}.{name}", pin, f"j{joint}{name}-pin")
-                """
-
                 self.net_add(f"joint.{joint}.motor-pos-cmd", f"{cmd_halname}", f"j{joint}pos-cmd")
                 self.net_add(f"{feedback_halname}", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
                 # self.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
