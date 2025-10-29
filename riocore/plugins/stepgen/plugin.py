@@ -180,12 +180,12 @@ If higher rates are needed, a hardware step generator is a better choice."""
             axis_name = joint_data["axis"]
             joint_n = joint_data["num"]
 
-            for key in ("dirsetup", "dirhold", "steplen", "stepspace", "maxaccel", "maxvel"):
+            for key in ("dirsetup", "dirhold", "steplen", "stepspace", "maxaccel"):
                 value = f"STEPGEN_{key.upper()}"
                 parent.halg.setp_add(f"{self.PREFIX}.{key}", f"[JOINT_{joint_n}]{value}")
 
             cmd_halname = f"{self.PREFIX}.position-cmd"
-            feedback_halname = f"{self.PREFIX}.position-fb"
+            feedback_halname = f"{self.PREFIX}.position-cmd"
             enable_halname = f"{self.PREFIX}.enable"
             scale_halname = f"{self.PREFIX}.position-scale"
 
