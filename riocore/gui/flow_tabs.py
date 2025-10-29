@@ -60,14 +60,15 @@ class TabAxis:
                 continue
             adata = project.axis_dict[axis]
             signature.append(axis)
-            for joint, jdata in adata["joints"].items():
+            for jdata in adata["joints"]:
+                joint = jdata["num"]
                 plugin_instance = None
                 plugin_setup = {}
                 plugin_instance_home = None
                 plugin_setup_home = {}
                 for item in self.parent.scene.items():
                     if hasattr(item, "plugin_instance"):
-                        if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
+                        if item.plugin_instance.plugin_setup["uid"] == jdata["instance"].plugin_setup["uid"]:
                             plugin_instance = item.plugin_instance
                             plugin_setup = plugin_instance.plugin_setup
 
@@ -338,7 +339,8 @@ class TabAxis:
             label.setStyleSheet("QLabel{font-size:32px;}")
             axis_box_axis.addWidget(label, stretch=0)
 
-            for joint, jdata in adata["joints"].items():
+            for jdata in adata["joints"]:
+                joint = jdata["num"]
                 self.signature.append(joint)
                 plugin_instance = None
                 plugin_setup = {}
@@ -346,7 +348,7 @@ class TabAxis:
                 plugin_setup_home = {}
                 for item in self.parent.scene.items():
                     if hasattr(item, "plugin_instance"):
-                        if item.plugin_instance.plugin_setup["uid"] == jdata["plugin_instance"].plugin_setup["uid"]:
+                        if item.plugin_instance.plugin_setup["uid"] == jdata["instance"].plugin_setup["uid"]:
                             plugin_instance = item.plugin_instance
                             plugin_setup = plugin_instance.plugin_setup
 

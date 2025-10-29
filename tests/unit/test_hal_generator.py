@@ -8,6 +8,10 @@ from riocore.generator.hal import hal_generator
 
 def test_generator():
     expected_hal = """
+# read
+# process
+# write
+
 #################################################################################
 # logic and calc components
 #################################################################################
@@ -198,12 +202,12 @@ net multitarget_not                => pio.multi2
 #################################################################################
 # setp
 #################################################################################
-# setp pyvcp.outval                     123    (in postgui)
-setp rio.outval                       123
-# setp rio.orout1                       0      (already linked to func_or_8_1_or)
-# setp rio.s32_1                        100    (already linked to sig_rio_s32_1)
-setp func.sum2_9.1.in1                10
 setp func.or_10.1.in-01               0
+setp func.sum2_9.1.in1                10
+# setp pyvcp.outval                     123    (in postgui)
+# setp rio.orout1                       0      (already linked to func_or_8_1_or)
+setp rio.outval                       123
+# setp rio.s32_1                        100    (already linked to sig_rio_s32_1)
 
 #################################################################################
 # preformated
@@ -274,6 +278,10 @@ setp pyvcp.outval                     123
 
 def test_generator_not():
     expected_hal = """
+# read
+# process
+# write
+
 #################################################################################
 # logic and calc components
 #################################################################################
@@ -285,7 +293,7 @@ addf func.not_func_and_0_1_and servo-thread
 addf func.not_mot_input1 servo-thread
 
 #################################################################################
-# !(rio.input1 AND rio.input2) --> hal.output1
+# not((rio.input1 AND rio.input2)) --> hal.output1
 #################################################################################
 net sig_rio_input1                 <= rio.input1
 net sig_rio_input2                 <= rio.input2
@@ -297,7 +305,7 @@ net func_not_func_and_0_1_and_out  <= func.not_func_and_0_1_and.out
 net func_not_func_and_0_1_and_out  => hal.output1
 
 #################################################################################
-# !(mot.input1) --> hal.output2
+# not(mot.input1) --> hal.output2
 #################################################################################
 net sig_mot_input1                 <= mot.input1
 net sig_mot_input1                 => func.not_mot_input1.in
@@ -305,7 +313,7 @@ net func_not_mot_input1_out        <= func.not_mot_input1.out
 net func_not_mot_input1_out        => hal.output2
 
 #################################################################################
-# !(mot.input1) --> hal.output3
+# not(mot.input1) --> hal.output3
 #################################################################################
 net func_not_mot_input1_out        => hal.output3
 
@@ -321,7 +329,7 @@ net func_not_mot_input1_out        => hal.output3
 
     halg = hal_generator()
 
-    halg.net_add("!(rio.input1 AND rio.input2)", "hal.output1")
+    halg.net_add("!((rio.input1 AND rio.input2))", "hal.output1")
     halg.net_add("not(mot.input1)", "hal.output2")
     halg.net_add("!(mot.input1)", "hal.output3")
 
@@ -338,6 +346,10 @@ net func_not_mot_input1_out        => hal.output3
 
 def test_generator_abs():
     expected_hal = """
+# read
+# process
+# write
+
 #################################################################################
 # logic and calc components
 #################################################################################
@@ -349,7 +361,7 @@ addf func.abs_func_and_0_1_and servo-thread
 addf func.abs_rio_input1 servo-thread
 
 #################################################################################
-# abs'(rio.input1 AND rio.input2) --> hal.output1
+# abs((rio.input1 AND rio.input2)) --> hal.output1
 #################################################################################
 net sig_rio_input1                 <= rio.input1
 net sig_rio_input2                 <= rio.input2
@@ -361,7 +373,7 @@ net func_abs_func_and_0_1_and_out  <= func.abs_func_and_0_1_and.out
 net func_abs_func_and_0_1_and_out  => hal.output1
 
 #################################################################################
-# abs'(rio.input1) --> hal.output2
+# abs(rio.input1) --> hal.output2
 #################################################################################
 net sig_rio_input1                 => func.abs_rio_input1.in
 net func_abs_rio_input1_out        <= func.abs_rio_input1.out
@@ -370,6 +382,7 @@ net func_abs_rio_input1_out        => hal.output2
 #################################################################################
 # preformated
 #################################################################################
+
 """
     expected_postgui = """
 #################################################################################
@@ -380,7 +393,7 @@ net func_abs_rio_input1_out        => hal.output2
 
     halg = hal_generator()
 
-    halg.net_add("abs(rio.input1 AND rio.input2)", "hal.output1")
+    halg.net_add("abs((rio.input1 AND rio.input2))", "hal.output1")
     halg.net_add("abs(rio.input1)", "hal.output2")
 
     (hal_data, postgui_data) = halg.net_write()

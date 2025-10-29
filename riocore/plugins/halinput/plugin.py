@@ -112,7 +112,8 @@ class Plugin(PluginBase):
                 parent.halg.net_add("halui.machine.is-on", f"mux2_{axis_lower}.sel")
                 parent.halg.net_add(f"input.0.{jaxis}-position", f"mux2_{axis_lower}.in1")
                 parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.axis.{axis_lower}.analog")
-                for joint, joint_setup in joints.items():
+                for joint_setup in joints:
+                    joint = joint_setup["num"]
                     parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.joint.{joint}.analog")
 
     def loader(cls, instances):

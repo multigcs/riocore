@@ -122,9 +122,9 @@ class documentation:
         output.append("| Axis | Joint | Plugin | Home-Seq. |")
         output.append("| --- | --- | --- | --- |")
         for axis_name, axis_config in self.project.axis_dict.items():
-            joints = axis_config["joints"]
-            for joint, joint_setup in joints.items():
-                plugin_instance = joint_setup["plugin_instance"]
+            for joint_setup in axis_config["joints"]:
+                joint = joint_setup["num"]
+                plugin_instance = joint_setup["instance"]
                 link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
                 plugin = plugin_instance.instances_name
                 home_seq = joint_setup["HOME_SEQUENCE"]

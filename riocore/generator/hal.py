@@ -444,7 +444,7 @@ class hal_generator:
         if not input_pin or not output_pin:
             return
         # replace some command/operation words
-        input_pin = input_pin.replace("abs(", "abs'(").replace("not(", "!(")
+        input_pin = input_pin.replace("!(", "not(")
         if output_pin[0] == "!":
             output_pin = output_pin[1:]
             input_pin = f"!{input_pin}"

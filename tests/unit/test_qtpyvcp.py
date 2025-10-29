@@ -62,13 +62,13 @@ def test_qtpyvcp():
                     <number>5</number>
                   </property>
                   <property name="topMargin">
-                    <number>5</number>
+                    <number>10</number>
                   </property>
                   <property name="rightMargin">
                     <number>5</number>
                   </property>
                   <property name="bottomMargin">
-                    <number>5</number>
+                    <number>10</number>
                   </property>
                   <item>
                     <layout class="QHBoxLayout" name="hosizontalLayout_3">
@@ -76,13 +76,13 @@ def test_qtpyvcp():
                         <number>5</number>
                       </property>
                       <property name="topMargin">
-                        <number>5</number>
+                        <number>0</number>
                       </property>
                       <property name="rightMargin">
                         <number>5</number>
                       </property>
                       <property name="bottomMargin">
-                        <number>5</number>
+                        <number>0</number>
                       </property>
                       <item>
                         <widget class="QLabel">
@@ -96,6 +96,9 @@ def test_qtpyvcp():
                       </item>
                       <item>
                         <widget class="HalLedIndicator" name="rio.hal-led">
+                          <property name="pinBaseName" stdset="0">
+                            <string>hal-led</string>
+                          </property>
                           <property name="sizePolicy">
                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -104,22 +107,22 @@ def test_qtpyvcp():
                           </property>
                           <property name="minimumSize">
                             <size>
-                              <width>32</width>
-                              <height>32</height>
+                              <width>16</width>
+                              <height>16</height>
+                            </size>
+                          </property>
+                          <property name="maximumSize">
+                            <size>
+                              <width>16</width>
+                              <height>16</height>
                             </size>
                           </property>
                           <property name="color">
                             <color>
-                              <red>85</red>
+                              <red>255</red>
                               <green>255</green>
                               <blue>0</blue>
                             </color>
-                          </property>
-                          <property name="maximumSize">
-                            <size>
-                              <width>32</width>
-                              <height>32</height>
-                            </size>
                           </property>
                         </widget>
                       </item>
@@ -158,13 +161,13 @@ def test_qtpyvcp():
                     <number>5</number>
                   </property>
                   <property name="topMargin">
-                    <number>5</number>
+                    <number>10</number>
                   </property>
                   <property name="rightMargin">
                     <number>5</number>
                   </property>
                   <property name="bottomMargin">
-                    <number>5</number>
+                    <number>10</number>
                   </property>
                   <item>
                     <layout class="QHBoxLayout" name="hosizontalLayout_3">
@@ -172,13 +175,13 @@ def test_qtpyvcp():
                         <number>5</number>
                       </property>
                       <property name="topMargin">
-                        <number>5</number>
+                        <number>0</number>
                       </property>
                       <property name="rightMargin">
                         <number>5</number>
                       </property>
                       <property name="bottomMargin">
-                        <number>5</number>
+                        <number>0</number>
                       </property>
                       <item>
                         <widget class="QLabel">
@@ -192,6 +195,9 @@ def test_qtpyvcp():
                       </item>
                       <item>
                         <widget class="HalCheckBox" name="rio.hal-check1">
+                          <property name="pinBaseName" stdset="0">
+                            <string>hal-check1</string>
+                          </property>
                           <property name="sizePolicy">
                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -200,8 +206,14 @@ def test_qtpyvcp():
                           </property>
                           <property name="minimumSize">
                             <size>
-                              <width>32</width>
-                              <height>32</height>
+                              <width>16</width>
+                              <height>16</height>
+                            </size>
+                          </property>
+                          <property name="maximumSize">
+                            <size>
+                              <width>16</width>
+                              <height>16</height>
                             </size>
                           </property>
                         </widget>
@@ -241,16 +253,19 @@ def test_qtpyvcp():
                     <number>5</number>
                   </property>
                   <property name="topMargin">
-                    <number>5</number>
+                    <number>10</number>
                   </property>
                   <property name="rightMargin">
                     <number>5</number>
                   </property>
                   <property name="bottomMargin">
-                    <number>5</number>
+                    <number>10</number>
                   </property>
                   <item>
                     <widget class="HalButton" name="rio.hal-button1">
+                      <property name="pinBaseName" stdset="0">
+                        <string>hal-button1</string>
+                      </property>
                       <property name="text">
                         <string>button11</string>
                       </property>

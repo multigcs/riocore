@@ -135,13 +135,11 @@ class Simulator:
         output.append("")
 
         for axis, data in self.project.axis_dict.items():
-            joints = list(data.get("joints", {}))
-            output.append(f"#define NUM_JOINTS_{axis} {len(joints)}")
+            output.append(f"#define NUM_JOINTS_{axis} {len(data['joints'])}")
         output.append("")
 
         for axis, data in self.project.axis_dict.items():
-            joints = list(data.get("joints", {}))
-            output.append(f"#define NUM_JOINTS_{axis} {len(joints)}")
+            output.append(f"#define NUM_JOINTS_{axis} {len(data['joints'])}")
             output.append(f"extern int {axis.lower()}_joints[NUM_JOINTS_{axis}];")
         output.append("")
 
@@ -221,14 +219,18 @@ class Simulator:
         output.append("    float newpos = 0.0;")
         for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
-            for joint, joint_setup in joints.items():
-                position_mode = joint_setup["position_mode"]
-                if position_mode != "absolute":
+            for joint_setup in joints:
+                # joint = joint_setup["num"]
+                # TODO: rewrite to new axis_dict
+                pass
+                """
+                position_mode = joint_setup.get("position_mode", "velocity")
+                if position_mode == "velocity":
                     feedback_halname = joint_setup["feedback_halname"]
                     position_halname = joint_setup["position_halname"]
                     velocity_var = hal2varnames[position_halname]
                     feedback_var = hal2varnames[feedback_halname]
-                    plugin_instance = joint_setup["plugin_instance"]
+                    plugin_instance = joint_setup["instance"]
                     interface_data = plugin_instance.interface_data()
                     enable_var = interface_data.get("enable", {}).get("variable", "1")
                     output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
@@ -242,6 +244,7 @@ class Simulator:
                     output.append(f"        {feedback_var} += (int32_t)newpos;")
                     output.append("    }")
                 output.append(f"    joint_position[{joint}] = {feedback_var};")
+                """
 
         home_n = 0
         bitout_n = 0

@@ -199,7 +199,6 @@ class LinuxCNC:
             if hasattr(instances[0], "update_prefixes"):
                 instances[0].update_prefixes(instances)
 
-        self.project.axis_dict2 = self.create_axis_config_new(self.project, f"{self.hal_prefix}.")
         self.project.axis_dict = self.create_axis_config(self.project, f"{self.hal_prefix}.")
         num_joints = 0
         for _axis, values in self.project.axis_dict.items():
@@ -424,8 +423,7 @@ class LinuxCNC:
 
         coordinates = []
         for axis_name, axis_config in axis_dict.items():
-            joints = axis_config["joints"]
-            for joint, joint_setup in joints.items():
+            for joint_setup in axis_config["joints"]:
                 coordinates.append(axis_name)
 
         for section, section_options in linuxcnc_config.get("ini", {}).items():
@@ -651,7 +649,6 @@ class LinuxCNC:
             output.append("")
 
         for axis_name, axis_config in self.project.axis_dict.items():
-            joints = axis_config["joints"]
             output.append(f"[AXIS_{axis_name}]")
             axis_setup = copy.deepcopy(self.AXIS_DEFAULTS)
             axis_max_velocity = 10000.0
@@ -660,7 +657,8 @@ class LinuxCNC:
             axis_max_limit = -100000.0
             axis_backlash = 0.0
             axis_ferror = axis_setup["FERROR"]
-            for joint, joint_setup in joints.items():
+            for joint_setup in axis_config["joints"]:
+                joint = joint_setup["num"]
                 max_velocity = joint_setup["MAX_VELOCITY"]
                 max_acceleration = joint_setup["MAX_ACCELERATION"]
                 min_limit = joint_setup["MIN_LIMIT"]
@@ -699,21 +697,15 @@ class LinuxCNC:
                     output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                 output.append(f"{key:18s} = {value}")
             output.append("")
-            for joint, joint_config in joints.items():
-                position_mode = joint_config["position_mode"]
-                position_halname = joint_config["position_halname"]
-                feedback_halname = joint_config["feedback_halname"]
-                plugin_instance = joint_config["plugin_instance"]
+
+            for joint_config in axis_config["joints"]:
+                joint = joint_config["num"]
+                position_mode = joint_config.get("position_mode", "relative")
+                plugin_instance = joint_config["instance"]
 
                 output.append(f"[JOINT_{joint}]")
                 output.append(f"# {plugin_instance.instances_name}")
-                if position_mode == "absolute":
-                    for key, value in joint_config.items():
-                        if key in self.JOINT_DEFAULTS:
-                            if joint_setup["type"] != "stepgen" and key.startswith("STEPGEN_"):
-                                continue
-                            output.append(f"{key:18s} = {value}")
-                elif position_halname and feedback_halname:
+                if position_mode == "velocity":
                     pid_setup = self.PID_DEFAULTS.copy()
                     for key, value in pid_setup.items():
                         setup_value = joint_config.get(f"PID_{key.upper()}")
@@ -723,13 +715,9 @@ class LinuxCNC:
                             continue
                         output.append(f"{key:18s} = {value}")
                     output.append("")
-                    for key, value in joint_config.items():
-                        if key in self.JOINT_DEFAULTS:
-                            if joint_setup["type"] != "stepgen" and key.startswith("STEPGEN_"):
-                                continue
-                            if key.endswith("_VELOCITY"):
-                                output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
-                            output.append(f"{key:18s} = {value}")
+                for key, value in joint_config.items():
+                    if key in self.JOINT_DEFAULTS:
+                        output.append(f"{key:18s} = {value}")
 
                 output.append("")
 
@@ -934,7 +922,6 @@ class LinuxCNC:
 
                 if halname_wheel:
                     for axis_name, axis_config in self.project.axis_dict.items():
-                        joints = axis_config["joints"]
                         laxis = axis_name.lower()
                         self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
 
@@ -946,7 +933,8 @@ class LinuxCNC:
                         if gui == "axis":
                             self.halg.net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
                             self.halg.net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
-                            for joint, joint_setup in joints.items():
+                            for joint_setup in axis_config["joints"]:
+                                joint = joint_setup["num"]
                                 self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
 
                                 if wheel_scale is not None:
@@ -959,7 +947,6 @@ class LinuxCNC:
 
             else:
                 for axis_name, axis_config in self.project.axis_dict.items():
-                    joints = axis_config["joints"]
                     laxis = axis_name.lower()
                     fname = f"wheel_{laxis}"
                     if fname in self.rio_functions["jog"]:
@@ -975,7 +962,8 @@ class LinuxCNC:
                             if function == fname:
                                 self.halg.net_add(f"{self.hal_prefix}.{halname}-s32", f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
 
-                        for joint, joint_setup in joints.items():
+                        for joint_setup in axis_config["joints"]:
+                            joint = joint_setup["num"]
                             self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
 
                             if wheel_scale is not None:
@@ -1051,7 +1039,6 @@ class LinuxCNC:
                         # pname = gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
                         # self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
                         for axis_id, axis_config in self.project.axis_dict.items():
-                            joints = axis_config["joints"]
                             laxis = axis_id.lower()
                             if axis_name == laxis:
                                 self.halg.fmt_add("")
@@ -1063,12 +1050,12 @@ class LinuxCNC:
                                 if gui == "axis":
                                     self.halg.net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
                                     self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
-                                    for joint, joint_setup in joints.items():
+                                    for joint_setup in axis_config["joints"]:
+                                        joint = joint_setup["num"]
                                         self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
                         joint_n += 1
             else:
                 for axis_id, axis_config in self.project.axis_dict.items():
-                    joints = axis_config["joints"]
                     laxis = axis_id.lower()
                     self.halg.fmt_add("")
                     self.halg.fmt_add(f"# axis {laxis} selection")
@@ -1079,7 +1066,8 @@ class LinuxCNC:
                     if gui == "axis":
                         self.halg.net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
                         self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
-                        for joint, joint_setup in joints.items():
+                        for joint_setup in axis_config["joints"]:
+                            joint = joint_setup["num"]
                             self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
 
             if axis_selector and position_display:
@@ -1675,7 +1663,8 @@ if __name__ == "__main__":
 
         wcomps = {}
         for axis_name, axis_config in self.project.axis_dict.items():
-            for joint, joint_setup in axis_config["joints"].items():
+            for joint_setup in axis_config["joints"]:
+                joint = joint_setup["num"]
                 maxsat = joint_setup.get("PID_MAXSATURATED")
                 if maxsat:
                     wcomps[f"j{joint}maxsat"] = f"[JOINT_{joint}]MAXSATURATED"
@@ -1931,7 +1920,7 @@ if __name__ == "__main__":
                         else:
                             self.halg.net_add(f"{self.hal_prefix}.{halname}", f"{rprefix}{halname}")
 
-    def create_axis_config_new(self, project, prefix="rio."):
+    def create_axis_config(self, project, prefix="rio."):
         linuxcnc_config = project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
         axis_names = "XYZACBUVW"
@@ -2091,223 +2080,3 @@ if __name__ == "__main__":
                     axis_data[key] = value
 
         return axis_config
-
-    def create_axis_config(self, project, prefix="rio."):
-        linuxcnc_config = project.config["jdata"].get("linuxcnc", {})
-        machinetype = linuxcnc_config.get("machinetype")
-        pin_num = 0
-        num_joints = 0
-        axis_dict = {}
-        axis_names = "XYZACBUVW"
-        if machinetype in {"melfa", "melfa_nogl", "puma"}:
-            axis_names = "XYZABC"
-
-        named_axis = []
-        for plugin_instance in project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint"):
-                axis_name = plugin_instance.plugin_setup.get("axis")
-                if axis_name:
-                    named_axis.append(axis_name)
-
-        # rio joints
-        for plugin_instance in project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint"):
-                axis_name = plugin_instance.plugin_setup.get("axis")
-                if not axis_name:
-                    for name in axis_names:
-                        if name not in axis_dict and name not in named_axis:
-                            axis_name = name
-                            break
-                if axis_name:
-                    if axis_name not in axis_dict:
-                        axis_dict[axis_name] = {"joints": {}}
-                    feedback = plugin_instance.plugin_setup.get("joint", {}).get("feedback")
-                    axis_dict[axis_name]["joints"][num_joints] = {
-                        "type": plugin_instance.NAME,
-                        "axis": axis_name,
-                        "joint": num_joints,
-                        "plugin_instance": plugin_instance,
-                        "feedback": feedback or True,
-                    }
-                    if feedback:
-                        self.feedbacks.append(feedback.replace(":", "."))
-                    num_joints += 1
-
-        # getting all home switches
-        joint_homeswitches = []
-        for plugin_instance in project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    userconfig = signal_config.get("userconfig")
-                    net = userconfig.get("net")
-                    if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
-                        joint_homeswitches.append(int(net.split(".")[1]))
-
-        for axis_name, axis_config in axis_dict.items():
-            joints = axis_config["joints"]
-            # riocore.log(f"  # Axis: {axis_name}")
-            for joint, joint_setup in joints.items():
-                position_halname = None
-                position_scale_halname = None
-                enable_halname = None
-                position_mode = None
-                joint_config = joint_setup["plugin_instance"].plugin_setup.get("joint", {})
-                position_scale = float(
-                    joint_config.get("scale_out", joint_config.get("scale", joint_setup["plugin_instance"].SIGNALS.get("position", {}).get("scale", self.JOINT_DEFAULTS["SCALE_OUT"])))
-                )
-
-                if machinetype == "lathe":
-                    home_sequence_default = 2
-                    if axis_name == "X":
-                        home_sequence_default = 1
-
-                elif machinetype in {"melfa", "melfa_nogl"}:
-                    home_sequence_default = 2
-                    if axis_name == "X":
-                        home_sequence_default = 2
-                    elif axis_name == "Y":
-                        home_sequence_default = 1
-                    elif axis_name == "Z":
-                        home_sequence_default = 1
-                    elif axis_name == "A":
-                        home_sequence_default = 1
-                    elif axis_name == "B":
-                        home_sequence_default = 2
-                    elif axis_name == "C":
-                        home_sequence_default = 1
-                else:
-                    if axis_name == "Z":
-                        home_sequence_default = 1
-                    elif len(joints) > 1:
-                        home_sequence_default = -2
-                    else:
-                        home_sequence_default = 2
-
-                home_sequence = joint_config.get("home_sequence", home_sequence_default)
-                if home_sequence == "auto":
-                    home_sequence = home_sequence_default
-                joint_signals = joint_setup["plugin_instance"].signals()
-                velocity = joint_signals.get("velocity")
-                position = joint_signals.get("position")
-                positioncmd = joint_signals.get("position-cmd")
-                dty = joint_signals.get("dty")
-                enable = joint_signals.get("enable")
-
-                if enable:
-                    enable_halname = f"{prefix}{enable['halname']}"
-                if velocity:
-                    position_halname = f"{prefix}{velocity['halname']}"
-                    position_mode = "relative"
-                elif positioncmd:
-                    position_scale_halname = f"{positioncmd['halname'].replace('-cmd', '-scale')}"
-                    position_halname = f"{positioncmd}['halname']"
-                    position_mode = "absolute"
-                    if joint_setup.get("type") == "ethercat":
-                        position_scale_halname = position_scale_halname.replace("position-", "pos-")
-                elif position:
-                    position_halname = f"{prefix}{position['halname']}"
-                    position_mode = "absolute"
-                elif dty:
-                    position_halname = f"{prefix}{dty['halname']}"
-                    position_mode = "relative"
-                if not position_scale_halname:
-                    position_scale_halname = f"{position_halname}-scale"
-
-                feedback_scale = float(joint_config.get("scale_in", position_scale))
-                feedback_halname = None
-                feedback = joint_setup.get("feedback")
-                if position_mode == "relative" and feedback is True:
-                    if position is not None:
-                        feedback_halname = f"{prefix}{position['halname']}"
-                    else:
-                        riocore.log(
-                            f"ERROR: missing feedback for axis:{axis_name} joint:{joint}",
-                        )
-                        continue
-                elif position_mode == "relative":
-                    if ":" in feedback:
-                        fb_plugin_name, fb_signal_name = feedback.split(":")
-                    else:
-                        fb_plugin_name = feedback
-                        fb_signal_name = "position"
-                    found = False
-                    for sub_instance in project.plugin_instances:
-                        if sub_instance.title == fb_plugin_name:
-                            for sub_signal_name, sub_signal_config in sub_instance.signals().items():
-                                if fb_signal_name != sub_signal_name:
-                                    continue
-                                sub_direction = sub_signal_config["direction"]
-                                if sub_direction != "input":
-                                    riocore.log("ERROR: can not use this as feedback (no input signal):", sub_signal_config)
-                                    exit(1)
-                                feedback_halname = f"{prefix}{sub_signal_config['halname']}"
-                                feedback_signal = feedback_halname.split(".")[-1]
-                                feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("signals", {}).get(feedback_signal, {}).get("scale", 1.0))
-                                found = True
-                                break
-                    if not found:
-                        riocore.log(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint} not found")
-                        continue
-
-                joint_setup["position_mode"] = position_mode
-                joint_setup["position_halname"] = position_halname
-                joint_setup["position_scale_halname"] = position_scale_halname
-                joint_setup["feedback_halname"] = feedback_halname
-                joint_setup["enable_halname"] = enable_halname
-                joint_setup["pin_num"] = pin_num
-                if position_mode != "absolute":
-                    pin_num += 1
-
-                # copy defaults
-                for key, value in self.JOINT_DEFAULTS.items():
-                    joint_setup[key.upper()] = value
-
-                # update defaults
-                # if position_scale < 0.0:
-                # joint_setup["HOME_SEARCH_VEL"] *= -1.0
-                # joint_setup["HOME_LATCH_VEL"] *= -1.0
-                # joint_setup["HOME_FINAL_VEL"] *= -1.0
-                # joint_setup["HOME_OFFSET"] *= -1.0
-
-                if machinetype not in {"scara", "melfa", "melfa_nogl", "puma", "lathe"}:
-                    if axis_name in {"Z"}:
-                        joint_setup["HOME_SEARCH_VEL"] *= -1.0
-                        joint_setup["HOME_LATCH_VEL"] *= -1.0
-                        joint_setup["MAX_VELOCITY"] /= 3.0
-
-                if joint not in joint_homeswitches:
-                    joint_setup["HOME_SEARCH_VEL"] = 0.0
-                    joint_setup["HOME_LATCH_VEL"] = 0.0
-                    joint_setup["HOME_FINAL_VEL"] = 0.0
-                    joint_setup["HOME_OFFSET"] = 0
-                    joint_setup["HOME"] = 0.0
-                    joint_setup["HOME_SEQUENCE"] = 0
-
-                if machinetype in {"scara"}:
-                    if axis_name in {"Z"}:
-                        joint_setup["TYPE"] = "LINEAR"
-                    else:
-                        joint_setup["TYPE"] = "ANGULAR"
-                elif machinetype in {"melfa", "melfa_nogl", "puma"}:
-                    joint_setup["TYPE"] = "ANGULAR"
-                else:
-                    if axis_name in {"A", "C", "B"}:
-                        joint_setup["TYPE"] = "ANGULAR"
-                    else:
-                        joint_setup["TYPE"] = "LINEAR"
-
-                # set autogen values
-                joint_setup["SCALE_OUT"] = position_scale
-                joint_setup["SCALE_IN"] = feedback_scale
-                joint_setup["HOME_SEQUENCE"] = home_sequence
-
-                # overwrite with user configuration
-                for key, value in joint_config.items():
-                    key = key.upper()
-                    joint_setup[key] = value
-
-            # overwrite axis configuration with user data
-            for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
-                key = key.upper()
-                axis_config[key] = value
-        return axis_dict
