@@ -116,7 +116,15 @@ class Plugin(PluginBase):
             enable_halname = f"{prefix}.enable"
             scale_halname = f"{prefix}.velocity-scale"
             feedback_scale_halname = f"{prefix}.position-scale"
-            parent.halg.joint_add(parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, feedback_scale_halname=feedback_scale_halname, enable_halname=enable_halname, pid_num=pid_num)
-
-
-
+            parent.halg.joint_add(
+                parent,
+                axis_name,
+                joint_n,
+                "velocity",
+                cmd_halname,
+                feedback_halname=feedback_halname,
+                scale_halname=scale_halname,
+                feedback_scale_halname=feedback_scale_halname,
+                enable_halname=enable_halname,
+                pid_num=pid_num,
+            )
