@@ -189,7 +189,7 @@ class Plugin(PluginBase):
         output.append("loadrt lcec")
 
         cia402_num = 0
-        lcec_num = 0
+        # lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "1":
@@ -198,7 +198,7 @@ class Plugin(PluginBase):
         output.append(f"loadrt cia402 count={cia402_num}")
         output.append("addf lcec.read-all servo-thread")
         cia402_num = 0
-        lcec_num = 0
+        # lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "1":
