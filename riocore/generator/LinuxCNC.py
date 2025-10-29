@@ -199,6 +199,7 @@ class LinuxCNC:
             if hasattr(instances[0], "update_prefixes"):
                 instances[0].update_prefixes(instances)
 
+        self.project.axis_dict2 = self.create_axis_config_new(self.project, f"{self.hal_prefix}.")
         self.project.axis_dict = self.create_axis_config(self.project, f"{self.hal_prefix}.")
         num_joints = 0
         for _axis, values in self.project.axis_dict.items():
@@ -1908,7 +1909,6 @@ if __name__ == "__main__":
                         self.halg.setp_add(f"{rprefix}{halname}-scale", scale)
                     if offset and not virtual:
                         self.halg.setp_add(f"{rprefix}{halname}-offset", offset)
-
                     if netname:
                         if direction == "inout":
                             self.halg.fmt_add(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
@@ -1931,111 +1931,166 @@ if __name__ == "__main__":
                         else:
                             self.halg.net_add(f"{self.hal_prefix}.{halname}", f"{rprefix}{halname}")
 
-        for axis_name, axis_config in self.project.axis_dict.items():
-            joints = axis_config["joints"]
-            for joint, joint_setup in joints.items():
-                position_mode = joint_setup["position_mode"]
-                position_halname = joint_setup["position_halname"]
-                position_scale_halname = joint_setup["position_scale_halname"]
-                feedback_halname = joint_setup["feedback_halname"]
-                enable_halname = joint_setup["enable_halname"]
-                pin_num = joint_setup["pin_num"]
-                if position_mode == "absolute":
-                    self.halg.setp_add(f"{position_scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
-                    if machinetype == "corexy" and axis_name in {"X", "Y"}:
-                        corexy_axis = "beta"
-                        if axis_name == "X":
-                            corexy_axis = "alpha"
-                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"corexy.j{joint}-motor-pos-cmd", f"j{joint}pos-cmd")
-                        self.halg.net_add(f"corexy.{corexy_axis}-cmd", f"{position_halname}", f"j{joint}pos-cmd-{corexy_axis}")
-                        self.halg.net_add(f"corexy.{corexy_axis}-cmd", f"corexy.{corexy_axis}-fb", f"j{joint}pos-cmd-{corexy_axis}")
-                        self.halg.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb-{corexy_axis}")
+    def create_axis_config_new(self, project, prefix="rio."):
+        linuxcnc_config = project.config["jdata"].get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype")
+        axis_names = "XYZACBUVW"
+        if machinetype in {"melfa", "melfa_nogl", "puma"}:
+            axis_names = "XYZABC"
+
+        axis_config = {}
+        for plugin_instance in project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint"):
+                axis_name = plugin_instance.plugin_setup.get("axis")
+                if axis_name:
+                    if axis_name not in axis_config:
+                        axis_config[axis_name] = {"joints": []}
+                    axis_config[axis_name]["joints"].append({"instance": plugin_instance})
+
+        for plugin_instance in project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint"):
+                axis_name = plugin_instance.plugin_setup.get("axis")
+                if not axis_name:
+                    for name in axis_names:
+                        if name not in axis_config:
+                            axis_name = name
+                            break
+                    if axis_name:
+                        if axis_name not in axis_config:
+                            axis_config[axis_name] = {"joints": []}
+                        axis_config[axis_name]["joints"].append({"instance": plugin_instance})
+
+        homeswitches = {}
+        for plugin_instance in project.plugin_instances:
+            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    userconfig = signal_config.get("userconfig")
+                    net = userconfig.get("net")
+                    if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
+                        homeswitches[int(net.split(".")[1])] = plugin_instance
+
+        joint_num = 0
+        for axis in "XYZABCUVW":
+            for axis_name, axis_data in axis_config.items():
+                if axis != axis_name:
+                    continue
+                if machinetype == "lathe":
+                    home_sequence_default = 2
+                    if axis_name == "X":
+                        home_sequence_default = 1
+                elif machinetype in {"melfa", "melfa_nogl"}:
+                    home_sequence_default = 2
+                    if axis_name == "X":
+                        home_sequence_default = 2
+                    elif axis_name == "Y":
+                        home_sequence_default = 1
+                    elif axis_name == "Z":
+                        home_sequence_default = 1
+                    elif axis_name == "A":
+                        home_sequence_default = 1
+                    elif axis_name == "B":
+                        home_sequence_default = 2
+                    elif axis_name == "C":
+                        home_sequence_default = 1
+                else:
+                    if axis_name == "Z":
+                        home_sequence_default = 1
+                    elif len(axis_data["joints"]) > 1:
+                        home_sequence_default = -2
                     else:
-                        if joint_setup["type"] == "stepgen":
-                            jprefix = joint_setup["plugin_instance"].PREFIX
-                            self.halg.setp_add(f"{jprefix}.maxaccel", f"[JOINT_{joint}]STEPGEN_MAXACCEL")
-                            self.halg.setp_add(f"{jprefix}.steplen", f"[JOINT_{joint}]STEPGEN_STEPLEN")
-                            self.halg.setp_add(f"{jprefix}.stepspace", f"[JOINT_{joint}]STEPGEN_STEPSPACE")
-                            self.halg.setp_add(f"{jprefix}.dirhold", f"[JOINT_{joint}]STEPGEN_DIRHOLD")
-                            self.halg.setp_add(f"{jprefix}.dirsetup", f"[JOINT_{joint}]STEPGEN_DIRSETUP")
-                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{jprefix}.position-cmd", f"j{joint}pos-cmd")
-                            self.halg.net_add(f"{jprefix}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
-                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}enable")
-                            for name, psetup in joint_setup["plugin_instance"].plugin_setup.get("pins", {}).items():
-                                pin = psetup["pin"]
-                                self.halg.net_add(f"{jprefix}.{name}", pin, f"j{joint}{name}-pin")
-                        elif joint_setup["type"] == "ethercat":
-                            jprefix = joint_setup["plugin_instance"].PREFIX
-                            lcec_prefix = joint_setup["plugin_instance"].PREFIX_LCEC
-                            self.halg.setp_add(f"{jprefix}.csp-mode", "1")
-                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{jprefix}.pos-cmd", f"j{joint}pos-cmd")
-                            self.halg.net_add(f"{jprefix}.pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
-                            self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}enable")
-                            self.halg.net_add(f"{jprefix}.drv-fault", f"joint.{joint}.amp-fault-in", f"j{joint}fault")
-                            self.halg.net_add(f"{lcec_prefix}.status-word", f"{jprefix}.statusword", f"j{joint}statusword")
-                            self.halg.net_add(f"{lcec_prefix}.pos-actual", f"{jprefix}.drv-actual-position", f"j{joint}drv-pos")
-                            self.halg.net_add(f"{jprefix}.controlword", f"{lcec_prefix}.control-word", f"j{joint}control")
-                            self.halg.net_add(f"{jprefix}.drv-target-position", f"{lcec_prefix}.target-position", f"j{joint}target-pos")
+                        home_sequence_default = 2
+
+                for joint_data in axis_data["joints"]:
+                    joint_data["axis"] = axis_name
+                    joint_data["num"] = joint_num
+                    if joint_num in homeswitches:
+                        joint_data["homeswitch"] = homeswitches[joint_num]
+                    else:
+                        joint_data["homeswitch"] = None
+                        home_sequence_default = 0
+
+                    # copy defaults
+                    for key, value in self.JOINT_DEFAULTS.items():
+                        joint_data[key.upper()] = value
+                    joint_data["HOME_SEQUENCE"] = home_sequence_default
+
+                    if machinetype not in {"scara", "melfa", "melfa_nogl", "puma", "lathe"}:
+                        if axis_name in {"Z"}:
+                            joint_data["HOME_SEARCH_VEL"] *= -1.0
+                            joint_data["HOME_LATCH_VEL"] *= -1.0
+                            joint_data["MAX_VELOCITY"] /= 3.0
+
+                    if joint_data["homeswitch"] is None:
+                        joint_data["HOME_SEARCH_VEL"] = 0.0
+                        joint_data["HOME_LATCH_VEL"] = 0.0
+                        joint_data["HOME_FINAL_VEL"] = 0.0
+                        joint_data["HOME_OFFSET"] = 0
+                        joint_data["HOME"] = 0.0
+                        joint_data["HOME_SEQUENCE"] = 0
+
+                    if machinetype in {"scara"}:
+                        if axis_name in {"Z"}:
+                            joint_data["TYPE"] = "LINEAR"
                         else:
-                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"{position_halname}", f"j{joint}pos-cmd")
-                            self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
-
-                    if enable_halname:
-                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{enable_halname}", f"j{joint}enable")
-
-                elif position_halname and feedback_halname:
-                    if joint_setup["type"] == "mesastepgen":
-                        stepgen_prefix = ".".join(joint_setup["plugin_instance"].plugin_setup.get("pins", {}).get("step", {}).get("pin", "").split(".")[:-1])
-                        position_halname = f"{stepgen_prefix}.velocity-cmd"
-                        feedback_halname = f"{stepgen_prefix}.position-fb"
-                        enable_halname = f"{stepgen_prefix}.enable"
-                        position_scale_halname = f"{stepgen_prefix}.position-scale"
-                        self.halg.setp_add(f"{stepgen_prefix}.dirsetup", f"[JOINT_{joint}]MESA_DIRSETUP")
-                        self.halg.setp_add(f"{stepgen_prefix}.dirhold", f"[JOINT_{joint}]MESA_DIRHOLD")
-                        self.halg.setp_add(f"{stepgen_prefix}.steplen", f"[JOINT_{joint}]MESA_STEPLEN")
-                        self.halg.setp_add(f"{stepgen_prefix}.stepspace", f"[JOINT_{joint}]MESA_STEPSPACE")
-                        self.halg.setp_add(f"{stepgen_prefix}.maxaccel", f"[JOINT_{joint}]MESA_STEPGEN_MAXACCEL")
-                        self.halg.setp_add(f"{stepgen_prefix}.maxvel", f"[JOINT_{joint}]MESA_STEPGEN_MAXVEL")
-                        self.halg.setp_add(f"{stepgen_prefix}.step_type", "0")
-                        self.halg.setp_add(f"{stepgen_prefix}.control-type", "1")
-
-                    self.halg.setp_add(f"pid.{pin_num}.Pgain", f"[JOINT_{joint}]P")
-                    self.halg.setp_add(f"pid.{pin_num}.Igain", f"[JOINT_{joint}]I")
-                    self.halg.setp_add(f"pid.{pin_num}.Dgain", f"[JOINT_{joint}]D")
-                    self.halg.setp_add(f"pid.{pin_num}.bias", f"[JOINT_{joint}]BIAS")
-                    self.halg.setp_add(f"pid.{pin_num}.FF0", f"[JOINT_{joint}]FF0")
-                    self.halg.setp_add(f"pid.{pin_num}.FF1", f"[JOINT_{joint}]FF1")
-                    self.halg.setp_add(f"pid.{pin_num}.FF2", f"[JOINT_{joint}]FF2")
-                    self.halg.setp_add(f"pid.{pin_num}.deadband", f"[JOINT_{joint}]DEADBAND")
-                    self.halg.setp_add(f"pid.{pin_num}.maxoutput", f"[JOINT_{joint}]MAXOUTPUT")
-                    self.halg.setp_add(f"{position_scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
-                    if joint_setup["type"] != "mesastepgen":
-                        self.halg.setp_add(f"{feedback_halname}-scale", f"[JOINT_{joint}]SCALE_IN")
-
-                    if machinetype == "corexy" and axis_name in {"X", "Y"}:
-                        corexy_axis = "beta"
-                        if axis_name == "X":
-                            corexy_axis = "alpha"
-                        self.halg.net_add(f"pid.{pin_num}.output", f"{position_halname}", f"j{joint}vel-cmd")
-                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"corexy.j{joint}-motor-pos-cmd", f"j{joint}pos-cmd")
-                        self.halg.net_add(f"corexy.{corexy_axis}-cmd", f"pid.{pin_num}.command", f"j{joint}pos-cmd-{corexy_axis}")
-                        self.halg.net_add(f"{feedback_halname}", f"corexy.{corexy_axis}-fb", f"j{joint}pos-fb-{corexy_axis}")
-                        self.halg.net_add(f"{feedback_halname}", f"pid.{joint}.feedback", f"j{joint}pos-fb-{corexy_axis}")
-                        self.halg.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
+                            joint_data["TYPE"] = "ANGULAR"
+                    elif machinetype in {"melfa", "melfa_nogl", "puma"}:
+                        joint_data["TYPE"] = "ANGULAR"
                     else:
-                        self.halg.net_add(f"pid.{pin_num}.output", f"{position_halname}", f"j{joint}vel-cmd")
-                        self.halg.net_add(f"joint.{joint}.motor-pos-cmd", f"pid.{pin_num}.command", f"j{joint}pos-cmd")
-                        self.halg.net_add(f"{feedback_halname}", f"joint.{joint}.motor-pos-fb", f"j{joint}motor-pos-fb")
-                        self.halg.net_add(f"{feedback_halname}", f"pid.{joint}.feedback", f"j{joint}motor-pos-fb")
+                        if axis_name in {"A", "C", "B"}:
+                            joint_data["TYPE"] = "ANGULAR"
+                        else:
+                            joint_data["TYPE"] = "LINEAR"
 
-                    if machinetype in {"ldelta", "rdelta"} and axis_name in {"X", "Y", "Z", "XYZ"}:
-                        self.halg.net_add(f"{feedback_halname}", f"lineardelta.joint{joint}", f"j{joint}motor-pos-fb")
+                    feedback = joint_data["instance"].plugin_setup.get("feedback", "")
+                    if feedback:
+                        if ":" in feedback:
+                            fb_plugin_name, fb_signal_name = feedback.split(":")
+                        else:
+                            fb_plugin_name = feedback
+                            fb_signal_name = "position"
 
-                    if enable_halname:
-                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"{enable_halname}", f"j{joint}enable")
-                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pin_num}.enable", f"j{joint}enable")
+                        found = None
+                        for sub_instance in project.plugin_instances:
+                            if sub_instance.title == fb_plugin_name:
+                                for sub_signal_name, sub_signal_config in sub_instance.signals().items():
+                                    if fb_signal_name != sub_signal_name:
+                                        continue
+                                    sub_direction = sub_signal_config["direction"]
+                                    if sub_direction != "input":
+                                        riocore.log("ERROR: can not use this as feedback (no input signal):", sub_signal_config)
+                                        exit(1)
+
+                                    feedback_halname = f"{prefix}{sub_signal_config['halname']}"
+                                    feedback_signal = feedback_halname.split(".")[-1]
+                                    feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("signals", {}).get(feedback_signal, {}).get("scale", 1.0))
+                                    joint_data["feedback_name"] = fb_plugin_name
+                                    joint_data["feedback_signal"] = fb_signal_name
+                                    joint_data["feedback_instance"] = sub_instance
+                                    joint_data["SCALE_IN"] = feedback_scale
+                                    found = True
+                                    break
+                        if not found:
+                            riocore.log(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint_num} not found")
                     else:
-                        self.halg.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pin_num}.enable", f"j{joint}enable")
+                        joint_data["SCALE_IN"] = joint_data["SCALE_OUT"]
+
+                    # overwrite with user configuration
+                    joint_config = joint_data["instance"].plugin_setup.get("joint", {})
+                    for key, value in joint_config.items():
+                        key = key.upper()
+                        joint_data[key] = value
+
+                    joint_data["instance"].plugin_setup["joint_data"] = joint_data
+
+                    joint_num += 1
+                    # print(axis_name, joint_data)
+
+                # overwrite axis configuration with user data
+                for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
+                    key = key.upper()
+                    axis_data[key] = value
+
+        return axis_config
 
     def create_axis_config(self, project, prefix="rio."):
         linuxcnc_config = project.config["jdata"].get("linuxcnc", {})

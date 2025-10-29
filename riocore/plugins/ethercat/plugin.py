@@ -208,3 +208,28 @@ class Plugin(PluginBase):
         output.append("addf lcec.write-all servo-thread")
         output.append("")
         return "\n".join(output)
+
+    def hal(self, parent):
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        if node_type == "1" and "joint_data" in self.plugin_setup:
+            joint_data = self.plugin_setup["joint_data"]
+            axis_name = joint_data["axis"]
+            joint_n = joint_data["num"]
+
+            lcec = "lcec.0.ethercat1"
+            cia402 = "cia402.0"
+
+            cmd_halname = f"{cia402}.pos-cmd"
+            feedback_halname = f"{cia402}.pos-fb"
+            enable_halname = f"{cia402}.enable"
+            scale_halname = f"{cia402}.pos-scale"
+            fault_halname = f"{cia402}.drv-fault"
+
+            parent.halg.net_add(f"{lcec}.status-word", f"{cia402}.statusword", f"j{joint_n}statusword")
+            parent.halg.net_add(f"{lcec}.pos-actual", f"{cia402}.drv-actual-position", f"j{joint_n}drv-pos")
+            parent.halg.net_add(f"{cia402}.controlword", f"{lcec}.control-word", f"j{joint_n}control")
+            parent.halg.net_add(f"{cia402}.drv-target-position", f"{lcec}.target-position", f"j{joint_n}target-pos")
+
+            parent.halg.joint_add(
+                parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname
+            )

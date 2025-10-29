@@ -331,17 +331,17 @@ class PluginBase:
             }
 
         if self.TYPE == "joint":
-            if "axis" not in self.OPTIONS:
-                NEW_OPTIONS["axis"] = {
-                    "type": "select",
-                    "description": "axis name (X,Y,Z,...)",
-                    "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
-                }
             if "is_joint" not in self.OPTIONS:
                 NEW_OPTIONS["is_joint"] = {
                     "type": bool,
                     "default": True,
                     "description": "configure as joint",
+                }
+            if "axis" not in self.OPTIONS:
+                NEW_OPTIONS["axis"] = {
+                    "type": "select",
+                    "description": "axis name (X,Y,Z,...)",
+                    "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
                 }
 
         if self.IMAGES:

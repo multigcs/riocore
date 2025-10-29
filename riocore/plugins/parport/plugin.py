@@ -210,6 +210,38 @@ class Plugin(PluginBase):
         if not active:
             self.parport_mode = ""
 
+        # mapping halnames to real prefix
+        self.instance_num = 0
+        for plugin_instance in parent.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE == "gpio":
+                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                    if "pin" not in psetup:
+                        continue
+                    pin = psetup["pin"]
+                    if ":" not in pin:
+                        continue
+                    prefix = pin.split(":")[0]
+                    if prefix != self.instances_name:
+                        continue
+                    pin = int(pin.split(":")[1])
+
+                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
+                    invert = 0
+                    for modifier in psetup.get("modifier", []):
+                        if modifier["type"] == "invert":
+                            invert = 1 - invert
+                        else:
+                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
+                    if direction == "output":
+                        psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-out"
+                        if invert:
+                            parent.halg.setp_add(f"parport.{self.instance_num}.pin-{pin:02d}-out-invert", 1)
+                    elif direction == "input":
+                        if invert:
+                            psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-in-not"
+                        else:
+                            psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-in"
+
     def hal(self, parent):
         # mapping halnames to real prefix
         for plugin_instance in parent.project.plugin_instances:

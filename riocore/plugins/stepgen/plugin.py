@@ -173,3 +173,24 @@ If higher rates are needed, a hardware step generator is a better choice."""
         output.append("addf stepgen.update-freq servo-thread")
         output.append("")
         return "\n".join(output)
+
+    def hal(self, parent):
+        if "joint_data" in self.plugin_setup:
+            joint_data = self.plugin_setup["joint_data"]
+            axis_name = joint_data["axis"]
+            joint_n = joint_data["num"]
+
+            for key in ("dirsetup", "dirhold", "steplen", "stepspace", "maxaccel", "maxvel"):
+                value = f"STEPGEN_{key.upper()}"
+                parent.halg.setp_add(f"{self.PREFIX}.{key}", f"[JOINT_{joint_n}]{value}")
+
+            cmd_halname = f"{self.PREFIX}.position-cmd"
+            feedback_halname = f"{self.PREFIX}.position-fb"
+            enable_halname = f"{self.PREFIX}.enable"
+            scale_halname = f"{self.PREFIX}.position-scale"
+
+            for name, psetup in self.plugin_setup.get("pins", {}).items():
+                pin = psetup["pin"]
+                parent.halg.net_add(f"{self.PREFIX}.{name}", pin, f"j{joint_n}{name}-pin")
+
+            parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname)

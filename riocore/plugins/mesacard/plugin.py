@@ -244,7 +244,23 @@ class Plugin(PluginBase):
         self.hm2_prefix = f"hm2_{board}.{self.instance_num}"
 
     def precheck(self, parent):
-        pass
+        for plugin_instance in parent.project.plugin_instances:
+            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
+                # for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                for name in list(plugin_instance.plugin_setup.get("pins", {}).keys()):
+                    psetup = plugin_instance.plugin_setup["pins"][name]
+                    if "pin" not in psetup:
+                        continue
+                    pin = psetup["pin"]
+                    if ":" not in pin:
+                        continue
+                    prefix = pin.split(":")[0]
+                    if prefix != self.instances_name:
+                        continue
+                    pin = pin.split(":")[1]
+
+                    suffix = ".".join(plugin_instance.plugin_setup["pins"][name]["pin"].split(":")[1].split(".")[:-1])
+                    plugin_instance.PREFIX = f"{self.hm2_prefix}.{suffix}"
 
     def hal(self, parent):
         # mapping halnames to real prefix

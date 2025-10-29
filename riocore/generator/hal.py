@@ -746,6 +746,72 @@ class hal_generator:
 
         return (hal_data, postgui_data)
 
+    def joint_add(self, parent, axis_name, joint, mode, cmd_halname, feedback_halname=None, scale_halname=None, feedback_scale_halname=None, enable_halname=None, fault_halname=None, pid_num=None):
+        linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype")
+
+        self.setp_add(f"{scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
+        if feedback_scale_halname:
+            self.setp_add(f"{feedback_scale_halname}", f"[JOINT_{joint}]SCALE_IN")
+
+        if mode == "position":
+            if machinetype == "corexy" and axis_name in {"X", "Y"}:
+                corexy_axis = "beta"
+                if axis_name == "X":
+                    corexy_axis = "alpha"
+                self.net_add(f"joint.{joint}.motor-pos-cmd", f"corexy.j{joint}-motor-pos-cmd", f"j{joint}pos-cmd")
+                self.net_add(f"corexy.{corexy_axis}-cmd", f"{cmd_halname}", f"j{joint}pos-cmd-{corexy_axis}")
+                self.net_add(f"corexy.{corexy_axis}-cmd", f"corexy.{corexy_axis}-fb", f"j{joint}pos-cmd-{corexy_axis}")
+                self.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb-{corexy_axis}")
+            else:
+                """
+                if joint_setup["type"] == "stepgen":
+                    jprefix = joint_setup["plugin_instance"].PREFIX
+                    self.setp_add(f"{jprefix}.maxaccel", f"[JOINT_{joint}]STEPGEN_MAXACCEL")
+                    self.setp_add(f"{jprefix}.steplen", f"[JOINT_{joint}]STEPGEN_STEPLEN")
+                    self.setp_add(f"{jprefix}.stepspace", f"[JOINT_{joint}]STEPGEN_STEPSPACE")
+                    self.setp_add(f"{jprefix}.dirhold", f"[JOINT_{joint}]STEPGEN_DIRHOLD")
+                    self.setp_add(f"{jprefix}.dirsetup", f"[JOINT_{joint}]STEPGEN_DIRSETUP")
+                    self.net_add(f"joint.{joint}.motor-pos-cmd", f"{jprefix}.position-cmd", f"j{joint}pos-cmd")
+                    self.net_add(f"{jprefix}.position-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
+                    self.net_add(f"joint.{joint}.amp-enable-out", f"{jprefix}.enable", f"j{joint}enable")
+                    for name, psetup in joint_setup["plugin_instance"].plugin_setup.get("pins", {}).items():
+                        pin = psetup["pin"]
+                        self.net_add(f"{jprefix}.{name}", pin, f"j{joint}{name}-pin")
+                """
+
+                self.net_add(f"joint.{joint}.motor-pos-cmd", f"{cmd_halname}", f"j{joint}pos-cmd")
+                self.net_add(f"{feedback_halname}", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
+                # self.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
+        else:
+            for key in ("Pgain", "Igain", "Dgain", "bias", "FF0", "FF1", "FF2", "deadband", "maxoutput"):
+                parent.halg.setp_add(f"pid.{joint}.{key}", f"[JOINT_{joint}]{key.replace('gain', '').upper()}")
+
+            if machinetype == "corexy" and axis_name in {"X", "Y"}:
+                corexy_axis = "beta"
+                if axis_name == "X":
+                    corexy_axis = "alpha"
+                self.net_add(f"pid.{pid_num}.output", f"{cmd_halname}", f"j{joint}vel-cmd")
+                self.net_add(f"joint.{joint}.motor-pos-cmd", f"corexy.j{joint}-motor-pos-cmd", f"j{joint}pos-cmd")
+                self.net_add(f"corexy.{corexy_axis}-cmd", f"pid.{pid_num}.command", f"j{joint}pos-cmd-{corexy_axis}")
+                self.net_add(f"{feedback_halname}", f"corexy.{corexy_axis}-fb", f"j{joint}pos-fb-{corexy_axis}")
+                self.net_add(f"{feedback_halname}", f"pid.{joint}.feedback", f"j{joint}pos-fb-{corexy_axis}")
+                self.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
+            else:
+                self.net_add(f"pid.{pid_num}.output", f"{cmd_halname}", f"j{joint}vel-cmd")
+                self.net_add(f"joint.{joint}.motor-pos-cmd", f"pid.{pid_num}.command", f"j{joint}pos-cmd")
+                self.net_add(f"{feedback_halname}", f"joint.{joint}.motor-pos-fb", f"j{joint}motor-pos-fb")
+                self.net_add(f"{feedback_halname}", f"pid.{joint}.feedback", f"j{joint}motor-pos-fb")
+            if machinetype in {"ldelta", "rdelta"} and axis_name in {"X", "Y", "Z", "XYZ"}:
+                self.net_add(f"{feedback_halname}", f"lineardelta.joint{joint}", f"j{joint}motor-pos-fb")
+
+            self.net_add(f"joint.{joint}.amp-enable-out", f"pid.{pid_num}.enable", f"j{joint}enable")
+
+        if enable_halname:
+            self.net_add(f"joint.{joint}.amp-enable-out", f"{enable_halname}", f"j{joint}enable")
+        if fault_halname:
+            self.net_add(f"{fault_halname}", f"joint.{joint}.amp-fault-in", f"j{joint}fault")
+
 
 if __name__ == "__main__":
     halg = hal_generator()
