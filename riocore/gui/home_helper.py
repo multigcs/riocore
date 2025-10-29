@@ -315,7 +315,7 @@ if __name__ == "__main__":
     class MainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
-            self.setWindowTitle("My App")
+            self.setWindowTitle("Home-Helper")
 
             self.setup = {
                 "HOME_SEARCH_VEL": {"value": -30.0, "unit": "units/s"},
