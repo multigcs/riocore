@@ -209,6 +209,11 @@ class LinuxCNC:
                     for num, instance in enumerate(instances):
                         instance.PREFIX = f"{component_type}.{num}"
 
+        machinetype = self.project.config["jdata"].get("linuxcnc", {}).get("machinetype")
+        self.project.axis_names = "XYZACBUVW"
+        if machinetype in {"melfa", "melfa_nogl", "puma"}:
+            self.project.axis_names = "XYZABC"
+
         self.project.axis_dict = self.create_axis_config(self.project, f"{self.hal_prefix}.")
         num_joints = 0
         for _axis, values in self.project.axis_dict.items():

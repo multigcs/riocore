@@ -55,7 +55,7 @@ class TabAxis:
 
         signature = []
         project = riocore.Project(copy.deepcopy(self.config), "")
-        for axis in "XYZABCUVW":
+        for axis in project.axis_names:
             if axis not in project.axis_dict:
                 continue
             adata = project.axis_dict[axis]
@@ -83,9 +83,7 @@ class TabAxis:
                     if "joint" not in plugin_setup:
                         plugin_setup["joint"] = {}
                     joint_setup = plugin_setup["joint"]
-
-                    position_mode = joint_setup.get("position_mode", jdata.get("position_mode", ""))
-                    ptype = joint_setup.get("type", jdata.get("type", ""))
+                    position_mode = joint_setup.get("position_mode", jdata.get("mode", ""))
                     scale = joint_setup.get("SCALE_OUT", jdata.get("SCALE_OUT", ""))
                     max_velocity = joint_setup.get("max_velocity", 40.0)
 
@@ -95,7 +93,6 @@ class TabAxis:
 
                     text = []
                     text.append(f"Mode: {position_mode}")
-                    text.append(f"Plugin-Type: {ptype}")
                     text.append(f"Plugin-Name: {plugin_instance.instances_name}")
                     text.append(f"Home-Switch: {home_sw}")
                     text.append(f"Max-Velocity: {max_velocity * 60:0.2f} units/min")
@@ -111,7 +108,7 @@ class TabAxis:
                         plugin_setup["joint"] = {}
                     joint_setup = plugin_setup["joint"]
 
-                    for key in ("type", "scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
+                    for key in ("scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
                         if f"{joint}_{key}" in self.widgets:
                             self.widgets[f"{joint}_{key}"].update(joint_setup)
                     for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
@@ -147,6 +144,9 @@ class TabAxis:
             "MAX_LIMIT": {"value": 500.1, "unit": "units"},
         }
 
+        def update(key, value):
+            self.setup[key]["value"] = value
+
         for key, koption in self.setup.items():
             value = self.widgets[f"{joint}_{key.lower()}"].value()
             koption["value"] = value
@@ -161,6 +161,7 @@ class TabAxis:
             setup["widget"].setMaximum(99999.0)
             setup["widget"].setDecimals(4)
             setup["widget"].setValue(float(setup["value"]))
+            setup["widget"].valueChanged.connect(partial(update, key))
             hbox.addWidget(setup["widget"], stretch=5)
             hbox.addWidget(QLabel("units"), stretch=1)
             vbox.addLayout(hbox)
@@ -321,7 +322,7 @@ class TabAxis:
             self.parent.scene.parent.snapshot()
 
         project = riocore.Project(copy.deepcopy(self.config), "")
-        for axis in "XYZABCUVW":
+        for axis in project.axis_names:
             if axis not in project.axis_dict:
                 continue
             adata = project.axis_dict[axis]
@@ -372,7 +373,7 @@ class TabAxis:
                     row.addWidget(info, stretch=1)
 
                     joint_edits = QVBoxLayout()
-                    for key in ("type", "scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
+                    for key in ("scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
                         options = riocore.halpins.JOINT_OPTIONS[key]
                         unit = options.get("unit", "")
                         dkey = key.upper()
