@@ -26,13 +26,3 @@ class Plugin(PluginBase):
                 "type": "GPIO",
             },
         }
-
-    def update_prefixes(cls, instances):
-        for num, instance in enumerate(instances):
-            instance.PREFIX = f"gpioout.{num}"
-
-    def hal(self, generator):
-        return
-
-    def loader(cls, instances):
-        return ""

@@ -76,7 +76,6 @@ class Plugin(PluginBase):
             vmin = self.plugin_setup.get("min", 0)
             vmax = self.plugin_setup.get("max", num_leds)
             scale = self.plugin_setup.get("scale", 1.0)
-            print("scale", scale, signal_setup)
             return f"""
             value *= {scale};
             if (value < {vmin}) {{

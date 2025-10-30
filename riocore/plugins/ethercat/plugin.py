@@ -18,12 +18,12 @@ class Plugin(PluginBase):
         self.mode_pins = {}
         self.OPTIONS = {
             "node_type": {
-                "default": "1",
+                "default": "Servo/Stepper",
                 "type": "select",
                 "options": [
-                    "0|Master",
-                    "1|Servo/Stepper",
-                    "2|GPIOs",
+                    "Master",
+                    "Servo/Stepper",
+                    "GPIOs",
                 ],
                 "description": "Type",
             },
@@ -35,10 +35,10 @@ class Plugin(PluginBase):
                 "description": "bus-index",
             },
         }
-        self.PREFIX_LCEC = ""
+        self.PREFIX_CIA402 = ""
 
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        if node_type == "0":
+        if node_type == "Master":
             self.TYPE = "base"
             self.IMAGE_SHOW = True
             self.PINDEFAULTS = {
@@ -51,7 +51,7 @@ class Plugin(PluginBase):
                     "type": "ETHERCAT",
                 },
             }
-        elif node_type == "1":
+        elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
             self.PINDEFAULTS = {
                 "in": {
@@ -83,7 +83,7 @@ class Plugin(PluginBase):
                     "description": "steps / unit",
                 },
             }
-        elif node_type == "2":
+        elif node_type == "GPIO":
             self.PINDEFAULTS = {
                 "in": {
                     "direction": "input",
@@ -121,14 +121,10 @@ class Plugin(PluginBase):
         lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            if node_type == "1":
-                instance.PREFIX = f"cia402.{cia402_num}"
-                instance.PREFIX_LCEC = f"lcec.0.{instance.title}"
+            instance.PREFIX = f"lcec.{lcec_num}.{instance.title}"
+            if node_type == "Servo/Stepper":
+                instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
                 cia402_num += 1
-            elif node_type == "2":
-                instance.PREFIX = f"lcec.{lcec_num}.{instance.title}"
-                # instance.PREFIX_LCEC = f"lcec.0.{instance.title}"
-                lcec_num += 1
 
     def extra_files(cls, parent, instances):
         output = []
@@ -182,7 +178,7 @@ class Plugin(PluginBase):
         target = os.path.join(parent.component_path, "ethercat-conf.xml")
         open(target, "w").write("\n".join(output))
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         output.append("# ethercat component")
         output.append("loadusr -W lcec_conf ethercat-conf.xml")
@@ -216,8 +212,8 @@ class Plugin(PluginBase):
             axis_name = joint_data["axis"]
             joint_n = joint_data["num"]
 
-            lcec = "lcec.0.ethercat1"
-            cia402 = "cia402.0"
+            lcec = self.PREFIX
+            cia402 = self.PREFIX_CIA402
 
             cmd_halname = f"{cia402}.pos-cmd"
             feedback_halname = f"{cia402}.pos-fb"

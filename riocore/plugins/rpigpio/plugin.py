@@ -43,7 +43,7 @@ class Plugin(PluginBase):
             "GPIO:P40": {"pin": f"{self.instances_name}:GPIO21", "pos": [553, 562.7], "direction": "all", "edge": "source", "type": "GPIO"},
         }
 
-    def precheck(self, parent):
+    def update_pins(self, parent):
         self.hal_gpios = {
             "input": [],
             "output": [],
@@ -51,58 +51,38 @@ class Plugin(PluginBase):
             "reset": [],
         }
         for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
-                    if ":" not in psetup["pin"]:
-                        continue
-                    prefix = psetup["pin"].split(":", 1)[0]
-                    pin = psetup["pin"].split(":", 1)[1]
-                    if self.instances_name != prefix:
-                        continue
+            for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                direction = plugin_instance.PINDEFAULTS[name]["direction"]
+                reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
+                if ":" not in psetup["pin"]:
+                    continue
+                prefix = psetup["pin"].split(":", 1)[0]
+                pin = psetup["pin"].split(":", 1)[1]
 
-                    invert = 0
-                    for modifier in psetup.get("modifier", []):
-                        if modifier["type"] == "invert":
-                            invert = 1 - invert
-                        else:
-                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
-                    self.hal_gpios[direction].append(pin)
-                    if reset:
-                        self.hal_gpios["reset"].append(pin)
-                    if invert and direction == "output":
-                        self.hal_gpios["invert"].append(pin)
+                if self.instances_name != prefix:
+                    continue
 
-    def hal(self, parent):
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    if ":" not in psetup["pin"]:
-                        continue
-                    prefix = psetup["pin"].split(":", 1)[0]
-                    pin = psetup["pin"].split(":", 1)[1]
+                invert = 0
+                for modifier in psetup.get("modifier", []):
+                    if modifier["type"] == "invert":
+                        invert = 1 - invert
+                    else:
+                        print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
+                self.hal_gpios[direction].append(pin)
+                if reset:
+                    self.hal_gpios["reset"].append(pin)
+                if invert and direction == "output":
+                    self.hal_gpios["invert"].append(pin)
 
-                    invert = 0
-                    for modifier in psetup.get("modifier", []):
-                        if modifier["type"] == "invert":
-                            invert = 1 - invert
-                        else:
-                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
+                if direction == "output":
+                    psetup["pin"] = f"hal_gpio.{pin}-out"
+                elif direction == "input":
+                    if invert:
+                        psetup["pin"] = f"hal_gpio.{pin}-in-not"
+                    else:
+                        psetup["pin"] = f"hal_gpio.{pin}-in"
 
-                    if self.instances_name != prefix:
-                        continue
-                    if direction == "output":
-                        psetup["pin"] = f"hal_gpio.{pin}-out"
-                    elif direction == "input":
-                        if invert:
-                            psetup["pin"] = f"hal_gpio.{pin}-in-not"
-                        else:
-                            psetup["pin"] = f"hal_gpio.{pin}-in"
-        return
-
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         args = []
         if instances[0].hal_gpios["input"]:

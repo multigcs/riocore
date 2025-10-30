@@ -43,13 +43,6 @@ class Plugin(PluginBase):
                 "default": scale,
             }
 
-    def update_prefixes(cls, instances):
-        for instance in instances:
-            instance.PREFIX = f"spacenav.{instance.instances_name}"
-
-    def precheck(self, parent):
-        pass
-
     def hal(self, parent):
         spacenav_scale = {}
         for axis in "xyzabc":
@@ -94,7 +87,7 @@ class Plugin(PluginBase):
             else:
                 parent.halg.net_add("spacenav.button.1", spacenav_button1)
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         output.append("loadusr -Wn spacenav ./spnav.py")
         output.append("")

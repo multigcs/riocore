@@ -18,10 +18,6 @@ class Plugin(PluginBase):
         self.FILES = []
         self.OPTIONS = {}
 
-    def update_prefixes(cls, instances):
-        for instance in instances:
-            instance.PREFIX = f"robojog.{instance.instances_name}"
-
     def ini(self, parent, ini_setup):
         tabname = "robojog"
         ini_setup["DISPLAY"]["EMBED_TAB_NAME|robojog"] = tabname
@@ -43,6 +39,3 @@ class Plugin(PluginBase):
                     parent.halg.setp_add(f"robojog.joint.{joint}.max_limit", 1500.0)
                     parent.halg.setp_add(f"robojog.joint.{joint}.min_limit", -500.0)
                     parent.halg.setp_add(f"robojog.joint.{joint}.scale", 100.0)
-
-    def loader(cls, instances):
-        return ""

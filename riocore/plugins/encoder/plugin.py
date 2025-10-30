@@ -76,10 +76,6 @@ Some hardware-based systems can count at MHz rates."""
             },
         }
 
-    def update_prefixes(cls, instances):
-        for num, instance in enumerate(instances):
-            instance.PREFIX = f"encoder.{num}"
-
     def hal(self, generator):
         for option in ("counter-mode", "x4-mode", "missing-teeth", "position-scale"):
             value = self.plugin_setup.get(option, self.option_default(option))
@@ -87,7 +83,7 @@ Some hardware-based systems can count at MHz rates."""
                 value = 1 if value else 0
             generator.halg.setp_add(f"{self.PREFIX}.{option}", f"{value}")
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         output.append(f"# encoder component for {len(instances)} inputs(s)")
         output.append(f"loadrt encoder num_chan={len(instances)}")

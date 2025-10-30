@@ -38,28 +38,21 @@ class Plugin(PluginBase):
             },
         }
 
-    def update_prefixes(cls, instances):
-        for instance in instances:
-            instance.PREFIX = f"vfd.{instance.instances_name}"
-
-    def precheck(self, parent):
-        pass
-
     def hal(self, parent):
         spindle = self.plugin_setup.get("spindle", self.option_default("spindle"))
-        parent.halg.setp_add(f"vfd{spindle}.enable", 1)
-        parent.halg.net_add(f"spindle.{spindle}.speed-out-abs", f"vfd{spindle}.speed-command")
-        parent.halg.net_add(f"spindle.{spindle}.forward", f"vfd{spindle}.spindle-forward")
-        parent.halg.net_add(f"spindle.{spindle}.reverse", f"vfd{spindle}.spindle-reverse")
-        parent.halg.net_add(f"spindle.{spindle}.on", f"vfd{spindle}.spindle-on")
+        parent.halg.setp_add(f"hy_vfd{spindle}.enable", 1)
+        parent.halg.net_add(f"spindle.{spindle}.speed-out-abs", f"hy_vfd{spindle}.speed-command")
+        parent.halg.net_add(f"spindle.{spindle}.forward", f"hy_vfd{spindle}.spindle-forward")
+        parent.halg.net_add(f"spindle.{spindle}.reverse", f"hy_vfd{spindle}.spindle-reverse")
+        parent.halg.net_add(f"spindle.{spindle}.on", f"hy_vfd{spindle}.spindle-on")
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         for instance in instances:
             spindle = instance.plugin_setup.get("spindle", instance.option_default("spindle"))
             device = instance.plugin_setup.get("device", instance.option_default("device"))
             baud = instance.plugin_setup.get("baud", instance.option_default("baud"))
             parity = instance.plugin_setup.get("parity", instance.option_default("parity"))
-            output.append(f"loadusr -Wn vfd{spindle} hy_vfd -n vfd{spindle} -d {device} -p {parity} -r {baud} -t 1")
+            output.append(f"loadusr -Wn hy_vfd{spindle} hy_vfd -n hy_vfd{spindle} -d {device} -p {parity} -r {baud} -t 1")
             output.append("")
         return "\n".join(output)

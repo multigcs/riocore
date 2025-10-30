@@ -47,10 +47,6 @@ class Plugin(PluginBase):
                 "default": default,
             }
 
-    def update_prefixes(cls, instances):
-        for instance in instances:
-            instance.PREFIX = f"halinput.{instance.instances_name}"
-
     def hal(self, parent):
         joypad_btn_slow = self.plugin_setup.get("slow", self.option_default("slow"))
         joypad_btn_medium = self.plugin_setup.get("medium", self.option_default("medium"))
@@ -116,7 +112,7 @@ class Plugin(PluginBase):
                     joint = joint_setup["num"]
                     parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.joint.{joint}.analog")
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         for instance in instances:
             joypad_name = instance.plugin_setup.get("joypad_name", instance.option_default("joypad_name"))

@@ -164,7 +164,8 @@ class Plugin(PluginBase):
             },
         }
 
-    def precheck(self, parent):
+    def update_pins(self, parent):
+        print("#### update_pins")
         self.parport_mode = ""
         active = False
         mode_outputs = {
@@ -277,7 +278,7 @@ class Plugin(PluginBase):
                     if reset:
                         parent.halg.setp_add(f"parport.{self.instance_num}.pin-{pin:02d}-out-reset", 1)
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         modes = []
         instance_num = 0

@@ -188,16 +188,26 @@ class LinuxCNC:
         self.configuration_path = f"{self.base_path}"
         self.hal_prefix = "rio"
 
-        # update_prefixes for gpio plugins
+        # update_prefixes for multiple used components
         components = {}
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
+            if plugin_instance.COMPONENT:
                 if plugin_instance.COMPONENT not in components:
                     components[plugin_instance.COMPONENT] = []
                 components[plugin_instance.COMPONENT].append(plugin_instance)
         for component_type, instances in components.items():
+            # run update_prefixes on the first instance of the plugin if exist
             if hasattr(instances[0], "update_prefixes"):
                 instances[0].update_prefixes(instances)
+            else:
+                if instances[0].TYPE == "base":
+                    # base plugins by instance name
+                    for instance in instances:
+                        instance.PREFIX = f"{component_type}.{instance.instances_name}"
+                else:
+                    # io plugins by instance idx
+                    for num, instance in enumerate(instances):
+                        instance.PREFIX = f"{component_type}.{num}"
 
         self.project.axis_dict = self.create_axis_config(self.project, f"{self.hal_prefix}.")
         num_joints = 0
@@ -1624,11 +1634,10 @@ if __name__ == "__main__":
         )
         self.halg.fmt_add_top("")
 
-        # precheck on base plugins
+        # update pin-names for connected plugins
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.TYPE == "base":
-                if hasattr(plugin_instance, "precheck"):
-                    plugin_instance.precheck(self)
+            if hasattr(plugin_instance, "update_pins"):
+                plugin_instance.update_pins(self)
 
         if self.project.config["toolchain"]:
             self.halg.fmt_add_top("loadrt rio")
@@ -1838,20 +1847,24 @@ if __name__ == "__main__":
                 elif not os.path.isdir(target):
                     shutil.copytree(source, target)
 
+        # run the component loaders
         for component_type, instances in components.items():
-            if hasattr(instances[0], "loader"):
-                ret = instances[0].loader(instances)
+            if hasattr(instances[0], "component_loader"):
+                ret = instances[0].component_loader(instances)
                 if ret:
                     self.halg.fmt_add_top(ret)
 
+        # run extra_files
         for component_type, instances in components.items():
             if hasattr(instances[0], "extra_files"):
                 instances[0].extra_files(self, instances)
 
+        # generate special hal entries for each plugin
         for plugin_instance in self.project.plugin_instances:
             if hasattr(plugin_instance, "hal"):
                 plugin_instance.hal(self)
 
+        # TODO: needed ?
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
                 if plugin_instance.NAME in {"stepgen", "mesastepgen"} and plugin_instance.plugin_setup.get("is_joint", False) is True:
@@ -1862,12 +1875,16 @@ if __name__ == "__main__":
                     if plugin_instance.NAME not in {"gpioout", "gpioin", "ethercat"} and "pin" in psetup:
                         self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
 
+        # TODO: can be removed if all addons moved to plugins
+        # generate special hal entries for each addon
         for addon_name, addon in self.addons.items():
             if hasattr(addon, "hal"):
                 addon.hal(self)
 
+        # adding all configured setp and net pins/signals
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is True:
+                # only setp for joints, other handled by plugin_instance.hal()
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     userconfig = signal_config.get("userconfig", {})
@@ -1876,7 +1893,7 @@ if __name__ == "__main__":
                     if setp:
                         self.halg.setp_add(f"{rprefix}.{halname}", setp)
 
-            if plugin_instance.plugin_setup.get("is_joint", False) is False:
+            else:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]
                     netname = signal_config["netname"]
@@ -1887,11 +1904,11 @@ if __name__ == "__main__":
                     direction = signal_config["direction"]
                     virtual = signal_config.get("virtual")
                     comp = signal_config.get("component")
-                    rprefix = "rio."
+                    rprefix = ""
                     if virtual:
                         rprefix = "riov."
-                    if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
-                        rprefix = ""
+                    elif plugin_instance.PLUGIN_TYPE == "gateware":
+                        rprefix = "rio."
                     if scale and not virtual:
                         self.halg.setp_add(f"{rprefix}{halname}-scale", scale)
                     if offset and not virtual:

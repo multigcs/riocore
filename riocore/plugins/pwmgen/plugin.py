@@ -114,10 +114,6 @@ a hardware PWM generator is a better choice."""
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
 
-    def update_prefixes(cls, instances):
-        for num, instance in enumerate(instances):
-            instance.PREFIX = f"pwmgen.{num}"
-
     def hal(self, generator):
         for option in ("pwm-freq", "scale", "offset", "min-dc", "max-dc", "dither-pwm"):
             value = self.plugin_setup.get(option, self.option_default(option))
@@ -125,7 +121,7 @@ a hardware PWM generator is a better choice."""
                 value = 1 if value else 0
             generator.halg.setp_add(f"{self.PREFIX}.{option}", f"{value}")
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         modes = []
         for num, instance in enumerate(instances):

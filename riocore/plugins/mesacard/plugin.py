@@ -243,7 +243,7 @@ class Plugin(PluginBase):
         self.instance_num = 0
         self.hm2_prefix = f"hm2_{board}.{self.instance_num}"
 
-    def precheck(self, parent):
+    def update_pins(self, parent):
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
                 # for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
@@ -309,7 +309,7 @@ class Plugin(PluginBase):
                         else:
                             psetup["pin"] = f"{self.hm2_prefix}.{pin}.in"
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         output.append("loadrt hostmot2")
 

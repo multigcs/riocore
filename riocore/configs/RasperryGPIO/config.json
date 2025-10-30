@@ -2,10 +2,10 @@
     "name": "RasperryGPIO",
     "flow": {
         "view": {
-            "scale": 0.7468468468468469,
+            "scale": 0.62,
             "pos": [
-                -6,
-                -109
+                34,
+                55
             ]
         },
         "board": {
@@ -304,6 +304,40 @@
                 130.0
             ],
             "rotate": 180
+        },
+        {
+            "type": "rpii2c",
+            "uid": "rpii2c0",
+            "pos": [
+                270.0,
+                660.0
+            ]
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "rpii2c0:IO:P6"
+                }
+            },
+            "uid": "gpioin5",
+            "pos": [
+                530.0,
+                750.0
+            ]
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "rpii2c0:IO:P3"
+                }
+            },
+            "uid": "gpioout2",
+            "pos": [
+                500.0,
+                830.0
+            ]
         }
     ],
     "breakouts": [

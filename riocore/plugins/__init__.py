@@ -264,6 +264,7 @@ class PluginBase:
         self.IMAGE_SHOW = False
         self.SIGNALS = {}
         self.PREFIX = ""
+        self.COMPONENT = ""
         self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []

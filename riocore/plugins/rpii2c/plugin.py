@@ -199,16 +199,16 @@ class Plugin(PluginBase):
                     text,
                 )
 
-    def update_prefixes(cls, instances):
-        for instance in instances:
-            instance.PREFIX = f"rpii2c.{instance.instances_name}"
-
-    def precheck(self, parent):
+    def update_pins(self, parent):
         device = self.plugin_setup.get("device", self.option_default("device"))
-        self.cfgstring = ""
+        self.cfgstring = "00000000"
+        if device == "hd44780":
+            self.cfgstring = self.plugin_setup.get("fmt", self.option_default("fmt")).replace("\n", "|")
+            return
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio":
                 for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
                     if ":" not in psetup["pin"]:
                         continue
                     prefix = psetup["pin"].split(":", 1)[0]
@@ -224,29 +224,14 @@ class Plugin(PluginBase):
                         self.cfgstring += "1"
                     else:
                         self.cfgstring += "0"
-        if not self.cfgstring:
-            self.cfgstring = "00000000"
-        if device == "hd44780":
-            self.cfgstring = self.plugin_setup.get("fmt", self.option_default("fmt")).replace("\n", "|")
 
-    def hal(self, parent):
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    if ":" not in psetup["pin"]:
-                        continue
-                    prefix = psetup["pin"].split(":", 1)[0]
-                    if self.instances_name != prefix:
-                        continue
                     pin = int(psetup["pin"].split(":", 1)[1])
-
                     if direction == "output":
                         psetup["pin"] = f"rpii2c.{self.instances_name}.p{pin:02d}-out"
                     elif direction == "input":
                         psetup["pin"] = f"rpii2c.{self.instances_name}.p{pin:02d}-in"
 
-    def loader(cls, instances):
+    def component_loader(cls, instances):
         output = []
         args = []
         for instance in instances:
