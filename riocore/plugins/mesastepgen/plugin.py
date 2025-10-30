@@ -11,7 +11,7 @@ class Plugin(PluginBase):
         self.IMAGES = ["stepper", "servo42"]
         self.TYPE = "joint"
         self.PLUGIN_TYPE = "mesa"
-        self.JOINT_TYPE = "position"
+        self.JOINT_TYPE = "velocity"
         self.ORIGIN = ""
         self.OPTIONS = {}
         self.SIGNALS = {

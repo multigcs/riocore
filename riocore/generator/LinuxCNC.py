@@ -2071,9 +2071,7 @@ if __name__ == "__main__":
                         joint_data[key] = value
 
                     joint_data["instance"].plugin_setup["joint_data"] = joint_data
-
                     joint_num += 1
-                    # print(axis_name, joint_data)
 
                 # overwrite axis configuration with user data
                 for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():

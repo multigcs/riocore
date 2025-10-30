@@ -14,6 +14,7 @@ If higher rates are needed, a hardware step generator is a better choice."""
         self.IMAGES = ["stepper", "servo42"]
         self.TYPE = "joint"
         self.PLUGIN_TYPE = "gpio"
+        self.JOINT_TYPE = "position"
         self.ORIGIN = ""
         self.OPTIONS = {
             "mode": {
