@@ -267,6 +267,7 @@ class Simulator:
                     for join_data in self.project.axis_dict.get("Z", {}).get("joints", []):
                         if int(jn) == join_data["num"]:
                             found = True
+                            break
                     if found and machinetype not in {"melfa", "melfa_nogl"}:
                         # Z-Axis
                         output.append(f"    if (joint_position[{jn}] > 2000.0) {{")
