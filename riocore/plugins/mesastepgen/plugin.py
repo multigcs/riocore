@@ -52,3 +52,5 @@ class Plugin(PluginBase):
                 value = {"MESA_MAXACCEL": "MESA_STEPGEN_MAXACCEL", "MESA_MAXVEL": "MESA_STEPGEN_MAXVEL"}.get(value, value)
                 parent.halg.setp_add(f"{self.PREFIX}.{key}", f"[JOINT_{joint_n}]{value}")
             parent.halg.joint_add(parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num)
+            parent.halg.setp_add(f"{self.PREFIX}.control-type", "1")
+            parent.halg.setp_add(f"{self.PREFIX}.step_type", "0")

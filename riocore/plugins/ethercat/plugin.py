@@ -35,7 +35,6 @@ class Plugin(PluginBase):
                 "description": "bus-index",
             },
         }
-        self.PREFIX_CIA402 = ""
 
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "Master":
@@ -115,16 +114,15 @@ class Plugin(PluginBase):
                     "type": "ETHERCAT",
                 },
             }
+        self.PREFIX_CIA402 = ""
 
     def update_prefixes(cls, instances):
         cia402_num = 0
         lcec_num = 0
         for instance in instances:
-            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            # node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             instance.PREFIX = f"lcec.{lcec_num}.{instance.title}"
-            if node_type == "Servo/Stepper":
-                instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
-                cia402_num += 1
+            instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
 
     def extra_files(cls, parent, instances):
         output = []
@@ -134,7 +132,7 @@ class Plugin(PluginBase):
         for num, instance in enumerate(instances):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             idx = instance.plugin_setup.get("idx", instance.option_default("idx"))
-            if idx < 0 or node_type == "0":
+            if idx < 0 or node_type == "Master":
                 # only connected slaves
                 continue
             if node_type == "1":
@@ -188,7 +186,7 @@ class Plugin(PluginBase):
         # lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            if node_type == "1":
+            if node_type == "Master":
                 cia402_num += 1
 
         output.append(f"loadrt cia402 count={cia402_num}")
@@ -197,7 +195,8 @@ class Plugin(PluginBase):
         # lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            if node_type == "1":
+            if node_type == "Master":
+                # TODO: .PREFIX_CIA402
                 output.append(f"addf cia402.{cia402_num}.read-all servo-thread")
                 output.append(f"addf cia402.{cia402_num}.write-all servo-thread")
                 cia402_num += 1
@@ -206,14 +205,13 @@ class Plugin(PluginBase):
         return "\n".join(output)
 
     def hal(self, parent):
+        lcec = self.PREFIX
+        cia402 = self.PREFIX_CIA402
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        if node_type == "1" and "joint_data" in self.plugin_setup:
+        if node_type == "Servo/Stepper" and "joint_data" in self.plugin_setup:
             joint_data = self.plugin_setup["joint_data"]
             axis_name = joint_data["axis"]
             joint_n = joint_data["num"]
-
-            lcec = self.PREFIX
-            cia402 = self.PREFIX_CIA402
 
             cmd_halname = f"{cia402}.pos-cmd"
             feedback_halname = f"{cia402}.pos-fb"
@@ -225,7 +223,10 @@ class Plugin(PluginBase):
             parent.halg.net_add(f"{lcec}.pos-actual", f"{cia402}.drv-actual-position", f"j{joint_n}drv-pos")
             parent.halg.net_add(f"{cia402}.controlword", f"{lcec}.control-word", f"j{joint_n}control")
             parent.halg.net_add(f"{cia402}.drv-target-position", f"{lcec}.target-position", f"j{joint_n}target-pos")
-
+            print(self, joint_n)
             parent.halg.joint_add(
                 parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname
             )
+
+        if node_type == "Master":
+            parent.halg.setp_add(f"{cia402}.csp-mode", "1")

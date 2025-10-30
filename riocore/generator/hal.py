@@ -767,7 +767,7 @@ class hal_generator:
                 self.net_add(f"corexy.j{joint}-motor-pos-fb", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb-{corexy_axis}")
             else:
                 self.net_add(f"joint.{joint}.motor-pos-cmd", f"{cmd_halname}", f"j{joint}pos-cmd")
-                self.net_add(f"{feedback_halname}", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
+                self.net_add(f"{feedback_halname}", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-fb")
                 # self.net_add(f"joint.{joint}.motor-pos-cmd", f"joint.{joint}.motor-pos-fb", f"j{joint}pos-cmd")
         else:
             for key in ("Pgain", "Igain", "Dgain", "bias", "FF0", "FF1", "FF2", "deadband", "maxoutput"):
