@@ -130,3 +130,28 @@ class Plugin(PluginBase):
             else:
                 return f"value = (value - {vmin}) * (OSC_CLOCK / {freq}) / ({vmax} - {vmin});"
         return ""
+
+    def hal(self, parent):
+        if "joint_data" in self.plugin_setup:
+            joint_data = self.plugin_setup["joint_data"]
+            axis_name = joint_data["axis"]
+            joint_n = joint_data["num"]
+            pid_num = joint_n
+            prefix = f"rio.{self.title}"
+            cmd_halname = f"{prefix}.dty"
+            enable_halname = f"{prefix}.enable"
+            scale_halname = f"{prefix}.dty-scale"
+            feedback_halname = joint_data["feedback_halname"]
+            feedback_scale_halname = f"{joint_data['feedback_halname']}-scale"
+            parent.halg.joint_add(
+                parent,
+                axis_name,
+                joint_n,
+                "velocity",
+                cmd_halname,
+                feedback_halname=feedback_halname,
+                scale_halname=scale_halname,
+                feedback_scale_halname=feedback_scale_halname,
+                enable_halname=enable_halname,
+                pid_num=pid_num,
+            )

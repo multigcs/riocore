@@ -284,6 +284,7 @@ class PluginBase:
         self.KEYWORDS = ""
         self.ORIGIN = ""
         self.GATEWARE_SUPPORT = True
+        self.JOINT_MODE = "velocity"
         self.SYNC = None
         self.ERROR = None
         self.OPTIONS = {}

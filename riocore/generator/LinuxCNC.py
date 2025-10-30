@@ -700,7 +700,7 @@ class LinuxCNC:
 
             for joint_config in axis_config["joints"]:
                 joint = joint_config["num"]
-                position_mode = joint_config.get("position_mode", "relative")
+                position_mode = joint_config.get("mode", "velocity")
                 plugin_instance = joint_config["instance"]
 
                 output.append(f"[JOINT_{joint}]")
@@ -711,8 +711,6 @@ class LinuxCNC:
                         setup_value = joint_config.get(f"PID_{key.upper()}")
                         if setup_value:
                             value = setup_value
-                        if joint_setup["type"] != "stepgen" and key.startswith("STEPGEN_"):
-                            continue
                         output.append(f"{key:18s} = {value}")
                     output.append("")
                 for key, value in joint_config.items():
@@ -1992,6 +1990,7 @@ if __name__ == "__main__":
                 for joint_data in axis_data["joints"]:
                     joint_data["axis"] = axis_name
                     joint_data["num"] = joint_num
+                    joint_data["mode"] = joint_data["instance"].JOINT_MODE
                     if joint_num in homeswitches:
                         joint_data["homeswitch"] = homeswitches[joint_num]
                     else:
@@ -2030,14 +2029,13 @@ if __name__ == "__main__":
                         else:
                             joint_data["TYPE"] = "LINEAR"
 
-                    feedback = joint_data["instance"].plugin_setup.get("feedback", "")
+                    feedback = joint_data["instance"].plugin_setup.get("joint", {}).get("feedback", "")
                     if feedback:
                         if ":" in feedback:
                             fb_plugin_name, fb_signal_name = feedback.split(":")
                         else:
                             fb_plugin_name = feedback
                             fb_signal_name = "position"
-
                         found = None
                         for sub_instance in project.plugin_instances:
                             if sub_instance.title == fb_plugin_name:
@@ -2048,17 +2046,20 @@ if __name__ == "__main__":
                                     if sub_direction != "input":
                                         riocore.log("ERROR: can not use this as feedback (no input signal):", sub_signal_config)
                                         exit(1)
-
                                     feedback_halname = f"{prefix}{sub_signal_config['halname']}"
                                     feedback_signal = feedback_halname.split(".")[-1]
-                                    feedback_scale = float(sub_signal_config["plugin_instance"].plugin_setup.get("signals", {}).get(feedback_signal, {}).get("scale", 1.0))
+                                    sub_signals_setup = sub_instance.plugin_setup.get("signals", {})
+                                    feedback_scale = float(sub_signals_setup.get(feedback_signal, {}).get("scale", 1.0))
                                     joint_data["feedback_name"] = fb_plugin_name
+                                    joint_data["feedback_halname"] = feedback_halname
                                     joint_data["feedback_signal"] = fb_signal_name
                                     joint_data["feedback_instance"] = sub_instance
                                     joint_data["SCALE_IN"] = feedback_scale
                                     found = True
                                     break
-                        if not found:
+                        if found:
+                            joint_data["mode"] = "velocity"
+                        else:
                             riocore.log(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint_num} not found")
                     else:
                         joint_data["SCALE_IN"] = joint_data["SCALE_OUT"]
