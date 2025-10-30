@@ -611,11 +611,11 @@
                     "net": "",
                     "setp": ""
                 },
-                "spindle_rated_motor_voltage": {
+                "spindle_voltage": {
                     "net": "",
                     "setp": ""
                 },
-                "spindle_rated_motor_current": {
+                "spindle_current": {
                     "net": "",
                     "setp": ""
                 },
@@ -623,7 +623,7 @@
                     "net": "",
                     "setp": ""
                 },
-                "spindle_rated_motor_rev": {
+                "spindle_rev": {
                     "net": "",
                     "setp": ""
                 },

@@ -10,10 +10,10 @@ class hy_vfd:
         "max_freq": {"scale": 0.01, "unit": "Hz"},
         "base_freq": {"scale": 0.01, "unit": "Hz"},
         "freq_lower_limit": {"scale": 0.01, "unit": "Hz"},
-        "rated_motor_voltage": {"scale": 0.1, "unit": "V"},
-        "rated_motor_current": {"scale": 0.1, "unit": "A"},
+        "voltage": {"scale": 0.1, "unit": "V"},
+        "current": {"scale": 0.1, "unit": "A"},
         "rpm_at_50hz": {"scale": 1.0, "unit": "RPM"},
-        "rated_motor_rev": {"scale": 1.0, "unit": "RPM"},
+        "rev": {"scale": 1.0, "unit": "RPM"},
         "speed_fb": {
             "scale": 1.0,
             "unit": "RPM",
@@ -158,7 +158,7 @@ class hy_vfd:
                             self.HYVFD_STATUS_REGISTER[status_register]["done"] = True
                             if status_register == 1 and self.HYVFD_DATA["max_freq"]:
                                 self.HYVFD_DATA[status_name] = value * status_scale
-                                self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
+                                self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
                                 self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
                                 set_speed = abs(self.signals[f"{self.signal_name}_speed_command"]["value"])
                                 tolerance = set_speed * self.signals[f"{self.signal_name}_spindle_at_speed_tolerance"]["value"]
@@ -209,10 +209,10 @@ class hy_vfd:
                 self.HYVFD_DATA["max_freq"] = self.HYVFD_CONFIG_REGISTER[5]["value"] * self.HYVFD_CALC_KEYS["max_freq"]["scale"]
                 self.HYVFD_DATA["base_freq"] = self.HYVFD_CONFIG_REGISTER[4]["value"] * self.HYVFD_CALC_KEYS["base_freq"]["scale"]
                 self.HYVFD_DATA["freq_lower_limit"] = self.HYVFD_CONFIG_REGISTER[11]["value"] * self.HYVFD_CALC_KEYS["freq_lower_limit"]["scale"]
-                self.HYVFD_DATA["rated_motor_voltage"] = self.HYVFD_CONFIG_REGISTER[141]["value"] * self.HYVFD_CALC_KEYS["rated_motor_voltage"]["scale"]
-                self.HYVFD_DATA["rated_motor_current"] = self.HYVFD_CONFIG_REGISTER[142]["value"] * self.HYVFD_CALC_KEYS["rated_motor_current"]["scale"]
+                self.HYVFD_DATA["voltage"] = self.HYVFD_CONFIG_REGISTER[141]["value"] * self.HYVFD_CALC_KEYS["voltage"]["scale"]
+                self.HYVFD_DATA["current"] = self.HYVFD_CONFIG_REGISTER[142]["value"] * self.HYVFD_CALC_KEYS["current"]["scale"]
                 self.HYVFD_DATA["rpm_at_50hz"] = self.HYVFD_CONFIG_REGISTER[144]["value"] * self.HYVFD_CALC_KEYS["rpm_at_50hz"]["scale"]
-                self.HYVFD_DATA["rated_motor_rev"] = (self.HYVFD_DATA["rpm_at_50hz"] / 50.0) * self.HYVFD_DATA["max_freq"]
+                self.HYVFD_DATA["rev"] = (self.HYVFD_DATA["rpm_at_50hz"] / 50.0) * self.HYVFD_DATA["max_freq"]
                 # get status data
                 if self.HYVFD_STATUS_REGISTER_ACTIVE < len(self.HYVFD_STATUS_REGISTER) - 1:
                     self.HYVFD_STATUS_REGISTER_ACTIVE += 1
@@ -228,8 +228,8 @@ class hy_vfd:
                 set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
                 freq_comp = 0
                 hz_per_rpm = 0
-                if self.HYVFD_DATA["rated_motor_rev"] > 0:
-                    hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rated_motor_rev"]
+                if self.HYVFD_DATA["rev"] > 0:
+                    hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rev"]
                 value = abs((set_speed + freq_comp) * hz_per_rpm)
                 if value > self.HYVFD_DATA["max_freq"]:
                     value = self.HYVFD_DATA["max_freq"]
@@ -318,7 +318,7 @@ class hy_vfd:
         output.append("            }")
         output.append(f"            if (value_{self.signal_name}_max_freq > 0.0) {{")
         output.append(
-            f"                value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};"
+            f"                value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};"
         )
         output.append("            }")
         output.append(f"            value_{self.signal_name}_speed_fb_rps = value_{self.signal_name}_speed_fb / 60.0;")
@@ -359,14 +359,10 @@ class hy_vfd:
         output.append(f"        value_{self.signal_name}_base_freq = {self.instances_name}_{self.signal_name}_config_register[0].value * {self.HYVFD_CALC_KEYS['base_freq']['scale']};")
         output.append(f"        value_{self.signal_name}_max_freq = {self.instances_name}_{self.signal_name}_config_register[1].value * {self.HYVFD_CALC_KEYS['max_freq']['scale']};")
         output.append(f"        value_{self.signal_name}_freq_lower_limit = {self.instances_name}_{self.signal_name}_config_register[2].value * {self.HYVFD_CALC_KEYS['freq_lower_limit']['scale']};")
-        output.append(
-            f"        value_{self.signal_name}_rated_motor_voltage = {self.instances_name}_{self.signal_name}_config_register[3].value * {self.HYVFD_CALC_KEYS['rated_motor_voltage']['scale']};"
-        )
-        output.append(
-            f"        value_{self.signal_name}_rated_motor_current = {self.instances_name}_{self.signal_name}_config_register[4].value * {self.HYVFD_CALC_KEYS['rated_motor_current']['scale']};"
-        )
+        output.append(f"        value_{self.signal_name}_voltage = {self.instances_name}_{self.signal_name}_config_register[3].value * {self.HYVFD_CALC_KEYS['voltage']['scale']};")
+        output.append(f"        value_{self.signal_name}_current = {self.instances_name}_{self.signal_name}_config_register[4].value * {self.HYVFD_CALC_KEYS['current']['scale']};")
         output.append(f"        value_{self.signal_name}_rpm_at_50hz = {self.instances_name}_{self.signal_name}_config_register[5].value * {self.HYVFD_CALC_KEYS['rpm_at_50hz']['scale']};")
-        output.append(f"        value_{self.signal_name}_rated_motor_rev = (value_{self.signal_name}_rpm_at_50hz / 50.0) * value_{self.signal_name}_max_freq;")
+        output.append(f"        value_{self.signal_name}_rev = (value_{self.signal_name}_rpm_at_50hz / 50.0) * value_{self.signal_name}_max_freq;")
         output.append("    }")
         output.append("    break;")
         output.append("")
@@ -434,8 +430,8 @@ class hy_vfd:
         output.append("        // set speed")
         output.append("        float freq_comp = 0;")
         output.append("        float hz_per_rpm = 0;")
-        output.append(f"        if (value_{self.signal_name}_rated_motor_rev > 0.0) {{")
-        output.append(f"            hz_per_rpm = value_{self.signal_name}_max_freq / value_{self.signal_name}_rated_motor_rev;")
+        output.append(f"        if (value_{self.signal_name}_rev > 0.0) {{")
+        output.append(f"            hz_per_rpm = value_{self.signal_name}_max_freq / value_{self.signal_name}_rev;")
         output.append("        }")
         output.append(f"        float value = abs((value_{self.signal_name}_speed_command + freq_comp) * hz_per_rpm);")
         output.append(f"        if (value > value_{self.signal_name}_max_freq) {{")
