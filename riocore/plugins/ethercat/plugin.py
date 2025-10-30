@@ -132,10 +132,13 @@ class Plugin(PluginBase):
         for num, instance in enumerate(instances):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             idx = instance.plugin_setup.get("idx", instance.option_default("idx"))
+
+            print("####", idx)
+
             if idx < 0 or node_type == "Master":
                 # only connected slaves
                 continue
-            if node_type == "1":
+            if node_type == "Servo/Stepper":
                 output.append(f'    <slave idx="{idx}" type="generic" vid="00400000" pid="00000715" configPdos="true" name="{instance.title}">')
                 output.append('      <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="25000"/>')
                 output.append('      <watchdog divider="2498" intervals="1000"/>')
@@ -159,7 +162,7 @@ class Plugin(PluginBase):
                 output.append("        </pdo>")
                 output.append("      </syncManager>")
                 output.append("    </slave>")
-            elif node_type == "2":
+            elif node_type == "GPIO":
                 output.append(f'    <slave idx="{idx}" type="generic" vid="00001337" pid="000004d2" configPdos="true" name="{instance.title}">')
                 output.append('      <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="25000"/>')
                 output.append('      <watchdog divider="2498" intervals="1000"/>')
@@ -223,7 +226,6 @@ class Plugin(PluginBase):
             parent.halg.net_add(f"{lcec}.pos-actual", f"{cia402}.drv-actual-position", f"j{joint_n}drv-pos")
             parent.halg.net_add(f"{cia402}.controlword", f"{lcec}.control-word", f"j{joint_n}control")
             parent.halg.net_add(f"{cia402}.drv-target-position", f"{lcec}.target-position", f"j{joint_n}target-pos")
-            print(self, joint_n)
             parent.halg.joint_add(
                 parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname
             )

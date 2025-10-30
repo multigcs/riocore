@@ -1878,7 +1878,7 @@ class Window(QMainWindow):
                 ptype = plugin_setup.get("type")
                 if ptype == "ethercat":
                     ethercat_node_found = True
-                    if plugin_setup.get("node_type", "1") == "0":
+                    if plugin_setup.get("node_type", "Servo/Stepper") == "Master":
                         # the master node
                         plugin_setup["idx"] = -1
                         ethercat_master_found = True
@@ -1926,7 +1926,7 @@ class Window(QMainWindow):
             if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
                 if isinstance(item._source_node, PluginNode) and item._source_node.plugin_instance.plugin_setup.get("type") == "ethercat":
                     parents.append(item._source_node.name)
-                    if item._source_node.plugin_instance.plugin_setup.get("node_type", "1") == "0":
+                    if item._source_node.plugin_instance.plugin_setup.get("node_type", "Servo/Stepper") == "Master":
                         # this is the master node
                         return item._source_node
                     else:
