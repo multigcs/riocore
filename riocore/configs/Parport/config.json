@@ -3,10 +3,10 @@
     "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 1.0,
+            "scale": 2.2,
             "pos": [
-                -50,
-                -299
+                2353,
+                366
             ]
         },
         "board": {
@@ -381,11 +381,98 @@
             "type": "parport",
             "uid": "parport0",
             "pos": [
-                90.0,
-                120.0
+                140.0,
+                130.0
             ],
             "rotate": 0,
             "name": "pport"
+        },
+        {
+            "type": "stepperninja",
+            "uid": "stepperninja0",
+            "pos": [
+                1490.0,
+                130.0
+            ],
+            "rotate": 90
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin5",
+            "pos": [
+                1200.0,
+                320.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP22"
+                }
+            },
+            "image": "opto",
+            "rotate": 180
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout2",
+            "pos": [
+                1730.0,
+                250.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP12"
+                }
+            },
+            "image": "ssr2a"
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout3",
+            "pos": [
+                1730.0,
+                340.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP11"
+                }
+            },
+            "image": "ssr2a",
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin6",
+            "pos": [
+                1200.0,
+                370.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP26"
+                }
+            },
+            "image": "opto",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "ninjastepgen",
+            "pins": {
+                "step": {
+                    "pin": "stepperninja0:IO:GP2"
+                },
+                "dir": {
+                    "pin": "stepperninja0:IO:GP3"
+                }
+            },
+            "uid": "ninjastepgen0",
+            "pos": [
+                1720.0,
+                450.0
+            ],
+            "image": "stepper",
+            "is_joint": true
         }
     ],
     "breakouts": [

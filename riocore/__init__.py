@@ -531,6 +531,7 @@ class Project:
                 target_pin = expansion_mapping.get(source_pin)
                 if target_pin:
                     plugin_instance.plugin_setup["pins"][pin]["pin"] = target_pin
+
         # resolve all mappings
         for _tn in range(5):
             unmapped = ""

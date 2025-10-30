@@ -528,9 +528,9 @@ class hal_generator:
             for line in part.split("\n"):
                 if line.startswith("addf"):
                     function = line.split()[1]
-                    if "read" in function:
+                    if "read" in function or "send" in function:
                         hal_data_addf_read.append(line)
-                    elif "write" in function:
+                    elif "write" in function or "recv" in function:
                         hal_data_addf_write.append(line)
                     else:
                         hal_data_addf_other.append(line)
