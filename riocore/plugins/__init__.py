@@ -334,7 +334,7 @@ class PluginBase:
             if "is_joint" not in self.OPTIONS:
                 NEW_OPTIONS["is_joint"] = {
                     "type": bool,
-                    "default": True,
+                    "default": False,
                     "description": "configure as joint",
                 }
             if "axis" not in self.OPTIONS:
