@@ -205,31 +205,20 @@ class Plugin(PluginBase):
         if device == "hd44780":
             self.cfgstring = self.plugin_setup.get("fmt", self.option_default("fmt")).replace("\n", "|")
             return
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    if ":" not in psetup["pin"]:
-                        continue
-                    prefix = psetup["pin"].split(":", 1)[0]
-                    if self.instances_name != prefix:
-                        continue
-                    invert = 0
-                    for modifier in psetup.get("modifier", []):
-                        if modifier["type"] == "invert":
-                            invert = 1 - invert
-                        else:
-                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
-                    if invert:
-                        self.cfgstring += "1"
-                    else:
-                        self.cfgstring += "0"
 
-                    pin = int(psetup["pin"].split(":", 1)[1])
-                    if direction == "output":
-                        psetup["pin"] = f"rpii2c.{self.instances_name}.p{pin:02d}-out"
-                    elif direction == "input":
-                        psetup["pin"] = f"rpii2c.{self.instances_name}.p{pin:02d}-in"
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            pin = connected_pin["pin"]
+            psetup = connected_pin["setup"]
+            direction = connected_pin["direction"]
+            inverted = connected_pin["inverted"]
+            if inverted:
+                self.cfgstring += "1"
+            else:
+                self.cfgstring += "0"
+            if direction == "output":
+                psetup["pin"] = f"rpii2c.{self.instances_name}.p{int(pin):02d}-out"
+            elif direction == "input":
+                psetup["pin"] = f"rpii2c.{self.instances_name}.p{int(pin):02d}-in"
 
     def component_loader(cls, instances):
         output = []

@@ -1594,6 +1594,45 @@ if __name__ == "__main__":
         gui_gen.draw_end()
         gui_gen.save(self.configuration_path)
 
+    def get_all_plugin_pins(self, configured=True, prefix=None):
+        pins = []
+        for plugin_instance in self.project.plugin_instances:
+            for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                pin = psetup.get("pin")
+                rawpin = pin
+                # filter unconfigured pins
+                if configured and not pin:
+                    continue
+
+                pin_prefix = None
+                if pin and ":" in pin:
+                    pin_prefix = pin.split(":")[0]
+                    # filter prefixes
+                    pin = pin.split(":", 1)[1]
+                if prefix and pin_prefix != prefix:
+                    continue
+
+                inverted = 0
+                for modifier in psetup.get("modifier", []):
+                    if modifier["type"] == "invert":
+                        inverted = 1 - inverted
+                direction = plugin_instance.PINDEFAULTS[name]["direction"]
+                reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
+                pins.append(
+                    {
+                        "name": name,
+                        "setup": psetup,
+                        "rawpin": rawpin,
+                        "pin": pin,
+                        "prefix": pin_prefix,
+                        "direction": direction,
+                        "reset": reset,
+                        "inverted": inverted,
+                        "instance": plugin_instance,
+                    }
+                )
+        return pins
+
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
         simulation = linuxcnc_config.get("simulation", False)

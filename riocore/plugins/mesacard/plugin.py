@@ -2,6 +2,7 @@ import os
 
 from riocore.plugins import PluginBase
 
+# mesaflash --device 7C81 --addr /dev/spidev0.0 --spi --fix-boot-block --write 7c81_5abobx3d.bit
 
 class Plugin(PluginBase):
     def setup(self):
@@ -244,79 +245,45 @@ class Plugin(PluginBase):
         self.hm2_prefix = f"hm2_{board}.{self.instance_num}"
 
     def update_pins(self, parent):
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
-                # for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                for name in list(plugin_instance.plugin_setup.get("pins", {}).keys()):
-                    psetup = plugin_instance.plugin_setup["pins"][name]
-                    if "pin" not in psetup:
-                        continue
-                    pin = psetup["pin"]
-                    if ":" not in pin:
-                        continue
-                    prefix = pin.split(":")[0]
-                    if prefix != self.instances_name:
-                        continue
-                    pin = pin.split(":")[1]
-
-                    suffix = ".".join(plugin_instance.plugin_setup["pins"][name]["pin"].split(":")[1].split(".")[:-1])
-                    plugin_instance.PREFIX = f"{self.hm2_prefix}.{suffix}"
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            rawpin = connected_pin["rawpin"]
+            plugin_instance = connected_pin["instance"]
+            suffix = ".".join(rawpin.split(":")[1].split(".")[:-1])
+            plugin_instance.PREFIX = f"{self.hm2_prefix}.{suffix}"
 
     def hal(self, parent):
         # mapping halnames to real prefix
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
-                # for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                for name in list(plugin_instance.plugin_setup.get("pins", {}).keys()):
-                    psetup = plugin_instance.plugin_setup["pins"][name]
-                    if "pin" not in psetup:
-                        continue
-                    pin = psetup["pin"]
-                    if ":" not in pin:
-                        continue
-                    prefix = pin.split(":")[0]
-                    if prefix != self.instances_name:
-                        continue
-                    pin = pin.split(":")[1]
-
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    invert = 0
-                    for modifier in psetup.get("modifier", []):
-                        if modifier["type"] == "invert":
-                            invert = 1 - invert
-                        else:
-                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
-
-                    if pin.endswith(".pwm"):
-                        postfix = plugin_instance.plugin_setup["pins"][name]["pin"].split(":")[1].replace(".pwm", "")
-                        plugin_instance.PREFIX = f"{self.hm2_prefix}.{postfix}"
-                        del plugin_instance.plugin_setup["pins"][name]
-
-                        if invert:
-                            parent.halg.setp_add(f"{self.hm2_prefix}.{postfix}.out0.invert_output", 1)
-
-                    elif pin.endswith(".step") or pin.endswith(".dir"):
-                        pin = pin.replace(".step", "").replace(".dir", "")
-                        psetup["pin"] = f"{self.hm2_prefix}.{pin}.out"
-                    elif direction == "output":
-                        psetup["pin"] = f"{self.hm2_prefix}.{pin}.out"
-                        parent.halg.setp_add(f"{self.hm2_prefix}.{pin}.is_output", 1)
-                        if invert:
-                            parent.halg.setp_add(f"{self.hm2_prefix}.{pin}.invert_output", 1)
-                    elif direction == "input":
-                        if invert:
-                            psetup["pin"] = f"{self.hm2_prefix}.{pin}.in_not"
-                        else:
-                            psetup["pin"] = f"{self.hm2_prefix}.{pin}.in"
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            name = connected_pin["name"]
+            psetup = connected_pin["setup"]
+            pin = connected_pin["pin"]
+            rawpin = connected_pin["rawpin"]
+            direction = connected_pin["direction"]
+            inverted = connected_pin["inverted"]
+            plugin_instance = connected_pin["instance"]
+            if pin.endswith(".pwm"):
+                postfix = rawpin.split(":")[1].replace(".pwm", "")
+                plugin_instance.PREFIX = f"{self.hm2_prefix}.{postfix}"
+                del plugin_instance.plugin_setup["pins"][name]
+                if inverted:
+                    parent.halg.setp_add(f"{self.hm2_prefix}.{postfix}.out0.invert_output", 1)
+            elif pin.endswith(".step") or pin.endswith(".dir"):
+                pin = pin.replace(".step", "").replace(".dir", "")
+                psetup["pin"] = f"{self.hm2_prefix}.{pin}.out"
+            elif direction == "output":
+                psetup["pin"] = f"{self.hm2_prefix}.{pin}.out"
+                parent.halg.setp_add(f"{self.hm2_prefix}.{pin}.is_output", 1)
+                if inverted:
+                    parent.halg.setp_add(f"{self.hm2_prefix}.{pin}.invert_output", 1)
+            elif direction == "input":
+                if inverted:
+                    psetup["pin"] = f"{self.hm2_prefix}.{pin}.in_not"
+                else:
+                    psetup["pin"] = f"{self.hm2_prefix}.{pin}.in"
 
     def component_loader(cls, instances):
         output = []
         output.append("loadrt hostmot2")
-
-        # mesaflash --device 7C81 --addr /dev/spidev0.0 --spi --fix-boot-block --write 7c81_5abobx3d.bit
-        # is_opendrain
-        # invert_output
-
         for num, instance in enumerate(instances):
             cardtype = instance.plugin_setup.get("cardtype", instance.option_default("cardtype"))
             num_pwms = instance.plugin_setup.get("num_pwms", instance.option_default("num_pwms"))

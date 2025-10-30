@@ -164,8 +164,11 @@ class Plugin(PluginBase):
             },
         }
 
+    def update_prefixes(cls, instances):
+        for num, instance in enumerate(instances):
+            instance.instance_num = num
+
     def update_pins(self, parent):
-        print("#### update_pins")
         self.parport_mode = ""
         active = False
         mode_outputs = {
@@ -174,28 +177,20 @@ class Plugin(PluginBase):
             "x": [2, 3, 4, 5, 6, 7, 8, 9],
         }
         matching_errors = {"in": [], "out": [], "x": []}
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    if "pin" not in psetup:
-                        continue
-                    pin = psetup["pin"]
-                    if ":" not in pin:
-                        continue
-                    prefix = pin.split(":")[0]
-                    if prefix != self.instances_name:
-                        continue
-                    pin = int(pin.split(":")[1])
-                    active = True
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    if direction == "output":
-                        for mode in mode_outputs:
-                            if pin not in mode_outputs[mode]:
-                                matching_errors[mode].append(f"{pin} must be input")
-                    else:
-                        for mode in mode_outputs:
-                            if pin in mode_outputs[mode]:
-                                matching_errors[mode].append(f"{pin} must be output")
+
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            pin = connected_pin["pin"]
+            psetup = connected_pin["setup"]
+            direction = connected_pin["direction"]
+            active = True
+            if direction == "output":
+                for mode in mode_outputs:
+                    if pin not in mode_outputs[mode]:
+                        matching_errors[mode].append(f"{pin} must be input")
+            else:
+                for mode in mode_outputs:
+                    if pin in mode_outputs[mode]:
+                        matching_errors[mode].append(f"{pin} must be output")
 
         self.parport_mode = ""
         for mode in matching_errors:
@@ -212,71 +207,20 @@ class Plugin(PluginBase):
             self.parport_mode = ""
 
         # mapping halnames to real prefix
-        self.instance_num = 0
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    if "pin" not in psetup:
-                        continue
-                    pin = psetup["pin"]
-                    if ":" not in pin:
-                        continue
-                    prefix = pin.split(":")[0]
-                    if prefix != self.instances_name:
-                        continue
-                    pin = int(pin.split(":")[1])
-
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    invert = 0
-                    for modifier in psetup.get("modifier", []):
-                        if modifier["type"] == "invert":
-                            invert = 1 - invert
-                        else:
-                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
-                    if direction == "output":
-                        psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-out"
-                        if invert:
-                            parent.halg.setp_add(f"parport.{self.instance_num}.pin-{pin:02d}-out-invert", 1)
-                    elif direction == "input":
-                        if invert:
-                            psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-in-not"
-                        else:
-                            psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-in"
-
-    def hal(self, parent):
-        # mapping halnames to real prefix
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio":
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    if "pin" not in psetup:
-                        continue
-                    pin = psetup["pin"]
-                    if ":" not in pin:
-                        continue
-                    prefix = pin.split(":")[0]
-                    if prefix != self.instances_name:
-                        continue
-                    pin = int(pin.split(":")[1])
-
-                    direction = plugin_instance.PINDEFAULTS[name]["direction"]
-                    reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
-                    invert = 0
-                    for modifier in psetup.get("modifier", []):
-                        if modifier["type"] == "invert":
-                            invert = 1 - invert
-                        else:
-                            print(f"WARNING: modifier {modifier['type']} is not supported for gpio's")
-                    if direction == "output":
-                        psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-out"
-                        if invert:
-                            parent.halg.setp_add(f"parport.{self.instance_num}.pin-{pin:02d}-out-invert", 1)
-                    elif direction == "input":
-                        if invert:
-                            psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-in-not"
-                        else:
-                            psetup["pin"] = f"parport.{self.instance_num}.pin-{pin:02d}-in"
-                    if reset:
-                        parent.halg.setp_add(f"parport.{self.instance_num}.pin-{pin:02d}-out-reset", 1)
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            pin = connected_pin["pin"]
+            psetup = connected_pin["setup"]
+            direction = connected_pin["direction"]
+            inverted = connected_pin["inverted"]
+            if direction == "output":
+                psetup["pin"] = f"parport.{self.instance_num}.pin-{int(pin):02d}-out"
+                if inverted:
+                    parent.halg.setp_add(f"parport.{self.instance_num}.pin-{int(pin):02d}-out-invert", 1)
+            elif direction == "input":
+                if inverted:
+                    psetup["pin"] = f"parport.{self.instance_num}.pin-{int(pin):02d}-in-not"
+                else:
+                    psetup["pin"] = f"parport.{self.instance_num}.pin-{int(pin):02d}-in"
 
     def component_loader(cls, instances):
         output = []
