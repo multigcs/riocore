@@ -712,7 +712,6 @@ class LinuxCNC:
                 joint = joint_config["num"]
                 position_mode = joint_config.get("mode", "velocity")
                 plugin_instance = joint_config["instance"]
-
                 output.append(f"[JOINT_{joint}]")
                 output.append(f"# {plugin_instance.instances_name}")
                 if position_mode == "velocity":
@@ -723,8 +722,27 @@ class LinuxCNC:
                             value = setup_value
                         output.append(f"{key:18s} = {value}")
                     output.append("")
+
+                options = [
+                    "TYPE",
+                    "FERROR",
+                    "MIN_LIMIT",
+                    "MAX_LIMIT",
+                    "MAX_VELOCITY",
+                    "MAX_ACCELERATION",
+                    "SCALE_OUT",
+                    "SCALE_IN",
+                    "HOME_SEARCH_VEL",
+                    "HOME_LATCH_VEL",
+                    "HOME_FINAL_VEL",
+                    "HOME_IGNORE_LIMITS",
+                    "HOME_USE_INDEX",
+                    "HOME_OFFSET",
+                    "HOME",
+                    "HOME_SEQUENCE",
+                ] + plugin_instance.JOINT_OPTIONS
                 for key, value in joint_config.items():
-                    if key in self.JOINT_DEFAULTS:
+                    if key in options:
                         output.append(f"{key:18s} = {value}")
 
                 output.append("")
@@ -2013,7 +2031,7 @@ if __name__ == "__main__":
                         homeswitches[int(net.split(".")[1])] = plugin_instance
 
         joint_num = 0
-        for axis in "XYZABCUVW":
+        for axis in axis_names:
             for axis_name, axis_data in axis_config.items():
                 if axis != axis_name:
                     continue
@@ -2117,14 +2135,16 @@ if __name__ == "__main__":
                             joint_data["mode"] = "velocity"
                         else:
                             riocore.log(f"ERROR: feedback {fb_plugin_name}->{fb_signal_name} for joint {joint_num} not found")
-                    else:
-                        joint_data["SCALE_IN"] = joint_data["SCALE_OUT"]
 
                     # overwrite with user configuration
                     joint_config = joint_data["instance"].plugin_setup.get("joint", {})
                     for key, value in joint_config.items():
                         key = key.upper()
+                        key = {"SCALE": "SCALE_OUT"}.get(key, key)
                         joint_data[key] = value
+
+                    if not feedback:
+                        joint_data["SCALE_IN"] = joint_data["SCALE_OUT"]
 
                     joint_data["instance"].plugin_setup["joint_data"] = joint_data
                     joint_num += 1

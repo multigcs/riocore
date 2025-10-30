@@ -12,6 +12,7 @@ class Plugin(PluginBase):
         self.TYPE = "joint"
         self.PLUGIN_TYPE = "mesa"
         self.JOINT_TYPE = "velocity"
+        self.JOINT_OPTIONS = ["MESA_DIRSETUP", "MESA_DIRHOLD", "MESA_STEPLEN", "MESA_STEPSPACE", "MESA_STEPGEN_MAXVEL", "MESA_STEPGEN_MAXACCEL"]
         self.ORIGIN = ""
         self.OPTIONS = {}
         self.SIGNALS = {

@@ -52,6 +52,7 @@ class Plugin(PluginBase):
             }
         elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
+            self.JOINT_MODE = "position"
             self.PINDEFAULTS = {
                 "in": {
                     "direction": "input",
@@ -132,9 +133,6 @@ class Plugin(PluginBase):
         for num, instance in enumerate(instances):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             idx = instance.plugin_setup.get("idx", instance.option_default("idx"))
-
-            print("####", idx)
-
             if idx < 0 or node_type == "Master":
                 # only connected slaves
                 continue
