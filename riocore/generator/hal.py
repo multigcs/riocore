@@ -94,6 +94,8 @@ class hal_generator:
         n_inputs = (len(parts) + 1) // 2
         etype = parts[1].upper()
 
+        print(etype, expression, target)
+
         if etype in logic_types:
             # pin1 AND pin2
             # pin1 OR pin2

@@ -179,7 +179,7 @@ class Plugin(PluginBase):
         matching_errors = {"in": [], "out": [], "x": []}
 
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
-            pin = connected_pin["pin"]
+            pin = int(connected_pin["pin"])
             psetup = connected_pin["setup"]
             direction = connected_pin["direction"]
             active = True

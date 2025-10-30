@@ -177,7 +177,7 @@ class documentation:
                     del data[key]
             elif data[key] is None:
                 del data[key]
-            elif key == "instance":
+            elif key in {"instance", "homeswitch"}:
                 del data[key]
 
     def json_md(self):
@@ -185,7 +185,10 @@ class documentation:
         self.struct_clean(jdata)
         output = ["# JSON-Config"]
         output.append("```")
-        output.append(json.dumps(jdata, indent=4))
+        if "jdata_str" in self.project.config:
+            output.append(self.project.config["jdata_str"])
+        else:
+            output.append(json.dumps(jdata, indent=4))
         output.append("```")
         output.append("")
         open(os.path.join(self.doc_path, "JSON.md"), "w").write("\n".join(output))

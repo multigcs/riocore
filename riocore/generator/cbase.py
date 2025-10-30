@@ -161,7 +161,7 @@ class cbase:
             for signal_name, signal_config in plugin_instance.signals().items():
                 if signal_name == "position":
                     varname = signal_config["varname"]
-                    position_mapping[plugin_instance.title] = varname
+                    position_mapping[plugin_instance.instances_name] = varname
             if plugin_instance.TYPE == "frameio":
                 for data_name, data_config in plugin_instance.interface_data().items():
                     variable_name = data_config["variable"]

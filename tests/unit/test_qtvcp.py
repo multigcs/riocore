@@ -100,7 +100,7 @@ def test_qtvcp():
                             <property name="minimumSize">
                               <size>
                                 <width>32</width>
-                                <height>32</height>
+                                <height>40</height>
                               </size>
                             </property>
                             <property name="color">

@@ -4,6 +4,7 @@ from riocore.plugins import PluginBase
 
 # mesaflash --device 7C81 --addr /dev/spidev0.0 --spi --fix-boot-block --write 7c81_5abobx3d.bit
 
+
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "mesacard"

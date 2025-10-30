@@ -683,6 +683,7 @@ class Project:
                 exit(1)
 
             try:
+                project["jdata_str"] = data
                 project["jdata"] = json.loads(data)
             except ValueError as err:
                 log("")
