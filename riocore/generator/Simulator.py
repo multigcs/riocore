@@ -263,7 +263,11 @@ class Simulator:
                     if "bit" not in interface_data:
                         continue
                     var = interface_data["bit"]["variable"]
-                    if self.project.axis_dict.get("Z", {}).get("joints", {}).get(int(jn)) and machinetype not in {"melfa", "melfa_nogl"}:
+                    found = False
+                    for join_data in self.project.axis_dict.get("Z", {}).get("joints", []):
+                        if int(jn) == join_data["num"]:
+                            found = True
+                    if found and machinetype not in {"melfa", "melfa_nogl"}:
                         # Z-Axis
                         output.append(f"    if (joint_position[{jn}] > 2000.0) {{")
                     else:
