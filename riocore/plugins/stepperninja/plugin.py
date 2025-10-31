@@ -181,7 +181,7 @@ class Plugin(PluginBase):
     #define default_step_scale 1000
 
     #define encoders 0
-    #define enc_pins {{PIN_11}} // uses 2 pins, you need to set the first pin (PIN_11 + PIN_12)
+    #define enc_pins {{PIN_11}}
     #define enc_index_pins {{PIN_NULL}}
     #define enc_index_active_level {{high}}
 
