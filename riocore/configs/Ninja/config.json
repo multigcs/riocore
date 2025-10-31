@@ -1,0 +1,237 @@
+{
+    "name": "Ninja",
+    "flow": {
+        "view": {
+            "scale": 0.54,
+            "pos": [
+                11,
+                -296
+            ]
+        },
+        "board": {
+            "pos": [
+                540.0,
+                1390.0
+            ],
+            "rotate": -90
+        },
+        "hal": {
+            "misc": [
+                1640.0,
+                310.0
+            ],
+            "joint.0": [
+                1640.0,
+                400.0
+            ],
+            "joint.1": [
+                1640.0,
+                180.0
+            ],
+            "joint.2": [
+                1640.0,
+                50.0
+            ],
+            "spindle.0": [
+                1640.0,
+                -40.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "stepperninja",
+            "uid": "stepperninja0",
+            "pos": [
+                690.0,
+                -250.0
+            ],
+            "rotate": 90
+        },
+        {
+            "type": "ninjastepgen",
+            "uid": "ninjastepgen0",
+            "pos": [
+                910.0,
+                210.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "stepperninja0:IO:GP0"
+                },
+                "dir": {
+                    "pin": "stepperninja0:IO:GP1"
+                }
+            },
+            "image": "servo42",
+            "rotate": 180,
+            "is_joint": true
+        },
+        {
+            "type": "ninjastepgen",
+            "uid": "ninjastepgen1",
+            "pos": [
+                910.0,
+                10.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "stepperninja0:IO:GP2"
+                },
+                "dir": {
+                    "pin": "stepperninja0:IO:GP3"
+                }
+            },
+            "image": "servo42",
+            "rotate": 180,
+            "name": "",
+            "is_joint": true
+        },
+        {
+            "type": "ninjastepgen",
+            "uid": "ninjastepgen2",
+            "pos": [
+                910.0,
+                -190.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "stepperninja0:IO:GP4"
+                },
+                "dir": {
+                    "pin": "stepperninja0:IO:GP5"
+                }
+            },
+            "image": "servo42",
+            "rotate": 180,
+            "name": "",
+            "is_joint": true
+        },
+        {
+            "type": "ninjapwmgen",
+            "pins": {
+                "pwm": {
+                    "pin": "stepperninja0:IO:GP14"
+                }
+            },
+            "uid": "ninjapwmgen0",
+            "pos": [
+                870.0,
+                -350.0
+            ],
+            "image": "spindle500w",
+            "rotate": 0
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP22"
+                }
+            },
+            "uid": "gpioin0",
+            "pos": [
+                360.0,
+                150.0
+            ],
+            "image": "proximity",
+            "rotate": 180
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP12"
+                }
+            },
+            "uid": "gpioout0",
+            "pos": [
+                360.0,
+                0.0
+            ],
+            "image": "relay",
+            "rotate": 180
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP26"
+                }
+            },
+            "uid": "gpioin1",
+            "pos": [
+                360.0,
+                220.0
+            ],
+            "image": "proximity",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP27"
+                }
+            },
+            "uid": "gpioin2",
+            "pos": [
+                360.0,
+                290.0
+            ],
+            "image": "proximity",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP28"
+                }
+            },
+            "uid": "gpioin3",
+            "pos": [
+                360.0,
+                360.0
+            ],
+            "image": "proximity",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP13"
+                }
+            },
+            "uid": "gpioout1",
+            "pos": [
+                360.0,
+                -150.0
+            ],
+            "image": "relay",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "stepperninja0:IO:GP15"
+                }
+            },
+            "uid": "gpioout2",
+            "pos": [
+                360.0,
+                -300.0
+            ],
+            "image": "relay",
+            "rotate": 180,
+            "name": ""
+        }
+    ],
+    "boardcfg": ""
+}
