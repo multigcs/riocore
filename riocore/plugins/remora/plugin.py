@@ -13,7 +13,7 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "remora"
-        self.ORIGIN = "https://github.com/atrex66/stepper-remora"
+        self.ORIGIN = "https://github.com/scottalford75/Remora-RP2040-W5500"
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
