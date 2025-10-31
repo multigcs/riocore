@@ -389,11 +389,11 @@ $(NINJA_SRC_PATH):
 	cd $(TOOLCHAIN_PATH) && git clone https://github.com/atrex66/stepper-ninja
 	sed -i "s|.*PICO_SDK_PATH.*||g" $(NINJA_SRC_PATH)/firmware/CMakeLists.txt
 
-prepare: $(NINJA_SRC_PATH) $(PICO_SDK_PATH)
+prepare: $(NINJA_SRC_PATH) $(PICO_SDK_PATH) ninja-config.h
 	cp -a ninja-config.h $(NINJA_SRC_PATH)/firmware/inc/config.h
 	mkdir -p build
 
-build: prepare
+build: prepare ninja-config.h
 	rm -rf build/stepper-ninja-*.uf2
 	cd build && PICO_SDK_PATH=$(PICO_SDK_PATH) cmake -DBOARD=pico -DWIZCHIP_TYPE=W5500 $(NINJA_SRC_PATH)/firmware
 	cd build && make clean
