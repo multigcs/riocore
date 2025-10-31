@@ -1,6 +1,8 @@
 import os
 from riocore.plugins import PluginBase
 
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
 
 class Plugin(PluginBase):
     def setup(self):
@@ -13,6 +15,20 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "ninja"
         self.ORIGIN = "https://github.com/atrex66/stepper-ninja"
+
+        self.GUI_COMMANDS = {
+            "Prepare": {
+                "directory": 111,
+                "cmd": "builder.py prepare",
+            },
+            "Build": {
+                "cmd": "builder.py build",
+            },
+            "Flash": {
+                "cmd": "builder.py flash",
+            },
+        }
+
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
@@ -98,7 +114,7 @@ class Plugin(PluginBase):
             self.IMAGE = f"{board}.png"
             board_pins = {
                 "w5500-evb-pico": {
-                    # "IO:LED": {"pin": f"{self.instances_name}:gp25", "pos": [259, 15], "direction": "all", "edge": "source", "type": ["GPIO"]},
+                    "IO:LED": {"pin": f"{self.instances_name}:gp25", "pos": [640, 45], "direction": "all", "edge": "source", "type": ["GPIO"]},
                     "IO:GP15": {"pin": f"{self.instances_name}:gp15", "pos": [259, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
                     "IO:GP14": {"pin": f"{self.instances_name}:gp14", "pos": [281, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAPwmPwm"]},
                     "IO:GP13": {"pin": f"{self.instances_name}:gp13", "pos": [325, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAPwmPwm"]},
@@ -168,6 +184,7 @@ class Plugin(PluginBase):
                     "direction": "output",
                     "min": min_limit,
                     "max": scale,
+                    "u32": True,
                 },
                 "enable": {
                     "direction": "output",
@@ -183,6 +200,7 @@ class Plugin(PluginBase):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "board":
                 stepgen_num = 0
+                pwmgen_num = 0
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                     name = connected_pin["name"]
                     plugin_instance = connected_pin["instance"]
@@ -190,7 +208,8 @@ class Plugin(PluginBase):
                         plugin_instance.PREFIX = f"stepgen-ninja.{instance.ninja_num}.stepgen.{stepgen_num}"
                         stepgen_num += 1
                     elif name == "pwm":
-                        plugin_instance.PREFIX = f"stepgen-ninja.{instance.ninja_num}.pwm"
+                        plugin_instance.PREFIX = f"stepgen-ninja.{instance.ninja_num}.pwm.{pwmgen_num}"
+                        pwmgen_num += 1
 
     def update_pins(self, parent):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
@@ -209,21 +228,22 @@ class Plugin(PluginBase):
                 pin = connected_pin["pin"]
                 direction = connected_pin["direction"]
                 inverted = connected_pin["inverted"]
+                upin = f"GP{int(pin[2:]):02d}"
 
                 if name == "step":
-                    self.stepgen_steps.append(pin)
+                    self.stepgen_steps.append(upin)
                 elif name == "dir":
-                    self.stepgen_dirs.append(pin)
+                    self.stepgen_dirs.append(upin)
                     self.stepgen_dir_inverts.append("0")
                 elif name == "pwm":
-                    self.pwm_pins.append(pin)
+                    self.pwm_pins.append(upin)
                     self.pwm_inverts.append("0")
 
                 elif direction == "output":
-                    self.output_pins.append(pin)
+                    self.output_pins.append(upin)
                     psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.output.{pin.lower()}"
                 elif direction == "input":
-                    self.input_pins.append(pin)
+                    self.input_pins.append(upin)
                     self.input_pullups.append("1")
                     if inverted:
                         psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.input.{pin.lower()}-not"
@@ -337,5 +357,64 @@ class Plugin(PluginBase):
 #include "kbmatrix.h"
 #endif
 """)
-            target = os.path.join(parent.component_path, "ninja-config.h")
-            open(target, "w").write("\n".join(output))
+                target = os.path.join(parent.component_path, "ninja-config.h")
+                open(target, "w").write("\n".join(output))
+
+                # create firmware stuff
+                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware")
+                os.makedirs(firmware_path, exist_ok=True)
+                print(f"{instance.NAME}: create firmware structure: {firmware_path}")
+
+                target = os.path.join(firmware_path, "ninja-config.h")
+                open(target, "w").write("\n".join(output))
+
+                makefile = f"""
+
+TOOLCHAIN_PATH := {riocore_path}/toolchains
+PICO_SDK_PATH := $(TOOLCHAIN_PATH)/pico-sdk
+NINJA_SRC_PATH := $(TOOLCHAIN_PATH)/stepper-ninja
+
+all: clean prepare build install
+
+clean:
+	rm -rf build
+
+$(PICO_SDK_PATH):
+	mkdir -p $(TOOLCHAIN_PATH)
+	cd $(TOOLCHAIN_PATH) && git clone https://github.com/raspberrypi/pico-sdk
+	cd $(TOOLCHAIN_PATH)/pico-sdk && git submodule update --init
+
+$(NINJA_SRC_PATH):
+	mkdir -p $(TOOLCHAIN_PATH)
+	cd $(TOOLCHAIN_PATH) && git clone https://github.com/atrex66/stepper-ninja
+	sed -i "s|.*PICO_SDK_PATH.*||g" $(NINJA_SRC_PATH)/firmware/CMakeLists.txt
+
+prepare: $(NINJA_SRC_PATH) $(PICO_SDK_PATH)
+	cp -a ninja-config.h $(NINJA_SRC_PATH)/firmware/inc/config.h
+	mkdir -p build
+
+build: prepare
+	rm -rf build/stepper-ninja-*.uf2
+	cd build && PICO_SDK_PATH=$(PICO_SDK_PATH) cmake -DBOARD=pico -DWIZCHIP_TYPE=W5500 $(NINJA_SRC_PATH)/firmware
+	cd build && make clean
+	cd build && make all
+	ls build/stepper-ninja-*.uf2
+
+/dev/disk/by-label/RPI-RP2:
+	@echo "##### set rpi to bootmode #####"
+	@exit 1
+
+halcompile:
+	sudo halcompile --install $(NINJA_SRC_PATH)/hal-driver/stepgen-ninja.c
+
+install: halcompile /dev/disk/by-label/RPI-RP2
+	mkdir -p fs_pico
+	sudo umount fs_pico || true
+	sudo mount /dev/disk/by-label/RPI-RP2 fs_pico
+	sudo cp build/stepper-ninja-*.uf2 fs_pico || true
+	sudo umount fs_pico
+	rmdir fs_pico
+"""
+
+                target = os.path.join(firmware_path, "Makefile")
+                open(target, "w").write(makefile)

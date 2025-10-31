@@ -2,10 +2,10 @@
     "name": "Ninja",
     "flow": {
         "view": {
-            "scale": 0.6377749029754204,
+            "scale": 1.54,
             "pos": [
-                179,
-                -273
+                502,
+                -587
             ]
         },
         "board": {
@@ -236,6 +236,20 @@
             "image": "relay",
             "rotate": 180,
             "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "ninja0:IO:LED"
+                }
+            },
+            "uid": "gpioout3",
+            "pos": [
+                730.0,
+                150.0
+            ],
+            "image": "led"
         }
     ],
     "boardcfg": ""

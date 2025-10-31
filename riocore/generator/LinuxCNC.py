@@ -266,6 +266,7 @@ class LinuxCNC:
         if startup:
             output.append(startup)
             output.append("")
+
         output.append('linuxcnc "$DIRNAME/rio.ini" $@')
         output.append("")
         os.makedirs(self.component_path, exist_ok=True)
@@ -1389,10 +1390,12 @@ if __name__ == "__main__":
                     dtype = displayconfig.get("type", "led")
             elif direction == "output":
                 section = displayconfig.get("section", "outputs").lower()
-                if not boolean:
-                    dtype = displayconfig.get("type", "scale")
-                else:
+                if boolean:
                     dtype = displayconfig.get("type", "checkbutton")
+                elif u32:
+                    dtype = displayconfig.get("type", "scale_u32")
+                else:
+                    dtype = displayconfig.get("type", "scale")
 
             if hasattr(gui_gen, f"draw_{dtype}"):
                 if section not in widgets:

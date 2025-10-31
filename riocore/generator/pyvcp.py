@@ -105,6 +105,10 @@ class pyvcp:
             e_label.append(e_width)
         self.parent.append(e_label)
 
+    def draw_scale_u32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
+        return f"conv({guipin[0:-2]}-i, s32, u32)"
+
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
