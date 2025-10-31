@@ -13,7 +13,6 @@
 |  | [ethercat](ethercat/README.md) | experimental ethercat driver | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
 |  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |  |
 |  | [mesastepgen](mesastepgen/README.md) | masa step pulse generation | <img src="mesastepgen/image.png" height="48"> |  |
-|  | [ninjastepgen](ninjastepgen/README.md) | masa step pulse generation | <img src="ninjastepgen/image.png" height="48"> |  |
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |  |
 |  | [pwmout](pwmout/README.md) | pwm output | <img src="pwmout/image.png" height="48"> |  |
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |  |
@@ -52,7 +51,6 @@
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |  |
 |  | [mesapwmgen](mesapwmgen/README.md) | mesa pwm pulse generation | <img src="mesapwmgen/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
-|  | [ninjapwmgen](ninjapwmgen/README.md) | ninja pwm pulse generation | <img src="ninjapwmgen/image.png" height="48"> |  |
 |  | [panasonic_abs](panasonic_abs/README.md) | serial abs-encoder | <img src="panasonic_abs/image.png" height="48"> | Experimental  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> | GPIO  |
@@ -81,9 +79,9 @@
 | Misc | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
 |  | [mesacard](mesacard/README.md) | mesacard | <img src="mesacard/image.png" height="48"> | GPIO  |
+|  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> | GPIO  |
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> | GPIO  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> | GPIO  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> | GPIO  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> | GPIO  |
-|  | [stepperninja](stepperninja/README.md) | stepgen-ninja | <img src="stepperninja/image.png" height="48"> | GPIO  |

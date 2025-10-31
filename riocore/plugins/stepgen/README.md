@@ -46,7 +46,7 @@ axis name (X,Y,Z,...)
 hardware type
 
  * type: select
- * default: generic
+ * default: stepper
 
 ### mode:
 Modus
@@ -103,7 +103,7 @@ steps / unit
     "name": "",
     "is_joint": false,
     "axis": "",
-    "image": "generic",
+    "image": "stepper",
     "mode": "0",
     "pins": {
         "step": {

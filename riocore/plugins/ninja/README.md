@@ -1,12 +1,12 @@
-# stepperninja
+# ninja
 
 <img align="right" width="320" src="image.png">
 
 **stepgen-ninja**
 
-stepperninja
+ninja
 
-Keywords: stepgen-ninja gpio board
+Keywords: stepgen pwm ninja board pico w5500
 
 ## Pins:
 *FPGA-pins*
@@ -99,6 +99,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### node_type:
+board type
+
+ * type: select
+ * default: board
+
 ### board:
 board type
 
@@ -147,7 +153,7 @@ UDP-Port
 ## Basic-Example:
 ```
 {
-    "type": "stepperninja",
+    "type": "ninja",
     "pins": {
         "IO:GP15": {
             "pin": "0"
@@ -216,8 +222,9 @@ UDP-Port
 ## Full-Example:
 ```
 {
-    "type": "stepperninja",
+    "type": "ninja",
     "name": "",
+    "node_type": "board",
     "board": "w5500-evb-pico",
     "mac": "00:08:DC:12:34:56",
     "ip": "192.168.0.177",

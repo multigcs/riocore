@@ -27,7 +27,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: generic
+ * default: led
 
 ### frequency:
 blink frequency in Hz
@@ -62,7 +62,7 @@ blink frequency in Hz
 {
     "type": "blink",
     "name": "",
-    "image": "generic",
+    "image": "led",
     "frequency": 1.0,
     "pins": {
         "led": {

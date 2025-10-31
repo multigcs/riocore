@@ -25,7 +25,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: generic
+ * default: proximity
 
 
 ## Signals:
@@ -57,7 +57,7 @@ hardware type
 {
     "type": "gpioin",
     "name": "",
-    "image": "generic",
+    "image": "proximity",
     "pins": {
         "bit": {
             "pin": "0",

@@ -41,7 +41,7 @@ axis name (X,Y,Z,...)
 hardware type
 
  * type: select
- * default: generic
+ * default: stepper
 
 
 ## Signals:
@@ -92,7 +92,7 @@ steps / unit
     "name": "",
     "is_joint": false,
     "axis": "",
-    "image": "generic",
+    "image": "stepper",
     "pins": {
         "step": {
             "pin": "0",

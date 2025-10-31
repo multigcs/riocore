@@ -45,7 +45,7 @@ axis name (X,Y,Z,...)
 hardware type
 
  * type: select
- * default: generic
+ * default: ethercatservo
 
 ### node_type:
 Type
@@ -110,7 +110,7 @@ steps / unit
     "name": "",
     "is_joint": false,
     "axis": "",
-    "image": "generic",
+    "image": "ethercatservo",
     "node_type": "Servo/Stepper",
     "idx": -2,
     "pins": {

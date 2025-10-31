@@ -48,7 +48,7 @@ axis name (X,Y,Z,...)
 hardware type
 
  * type: select
- * default: generic
+ * default: stepper
 
 ### pulse_len:
 step pulse len
@@ -136,7 +136,7 @@ position feedback
     "name": "",
     "is_joint": false,
     "axis": "",
-    "image": "generic",
+    "image": "stepper",
     "pulse_len": 4.0,
     "dir_delay": 0.7,
     "pins": {

@@ -49,7 +49,7 @@ axis name (X,Y,Z,...)
 hardware type
 
  * type: select
- * default: generic
+ * default: spindle500w
 
 ### frequency:
 PWM frequency
@@ -115,7 +115,7 @@ PWM frequency
     "name": "",
     "is_joint": false,
     "axis": "",
-    "image": "generic",
+    "image": "spindle500w",
     "frequency": 10000,
     "pins": {
         "pwm": {

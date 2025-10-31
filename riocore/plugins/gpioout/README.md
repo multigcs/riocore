@@ -25,7 +25,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: generic
+ * default: relay
 
 
 ## Signals:
@@ -57,7 +57,7 @@ hardware type
 {
     "type": "gpioout",
     "name": "",
-    "image": "generic",
+    "image": "relay",
     "pins": {
         "bit": {
             "pin": "0",
