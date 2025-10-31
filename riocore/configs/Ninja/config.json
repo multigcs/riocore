@@ -2,10 +2,10 @@
     "name": "Ninja",
     "flow": {
         "view": {
-            "scale": 0.54,
+            "scale": 0.6377749029754204,
             "pos": [
-                11,
-                -296
+                179,
+                -273
             ]
         },
         "board": {
@@ -40,78 +40,83 @@
     },
     "plugins": [
         {
-            "type": "stepperninja",
-            "uid": "stepperninja0",
+            "type": "ninja",
+            "node_type": "board",
             "pos": [
                 690.0,
                 -250.0
             ],
-            "rotate": 90
+            "rotate": 90,
+            "uid": "ninja0"
         },
         {
-            "type": "ninjastepgen",
-            "uid": "ninjastepgen0",
+            "type": "ninja",
+            "node_type": "stepper",
             "pos": [
                 910.0,
                 210.0
             ],
             "pins": {
                 "step": {
-                    "pin": "stepperninja0:IO:GP0"
+                    "pin": "ninja0:IO:GP0"
                 },
                 "dir": {
-                    "pin": "stepperninja0:IO:GP1"
+                    "pin": "ninja0:IO:GP1"
                 }
             },
             "image": "servo42",
             "rotate": 180,
-            "is_joint": true
+            "is_joint": true,
+            "uid": "ninja1"
         },
         {
-            "type": "ninjastepgen",
-            "uid": "ninjastepgen1",
+            "type": "ninja",
+            "node_type": "stepper",
             "pos": [
                 910.0,
                 10.0
             ],
             "pins": {
                 "step": {
-                    "pin": "stepperninja0:IO:GP2"
+                    "pin": "ninja0:IO:GP2"
                 },
                 "dir": {
-                    "pin": "stepperninja0:IO:GP3"
+                    "pin": "ninja0:IO:GP3"
                 }
             },
             "image": "servo42",
             "rotate": 180,
             "name": "",
-            "is_joint": true
+            "is_joint": true,
+            "uid": "ninja2"
         },
         {
-            "type": "ninjastepgen",
-            "uid": "ninjastepgen2",
+            "type": "ninja",
+            "node_type": "stepper",
             "pos": [
                 910.0,
                 -190.0
             ],
             "pins": {
                 "step": {
-                    "pin": "stepperninja0:IO:GP4"
+                    "pin": "ninja0:IO:GP4"
                 },
                 "dir": {
-                    "pin": "stepperninja0:IO:GP5"
+                    "pin": "ninja0:IO:GP5"
                 }
             },
             "image": "servo42",
             "rotate": 180,
             "name": "",
-            "is_joint": true
+            "is_joint": true,
+            "uid": "ninja3"
         },
         {
-            "type": "ninjapwmgen",
+            "type": "ninja",
+            "node_type": "pwm",
             "pins": {
                 "pwm": {
-                    "pin": "stepperninja0:IO:GP14"
+                    "pin": "ninja0:IO:GP14"
                 }
             },
             "uid": "ninjapwmgen0",
@@ -126,7 +131,7 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "stepperninja0:IO:GP22"
+                    "pin": "ninja0:IO:GP22"
                 }
             },
             "uid": "gpioin0",
@@ -141,7 +146,7 @@
             "type": "gpioout",
             "pins": {
                 "bit": {
-                    "pin": "stepperninja0:IO:GP12"
+                    "pin": "ninja0:IO:GP12"
                 }
             },
             "uid": "gpioout0",
@@ -156,7 +161,7 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "stepperninja0:IO:GP26"
+                    "pin": "ninja0:IO:GP26"
                 }
             },
             "uid": "gpioin1",
@@ -172,7 +177,7 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "stepperninja0:IO:GP27"
+                    "pin": "ninja0:IO:GP27"
                 }
             },
             "uid": "gpioin2",
@@ -188,7 +193,7 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "stepperninja0:IO:GP28"
+                    "pin": "ninja0:IO:GP28"
                 }
             },
             "uid": "gpioin3",
@@ -204,7 +209,7 @@
             "type": "gpioout",
             "pins": {
                 "bit": {
-                    "pin": "stepperninja0:IO:GP13"
+                    "pin": "ninja0:IO:GP13"
                 }
             },
             "uid": "gpioout1",
@@ -220,7 +225,7 @@
             "type": "gpioout",
             "pins": {
                 "bit": {
-                    "pin": "stepperninja0:IO:GP15"
+                    "pin": "ninja0:IO:GP15"
                 }
             },
             "uid": "gpioout2",

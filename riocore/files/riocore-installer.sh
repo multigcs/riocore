@@ -77,6 +77,7 @@ then
 fi
 
 echo "	ethercat \"install ethercat master\" OFF \\" >> ${TEMPFILE}2
+echo "	pico-dev \"install pico dev enviroment\" OFF \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
@@ -159,6 +160,27 @@ then
 	TC_GOWIN="$PWD/riocore/toolchains/gowin/IDE"
 fi
 
+if grep -s -q '"pico-dev"' in $TEMPFILE
+then
+	sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi unzip cmake unzip
+    if ! test -d riocore/toolchains/pico-sdk
+    then
+		echo "installing pico-sdk"
+        (
+            mkdir -p riocore/toolchains/
+            cd riocore/toolchains/ || doexit 1
+            git clone https://github.com/raspberrypi/pico-sdk
+            cd pico-sdk
+            git submodule update --init
+        )
+    else
+        echo "pico-sdk allready installed"
+    fi
+    TC_PICO="$PWD/riocore/toolchains/pico-sdk"
+    export PICO_SDK_PATH=$PWD/riocore/toolchains/pico-sdk/
+fi
+
+
 if test -e riocore/riocore && test "$TC_ICESTORM$TC_GOWIN" != ""
 then
 	echo "adding toolchains to riocore/riocore/toolchains.json"
@@ -173,7 +195,8 @@ then
     "diamond": "",
     "vivado": "",
     "quartus": "",
-    "ise": ""
+    "ise": "",
+    "pico": "$TC_PICO"
 }
 EOF
 fi

@@ -1,6 +1,7 @@
 Output/
 pyvenv/
 tests/unit/output/
+riocore/toolchains/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
