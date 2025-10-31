@@ -81,6 +81,7 @@
 |  | [mesacard](mesacard/README.md) | mesacard | <img src="mesacard/image.png" height="48"> | GPIO  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> | GPIO  |
+|  | [remora](remora/README.md) | remora | <img src="remora/image.png" height="48"> |  |
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> | GPIO  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> | GPIO  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> | GPIO  |

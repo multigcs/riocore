@@ -1424,7 +1424,7 @@ if __name__ == "__main__":
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "position-scale", "position-fb", "velocity", "position-cmd", "enable", "dty"}:
                     continue
                 hal_prefix = f"{self.hal_prefix}."
-                if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa", "ninja"}:
+                if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa", "ninja", "remora"}:
                     hal_prefix = ""
                 vcp_add(signal_config, hal_prefix, widgets)
 
@@ -1631,6 +1631,12 @@ if __name__ == "__main__":
                     pin_prefix = pin.split(":")[0]
                     # filter prefixes
                     pin = pin.split(":", 1)[1]
+
+                elif pin and "." in pin:
+                    pin_prefix = pin.split(".")[0]
+                    # filter prefixes
+                    pin = pin.split(".", 1)[1]
+
                 if prefix and pin_prefix != prefix:
                     continue
 
