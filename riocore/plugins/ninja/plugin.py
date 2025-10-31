@@ -14,7 +14,11 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "ninja"
-        self.ORIGIN = "https://github.com/atrex66/stepper-ninja"
+        self.URL = "https://github.com/atrex66/stepper-ninja"
+        self.SHORTENER = {
+            "latched": "lt",
+            "ninja": "nja",
+        }
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
@@ -65,7 +69,13 @@ class Plugin(PluginBase):
                     "description": "UDP-Port",
                 },
             },
-            "stepper": {},
+            "stepper": {
+                # "mode": {
+                #    "default": False,
+                #    "type": bool,
+                #    "description": "velocity mode",
+                # },
+            },
             "encoder": {
                 "scale": {
                     "default": 80,
@@ -156,7 +166,11 @@ class Plugin(PluginBase):
             self.ninja_num = 0
         elif node_type == "stepper":
             self.TYPE = "joint"
-            self.JOINT_TYPE = "position"
+            mode = self.plugin_setup.get("mode", self.option_default("mode"))
+            if mode:
+                self.JOINT_TYPE = "velocity"
+            else:
+                self.JOINT_TYPE = "position"
             self.IMAGE_SHOW = True
             self.IMAGES = ["stepper", "servo42"]
             self.SIGNALS = {
@@ -187,19 +201,6 @@ class Plugin(PluginBase):
             self.IMAGE_SHOW = False
             self.IMAGES = ["generic", "encoder"]
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
-            """
-                "count-latched": {
-                    "direction": "input",
-                    "s32": True,
-                },
-                "position-latched": {
-                    "direction": "input",
-                },
-                "debug-reset": {
-                    "direction": "output",
-                    "bool": True,
-                },
-            """
             self.SIGNALS = {
                 "raw-count": {
                     "direction": "input",
@@ -209,6 +210,13 @@ class Plugin(PluginBase):
                     "direction": "input",
                 },
                 "velocity": {
+                    "direction": "input",
+                },
+                "count-latched": {
+                    "direction": "input",
+                    "s32": True,
+                },
+                "position-latched": {
                     "direction": "input",
                 },
             }
@@ -338,6 +346,8 @@ class Plugin(PluginBase):
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
         elif node_type == "stepper":
+            mode = self.plugin_setup.get("mode", self.option_default("mode")) or False
+            parent.halg.setp_add(f"{self.PREFIX}.mode", mode)
             if "joint_data" in self.plugin_setup:
                 joint_data = self.plugin_setup["joint_data"]
                 axis_name = joint_data["axis"]

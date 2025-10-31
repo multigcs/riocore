@@ -260,6 +260,7 @@ class PluginBase:
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.IMAGE = ""
+        self.SHORTENER = {}
         self.IMAGES = []
         self.IMAGE_SHOW = False
         self.SIGNALS = {}

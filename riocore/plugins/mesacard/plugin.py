@@ -16,6 +16,10 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
+        self.URL = "https://store.mesanet.com/index.php?route=product/category&path=83_85"
+        self.SHORTENER = {
+            "stepgen-ninja": "nij",
+        }
         self.OPTIONS = {
             "cardtype": {
                 "default": "7c81_5abobx3d",

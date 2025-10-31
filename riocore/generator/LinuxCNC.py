@@ -173,6 +173,21 @@ class LinuxCNC:
             "TOOL_TABLE": "tool.tbl",
         },
     }
+    SHORTENER = {
+        "input": "in",
+        "output": "out",
+        "encoder": "enc",
+        "enable": "en",
+        "duty": "sty",
+        "count": "cnt",
+        "feedback": "fb",
+        "position": "pos",
+        "velocity": "vel",
+        "index": "idx",
+        "pwmgen": "pwm",
+        "stepgen": "sg",
+        "gpio": "io",
+    }
 
     def __init__(self, project):
         self.postgui_call_rm = []
@@ -187,6 +202,11 @@ class LinuxCNC:
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
         self.hal_prefix = "rio"
+
+        # expand shortener mapping
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.SHORTENER:
+                self.SHORTENER.update(plugin_instance.SHORTENER)
 
         # update_prefixes for multiple used components
         components = {}
@@ -1564,7 +1584,19 @@ if __name__ == "__main__":
                             lnum += 1
 
                     title = displayconfig.get("title", haltitles.get(halname, halname))
-                    gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname, setup=displayconfig)
+
+                    # string len shorter
+                    def short_str(halname):
+                        for string, short in self.SHORTENER.items():
+                            halname = halname.replace(string, short)
+                        return halname
+
+                    # max = 47 characters
+                    halname_short = short_str(halname)
+                    halname_full = f"{self.gui_prefix}.{halname_short}"
+                    if len(halname_full) > 47:
+                        riocore.log(f"ERROR: halname too long (>47): {halname_short} ({halname_full})")
+                    gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname_short, setup=displayconfig)
 
                     # fselect handling
                     if dtype == "fselect":
@@ -1609,13 +1641,13 @@ if __name__ == "__main__":
                     if dtype == "multilabel" and not boolean:
                         self.halg.net_add(f"{prefix}{halname}-u32-abs", f"demux_{halname}.sel-u32")
                     elif virtual and direction == "input":
-                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
+                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"s_rv_{halname_short.replace('.', '_')}")
                     elif virtual and direction == "output":
-                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
+                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"s_rv_{halname_short.replace('.', '_')}")
                     elif netname or setp or direction == "input":
-                        self.halg.net_add(f"{prefix}{halname}", gui_pinname)
+                        self.halg.net_add(f"{prefix}{halname}", gui_pinname, f"s_{halname_short.replace('.', '_')}")
                     elif direction == "output":
-                        self.halg.net_add(gui_pinname, f"{prefix}{halname}")
+                        self.halg.net_add(gui_pinname, f"{prefix}{halname}", f"s_{halname_short.replace('.', '_')}")
 
                 if group:
                     gui_gen.draw_vbox_end()
