@@ -25,17 +25,17 @@ name of this plugin instance
  * type: str
  * default: 
 
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
 ### is_joint:
 configure as joint
 
  * type: bool
  * default: False
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
 
 ### image:
 hardware type
@@ -90,8 +90,8 @@ steps / unit
 {
     "type": "mesastepgen",
     "name": "",
-    "axis": "",
     "is_joint": false,
+    "axis": "",
     "image": "generic",
     "pins": {
         "step": {

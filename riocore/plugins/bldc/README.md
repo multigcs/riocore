@@ -71,17 +71,17 @@ name of this plugin instance
  * type: str
  * default: 
 
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
 ### is_joint:
 configure as joint
 
  * type: bool
  * default: False
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
 
 ### frequency:
 PWM frequency
@@ -227,8 +227,8 @@ encoder resolution
 {
     "type": "bldc",
     "name": "",
-    "axis": "",
     "is_joint": false,
+    "axis": "",
     "frequency": 50000,
     "halsensor": "",
     "poles": 4,

@@ -32,17 +32,17 @@ name of this plugin instance
  * type: str
  * default: 
 
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
 ### is_joint:
 configure as joint
 
  * type: bool
  * default: False
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
 
 ### frequency:
 PWM frequency
@@ -106,8 +106,8 @@ PWM frequency
 {
     "type": "hbridge",
     "name": "",
-    "axis": "",
     "is_joint": false,
+    "axis": "",
     "frequency": 10000,
     "pins": {
         "out1": {

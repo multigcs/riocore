@@ -28,17 +28,17 @@ name of this plugin instance
  * type: str
  * default: 
 
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
 ### is_joint:
 configure as joint
 
  * type: bool
  * default: False
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
 
 ### resolution:
 PDM Resolution
@@ -99,8 +99,8 @@ PDM Resolution
 {
     "type": "pdmout",
     "name": "",
-    "axis": "",
     "is_joint": false,
+    "axis": "",
     "resolution": 8,
     "pins": {
         "pdm": {

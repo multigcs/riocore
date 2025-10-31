@@ -29,17 +29,17 @@ name of this plugin instance
  * type: str
  * default: 
 
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
 ### is_joint:
 configure as joint
 
  * type: bool
  * default: False
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
 
 ### image:
 hardware type
@@ -51,7 +51,7 @@ hardware type
 Type
 
  * type: select
- * default: 1
+ * default: Servo/Stepper
 
 ### idx:
 bus-index
@@ -108,10 +108,10 @@ steps / unit
 {
     "type": "ethercat",
     "name": "",
-    "axis": "",
     "is_joint": false,
+    "axis": "",
     "image": "generic",
-    "node_type": "1",
+    "node_type": "Servo/Stepper",
     "idx": -2,
     "pins": {
         "in": {

@@ -23,17 +23,17 @@ name of this plugin instance
  * type: str
  * default: 
 
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
 ### is_joint:
 configure as joint
 
  * type: bool
  * default: False
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
 
 ### frequency:
 update frequency
@@ -90,8 +90,8 @@ absolute position (-100 = 1ms / 100 = 2ms)
 {
     "type": "rcservo",
     "name": "",
-    "axis": "",
     "is_joint": false,
+    "axis": "",
     "frequency": 100,
     "pins": {
         "pwm": {
