@@ -198,7 +198,7 @@ class LinuxCNC:
         for component_type, instances in components.items():
             # run update_prefixes on the first instance of the plugin if exist
             if hasattr(instances[0], "update_prefixes"):
-                instances[0].update_prefixes(instances)
+                instances[0].update_prefixes(self, instances)
             else:
                 if instances[0].TYPE == "base":
                     # base plugins by instance name
@@ -644,9 +644,8 @@ class LinuxCNC:
                 addon.ini(self, ini_setup)
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
-                if hasattr(plugin_instance, "ini"):
-                    plugin_instance.ini(self, ini_setup)
+            if hasattr(plugin_instance, "ini"):
+                plugin_instance.ini(self, ini_setup)
 
         output = []
         for section, setup in ini_setup.items():
@@ -1425,7 +1424,7 @@ if __name__ == "__main__":
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "position-scale", "position-fb", "velocity", "position-cmd", "enable", "dty"}:
                     continue
                 hal_prefix = f"{self.hal_prefix}."
-                if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
+                if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa", "ninja"}:
                     hal_prefix = ""
                 vcp_add(signal_config, hal_prefix, widgets)
 

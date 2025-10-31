@@ -39,7 +39,12 @@ class Plugin(PluginBase):
             "dir": {"direction": "output", "edge": "target", "type": "NINJAStepGenDir"},
         }
 
+    def update_prefixes(cls, parent, instances):
+        # do not remove
+        pass
+
     def update_pins(self, parent):
+        # do not remove
         return
 
     def hal(self, parent):
@@ -49,16 +54,16 @@ class Plugin(PluginBase):
             joint_n = joint_data["num"]
             pid_num = joint_n
             if self.JOINT_TYPE == "velocity":
-                cmd_halname = f"{self.PREFIX}.stepgen.0.command"
-                feedback_halname = f"{self.PREFIX}.stepgen.0.feedback"
-                enable_halname = f"{self.PREFIX}.stepgen.0.enable"
-                scale_halname = f"{self.PREFIX}.stepgen.0.step-scale"
+                cmd_halname = f"{self.PREFIX}.command"
+                feedback_halname = f"{self.PREFIX}.feedback"
+                enable_halname = f"{self.PREFIX}.enable"
+                scale_halname = f"{self.PREFIX}.step-scale"
                 parent.halg.joint_add(
                     parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num
                 )
             else:
-                cmd_halname = f"{self.PREFIX}.stepgen.0.command"
-                feedback_halname = f"{self.PREFIX}.stepgen.0.command"
-                enable_halname = f"{self.PREFIX}.stepgen.0.enable"
-                scale_halname = f"{self.PREFIX}.stepgen.0.step-scale"
+                cmd_halname = f"{self.PREFIX}.command"
+                feedback_halname = f"{self.PREFIX}.command"
+                enable_halname = f"{self.PREFIX}.enable"
+                scale_halname = f"{self.PREFIX}.step-scale"
                 parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname)

@@ -117,7 +117,7 @@ class Plugin(PluginBase):
             }
         self.PREFIX_CIA402 = ""
 
-    def update_prefixes(cls, instances):
+    def update_prefixes(cls, parent, instances):
         cia402_num = 0
         lcec_num = 0
         for instance in instances:

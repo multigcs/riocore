@@ -164,7 +164,7 @@ class Plugin(PluginBase):
             },
         }
 
-    def update_prefixes(cls, instances):
+    def update_prefixes(cls, parent, instances):
         for num, instance in enumerate(instances):
             instance.instance_num = num
 
