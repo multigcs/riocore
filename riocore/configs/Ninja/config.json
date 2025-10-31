@@ -2,10 +2,10 @@
     "name": "Ninja",
     "flow": {
         "view": {
-            "scale": 1.54,
+            "scale": 1.24,
             "pos": [
-                502,
-                -587
+                -18,
+                -533
             ]
         },
         "board": {
@@ -53,8 +53,8 @@
             "type": "ninja",
             "node_type": "stepper",
             "pos": [
-                910.0,
-                210.0
+                900.0,
+                240.0
             ],
             "pins": {
                 "step": {
@@ -73,8 +73,8 @@
             "type": "ninja",
             "node_type": "stepper",
             "pos": [
-                910.0,
-                10.0
+                900.0,
+                40.0
             ],
             "pins": {
                 "step": {
@@ -94,8 +94,8 @@
             "type": "ninja",
             "node_type": "stepper",
             "pos": [
-                910.0,
-                -190.0
+                900.0,
+                -160.0
             ],
             "pins": {
                 "step": {
@@ -122,7 +122,7 @@
             "uid": "ninjapwmgen0",
             "pos": [
                 870.0,
-                -350.0
+                -360.0
             ],
             "image": "spindle500w",
             "rotate": 0
@@ -250,6 +250,26 @@
                 150.0
             ],
             "image": "led"
+        },
+        {
+            "type": "ninja",
+            "uid": "ninja4",
+            "pos": [
+                900.0,
+                -250.0
+            ],
+            "node_type": "encoder",
+            "pins": {
+                "a": {
+                    "pin": "ninja0:IO:GP8"
+                },
+                "b": {
+                    "pin": "ninja0:IO:GP9"
+                },
+                "z": {
+                    "pin": "ninja0:IO:GP10"
+                }
+            }
         }
     ],
     "boardcfg": ""

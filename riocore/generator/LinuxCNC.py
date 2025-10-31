@@ -1290,6 +1290,7 @@ if __name__ == "__main__":
             userconfig = signal_config.get("userconfig", {})
             boolean = signal_config.get("bool")
             u32 = signal_config.get("u32")
+            s32 = signal_config.get("s32")
             virtual = signal_config.get("virtual")
             mapping = signal_config.get("mapping")
             setp = userconfig.get("setp")
@@ -1365,6 +1366,8 @@ if __name__ == "__main__":
                     dtype = displayconfig.get("type", "led")
                 elif u32:
                     dtype = displayconfig.get("type", "number_u32")
+                elif s32:
+                    dtype = displayconfig.get("type", "number_s32")
                 else:
                     dtype = displayconfig.get("type", "number")
 
@@ -1384,19 +1387,24 @@ if __name__ == "__main__":
                 section = displayconfig.get("section", "inputs").lower()
                 if mapping and hasattr(gui_gen, "draw_multilabel"):
                     dtype = displayconfig.get("type", "multilabel")
-                elif not boolean:
-                    dtype = displayconfig.get("type", "number")
-                else:
+                elif boolean:
                     dtype = displayconfig.get("type", "led")
+                elif u32:
+                    dtype = displayconfig.get("type", "number_u32")
+                elif s32:
+                    dtype = displayconfig.get("type", "number_s32")
+                else:
+                    dtype = displayconfig.get("type", "number")
             elif direction == "output":
                 section = displayconfig.get("section", "outputs").lower()
                 if boolean:
                     dtype = displayconfig.get("type", "checkbutton")
                 elif u32:
                     dtype = displayconfig.get("type", "scale_u32")
+                elif s32:
+                    dtype = displayconfig.get("type", "scale_s32")
                 else:
                     dtype = displayconfig.get("type", "scale")
-
             if hasattr(gui_gen, f"draw_{dtype}"):
                 if section not in widgets:
                     widgets[section] = {}

@@ -15,20 +15,6 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "ninja"
         self.ORIGIN = "https://github.com/atrex66/stepper-ninja"
-
-        self.GUI_COMMANDS = {
-            "Prepare": {
-                "directory": 111,
-                "cmd": "builder.py prepare",
-            },
-            "Build": {
-                "cmd": "builder.py build",
-            },
-            "Flash": {
-                "cmd": "builder.py flash",
-            },
-        }
-
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
@@ -37,8 +23,9 @@ class Plugin(PluginBase):
                     "board",
                     "stepper",
                     "pwm",
+                    "encoder",
                 ],
-                "description": "board type",
+                "description": "instance type",
             },
         }
 
@@ -79,13 +66,22 @@ class Plugin(PluginBase):
                 },
             },
             "stepper": {},
+            "encoder": {
+                "scale": {
+                    "default": 80,
+                    "type": int,
+                    "min": 1,
+                    "max": 1000000,
+                    "description": "encoder scale",
+                },
+            },
             "pwm": {
                 "frequency": {
                     "default": 10000,
                     "type": int,
                     "min": 1907,
                     "max": 1000000,
-                    "description": "max pwm value",
+                    "description": "pwm frequency",
                 },
                 "scale": {
                     "default": 100,
@@ -99,7 +95,7 @@ class Plugin(PluginBase):
                     "type": int,
                     "min": 0,
                     "max": 100000,
-                    "description": "max pwm value",
+                    "description": "min pwm value",
                 },
             },
         }
@@ -115,22 +111,34 @@ class Plugin(PluginBase):
             board_pins = {
                 "w5500-evb-pico": {
                     "IO:LED": {"pin": f"{self.instances_name}:gp25", "pos": [640, 45], "direction": "all", "edge": "source", "type": ["GPIO"]},
-                    "IO:GP15": {"pin": f"{self.instances_name}:gp15", "pos": [259, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP14": {"pin": f"{self.instances_name}:gp14", "pos": [281, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAPwmPwm"]},
-                    "IO:GP13": {"pin": f"{self.instances_name}:gp13", "pos": [325, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAPwmPwm"]},
-                    "IO:GP12": {"pin": f"{self.instances_name}:gp12", "pos": [347, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP11": {"pin": f"{self.instances_name}:gp11", "pos": [369, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP10": {"pin": f"{self.instances_name}:gp10", "pos": [391, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP9": {"pin": f"{self.instances_name}:gp9", "pos": [435, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
+                    "IO:GP15": {"pin": f"{self.instances_name}:gp15", "pos": [259, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP14": {
+                        "pin": f"{self.instances_name}:gp14",
+                        "pos": [281, 15],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"],
+                    },
+                    "IO:GP13": {
+                        "pin": f"{self.instances_name}:gp13",
+                        "pos": [325, 15],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"],
+                    },
+                    "IO:GP12": {"pin": f"{self.instances_name}:gp12", "pos": [347, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP11": {"pin": f"{self.instances_name}:gp11", "pos": [369, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP10": {"pin": f"{self.instances_name}:gp10", "pos": [391, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP9": {"pin": f"{self.instances_name}:gp9", "pos": [435, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderB"]},
                     "IO:GP8": {"pin": f"{self.instances_name}:gp8", "pos": [457, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderA"]},
-                    "IO:GP7": {"pin": f"{self.instances_name}:gp7", "pos": [479, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderB"]},
-                    "IO:GP6": {"pin": f"{self.instances_name}:gp6", "pos": [501, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP5": {"pin": f"{self.instances_name}:gp5", "pos": [545, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP4": {"pin": f"{self.instances_name}:gp4", "pos": [567, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP3": {"pin": f"{self.instances_name}:gp3", "pos": [589, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP2": {"pin": f"{self.instances_name}:gp2", "pos": [611, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP1": {"pin": f"{self.instances_name}:gp1", "pos": [655, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP0": {"pin": f"{self.instances_name}:gp0", "pos": [677, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
+                    "IO:GP7": {"pin": f"{self.instances_name}:gp7", "pos": [479, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP6": {"pin": f"{self.instances_name}:gp6", "pos": [501, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP5": {"pin": f"{self.instances_name}:gp5", "pos": [545, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP4": {"pin": f"{self.instances_name}:gp4", "pos": [567, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP3": {"pin": f"{self.instances_name}:gp3", "pos": [589, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP2": {"pin": f"{self.instances_name}:gp2", "pos": [611, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP1": {"pin": f"{self.instances_name}:gp1", "pos": [655, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+                    "IO:GP0": {"pin": f"{self.instances_name}:gp0", "pos": [677, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
                     # W5500 - SPI pins
                     # "IO:GP16": {"pin": f"{self.instances_name}:gp16", "pos": [259, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
                     # "IO:GP17": {"pin": f"{self.instances_name}:gp17", "pos": [281, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
@@ -173,6 +181,43 @@ class Plugin(PluginBase):
                 "step": {"direction": "output", "edge": "target", "type": "NINJAStepGenStep"},
                 "dir": {"direction": "output", "edge": "target", "type": "NINJAStepGenDir"},
             }
+        elif node_type == "encoder":
+            self.TYPE = "io"
+            self.IMAGE_SHOW = True
+            self.IMAGE_SHOW = False
+            self.IMAGES = ["generic", "encoder"]
+            scale = self.plugin_setup.get("scale", self.option_default("scale"))
+            """
+                "count-latched": {
+                    "direction": "input",
+                    "s32": True,
+                },
+                "position-latched": {
+                    "direction": "input",
+                },
+                "debug-reset": {
+                    "direction": "output",
+                    "bool": True,
+                },
+            """
+            self.SIGNALS = {
+                "raw-count": {
+                    "direction": "input",
+                    "s32": True,
+                },
+                "position": {
+                    "direction": "input",
+                },
+                "velocity": {
+                    "direction": "input",
+                },
+            }
+            self.PINDEFAULTS = {
+                "a": {"direction": "output", "edge": "target", "type": "NINJAEncoderA"},
+                "b": {"direction": "output", "edge": "target", "type": "NINJAEncoderB"},
+                "z": {"direction": "output", "edge": "target", "type": "NINJAEncoderZ", "optional": True},
+            }
+
         elif node_type == "pwm":
             self.TYPE = "io"
             self.IMAGE_SHOW = True
@@ -201,6 +246,7 @@ class Plugin(PluginBase):
             if node_type == "board":
                 stepgen_num = 0
                 pwmgen_num = 0
+                encoder_num = 0
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                     name = connected_pin["name"]
                     plugin_instance = connected_pin["instance"]
@@ -210,6 +256,9 @@ class Plugin(PluginBase):
                     elif name == "pwm":
                         plugin_instance.PREFIX = f"stepgen-ninja.{instance.ninja_num}.pwm.{pwmgen_num}"
                         pwmgen_num += 1
+                    elif name == "a":
+                        plugin_instance.PREFIX = f"stepgen-ninja.{instance.ninja_num}.encoder.{encoder_num}"
+                        encoder_num += 1
 
     def update_pins(self, parent):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
@@ -219,6 +268,10 @@ class Plugin(PluginBase):
             self.output_pins = []
             self.pwm_pins = []
             self.pwm_inverts = []
+            self.encoder_a_pins = []
+            self.encoder_b_pins = []
+            self.encoder_z_pins = []
+            self.encoder_z_inverts = []
             self.stepgen_steps = []
             self.stepgen_dirs = []
             self.stepgen_dir_inverts = []
@@ -229,7 +282,6 @@ class Plugin(PluginBase):
                 direction = connected_pin["direction"]
                 inverted = connected_pin["inverted"]
                 upin = f"GP{int(pin[2:]):02d}"
-
                 if name == "step":
                     self.stepgen_steps.append(upin)
                 elif name == "dir":
@@ -238,7 +290,15 @@ class Plugin(PluginBase):
                 elif name == "pwm":
                     self.pwm_pins.append(upin)
                     self.pwm_inverts.append("0")
-
+                elif name == "a":
+                    self.encoder_a_pins.append(upin)
+                elif name == "b":
+                    self.encoder_b_pins.append(upin)
+                elif name == "z":
+                    if inverted:
+                        self.encoder_z_pins.append("low")
+                    else:
+                        self.encoder_z_pins.append("high")
                 elif direction == "output":
                     self.output_pins.append(upin)
                     psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.output.{pin.lower()}"
@@ -274,6 +334,9 @@ class Plugin(PluginBase):
             parent.halg.setp_add(f"{self.PREFIX}.frequency", frequency)
             parent.halg.setp_add(f"{self.PREFIX}.max-scale", scale)
             parent.halg.setp_add(f"{self.PREFIX}.min-limit", min_limit)
+        elif node_type == "encoder":
+            scale = self.plugin_setup.get("scale", self.option_default("scale"))
+            parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
         elif node_type == "stepper":
             if "joint_data" in self.plugin_setup:
                 joint_data = self.plugin_setup["joint_data"]
@@ -328,10 +391,11 @@ class Plugin(PluginBase):
     #define default_pulse_width 2000
     #define default_step_scale 1000
 
-    #define encoders 0
-    #define enc_pins {{PIN_11}}
-    #define enc_index_pins {{PIN_NULL}}
-    #define enc_index_active_level {{high}}
+    #define encoders {len(instance.encoder_a_pins)}
+    #define enc_pins {{{", ".join(instance.encoder_a_pins)}}}
+    // #define enc_pins_b {{{", ".join(instance.encoder_b_pins)}}}
+    #define enc_index_pins {{{", ".join(instance.encoder_z_pins)}}}
+    #define enc_index_active_level {{{", ".join(instance.encoder_z_inverts)}}}
 
     #define in_pins {{{", ".join(instance.input_pins)}}}
     #define in_pullup {{{", ".join(instance.input_pullups)}}}

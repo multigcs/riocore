@@ -109,6 +109,10 @@ class pyvcp:
         guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
         return f"conv({guipin[0:-2]}-i, s32, u32)"
 
+    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
+        return f"{guipin[0:-2]}-i"
+
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
