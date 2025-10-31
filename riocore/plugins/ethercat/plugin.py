@@ -10,7 +10,7 @@ class Plugin(PluginBase):
         self.EXPERIMENTAL = True
         self.DESCRIPTION = ""
         self.KEYWORDS = "stepper servo master"
-        self.IMAGES = ["ethercatservo"]
+        self.IMAGES = []
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
         self.OPTIONS = {}
@@ -18,7 +18,7 @@ class Plugin(PluginBase):
         self.mode_pins = {}
         self.OPTIONS = {
             "node_type": {
-                "default": "Servo/Stepper",
+                "default": "Master",
                 "type": "select",
                 "options": [
                     "Master",
@@ -40,6 +40,7 @@ class Plugin(PluginBase):
         if node_type == "Master":
             self.TYPE = "base"
             self.IMAGE_SHOW = True
+            self.IMAGE = "image.png"
             self.PINDEFAULTS = {
                 "out": {
                     "pin": f"{self.instances_name}:master",
@@ -52,6 +53,7 @@ class Plugin(PluginBase):
             }
         elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
+            self.IMAGES = ["ethercatservo"]
             self.JOINT_MODE = "position"
             self.PINDEFAULTS = {
                 "in": {

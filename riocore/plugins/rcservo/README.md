@@ -27,7 +27,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -90,7 +90,7 @@ absolute position (-100 = 1ms / 100 = 2ms)
 {
     "type": "rcservo",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
     "frequency": 100,
     "pins": {

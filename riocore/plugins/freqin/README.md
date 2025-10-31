@@ -27,7 +27,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: flow
+ * default: generic
 
 ### freq_min:
 minimum measured frequency (for faster updates)
@@ -92,7 +92,7 @@ maximum measured frequency (for filtering)
 {
     "type": "freqin",
     "name": "",
-    "image": "flow",
+    "image": "generic",
     "freq_min": 10,
     "freq_max": 1000000,
     "pins": {

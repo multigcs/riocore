@@ -8,6 +8,8 @@ remora
 
 Keywords: stepgen pwm remora board pico w5500
 
+URL: https://github.com/scottalford75/Remora-RP2040-W5500
+
 ## Pins:
 *FPGA-pins*
 ### IO:GP15:

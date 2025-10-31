@@ -75,7 +75,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -227,7 +227,7 @@ encoder resolution
 {
     "type": "bldc",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
     "frequency": 50000,
     "halsensor": "",

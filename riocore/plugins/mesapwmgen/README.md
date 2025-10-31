@@ -25,7 +25,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: spindle500w
+ * default: generic
 
 ### scale:
 max pwm value
@@ -72,7 +72,7 @@ max pwm value
 {
     "type": "mesapwmgen",
     "name": "",
-    "image": "spindle500w",
+    "image": "generic",
     "scale": 100,
     "pins": {
         "pwm": {

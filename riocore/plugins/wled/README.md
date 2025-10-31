@@ -27,7 +27,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: wled
+ * default: generic
 
 ### leds:
 number of LED's
@@ -99,7 +99,7 @@ LED brighness
 {
     "type": "wled",
     "name": "",
-    "image": "wled",
+    "image": "generic",
     "leds": 1,
     "level": 127,
     "pins": {

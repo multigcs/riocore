@@ -27,7 +27,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: proximity
+ * default: generic
 
 
 ## Signals:
@@ -63,7 +63,7 @@ hardware type
 {
     "type": "bitin",
     "name": "",
-    "image": "proximity",
+    "image": "generic",
     "pins": {
         "bit": {
             "pin": "0",

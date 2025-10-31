@@ -29,7 +29,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -41,7 +41,7 @@ axis name (X,Y,Z,...)
 hardware type
 
  * type: select
- * default: stepper
+ * default: generic
 
 
 ## Signals:
@@ -90,9 +90,9 @@ steps / unit
 {
     "type": "mesastepgen",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
-    "image": "stepper",
+    "image": "generic",
     "pins": {
         "step": {
             "pin": "0",

@@ -36,7 +36,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -106,7 +106,7 @@ PWM frequency
 {
     "type": "hbridge",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
     "frequency": 10000,
     "pins": {

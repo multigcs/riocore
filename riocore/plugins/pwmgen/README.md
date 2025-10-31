@@ -35,7 +35,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: spindle500w
+ * default: generic
 
 ### mode:
 modus
@@ -134,7 +134,7 @@ dither-pwm
 {
     "type": "pwmgen",
     "name": "",
-    "image": "spindle500w",
+    "image": "generic",
     "mode": "1",
     "pwm-freq": 100,
     "scale": 100.0,

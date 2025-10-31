@@ -34,7 +34,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -46,7 +46,7 @@ axis name (X,Y,Z,...)
 hardware type
 
  * type: select
- * default: stepper
+ * default: generic
 
 ### mode:
 Modus
@@ -101,9 +101,9 @@ steps / unit
 {
     "type": "stepgen",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
-    "image": "stepper",
+    "image": "generic",
     "mode": "0",
     "pins": {
         "step": {

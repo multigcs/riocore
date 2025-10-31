@@ -8,6 +8,8 @@ mesacard
 
 Keywords: mesacard gpio
 
+URL: https://store.mesanet.com/index.php?route=product/category&path=83_85
+
 ## Pins:
 *FPGA-pins*
 ### P1:P1:

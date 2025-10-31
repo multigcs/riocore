@@ -10,7 +10,6 @@
 |  | [uart](uart/README.md) | uart interface for host cominucation | <img src="uart/image.png" height="48"> |  |
 |  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |  |
 | Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | Experimental  |
-|  | [ethercat](ethercat/README.md) | experimental ethercat driver | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
 |  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |  |
 |  | [mesastepgen](mesastepgen/README.md) | masa step pulse generation | <img src="mesastepgen/image.png" height="48"> |  |
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |  |
@@ -76,7 +75,8 @@
 | Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
 |  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
-| Misc | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
+| Misc | [ethercat](ethercat/README.md) | experimental ethercat driver | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
+|  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
 |  | [mesacard](mesacard/README.md) | mesacard | <img src="mesacard/image.png" height="48"> | GPIO  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |

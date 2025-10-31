@@ -335,10 +335,13 @@ class PluginBase:
             }
 
         if self.TYPE == "joint":
+            default = True
+            if "pwm" in self.NAME:
+                default = False
             if "is_joint" not in self.OPTIONS:
                 NEW_OPTIONS["is_joint"] = {
                     "type": bool,
-                    "default": False,
+                    "default": default,
                     "description": "configure as joint",
                 }
             if "axis" not in self.OPTIONS:
@@ -350,7 +353,7 @@ class PluginBase:
 
         if self.IMAGES:
             NEW_OPTIONS["image"] = {
-                "default": self.IMAGES[0],
+                "default": "generic",
                 "type": "select",
                 "options": ["generic"] + self.IMAGES,
                 "description": "hardware type",

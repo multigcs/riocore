@@ -27,7 +27,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: relay
+ * default: generic
 
 
 ## Signals:
@@ -63,7 +63,7 @@ hardware type
 {
     "type": "bitout",
     "name": "",
-    "image": "relay",
+    "image": "generic",
     "pins": {
         "bit": {
             "pin": "0",

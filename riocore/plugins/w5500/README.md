@@ -49,7 +49,7 @@ name of this plugin instance
 hardware type
 
  * type: select
- * default: w5500
+ * default: generic
 
 ### mac:
 MAC-Address
@@ -128,7 +128,7 @@ SPI clock
 {
     "type": "w5500",
     "name": "",
-    "image": "w5500",
+    "image": "generic",
     "mac": "AA:AF:FA:CC:E3:1C",
     "ip": "192.168.10.194",
     "mask": "255.255.255.0",

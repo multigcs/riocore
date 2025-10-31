@@ -32,7 +32,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -99,7 +99,7 @@ PDM Resolution
 {
     "type": "pdmout",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
     "resolution": 8,
     "pins": {

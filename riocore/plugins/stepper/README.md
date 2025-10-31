@@ -39,7 +39,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -116,7 +116,7 @@ position feedback
 {
     "type": "stepper",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
     "pins": {
         "a1": {

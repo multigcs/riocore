@@ -8,8 +8,14 @@ ninja
 
 Keywords: stepgen pwm ninja board pico w5500
 
+URL: https://github.com/atrex66/stepper-ninja
+
 ## Pins:
 *FPGA-pins*
+### IO:LED:
+
+ * direction: all
+
 ### IO:GP15:
 
  * direction: all
@@ -100,7 +106,7 @@ name of this plugin instance
  * default: 
 
 ### node_type:
-board type
+instance type
 
  * type: select
  * default: board
@@ -155,65 +161,68 @@ UDP-Port
 {
     "type": "ninja",
     "pins": {
-        "IO:GP15": {
+        "IO:LED": {
             "pin": "0"
         },
-        "IO:GP14": {
+        "IO:GP15": {
             "pin": "1"
         },
-        "IO:GP13": {
+        "IO:GP14": {
             "pin": "2"
         },
-        "IO:GP12": {
+        "IO:GP13": {
             "pin": "3"
         },
-        "IO:GP11": {
+        "IO:GP12": {
             "pin": "4"
         },
-        "IO:GP10": {
+        "IO:GP11": {
             "pin": "5"
         },
-        "IO:GP9": {
+        "IO:GP10": {
             "pin": "6"
         },
-        "IO:GP8": {
+        "IO:GP9": {
             "pin": "7"
         },
-        "IO:GP7": {
+        "IO:GP8": {
             "pin": "8"
         },
-        "IO:GP6": {
+        "IO:GP7": {
             "pin": "9"
         },
-        "IO:GP5": {
+        "IO:GP6": {
             "pin": "10"
         },
-        "IO:GP4": {
+        "IO:GP5": {
             "pin": "11"
         },
-        "IO:GP3": {
+        "IO:GP4": {
             "pin": "12"
         },
-        "IO:GP2": {
+        "IO:GP3": {
             "pin": "13"
         },
-        "IO:GP1": {
+        "IO:GP2": {
             "pin": "14"
         },
-        "IO:GP0": {
+        "IO:GP1": {
             "pin": "15"
         },
-        "IO:GP22": {
+        "IO:GP0": {
             "pin": "16"
         },
-        "IO:GP26": {
+        "IO:GP22": {
             "pin": "17"
         },
-        "IO:GP27": {
+        "IO:GP26": {
             "pin": "18"
         },
-        "IO:GP28": {
+        "IO:GP27": {
             "pin": "19"
+        },
+        "IO:GP28": {
+            "pin": "20"
         }
     }
 }
@@ -232,7 +241,7 @@ UDP-Port
     "gw": "192.168.10.1",
     "port": 8888,
     "pins": {
-        "IO:GP15": {
+        "IO:LED": {
             "pin": "0",
             "modifiers": [
                 {
@@ -240,7 +249,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP14": {
+        "IO:GP15": {
             "pin": "1",
             "modifiers": [
                 {
@@ -248,7 +257,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP13": {
+        "IO:GP14": {
             "pin": "2",
             "modifiers": [
                 {
@@ -256,7 +265,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP12": {
+        "IO:GP13": {
             "pin": "3",
             "modifiers": [
                 {
@@ -264,7 +273,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP11": {
+        "IO:GP12": {
             "pin": "4",
             "modifiers": [
                 {
@@ -272,7 +281,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP10": {
+        "IO:GP11": {
             "pin": "5",
             "modifiers": [
                 {
@@ -280,7 +289,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP9": {
+        "IO:GP10": {
             "pin": "6",
             "modifiers": [
                 {
@@ -288,7 +297,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP8": {
+        "IO:GP9": {
             "pin": "7",
             "modifiers": [
                 {
@@ -296,7 +305,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP7": {
+        "IO:GP8": {
             "pin": "8",
             "modifiers": [
                 {
@@ -304,7 +313,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP6": {
+        "IO:GP7": {
             "pin": "9",
             "modifiers": [
                 {
@@ -312,7 +321,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP5": {
+        "IO:GP6": {
             "pin": "10",
             "modifiers": [
                 {
@@ -320,7 +329,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP4": {
+        "IO:GP5": {
             "pin": "11",
             "modifiers": [
                 {
@@ -328,7 +337,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP3": {
+        "IO:GP4": {
             "pin": "12",
             "modifiers": [
                 {
@@ -336,7 +345,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP2": {
+        "IO:GP3": {
             "pin": "13",
             "modifiers": [
                 {
@@ -344,7 +353,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP1": {
+        "IO:GP2": {
             "pin": "14",
             "modifiers": [
                 {
@@ -352,7 +361,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP0": {
+        "IO:GP1": {
             "pin": "15",
             "modifiers": [
                 {
@@ -360,7 +369,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP22": {
+        "IO:GP0": {
             "pin": "16",
             "modifiers": [
                 {
@@ -368,7 +377,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP26": {
+        "IO:GP22": {
             "pin": "17",
             "modifiers": [
                 {
@@ -376,7 +385,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP27": {
+        "IO:GP26": {
             "pin": "18",
             "modifiers": [
                 {
@@ -384,8 +393,16 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP28": {
+        "IO:GP27": {
             "pin": "19",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "IO:GP28": {
+            "pin": "20",
             "modifiers": [
                 {
                     "type": "invert"

@@ -16,6 +16,10 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QRect, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
+    QHeaderView,
+    QLineEdit,
+    QTableWidget,
+    QTableWidgetItem,
     QDialogButtonBox,
     QSplitter,
     QPlainTextEdit,
@@ -562,12 +566,14 @@ class PluginNode(MyNode):
 
         if self.plugin_instance.IMAGE_SHOW:
             self.setZValue(1)
-            image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
+            image = None
             if self.plugin_instance.IMAGE:
                 image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)
-                if not os.path.exists(image):
+                if not image or not os.path.exists(image):
                     image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
-            self.load_image(image)
+                self.load_image(image)
+            else:
+                self.plugin_instance.IMAGE_SHOW = False
 
         if hasattr(self, "plugin_instance"):
             if self.plugin_instance.TYPE == "expansion":
@@ -1468,25 +1474,76 @@ class Window(QMainWindow):
         self.tabwidget.addTab(self.options_tab, "Options")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
 
-        hbox = QSplitter(Qt.Horizontal)
-        hbox.addWidget(self.tabwidget)
+        def plugin_select(idx):
+            if not self.plugin_table.item(idx, 0):
+                return
+            self.plugin_name_selected = self.plugin_table.item(idx, 0).text()
+
+        def plugin_update(misc):
+            pass
+
+        def plugin_add(misc):
+            node_type = None
+            if " " in self.plugin_name_selected:
+                self.plugin_name_selected, node_type = self.plugin_name_selected.split(" ")
+
+            psetup = {"type": self.plugin_name_selected}
+            if node_type:
+                psetup["node_type"] = node_type
+            self.plugins.load_plugin(self.plugin_name_selected, psetup, self.config)
+            plugin_instance = self.plugins.plugin_instances[-1]
+            if not node_type:
+                if "node_type" in plugin_instance.OPTIONS:
+                    option_data = plugin_instance.OPTIONS["node_type"]
+                    node_type = self.dialog_select("Plugin node select", option_data["options"])
+                    if node_type:
+                        plugin_instance.plugin_setup["node_type"] = node_type
+
+            plugin_instance.setup()
+            if plugin_instance.IMAGES:
+                plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
+            plugin_instance.plugin_setup["pos"] = [0.0, 0.0]
+            self.config["plugins"].append(plugin_instance.plugin_setup)
+            self.redraw()
+            self.fit_view()
+            self.snapshot()
+
+        self.plugin_table = QTableWidget()
+        self.plugin_table.setColumnCount(1)
+        self.plugin_table.verticalHeader().setVisible(False)
+        # self.plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        self.plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Name"))
+        self.plugin_table.setMinimumWidth(180)
+        self.plugin_table.cellClicked.connect(plugin_select)
+        self.plugin_table.doubleClicked.connect(plugin_add)
+
+        plugin_vbox_widget = QWidget()
+        plugin_vbox = QVBoxLayout()
+        plugin_vbox_widget.setLayout(plugin_vbox)
+        self.search_text = QLineEdit("")
+        self.search_text.textChanged.connect(self.plugin_search)
+        plugin_vbox.addWidget(self.search_text)
+        plugin_vbox.addWidget(self.plugin_table)
 
         info_vbox_widget = QWidget()
         info_vbox = QVBoxLayout()
         info_vbox_widget.setLayout(info_vbox)
-        hbox.addWidget(info_vbox_widget)
-
         self.pininfo = QLabel("")
         info_vbox.addWidget(self.pininfo)
-
         self.infobox = QPlainTextEdit(self)
         self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.infobox.setMinimumWidth(300)
         info_vbox.addWidget(self.infobox)
 
+        hbox = QSplitter(Qt.Horizontal)
+        hbox.addWidget(plugin_vbox_widget)
+        hbox.addWidget(self.tabwidget)
+        hbox.addWidget(info_vbox_widget)
+
         vboxMain = QVBoxLayout()
         vboxMain.addWidget(self.toolbar())
         vboxMain.addWidget(hbox, stretch=1)
+
         self.info = QLabel("---")
         self.info.setStyleSheet("QLabel{font-size:24px;}")
         vboxMain.addWidget(self.info, stretch=0)
@@ -1534,6 +1591,41 @@ class Window(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
+
+    def plugin_search(self, filter_string=None):
+        plugins = []
+        for plugin_data in self.plugins.list(True):
+            plugin_name = plugin_data["name"]
+            if not filter_string or filter_string in plugin_name:
+                plugins.append(plugin_data)
+
+        self.plugin_table.setRowCount(len(plugins))
+        for row, plugin_data in enumerate(plugins):
+            plugin_name = plugin_data["name"]
+            # item = QTableWidgetItem("")
+            # item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            # self.plugin_table.setItem(row, 0, item)
+            item = QTableWidgetItem(plugin_name)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            self.plugin_table.setItem(row, 0, item)
+            """
+            self.plugin_table.setItem(row, 1, item)
+            plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
+            image_path = os.path.join(plugin_path, "image.png")
+            if os.path.isfile(image_path):
+                ilabel = QLabel()
+                ilabel.setFixedSize(20, 20)
+                pixmap = QPixmap(image_path)
+                ilabel.setPixmap(pixmap)
+                ilabel.setScaledContents(True)
+                self.plugin_table.setCellWidget(row, 0, ilabel)
+            """
+
+        header = self.plugin_table.horizontalHeader()
+        # header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        self.plugin_table.resizeColumnToContents(0)
+        # self.plugin_table.resizeColumnToContents(1)
 
     def generate(self):
         output_dir = "/tmp/rio-test-build"
@@ -2131,7 +2223,6 @@ class Window(QMainWindow):
         # loading plugins
         self.plugin_uids = []
         self.plugins = riocore.Plugins()
-
         pluginlist = []
         for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
             uid = plugin_config.get("uid")
@@ -2146,6 +2237,8 @@ class Window(QMainWindow):
             self.plugins.load_plugin(plugin_id, plugin_config, self.config)
             plugin_instance = self.plugins.plugin_instances[-1]
             pluginlist.append(plugin_instance)
+
+        self.plugin_search(self.search_text.text())
 
         # load base and expansion plugins first
         first = ["base", "expansion"]

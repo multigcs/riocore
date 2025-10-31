@@ -43,15 +43,26 @@ def log_clear():
 
 
 class Plugins:
-    def __init__(self):
+    def __init__(self, node_types=False):
+        self.node_types = node_types
         self.plugin_modules = {}
         self.plugin_instances = []
 
-    def list(self):
+    def list(self, splitted=False):
         plugins = []
         for plugin_path in sorted(glob.glob(os.path.join(riocore_path, "plugins", "*", "plugin.py"))):
             plugin_name = os.path.basename(os.path.dirname(plugin_path))
-            plugins.append({"name": plugin_name, "path": plugin_path})
+            if splitted is True:
+                self.load_plugins({"plugins": [{"type": plugin_name}]})
+                plugin_instance = self.plugin_instances[-1]
+                if "node_type" in plugin_instance.OPTIONS:
+                    option_data = plugin_instance.OPTIONS["node_type"]
+                    for option in option_data["options"]:
+                        plugins.append({"name": f"{plugin_name} {option}", "path": plugin_path})
+                else:
+                    plugins.append({"name": plugin_name, "path": plugin_path})
+            else:
+                plugins.append({"name": plugin_name, "path": plugin_path})
         return plugins
 
     def info(self, plugin_name):

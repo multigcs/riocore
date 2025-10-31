@@ -37,7 +37,7 @@ name of this plugin instance
 configure as joint
 
  * type: bool
- * default: False
+ * default: True
 
 ### axis:
 axis name (X,Y,Z,...)
@@ -223,7 +223,7 @@ trigger error on connection/drive problems
 {
     "type": "riodrive",
     "name": "",
-    "is_joint": false,
+    "is_joint": true,
     "axis": "",
     "baud": 500000,
     "interval": 400,

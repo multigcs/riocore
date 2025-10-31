@@ -105,12 +105,12 @@
                     "pin": "ninja0:IO:GP5"
                 }
             },
-            "image": "servo42",
             "rotate": 180,
             "name": "",
             "is_joint": true,
             "uid": "ninja3",
-            "mode": true
+            "mode": true,
+            "image": "servo42"
         },
         {
             "type": "ninja",
