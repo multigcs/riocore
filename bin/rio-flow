@@ -1813,7 +1813,7 @@ class Window(QMainWindow):
     def cfg_check(self):
         self.jsontab.update(flow=True)
         if self.jsontab.found_diffs:
-            self.tabwidget.tabBar().setTabTextColor(3, QColor(250, 0, 0))
+            self.tabwidget.tabBar().setTabTextColor(3, QColor(255, 0, 0))
         else:
             self.tabwidget.tabBar().setTabTextColor(3, QColor(0, 0, 0))
 

@@ -42,6 +42,7 @@ class GuiPlugins:
         self.pins_tab = None
         self.joint_tab = None
         self.signals_tab = None
+        self.main_options = {}
 
     def edit_plugin_pins(self, pin_selected=None, cb=None):
         plugin_instance = self.plugin_instance
@@ -540,6 +541,7 @@ class GuiPlugins:
         iname_row.addWidget(iname_label, stretch=3)
         options.addLayout(iname_row)
 
+        self.main_options = {}
         for option_name, option_defaults in plugin_instance.OPTIONS.items():
             title = option_name.title()
             unit = option_defaults.get("unit")
@@ -551,11 +553,15 @@ class GuiPlugins:
             option_label = QLabel(title)
             option_label.setToolTip(help_text)
             option_row.addWidget(option_label, stretch=3)
-            option_row.addWidget(self.parent.edit_item(plugin_config, option_name, option_defaults, cb=update), stretch=3)
+            self.main_options[option_name] = self.parent.edit_item(plugin_config, option_name, option_defaults, cb=update)
+            option_row.addWidget(self.main_options[option_name], stretch=3)
             option_row.addWidget(QLabel(option_defaults.get("unit", "")), stretch=1)
 
         if plugin_instance.PLUGIN_CONFIG:
-            button_config = QPushButton("config")
+            title = "Config"
+            if isinstance(plugin_instance.PLUGIN_CONFIG, str):
+                title = plugin_instance.PLUGIN_CONFIG
+            button_config = QPushButton(title)
             bcb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
             button_config.clicked.connect(bcb)
             button_config.setMaximumSize(button_config.sizeHint())
@@ -652,18 +658,21 @@ class GuiPlugins:
                 self.plugin_instance.setup()
                 self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
 
-        dialog = QDialog()
-        dialog.is_removed = False
-        dialog.setWindowTitle(f"edit plugin {self.plugin_instance.NAME}")
+        self.dialog = QDialog()
+        self.dialog.setMinimumWidth(800)
+        self.dialog.setMinimumHeight(600)
+
+        self.dialog.is_removed = False
+        self.dialog.setWindowTitle(f"edit plugin {self.plugin_instance.NAME}")
         if hasattr(self.parent, "STYLESHEET"):
-            dialog.setStyleSheet(self.parent.STYLESHEET)
+            self.dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog_buttonBox.accepted.connect(self.dialog.accept)
+        dialog_buttonBox.rejected.connect(self.dialog.reject)
 
         if not nopins:
             remove_button = QPushButton(self.parent.tr("Remove"))
-            remove_button.clicked.connect(partial(self.del_plugin, self.plugin_instance, dialog=dialog))
+            remove_button.clicked.connect(partial(self.del_plugin, self.plugin_instance, dialog=self.dialog))
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
         self.tab_widget = QTabWidget()
@@ -697,19 +706,23 @@ class GuiPlugins:
         dialog_layout = QVBoxLayout()
         dialog_layout.addLayout(hlayout)
         dialog_layout.addWidget(dialog_buttonBox)
-        dialog.setLayout(dialog_layout)
+        self.dialog.setLayout(dialog_layout)
 
-        if dialog.exec():
+        if self.dialog.exec():
             if hasattr(self.parent, "config_load"):
                 self.parent.config_load()
                 # self.parent.display()
             return
-        if not dialog.is_removed:
+        if not self.dialog.is_removed:
             for key in list(self.plugin_config.keys()):
                 if key not in self.plugin_config_backup:
                     del self.plugin_config[key]
             for key in self.plugin_config_backup:
                 self.plugin_config[key] = self.plugin_config_backup[key]
+
+    def options_update(self):
+        for key, value in self.main_options.items():
+            value.update()
 
     def config_plugin(self, plugin_instance, plugin_id, widget=None):
         if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
@@ -719,6 +732,8 @@ class GuiPlugins:
             else:
                 config_box = plugin_config.config(plugin_instance)
             config_box.run()
+            self.options_update()
+
         if hasattr(self.parent, "config_load"):
             self.parent.config_load()
             # self.parent.load_tree()

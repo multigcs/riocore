@@ -76,7 +76,7 @@ class TabBuilder:
 
     def runTimer(self):
         if self.compile_sub is not None:
-            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(250, 0, 0))
+            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(255, 0, 0))
             logdata = open("/tmp/buildlog", "r").read()
 
             if self.output.verticalScrollBar().maximum() == self.output.verticalScrollBar().value():

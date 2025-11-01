@@ -11,6 +11,7 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
+        self.PLUGIN_CONFIG = "Wizard"
         self.IMAGE = ""
         self.ORIGIN = ""
         self.SIGNALS = {}
