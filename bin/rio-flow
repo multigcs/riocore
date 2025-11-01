@@ -1220,7 +1220,7 @@ class NodeViewer(QGraphicsView):
                     info_text.append(f"port: {port}")
                     for key, value in pinfo.items():
                         info_text.append(f"{key.title()}: {value}")
-                    self.scene.parent.pininfo.setText("\n".join(info_text))
+                    self.scene.parent.pininfo.setPlainText("\n".join(info_text))
                     self.scene.parent.info.setText(f"{hovername} - {port}")
                 elif dev_mode:
                     self.scene.parent.info.setText(f"{hovername} ({position.x():0.1f} {position.y():0.1f})")
@@ -1478,6 +1478,7 @@ class Window(QMainWindow):
             if not self.plugin_table.item(idx, 0):
                 return
             self.plugin_name_selected = self.plugin_table.item(idx, 0).text()
+            self.plugin_info(self.plugin_name_selected)
 
         def plugin_update(misc):
             pass
@@ -1528,7 +1529,7 @@ class Window(QMainWindow):
         info_vbox_widget = QWidget()
         info_vbox = QVBoxLayout()
         info_vbox_widget.setLayout(info_vbox)
-        self.pininfo = QLabel("")
+        self.pininfo = QPlainTextEdit("")
         info_vbox.addWidget(self.pininfo)
         self.infobox = QPlainTextEdit(self)
         self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
@@ -1591,6 +1592,26 @@ class Window(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
+
+    def plugin_info(self, plugin_name):
+        node_type = None
+        plugin_name = self.plugin_name_selected
+        if " " in self.plugin_name_selected:
+            plugin_name, node_type = self.plugin_name_selected.split(" ")
+
+        psetup = {"type": self.plugin_name_selected}
+        if node_type:
+            psetup["node_type"] = node_type
+        self.plugins.load_plugin(self.plugin_name_selected, psetup, self.config)
+        plugin_instance = self.plugins.plugin_instances[-1]
+
+        infotext = plugin_instance.NAME
+        infotext += f"\n\n{plugin_instance.INFO}"
+        if plugin_instance.EXPERIMENTAL:
+            infotext += "\n --- EXPERIMENTAL ---"
+
+        infotext += f"\n{plugin_instance.DESCRIPTION}"
+        self.pininfo.setPlainText(infotext)
 
     def plugin_search(self, filter_string=None):
         plugins = []

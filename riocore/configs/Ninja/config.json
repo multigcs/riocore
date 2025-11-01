@@ -4,7 +4,7 @@
         "view": {
             "scale": 1.49,
             "pos": [
-                487,
+                -50,
                 -587
             ]
         },
@@ -247,10 +247,11 @@
             },
             "uid": "gpioout3",
             "pos": [
-                730.0,
+                720.0,
                 150.0
             ],
-            "image": "led"
+            "image": "led",
+            "rotate": 180
         },
         {
             "type": "ninja",
