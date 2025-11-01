@@ -2,10 +2,10 @@
     "name": "Ninja",
     "flow": {
         "view": {
-            "scale": 1.4930817610062892,
+            "scale": 1.41,
             "pos": [
-                -50,
-                -587
+                567,
+                -658
             ]
         },
         "board": {
@@ -43,87 +43,114 @@
             "type": "ninja",
             "node_type": "board",
             "pos": [
-                690.0,
+                670.0,
                 -250.0
             ],
             "rotate": 90,
-            "uid": "ninja0"
+            "uid": "ninja0",
+            "board": "w5500-evb-pico-parport"
         },
         {
             "type": "ninja",
             "node_type": "stepper",
             "pos": [
-                900.0,
-                240.0
+                1340.0,
+                220.0
             ],
             "pins": {
                 "step": {
-                    "pin": "ninja0:IO:GP0"
+                    "pin": "china-bob5x0:X:step"
                 },
                 "dir": {
-                    "pin": "ninja0:IO:GP1"
+                    "pin": "china-bob5x0:X:dir"
                 }
             },
             "image": "servo42",
             "rotate": 180,
             "is_joint": true,
-            "uid": "ninja1"
+            "uid": "ninja1",
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 20.0,
+                "min_limit": 0.0,
+                "max_limit": 230.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0
+            }
         },
         {
             "type": "ninja",
             "node_type": "stepper",
             "pos": [
-                900.0,
-                40.0
+                1340.0,
+                20.0
             ],
             "pins": {
                 "step": {
-                    "pin": "ninja0:IO:GP2"
+                    "pin": "china-bob5x0:Y:step"
                 },
                 "dir": {
-                    "pin": "ninja0:IO:GP3"
+                    "pin": "china-bob5x0:Y:dir"
                 }
             },
             "image": "servo42",
             "rotate": 180,
             "name": "",
             "is_joint": true,
-            "uid": "ninja2"
+            "uid": "ninja2",
+            "joint": {
+                "scale": 800.0,
+                "max_velocity": 20.0,
+                "min_limit": 0.0,
+                "max_limit": 160.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0
+            }
         },
         {
             "type": "ninja",
             "node_type": "stepper",
             "pos": [
-                900.0,
-                -160.0
+                1340.0,
+                -180.0
             ],
             "pins": {
                 "step": {
-                    "pin": "ninja0:IO:GP4"
+                    "pin": "china-bob5x0:Z:step"
                 },
                 "dir": {
-                    "pin": "ninja0:IO:GP5"
+                    "pin": "china-bob5x0:Z:dir"
                 }
             },
             "rotate": 180,
             "name": "",
             "is_joint": true,
             "uid": "ninja3",
-            "mode": true,
-            "image": "servo42"
+            "image": "servo42",
+            "joint": {
+                "scale": -1600.0,
+                "max_velocity": 15.0,
+                "min_limit": -32.0,
+                "max_limit": 0.0,
+                "home": 0.0,
+                "home_search_vel": 10.0,
+                "home_final_vel": 20.0
+            }
         },
         {
             "type": "ninja",
             "node_type": "pwm",
             "pins": {
                 "pwm": {
-                    "pin": "ninja0:IO:GP14"
+                    "pin": "china-bob5x0:PWM:analog"
                 }
             },
             "uid": "ninjapwmgen0",
             "pos": [
-                870.0,
-                -360.0
+                1010.0,
+                -400.0
             ],
             "image": "spindle500w",
             "rotate": 0
@@ -132,107 +159,76 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "ninja0:IO:GP22"
+                    "pin": "china-bob5x0:OPTO:in0"
                 }
             },
             "uid": "gpioin0",
             "pos": [
-                360.0,
-                150.0
+                880.0,
+                200.0
             ],
             "image": "proximity",
-            "rotate": 180
-        },
-        {
-            "type": "gpioout",
-            "pins": {
+            "rotate": 90,
+            "signals": {
                 "bit": {
-                    "pin": "ninja0:IO:GP12"
+                    "net": "joint.0.home-sw-in"
                 }
             },
-            "uid": "gpioout0",
-            "pos": [
-                360.0,
-                0.0
-            ],
-            "image": "relay",
-            "rotate": 180
+            "name": "home-x"
         },
         {
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "ninja0:IO:GP26"
+                    "pin": "china-bob5x0:OPTO:in1"
                 }
             },
             "uid": "gpioin1",
             "pos": [
-                360.0,
-                220.0
+                950.0,
+                200.0
             ],
             "image": "proximity",
-            "rotate": 180,
-            "name": ""
+            "rotate": 90,
+            "name": "home-y",
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
         },
         {
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "ninja0:IO:GP27"
+                    "pin": "china-bob5x0:OPTO:in2"
                 }
             },
             "uid": "gpioin2",
             "pos": [
-                360.0,
-                290.0
+                1020.0,
+                200.0
             ],
             "image": "proximity",
-            "rotate": 180,
-            "name": ""
-        },
-        {
-            "type": "gpioin",
-            "pins": {
+            "rotate": 90,
+            "name": "home-z",
+            "signals": {
                 "bit": {
-                    "pin": "ninja0:IO:GP28"
+                    "net": "joint.2.home-sw-in"
                 }
-            },
-            "uid": "gpioin3",
-            "pos": [
-                360.0,
-                360.0
-            ],
-            "image": "proximity",
-            "rotate": 180,
-            "name": ""
+            }
         },
         {
             "type": "gpioout",
             "pins": {
                 "bit": {
-                    "pin": "ninja0:IO:GP13"
-                }
-            },
-            "uid": "gpioout1",
-            "pos": [
-                360.0,
-                -150.0
-            ],
-            "image": "relay",
-            "rotate": 180,
-            "name": ""
-        },
-        {
-            "type": "gpioout",
-            "pins": {
-                "bit": {
-                    "pin": "ninja0:IO:GP15"
+                    "pin": "china-bob5x0:RELAIS:out"
                 }
             },
             "uid": "gpioout2",
             "pos": [
-                360.0,
-                -300.0
+                760.0,
+                -450.0
             ],
             "image": "relay",
             "rotate": 180,
@@ -247,32 +243,39 @@
             },
             "uid": "gpioout3",
             "pos": [
-                720.0,
-                150.0
+                740.0,
+                140.0
             ],
             "image": "led",
-            "rotate": 180
+            "rotate": 90,
+            "name": "led"
         },
         {
-            "type": "ninja",
-            "uid": "ninja4",
+            "type": "gpioout",
+            "uid": "gpiooutgpioout",
             "pos": [
-                900.0,
-                -250.0
+                1320.0,
+                -260.0
             ],
-            "node_type": "encoder",
             "pins": {
-                "a": {
-                    "pin": "ninja0:IO:GP8"
-                },
-                "b": {
-                    "pin": "ninja0:IO:GP9"
-                },
-                "z": {
-                    "pin": "ninja0:IO:GP10"
+                "bit": {
+                    "pin": "china-bob5x0:ALL:en"
                 }
-            }
+            },
+            "name": "enable"
         }
     ],
-    "boardcfg": ""
+    "boardcfg": "",
+    "breakouts": [
+        {
+            "breakout": "china-bob5x",
+            "name": "china-bob5x0",
+            "pos": [
+                860.0,
+                -270.0
+            ],
+            "rotate": 0,
+            "slot": "ninja0:PAR"
+        }
+    ]
 }

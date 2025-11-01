@@ -3,10 +3,10 @@
     "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 2.2,
+            "scale": 1.02,
             "pos": [
-                2353,
-                366
+                68,
+                -280
             ]
         },
         "board": {
@@ -395,66 +395,6 @@
                 130.0
             ],
             "rotate": 90
-        },
-        {
-            "type": "gpioin",
-            "uid": "gpioin5",
-            "pos": [
-                1200.0,
-                320.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "stepperninja0:IO:GP22"
-                }
-            },
-            "image": "opto",
-            "rotate": 180
-        },
-        {
-            "type": "gpioout",
-            "uid": "gpioout2",
-            "pos": [
-                1730.0,
-                250.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "stepperninja0:IO:GP12"
-                }
-            },
-            "image": "ssr2a"
-        },
-        {
-            "type": "gpioout",
-            "uid": "gpioout3",
-            "pos": [
-                1730.0,
-                340.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "stepperninja0:IO:GP11"
-                }
-            },
-            "image": "ssr2a",
-            "name": ""
-        },
-        {
-            "type": "gpioin",
-            "uid": "gpioin6",
-            "pos": [
-                1200.0,
-                370.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "stepperninja0:IO:GP26"
-                }
-            },
-            "image": "opto",
-            "rotate": 180,
-            "name": ""
         },
         {
             "type": "ninjastepgen",

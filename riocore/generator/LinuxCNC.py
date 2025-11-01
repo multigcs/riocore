@@ -1585,9 +1585,11 @@ if __name__ == "__main__":
 
                     title = displayconfig.get("title", haltitles.get(halname, halname))
 
-                    # string len shorter
+                    # string len shortener
                     def short_str(halname):
                         for string, short in self.SHORTENER.items():
+                            if len(halname) <= 47:
+                                break
                             halname = halname.replace(string, short)
                         return halname
 
@@ -1700,6 +1702,7 @@ if __name__ == "__main__":
                         "reset": reset,
                         "inverted": inverted,
                         "instance": plugin_instance,
+                        "instance_title": plugin_instance.title,
                     }
                 )
         return pins

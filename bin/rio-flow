@@ -571,7 +571,7 @@ class PluginNode(MyNode):
             else:
                 image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
                 self.load_image(image)
-                #self.plugin_instance.IMAGE_SHOW = False
+                # self.plugin_instance.IMAGE_SHOW = False
 
         if hasattr(self, "plugin_instance"):
             if self.plugin_instance.TYPE == "expansion":
@@ -1119,6 +1119,7 @@ class NodeViewer(QGraphicsView):
                     else:
                         # check type and dir
                         types = source_node.ports.get(source_port, {}).get("type", "")
+                        source_port_direction = source_node.ports.get(source_port, {}).get("direction")
                         if isinstance(types, list):
                             source_port_types = []
                             for stype in types:
@@ -1126,12 +1127,22 @@ class NodeViewer(QGraphicsView):
                         else:
                             source_port_types = [types.split("-")[0]]
 
-                        source_port_direction = source_node.ports.get(source_port, {}).get("direction")
-                        target_port_type = target_node.ports.get(target_port, {}).get("type", "")
                         target_port_direction = target_node.ports.get(target_port, {}).get("direction")
-                        check_type = target_port_type and source_port_types
+                        types = target_node.ports.get(target_port, {}).get("type", "")
+                        if isinstance(types, list):
+                            target_port_types = []
+                            for stype in types:
+                                target_port_types.append(stype.split("-")[0])
+                        else:
+                            target_port_types = [types.split("-")[0]]
+
+                        intersection = []
+                        for element in source_port_types:
+                            if element in target_port_types:
+                                intersection.append(element)
+
                         check_dir = target_port_direction and source_port_direction
-                        if check_type and not (target_port_type in source_port_types or source_port_types in target_port_type or source_port_types == target_port_type):
+                        if not (target_port_types and source_port_types and intersection):
                             riocore.log("ERROR: different port types")
                         elif check_dir and target_port_direction == "input" and source_port_direction == "output":
                             riocore.log("ERROR: input -> output")

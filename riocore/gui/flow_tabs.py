@@ -6,8 +6,10 @@ from PyQt5.QtCore import QTimer, Qt
 import copy
 from functools import partial
 
-from PyQt5.QtGui import QPixmap, QStandardItemModel
+from PyQt5.QtGui import QPixmap, QStandardItemModel, QColor
 from PyQt5.QtWidgets import (
+    QWidgetItem,
+    QSpacerItem,
     QLineEdit,
     QSplitter,
     QPlainTextEdit,
@@ -36,12 +38,15 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 
 def cleanLayout(layout):
-    for widget_no in range(0, layout.count()):
-        if layout.itemAt(widget_no) and layout.itemAt(widget_no).widget():
-            layout.itemAt(widget_no).widget().deleteLater()
-        elif layout.itemAt(widget_no) and layout.itemAt(widget_no).layout():
-            cleanLayout(layout.itemAt(widget_no).layout())
-            layout.itemAt(widget_no).layout().deleteLater()
+    for i in reversed(range(layout.count())):
+        item = layout.itemAt(i)
+        if isinstance(item, QWidgetItem):
+            item.widget().close()
+        elif isinstance(item, QSpacerItem):
+            pass
+        else:
+            cleanLayout(item.layout())
+        layout.removeItem(item)
 
 
 class TabBuilder:
@@ -67,18 +72,23 @@ class TabBuilder:
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(1000)
+        self.timer.start(300)
 
     def runTimer(self):
         if self.compile_sub is not None:
+            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(250, 0, 0))
             logdata = open("/tmp/buildlog", "r").read()
-            self.output.setPlainText(logdata)
-            self.output.verticalScrollBar().setValue(self.output.verticalScrollBar().maximum())
+
+            if self.output.verticalScrollBar().maximum() == self.output.verticalScrollBar().value():
+                self.output.setPlainText(logdata)
+                self.output.verticalScrollBar().setValue(self.output.verticalScrollBar().maximum())
 
             if self.compile_sub.poll() is not None:
                 self.compile_sub = None
                 self.block = False
+                self.output.appendPlainText("...done")
                 print("...done")
+                self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(0, 0, 0))
 
     def generator_run(self):
         if self.block:
@@ -88,7 +98,8 @@ class TabBuilder:
 
         generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
         cmd = f"{generator_path} {self.parent.config_file}"
-        print(f"running cmd: {cmd}")
+        self.output.setPlainText(f"running cmd; {cmd}...")
+        print(f"running cmd: {cmd}...")
         self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
 
     def bulder_run(self, plugin_instance, command):
@@ -98,7 +109,8 @@ class TabBuilder:
         self.block = True
 
         cmd = plugin_instance.builder(self.parent.config, command)
-        print(f"running cmd; {cmd}")
+        self.output.setPlainText(f"running cmd; {cmd}...")
+        print(f"running cmd; {cmd}...")
         self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
 
     def update_left(self):
