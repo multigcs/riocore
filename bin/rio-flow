@@ -2349,15 +2349,18 @@ class Window(QMainWindow):
         h = max_y - min_y
         vw = self.view.width()
         vh = self.view.height()
-        offset = 100
-        scale = min((vw - offset) / w, (vh - offset) / h)
-        pos_x = int(min_x * scale) - offset // 2
-        pos_y = int(min_y * scale) - offset // 2
+
+        border_x = 100
+        border_y = 100
+        scale = min((vw - border_x) / w, (vh - border_y) / h)
+        pos_x = int(min_x * scale) - border_x // 2
+        pos_y = int(min_y * scale) - border_y // 2
+
         self.scene.parent.config["flow"]["view"]["scale"] = scale
         self.scene.parent.config["flow"]["view"]["pos"] = (pos_x, pos_y)
         self.view.setZoom(scale)
-        self.view.horizontalScrollBar().setSliderPosition(pos_x)
-        self.view.verticalScrollBar().setSliderPosition(pos_y)
+        self.view.horizontalScrollBar().setSliderPosition(int(pos_x))
+        self.view.verticalScrollBar().setSliderPosition(int(pos_y))
 
         self.update()
 

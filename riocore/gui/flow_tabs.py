@@ -128,7 +128,7 @@ class TabBuilder:
                     button.clicked.connect(partial(self.bulder_run, plugin_instance, command))
                     ninja.addWidget(button)
 
-        ninja.addStretch()
+        self.left.addStretch()
 
     def update(self):
         self.update_left()
