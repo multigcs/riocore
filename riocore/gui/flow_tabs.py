@@ -7,6 +7,9 @@ from functools import partial
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QStandardItemModel
 from PyQt5.QtWidgets import (
+    QLineEdit,
+    QSplitter,
+    QPlainTextEdit,
     QDialogButtonBox,
     QScrollArea,
     QDoubleSpinBox,
@@ -31,10 +34,133 @@ from riocore.gui.home_helper import HomeAnimation
 riocore_path = os.path.dirname(riocore.__file__)
 
 
-class TabAxis:
-    def __init__(self, config, parent=None):
+class TabDrawing:
+    def __init__(self, parent):
+        self.plugins = None
         self.parent = parent
-        self.config = config
+        info_vbox = QWidget()
+        info_vbox_layout = QVBoxLayout()
+        info_vbox.setLayout(info_vbox_layout)
+        self.pininfo = QPlainTextEdit("")
+        info_vbox_layout.addWidget(self.pininfo)
+        self.infobox = QPlainTextEdit()
+        self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.infobox.setMinimumWidth(300)
+        info_vbox_layout.addWidget(self.infobox)
+
+        self.drawing_tab = QSplitter(Qt.Horizontal)
+        self.drawing_tab.addWidget(self.plugin_selector())
+        self.drawing_tab.addWidget(parent.view)
+        self.drawing_tab.addWidget(info_vbox)
+
+    def plugin_selector(self):
+        self.plugin_table = QTableWidget()
+
+        plugin_vbox_widget = QWidget()
+        plugin_vbox_widget.plugin_search = self.plugin_table
+        plugin_vbox = QVBoxLayout()
+        plugin_vbox_widget.setLayout(plugin_vbox)
+
+        self.search_text = QLineEdit("")
+        self.search_text.textChanged.connect(self.plugin_search)
+        plugin_vbox.addWidget(self.search_text)
+        plugin_vbox.addWidget(self.plugin_table)
+
+        def plugin_select(idx):
+            if not self.plugin_table.item(idx, 0):
+                return
+            self.plugin_name_selected = self.plugin_table.item(idx, 0).text()
+            self.plugin_info(self.plugin_name_selected)
+
+        def plugin_update(misc):
+            pass
+
+        def plugin_add(misc):
+            node_type = None
+            if " " in self.plugin_name_selected:
+                self.plugin_name_selected, node_type = self.plugin_name_selected.split(" ")
+
+            psetup = {"type": self.plugin_name_selected}
+            if node_type:
+                psetup["node_type"] = node_type
+            self.plugins.load_plugin(self.plugin_name_selected, psetup, self.parent.config)
+            plugin_instance = self.plugins.plugin_instances[-1]
+            if not node_type:
+                if "node_type" in plugin_instance.OPTIONS:
+                    option_data = plugin_instance.OPTIONS["node_type"]
+                    node_type = self.parent.dialog_select("Plugin node select", option_data["options"])
+                    if node_type:
+                        plugin_instance.plugin_setup["node_type"] = node_type
+
+            plugin_instance.setup()
+            if plugin_instance.IMAGES:
+                plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
+            plugin_instance.plugin_setup["pos"] = [0.0, 0.0]
+            self.parent.config["plugins"].append(plugin_instance.plugin_setup)
+            self.parent.redraw()
+            self.parent.fit_view()
+            self.parent.snapshot()
+
+        self.plugin_table.setColumnCount(1)
+        self.plugin_table.verticalHeader().setVisible(False)
+        # self.plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        self.plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Name"))
+        self.plugin_table.setMinimumWidth(180)
+        self.plugin_table.cellClicked.connect(plugin_select)
+        self.plugin_table.doubleClicked.connect(plugin_add)
+
+        return plugin_vbox_widget
+
+    def plugin_info(self, plugin_name):
+        node_type = None
+        if " " in plugin_name:
+            plugin_name, node_type = plugin_name.split(" ")
+
+        psetup = {"type": plugin_name}
+        if node_type:
+            psetup["node_type"] = node_type
+        self.plugins.load_plugin(plugin_name, psetup, self.parent.config)
+        plugin_instance = self.plugins.plugin_instances[-1]
+
+        infotext = plugin_instance.NAME
+        infotext += f"\n\n{plugin_instance.INFO}"
+        if plugin_instance.EXPERIMENTAL:
+            infotext += "\n --- EXPERIMENTAL ---"
+
+        infotext += f"\n{plugin_instance.DESCRIPTION}"
+        self.pininfo.setPlainText(infotext)
+
+    def plugin_search(self, filter_string=None, plugins=None):
+        if plugins:
+            self.plugins = plugins
+        if not filter_string:
+            filter_string = self.search_text.text()
+
+        plugins = []
+        for plugin_data in self.plugins.list(True):
+            plugin_name = plugin_data["name"]
+            if not filter_string or filter_string in plugin_name:
+                plugins.append(plugin_data)
+
+        self.plugin_table.setRowCount(len(plugins))
+        for row, plugin_data in enumerate(plugins):
+            plugin_name = plugin_data["name"]
+            item = QTableWidgetItem(plugin_name)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            self.plugin_table.setItem(row, 0, item)
+
+        header = self.plugin_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+        self.plugin_table.resizeColumnToContents(0)
+
+    def widget(self):
+        return self.drawing_tab
+
+
+class TabAxis:
+    def __init__(self, parent):
+        self.parent = parent
+        self.config = parent.config
         self.signature = []
         self.widgets = {}
 
@@ -452,9 +578,9 @@ class TabAxis:
 
 
 class TabOptions:
-    def __init__(self, config, parent=None):
+    def __init__(self, parent):
         self.parent = parent
-        self.config = config
+        self.config = parent.config
         self.update_flag = False
         self.ini_items = {}
         self.items = {}

@@ -16,13 +16,7 @@ from functools import partial
 from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QRect, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
-    QHeaderView,
-    QLineEdit,
-    QTableWidget,
-    QTableWidgetItem,
     QDialogButtonBox,
-    QSplitter,
-    QPlainTextEdit,
     QFileDialog,
     QStyle,
     QMainWindow,
@@ -60,6 +54,7 @@ from riocore.gui.breakouts import GuiBreakouts
 from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.flow_tabs import TabAxis
 from riocore.gui.flow_tabs import TabOptions
+from riocore.gui.flow_tabs import TabDrawing
 
 
 from riocore.gui.widgets import (
@@ -1220,7 +1215,7 @@ class NodeViewer(QGraphicsView):
                     info_text.append(f"port: {port}")
                     for key, value in pinfo.items():
                         info_text.append(f"{key.title()}: {value}")
-                    self.scene.parent.pininfo.setPlainText("\n".join(info_text))
+                    self.scene.parent.drawingtab.pininfo.setPlainText("\n".join(info_text))
                     self.scene.parent.info.setText(f"{hovername} - {port}")
                 elif dev_mode:
                     self.scene.parent.info.setText(f"{hovername} ({position.x():0.1f} {position.y():0.1f})")
@@ -1459,43 +1454,22 @@ class Window(QMainWindow):
         self.gui_modifiers = GuiModifiers(self)
 
         self.view = NodeViewer(self.scene)
+
+        self.drawingtab = TabDrawing(self)
         self.jsontab = TabJson(self)
-
-        self.options_cfg = TabOptions(self.config, parent=self)
-        self.options_tab = self.options_cfg.widget()
-
-        self.axis_cfg = TabAxis(self.config, parent=self)
-        self.axis_tab = self.axis_cfg.widget()
+        self.optionstab = TabOptions(self)
+        self.axistab = TabAxis(self)
 
         self.tabwidget = QTabWidget()
         # self.tabwidget.setTabPosition(QTabWidget.West)
-        self.tabwidget.addTab(self.view, "Drawing")
-        self.tabwidget.addTab(self.axis_tab, "Axis/Joints")
-        self.tabwidget.addTab(self.options_tab, "Options")
+        self.tabwidget.addTab(self.drawingtab.widget(), "Drawing")
+        self.tabwidget.addTab(self.axistab.widget(), "Axis/Joints")
+        self.tabwidget.addTab(self.optionstab.widget(), "Options")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
-
-
-        plugin_vbox_widget = self.plugin_selector()
-
-
-        info_vbox_widget = QWidget()
-        info_vbox = QVBoxLayout()
-        info_vbox_widget.setLayout(info_vbox)
-        self.pininfo = QPlainTextEdit("")
-        info_vbox.addWidget(self.pininfo)
-        self.infobox = QPlainTextEdit(self)
-        self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.infobox.setMinimumWidth(300)
-        info_vbox.addWidget(self.infobox)
-
-        hbox = QSplitter(Qt.Horizontal)
-        hbox.addWidget(plugin_vbox_widget)
-        hbox.addWidget(self.tabwidget)
-        hbox.addWidget(info_vbox_widget)
 
         vboxMain = QVBoxLayout()
         vboxMain.addWidget(self.toolbar())
-        vboxMain.addWidget(hbox, stretch=1)
+        vboxMain.addWidget(self.tabwidget, stretch=1)
 
         self.info = QLabel("---")
         self.info.setStyleSheet("QLabel{font-size:24px;}")
@@ -1523,10 +1497,10 @@ class Window(QMainWindow):
             riocore.log(f"ERROR: file not found: {self.config_file}")
             exit(1)
 
-        self.options_cfg.load()
-        self.options_cfg.update(self.config)
-        self.axis_cfg.reload(self.config)
-        self.axis_cfg.update(self.config)
+        self.optionstab.load()
+        self.optionstab.update(self.config)
+        self.axistab.reload(self.config)
+        self.axistab.update(self.config)
 
         if self.config_file:
             self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
@@ -1544,104 +1518,6 @@ class Window(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(1000)
-
-
-    def plugin_selector(self):
-
-        plugin_vbox_widget = QWidget()
-        plugin_vbox = QVBoxLayout()
-        plugin_vbox_widget.setLayout(plugin_vbox)
-
-        self.search_text = QLineEdit("")
-        self.search_text.textChanged.connect(partial(self.plugin_search, plugin_table))
-        plugin_vbox.addWidget(self.search_text)
-
-        plugin_table = QTableWidget()
-        plugin_vbox.addWidget(plugin_table)
-
-
-        def plugin_select(idx):
-            if not plugin_table.item(idx, 0):
-                return
-            self.plugin_name_selected = plugin_table.item(idx, 0).text()
-            self.plugin_info(self.plugin_name_selected)
-
-        def plugin_update(misc):
-            pass
-
-        def plugin_add(misc):
-            node_type = None
-            if " " in self.plugin_name_selected:
-                self.plugin_name_selected, node_type = self.plugin_name_selected.split(" ")
-
-            psetup = {"type": self.plugin_name_selected}
-            if node_type:
-                psetup["node_type"] = node_type
-            self.plugins.load_plugin(self.plugin_name_selected, psetup, self.config)
-            plugin_instance = self.plugins.plugin_instances[-1]
-            if not node_type:
-                if "node_type" in plugin_instance.OPTIONS:
-                    option_data = plugin_instance.OPTIONS["node_type"]
-                    node_type = self.dialog_select("Plugin node select", option_data["options"])
-                    if node_type:
-                        plugin_instance.plugin_setup["node_type"] = node_type
-
-            plugin_instance.setup()
-            if plugin_instance.IMAGES:
-                plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
-            plugin_instance.plugin_setup["pos"] = [0.0, 0.0]
-            self.config["plugins"].append(plugin_instance.plugin_setup)
-            self.redraw()
-            self.fit_view()
-            self.snapshot()
-
-        plugin_table.setColumnCount(1)
-        plugin_table.verticalHeader().setVisible(False)
-        # plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem(""))
-        plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Name"))
-        plugin_table.setMinimumWidth(180)
-        plugin_table.cellClicked.connect(plugin_select)
-        plugin_table.doubleClicked.connect(plugin_add)
-
-        return plugin_vbox_widget
-        
-
-    def plugin_info(self, plugin_name):
-        node_type = None
-        if " " in plugin_name:
-            plugin_name, node_type = plugin_name.split(" ")
-
-        psetup = {"type": plugin_name}
-        if node_type:
-            psetup["node_type"] = node_type
-        self.plugins.load_plugin(plugin_name, psetup, self.config)
-        plugin_instance = self.plugins.plugin_instances[-1]
-
-        infotext = plugin_instance.NAME
-        infotext += f"\n\n{plugin_instance.INFO}"
-        if plugin_instance.EXPERIMENTAL:
-            infotext += "\n --- EXPERIMENTAL ---"
-
-        infotext += f"\n{plugin_instance.DESCRIPTION}"
-        self.pininfo.setPlainText(infotext)
-
-    def plugin_search(self, plugin_table, filter_string=None):
-        plugins = []
-        for plugin_data in self.plugins.list(True):
-            plugin_name = plugin_data["name"]
-            if not filter_string or filter_string in plugin_name:
-                plugins.append(plugin_data)
-
-        plugin_table.setRowCount(len(plugins))
-        for row, plugin_data in enumerate(plugins):
-            plugin_name = plugin_data["name"]
-            item = QTableWidgetItem(plugin_name)
-            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
-            plugin_table.setItem(row, 0, item)
-
-        header = plugin_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.Stretch)
-        plugin_table.resizeColumnToContents(0)
 
     def generate(self):
         output_dir = "/tmp/rio-test-build"
@@ -1695,7 +1571,7 @@ class Window(QMainWindow):
             target_port = self.scene.selection_target[1]
             infotext.append(f"target: {target_node.name} {target_port}")
         infotext.append(riocore.log_get())
-        self.infobox.setPlainText("\n".join(infotext))
+        self.drawingtab.infobox.setPlainText("\n".join(infotext))
 
     def load(self):
         self.snapshots = []
@@ -1903,7 +1779,7 @@ class Window(QMainWindow):
             self.config["flow"]["hal"] = {}
 
         self.nesting_all()
-        self.options_cfg.update(self.config)
+        self.optionstab.update(self.config)
         self.redraw()
         self.fit_view()
         self.cfg_check()
@@ -2254,7 +2130,7 @@ class Window(QMainWindow):
             plugin_instance = self.plugins.plugin_instances[-1]
             pluginlist.append(plugin_instance)
 
-        self.plugin_search(self.search_text.text())
+        self.drawingtab.plugin_search(plugins=self.plugins)
 
         # load base and expansion plugins first
         first = ["base", "expansion"]
@@ -2282,8 +2158,8 @@ class Window(QMainWindow):
                 edge = NodeEdge(self.scene, "bus", source, "out", item, "in", color=colors[0])
                 self.scene.addItem(edge)
 
-        self.axis_cfg.update(self.config)
-        self.options_cfg.update(self.config)
+        self.axistab.update(self.config)
+        self.optionstab.update(self.config)
 
     def grid_align(self):
         items = self.scene.selectedItems()
