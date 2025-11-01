@@ -65,7 +65,7 @@ class LinuxCNC:
         "HOME_FINAL_VEL": 100.0,
         "HOME_IGNORE_LIMITS": "YES",
         "HOME_USE_INDEX": "NO",
-        "HOME_OFFSET": 1.0,
+        "HOME_OFFSET": 0.0,
         "HOME": 0.0,
         "HOME_SEQUENCE": 0,
     }
@@ -667,6 +667,28 @@ class LinuxCNC:
         for plugin_instance in self.project.plugin_instances:
             if hasattr(plugin_instance, "ini"):
                 plugin_instance.ini(self, ini_setup)
+
+        # update VELOCITY values
+        max_linear_velocity = 0
+        max_angular_velocity = 0
+        for axis_name, axis_config in self.project.axis_dict.items():
+            for joint_setup in axis_config["joints"]:
+                if joint_setup["TYPE"] == "LINEAR":
+                    max_linear_velocity = max(max_linear_velocity, joint_setup["MAX_VELOCITY"])
+                else:
+                    max_angular_velocity = max(max_angular_velocity, joint_setup["MAX_VELOCITY"])
+        max_linear_velocity = min(max_linear_velocity, ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"]
+        default_linear_velocity = min(max_linear_velocity, ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"]
+        ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"] = max_linear_velocity
+        ini_setup["TRAJ"]["MAX_LINEAR_VELOCITY"] = max_linear_velocity
+        ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"] = default_linear_velocity
+        ini_setup["TRAJ"]["DEFAULT_LINEAR_VELOCITY"] = default_linear_velocity
+        max_angular_velocity = min(max_angular_velocity, ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"]
+        default_angular_velocity = min(max_angular_velocity, ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"]
+        ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"] = max_angular_velocity
+        ini_setup["TRAJ"]["MAX_ANGULAR_VELOCITY"] = max_angular_velocity
+        ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"] = default_angular_velocity
+        ini_setup["TRAJ"]["DEFAULT_ANGULAR_VELOCITY"] = default_angular_velocity
 
         output = []
         for section, setup in ini_setup.items():

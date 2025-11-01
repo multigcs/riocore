@@ -55,12 +55,15 @@ class Plugins:
             if splitted is True:
                 self.load_plugins({"plugins": [{"type": plugin_name}]})
                 plugin_instance = self.plugin_instances[-1]
+                description = plugin_instance.DESCRIPTION
+                info = plugin_instance.INFO
+                keywords = plugin_instance.KEYWORDS
                 if "node_type" in plugin_instance.OPTIONS:
                     option_data = plugin_instance.OPTIONS["node_type"]
                     for option in option_data["options"]:
-                        plugins.append({"name": f"{plugin_name} {option}", "path": plugin_path})
+                        plugins.append({"name": f"{plugin_name} {option}", "path": plugin_path, "description": description, "info": info, "keywords": keywords})
                 else:
-                    plugins.append({"name": plugin_name, "path": plugin_path})
+                    plugins.append({"name": plugin_name, "path": plugin_path, "description": description, "info": info, "keywords": keywords})
             else:
                 plugins.append({"name": plugin_name, "path": plugin_path})
         return plugins

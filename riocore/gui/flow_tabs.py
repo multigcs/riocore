@@ -254,7 +254,15 @@ class TabDrawing:
         plugins = []
         for plugin_data in self.plugins.list(True):
             plugin_name = plugin_data["name"]
-            if not filter_string or filter_string in plugin_name:
+            if not filter_string:
+                plugins.append(plugin_data)
+            elif filter_string in plugin_name:
+                plugins.append(plugin_data)
+            elif filter_string in plugin_data["description"]:
+                plugins.append(plugin_data)
+            elif filter_string in plugin_data["info"]:
+                plugins.append(plugin_data)
+            elif filter_string in plugin_data["keywords"]:
                 plugins.append(plugin_data)
 
         self.plugin_table.setRowCount(len(plugins))

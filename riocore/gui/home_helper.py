@@ -133,6 +133,9 @@ class HomeAnimation(QWidget):
         self.home_sw_pos *= self.invert
         self.home_pos *= self.invert
 
+        if HOME_SEARCH_VEL > 0:
+            HOME_LATCH_VEL *= -1
+
         if self.delay > 0:
             self.delay -= 1
         elif self.sequence == 0:
@@ -144,7 +147,7 @@ class HomeAnimation(QWidget):
                 self.sequence = 1
                 self.delay = 2
 
-        elif self.sequence == 1 and HOME_LATCH_VEL > 0:  # HOME_LATCH_VEL+
+        elif self.sequence == 1 and HOME_LATCH_VEL < 0:  # HOME_LATCH_VEL-
             self.used_speed = "SEARCH"
             if self.slider_pos < self.home_sw_pos + 10:
                 self.steps = 3
@@ -161,7 +164,7 @@ class HomeAnimation(QWidget):
                 self.sequence = 3
                 self.delay = 2
 
-        elif self.sequence == 1 and HOME_LATCH_VEL < 0:  # HOME_LATCH_VEL-
+        elif self.sequence == 1 and HOME_LATCH_VEL > 0:  # HOME_LATCH_VEL+
             self.used_speed = "LATCH"
             if self.slider_pos < self.home_sw_pos:
                 self.steps = 1
