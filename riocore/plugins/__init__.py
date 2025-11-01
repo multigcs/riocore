@@ -263,6 +263,7 @@ class PluginBase:
         self.SHORTENER = {}
         self.IMAGES = []
         self.IMAGE_SHOW = False
+        self.BUILDER = []
         self.SIGNALS = {}
         self.PREFIX = ""
         self.COMPONENT = ""

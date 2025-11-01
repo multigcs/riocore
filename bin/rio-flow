@@ -52,11 +52,12 @@ from riocore.gui.plugins import GuiPlugins
 from riocore.gui.boards import GuiBoards
 from riocore.gui.breakouts import GuiBreakouts
 from riocore.gui.modifiers import GuiModifiers
-from riocore.gui.flow_tabs import TabAxis
-from riocore.gui.flow_tabs import TabOptions
-from riocore.gui.flow_tabs import TabDrawing
-
-
+from riocore.gui.flow_tabs import (
+    TabAxis,
+    TabOptions,
+    TabDrawing,
+    TabBuilder,
+)
 from riocore.gui.widgets import (
     edit_file,
     edit_float,
@@ -1459,6 +1460,7 @@ class Window(QMainWindow):
         self.jsontab = TabJson(self)
         self.optionstab = TabOptions(self)
         self.axistab = TabAxis(self)
+        self.buildertab = TabBuilder(self)
 
         self.tabwidget = QTabWidget()
         # self.tabwidget.setTabPosition(QTabWidget.West)
@@ -1466,6 +1468,7 @@ class Window(QMainWindow):
         self.tabwidget.addTab(self.axistab.widget(), "Axis/Joints")
         self.tabwidget.addTab(self.optionstab.widget(), "Options")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
+        self.tabwidget.addTab(self.buildertab.widget(), "Builder")
 
         vboxMain = QVBoxLayout()
         vboxMain.addWidget(self.toolbar())
@@ -2160,6 +2163,7 @@ class Window(QMainWindow):
 
         self.axistab.update(self.config)
         self.optionstab.update(self.config)
+        self.buildertab.update()
 
     def grid_align(self):
         items = self.scene.selectedItems()

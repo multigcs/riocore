@@ -1,5 +1,8 @@
+import copy
 import os
 from riocore.plugins import PluginBase
+
+import riocore
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -116,6 +119,7 @@ class Plugin(PluginBase):
         if node_type == "board":
             board = self.plugin_setup.get("board", self.option_default("board"))
             self.TYPE = "base"
+            self.BUILDER = ["build", "install"]
             self.IMAGE_SHOW = True
             self.IMAGE = f"{board}.png"
             board_pins = {
@@ -368,6 +372,12 @@ class Plugin(PluginBase):
                     scale_halname = f"{self.PREFIX}.step-scale"
                     parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname)
 
+    def builder(self, config, command):
+        project = riocore.Project(copy.deepcopy(config))
+        firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
+        cmd = f"cd {firmware_path} && make {command}"
+        return cmd
+
     def extra_files(cls, parent, instances):
         output = []
         for instance in instances:
@@ -435,7 +445,7 @@ class Plugin(PluginBase):
                 open(target, "w").write("\n".join(output))
 
                 # create firmware stuff
-                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware")
+                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
                 os.makedirs(firmware_path, exist_ok=True)
                 print(f"{instance.NAME}: create firmware structure: {firmware_path}")
 

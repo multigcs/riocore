@@ -1,10 +1,11 @@
 import os
+import subprocess
 import glob
+from PyQt5.QtCore import QTimer, Qt
 
 import copy
 from functools import partial
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QStandardItemModel
 from PyQt5.QtWidgets import (
     QLineEdit,
@@ -32,6 +33,108 @@ from riocore.gui.widgets import MyStandardItem
 from riocore.gui.home_helper import HomeAnimation
 
 riocore_path = os.path.dirname(riocore.__file__)
+
+
+def cleanLayout(layout):
+    for widget_no in range(0, layout.count()):
+        if layout.itemAt(widget_no) and layout.itemAt(widget_no).widget():
+            layout.itemAt(widget_no).widget().deleteLater()
+        elif layout.itemAt(widget_no) and layout.itemAt(widget_no).layout():
+            cleanLayout(layout.itemAt(widget_no).layout())
+            layout.itemAt(widget_no).layout().deleteLater()
+
+
+class TabBuilder:
+    def __init__(self, parent):
+        self.parent = parent
+        self.block = False
+
+        self.builder_tab = QWidget()
+        builder_tab_layout = QHBoxLayout()
+        self.builder_tab.setLayout(builder_tab_layout)
+
+        self.left = QVBoxLayout()
+
+        self.right = QVBoxLayout()
+        self.output = QPlainTextEdit("")
+        self.right.addWidget(self.output, stretch=1)
+        self.right.addStretch()
+
+        builder_tab_layout.addLayout(self.left, stretch=1)
+        builder_tab_layout.addLayout(self.right, stretch=4)
+
+        self.compile_sub = None
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.runTimer)
+        self.timer.start(1000)
+
+    def runTimer(self):
+        if self.compile_sub is not None:
+            logdata = open("/tmp/buildlog", "r").read()
+            self.output.setPlainText(logdata)
+            self.output.verticalScrollBar().setValue(self.output.verticalScrollBar().maximum())
+
+            if self.compile_sub.poll() is not None:
+                self.compile_sub = None
+                self.block = False
+                print("...done")
+
+    def generator_run(self):
+        if self.block:
+            print("wait to finish already running command")
+            return
+        self.block = True
+
+        generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
+        cmd = f"{generator_path} {self.parent.config_file}"
+        print(f"running cmd: {cmd}")
+        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
+
+    def bulder_run(self, plugin_instance, command):
+        if self.block:
+            print("wait to finish already running command")
+            return
+        self.block = True
+
+        cmd = plugin_instance.builder(self.parent.config, command)
+        print(f"running cmd; {cmd}")
+        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
+
+    def update_left(self):
+        if self.block:
+            print("wait to finish already running command")
+            return
+
+        cleanLayout(self.left)
+
+        button = QPushButton("Generate files")
+        button.clicked.connect(self.generator_run)
+        self.left.addWidget(button)
+
+        for item in self.parent.scene.items():
+            if hasattr(item, "plugin_instance"):
+                plugin_instance = item.plugin_instance
+                if not plugin_instance.BUILDER:
+                    continue
+
+                ninja = QVBoxLayout()
+                self.left.addLayout(ninja)
+                ninja.addWidget(QLabel(""))
+                ninja.addWidget(QLabel(plugin_instance.title))
+
+                for command in plugin_instance.BUILDER:
+                    button = QPushButton(command.title())
+                    button.clicked.connect(partial(self.bulder_run, plugin_instance, command))
+                    ninja.addWidget(button)
+
+        ninja.addStretch()
+
+    def update(self):
+        self.update_left()
+
+    def widget(self):
+        return self.builder_tab
 
 
 class TabDrawing:
@@ -426,14 +529,6 @@ class TabAxis:
         self.config = config
         if not self.config.get("name"):
             return
-
-        def cleanLayout(layout):
-            for widget_no in range(0, layout.count()):
-                if layout.itemAt(widget_no) and layout.itemAt(widget_no).widget():
-                    layout.itemAt(widget_no).widget().deleteLater()
-                elif layout.itemAt(widget_no) and layout.itemAt(widget_no).layout():
-                    cleanLayout(layout.itemAt(widget_no).layout())
-                    layout.itemAt(widget_no).layout().deleteLater()
 
         cleanLayout(self.tab_layout)
 

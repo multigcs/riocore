@@ -1,6 +1,11 @@
+import copy
 import os
 import json
 from riocore.plugins import PluginBase
+
+import riocore
+
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 class Plugin(PluginBase):
@@ -100,6 +105,7 @@ class Plugin(PluginBase):
             self.TYPE = "base"
             self.IMAGE_SHOW = True
             self.IMAGE = f"{board}.png"
+            self.BUILDER = ["build", "install"]
             board_pins = {
                 "W5500-EVB-Pico": {
                     # "IO:LED": {"pin": f"{self.instances_name}:gp25", "pos": [259, 15], "direction": "all", "edge": "source", "type": ["GPIO"]},
@@ -302,6 +308,12 @@ class Plugin(PluginBase):
                     enable_halname = f"{self.PREFIX}.enable"
                     scale_halname = f"{self.PREFIX}.step-scale"
                     parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname)
+
+    def builder(self, config, command):
+        project = riocore.Project(copy.deepcopy(config))
+        firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
+        cmd = f"cd {firmware_path} && make {command}"
+        return cmd
 
     def extra_files(cls, parent, instances):
         remora_cfg = {
