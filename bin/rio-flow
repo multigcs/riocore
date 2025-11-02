@@ -831,7 +831,10 @@ class BreakoutNode(MyNode):
     def reload(self):
         # self.selected_port = None
         breakout = self.breakout_setup["breakout"]
-        data = open(os.path.join(riocore_path, "breakouts", breakout, "breakout.json"), "r").read()
+        breakout_path = os.path.join(riocore_path, "breakouts", breakout, "breakout.json")
+        if not os.path.exists(breakout_path):
+            return
+        data = open(breakout_path, "r").read()
         self.jdata = json.loads(data)
 
         image = os.path.join(riocore_path, "breakouts", breakout, "breakout.png")

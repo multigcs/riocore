@@ -1,0 +1,485 @@
+
+<html>
+<header>
+<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>
+</header>
+<body>
+<div class="tab">
+  <button class="tablinks" onclick="openSection(event, 'CONFIG')">CONFIG</button>
+  <button class="tablinks" onclick="openSection(event, 'PINS')">PINS</button>
+  <button class="tablinks" onclick="openSection(event, 'SIGNALS')">SIGNALS</button>
+  <button class="tablinks" onclick="openSection(event, 'INTERFACE')">INTERFACE</button>
+  <button class="tablinks" onclick="openSection(event, 'LINUXCNC')">LINUXCNC</button>
+  <button class="tablinks" onclick="openSection(event, 'JSON')">JSON</button>
+</div>
+<div id="CONFIG" class="tabcontent">
+<github-md>
+# ICEBreakerV1.0e
+<img align="right" height="320" src="board.png">
+Small and low cost FPGA educational and development board
+
+* Board: [ICEBreakerV1.0e](https://github.com/multigcs/riocore/blob/main/riocore/boards/ICEBreakerV1.0e/README.md)
+* Config-Path: tests/unit/data/full/ICEBreakerV1.0e.json
+* Output-Path: tests/unit/output/ICEBreakerV1.0e
+* Toolchain: icestorm
+* Protocol: UDP
+
+## Axis/Joints
+| Axis | Joint | Plugin | Home-Seq. |
+| --- | --- | --- | --- |
+| X | 0 | stepdir0 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 0 | 
+| Y | 1 | stepdir1 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 0 | 
+| Z | 2 | stepdir2 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 0 | 
+
+## Plugins
+| Type | Info | Instance | Image |
+| --- | --- | --- | --- |
+| [w5500](https://github.com/multigcs/riocore/blob/main/riocore/plugins/w5500/README.md) | udp interface for host comunication | w55000 | <img src="w5500.png" height="48"> |
+| [stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md) | step/dir output for stepper drivers | stepdir0, stepdir1, stepdir2 | <img src="stepdir.png" height="48"> |
+| [blink](https://github.com/multigcs/riocore/blob/main/riocore/plugins/blink/README.md) | blinking output pin | blink0 | <img src="blink.png" height="48"> |
+| [bitin](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitin/README.md) | single input pin | bitin0, bitin1, bitin2, bitin3, bitin4, bitin5 | <img src="bitin.png" height="48"> |
+| [bitout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitout/README.md) | singe bit output pin | bitout0, bitout1 | <img src="bitout.png" height="48"> |
+
+</github-md>
+</div>
+<div id="PINS" class="tabcontent">
+<github-md>
+# Pins
+| Plugin | ID | Name | Board | Alias |
+| --- | --- | --- | --- | --- |
+| w5500 | w55000 | mosi | 14 |  |
+|  |  | miso | 17 |  |
+|  |  | sclk | 15 |  |
+|  |  | sel | 12 |  |
+|  |  | rst | - |  |
+|  |  | intr | - |  |
+| stepdir | stepdir0 | step | 45 |  |
+|  |  | dir | 44 |  |
+|  |  | en | 4 |  |
+|  | stepdir1 | step | 47 |  |
+|  |  | dir | 46 |  |
+|  |  | en | - |  |
+|  | stepdir2 | step | 2 |  |
+|  |  | dir | 48 |  |
+|  |  | en | - |  |
+| blink | blink0 | led | 11 |  |
+| bitin | bitin0 | bit | 10 |  |
+|  | bitin1 | bit | 31 |  |
+|  | bitin2 | bit | 38 |  |
+|  | bitin3 | bit | 34 |  |
+|  | bitin4 | bit | 28 |  |
+|  | bitin5 | bit | 32 |  |
+| bitout | bitout0 | bit | 43 |  |
+|  | bitout1 | bit | 42 |  |
+
+</github-md>
+</div>
+<div id="SIGNALS" class="tabcontent">
+<github-md>
+# Signals
+| Plugin | ID | Name | Dir | Hal-Pin | Type | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+
+</github-md>
+</div>
+<div id="INTERFACE" class="tabcontent">
+<github-md>
+# Interface
+## Host to FPGA
+| POS | SIZE | NAME |
+| --- | --- | --- |
+| 0 | 32bits | RX_HEADER |
+| 32 | 32bits | VAROUT32_STEPDIR0_VELOCITY |
+| 64 | 32bits | VAROUT32_STEPDIR1_VELOCITY |
+| 96 | 32bits | VAROUT32_STEPDIR2_VELOCITY |
+| 128 | 1bit | VAROUT1_STEPDIR0_ENABLE |
+| 129 | 1bit | VAROUT1_STEPDIR1_ENABLE |
+| 130 | 1bit | VAROUT1_STEPDIR2_ENABLE |
+| 131 | 1bit | VAROUT1_BITOUT0_BIT |
+| 132 | 1bit | VAROUT1_BITOUT1_BIT |
+
+## FPGA to Host
+| POS | SIZE | NAME |
+| --- | --- | --- |
+| 0 | 32bits | TX_HEADER |
+| 32 | 32bits | TIMESTAMP |
+| 64 | 32bits | VARIN32_STEPDIR0_POSITION |
+| 96 | 32bits | VARIN32_STEPDIR1_POSITION |
+| 128 | 32bits | VARIN32_STEPDIR2_POSITION |
+| 160 | 1bit | VARIN1_BITIN0_BIT |
+| 161 | 1bit | VARIN1_BITIN1_BIT |
+| 162 | 1bit | VARIN1_BITIN2_BIT |
+| 163 | 1bit | VARIN1_BITIN3_BIT |
+| 164 | 1bit | VARIN1_BITIN4_BIT |
+| 165 | 1bit | VARIN1_BITIN5_BIT |
+
+</github-md>
+</div>
+<div id="LINUXCNC" class="tabcontent">
+<github-md>
+# LinuxCNC
+## Hal-Graph
+![halgraph](./halgraph.png)
+</github-md>
+</div>
+<div id="JSON" class="tabcontent">
+<github-md>
+# JSON-Config
+```
+{
+    "name": "ICEBreakerV1.0e",
+    "flow": {
+        "view": {
+            "scale": 1.48,
+            "pos": [
+                882,
+                -61
+            ]
+        },
+        "board": {
+            "pos": [
+                1160.0,
+                350.0
+            ],
+            "rotate": 0
+        },
+        "hal": {
+            "misc": [
+                1640.0,
+                310.0
+            ],
+            "joint.0": [
+                1640.0,
+                400.0
+            ],
+            "joint.1": [
+                1640.0,
+                180.0
+            ],
+            "joint.2": [
+                1640.0,
+                50.0
+            ],
+            "spindle.0": [
+                1640.0,
+                -40.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "w5500",
+            "pins": {
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                }
+            },
+            "uid": "w55000",
+            "pos": [
+                850.0,
+                400.0
+            ],
+            "image": "w5500mini",
+            "gw": "192.168.11.1",
+            "ip": "192.168.11.194",
+            "rotate": 90
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD1A:P4"
+                },
+                "dir": {
+                    "pin": "PMOD1A:P10"
+                },
+                "en": {
+                    "pin": "PMOD1A:P1"
+                }
+            },
+            "uid": "stepdir0",
+            "pos": [
+                1280.0,
+                -10.0
+            ],
+            "image": "stepper",
+            "is_joint": true,
+            "joint": {
+                "min_ferror": 10.0,
+                "ferror": 22.0,
+                "max_acceleration": 100.0
+            },
+            "rotate": -90
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD1A:P3"
+                },
+                "dir": {
+                    "pin": "PMOD1A:P9"
+                }
+            },
+            "uid": "stepdir1",
+            "pos": [
+                1020.0,
+                -10.0
+            ],
+            "name": "",
+            "image": "stepper",
+            "is_joint": true,
+            "joint": {
+                "ferror": 20.0,
+                "min_ferror": 10.0,
+                "max_acceleration": 110.0
+            },
+            "rotate": -90
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "LED:R"
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                1080.0,
+                370.0
+            ],
+            "image": "led",
+            "rotate": 180
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "BUTTON:1"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                890.0,
+                270.0
+            ],
+            "image": "switch",
+            "rotate": 180
+        },
+        {
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "PMOD1A:P2"
+                },
+                "dir": {
+                    "pin": "PMOD1A:P8"
+                }
+            },
+            "uid": "stepdir2",
+            "pos": [
+                760.0,
+                -10.0
+            ],
+            "name": "",
+            "image": "stepper",
+            "is_joint": true,
+            "joint": {
+                "ferror": 20.0,
+                "min_ferror": 10.0,
+                "max_acceleration": 110.0
+            },
+            "rotate": -90
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "image": "relay",
+            "pos": [
+                1410.0,
+                320.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "PMOD1B:P1"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout1",
+            "image": "relay",
+            "pos": [
+                1410.0,
+                470.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "PMOD1B:P7"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
+            "pos": [
+                1060.0,
+                600.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "PMOD1B:P4"
+                }
+            },
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "proximity",
+            "pos": [
+                1200.0,
+                600.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "PMOD1B:P2"
+                }
+            },
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin3",
+            "image": "proximity",
+            "pos": [
+                1130.0,
+                600.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "PMOD1B:P3"
+                }
+            },
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin4",
+            "image": "proximity",
+            "pos": [
+                1270.0,
+                600.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "PMOD1B:P10"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin5",
+            "image": "proximity",
+            "pos": [
+                1340.0,
+                600.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "PMOD1B:P9"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        }
+    ],
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "DEFAULT_LINEAR_VELOCITY": 20.0
+            },
+            "EMCMOT": {
+                "SERVO_PERIOD": 1500000
+            }
+        }
+    },
+    "boardcfg": "ICEBreakerV1.0e",
+    "protocol": "UDP",
+    "toolchain": "icestorm"
+}
+
+```
+
+</github-md>
+</div>
+</body>
+<script>
+function openSection(evt, sectionName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sectionName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+openSection(event, 'CONFIG');
+</script>
+</html>

@@ -1,0 +1,315 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+loadrt rio
+
+# if you need to test rio without hardware, set it to 1
+setp rio.sys-simulation 0
+
+# pid controller
+loadrt pid num_chan=3
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# read
+addf rio.readwrite servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+# write
+
+#################################################################################
+# logic and calc components
+#################################################################################
+loadrt logic names=func.and_0.1,func.or_0.4 personality=0x102,0x202
+addf func.and_0.1 servo-thread
+addf func.or_0.4 servo-thread
+
+loadrt not names=func.not_halui_mode_is-auto,func.not_axisui_error
+addf func.not_halui_mode_is-auto servo-thread
+addf func.not_axisui_error servo-thread
+
+#################################################################################
+# iocontrol.0.user-enable-out --> rio.sys-enable
+#################################################################################
+net user-enable-out                <= iocontrol.0.user-enable-out
+net user-enable-out                => rio.sys-enable
+
+#################################################################################
+# iocontrol.0.user-request-enable --> rio.sys-enable-request
+#################################################################################
+net user-request-enable            <= iocontrol.0.user-request-enable
+net user-request-enable            => rio.sys-enable-request
+
+#################################################################################
+# &rio.sys-status --> iocontrol.0.emc-enable-in
+#################################################################################
+net sig_rio_sys-status             <= rio.sys-status
+net sig_rio_sys-status             => iocontrol.0.emc-enable-in
+
+#################################################################################
+# halui.machine.is-on --> rio.machine-on
+#################################################################################
+net sig_halui_machine_is-on        <= halui.machine.is-on
+net sig_halui_machine_is-on        => rio.machine-on
+
+#################################################################################
+# iocontrol.0.tool-prep-number --> hal_manualtoolchange.number
+#################################################################################
+net tool-prep-number               <= iocontrol.0.tool-prep-number
+# net tool-prep-number               => hal_manualtoolchange.number (in postgui)
+
+#################################################################################
+# iocontrol.0.tool-change --> hal_manualtoolchange.change
+#################################################################################
+net tool-change                    <= iocontrol.0.tool-change
+# net tool-change                    => hal_manualtoolchange.change (in postgui)
+
+#################################################################################
+# hal_manualtoolchange.changed --> iocontrol.0.tool-changed
+#################################################################################
+# net tool-changed                   <= hal_manualtoolchange.changed (in postgui)
+net tool-changed                   => iocontrol.0.tool-changed
+
+#################################################################################
+# iocontrol.0.tool-prepare --> iocontrol.0.tool-prepared
+#################################################################################
+net tool-prepared                  <= iocontrol.0.tool-prepare
+net tool-prepared                  => iocontrol.0.tool-prepared
+
+#################################################################################
+# (!halui.mode.is-auto and !axisui.error) or halui.program.is-paused --> rio.wled0.0_green
+#################################################################################
+net sig_halui_mode_is-auto         <= halui.mode.is-auto
+# net sig_axisui_error               <= axisui.error (in postgui)
+net sig_halui_program_is-paused    <= halui.program.is-paused
+net sig_halui_mode_is-auto         => func.not_halui_mode_is-auto.in
+net func_not_halui_mode_is-auto_out <= func.not_halui_mode_is-auto.out
+net func_not_halui_mode_is-auto_out => func.and_0.1.in-00
+net func_not_axisui_error_out      => func.and_0.1.in-01
+net func_and_0_1_and               <= func.and_0.1.and
+net sig_axisui_error               => func.not_axisui_error.in
+net func_not_axisui_error_out      <= func.not_axisui_error.out
+net func_and_0_1_and               => func.or_0.4.in-00
+net sig_halui_program_is-paused    => func.or_0.4.in-01
+net func_or_0_4_or                 <= func.or_0.4.or
+net func_or_0_4_or                 => rio.wled0.0_green
+
+#################################################################################
+# halui.mode.is-auto --> rio.wled0.0_blue
+#################################################################################
+net sig_halui_mode_is-auto         => rio.wled0.0_blue
+
+#################################################################################
+# axisui.error --> rio.wled0.0_red
+#################################################################################
+net sig_axisui_error               => rio.wled0.0_red
+
+#################################################################################
+# rio.bitin0.bit --> joint.0.home-sw-in
+#################################################################################
+net sig_rio_bitin0_bit             <= rio.bitin0.bit
+net sig_rio_bitin0_bit             => joint.0.home-sw-in
+
+#################################################################################
+# rio.bitin1.bit --> joint.1.home-sw-in
+#################################################################################
+net sig_rio_bitin1_bit             <= rio.bitin1.bit
+net sig_rio_bitin1_bit             => joint.1.home-sw-in
+
+#################################################################################
+# rio.bitin2.bit --> joint.2.home-sw-in
+#################################################################################
+net sig_rio_bitin2_bit             <= rio.bitin2.bit
+net sig_rio_bitin2_bit             => joint.2.home-sw-in
+
+#################################################################################
+# pyvcp.halui.mdi-command-00 --> halui.mdi-command-00
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-00 <= pyvcp.halui.mdi-command-00 (in postgui)
+net sig_pyvcp_halui_mdi-command-00 => halui.mdi-command-00
+
+#################################################################################
+# pyvcp.halui.mdi-command-01 --> halui.mdi-command-01
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-01 <= pyvcp.halui.mdi-command-01 (in postgui)
+net sig_pyvcp_halui_mdi-command-01 => halui.mdi-command-01
+
+#################################################################################
+# pyvcp.halui.mdi-command-02 --> halui.mdi-command-02
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-02 <= pyvcp.halui.mdi-command-02 (in postgui)
+net sig_pyvcp_halui_mdi-command-02 => halui.mdi-command-02
+
+#################################################################################
+# rio.modbus0.temperature --> pyvcp.modbus0.temperature
+#################################################################################
+net sig_rio_modbus0_temperature    <= rio.modbus0.temperature
+# net sig_rio_modbus0_temperature    => pyvcp.modbus0.temperature (in postgui)
+
+#################################################################################
+# rio.i2cbus0.lm75_0_temp --> pyvcp.i2cbus0.lm75_0_temp
+#################################################################################
+net sig_rio_i2cbus0_lm75_0_temp    <= rio.i2cbus0.lm75_0_temp
+# net sig_rio_i2cbus0_lm75_0_temp    => pyvcp.i2cbus0.lm75_0_temp (in postgui)
+
+#################################################################################
+# rio.i2cbus0.lm75_0_valid --> pyvcp.i2cbus0.lm75_0_valid
+#################################################################################
+net sig_rio_i2cbus0_lm75_0_valid   <= rio.i2cbus0.lm75_0_valid
+# net sig_rio_i2cbus0_lm75_0_valid   => pyvcp.i2cbus0.lm75_0_valid (in postgui)
+
+#################################################################################
+# rio.bitin0.bit --> pyvcp.bitin0.bit
+#################################################################################
+# net sig_rio_bitin0_bit             => pyvcp.bitin0.bit (in postgui)
+
+#################################################################################
+# rio.bitin1.bit --> pyvcp.bitin1.bit
+#################################################################################
+# net sig_rio_bitin1_bit             => pyvcp.bitin1.bit (in postgui)
+
+#################################################################################
+# rio.bitin2.bit --> pyvcp.bitin2.bit
+#################################################################################
+# net sig_rio_bitin2_bit             => pyvcp.bitin2.bit (in postgui)
+
+#################################################################################
+# rio.wled0.0_green --> pyvcp.wled0.0_green
+#################################################################################
+# net func_or_0_4_or                 => pyvcp.wled0.0_green (in postgui)
+
+#################################################################################
+# rio.wled0.0_blue --> pyvcp.wled0.0_blue
+#################################################################################
+# net sig_halui_mode_is-auto         => pyvcp.wled0.0_blue (in postgui)
+
+#################################################################################
+# rio.wled0.0_red --> pyvcp.wled0.0_red
+#################################################################################
+# net sig_axisui_error               => pyvcp.wled0.0_red (in postgui)
+
+#################################################################################
+# pyvcp.wled0.1_green --> rio.wled0.1_green
+#################################################################################
+# net sig_pyvcp_wled0_1_green        <= pyvcp.wled0.1_green (in postgui)
+net sig_pyvcp_wled0_1_green        => rio.wled0.1_green
+
+#################################################################################
+# pyvcp.wled0.1_blue --> rio.wled0.1_blue
+#################################################################################
+# net sig_pyvcp_wled0_1_blue         <= pyvcp.wled0.1_blue (in postgui)
+net sig_pyvcp_wled0_1_blue         => rio.wled0.1_blue
+
+#################################################################################
+# pyvcp.wled0.1_red --> rio.wled0.1_red
+#################################################################################
+# net sig_pyvcp_wled0_1_red          <= pyvcp.wled0.1_red (in postgui)
+net sig_pyvcp_wled0_1_red          => rio.wled0.1_red
+
+#################################################################################
+# pyvcp.wled0.2_green --> rio.wled0.2_green
+#################################################################################
+# net sig_pyvcp_wled0_2_green        <= pyvcp.wled0.2_green (in postgui)
+net sig_pyvcp_wled0_2_green        => rio.wled0.2_green
+
+#################################################################################
+# pyvcp.wled0.2_blue --> rio.wled0.2_blue
+#################################################################################
+# net sig_pyvcp_wled0_2_blue         <= pyvcp.wled0.2_blue (in postgui)
+net sig_pyvcp_wled0_2_blue         => rio.wled0.2_blue
+
+#################################################################################
+# pyvcp.wled0.2_red --> rio.wled0.2_red
+#################################################################################
+# net sig_pyvcp_wled0_2_red          <= pyvcp.wled0.2_red (in postgui)
+net sig_pyvcp_wled0_2_red          => rio.wled0.2_red
+
+#################################################################################
+# joint-0
+#################################################################################
+setp rio.stepdir0.velocity-scale   [JOINT_0]SCALE_OUT
+setp rio.stepdir0.position-scale   [JOINT_0]SCALE_IN
+setp pid.0.Pgain                   [JOINT_0]P
+setp pid.0.Igain                   [JOINT_0]I
+setp pid.0.Dgain                   [JOINT_0]D
+setp pid.0.bias                    [JOINT_0]BIAS
+setp pid.0.FF0                     [JOINT_0]FF0
+setp pid.0.FF1                     [JOINT_0]FF1
+setp pid.0.FF2                     [JOINT_0]FF2
+setp pid.0.deadband                [JOINT_0]DEADBAND
+setp pid.0.maxoutput               [JOINT_0]MAXOUTPUT
+net j0vel-cmd                      <= pid.0.output
+net j0pos-cmd                      <= joint.0.motor-pos-cmd
+net j0motor-pos-fb                 <= rio.stepdir0.position
+net j0enable                       <= joint.0.amp-enable-out
+net j0vel-cmd                      => rio.stepdir0.velocity
+net j0pos-cmd                      => pid.0.command
+net j0motor-pos-fb                 => joint.0.motor-pos-fb
+net j0motor-pos-fb                 => pid.0.feedback
+net j0enable                       => pid.0.enable
+net j0enable                       => rio.stepdir0.enable
+
+#################################################################################
+# joint-1
+#################################################################################
+setp rio.stepdir1.velocity-scale   [JOINT_1]SCALE_OUT
+setp rio.stepdir1.position-scale   [JOINT_1]SCALE_IN
+setp pid.1.Pgain                   [JOINT_1]P
+setp pid.1.Igain                   [JOINT_1]I
+setp pid.1.Dgain                   [JOINT_1]D
+setp pid.1.bias                    [JOINT_1]BIAS
+setp pid.1.FF0                     [JOINT_1]FF0
+setp pid.1.FF1                     [JOINT_1]FF1
+setp pid.1.FF2                     [JOINT_1]FF2
+setp pid.1.deadband                [JOINT_1]DEADBAND
+setp pid.1.maxoutput               [JOINT_1]MAXOUTPUT
+net j1vel-cmd                      <= pid.1.output
+net j1pos-cmd                      <= joint.1.motor-pos-cmd
+net j1motor-pos-fb                 <= rio.stepdir1.position
+net j1enable                       <= joint.1.amp-enable-out
+net j1vel-cmd                      => rio.stepdir1.velocity
+net j1pos-cmd                      => pid.1.command
+net j1motor-pos-fb                 => joint.1.motor-pos-fb
+net j1motor-pos-fb                 => pid.1.feedback
+net j1enable                       => pid.1.enable
+net j1enable                       => rio.stepdir1.enable
+
+#################################################################################
+# joint-2
+#################################################################################
+setp rio.stepdir2.velocity-scale   [JOINT_2]SCALE_OUT
+setp rio.stepdir2.position-scale   [JOINT_2]SCALE_IN
+setp pid.2.Pgain                   [JOINT_2]P
+setp pid.2.Igain                   [JOINT_2]I
+setp pid.2.Dgain                   [JOINT_2]D
+setp pid.2.bias                    [JOINT_2]BIAS
+setp pid.2.FF0                     [JOINT_2]FF0
+setp pid.2.FF1                     [JOINT_2]FF1
+setp pid.2.FF2                     [JOINT_2]FF2
+setp pid.2.deadband                [JOINT_2]DEADBAND
+setp pid.2.maxoutput               [JOINT_2]MAXOUTPUT
+net j2vel-cmd                      <= pid.2.output
+net j2pos-cmd                      <= joint.2.motor-pos-cmd
+net j2motor-pos-fb                 <= rio.stepdir2.position
+net j2enable                       <= joint.2.amp-enable-out
+net j2vel-cmd                      => rio.stepdir2.velocity
+net j2pos-cmd                      => pid.2.command
+net j2motor-pos-fb                 => joint.2.motor-pos-fb
+net j2motor-pos-fb                 => pid.2.feedback
+net j2enable                       => pid.2.enable
+net j2enable                       => rio.stepdir2.enable
+
+#################################################################################
+# setp
+#################################################################################
+
+#################################################################################
+# preformated
+#################################################################################
