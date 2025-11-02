@@ -2,6 +2,7 @@
     "name": "Tangbob",
     "boardcfg": "Tangbob",
     "description": "Tangbob with one 5x china BOB",
+    "_async": true,
     "protocol": "UDP",
     "plugins": [
         {
@@ -138,6 +139,9 @@
                 },
                 "dir": {
                     "pin": "china-bob5x0:X:dir"
+                },
+                "en": {
+                    "pin": "china-bob5x0:ALL:en"
                 }
             },
             "is_joint": true,
@@ -291,28 +295,14 @@
                 }
             },
             "name": "home-z"
-        },
-        {
-            "type": "bitout",
-            "pins": {
-                "bit": {
-                    "pin": "china-bob5x0:ALL:en"
-                }
-            },
-            "uid": "bitout0",
-            "pos": [
-                730.0,
-                100.0
-            ],
-            "name": "enable"
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.39,
+            "scale": 1.3940435280641466,
             "pos": [
-                -233,
-                2
+                -233.81214203894615,
+                2.0
             ]
         },
         "hal": {
@@ -360,5 +350,12 @@
             ],
             "rotate": 0
         }
-    ]
+    ],
+    "linuxcnc": {
+        "ini": {
+            "EMCMOT": {
+                "SERVO_PERIOD": 500000
+            }
+        }
+    }
 }
