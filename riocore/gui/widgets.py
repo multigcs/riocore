@@ -577,8 +577,8 @@ class edit_combobox(QComboBox):
             else:
                 print(f"ERROR: {obj[key]} is not a option")
         elif default is not None:
-            if default in self.options_clean:
-                self.setCurrentIndex(self.options_clean.index(default))
+            if str(default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(default)))
             else:
                 print(f"ERROR: {default} is not a option")
         else:
@@ -600,8 +600,8 @@ class edit_combobox(QComboBox):
             else:
                 print(f"ERROR: {self.obj[self.key]} is not a option")
         elif self.default is not None:
-            if self.default in self.options_clean:
-                self.setCurrentIndex(self.options_clean.index(self.default))
+            if str(self.default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.default)))
             else:
                 print(f"ERROR: {self.default} is not a option")
         else:

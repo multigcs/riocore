@@ -167,6 +167,11 @@ class Plugins:
                         if pin_config["pin"] == "" or pin_config["pin"] is None:
                             log(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
                             del pin_config["pin"]
+
+                for option_name, option_data in plugin_instance.OPTIONS.items():
+                    if option_name == "is_joint" and option_name not in plugin_instance.plugin_setup and option_data.get("default"):
+                        plugin_instance.plugin_setup[option_name] = option_data.get("default")
+
                 self.plugin_instances.append(plugin_instance)
 
                 return plugin_instance

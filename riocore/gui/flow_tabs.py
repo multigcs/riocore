@@ -102,6 +102,32 @@ class TabBuilder:
         print(f"running cmd: {cmd}...")
         self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
 
+    def generator_run_build(self):
+        if self.block:
+            print("wait to finish already running command")
+            return
+        self.block = True
+
+        generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
+        cmd = f"{generator_path} -b {self.parent.config_file}"
+        self.output.setPlainText(f"running cmd; {cmd}...")
+        print(f"running cmd: {cmd}...")
+        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
+
+    def make(self, command):
+        if self.block:
+            print("wait to finish already running command")
+            return
+        self.block = True
+
+        project = riocore.Project(copy.deepcopy(self.parent.config))
+        print(project.config["output_path"], command)
+        buid_dir = os.path.join(project.config["output_path"], "Gateware")
+        cmd = f"(cd {buid_dir} && make {command})"
+        self.output.setPlainText(f"running cmd; {cmd}...")
+        print(f"running cmd; {cmd}...")
+        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
+
     def bulder_run(self, plugin_instance, command):
         if self.block:
             print("wait to finish already running command")
@@ -123,6 +149,18 @@ class TabBuilder:
         button = QPushButton("Generate files")
         button.clicked.connect(self.generator_run)
         self.left.addWidget(button)
+
+        if self.parent.board and self.parent.board.get("name"):
+            self.left.addWidget(QLabel(""))
+            self.left.addWidget(QLabel(self.parent.board.get("name")))
+
+            button = QPushButton("Gateware build")
+            button.clicked.connect(self.generator_run_build)
+            self.left.addWidget(button)
+
+            button = QPushButton("Gateware flash")
+            button.clicked.connect(partial(self.make, "load"))
+            self.left.addWidget(button)
 
         for item in self.parent.scene.items():
             if hasattr(item, "plugin_instance"):
@@ -198,8 +236,13 @@ class TabDrawing:
             psetup = {"type": self.plugin_name_selected}
             if node_type:
                 psetup["node_type"] = node_type
-            self.plugins.load_plugin(self.plugin_name_selected, psetup, self.parent.config)
+
+            unum = 0
+            while f"{self.plugin_name_selected}{unum}" in self.parent.plugin_uids:
+                unum += 1
+            self.plugins.load_plugin(unum, psetup, self.parent.config)
             plugin_instance = self.plugins.plugin_instances[-1]
+
             if not node_type:
                 if "node_type" in plugin_instance.OPTIONS:
                     option_data = plugin_instance.OPTIONS["node_type"]
@@ -211,6 +254,7 @@ class TabDrawing:
             if plugin_instance.IMAGES:
                 plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
             plugin_instance.plugin_setup["pos"] = [0.0, 0.0]
+
             self.parent.config["plugins"].append(plugin_instance.plugin_setup)
             self.parent.redraw()
             self.parent.fit_view()
@@ -304,6 +348,7 @@ class TabAxis:
 
         signature = []
         project = riocore.Project(copy.deepcopy(self.config), "")
+        self.project = project
         for axis in project.axis_names:
             if axis not in project.axis_dict:
                 continue
@@ -660,9 +705,14 @@ class TabAxis:
                         options = riocore.halpins.JOINT_OPTIONS[key]
                         home_options[key.upper()] = options
                         unit = options.get("unit", "")
-                        default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
-                        if default:
-                            options["default"] = default
+
+                        if key.upper() in jdata:
+                            options["default"] = jdata.get(key.upper())
+                        else:
+                            default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
+                            if default:
+                                options["default"] = default
+
                         widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key])
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)

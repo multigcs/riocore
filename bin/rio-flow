@@ -959,6 +959,13 @@ class ModuleNode(MyNode):
                     pin_data["title"] = f"{plugin_name} - {pin_data['title']}"
                     self.ports[f"{plugin_name}:sig_{pin_name}"] = pin_data
 
+    def delete(self):
+        # remove module from cfg
+        for pn, module in enumerate(self.scene.parent.config["modules"]):
+            if module == self.module_config:
+                self.scene.parent.config["modules"].pop(pn)
+        return True
+
 
 class ModifierNode(MyNode):
     port_top = 7

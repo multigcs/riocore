@@ -23,10 +23,11 @@
             "uid": "w55000",
             "pos": [
                 390.0,
-                570.0
+                530.0
             ],
             "image": "w5500mini",
-            "rotate": 0
+            "rotate": 0,
+            "ip": "192.168.11.194"
         },
         {
             "type": "wled",
@@ -122,183 +123,196 @@
                     727.0547228632354
                 ]
             }
-        }
-    ],
-    "modules": [
+        },
         {
-            "slot": "RIGHT",
-            "module": "china-bob5x",
-            "setup": {
-                "enable": {
-                    "type": "bitout",
-                    "name": "enable",
-                    "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                },
-                                {
-                                    "type": "onerror"
-                                },
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "halui.machine.is-on",
-                            "function": "",
-                            "setp": ""
-                        }
-                    },
-                    "uid": "bitout0"
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "image": "stepper",
+            "pos": [
+                980.0,
+                540.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:X:step"
                 },
-                "home-x": {
-                    "type": "bitin",
-                    "name": "home-x",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.0.home-sw-in",
-                            "function": "",
-                            "setp": ""
-                        }
-                    },
-                    "uid": "bitin0"
-                },
-                "home-y": {
-                    "type": "bitin",
-                    "name": "home-y",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.1.home-sw-in",
-                            "function": "",
-                            "setp": ""
-                        }
-                    },
-                    "uid": "bitin1"
-                },
-                "home-z": {
-                    "type": "bitin",
-                    "name": "home-z",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "joint.2.home-sw-in",
-                            "function": "",
-                            "setp": ""
-                        }
-                    },
-                    "uid": "bitin2"
-                },
-                "spindle-enable": {
-                    "type": "bitout",
-                    "name": "spindle-enable",
-                    "pins": {
-                        "bit": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    },
-                    "signals": {
-                        "bit": {
-                            "net": "spindle.0.on",
-                            "function": "",
-                            "setp": ""
-                        }
-                    },
-                    "uid": "bitout1"
-                },
-                "pwm": {
-                    "type": "pwmout",
-                    "name": "pwm",
-                    "pins": {
-                        "pwm": {
-                            "modifier": [
-                                {
-                                    "type": "invert"
-                                }
-                            ]
-                        }
-                    },
-                    "uid": "pwmout0"
-                },
-                "e-stop": {
-                    "type": "bitin",
-                    "name": "e-stop",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "uid": "bitin3"
-                },
-                "probe": {
-                    "type": "bitin",
-                    "name": "probe",
-                    "pins": {
-                        "bit": {
-                            "pull": "up"
-                        }
-                    },
-                    "uid": "bitin4"
-                },
-                "joint-0": {
-                    "name": "joint-0",
-                    "type": "stepdir",
-                    "is_joint": true,
-                    "uid": "stepdir0"
-                },
-                "joint-1": {
-                    "name": "joint-1",
-                    "type": "stepdir",
-                    "is_joint": true,
-                    "uid": "stepdir1"
-                },
-                "joint-2": {
-                    "name": "joint-2",
-                    "type": "stepdir",
-                    "is_joint": true,
-                    "uid": "stepdir2"
-                },
-                "joint-3": {
-                    "name": "joint-3",
-                    "type": "stepdir",
-                    "is_joint": true,
-                    "uid": "stepdir3"
+                "dir": {
+                    "pin": "china-bob5x0:X:dir"
                 }
             },
+            "is_joint": true,
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 230.0,
+                "home_search_vel": -10.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 20.0
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "image": "stepper",
             "pos": [
-                630.0,
-                210.0
-            ]
+                980.0,
+                280.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Y:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Y:dir"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 160.0,
+                "home_search_vel": -10.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 20.0
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "image": "stepper",
+            "pos": [
+                980.0,
+                20.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -1600.0,
+                "max_velocity": 15.0,
+                "min_limit": -32.0,
+                "max_limit": 0.0,
+                "home_search_vel": 10.0,
+                "home_latch_vel": 1.0,
+                "home_final_vel": 10.0
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "proximity",
+            "pos": [
+                730.0,
+                830.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                610.0,
+                                810.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "home-x"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
+            "pos": [
+                730.0,
+                760.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                610.0,
+                                780.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            },
+            "name": "home-y"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "proximity",
+            "pos": [
+                730.0,
+                690.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                610.0,
+                                750.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            },
+            "name": "home-z"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            },
+            "uid": "bitout0",
+            "pos": [
+                730.0,
+                100.0
+            ],
+            "name": "enable"
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.84,
+            "scale": 1.39,
             "pos": [
-                -144,
-                125
+                -233,
+                2
             ]
         },
         "hal": {
@@ -334,5 +348,17 @@
             ],
             "rotate": 0
         }
-    }
+    },
+    "breakouts": [
+        {
+            "slot": "Tangbob:LEFT",
+            "breakout": "china-bob5x",
+            "name": "china-bob5x0",
+            "pos": [
+                570.0,
+                210.0
+            ],
+            "rotate": 0
+        }
+    ]
 }
