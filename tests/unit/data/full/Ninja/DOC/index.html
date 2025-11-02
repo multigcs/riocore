@@ -1,0 +1,470 @@
+
+<html>
+<header>
+<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>
+</header>
+<body>
+<div class="tab">
+  <button class="tablinks" onclick="openSection(event, 'CONFIG')">CONFIG</button>
+  <button class="tablinks" onclick="openSection(event, 'PINS')">PINS</button>
+  <button class="tablinks" onclick="openSection(event, 'SIGNALS')">SIGNALS</button>
+  <button class="tablinks" onclick="openSection(event, 'LINUXCNC')">LINUXCNC</button>
+  <button class="tablinks" onclick="openSection(event, 'JSON')">JSON</button>
+</div>
+<div id="CONFIG" class="tabcontent">
+<github-md>
+# Ninja
+
+
+* Board: [](https://github.com/multigcs/riocore/blob/main/riocore/boards//README.md)
+* Config-Path: tests/unit/data/full/Ninja.json
+* Output-Path: tests/unit/output/Ninja
+
+## Axis/Joints
+| Axis | Joint | Plugin | Home-Seq. |
+| --- | --- | --- | --- |
+| X | 0 | ninja1 ([ninja](https://github.com/multigcs/riocore/blob/main/riocore/plugins/ninja/README.md)) | 2 | 
+| Y | 1 | ninja2 ([ninja](https://github.com/multigcs/riocore/blob/main/riocore/plugins/ninja/README.md)) | 2 | 
+| Z | 2 | ninja3 ([ninja](https://github.com/multigcs/riocore/blob/main/riocore/plugins/ninja/README.md)) | 1 | 
+
+## Plugins
+| Type | Info | Instance | Image |
+| --- | --- | --- | --- |
+| [ninja](https://github.com/multigcs/riocore/blob/main/riocore/plugins/ninja/README.md) | stepgen-ninja | ninja0, ninja1, ninja2, ninja3, ninjapwmgen0 | <img src="ninja.png" height="48"> |
+| [gpioin](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioin/README.md) | gpio input | gpioin0, gpioin1, gpioin2 | <img src="gpioin.png" height="48"> |
+| [gpioout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioout/README.md) | gpio output | gpioout2, gpioout3, gpiooutgpioout | <img src="gpioout.png" height="48"> |
+| [halinput](https://github.com/multigcs/riocore/blob/main/riocore/plugins/halinput/README.md) | joypad support | halinputhalinput | <img src="halinput.png" height="48"> |
+
+</github-md>
+</div>
+<div id="PINS" class="tabcontent">
+<github-md>
+# Pins
+| Plugin | ID | Name | Board | Alias |
+| --- | --- | --- | --- | --- |
+| ninja | ninja1 | step | ninja0:gp0 |  |
+|  |  | dir | ninja0:gp1 |  |
+|  | ninja2 | step | ninja0:gp2 |  |
+|  |  | dir | ninja0:gp3 |  |
+|  | ninja3 | step | ninja0:gp4 |  |
+|  |  | dir | ninja0:gp5 |  |
+|  | ninjapwmgen0 | pwm | ninja0:gp13 |  |
+| gpioin | gpioin0 | bit | stepgen-ninja.0.input.gp8-not |  |
+|  | gpioin1 | bit | stepgen-ninja.0.input.gp9-not |  |
+|  | gpioin2 | bit | stepgen-ninja.0.input.gp10-not |  |
+| gpioout | gpioout2 | bit | stepgen-ninja.0.output.gp26 |  |
+|  | gpioout3 | bit | stepgen-ninja.0.output.gp25 |  |
+|  | gpiooutgpioout | bit | stepgen-ninja.0.output.gp29 |  |
+
+</github-md>
+</div>
+<div id="SIGNALS" class="tabcontent">
+<github-md>
+# Signals
+| Plugin | ID | Name | Dir | Hal-Pin | Type | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| gpioin | gpioin0 | stepgen-ninja.0.input.gp8-not | -> | joint.0.home-sw-in | net |  |
+|  | gpioin1 | stepgen-ninja.0.input.gp9-not | -> | joint.1.home-sw-in | net |  |
+|  | gpioin2 | stepgen-ninja.0.input.gp10-not | -> | joint.2.home-sw-in | net |  |
+| gpioout | gpioout2 | stepgen-ninja.0.output.gp26 | <- | spindle.0.on | net |  |
+
+</github-md>
+</div>
+<div id="LINUXCNC" class="tabcontent">
+<github-md>
+# LinuxCNC
+## Hal-Graph
+![halgraph](./halgraph.png)
+</github-md>
+</div>
+<div id="JSON" class="tabcontent">
+<github-md>
+# JSON-Config
+```
+{
+    "name": "Ninja",
+    "flow": {
+        "view": {
+            "scale": 1.2933049946865036,
+            "pos": [
+                351.1190223166843,
+                -606.0
+            ]
+        },
+        "board": {
+            "pos": [
+                540.0,
+                1390.0
+            ],
+            "rotate": -90
+        },
+        "hal": {
+            "misc": [
+                1640.0,
+                310.0
+            ],
+            "joint.0": [
+                1640.0,
+                400.0
+            ],
+            "joint.1": [
+                1640.0,
+                180.0
+            ],
+            "joint.2": [
+                1640.0,
+                50.0
+            ],
+            "spindle.0": [
+                1640.0,
+                -40.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "ninja",
+            "node_type": "board",
+            "pos": [
+                670.0,
+                -250.0
+            ],
+            "rotate": 90,
+            "uid": "ninja0",
+            "board": "w5500-evb-pico-parport"
+        },
+        {
+            "type": "ninja",
+            "node_type": "stepper",
+            "pos": [
+                1340.0,
+                220.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:X:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:X:dir"
+                }
+            },
+            "image": "servo42",
+            "rotate": 180,
+            "is_joint": true,
+            "uid": "ninja1",
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 230.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "home_latch_vel": -1.0
+            }
+        },
+        {
+            "type": "ninja",
+            "node_type": "stepper",
+            "pos": [
+                1340.0,
+                20.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Y:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Y:dir"
+                }
+            },
+            "image": "servo42",
+            "rotate": 180,
+            "name": "",
+            "is_joint": true,
+            "uid": "ninja2",
+            "joint": {
+                "scale": 800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 160.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "home_offset": 0.0,
+                "home_latch_vel": -1.0
+            }
+        },
+        {
+            "type": "ninja",
+            "node_type": "stepper",
+            "pos": [
+                1340.0,
+                -180.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                }
+            },
+            "rotate": 180,
+            "name": "",
+            "is_joint": true,
+            "uid": "ninja3",
+            "image": "servo42",
+            "joint": {
+                "scale": -1600.0,
+                "max_velocity": 15.0,
+                "min_limit": -32.0,
+                "max_limit": 0.0,
+                "home": 0.0,
+                "home_search_vel": 10.0,
+                "home_final_vel": 20.0,
+                "home_latch_vel": 1.0
+            }
+        },
+        {
+            "type": "ninja",
+            "node_type": "pwm",
+            "pins": {
+                "pwm": {
+                    "pin": "china-bob5x0:PWM:analog"
+                }
+            },
+            "uid": "ninjapwmgen0",
+            "pos": [
+                1010.0,
+                -400.0
+            ],
+            "image": "spindle500w",
+            "rotate": 0
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                880.0,
+                                330.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "gpioin0",
+            "pos": [
+                1020.0,
+                350.0
+            ],
+            "image": "proximity",
+            "rotate": 0,
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "home-x"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                880.0,
+                                300.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "gpioin1",
+            "pos": [
+                1020.0,
+                280.0
+            ],
+            "image": "proximity",
+            "rotate": 0,
+            "name": "home-y",
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                880.0,
+                                270.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "gpioin2",
+            "pos": [
+                1020.0,
+                210.0
+            ],
+            "image": "proximity",
+            "rotate": 0,
+            "name": "home-z",
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:RELAIS:out"
+                }
+            },
+            "uid": "gpioout2",
+            "pos": [
+                760.0,
+                -450.0
+            ],
+            "image": "relay",
+            "rotate": 180,
+            "name": "spindle-on",
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "ninja0:IO:LED"
+                }
+            },
+            "uid": "gpioout3",
+            "pos": [
+                740.0,
+                140.0
+            ],
+            "image": "led",
+            "rotate": 90,
+            "name": "led"
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpiooutgpioout",
+            "pos": [
+                1320.0,
+                -260.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            },
+            "name": "enable"
+        },
+        {
+            "type": "halinput",
+            "uid": "halinputhalinput",
+            "pos": [
+                530.0,
+                220.0
+            ]
+        }
+    ],
+    "boardcfg": "",
+    "breakouts": [
+        {
+            "breakout": "china-bob5x",
+            "name": "china-bob5x0",
+            "pos": [
+                860.0,
+                -270.0
+            ],
+            "rotate": 0,
+            "slot": "ninja0:PAR"
+        }
+    ]
+}
+```
+
+</github-md>
+</div>
+</body>
+<script>
+function openSection(evt, sectionName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sectionName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+openSection(event, 'CONFIG');
+</script>
+</html>
