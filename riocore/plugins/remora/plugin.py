@@ -181,7 +181,13 @@ class Plugin(PluginBase):
                     "PAR:P16": {"pin": f"{self.instances_name}:gp27", "pos": [507, 42], "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
                     "PAR:P17": {"pin": f"{self.instances_name}:gp26", "pos": [488, 42], "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
                     "IO:LED": {"pin": f"{self.instances_name}:gp25", "pos": [640, 105], "direction": "all", "edge": "source", "type": ["GPIO"]},
-                    "IO:GP15": {"pin": f"{self.instances_name}:gp15", "pos": [259, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
+                    "IO:GP15": {
+                        "pin": f"{self.instances_name}:gp15",
+                        "pos": [259, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
                     "IO:GP14": {
                         "pin": f"{self.instances_name}:gp14",
                         "pos": [281, 75],
@@ -196,19 +202,97 @@ class Plugin(PluginBase):
                         "edge": "source",
                         "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ", "REMORAPwmPwm"],
                     },
-                    "IO:GP12": {"pin": f"{self.instances_name}:gp12", "pos": [347, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP11": {"pin": f"{self.instances_name}:gp11", "pos": [369, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP10": {"pin": f"{self.instances_name}:gp10", "pos": [391, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP9": {"pin": f"{self.instances_name}:gp9", "pos": [435, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderB"]},
-                    "IO:GP8": {"pin": f"{self.instances_name}:gp8", "pos": [457, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderA"]},
-                    "IO:GP7": {"pin": f"{self.instances_name}:gp7", "pos": [479, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP6": {"pin": f"{self.instances_name}:gp6", "pos": [501, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP5": {"pin": f"{self.instances_name}:gp5", "pos": [545, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP4": {"pin": f"{self.instances_name}:gp4", "pos": [567, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP3": {"pin": f"{self.instances_name}:gp3", "pos": [589, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP2": {"pin": f"{self.instances_name}:gp2", "pos": [611, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP1": {"pin": f"{self.instances_name}:gp1", "pos": [655, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
-                    "IO:GP0": {"pin": f"{self.instances_name}:gp0", "pos": [677, 75], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"]},
+                    "IO:GP12": {
+                        "pin": f"{self.instances_name}:gp12",
+                        "pos": [347, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP11": {
+                        "pin": f"{self.instances_name}:gp11",
+                        "pos": [369, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP10": {
+                        "pin": f"{self.instances_name}:gp10",
+                        "pos": [391, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP9": {
+                        "pin": f"{self.instances_name}:gp9",
+                        "pos": [435, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderB"],
+                    },
+                    "IO:GP8": {
+                        "pin": f"{self.instances_name}:gp8",
+                        "pos": [457, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderA"],
+                    },
+                    "IO:GP7": {
+                        "pin": f"{self.instances_name}:gp7",
+                        "pos": [479, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP6": {
+                        "pin": f"{self.instances_name}:gp6",
+                        "pos": [501, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP5": {
+                        "pin": f"{self.instances_name}:gp5",
+                        "pos": [545, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP4": {
+                        "pin": f"{self.instances_name}:gp4",
+                        "pos": [567, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP3": {
+                        "pin": f"{self.instances_name}:gp3",
+                        "pos": [589, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP2": {
+                        "pin": f"{self.instances_name}:gp2",
+                        "pos": [611, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP1": {
+                        "pin": f"{self.instances_name}:gp1",
+                        "pos": [655, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
+                    "IO:GP0": {
+                        "pin": f"{self.instances_name}:gp0",
+                        "pos": [677, 75],
+                        "direction": "all",
+                        "edge": "source",
+                        "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir", "REMORAEncoderZ"],
+                    },
                     # W5500 - SPI pins
                     # "IO:GP16": {"pin": f"{self.instances_name}:gp16", "pos": [259, 236], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir"]},
                     # "IO:GP17": {"pin": f"{self.instances_name}:gp17", "pos": [281, 236], "direction": "all", "edge": "source", "type": ["GPIO", "REMORAStepGenStep", "REMORAStepGenDir"]},
@@ -285,7 +369,7 @@ class Plugin(PluginBase):
                         plugin_instance.PREFIX = f"remora.joint.{stepgen_num}"
                         stepgen_num += 1
                     elif name == "pwm":
-                        plugin_instance.PREFIX = f"remora.pwm"
+                        plugin_instance.PREFIX = "remora.pwm"
 
     def update_pins(self, parent):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
@@ -295,7 +379,6 @@ class Plugin(PluginBase):
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
                 name = connected_pin["name"]
                 psetup = connected_pin["setup"]
-                pin = connected_pin["pin"]
                 direction = connected_pin["direction"]
                 inverted = connected_pin["inverted"]
 
@@ -321,33 +404,34 @@ class Plugin(PluginBase):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "board":
                 output.append("# remora")
-                ip = instance.plugin_setup.get("ip", instance.option_default("ip"))
-                port = instance.plugin_setup.get("port", instance.option_default("port"))
+                # ip = instance.plugin_setup.get("ip", instance.option_default("ip"))
+                # port = instance.plugin_setup.get("port", instance.option_default("port"))
                 output.append("loadrt remora-eth-3.0")
                 output.append("")
-                output.append(f"addf remora.read servo-thread")
-                output.append(f"addf remora.update-freq servo-thread")
-                output.append(f"addf remora.write servo-thread")
+                output.append("addf remora.read servo-thread")
+                output.append("addf remora.update-freq servo-thread")
+                output.append("addf remora.write servo-thread")
         return "\n".join(output)
 
     def hal(self, parent):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "board":
-            #parent.halg.net_add("iocontrol.0.user-enable-out", "remora.enable", "user-enable-out")
-            #parent.halg.net_add("iocontrol.0.user-request-enable", "remora.reset", "user-request-enable")
-            #parent.halg.net_add("remora.status", "iocontrol.0.emc-enable-in", "user-request-enable")
+            # parent.halg.net_add("iocontrol.0.user-enable-out", "remora.enable", "user-enable-out")
+            # parent.halg.net_add("iocontrol.0.user-request-enable", "remora.reset", "user-request-enable")
+            # parent.halg.net_add("remora.status", "iocontrol.0.emc-enable-in", "user-request-enable")
 
             parent.halg.net_add("iocontrol.0.user-enable-out", "remora.enable")
             parent.halg.net_add("iocontrol.0.user-request-enable", "remora.reset")
             parent.halg.net_add("remora.status", "iocontrol.0.emc-enable-in")
 
         elif node_type == "pwm":
-            frequency = self.plugin_setup.get("frequency", self.option_default("frequency"))
-            scale = self.plugin_setup.get("scale", self.option_default("scale"))
-            min_limit = self.plugin_setup.get("min_limit", self.option_default("min_limit"))
-            #parent.halg.setp_add(f"{self.PREFIX}.frequency", frequency)
-            #parent.halg.setp_add(f"{self.PREFIX}.max-scale", scale)
-            #parent.halg.setp_add(f"{self.PREFIX}.min-limit", min_limit)
+            pass
+            # frequency = self.plugin_setup.get("frequency", self.option_default("frequency"))
+            # scale = self.plugin_setup.get("scale", self.option_default("scale"))
+            # min_limit = self.plugin_setup.get("min_limit", self.option_default("min_limit"))
+            # parent.halg.setp_add(f"{self.PREFIX}.frequency", frequency)
+            # parent.halg.setp_add(f"{self.PREFIX}.max-scale", scale)
+            # parent.halg.setp_add(f"{self.PREFIX}.min-limit", min_limit)
         elif node_type == "stepper":
             if "joint_data" in self.plugin_setup:
                 joint_data = self.plugin_setup["joint_data"]
@@ -362,7 +446,6 @@ class Plugin(PluginBase):
                     feedback_halname = f"{self.PREFIX}.pos-fb"
                     enable_halname = f"{self.PREFIX}.enable"
                     scale_halname = f"{self.PREFIX}.scale"
-                    maxaccel_halname = f"{self.PREFIX}.maxaccel"
                     parent.halg.joint_add(
                         parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num
                     )
@@ -371,7 +454,6 @@ class Plugin(PluginBase):
                     feedback_halname = f"{self.PREFIX}.pos-fb"
                     enable_halname = f"{self.PREFIX}.enable"
                     scale_halname = f"{self.PREFIX}.scale"
-                    maxaccel_halname = f"{self.PREFIX}.maxaccel"
                     parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname)
 
     def builder(self, config, command):
@@ -432,7 +514,6 @@ class Plugin(PluginBase):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "board":
-
                 firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
                 os.makedirs(firmware_path, exist_ok=True)
                 print(f"{instance.NAME}: create firmware structure: {firmware_path}")
