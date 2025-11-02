@@ -1,0 +1,25 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-prep-number               => hal_manualtoolchange.number
+net tool-change                    => hal_manualtoolchange.change
+net tool-changed                   <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00 <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01 <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02 <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_halui_mdi-command-03 <= pyvcp.halui.mdi-command-03
+net sig_parport_0_pin-13-in-not    => pyvcp.probe-input
+net sig_parport_0_pin-10-in-not    => pyvcp.parport.0.pin-10-in-not
+net sig_parport_0_pin-11-in-not    => pyvcp.parport.0.pin-11-in-not
+net sig_parport_0_pin-12-in-not    => pyvcp.parport.0.pin-12-in-not
+net sig_parport_0_pin-15-in        => pyvcp.parport.0.pin-15-in
+net sig_parport_0_pin-13-in-not    => pyvcp.parport.0.pin-13-in-not
+net sig_spindle_0_speed-out        => pyvcp.pwmgen.0.value
+net sig_spindle_0_on               => pyvcp.pwmgen.0.enable
+net sig_halui_machine_is-on        => pyvcp.parport.0.pin-14-out
+net sig_spindle_0_on               => pyvcp.parport.0.pin-17-out
+
+#################################################################################
+# setp
+#################################################################################
+

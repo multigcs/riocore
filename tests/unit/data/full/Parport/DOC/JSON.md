@@ -1,3 +1,5 @@
+# JSON-Config
+```
 {
     "name": "Parport",
     "_boardcfg": "",
@@ -440,3 +442,4 @@
         }
     }
 }
+```

@@ -1,0 +1,266 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=3
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# pwmgen component for 1 output(s)
+loadrt pwmgen output_type=1
+
+# stepgen component for 3 joint(s)
+loadrt stepgen step_type=0,0,0
+
+# parport component for 1 port(s)
+loadrt hal_parport cfg="0 out"
+setp parport.0.reset-time 5000
+
+# read
+addf parport.0.read base-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf pwmgen.make-pulses base-thread
+addf pwmgen.update servo-thread
+addf stepgen.make-pulses base-thread
+addf stepgen.capture-position servo-thread
+addf stepgen.update-freq servo-thread
+addf parport.0.reset base-thread
+# write
+addf parport.0.write base-thread
+
+#################################################################################
+# &iocontrol.0.user-enable-out --> iocontrol.0.emc-enable-in
+#################################################################################
+net estop-out                      <= iocontrol.0.user-enable-out
+net estop-out                      => iocontrol.0.emc-enable-in
+
+#################################################################################
+# iocontrol.0.tool-prep-number --> hal_manualtoolchange.number
+#################################################################################
+net tool-prep-number               <= iocontrol.0.tool-prep-number
+# net tool-prep-number               => hal_manualtoolchange.number (in postgui)
+
+#################################################################################
+# iocontrol.0.tool-change --> hal_manualtoolchange.change
+#################################################################################
+net tool-change                    <= iocontrol.0.tool-change
+# net tool-change                    => hal_manualtoolchange.change (in postgui)
+
+#################################################################################
+# hal_manualtoolchange.changed --> iocontrol.0.tool-changed
+#################################################################################
+# net tool-changed                   <= hal_manualtoolchange.changed (in postgui)
+net tool-changed                   => iocontrol.0.tool-changed
+
+#################################################################################
+# iocontrol.0.tool-prepare --> iocontrol.0.tool-prepared
+#################################################################################
+net tool-prepared                  <= iocontrol.0.tool-prepare
+net tool-prepared                  => iocontrol.0.tool-prepared
+
+#################################################################################
+# pwmgen.0.pwm --> parport.0.pin-01-out
+#################################################################################
+net sig_pwmgen_0_pwm               <= pwmgen.0.pwm
+net sig_pwmgen_0_pwm               => parport.0.pin-01-out
+
+#################################################################################
+# spindle.0.speed-out --> pwmgen.0.value
+#################################################################################
+net sig_spindle_0_speed-out        <= spindle.0.speed-out
+net sig_spindle_0_speed-out        => pwmgen.0.value
+
+#################################################################################
+# spindle.0.on --> pwmgen.0.enable
+#################################################################################
+net sig_spindle_0_on               <= spindle.0.on
+net sig_spindle_0_on               => pwmgen.0.enable
+
+#################################################################################
+# halui.machine.is-on --> parport.0.pin-14-out
+#################################################################################
+net sig_halui_machine_is-on        <= halui.machine.is-on
+net sig_halui_machine_is-on        => parport.0.pin-14-out
+
+#################################################################################
+# parport.0.pin-10-in-not --> joint.0.home-sw-in
+#################################################################################
+net sig_parport_0_pin-10-in-not    <= parport.0.pin-10-in-not
+net sig_parport_0_pin-10-in-not    => joint.0.home-sw-in
+
+#################################################################################
+# parport.0.pin-11-in-not --> joint.1.home-sw-in
+#################################################################################
+net sig_parport_0_pin-11-in-not    <= parport.0.pin-11-in-not
+net sig_parport_0_pin-11-in-not    => joint.1.home-sw-in
+
+#################################################################################
+# parport.0.pin-12-in-not --> joint.2.home-sw-in
+#################################################################################
+net sig_parport_0_pin-12-in-not    <= parport.0.pin-12-in-not
+net sig_parport_0_pin-12-in-not    => joint.2.home-sw-in
+
+#################################################################################
+# parport.0.pin-13-in-not --> motion.probe-input
+#################################################################################
+net sig_parport_0_pin-13-in-not    <= parport.0.pin-13-in-not
+net sig_parport_0_pin-13-in-not    => motion.probe-input
+
+#################################################################################
+# spindle.0.on --> parport.0.pin-17-out
+#################################################################################
+net sig_spindle_0_on               => parport.0.pin-17-out
+
+#################################################################################
+# pyvcp.halui.mdi-command-00 --> halui.mdi-command-00
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-00 <= pyvcp.halui.mdi-command-00 (in postgui)
+net sig_pyvcp_halui_mdi-command-00 => halui.mdi-command-00
+
+#################################################################################
+# pyvcp.halui.mdi-command-01 --> halui.mdi-command-01
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-01 <= pyvcp.halui.mdi-command-01 (in postgui)
+net sig_pyvcp_halui_mdi-command-01 => halui.mdi-command-01
+
+#################################################################################
+# pyvcp.halui.mdi-command-02 --> halui.mdi-command-02
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-02 <= pyvcp.halui.mdi-command-02 (in postgui)
+net sig_pyvcp_halui_mdi-command-02 => halui.mdi-command-02
+
+#################################################################################
+# pyvcp.halui.mdi-command-03 --> halui.mdi-command-03
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-03 <= pyvcp.halui.mdi-command-03 (in postgui)
+net sig_pyvcp_halui_mdi-command-03 => halui.mdi-command-03
+
+#################################################################################
+# motion.probe-input --> pyvcp.probe-input
+#################################################################################
+# net sig_parport_0_pin-13-in-not    => pyvcp.probe-input (in postgui)
+
+#################################################################################
+# parport.0.pin-10-in-not --> pyvcp.parport.0.pin-10-in-not
+#################################################################################
+# net sig_parport_0_pin-10-in-not    => pyvcp.parport.0.pin-10-in-not (in postgui)
+
+#################################################################################
+# parport.0.pin-11-in-not --> pyvcp.parport.0.pin-11-in-not
+#################################################################################
+# net sig_parport_0_pin-11-in-not    => pyvcp.parport.0.pin-11-in-not (in postgui)
+
+#################################################################################
+# parport.0.pin-12-in-not --> pyvcp.parport.0.pin-12-in-not
+#################################################################################
+# net sig_parport_0_pin-12-in-not    => pyvcp.parport.0.pin-12-in-not (in postgui)
+
+#################################################################################
+# parport.0.pin-15-in --> pyvcp.parport.0.pin-15-in
+#################################################################################
+net sig_parport_0_pin-15-in        <= parport.0.pin-15-in
+# net sig_parport_0_pin-15-in        => pyvcp.parport.0.pin-15-in (in postgui)
+
+#################################################################################
+# parport.0.pin-13-in-not --> pyvcp.parport.0.pin-13-in-not
+#################################################################################
+# net sig_parport_0_pin-13-in-not    => pyvcp.parport.0.pin-13-in-not (in postgui)
+
+#################################################################################
+# pwmgen.0.value --> pyvcp.pwmgen.0.value
+#################################################################################
+# net sig_spindle_0_speed-out        => pyvcp.pwmgen.0.value (in postgui)
+
+#################################################################################
+# pwmgen.0.enable --> pyvcp.pwmgen.0.enable
+#################################################################################
+# net sig_spindle_0_on               => pyvcp.pwmgen.0.enable (in postgui)
+
+#################################################################################
+# parport.0.pin-14-out --> pyvcp.parport.0.pin-14-out
+#################################################################################
+# net sig_halui_machine_is-on        => pyvcp.parport.0.pin-14-out (in postgui)
+
+#################################################################################
+# parport.0.pin-17-out --> pyvcp.parport.0.pin-17-out
+#################################################################################
+# net sig_spindle_0_on               => pyvcp.parport.0.pin-17-out (in postgui)
+
+#################################################################################
+# joint-0
+#################################################################################
+setp stepgen.0.dirsetup            [JOINT_0]STEPGEN_DIRSETUP
+setp stepgen.0.dirhold             [JOINT_0]STEPGEN_DIRHOLD
+setp stepgen.0.steplen             [JOINT_0]STEPGEN_STEPLEN
+setp stepgen.0.stepspace           [JOINT_0]STEPGEN_STEPSPACE
+setp stepgen.0.maxaccel            [JOINT_0]STEPGEN_MAXACCEL
+setp stepgen.0.position-scale      [JOINT_0]SCALE_OUT
+net j0step-pin                     <= stepgen.0.step
+net j0dir-pin                      <= stepgen.0.dir
+net j0pos-cmd                      <= joint.0.motor-pos-cmd
+net j0enable                       <= joint.0.amp-enable-out
+net j0step-pin                     => parport.0.pin-02-out
+net j0dir-pin                      => parport.0.pin-03-out
+net j0pos-cmd                      => stepgen.0.position-cmd
+net j0pos-cmd                      => joint.0.motor-pos-fb
+net j0enable                       => stepgen.0.enable
+
+#################################################################################
+# joint-1
+#################################################################################
+setp stepgen.1.dirsetup            [JOINT_1]STEPGEN_DIRSETUP
+setp stepgen.1.dirhold             [JOINT_1]STEPGEN_DIRHOLD
+setp stepgen.1.steplen             [JOINT_1]STEPGEN_STEPLEN
+setp stepgen.1.stepspace           [JOINT_1]STEPGEN_STEPSPACE
+setp stepgen.1.maxaccel            [JOINT_1]STEPGEN_MAXACCEL
+setp stepgen.1.position-scale      [JOINT_1]SCALE_OUT
+net j1step-pin                     <= stepgen.1.step
+net j1dir-pin                      <= stepgen.1.dir
+net j1pos-cmd                      <= joint.1.motor-pos-cmd
+net j1enable                       <= joint.1.amp-enable-out
+net j1step-pin                     => parport.0.pin-04-out
+net j1dir-pin                      => parport.0.pin-05-out
+net j1pos-cmd                      => stepgen.1.position-cmd
+net j1pos-cmd                      => joint.1.motor-pos-fb
+net j1enable                       => stepgen.1.enable
+
+#################################################################################
+# joint-2
+#################################################################################
+setp stepgen.2.dirsetup            [JOINT_2]STEPGEN_DIRSETUP
+setp stepgen.2.dirhold             [JOINT_2]STEPGEN_DIRHOLD
+setp stepgen.2.steplen             [JOINT_2]STEPGEN_STEPLEN
+setp stepgen.2.stepspace           [JOINT_2]STEPGEN_STEPSPACE
+setp stepgen.2.maxaccel            [JOINT_2]STEPGEN_MAXACCEL
+setp stepgen.2.position-scale      [JOINT_2]SCALE_OUT
+net j2step-pin                     <= stepgen.2.step
+net j2dir-pin                      <= stepgen.2.dir
+net j2pos-cmd                      <= joint.2.motor-pos-cmd
+net j2enable                       <= joint.2.amp-enable-out
+net j2step-pin                     => parport.0.pin-06-out
+net j2dir-pin                      => parport.0.pin-07-out
+net j2pos-cmd                      => stepgen.2.position-cmd
+net j2pos-cmd                      => joint.2.motor-pos-fb
+net j2enable                       => stepgen.2.enable
+
+#################################################################################
+# setp
+#################################################################################
+setp pwmgen.0.dither-pwm              0
+setp pwmgen.0.max-dc                  1.0
+setp pwmgen.0.min-dc                  0.0
+setp pwmgen.0.offset                  0.0
+setp pwmgen.0.pwm-freq                100
+setp pwmgen.0.scale                   100.0
+
+#################################################################################
+# preformated
+#################################################################################
