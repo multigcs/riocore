@@ -1760,7 +1760,7 @@ if __name__ == "__main__":
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE == "gpio" or plugin_instance.COMPONENT:
                 if plugin_instance.PLUGIN_TYPE == "gpio":
-                    self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 50000
+                    self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 25000
                 if plugin_instance.COMPONENT not in components:
                     components[plugin_instance.COMPONENT] = []
                 components[plugin_instance.COMPONENT].append(plugin_instance)
