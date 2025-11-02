@@ -177,7 +177,7 @@ class Simulator:
 
         for axis, data in self.project.axis_dict.items():
             joints = list(data.get("joints", {}))
-            output.append(f"int {axis.lower()}_joints[NUM_JOINTS_{axis}] = {{{', '.join([str(j) for j in joints])}}};")
+            output.append(f"int {axis.lower()}_joints[NUM_JOINTS_{axis}] = {{{', '.join([str(j['num']) for j in joints])}}};")
         output.append("")
 
         output.append("int interface_init(void) {")

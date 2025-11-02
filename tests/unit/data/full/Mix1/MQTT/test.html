@@ -1,0 +1,367 @@
+<html>
+  <head>
+    <title>RIO MQTT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  </head>
+  <style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+
+.item {
+    background-color: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+  </style>
+  <body>
+    <div class="container">
+        <div class="item">
+    <B>mesastepgen0</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">set position</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/02/velocity_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/hm2_7c81/0/stepgen/02/velocity" value="0" /></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/02/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position-scale<span class="tooltiptext">steps / unit</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/02/position_scale_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/hm2_7c81/0/stepgen/02/position_scale" value="0" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>mesastepgen1</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">set position</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/01/velocity_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/hm2_7c81/0/stepgen/01/velocity" value="0" /></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/01/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position-scale<span class="tooltiptext">steps / unit</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/01/position_scale_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/hm2_7c81/0/stepgen/01/position_scale" value="0" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>mesastepgen2</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">set position</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/00/velocity_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/hm2_7c81/0/stepgen/00/velocity" value="0" /></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/00/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position-scale<span class="tooltiptext">steps / unit</span></div>:</td>
+        <td><b id="/rio/hm2_7c81/0/stepgen/00/position_scale_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/hm2_7c81/0/stepgen/00/position_scale" value="0" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>gpioin0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/hm2_7c81/0/gpio/015/in">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>gpioout0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="/rio/hm2_7c81/0/gpio/007/out" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>gpioin1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/hm2_7c81/0/gpio/014/in">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>gpioin2</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/hm2_7c81/0/gpio/013/in_not">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>mesapwmgen0</B>
+    <table>
+      <tr>
+        <td>value</td>
+        <td><b id="/rio/hm2_7c81/0/pwmgen/00/value_fb">0</b></td>
+        <td><input type="range" min="0.0" max="20000.0" id="/rio/hm2_7c81/0/pwmgen/00/value" value="0" /></td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/hm2_7c81/0/pwmgen/00/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir0</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="/rio/stepdir0/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="/rio/stepdir0/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('/rio/stepdir0/velocity').value = 0;" id="/rio/stepdir0/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/stepdir0/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/stepdir0/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir1</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="/rio/stepdir1/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="/rio/stepdir1/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('/rio/stepdir1/velocity').value = 0;" id="/rio/stepdir1/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/stepdir1/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="/rio/stepdir1/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>ethercat1</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">position-cmd<span class="tooltiptext">set position</span></div>:</td>
+        <td><b id="/rio/lcec/0/ethercat1/position_cmd_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/lcec/0/ethercat1/position_cmd" value="0" /></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position-fb<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="/rio/lcec/0/ethercat1/position_fb">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position-scale<span class="tooltiptext">steps / unit</span></div>:</td>
+        <td><b id="/rio/lcec/0/ethercat1/position_scale_fb">0</b></td>
+        <td><input type="range" min="0" max="1000" id="/rio/lcec/0/ethercat1/position_scale" value="0" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitout0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="/rio/bitout0/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="/rio/bitin0/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var clientID = "ID-" + Math.round(Math.random() * 1000);
+        var client = new Paho.MQTT.Client("127.0.0.1", 9001, clientID);
+
+        document.getElementById("/rio/hm2_7c81/0/stepgen/02/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/02/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/02/position_scale").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/02/position_scale").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/01/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/01/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/01/position_scale").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/01/position_scale").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/00/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/00/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/00/position_scale").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/stepgen/00/position_scale").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/gpio/007/out").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/gpio/007/out").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/pwmgen/00/value").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/pwmgen/00/value").addEventListener("input", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/pwmgen/00/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/hm2_7c81/0/pwmgen/00/enable").addEventListener("input", publish, false);
+        document.getElementById("/rio/stepdir0/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/stepdir0/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/stepdir0/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("/rio/stepdir0/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/stepdir0/enable").addEventListener("input", publish, false);
+        document.getElementById("/rio/stepdir1/velocity").addEventListener("change", publish, false);
+        document.getElementById("/rio/stepdir1/velocity").addEventListener("input", publish, false);
+        document.getElementById("/rio/stepdir1/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("/rio/stepdir1/enable").addEventListener("change", publish, false);
+        document.getElementById("/rio/stepdir1/enable").addEventListener("input", publish, false);
+        document.getElementById("/rio/lcec/0/ethercat1/position_cmd").addEventListener("change", publish, false);
+        document.getElementById("/rio/lcec/0/ethercat1/position_cmd").addEventListener("input", publish, false);
+        document.getElementById("/rio/lcec/0/ethercat1/position_scale").addEventListener("change", publish, false);
+        document.getElementById("/rio/lcec/0/ethercat1/position_scale").addEventListener("input", publish, false);
+        document.getElementById("/rio/bitout0/bit").addEventListener("change", publish, false);
+        document.getElementById("/rio/bitout0/bit").addEventListener("input", publish, false);
+        client.connect({onSuccess:onConnect});
+        client.onMessageArrived = onMessage;
+
+        function onConnect() {
+            console.log("connected");
+            client.subscribe("/rio/hm2_7c81/0/stepgen/02/position");
+            client.subscribe("/rio/hm2_7c81/0/stepgen/01/position");
+            client.subscribe("/rio/hm2_7c81/0/stepgen/00/position");
+            client.subscribe("/rio/hm2_7c81/0/gpio/015/in");
+            client.subscribe("/rio/hm2_7c81/0/gpio/014/in");
+            client.subscribe("/rio/hm2_7c81/0/gpio/013/in_not");
+            client.subscribe("/rio/stepdir0/position");
+            client.subscribe("/rio/stepdir1/position");
+            client.subscribe("/rio/lcec/0/ethercat1/position_fb");
+            client.subscribe("/rio/bitin0/bit");
+            console.log("connected");
+        }
+
+
+        function publish() {
+            var topic = this.attributes.id.value.replace("_zero", "");
+            element = document.getElementById(topic);
+            var value = "0";
+            if (element.attributes.type.value == "checkbox") {
+                if (element.checked) {
+                    value = "1";
+                }
+            } else {
+                value = element.value;
+            }
+            console.log("publish", topic, value);
+
+            fb_element = document.getElementById(topic + "_fb");
+            if (fb_element) {
+                fb_element.innerHTML = value;
+            }
+
+
+            var message = new Paho.MQTT.Message(value);
+            message.destinationName = topic;
+            client.send(message);
+        }
+
+        function onMessage(message) {
+            // console.log("msg", message.destinationName, message.payloadString);
+            if (message.destinationName == "/rio/hm2_7c81/0/stepgen/02/position") {
+                document.getElementById("/rio/hm2_7c81/0/stepgen/02/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/hm2_7c81/0/stepgen/01/position") {
+                document.getElementById("/rio/hm2_7c81/0/stepgen/01/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/hm2_7c81/0/stepgen/00/position") {
+                document.getElementById("/rio/hm2_7c81/0/stepgen/00/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/hm2_7c81/0/gpio/015/in") {
+                document.getElementById("/rio/hm2_7c81/0/gpio/015/in").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/hm2_7c81/0/gpio/014/in") {
+                document.getElementById("/rio/hm2_7c81/0/gpio/014/in").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/hm2_7c81/0/gpio/013/in_not") {
+                document.getElementById("/rio/hm2_7c81/0/gpio/013/in_not").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/stepdir0/position") {
+                document.getElementById("/rio/stepdir0/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/stepdir1/position") {
+                document.getElementById("/rio/stepdir1/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/lcec/0/ethercat1/position_fb") {
+                document.getElementById("/rio/lcec/0/ethercat1/position_fb").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "/rio/bitin0/bit") {
+                document.getElementById("/rio/bitin0/bit").innerHTML = message.payloadString;
+            }
+        }
+
+    </script>
+  </body>
+</html>

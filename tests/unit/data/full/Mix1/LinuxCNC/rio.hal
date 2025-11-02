@@ -1,0 +1,502 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+loadrt rio
+
+# if you need to test rio without hardware, set it to 1
+setp rio.sys-simulation 0
+
+# pid controller
+loadrt pid num_chan=6
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+loadrt hostmot2
+loadrt hm2_spix spi_probe=1 spiclk_rate=21250 config="num_encoders=0 num_pwmgens=1 num_stepgens=3" 
+setp hm2_7c81.0.led.CR01 1
+setp hm2_7c81.0.led.CR02 1
+setp hm2_7c81.0.led.CR03 1
+setp hm2_7c81.0.led.CR04 1
+setp hm2_7c81.0.watchdog.timeout_ns 50000000
+setp hm2_7c81.0.dpll.01.timer-us -50
+setp hm2_7c81.0.stepgen.timer-number 1
+
+# ethercat component
+loadusr -W lcec_conf ethercat-conf.xml
+loadrt lcec
+loadrt cia402 count=1
+
+loadusr -W hal_input -KRAL Joystick
+loadrt mux4 names=joy_mux4
+
+# read
+addf rio.readwrite servo-thread
+addf hm2_7c81.0.read servo-thread
+addf lcec.read-all servo-thread
+addf cia402.0.read-all servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
+addf pid.3.do-pid-calcs servo-thread
+addf pid.4.do-pid-calcs servo-thread
+addf pid.5.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf joy_mux4 servo-thread
+# write
+addf hm2_7c81.0.write servo-thread
+addf cia402.0.write-all servo-thread
+addf lcec.write-all servo-thread
+
+#################################################################################
+# logic and calc components
+#################################################################################
+loadrt logic names=func.or_0.1,func.or_1.1 personality=0x202,0x202
+addf func.or_0.1 servo-thread
+addf func.or_1.1 servo-thread
+
+#################################################################################
+# iocontrol.0.user-enable-out --> rio.sys-enable
+#################################################################################
+net user-enable-out                <= iocontrol.0.user-enable-out
+net user-enable-out                => rio.sys-enable
+
+#################################################################################
+# iocontrol.0.user-request-enable --> rio.sys-enable-request
+#################################################################################
+net user-request-enable            <= iocontrol.0.user-request-enable
+net user-request-enable            => rio.sys-enable-request
+
+#################################################################################
+# &rio.sys-status --> iocontrol.0.emc-enable-in
+#################################################################################
+net sig_rio_sys-status             <= rio.sys-status
+net sig_rio_sys-status             => iocontrol.0.emc-enable-in
+
+#################################################################################
+# halui.machine.is-on --> rio.machine-on
+#################################################################################
+net sig_halui_machine_is-on        <= halui.machine.is-on
+net sig_halui_machine_is-on        => rio.machine-on
+
+#################################################################################
+# iocontrol.0.tool-prep-number --> hal_manualtoolchange.number
+#################################################################################
+net tool-prep-number               <= iocontrol.0.tool-prep-number
+# net tool-prep-number               => hal_manualtoolchange.number (in postgui)
+
+#################################################################################
+# iocontrol.0.tool-change --> hal_manualtoolchange.change
+#################################################################################
+net tool-change                    <= iocontrol.0.tool-change
+# net tool-change                    => hal_manualtoolchange.change (in postgui)
+
+#################################################################################
+# hal_manualtoolchange.changed --> iocontrol.0.tool-changed
+#################################################################################
+# net tool-changed                   <= hal_manualtoolchange.changed (in postgui)
+net tool-changed                   => iocontrol.0.tool-changed
+
+#################################################################################
+# iocontrol.0.tool-prepare --> iocontrol.0.tool-prepared
+#################################################################################
+net tool-prepared                  <= iocontrol.0.tool-prepare
+net tool-prepared                  => iocontrol.0.tool-prepared
+
+#################################################################################
+# input.0.btn-top2 or input.0.btn-pinkie --> joy_mux4.sel0
+#################################################################################
+net sig_input_0_btn-top2           <= input.0.btn-top2
+net sig_input_0_btn-pinkie         <= input.0.btn-pinkie
+net sig_input_0_btn-top2           => func.or_0.1.in-00
+net sig_input_0_btn-pinkie         => func.or_0.1.in-01
+net func_or_0_1_or                 <= func.or_0.1.or
+net func_or_0_1_or                 => joy_mux4.sel0
+
+#################################################################################
+# input.0.btn-base or input.0.btn-pinkie --> joy_mux4.sel1
+#################################################################################
+net sig_input_0_btn-base           <= input.0.btn-base
+net sig_input_0_btn-base           => func.or_1.1.in-00
+net sig_input_0_btn-pinkie         => func.or_1.1.in-01
+net func_or_1_1_or                 <= func.or_1.1.or
+net func_or_1_1_or                 => joy_mux4.sel1
+
+#################################################################################
+# joy_mux4.out --> halui.axis.jog-speed
+#################################################################################
+net sig_joy_mux4_out               <= joy_mux4.out
+net sig_joy_mux4_out               => halui.axis.jog-speed
+
+#################################################################################
+# joy_mux4.out --> halui.joint.jog-speed
+#################################################################################
+net sig_joy_mux4_out               => halui.joint.jog-speed
+
+#################################################################################
+# halui.machine.is-on --> mux2_x.sel
+#################################################################################
+net sig_halui_machine_is-on        => mux2_x.sel
+
+#################################################################################
+# input.0.abs-x-position --> mux2_x.in1
+#################################################################################
+net sig_input_0_abs-x-position     <= input.0.abs-x-position
+net sig_input_0_abs-x-position     => mux2_x.in1
+
+#################################################################################
+# mux2_x.out --> halui.axis.x.analog
+#################################################################################
+net sig_mux2_x_out                 <= mux2_x.out
+net sig_mux2_x_out                 => halui.axis.x.analog
+
+#################################################################################
+# mux2_x.out --> halui.joint.0.analog
+#################################################################################
+net sig_mux2_x_out                 => halui.joint.0.analog
+
+#################################################################################
+# halui.machine.is-on --> mux2_y.sel
+#################################################################################
+net sig_halui_machine_is-on        => mux2_y.sel
+
+#################################################################################
+# input.0.abs-y-position --> mux2_y.in1
+#################################################################################
+net sig_input_0_abs-y-position     <= input.0.abs-y-position
+net sig_input_0_abs-y-position     => mux2_y.in1
+
+#################################################################################
+# mux2_y.out --> halui.axis.y.analog
+#################################################################################
+net sig_mux2_y_out                 <= mux2_y.out
+net sig_mux2_y_out                 => halui.axis.y.analog
+
+#################################################################################
+# mux2_y.out --> halui.joint.1.analog
+#################################################################################
+net sig_mux2_y_out                 => halui.joint.1.analog
+
+#################################################################################
+# halui.machine.is-on --> mux2_a.sel
+#################################################################################
+net sig_halui_machine_is-on        => mux2_a.sel
+
+#################################################################################
+# input.0.abs-rz-position --> mux2_a.in1
+#################################################################################
+net sig_input_0_abs-rz-position    <= input.0.abs-rz-position
+net sig_input_0_abs-rz-position    => mux2_a.in1
+
+#################################################################################
+# mux2_a.out --> halui.axis.a.analog
+#################################################################################
+net sig_mux2_a_out                 <= mux2_a.out
+net sig_mux2_a_out                 => halui.axis.a.analog
+
+#################################################################################
+# mux2_a.out --> halui.joint.3.analog
+#################################################################################
+net sig_mux2_a_out                 => halui.joint.3.analog
+
+#################################################################################
+# halui.machine.is-on --> mux2_b.sel
+#################################################################################
+net sig_halui_machine_is-on        => mux2_b.sel
+
+#################################################################################
+# input.0.abs-z-position --> mux2_b.in1
+#################################################################################
+net sig_input_0_abs-z-position     <= input.0.abs-z-position
+net sig_input_0_abs-z-position     => mux2_b.in1
+
+#################################################################################
+# mux2_b.out --> halui.axis.b.analog
+#################################################################################
+net sig_mux2_b_out                 <= mux2_b.out
+net sig_mux2_b_out                 => halui.axis.b.analog
+
+#################################################################################
+# mux2_b.out --> halui.joint.5.analog
+#################################################################################
+net sig_mux2_b_out                 => halui.joint.5.analog
+
+#################################################################################
+# pyvcp.halui.mdi-command-00 --> halui.mdi-command-00
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-00 <= pyvcp.halui.mdi-command-00 (in postgui)
+net sig_pyvcp_halui_mdi-command-00 => halui.mdi-command-00
+
+#################################################################################
+# pyvcp.halui.mdi-command-01 --> halui.mdi-command-01
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-01 <= pyvcp.halui.mdi-command-01 (in postgui)
+net sig_pyvcp_halui_mdi-command-01 => halui.mdi-command-01
+
+#################################################################################
+# pyvcp.halui.mdi-command-02 --> halui.mdi-command-02
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-02 <= pyvcp.halui.mdi-command-02 (in postgui)
+net sig_pyvcp_halui_mdi-command-02 => halui.mdi-command-02
+
+#################################################################################
+# pyvcp.halui.mdi-command-03 --> halui.mdi-command-03
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-03 <= pyvcp.halui.mdi-command-03 (in postgui)
+net sig_pyvcp_halui_mdi-command-03 => halui.mdi-command-03
+
+#################################################################################
+# pyvcp.halui.mdi-command-04 --> halui.mdi-command-04
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-04 <= pyvcp.halui.mdi-command-04 (in postgui)
+net sig_pyvcp_halui_mdi-command-04 => halui.mdi-command-04
+
+#################################################################################
+# pyvcp.halui.mdi-command-05 --> halui.mdi-command-05
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-05 <= pyvcp.halui.mdi-command-05 (in postgui)
+net sig_pyvcp_halui_mdi-command-05 => halui.mdi-command-05
+
+#################################################################################
+# hm2_7c81.0.gpio.015.in --> pyvcp.hm2_7c81.0.gpio.015.in
+#################################################################################
+net sig_rio_hm2_7c81_0_gpio_015_in <= hm2_7c81.0.gpio.015.in
+# net sig_rio_hm2_7c81_0_gpio_015_in => pyvcp.hm2_7c81.0.gpio.015.in (in postgui)
+
+#################################################################################
+# hm2_7c81.0.gpio.014.in --> pyvcp.hm2_7c81.0.gpio.014.in
+#################################################################################
+net sig_rio_hm2_7c81_0_gpio_014_in <= hm2_7c81.0.gpio.014.in
+# net sig_rio_hm2_7c81_0_gpio_014_in => pyvcp.hm2_7c81.0.gpio.014.in (in postgui)
+
+#################################################################################
+# hm2_7c81.0.gpio.013.in_not --> pyvcp.hm2_7c81.0.gpio.013.in_not
+#################################################################################
+net sig_rio_hm2_7c81_0_gpio_013_in_not <= hm2_7c81.0.gpio.013.in_not
+# net sig_rio_hm2_7c81_0_gpio_013_in_not => pyvcp.hm2_7c81.0.gpio.013.in_not (in postgui)
+
+#################################################################################
+# rio.bitin0.bit --> pyvcp.bitin0.bit
+#################################################################################
+net sig_rio_bitin0_bit             <= rio.bitin0.bit
+# net sig_rio_bitin0_bit             => pyvcp.bitin0.bit (in postgui)
+
+#################################################################################
+# pyvcp.hm2_7c81.0.gpio.007.out --> hm2_7c81.0.gpio.007.out
+#################################################################################
+# net sig_hm2_7c81_0_gpio_007_out    <= pyvcp.hm2_7c81.0.gpio.007.out (in postgui)
+net sig_hm2_7c81_0_gpio_007_out    => hm2_7c81.0.gpio.007.out
+
+#################################################################################
+# pyvcp.hm2_7c81.0.pwmgen.00.value-f --> hm2_7c81.0.pwmgen.00.value
+#################################################################################
+# net sig_hm2_7c81_0_pwmgen_00_value <= pyvcp.hm2_7c81.0.pwmgen.00.value-f (in postgui)
+net sig_hm2_7c81_0_pwmgen_00_value => hm2_7c81.0.pwmgen.00.value
+
+#################################################################################
+# pyvcp.hm2_7c81.0.pwmgen.00.enable --> hm2_7c81.0.pwmgen.00.enable
+#################################################################################
+# net sig_hm2_7c81_0_pwmgen_00_enable <= pyvcp.hm2_7c81.0.pwmgen.00.enable (in postgui)
+net sig_hm2_7c81_0_pwmgen_00_enable => hm2_7c81.0.pwmgen.00.enable
+
+#################################################################################
+# pyvcp.bitout0.bit --> rio.bitout0.bit
+#################################################################################
+# net sig_bitout0_bit                <= pyvcp.bitout0.bit (in postgui)
+net sig_bitout0_bit                => rio.bitout0.bit
+
+#################################################################################
+# joint-0
+#################################################################################
+setp hm2_7c81.0.stepgen.02.dirsetup [JOINT_0]MESA_DIRSETUP
+setp hm2_7c81.0.stepgen.02.dirhold [JOINT_0]MESA_DIRHOLD
+setp hm2_7c81.0.stepgen.02.steplen [JOINT_0]MESA_STEPLEN
+setp hm2_7c81.0.stepgen.02.stepspace [JOINT_0]MESA_STEPSPACE
+setp hm2_7c81.0.stepgen.02.maxaccel [JOINT_0]MESA_STEPGEN_MAXACCEL
+setp hm2_7c81.0.stepgen.02.maxvel  [JOINT_0]MESA_STEPGEN_MAXVEL
+setp hm2_7c81.0.stepgen.02.position-scale [JOINT_0]SCALE_OUT
+setp pid.0.Pgain                   [JOINT_0]P
+setp pid.0.Igain                   [JOINT_0]I
+setp pid.0.Dgain                   [JOINT_0]D
+setp pid.0.bias                    [JOINT_0]BIAS
+setp pid.0.FF0                     [JOINT_0]FF0
+setp pid.0.FF1                     [JOINT_0]FF1
+setp pid.0.FF2                     [JOINT_0]FF2
+setp pid.0.deadband                [JOINT_0]DEADBAND
+setp pid.0.maxoutput               [JOINT_0]MAXOUTPUT
+net j0vel-cmd                      <= pid.0.output
+net j0pos-cmd                      <= joint.0.motor-pos-cmd
+net j0motor-pos-fb                 <= hm2_7c81.0.stepgen.02.position-fb
+net j0enable                       <= joint.0.amp-enable-out
+net j0vel-cmd                      => hm2_7c81.0.stepgen.02.velocity-cmd
+net j0pos-cmd                      => pid.0.command
+net j0motor-pos-fb                 => joint.0.motor-pos-fb
+net j0motor-pos-fb                 => pid.0.feedback
+net j0enable                       => pid.0.enable
+net j0enable                       => hm2_7c81.0.stepgen.02.enable
+
+#################################################################################
+# joint-1
+#################################################################################
+setp hm2_7c81.0.stepgen.01.dirsetup [JOINT_1]MESA_DIRSETUP
+setp hm2_7c81.0.stepgen.01.dirhold [JOINT_1]MESA_DIRHOLD
+setp hm2_7c81.0.stepgen.01.steplen [JOINT_1]MESA_STEPLEN
+setp hm2_7c81.0.stepgen.01.stepspace [JOINT_1]MESA_STEPSPACE
+setp hm2_7c81.0.stepgen.01.maxaccel [JOINT_1]MESA_STEPGEN_MAXACCEL
+setp hm2_7c81.0.stepgen.01.maxvel  [JOINT_1]MESA_STEPGEN_MAXVEL
+setp hm2_7c81.0.stepgen.01.position-scale [JOINT_1]SCALE_OUT
+setp pid.1.Pgain                   [JOINT_1]P
+setp pid.1.Igain                   [JOINT_1]I
+setp pid.1.Dgain                   [JOINT_1]D
+setp pid.1.bias                    [JOINT_1]BIAS
+setp pid.1.FF0                     [JOINT_1]FF0
+setp pid.1.FF1                     [JOINT_1]FF1
+setp pid.1.FF2                     [JOINT_1]FF2
+setp pid.1.deadband                [JOINT_1]DEADBAND
+setp pid.1.maxoutput               [JOINT_1]MAXOUTPUT
+net j1vel-cmd                      <= pid.1.output
+net j1pos-cmd                      <= joint.1.motor-pos-cmd
+net j1motor-pos-fb                 <= hm2_7c81.0.stepgen.01.position-fb
+net j1enable                       <= joint.1.amp-enable-out
+net j1vel-cmd                      => hm2_7c81.0.stepgen.01.velocity-cmd
+net j1pos-cmd                      => pid.1.command
+net j1motor-pos-fb                 => joint.1.motor-pos-fb
+net j1motor-pos-fb                 => pid.1.feedback
+net j1enable                       => pid.1.enable
+net j1enable                       => hm2_7c81.0.stepgen.01.enable
+
+#################################################################################
+# joint-2
+#################################################################################
+setp hm2_7c81.0.stepgen.00.dirsetup [JOINT_2]MESA_DIRSETUP
+setp hm2_7c81.0.stepgen.00.dirhold [JOINT_2]MESA_DIRHOLD
+setp hm2_7c81.0.stepgen.00.steplen [JOINT_2]MESA_STEPLEN
+setp hm2_7c81.0.stepgen.00.stepspace [JOINT_2]MESA_STEPSPACE
+setp hm2_7c81.0.stepgen.00.maxaccel [JOINT_2]MESA_STEPGEN_MAXACCEL
+setp hm2_7c81.0.stepgen.00.maxvel  [JOINT_2]MESA_STEPGEN_MAXVEL
+setp hm2_7c81.0.stepgen.00.position-scale [JOINT_2]SCALE_OUT
+setp pid.2.Pgain                   [JOINT_2]P
+setp pid.2.Igain                   [JOINT_2]I
+setp pid.2.Dgain                   [JOINT_2]D
+setp pid.2.bias                    [JOINT_2]BIAS
+setp pid.2.FF0                     [JOINT_2]FF0
+setp pid.2.FF1                     [JOINT_2]FF1
+setp pid.2.FF2                     [JOINT_2]FF2
+setp pid.2.deadband                [JOINT_2]DEADBAND
+setp pid.2.maxoutput               [JOINT_2]MAXOUTPUT
+net j2vel-cmd                      <= pid.2.output
+net j2pos-cmd                      <= joint.2.motor-pos-cmd
+net j2motor-pos-fb                 <= hm2_7c81.0.stepgen.00.position-fb
+net j2enable                       <= joint.2.amp-enable-out
+net j2vel-cmd                      => hm2_7c81.0.stepgen.00.velocity-cmd
+net j2pos-cmd                      => pid.2.command
+net j2motor-pos-fb                 => joint.2.motor-pos-fb
+net j2motor-pos-fb                 => pid.2.feedback
+net j2enable                       => pid.2.enable
+net j2enable                       => hm2_7c81.0.stepgen.00.enable
+
+#################################################################################
+# joint-3
+#################################################################################
+setp rio.stepdir0.velocity-scale   [JOINT_3]SCALE_OUT
+setp rio.stepdir0.position-scale   [JOINT_3]SCALE_IN
+setp pid.3.Pgain                   [JOINT_3]P
+setp pid.3.Igain                   [JOINT_3]I
+setp pid.3.Dgain                   [JOINT_3]D
+setp pid.3.bias                    [JOINT_3]BIAS
+setp pid.3.FF0                     [JOINT_3]FF0
+setp pid.3.FF1                     [JOINT_3]FF1
+setp pid.3.FF2                     [JOINT_3]FF2
+setp pid.3.deadband                [JOINT_3]DEADBAND
+setp pid.3.maxoutput               [JOINT_3]MAXOUTPUT
+net j3vel-cmd                      <= pid.3.output
+net j3pos-cmd                      <= joint.3.motor-pos-cmd
+net j3motor-pos-fb                 <= rio.stepdir0.position
+net j3enable                       <= joint.3.amp-enable-out
+net j3vel-cmd                      => rio.stepdir0.velocity
+net j3pos-cmd                      => pid.3.command
+net j3motor-pos-fb                 => joint.3.motor-pos-fb
+net j3motor-pos-fb                 => pid.3.feedback
+net j3enable                       => pid.3.enable
+net j3enable                       => rio.stepdir0.enable
+
+#################################################################################
+# joint-4
+#################################################################################
+setp rio.stepdir1.velocity-scale   [JOINT_4]SCALE_OUT
+setp rio.stepdir1.position-scale   [JOINT_4]SCALE_IN
+setp pid.4.Pgain                   [JOINT_4]P
+setp pid.4.Igain                   [JOINT_4]I
+setp pid.4.Dgain                   [JOINT_4]D
+setp pid.4.bias                    [JOINT_4]BIAS
+setp pid.4.FF0                     [JOINT_4]FF0
+setp pid.4.FF1                     [JOINT_4]FF1
+setp pid.4.FF2                     [JOINT_4]FF2
+setp pid.4.deadband                [JOINT_4]DEADBAND
+setp pid.4.maxoutput               [JOINT_4]MAXOUTPUT
+net j4vel-cmd                      <= pid.4.output
+net j4pos-cmd                      <= joint.4.motor-pos-cmd
+net j4motor-pos-fb                 <= rio.stepdir1.position
+net j4enable                       <= joint.4.amp-enable-out
+net j4vel-cmd                      => rio.stepdir1.velocity
+net j4pos-cmd                      => pid.4.command
+net j4motor-pos-fb                 => joint.4.motor-pos-fb
+net j4motor-pos-fb                 => pid.4.feedback
+net j4enable                       => pid.4.enable
+net j4enable                       => rio.stepdir1.enable
+
+#################################################################################
+# joint-5
+#################################################################################
+setp cia402.0.pos-scale            [JOINT_5]SCALE_OUT
+net j5statusword                   <= lcec.0.ethercat1.status-word
+net j5drv-pos                      <= lcec.0.ethercat1.pos-actual
+net j5control                      <= cia402.0.controlword
+net j5target-pos                   <= cia402.0.drv-target-position
+net j5pos-cmd                      <= joint.5.motor-pos-cmd
+net j5pos-fb                       <= cia402.0.pos-fb
+net j5enable                       <= joint.5.amp-enable-out
+net j5fault                        <= cia402.0.drv-fault
+net j5statusword                   => cia402.0.statusword
+net j5drv-pos                      => cia402.0.drv-actual-position
+net j5control                      => lcec.0.ethercat1.control-word
+net j5target-pos                   => lcec.0.ethercat1.target-position
+net j5pos-cmd                      => cia402.0.pos-cmd
+net j5pos-fb                       => joint.5.motor-pos-fb
+net j5enable                       => cia402.0.enable
+net j5fault                        => joint.5.amp-fault-in
+
+#################################################################################
+# setp
+#################################################################################
+setp cia402.0.csp-mode                1
+setp hm2_7c81.0.gpio.007.invert_output   1
+setp hm2_7c81.0.gpio.007.is_output    1
+setp hm2_7c81.0.pwmgen.00.scale       20000.0
+setp hm2_7c81.0.stepgen.00.control-type   1
+setp hm2_7c81.0.stepgen.00.step_type   0
+setp hm2_7c81.0.stepgen.01.control-type   1
+setp hm2_7c81.0.stepgen.01.step_type   0
+setp hm2_7c81.0.stepgen.02.control-type   1
+setp hm2_7c81.0.stepgen.02.step_type   0
+setp input.0.abs-rz-scale             -127.5
+setp input.0.abs-x-scale              127.5
+setp input.0.abs-y-scale              -127.5
+setp input.0.abs-z-scale              127.5
+setp joy_mux4.in0                     0.0
+setp joy_mux4.in1                     50.0
+setp joy_mux4.in2                     500.0
+setp joy_mux4.in3                     2000.0
+
+#################################################################################
+# preformated
+#################################################################################
+loadrt mux2 names=mux2_x,mux2_y,mux2_z,mux2_a,mux2_c,mux2_b
+addf mux2_x servo-thread
+addf mux2_y servo-thread
+addf mux2_a servo-thread
+addf mux2_b servo-thread
