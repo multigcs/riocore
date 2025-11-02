@@ -266,11 +266,11 @@ setp pyvcp.outval                     123
     halg.net_add("oio.bit9", "pio.multi1, !pio.multi2", "multitarget")
 
     (hal_data, postgui_data) = halg.net_write()
-    # print("---------------------------------")
-    # print("\n".join(hal_data))
-    # print("---------------------------------")
-    # print("\n".join(postgui_data))
-    # print("---------------------------------")
+    print("---------------------------------")
+    print("\n".join(hal_data))
+    print("---------------------------------")
+    print("\n".join(postgui_data))
+    print("---------------------------------")
 
     assert "\n".join(hal_data).strip() == expected_hal.strip()
     assert "\n".join(postgui_data).strip() == expected_postgui.strip()
@@ -382,7 +382,6 @@ net func_abs_rio_input1_out        => hal.output2
 #################################################################################
 # preformated
 #################################################################################
-
 """
     expected_postgui = """
 #################################################################################

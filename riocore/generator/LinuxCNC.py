@@ -678,13 +678,17 @@ class LinuxCNC:
                 else:
                     max_angular_velocity = max(max_angular_velocity, joint_setup["MAX_VELOCITY"])
         max_linear_velocity = min(max_linear_velocity, ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"]
-        default_linear_velocity = min(max_linear_velocity, ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"]
+        default_linear_velocity = (
+            min(max_linear_velocity, ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"], ini_setup["TRAJ"]["DEFAULT_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"]
+        )
         ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"] = max_linear_velocity
         ini_setup["TRAJ"]["MAX_LINEAR_VELOCITY"] = max_linear_velocity
         ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"] = default_linear_velocity
         ini_setup["TRAJ"]["DEFAULT_LINEAR_VELOCITY"] = default_linear_velocity
         max_angular_velocity = min(max_angular_velocity, ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"]
-        default_angular_velocity = min(max_angular_velocity, ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"]
+        default_angular_velocity = (
+            min(max_angular_velocity, ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"], ini_setup["TRAJ"]["DEFAULT_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"]
+        )
         ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"] = max_angular_velocity
         ini_setup["TRAJ"]["MAX_ANGULAR_VELOCITY"] = max_angular_velocity
         ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"] = default_angular_velocity
@@ -1665,13 +1669,13 @@ if __name__ == "__main__":
                     if dtype == "multilabel" and not boolean:
                         self.halg.net_add(f"{prefix}{halname}-u32-abs", f"demux_{halname}.sel-u32")
                     elif virtual and direction == "input":
-                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"s_rv_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname_short.replace('.', '_')}")
                     elif virtual and direction == "output":
-                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"s_rv_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname_short.replace('.', '_')}")
                     elif netname or setp or direction == "input":
-                        self.halg.net_add(f"{prefix}{halname}", gui_pinname, f"s_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(f"{prefix}{halname}", gui_pinname, f"sig_rio_{halname_short.replace('.', '_')}")
                     elif direction == "output":
-                        self.halg.net_add(gui_pinname, f"{prefix}{halname}", f"s_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(gui_pinname, f"{prefix}{halname}", f"sig_{halname_short.replace('.', '_')}")
 
                 if group:
                     gui_gen.draw_vbox_end()

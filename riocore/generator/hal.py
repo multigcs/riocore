@@ -70,7 +70,7 @@ class hal_generator:
                 if pin.startswith("func."):
                     signal = f"{pin.replace('.', '_')}"
                 else:
-                    signal = f"s_{pin.replace('.', '_')}"
+                    signal = f"sig_{pin.replace('.', '_')}"
                 self.inputs2signals[pin] = {"signal": signal, "target": target}
         else:
             signal = self.inputs2signals[pin]["signal"]

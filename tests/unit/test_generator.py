@@ -97,6 +97,11 @@ def test_generator_ini(config, target, protocol, ip, home_sequence, ini_values):
                 found = True
                 break
         if not found:
+
+            for line in ini.split("\n"):
+                if f"{key} = " in line:
+                    print("---> ", line)
+
             assert False
 
 
