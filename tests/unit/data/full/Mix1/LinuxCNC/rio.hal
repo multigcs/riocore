@@ -264,20 +264,20 @@ net sig_pyvcp_halui_mdi-command-05 => halui.mdi-command-05
 #################################################################################
 # hm2_7c81.0.gpio.015.in --> pyvcp.hm2_7c81.0.gpio.015.in
 #################################################################################
-net sig_rio_hm2_7c81_0_gpio_015_in <= hm2_7c81.0.gpio.015.in
-# net sig_rio_hm2_7c81_0_gpio_015_in => pyvcp.hm2_7c81.0.gpio.015.in (in postgui)
+net sig_hm2_7c81_0_gpio_015_in     <= hm2_7c81.0.gpio.015.in
+# net sig_hm2_7c81_0_gpio_015_in     => pyvcp.hm2_7c81.0.gpio.015.in (in postgui)
 
 #################################################################################
 # hm2_7c81.0.gpio.014.in --> pyvcp.hm2_7c81.0.gpio.014.in
 #################################################################################
-net sig_rio_hm2_7c81_0_gpio_014_in <= hm2_7c81.0.gpio.014.in
-# net sig_rio_hm2_7c81_0_gpio_014_in => pyvcp.hm2_7c81.0.gpio.014.in (in postgui)
+net sig_hm2_7c81_0_gpio_014_in     <= hm2_7c81.0.gpio.014.in
+# net sig_hm2_7c81_0_gpio_014_in     => pyvcp.hm2_7c81.0.gpio.014.in (in postgui)
 
 #################################################################################
 # hm2_7c81.0.gpio.013.in_not --> pyvcp.hm2_7c81.0.gpio.013.in_not
 #################################################################################
-net sig_rio_hm2_7c81_0_gpio_013_in_not <= hm2_7c81.0.gpio.013.in_not
-# net sig_rio_hm2_7c81_0_gpio_013_in_not => pyvcp.hm2_7c81.0.gpio.013.in_not (in postgui)
+net sig_hm2_7c81_0_gpio_013_in_not <= hm2_7c81.0.gpio.013.in_not
+# net sig_hm2_7c81_0_gpio_013_in_not => pyvcp.hm2_7c81.0.gpio.013.in_not (in postgui)
 
 #################################################################################
 # rio.bitin0.bit --> pyvcp.bitin0.bit
@@ -288,26 +288,26 @@ net sig_rio_bitin0_bit             <= rio.bitin0.bit
 #################################################################################
 # pyvcp.hm2_7c81.0.gpio.007.out --> hm2_7c81.0.gpio.007.out
 #################################################################################
-# net sig_hm2_7c81_0_gpio_007_out    <= pyvcp.hm2_7c81.0.gpio.007.out (in postgui)
-net sig_hm2_7c81_0_gpio_007_out    => hm2_7c81.0.gpio.007.out
+# net sig_pyvcp_hm2_7c81_0_gpio_007_out <= pyvcp.hm2_7c81.0.gpio.007.out (in postgui)
+net sig_pyvcp_hm2_7c81_0_gpio_007_out => hm2_7c81.0.gpio.007.out
 
 #################################################################################
 # pyvcp.hm2_7c81.0.pwmgen.00.value-f --> hm2_7c81.0.pwmgen.00.value
 #################################################################################
-# net sig_hm2_7c81_0_pwmgen_00_value <= pyvcp.hm2_7c81.0.pwmgen.00.value-f (in postgui)
-net sig_hm2_7c81_0_pwmgen_00_value => hm2_7c81.0.pwmgen.00.value
+# net sig_pyvcp_hm2_7c81_0_pwmgen_00_value-f <= pyvcp.hm2_7c81.0.pwmgen.00.value-f (in postgui)
+net sig_pyvcp_hm2_7c81_0_pwmgen_00_value-f => hm2_7c81.0.pwmgen.00.value
 
 #################################################################################
 # pyvcp.hm2_7c81.0.pwmgen.00.enable --> hm2_7c81.0.pwmgen.00.enable
 #################################################################################
-# net sig_hm2_7c81_0_pwmgen_00_enable <= pyvcp.hm2_7c81.0.pwmgen.00.enable (in postgui)
-net sig_hm2_7c81_0_pwmgen_00_enable => hm2_7c81.0.pwmgen.00.enable
+# net sig_pyvcp_hm2_7c81_0_pwmgen_00_enable <= pyvcp.hm2_7c81.0.pwmgen.00.enable (in postgui)
+net sig_pyvcp_hm2_7c81_0_pwmgen_00_enable => hm2_7c81.0.pwmgen.00.enable
 
 #################################################################################
 # pyvcp.bitout0.bit --> rio.bitout0.bit
 #################################################################################
-# net sig_bitout0_bit                <= pyvcp.bitout0.bit (in postgui)
-net sig_bitout0_bit                => rio.bitout0.bit
+# net sig_pyvcp_bitout0_bit          <= pyvcp.bitout0.bit (in postgui)
+net sig_pyvcp_bitout0_bit          => rio.bitout0.bit
 
 #################################################################################
 # joint-0

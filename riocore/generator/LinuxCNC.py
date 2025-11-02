@@ -1669,13 +1669,13 @@ if __name__ == "__main__":
                     if dtype == "multilabel" and not boolean:
                         self.halg.net_add(f"{prefix}{halname}-u32-abs", f"demux_{halname}.sel-u32")
                     elif virtual and direction == "input":
-                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
                     elif virtual and direction == "output":
-                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
                     elif netname or setp or direction == "input":
-                        self.halg.net_add(f"{prefix}{halname}", gui_pinname, f"sig_rio_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(f"{prefix}{halname}", gui_pinname)
                     elif direction == "output":
-                        self.halg.net_add(gui_pinname, f"{prefix}{halname}", f"sig_{halname_short.replace('.', '_')}")
+                        self.halg.net_add(gui_pinname, f"{prefix}{halname}")
 
                 if group:
                     gui_gen.draw_vbox_end()

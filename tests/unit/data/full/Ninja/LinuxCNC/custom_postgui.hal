@@ -11,10 +11,10 @@ net sig_stepgen-ninja_0_input_gp8-not => pyvcp.stepgen-ninja.0.input.gp8-not
 net sig_stepgen-ninja_0_input_gp9-not => pyvcp.stepgen-ninja.0.input.gp9-not
 net sig_stepgen-ninja_0_input_gp10-not => pyvcp.stepgen-ninja.0.input.gp10-not
 net sig_pyvcp_stepgen-ninja_0_pwm_0_duty-i <= pyvcp.stepgen-ninja.0.pwm.0.duty-i
-net sig_stepgen-ninja_0_pwm_0_enable <= pyvcp.stepgen-ninja.0.pwm.0.enable
+net sig_pyvcp_stepgen-ninja_0_pwm_0_enable <= pyvcp.stepgen-ninja.0.pwm.0.enable
 net sig_spindle_0_on               => pyvcp.stepgen-ninja.0.output.gp26
-net sig_stepgen-ninja_0_output_gp25 <= pyvcp.stepgen-ninja.0.output.gp25
-net sig_stepgen-ninja_0_output_gp29 <= pyvcp.stepgen-ninja.0.output.gp29
+net sig_pyvcp_stepgen-ninja_0_output_gp25 <= pyvcp.stepgen-ninja.0.output.gp25
+net sig_pyvcp_stepgen-ninja_0_output_gp29 <= pyvcp.stepgen-ninja.0.output.gp29
 
 #################################################################################
 # setp

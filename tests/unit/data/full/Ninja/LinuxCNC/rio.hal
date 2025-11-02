@@ -227,14 +227,14 @@ net sig_pyvcp_halui_mdi-command-02 => halui.mdi-command-02
 #################################################################################
 # net sig_pyvcp_stepgen-ninja_0_pwm_0_duty-i <= pyvcp.stepgen-ninja.0.pwm.0.duty-i (in postgui)
 net sig_pyvcp_stepgen-ninja_0_pwm_0_duty-i => func.conv_s32_u32-1.in
-net sig_stepgen-ninja_0_pwm_0_duty <= func.conv_s32_u32-1.out
-net sig_stepgen-ninja_0_pwm_0_duty => stepgen-ninja.0.pwm.0.duty
+net func_conv_s32_u32-1_out        <= func.conv_s32_u32-1.out
+net func_conv_s32_u32-1_out        => stepgen-ninja.0.pwm.0.duty
 
 #################################################################################
 # pyvcp.stepgen-ninja.0.pwm.0.enable --> stepgen-ninja.0.pwm.0.enable
 #################################################################################
-# net sig_stepgen-ninja_0_pwm_0_enable <= pyvcp.stepgen-ninja.0.pwm.0.enable (in postgui)
-net sig_stepgen-ninja_0_pwm_0_enable => stepgen-ninja.0.pwm.0.enable
+# net sig_pyvcp_stepgen-ninja_0_pwm_0_enable <= pyvcp.stepgen-ninja.0.pwm.0.enable (in postgui)
+net sig_pyvcp_stepgen-ninja_0_pwm_0_enable => stepgen-ninja.0.pwm.0.enable
 
 #################################################################################
 # stepgen-ninja.0.output.gp26 --> pyvcp.stepgen-ninja.0.output.gp26
@@ -244,14 +244,14 @@ net sig_stepgen-ninja_0_pwm_0_enable => stepgen-ninja.0.pwm.0.enable
 #################################################################################
 # pyvcp.stepgen-ninja.0.output.gp25 --> stepgen-ninja.0.output.gp25
 #################################################################################
-# net sig_stepgen-ninja_0_output_gp25 <= pyvcp.stepgen-ninja.0.output.gp25 (in postgui)
-net sig_stepgen-ninja_0_output_gp25 => stepgen-ninja.0.output.gp25
+# net sig_pyvcp_stepgen-ninja_0_output_gp25 <= pyvcp.stepgen-ninja.0.output.gp25 (in postgui)
+net sig_pyvcp_stepgen-ninja_0_output_gp25 => stepgen-ninja.0.output.gp25
 
 #################################################################################
 # pyvcp.stepgen-ninja.0.output.gp29 --> stepgen-ninja.0.output.gp29
 #################################################################################
-# net sig_stepgen-ninja_0_output_gp29 <= pyvcp.stepgen-ninja.0.output.gp29 (in postgui)
-net sig_stepgen-ninja_0_output_gp29 => stepgen-ninja.0.output.gp29
+# net sig_pyvcp_stepgen-ninja_0_output_gp29 <= pyvcp.stepgen-ninja.0.output.gp29 (in postgui)
+net sig_pyvcp_stepgen-ninja_0_output_gp29 => stepgen-ninja.0.output.gp29
 
 #################################################################################
 # joint-0

@@ -439,7 +439,6 @@ class Plugin(PluginBase):
         return cmd
 
     def extra_files(cls, parent, instances):
-        output = []
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "board":
@@ -449,6 +448,7 @@ class Plugin(PluginBase):
                 gw = instance.plugin_setup.get("gw", instance.option_default("gw"))
                 port = instance.plugin_setup.get("port", instance.option_default("port"))
 
+                output = []
                 output.append(f"""
 #ifndef CONFIG_H
 #define CONFIG_H
