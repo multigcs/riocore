@@ -55,6 +55,25 @@ class Plugin(PluginBase):
             self.TYPE = "joint"
             self.IMAGES = ["ethercatservo"]
             self.JOINT_MODE = "position"
+            self.OPTIONS.update(
+                {
+                    "vid": {
+                        "default": "00400000",
+                        "type": str,
+                        "description": "device vid",
+                    },
+                    "pid": {
+                        "default": "00000715",
+                        "type": str,
+                        "description": "device pid",
+                    },
+                    "din": {
+                        "default": True,
+                        "type": bool,
+                        "description": "activate digital inputs (home / limits /...)",
+                    },
+                }
+            )
             self.PINDEFAULTS = {
                 "in": {
                     "direction": "all",
@@ -85,6 +104,13 @@ class Plugin(PluginBase):
                     "description": "steps / unit",
                 },
             }
+            din = self.plugin_setup.get("din", self.option_default("din"))
+            if din:
+                for pin in ("limit-neg", "limit-pos", "home-switch", "din1", "din2", "din3", "din4"):
+                    self.SIGNALS[f"{pin}"] = {
+                        "direction": "input",
+                        "bool": True,
+                    }
         elif node_type == "GPIO":
             self.PINDEFAULTS = {
                 "in": {
@@ -140,8 +166,11 @@ class Plugin(PluginBase):
             if idx < 0 or node_type == "Master":
                 # only connected slaves
                 continue
-            if node_type == "Servo/Stepper":
-                output.append(f'    <slave idx="{idx}" type="generic" vid="00400000" pid="00000715" configPdos="true" name="{instance.title}">')
+            elif node_type == "Servo/Stepper":
+                vid = instance.plugin_setup.get("vid", instance.option_default("vid"))
+                pid = instance.plugin_setup.get("pid", instance.option_default("pid"))
+                din = instance.plugin_setup.get("din", instance.option_default("din"))
+                output.append(f'    <slave idx="{idx}" type="generic" vid="{vid}" pid="{pid}" configPdos="true" name="{instance.title}">')
                 output.append('      <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="25000"/>')
                 output.append('      <watchdog divider="2498" intervals="1000"/>')
                 output.append('      <syncManager idx="2" dir="out">')
@@ -159,8 +188,18 @@ class Plugin(PluginBase):
                 output.append('          <pdoEntry idx="60BC" subIdx="00" bitLen="32" halPin="touch-probe-2" halType="s32"/>')
                 output.append('          <pdoEntry idx="60B9" subIdx="00" bitLen="16" halPin="touch-probe-status" halType="s32"/>')
                 output.append('          <pdoEntry idx="603F" subIdx="00" bitLen="16" halPin="fault-code" halType="s32"/>')
-                output.append('          <pdoEntry idx="60FD" subIdx="00" bitLen="32" halPin="DI-status" halType="u32"/>')
                 output.append('          <pdoEntry idx="60F4" subIdx="00" bitLen="32" halPin="follow-error" halType="s32"/>')
+                if din:
+                    output.append('          <pdoEntry idx="60FD" subIdx="00" bitLen="32" halType="complex">')
+                    output.append('            <complexEntry bitLen="1" halPin="limit-neg" halType="bit"/>')
+                    output.append('            <complexEntry bitLen="1" halPin="limit-pos" halType="bit"/>')
+                    output.append('            <complexEntry bitLen="1" halPin="home-switch" halType="bit"/>')
+                    output.append('            <complexEntry bitLen="13" />')
+                    output.append('            <complexEntry bitLen="1" halPin="din1" halType="bit"/>')
+                    output.append('            <complexEntry bitLen="1" halPin="din2" halType="bit"/>')
+                    output.append('            <complexEntry bitLen="1" halPin="din3" halType="bit"/>')
+                    output.append('            <complexEntry bitLen="1" halPin="din4" halType="bit"/>')
+                    output.append("          </pdoEntry>")
                 output.append("        </pdo>")
                 output.append("      </syncManager>")
                 output.append("    </slave>")
