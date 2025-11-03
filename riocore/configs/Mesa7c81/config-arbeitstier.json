@@ -49,7 +49,7 @@
             },
             {
                 "comment": "if waterflow < 3Hz, disable motion",
-                "source": "rio.Waterflow.frequency > 3.0",
+                "source": "rio.waterflow.frequency > 3.0",
                 "target": "&motion.enable"
             },
             {
@@ -992,7 +992,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "rio.Waterflow.frequency > 3.0",
+                    "net": "rio.waterflow.frequency > 3.0",
                     "setp": "",
                     "display": {
                         "title": "Waterflow",
