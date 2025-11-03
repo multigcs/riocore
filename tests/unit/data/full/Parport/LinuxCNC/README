@@ -12,6 +12,4 @@ Plugins:
   gpioout (2x)
   gpioin (5x)
   parport (1x)
-  stepperninja (1x)
-  ninjastepgen (1x)
 

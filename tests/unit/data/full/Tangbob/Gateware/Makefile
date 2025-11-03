@@ -1,6 +1,8 @@
 
 # Toolchain: Gowin
 
+PATH     := /opt/gowin/IDE/bin:$(PATH)
+
 PROJECT  := rio
 TOP      := rio
 FAMILY   := GW1N-9C
