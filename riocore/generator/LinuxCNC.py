@@ -58,7 +58,7 @@ class LinuxCNC:
         "MESA_DIRHOLD": 2000,
         "MESA_STEPLEN": 2000,
         "MESA_STEPSPACE": 2000,
-        "MESA_STEPGEN_MAXVEL": 200,
+        "MESA_STEPGEN_MAXVEL": 100,
         "MESA_STEPGEN_MAXACCEL": 1000,
         "HOME_SEARCH_VEL": -30.0,
         "HOME_LATCH_VEL": 5.0,

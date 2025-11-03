@@ -8,17 +8,13 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "mesa"
         self.COMPONENT = "mesa"
-        self.INFO = "stepgen-mesa"
+        self.INFO = "mesa"
         self.DESCRIPTION = "mesa"
-        self.KEYWORDS = "stepgen pwm mesa board pico w5500"
+        self.KEYWORDS = "stepgen pwm mesa board hm2"
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "mesa"
         self.URL = "https://github.com/atrex66/stepper-mesa"
-        self.SHORTENER = {
-            "latched": "lt",
-            "mesa": "nja",
-        }
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
@@ -291,6 +287,7 @@ class Plugin(PluginBase):
 
         elif node_type == "stepper":
             self.TYPE = "joint"
+            self.JOINT_OPTIONS = ["MESA_DIRSETUP", "MESA_DIRHOLD", "MESA_STEPLEN", "MESA_STEPSPACE", "MESA_STEPGEN_MAXVEL", "MESA_STEPGEN_MAXACCEL"]
             mode = self.plugin_setup.get("mode", self.option_default("mode"))
             if mode:
                 self.JOINT_TYPE = "velocity"
@@ -358,7 +355,7 @@ class Plugin(PluginBase):
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             min_limit = self.plugin_setup.get("min_limit", self.option_default("min_limit"))
             self.SIGNALS = {
-                "duty": {
+                "value": {
                     "direction": "output",
                     "min": min_limit,
                     "max": scale,
@@ -396,14 +393,14 @@ class Plugin(PluginBase):
                 if pin.startswith("gpio."):
                     if direction == "input":
                         if inverted:
-                            psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}-not"
+                            psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}.in_not"
                         else:
-                            psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}"
+                            psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}.in"
                     else:
-                        psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}"
-                        self.outputs.append(psetup["pin"])
+                        psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}.out"
+                        self.outputs.append(f"{self.hm2_prefix}.{pin.lower()}")
                         if inverted:
-                            self.output_inverts.append(psetup["pin"])
+                            self.output_inverts.append(f"{self.hm2_prefix}.{pin.lower()}")
                 else:
                     del psetup["pin"]
 
@@ -419,7 +416,8 @@ class Plugin(PluginBase):
 
                 output.append("# mesa")
                 component = "hm2_spix"
-                output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}" ')
+                output.append("loadrt hostmot2")
+                output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
                 output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
                 output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
                 output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
@@ -453,6 +451,10 @@ class Plugin(PluginBase):
                 axis_name = joint_data["axis"]
                 joint_n = joint_data["num"]
                 pid_num = joint_n
+
+                for key in ("dirsetup", "dirhold", "steplen", "stepspace", "stepgen_maxvel", "stepgen_maxaccel"):
+                    value = f"MESA_{key.upper()}"
+                    parent.halg.setp_add(f"{self.PREFIX}.{key.replace('stepgen_', '')}", f"[JOINT_{joint_n}]{value}")
 
                 cmd_halname = f"{self.PREFIX}.velocity-cmd"
                 feedback_halname = f"{self.PREFIX}.position-fb"

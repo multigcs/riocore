@@ -2,10 +2,10 @@
     "name": "Mesa",
     "flow": {
         "view": {
-            "scale": 0.85,
+            "scale": 1.29,
             "pos": [
-                395,
-                -321
+                273,
+                -606
             ]
         },
         "board": {
@@ -283,14 +283,6 @@
                 }
             },
             "name": "enable"
-        },
-        {
-            "type": "halinput",
-            "uid": "halinputhalinput",
-            "pos": [
-                530.0,
-                220.0
-            ]
         }
     ],
     "boardcfg": "",

@@ -749,7 +749,6 @@ class hal_generator:
     def joint_add(self, parent, axis_name, joint, mode, cmd_halname, feedback_halname=None, scale_halname=None, feedback_scale_halname=None, enable_halname=None, fault_halname=None, pid_num=None):
         linuxcnc_config = parent.project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
-
         self.setp_add(f"{scale_halname}", f"[JOINT_{joint}]SCALE_OUT")
         if feedback_scale_halname:
             self.setp_add(f"{feedback_scale_halname}", f"[JOINT_{joint}]SCALE_IN")
