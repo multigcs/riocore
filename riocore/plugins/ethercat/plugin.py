@@ -123,10 +123,11 @@ class Plugin(PluginBase):
         cia402_num = 0
         lcec_num = 0
         for instance in instances:
-            # node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             instance.PREFIX = f"lcec.{lcec_num}.{instance.title}"
-            instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
-            cia402_num += 1
+            if node_type == "Servo/Stepper":
+                instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
+                cia402_num += 1
 
     def extra_files(cls, parent, instances):
         output = []
@@ -230,6 +231,4 @@ class Plugin(PluginBase):
             parent.halg.joint_add(
                 parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname
             )
-
-        if node_type == "Master":
             parent.halg.setp_add(f"{cia402}.csp-mode", "1")
