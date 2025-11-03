@@ -57,12 +57,12 @@ class Plugin(PluginBase):
             self.JOINT_MODE = "position"
             self.PINDEFAULTS = {
                 "in": {
-                    "direction": "input",
+                    "direction": "all",
                     "edge": "target",
                     "type": "ETHERCAT",
                 },
                 "out": {
-                    "direction": "output",
+                    "direction": "all",
                     "edge": "source",
                     "type": "ETHERCAT",
                 },
@@ -126,6 +126,7 @@ class Plugin(PluginBase):
             # node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             instance.PREFIX = f"lcec.{lcec_num}.{instance.title}"
             instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
+            cia402_num += 1
 
     def extra_files(cls, parent, instances):
         output = []
@@ -186,20 +187,20 @@ class Plugin(PluginBase):
         output.append("loadrt lcec")
 
         cia402_num = 0
-        # lcec_num = 0
+        lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "Master":
+                lcec_num += 1
+            elif node_type == "Servo/Stepper":
                 cia402_num += 1
 
         output.append(f"loadrt cia402 count={cia402_num}")
         output.append("addf lcec.read-all servo-thread")
         cia402_num = 0
-        # lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            if node_type == "Master":
-                # TODO: .PREFIX_CIA402
+            if node_type == "Servo/Stepper":
                 output.append(f"addf cia402.{cia402_num}.read-all servo-thread")
                 output.append(f"addf cia402.{cia402_num}.write-all servo-thread")
                 cia402_num += 1

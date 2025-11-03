@@ -642,7 +642,7 @@ class PluginNode(MyNode):
             yoff = self.height + 5
         plugin_config["pos"] = (plugin_config["pos"][0] + xoff, plugin_config["pos"][1] + yoff)
         plugin_config["preselect"] = True
-        for pin_name, pin_data in plugin_config["pins"].items():
+        for pin_name, pin_data in plugin_config.get("pins", {}).items():
             pin_data["pin"] = ""
             for modifier in pin_data.get("modifier", []):
                 if "pos" in modifier:
@@ -1894,7 +1894,7 @@ class Window(QMainWindow):
                 ptype = plugin_setup.get("type")
                 if ptype == "ethercat":
                     ethercat_node_found = True
-                    if plugin_setup.get("node_type", "Servo/Stepper") == "Master":
+                    if plugin_setup.get("node_type", "Master") == "Master":
                         # the master node
                         plugin_setup["idx"] = -1
                         ethercat_master_found = True
@@ -1942,7 +1942,7 @@ class Window(QMainWindow):
             if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
                 if isinstance(item._source_node, PluginNode) and item._source_node.plugin_instance.plugin_setup.get("type") == "ethercat":
                     parents.append(item._source_node.name)
-                    if item._source_node.plugin_instance.plugin_setup.get("node_type", "Servo/Stepper") == "Master":
+                    if item._source_node.plugin_instance.plugin_setup.get("node_type", "Master") == "Master":
                         # this is the master node
                         return item._source_node
                     else:
