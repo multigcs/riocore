@@ -7,7 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "singe bit output pin"
         self.DESCRIPTION = "to control relay, leds, valves, ...."
         self.KEYWORDS = "led relais relay valve lamp motor magnet"
-        self.IMAGES = ["relay", "ssr", "ssr2a", "led"]
+        self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled"]
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {

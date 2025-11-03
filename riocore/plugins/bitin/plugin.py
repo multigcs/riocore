@@ -7,7 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "single input pin"
         self.DESCRIPTION = "to read switches or other 1bit signals"
         self.KEYWORDS = "switch limit estop keyboard"
-        self.IMAGES = ["proximity", "estop", "probe", "switch", "opto"]
+        self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton"]
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {

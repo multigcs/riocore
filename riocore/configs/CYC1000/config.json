@@ -11,9 +11,10 @@
             },
             "uid": "blink0",
             "pos": [
-                660.0,
-                230.0
-            ]
+                540.0,
+                250.0
+            ],
+            "image": "smdled"
         },
         {
             "type": "bitin",
@@ -25,9 +26,11 @@
             },
             "uid": "bitin0",
             "pos": [
-                660.0,
-                160.0
-            ]
+                540.0,
+                210.0
+            ],
+            "image": "smdbutton",
+            "rotate": 0
         },
         {
             "type": "bitout",
@@ -38,9 +41,10 @@
             },
             "uid": "bitout0",
             "pos": [
-                660.0,
-                300.0
-            ]
+                540.0,
+                270.0
+            ],
+            "image": "smdled"
         },
         {
             "type": "bitout",
@@ -51,9 +55,10 @@
             },
             "uid": "bitout1",
             "pos": [
-                660.0,
-                370.0
-            ]
+                540.0,
+                290.0
+            ],
+            "image": "smdled"
         },
         {
             "type": "pwmout",
@@ -70,8 +75,8 @@
             },
             "uid": "pwmout0",
             "pos": [
-                660.0,
-                440.0
+                540.0,
+                360.0
             ]
         },
         {
@@ -83,9 +88,10 @@
             },
             "uid": "freqout0",
             "pos": [
-                660.0,
-                550.0
-            ]
+                540.0,
+                310.0
+            ],
+            "image": "smdled"
         },
         {
             "type": "freqout",
@@ -96,36 +102,42 @@
             },
             "uid": "freqout1",
             "pos": [
-                660.0,
-                620.0
-            ]
-        }
-    ],
-    "modules": [
+                540.0,
+                330.0
+            ],
+            "image": "smdled"
+        },
         {
-            "slot": "PMOD",
-            "module": "w5500_pmod",
-            "setup": {
-                "w5500": {
-                    "name": "w5500",
-                    "type": "w5500",
-                    "mac": "AA:AF:FA:CC:E3:1C",
-                    "ip": "192.168.10.194",
-                    "port": 2390
+            "type": "w5500",
+            "uid": "w55000",
+            "image": "w5500mini",
+            "pos": [
+                380.0,
+                630.0
+            ],
+            "pins": {
+                "mosi": {
+                    "pin": "PMOD:P7"
+                },
+                "miso": {
+                    "pin": "PMOD:P8"
+                },
+                "sclk": {
+                    "pin": "PMOD:P9"
+                },
+                "sel": {
+                    "pin": "PMOD:P10"
                 }
             },
-            "pos": [
-                310.0,
-                630.0
-            ]
+            "rotate": 0
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.914516129032258,
+            "scale": 0.78,
             "pos": [
-                543,
-                256
+                78,
+                34
             ]
         },
         "board": {

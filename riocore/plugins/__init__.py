@@ -58,6 +58,30 @@ class PluginImages:
         }
         return setup
 
+    def smdbutton(self):
+        setup = {
+            "image": "smdbutton.png",
+            "pins": [
+                (10, 10),
+            ],
+            "signals": [
+                (60, 10),
+            ],
+        }
+        return setup
+
+    def smdled(self):
+        setup = {
+            "image": "smdled.png",
+            "pins": [
+                (9, 13),
+            ],
+            "signals": [
+                (42, 13),
+            ],
+        }
+        return setup
+
     def wled(self):
         setup = {
             "image": "wled.png",

@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "frequency output"
         self.DESCRIPTION = "to output variable frequency signals"
         self.KEYWORDS = "frequency"
+        self.IMAGES = ["led", "smdled"]
         self.ORIGIN = ""
         self.VERILOGS = ["freqout.v"]
         self.PINDEFAULTS = {
