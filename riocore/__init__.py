@@ -61,9 +61,9 @@ class Plugins:
                 if "node_type" in plugin_instance.OPTIONS:
                     option_data = plugin_instance.OPTIONS["node_type"]
                     for option in option_data["options"]:
-                        plugins.append({"name": f"{plugin_name} {option}", "path": plugin_path, "description": description, "info": info, "keywords": keywords})
+                        plugins.append({"name": f"{plugin_name} {option}", "path": plugin_path, "description": description, "info": info, "keywords": keywords, "ptype": plugin_instance.PLUGIN_TYPE})
                 else:
-                    plugins.append({"name": plugin_name, "path": plugin_path, "description": description, "info": info, "keywords": keywords})
+                    plugins.append({"name": plugin_name, "path": plugin_path, "description": description, "info": info, "keywords": keywords, "ptype": plugin_instance.PLUGIN_TYPE})
             else:
                 plugins.append({"name": plugin_name, "path": plugin_path})
         return plugins

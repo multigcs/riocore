@@ -35,89 +35,48 @@ class Plugin(PluginBase):
                 "description": "instance type",
             },
         }
-
-        extra_options = {
-            "board": {
-                "board": {
-                    "default": "w5500-evb-pico",
-                    "type": "select",
-                    "options": [
-                        "w5500-evb-pico",
-                        "w5500-evb-pico-parport",
-                    ],
-                    "description": "board type",
-                },
-                "mac": {
-                    "default": "00:08:DC:12:34:56",
-                    "type": str,
-                    "description": "MAC-Address",
-                },
-                "ip": {
-                    "default": "192.168.0.177",
-                    "type": str,
-                    "description": "IP-Address",
-                },
-                "mask": {
-                    "default": "255.255.255.0",
-                    "type": str,
-                    "description": "Network-Mask",
-                },
-                "gw": {
-                    "default": "192.168.10.1",
-                    "type": str,
-                    "description": "Gateway IP-Address",
-                },
-                "port": {
-                    "default": 8888,
-                    "type": int,
-                    "description": "UDP-Port",
-                },
-            },
-            "stepper": {
-                # "mode": {
-                #    "default": False,
-                #    "type": bool,
-                #    "description": "velocity mode",
-                # },
-            },
-            "encoder": {
-                "scale": {
-                    "default": 80,
-                    "type": int,
-                    "min": 1,
-                    "max": 1000000,
-                    "description": "encoder scale",
-                },
-            },
-            "pwm": {
-                "frequency": {
-                    "default": 10000,
-                    "type": int,
-                    "min": 1907,
-                    "max": 1000000,
-                    "description": "pwm frequency",
-                },
-                "scale": {
-                    "default": 100,
-                    "type": int,
-                    "min": 1,
-                    "max": 100000,
-                    "description": "max pwm value",
-                },
-                "min_limit": {
-                    "default": 0,
-                    "type": int,
-                    "min": 0,
-                    "max": 100000,
-                    "description": "min pwm value",
-                },
-            },
-        }
-        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        self.OPTIONS.update(extra_options[node_type])
         self.SIGNALS = {}
 
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "board":
+            self.OPTIONS.update(
+                {
+                    "board": {
+                        "default": "w5500-evb-pico",
+                        "type": "select",
+                        "options": [
+                            "w5500-evb-pico",
+                            "w5500-evb-pico-parport",
+                        ],
+                        "description": "board type",
+                    },
+                    "mac": {
+                        "default": "00:08:DC:12:34:56",
+                        "type": str,
+                        "description": "MAC-Address",
+                    },
+                    "ip": {
+                        "default": "192.168.0.177",
+                        "type": str,
+                        "description": "IP-Address",
+                    },
+                    "mask": {
+                        "default": "255.255.255.0",
+                        "type": str,
+                        "description": "Network-Mask",
+                    },
+                    "gw": {
+                        "default": "192.168.10.1",
+                        "type": str,
+                        "description": "Gateway IP-Address",
+                    },
+                    "port": {
+                        "default": 8888,
+                        "type": int,
+                        "description": "UDP-Port",
+                    },
+                }
+            )
             board = self.plugin_setup.get("board", self.option_default("board"))
             self.TYPE = "base"
             self.BUILDER = ["build", "install"]
@@ -260,6 +219,17 @@ class Plugin(PluginBase):
                 "dir": {"direction": "output", "edge": "target", "type": "NINJAStepGenDir"},
             }
         elif node_type == "encoder":
+            self.OPTIONS.update(
+                {
+                    "scale": {
+                        "default": 80,
+                        "type": int,
+                        "min": 1,
+                        "max": 1000000,
+                        "description": "encoder scale",
+                    },
+                }
+            )
             self.TYPE = "io"
             self.IMAGE_SHOW = True
             self.IMAGE_SHOW = False
@@ -291,6 +261,31 @@ class Plugin(PluginBase):
             }
 
         elif node_type == "pwm":
+            self.OPTIONS.update(
+                {
+                    "frequency": {
+                        "default": 10000,
+                        "type": int,
+                        "min": 1907,
+                        "max": 1000000,
+                        "description": "pwm frequency",
+                    },
+                    "scale": {
+                        "default": 100,
+                        "type": int,
+                        "min": 1,
+                        "max": 100000,
+                        "description": "max pwm value",
+                    },
+                    "min_limit": {
+                        "default": 0,
+                        "type": int,
+                        "min": 0,
+                        "max": 100000,
+                        "description": "min pwm value",
+                    },
+                }
+            )
             self.TYPE = "io"
             self.IMAGE_SHOW = True
             self.IMAGES = ["spindle500w", "laser", "led"]
