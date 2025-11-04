@@ -409,12 +409,14 @@ class MyNode(QGraphicsItem):
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
+
         self.flow_cfg["pos"] = (pos_x, pos_y)
         if self.pixmap:
             painter.drawPixmap(0, 0, self.pixmap)
             painter.setRenderHint(QPainter.Antialiasing)
             path = QPainterPath()
             pen = None
+
             if self.isSelected():
                 pen = QPen(self.border_color_selected, self.border_size)
             elif self.hover:
@@ -440,7 +442,7 @@ class MyNode(QGraphicsItem):
             if key not in painted_ports:
                 if selected:
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red)
-                else:  # do not overwrite selected ports
+                else:
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow)
             painted_ports.append(key)
 
@@ -1232,6 +1234,7 @@ class NodeViewer(QGraphicsView):
                 hoverpos = self.scene.hover.pos()
                 position = QPointF(position.x() - hoverpos.x(), position.y() - hoverpos.y())
                 port = self.scene.hover.port_selected(position)
+                tootltip = []
                 if port:
                     pinfo = self.scene.hover.port_info(port)
                     info_text = []
@@ -1241,10 +1244,19 @@ class NodeViewer(QGraphicsView):
                         info_text.append(f"{key.title()}: {value}")
                     self.scene.parent.drawingtab.pininfo.setPlainText("\n".join(info_text))
                     self.scene.parent.info.setText(f"{hovername} - {port}")
+                    tootltip.append(self.scene.hover.name)
+
+                    if pinfo.get("comment2") and not pinfo.get("comment"):
+                        pinfo["comment"] = pinfo["comment2"]
+                        del pinfo["comment2"]
+                    for key, value in pinfo.items():
+                        tootltip.append(f"{key.title():10s}: {value}")
                 elif dev_mode:
                     self.scene.parent.info.setText(f"{hovername} ({position.x():0.1f} {position.y():0.1f})")
                 else:
                     self.scene.parent.info.setText(f"{hovername}")
+
+                self.scene.hover.setToolTip("\n".join(tootltip))
             else:
                 self.scene.parent.info.setText("")
 
@@ -1462,6 +1474,7 @@ class Window(QMainWindow):
         self.outputs2signals = {}
         self.signals_out = {}
         self.function_cache = {}
+        self.setStyleSheet('QToolTip {background-color: black; color: white; border: black solid 1px; font-family: "Monospace";}')
 
         self.scene = NodeScene(-5000, -5000, 7500, 7500, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
