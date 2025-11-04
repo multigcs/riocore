@@ -1,4 +1,4 @@
-# panasonic_abs
+# abs_encoder
 
 <img align="right" width="320" src="image.png">
 
@@ -10,25 +10,21 @@
 
 abs-encoder over rs485
 
-TODO: csum, pos/revs, cleanup
+angle scale: 16bit (65536)
+position scale: 17bit (131072)
 
-for Panasonic and some Bosch/Rexroth Servos with
-mfe0017 encoder
+protocol in short:
+    * RS485
+    * manchester code
+    * stuffing bit (after 5x1)
+    * 16bit checksum
 
-FG      Shield      
-VCC-    GND     Black
-VCC+    5V      White
-VB-     GND     Orange
-VB+     3.3V    RED
-SD+     RS485-A Blue
-SD-     RS485-B Brown
+very time critical
+on TangNano9k:
+ "speed": "32400000",
+ parameter DELAY=3, parameter DELAY_NEXT=4
 
-Connector:
-V+  V-
-B-  SD+
-B+  SD-  FG
-
-Keywords: absolute angle bldc panasonic bosch rexroth mfe0017 minas
+Keywords: absolute angle encoder
 
 ## Pins:
 *FPGA-pins*
@@ -49,6 +45,11 @@ Keywords: absolute angle bldc panasonic bosch rexroth mfe0017 minas
  * direction: output
  * optional: True
 
+### rx_synced:
+
+ * direction: output
+ * optional: True
+
 
 ## Options:
 *user-options*
@@ -57,6 +58,12 @@ name of this plugin instance
 
  * type: str
  * default: 
+
+### node_type:
+encoder type
+
+ * type: select
+ * default: yaskawa
 
 ### delay:
 clock delay for next manchester bit
@@ -79,12 +86,12 @@ clock delay for center of the next manchester bit
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### tmp1:
+### batt_error:
 
- * type: float
+ * type: bit
  * direction: input
 
-### tmp2:
+### temp:
 
  * type: float
  * direction: input
@@ -99,11 +106,6 @@ clock delay for center of the next manchester bit
  * type: float
  * direction: input
 
-### revs:
-
- * type: float
- * direction: input
-
 ### csum:
 
  * type: float
@@ -114,20 +116,15 @@ clock delay for center of the next manchester bit
  * type: float
  * direction: input
 
-### cmd:
-
- * type: float
- * direction: output
-
 
 ## Interfaces:
 *transport layer*
-### tmp1:
+### batt_error:
 
- * size: 8 bit
+ * size: 1 bit
  * direction: input
 
-### tmp2:
+### temp:
 
  * size: 8 bit
  * direction: input
@@ -144,7 +141,7 @@ clock delay for center of the next manchester bit
 
 ### csum:
 
- * size: 8 bit
+ * size: 16 bit
  * direction: input
 
 ### debug_data:
@@ -152,16 +149,11 @@ clock delay for center of the next manchester bit
  * size: 32 bit
  * direction: input
 
-### cmd:
-
- * size: 8 bit
- * direction: output
-
 
 ## Basic-Example:
 ```
 {
-    "type": "panasonic_abs",
+    "type": "abs_encoder",
     "pins": {
         "rx": {
             "pin": "0"
@@ -174,6 +166,9 @@ clock delay for center of the next manchester bit
         },
         "debug_bit": {
             "pin": "3"
+        },
+        "rx_synced": {
+            "pin": "4"
         }
     }
 }
@@ -182,8 +177,9 @@ clock delay for center of the next manchester bit
 ## Full-Example:
 ```
 {
-    "type": "panasonic_abs",
+    "type": "abs_encoder",
     "name": "",
+    "node_type": "yaskawa",
     "delay": 3,
     "delay_next": 4,
     "pins": {
@@ -218,27 +214,33 @@ clock delay for center of the next manchester bit
                     "type": "invert"
                 }
             ]
+        },
+        "rx_synced": {
+            "pin": "4",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
         }
     },
     "signals": {
-        "tmp1": {
+        "batt_error": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "tmp1",
+                "title": "batt_error",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
-        "tmp2": {
+        "temp": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "tmp2",
+                "title": "temp",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -265,17 +267,6 @@ clock delay for center of the next manchester bit
                 "type": "meter"
             }
         },
-        "revs": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "revs",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
         "csum": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
@@ -297,24 +288,10 @@ clock delay for center of the next manchester bit
                 "section": "inputs",
                 "type": "meter"
             }
-        },
-        "cmd": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "cmd",
-                "section": "outputs",
-                "type": "scale"
-            }
         }
     }
 }
 ```
 
 ## Verilogs:
- * [panasonic_abs.v](panasonic_abs.v)
- * [uart_baud.v](uart_baud.v)
- * [uart_rx.v](uart_rx.v)
- * [uart_tx.v](uart_tx.v)
+ * [yaskawa_abs.v](yaskawa_abs.v)

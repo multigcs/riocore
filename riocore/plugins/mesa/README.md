@@ -1,14 +1,14 @@
-# mesacard
+# mesa
 
 <img align="right" width="320" src="image.png">
 
-**mesacard**
+**mesa**
 
-mesacard
+mesa
 
-Keywords: mesacard gpio
+Keywords: stepgen pwm mesa board hm2
 
-URL: https://store.mesanet.com/index.php?route=product/category&path=83_85
+URL: https://github.com/atrex66/stepper-mesa
 
 ## Pins:
 *FPGA-pins*
@@ -225,11 +225,25 @@ name of this plugin instance
  * type: str
  * default: 
 
-### cardtype:
+### node_type:
+instance type
+
+ * type: select
+ * default: board
+
+### board:
 card configuration
 
  * type: select
  * default: 7c81_5abobx3d
+
+### spiclk_rate:
+spiclk_rate
+
+ * type: int
+ * min: 10000
+ * max: 1000000
+ * default: 21250
 
 ### num_pwms:
 number of pwm's
@@ -275,7 +289,7 @@ number of serial's
 ## Basic-Example:
 ```
 {
-    "type": "mesacard",
+    "type": "mesa",
     "pins": {
         "P1:P1": {
             "pin": "0"
@@ -437,9 +451,11 @@ number of serial's
 ## Full-Example:
 ```
 {
-    "type": "mesacard",
+    "type": "mesa",
     "name": "",
-    "cardtype": "7c81_5abobx3d",
+    "node_type": "board",
+    "board": "7c81_5abobx3d",
+    "spiclk_rate": 21250,
     "num_pwms": 1,
     "num_encoders": 0,
     "num_stepgens": 3,
