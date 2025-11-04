@@ -11,7 +11,6 @@
 |  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |  |
 | Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | Experimental  |
 |  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |  |
-|  | [mesastepgen](mesastepgen/README.md) | masa step pulse generation | <img src="mesastepgen/image.png" height="48"> |  |
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |  |
 |  | [pwmout](pwmout/README.md) | pwm output | <img src="pwmout/image.png" height="48"> |  |
 |  | [rcservo](rcservo/README.md) | rc-servo output | <img src="rcservo/image.png" height="48"> |  |
@@ -19,7 +18,8 @@
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |  |
 |  | [stepgen](stepgen/README.md) | software step pulse generation | <img src="stepgen/image.png" height="48"> | GPIO  |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |  |
-| IO | [as5600pwm](as5600pwm/README.md) | as5600 pwm input | <img src="as5600pwm/image.png" height="48"> |  |
+| IO | [abs_encoder](abs_encoder/README.md) | serial abs-encoder | <img src="abs_encoder/image.png" height="48"> | Experimental  |
+|  | [as5600pwm](as5600pwm/README.md) | as5600 pwm input | <img src="as5600pwm/image.png" height="48"> |  |
 |  | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |  |
 |  | [binout](binout/README.md) | decimal to binary output | <img src="binout/image.png" height="48"> |  |
 |  | [bitcopy](bitcopy/README.md) | copy a bit/pin to an other output pin | <img src="bitcopy/image.png" height="48"> |  |
@@ -48,40 +48,33 @@
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |  |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |  |
-|  | [mesapwmgen](mesapwmgen/README.md) | mesa pwm pulse generation | <img src="mesapwmgen/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
-|  | [panasonic_abs](panasonic_abs/README.md) | serial abs-encoder | <img src="panasonic_abs/image.png" height="48"> | Experimental  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> | GPIO  |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
-|  | [rioencoder](rioencoder/README.md) | serial abs-encoder | <img src="rioencoder/image.png" height="48"> | Experimental  |
 |  | [riosub](riosub/README.md) | rio sub board | <img src="riosub/image.png" height="48"> | Experimental  |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
 |  | [spipoti](spipoti/README.md) | spi digital poti | <img src="spipoti/image.png" height="48"> |  |
-|  | [stepperonline_abs](stepperonline_abs/README.md) | serial abs-encoder stepperonline A6 | <img src="stepperonline_abs/image.png" height="48"> | Experimental  |
-|  | [t3d_abs](t3d_abs/README.md) | serial abs-encoder hltnc t3d | <img src="t3d_abs/image.png" height="48"> | Experimental  |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |  |
 |  | [tm1638b8s7l8](tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="tm1638b8s7l8/image.png" height="48"> |  |
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [wled_bar](wled_bar/README.md) | ws2812b interface for bar-displays | <img src="wled_bar/image.png" height="48"> |  |
-|  | [yaskawa_abs](yaskawa_abs/README.md) | serial abs-encoder | <img src="yaskawa_abs/image.png" height="48"> | Experimental  |
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | Experimental  |
 | Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
 |  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
-| Misc | [ethercat](ethercat/README.md) | experimental ethercat driver | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
+| Misc | [ethercat](ethercat/README.md) | experimental ethercat plugin | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
-|  | [mesacard](mesacard/README.md) | mesacard | <img src="mesacard/image.png" height="48"> | GPIO  |
+|  | [mesa](mesa/README.md) | mesa | <img src="mesa/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> | GPIO  |
-|  | [remora](remora/README.md) | remora | <img src="remora/image.png" height="48"> |  |
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> | GPIO  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> | GPIO  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> | GPIO  |

@@ -23,6 +23,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -61,6 +67,7 @@ output frequency
 {
     "type": "freqout",
     "name": "",
+    "image": "generic",
     "pins": {
         "freq": {
             "pin": "0",

@@ -6,7 +6,7 @@
 | :warning: EXPERIMENTAL |
 |:-----------------------|
 
-**experimental ethercat driver**
+**experimental ethercat plugin**
 
 Keywords: stepper servo master
 

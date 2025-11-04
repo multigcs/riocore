@@ -1,0 +1,41 @@
+{
+    "IO:LED": {"pin": "gp25", "pos": [640, 45], "direction": "all", "edge": "source", "type": ["GPIO"]},
+    "IO:GP15": {"pin": "gp15", "pos": [259, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP14": {
+        "pin": "gp14",
+        "pos": [281, 15],
+        "direction": "all",
+        "edge": "source",
+        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"]
+    },
+    "IO:GP13": {
+        "pin": "gp13",
+        "pos": [325, 15],
+        "direction": "all",
+        "edge": "source",
+        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"]
+    },
+    "IO:GP12": {"pin": "gp12", "pos": [347, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP11": {"pin": "gp11", "pos": [369, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP10": {"pin": "gp10", "pos": [391, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP9": {"pin": "gp9", "pos": [435, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderB"]},
+    "IO:GP8": {"pin": "gp8", "pos": [457, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderA"]},
+    "IO:GP7": {"pin": "gp7", "pos": [479, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP6": {"pin": "gp6", "pos": [501, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP5": {"pin": "gp5", "pos": [545, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP4": {"pin": "gp4", "pos": [567, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP3": {"pin": "gp3", "pos": [589, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP2": {"pin": "gp2", "pos": [611, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP1": {"pin": "gp1", "pos": [655, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP0": {"pin": "gp0", "pos": [677, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
+    "IO:GP16": {"pin": "gp16", "pos": [259, 166], "direction": "all", "edge": "source", "type": [], "comment": "used by spi"},
+    "IO:GP17": {"pin": "gp17", "pos": [281, 166], "direction": "all", "edge": "source", "type": [], "comment": "used by spi"},
+    "IO:GP18": {"pin": "gp18", "pos": [325, 166], "direction": "all", "edge": "source", "type": [], "comment": "used by spi"},
+    "IO:GP19": {"pin": "gp19", "pos": [347, 166], "direction": "all", "edge": "source", "type": [], "comment": "used by spi"},
+    "IO:GP20": {"pin": "gp20", "pos": [369, 166], "direction": "all", "edge": "source", "type": [], "comment": "used by spi"},
+    "IO:GP21": {"pin": "gp21", "pos": [391, 166], "direction": "all", "edge": "source", "type": [], "comment": "used by spi"},
+    "IO:GP22": {"pin": "gp22", "pos": [435, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
+    "IO:GP26": {"pin": "gp26", "pos": [479, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
+    "IO:GP27": {"pin": "gp27", "pos": [501, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
+    "IO:GP28": {"pin": "gp28", "pos": [545, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]}
+}

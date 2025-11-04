@@ -1,4 +1,4 @@
-# t3d_abs
+# abs_encoder
 
 <img align="right" width="320" src="image.png">
 
@@ -6,21 +6,25 @@
 | :warning: EXPERIMENTAL |
 |:-----------------------|
 
-**serial abs-encoder hltnc t3d**
+**serial abs-encoder**
 
 abs-encoder over rs485
 
-17bit Absolute
+angle scale: 16bit (65536)
+position scale: 17bit (131072)
 
-Firewire-Connector:
-* 1 PS+
-* 2 PS-
-* 3 NC
-* 4 NC
-* 5 5V
-* 6 GND
+protocol in short:
+    * RS485
+    * manchester code
+    * stuffing bit (after 5x1)
+    * 16bit checksum
 
-Keywords: absolute angle bldc hltnc_t3d A6
+very time critical
+on TangNano9k:
+ "speed": "32400000",
+ parameter DELAY=3, parameter DELAY_NEXT=4
+
+Keywords: absolute angle encoder
 
 ## Pins:
 *FPGA-pins*
@@ -36,6 +40,16 @@ Keywords: absolute angle bldc hltnc_t3d A6
 
  * direction: output
 
+### debug_bit:
+
+ * direction: output
+ * optional: True
+
+### rx_synced:
+
+ * direction: output
+ * optional: True
+
 
 ## Options:
 *user-options*
@@ -45,15 +59,39 @@ name of this plugin instance
  * type: str
  * default: 
 
+### node_type:
+encoder type
+
+ * type: select
+ * default: yaskawa
+
+### delay:
+clock delay for next manchester bit
+
+ * type: int
+ * min: 1
+ * max: 100
+ * default: 3
+ * unit: clocks
+
+### delay_next:
+clock delay for center of the next manchester bit
+
+ * type: int
+ * min: 1
+ * max: 100
+ * default: 4
+ * unit: clocks
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### revs:
+### batt_error:
 
- * type: float
+ * type: bit
  * direction: input
 
-### angle16:
+### temp:
 
  * type: float
  * direction: input
@@ -68,20 +106,45 @@ name of this plugin instance
  * type: float
  * direction: input
 
+### csum:
+
+ * type: float
+ * direction: input
+
+### debug_data:
+
+ * type: float
+ * direction: input
+
 
 ## Interfaces:
 *transport layer*
-### revs:
+### batt_error:
 
- * size: 32 bit
+ * size: 1 bit
  * direction: input
 
-### angle16:
+### temp:
+
+ * size: 8 bit
+ * direction: input
+
+### angle:
 
  * size: 16 bit
  * direction: input
 
-### angle:
+### position:
+
+ * size: 32 bit
+ * direction: input
+
+### csum:
+
+ * size: 16 bit
+ * direction: input
+
+### debug_data:
 
  * size: 32 bit
  * direction: input
@@ -90,7 +153,7 @@ name of this plugin instance
 ## Basic-Example:
 ```
 {
-    "type": "t3d_abs",
+    "type": "abs_encoder",
     "pins": {
         "rx": {
             "pin": "0"
@@ -100,6 +163,12 @@ name of this plugin instance
         },
         "tx_enable": {
             "pin": "2"
+        },
+        "debug_bit": {
+            "pin": "3"
+        },
+        "rx_synced": {
+            "pin": "4"
         }
     }
 }
@@ -108,8 +177,11 @@ name of this plugin instance
 ## Full-Example:
 ```
 {
-    "type": "t3d_abs",
+    "type": "abs_encoder",
     "name": "",
+    "node_type": "yaskawa",
+    "delay": 3,
+    "delay_next": 4,
     "pins": {
         "rx": {
             "pin": "0",
@@ -134,27 +206,41 @@ name of this plugin instance
                     "type": "invert"
                 }
             ]
+        },
+        "debug_bit": {
+            "pin": "3",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "rx_synced": {
+            "pin": "4",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
         }
     },
     "signals": {
-        "revs": {
+        "batt_error": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
             "display": {
-                "title": "revs",
+                "title": "batt_error",
                 "section": "inputs",
-                "type": "meter"
+                "type": "led"
             }
         },
-        "angle16": {
+        "temp": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "angle16",
+                "title": "temp",
                 "section": "inputs",
                 "type": "meter"
             }
@@ -180,13 +266,32 @@ name of this plugin instance
                 "section": "inputs",
                 "type": "meter"
             }
+        },
+        "csum": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "csum",
+                "section": "inputs",
+                "type": "meter"
+            }
+        },
+        "debug_data": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "debug_data",
+                "section": "inputs",
+                "type": "meter"
+            }
         }
     }
 }
 ```
 
 ## Verilogs:
- * [t3d_abs.v](t3d_abs.v)
- * [uart_baud.v](uart_baud.v)
- * [uart_rx.v](uart_rx.v)
- * [uart_tx.v](uart_tx.v)
+ * [yaskawa_abs.v](yaskawa_abs.v)

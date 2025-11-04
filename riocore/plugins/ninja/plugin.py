@@ -1,3 +1,4 @@
+import json
 import copy
 import os
 from riocore.plugins import PluginBase
@@ -35,198 +36,63 @@ class Plugin(PluginBase):
                 "description": "instance type",
             },
         }
-
-        extra_options = {
-            "board": {
-                "board": {
-                    "default": "w5500-evb-pico",
-                    "type": "select",
-                    "options": [
-                        "w5500-evb-pico",
-                        "w5500-evb-pico-parport",
-                    ],
-                    "description": "board type",
-                },
-                "mac": {
-                    "default": "00:08:DC:12:34:56",
-                    "type": str,
-                    "description": "MAC-Address",
-                },
-                "ip": {
-                    "default": "192.168.0.177",
-                    "type": str,
-                    "description": "IP-Address",
-                },
-                "mask": {
-                    "default": "255.255.255.0",
-                    "type": str,
-                    "description": "Network-Mask",
-                },
-                "gw": {
-                    "default": "192.168.10.1",
-                    "type": str,
-                    "description": "Gateway IP-Address",
-                },
-                "port": {
-                    "default": 8888,
-                    "type": int,
-                    "description": "UDP-Port",
-                },
-            },
-            "stepper": {
-                # "mode": {
-                #    "default": False,
-                #    "type": bool,
-                #    "description": "velocity mode",
-                # },
-            },
-            "encoder": {
-                "scale": {
-                    "default": 80,
-                    "type": int,
-                    "min": 1,
-                    "max": 1000000,
-                    "description": "encoder scale",
-                },
-            },
-            "pwm": {
-                "frequency": {
-                    "default": 10000,
-                    "type": int,
-                    "min": 1907,
-                    "max": 1000000,
-                    "description": "pwm frequency",
-                },
-                "scale": {
-                    "default": 100,
-                    "type": int,
-                    "min": 1,
-                    "max": 100000,
-                    "description": "max pwm value",
-                },
-                "min_limit": {
-                    "default": 0,
-                    "type": int,
-                    "min": 0,
-                    "max": 100000,
-                    "description": "min pwm value",
-                },
-            },
-        }
-        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        self.OPTIONS.update(extra_options[node_type])
         self.SIGNALS = {}
 
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "board":
+            self.OPTIONS.update(
+                {
+                    "board": {
+                        "default": "w5500-evb-pico",
+                        "type": "select",
+                        "options": [
+                            "w5500-evb-pico",
+                            "w5500-evb-pico-parport",
+                        ],
+                        "description": "board type",
+                    },
+                    "mac": {
+                        "default": "00:08:DC:12:34:56",
+                        "type": str,
+                        "description": "MAC-Address",
+                    },
+                    "ip": {
+                        "default": "192.168.0.177",
+                        "type": str,
+                        "description": "IP-Address",
+                    },
+                    "mask": {
+                        "default": "255.255.255.0",
+                        "type": str,
+                        "description": "Network-Mask",
+                    },
+                    "gw": {
+                        "default": "192.168.10.1",
+                        "type": str,
+                        "description": "Gateway IP-Address",
+                    },
+                    "port": {
+                        "default": 8888,
+                        "type": int,
+                        "description": "UDP-Port",
+                    },
+                }
+            )
             board = self.plugin_setup.get("board", self.option_default("board"))
             self.TYPE = "base"
             self.BUILDER = ["build", "install"]
             self.IMAGE_SHOW = True
             self.IMAGE = f"{board}.png"
-            board_pins = {
-                "w5500-evb-pico": {
-                    "IO:LED": {"pin": f"{self.instances_name}:gp25", "pos": [640, 45], "direction": "all", "edge": "source", "type": ["GPIO"]},
-                    "IO:GP15": {"pin": f"{self.instances_name}:gp15", "pos": [259, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP14": {
-                        "pin": f"{self.instances_name}:gp14",
-                        "pos": [281, 15],
-                        "direction": "all",
-                        "edge": "source",
-                        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"],
-                    },
-                    "IO:GP13": {
-                        "pin": f"{self.instances_name}:gp13",
-                        "pos": [325, 15],
-                        "direction": "all",
-                        "edge": "source",
-                        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"],
-                    },
-                    "IO:GP12": {"pin": f"{self.instances_name}:gp12", "pos": [347, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP11": {"pin": f"{self.instances_name}:gp11", "pos": [369, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP10": {"pin": f"{self.instances_name}:gp10", "pos": [391, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP9": {"pin": f"{self.instances_name}:gp9", "pos": [435, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderB"]},
-                    "IO:GP8": {"pin": f"{self.instances_name}:gp8", "pos": [457, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderA"]},
-                    "IO:GP7": {"pin": f"{self.instances_name}:gp7", "pos": [479, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP6": {"pin": f"{self.instances_name}:gp6", "pos": [501, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP5": {"pin": f"{self.instances_name}:gp5", "pos": [545, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP4": {"pin": f"{self.instances_name}:gp4", "pos": [567, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP3": {"pin": f"{self.instances_name}:gp3", "pos": [589, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP2": {"pin": f"{self.instances_name}:gp2", "pos": [611, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP1": {"pin": f"{self.instances_name}:gp1", "pos": [655, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP0": {"pin": f"{self.instances_name}:gp0", "pos": [677, 15], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    # W5500 - SPI pins
-                    # "IO:GP16": {"pin": f"{self.instances_name}:gp16", "pos": [259, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP17": {"pin": f"{self.instances_name}:gp17", "pos": [281, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP18": {"pin": f"{self.instances_name}:gp18", "pos": [325, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP19": {"pin": f"{self.instances_name}:gp19", "pos": [347, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP20": {"pin": f"{self.instances_name}:gp20", "pos": [369, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP21": {"pin": f"{self.instances_name}:gp21", "pos": [391, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP22": {"pin": f"{self.instances_name}:gp22", "pos": [435, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP26": {"pin": f"{self.instances_name}:gp26", "pos": [479, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP27": {"pin": f"{self.instances_name}:gp27", "pos": [501, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP28": {"pin": f"{self.instances_name}:gp28", "pos": [545, 166], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                },
-                "w5500-evb-pico-parport": {
-                    "PAR:P1": {"pin": f"{self.instances_name}:gp13", "pos": [545, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"]},
-                    "PAR:P2": {"pin": f"{self.instances_name}:gp0", "pos": [526, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P3": {"pin": f"{self.instances_name}:gp1", "pos": [507, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P4": {"pin": f"{self.instances_name}:gp2", "pos": [488, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P5": {"pin": f"{self.instances_name}:gp3", "pos": [469, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P6": {"pin": f"{self.instances_name}:gp4", "pos": [450, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P7": {"pin": f"{self.instances_name}:gp5", "pos": [431, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P8": {"pin": f"{self.instances_name}:gp6", "pos": [412, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P9": {"pin": f"{self.instances_name}:gp7", "pos": [393, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P10": {"pin": f"{self.instances_name}:gp8", "pos": [374, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P11": {"pin": f"{self.instances_name}:gp9", "pos": [355, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P12": {"pin": f"{self.instances_name}:gp10", "pos": [336, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P13": {"pin": f"{self.instances_name}:gp11", "pos": [317, 23], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P14": {"pin": f"{self.instances_name}:gp29", "pos": [545, 42], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P15": {"pin": f"{self.instances_name}:gp28", "pos": [526, 42], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P16": {"pin": f"{self.instances_name}:gp27", "pos": [507, 42], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "PAR:P17": {"pin": f"{self.instances_name}:gp26", "pos": [488, 42], "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:LED": {"pin": f"{self.instances_name}:gp25", "pos": [640, 105], "direction": "all", "edge": "source", "type": ["GPIO"]},
-                    "IO:GP15": {"pin": f"{self.instances_name}:gp15", "pos": [259, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP14": {
-                        "pin": f"{self.instances_name}:gp14",
-                        "pos": [281, 75],
-                        "direction": "all",
-                        "edge": "source",
-                        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"],
-                    },
-                    "IO:GP13": {
-                        "pin": f"{self.instances_name}:gp13",
-                        "pos": [325, 75],
-                        "direction": "all",
-                        "edge": "source",
-                        "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ", "NINJAPwmPwm"],
-                    },
-                    "IO:GP12": {"pin": f"{self.instances_name}:gp12", "pos": [347, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP11": {"pin": f"{self.instances_name}:gp11", "pos": [369, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP10": {"pin": f"{self.instances_name}:gp10", "pos": [391, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP9": {"pin": f"{self.instances_name}:gp9", "pos": [435, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderB"]},
-                    "IO:GP8": {"pin": f"{self.instances_name}:gp8", "pos": [457, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderA"]},
-                    "IO:GP7": {"pin": f"{self.instances_name}:gp7", "pos": [479, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP6": {"pin": f"{self.instances_name}:gp6", "pos": [501, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP5": {"pin": f"{self.instances_name}:gp5", "pos": [545, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP4": {"pin": f"{self.instances_name}:gp4", "pos": [567, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP3": {"pin": f"{self.instances_name}:gp3", "pos": [589, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP2": {"pin": f"{self.instances_name}:gp2", "pos": [611, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP1": {"pin": f"{self.instances_name}:gp1", "pos": [655, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    "IO:GP0": {"pin": f"{self.instances_name}:gp0", "pos": [677, 75], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir", "NINJAEncoderZ"]},
-                    # W5500 - SPI pins
-                    # "IO:GP16": {"pin": f"{self.instances_name}:gp16", "pos": [259, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP17": {"pin": f"{self.instances_name}:gp17", "pos": [281, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP18": {"pin": f"{self.instances_name}:gp18", "pos": [325, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP19": {"pin": f"{self.instances_name}:gp19", "pos": [347, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP20": {"pin": f"{self.instances_name}:gp20", "pos": [369, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    # "IO:GP21": {"pin": f"{self.instances_name}:gp21", "pos": [391, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP22": {"pin": f"{self.instances_name}:gp22", "pos": [435, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP26": {"pin": f"{self.instances_name}:gp26", "pos": [479, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP27": {"pin": f"{self.instances_name}:gp27", "pos": [501, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                    "IO:GP28": {"pin": f"{self.instances_name}:gp28", "pos": [545, 236], "direction": "all", "edge": "source", "type": ["GPIO", "NINJAStepGenStep", "NINJAStepGenDir"]},
-                },
-            }
-            self.PINDEFAULTS = board_pins[board]
+            self.PINDEFAULTS = {}
+            pin_file = os.path.join(os.path.dirname(__file__), f"{board}.json")
+            if os.path.exists(pin_file):
+                pins = json.loads(open(pin_file, "r").read())
+                for pin_name, pin_data in pins.items():
+                    pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
+                    self.PINDEFAULTS[pin_name] = pin_data
+            else:
+                riocore.log(f"ERROR: ninja: pinfile not found: {pin_file}")
+
             self.ninja_num = 0
         elif node_type == "stepper":
             self.TYPE = "joint"
@@ -260,6 +126,17 @@ class Plugin(PluginBase):
                 "dir": {"direction": "output", "edge": "target", "type": "NINJAStepGenDir"},
             }
         elif node_type == "encoder":
+            self.OPTIONS.update(
+                {
+                    "scale": {
+                        "default": 80,
+                        "type": int,
+                        "min": 1,
+                        "max": 1000000,
+                        "description": "encoder scale",
+                    },
+                }
+            )
             self.TYPE = "io"
             self.IMAGE_SHOW = True
             self.IMAGE_SHOW = False
@@ -291,6 +168,31 @@ class Plugin(PluginBase):
             }
 
         elif node_type == "pwm":
+            self.OPTIONS.update(
+                {
+                    "frequency": {
+                        "default": 10000,
+                        "type": int,
+                        "min": 1907,
+                        "max": 1000000,
+                        "description": "pwm frequency",
+                    },
+                    "scale": {
+                        "default": 100,
+                        "type": int,
+                        "min": 1,
+                        "max": 100000,
+                        "description": "max pwm value",
+                    },
+                    "min_limit": {
+                        "default": 0,
+                        "type": int,
+                        "min": 0,
+                        "max": 100000,
+                        "description": "min pwm value",
+                    },
+                }
+            )
             self.TYPE = "io"
             self.IMAGE_SHOW = True
             self.IMAGES = ["spindle500w", "laser", "led"]

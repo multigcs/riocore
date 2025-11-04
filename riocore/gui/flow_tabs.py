@@ -264,7 +264,7 @@ class TabDrawing:
         self.plugin_table.verticalHeader().setVisible(False)
         # self.plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem(""))
         self.plugin_table.setHorizontalHeaderItem(0, QTableWidgetItem("Name"))
-        self.plugin_table.setMinimumWidth(180)
+        self.plugin_table.setMinimumWidth(200)
         self.plugin_table.cellClicked.connect(plugin_select)
         self.plugin_table.doubleClicked.connect(plugin_add)
 
@@ -272,6 +272,8 @@ class TabDrawing:
 
     def plugin_info(self, plugin_name):
         node_type = None
+        if plugin_name and plugin_name[0] == "-":
+            return
         if " " in plugin_name:
             plugin_name, node_type = plugin_name.split(" ")
 
@@ -309,12 +311,29 @@ class TabDrawing:
             elif filter_string in plugin_data["keywords"]:
                 plugins.append(plugin_data)
 
-        self.plugin_table.setRowCount(len(plugins))
-        for row, plugin_data in enumerate(plugins):
-            plugin_name = plugin_data["name"]
-            item = QTableWidgetItem(plugin_name)
+        ptypes = set()
+        for plugin_data in plugins:
+            ptypes.add(plugin_data["ptype"])
+
+        row = 0
+        for ptype in sorted(ptypes):
+            self.plugin_table.setRowCount(row + 1)
+            item = QTableWidgetItem()
             item.setFlags(Qt.ItemFlag.ItemIsEnabled)
             self.plugin_table.setItem(row, 0, item)
+            label = QLabel(ptype.title())
+            label.setStyleSheet("QLabel { background-color: gray; color: white; font-size:14px; qproperty-alignment: AlignCenter;}")
+            self.plugin_table.setCellWidget(row, 0, label)
+            row += 1
+            for plugin_data in plugins:
+                if plugin_data["ptype"] != ptype:
+                    continue
+                self.plugin_table.setRowCount(row + 1)
+                plugin_name = plugin_data["name"]
+                item = QTableWidgetItem(plugin_name)
+                item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+                self.plugin_table.setItem(row, 0, item)
+                row += 1
 
         header = self.plugin_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.Stretch)
