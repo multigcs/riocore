@@ -1,4 +1,5 @@
 import os
+import json
 import subprocess
 import glob
 from PyQt5.QtCore import QTimer, Qt
@@ -6,7 +7,8 @@ from PyQt5.QtCore import QTimer, Qt
 import copy
 from functools import partial
 
-from PyQt5.QtGui import QPixmap, QStandardItemModel, QColor
+from PyQt5.QtCore import QMimeData
+from PyQt5.QtGui import QPixmap, QStandardItemModel, QColor, QDrag
 from PyQt5.QtWidgets import (
     QWidgetItem,
     QSpacerItem,
@@ -47,6 +49,21 @@ def cleanLayout(layout):
         else:
             cleanLayout(item.layout())
         layout.removeItem(item)
+
+
+class DragLabel(QLabel):
+    def __init__(self, title):
+        super().__init__(title)
+        self.title = title
+
+    def mouseMoveEvent(self, e):
+        if e.buttons() == Qt.LeftButton:
+            drag = QDrag(self)
+            mime = QMimeData()
+            jdata = json.dumps({"type": "plugin", "name": self.title})
+            mime.setData("text/json", jdata.encode())
+            drag.setMimeData(mime)
+            drag.exec_(Qt.MoveAction)
 
 
 class TabBuilder:
@@ -321,8 +338,10 @@ class TabDrawing:
             item = QTableWidgetItem()
             item.setFlags(Qt.ItemFlag.ItemIsEnabled)
             self.plugin_table.setItem(row, 0, item)
+
             label = QLabel(ptype.title())
             label.setStyleSheet("QLabel { background-color: gray; color: white; font-size:14px; qproperty-alignment: AlignCenter;}")
+
             self.plugin_table.setCellWidget(row, 0, label)
             row += 1
             for plugin_data in plugins:
@@ -330,8 +349,12 @@ class TabDrawing:
                     continue
                 self.plugin_table.setRowCount(row + 1)
                 plugin_name = plugin_data["name"]
-                item = QTableWidgetItem(plugin_name)
+                item = QTableWidgetItem()
                 item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+
+                label = DragLabel(plugin_name)
+                self.plugin_table.setCellWidget(row, 0, label)
+
                 self.plugin_table.setItem(row, 0, item)
                 row += 1
 

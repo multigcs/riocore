@@ -1038,6 +1038,58 @@ class NodeViewer(QGraphicsView):
         self.mouse_selection_start = None
         self.mouse_selection_end = None
         self.scene.insert_position = None
+        self.setAcceptDrops(True)
+
+    def dragMoveEvent(self, e):
+        jdata = e.mimeData().data("text/json")
+        if jdata:
+            data = json.loads(str(jdata.data(), encoding="utf-8"))
+            if "type" in data and data["type"] == "plugin":
+                e.accept()
+
+    def dragEnterEvent(self, e):
+        jdata = e.mimeData().data("text/json")
+        if jdata:
+            data = json.loads(str(jdata.data(), encoding="utf-8"))
+            if "type" in data and data["type"] == "plugin":
+                e.accept()
+
+    def dropEvent(self, e):
+        plugin_name = None
+        pos = e.pos()
+        jdata = e.mimeData().data("text/json")
+        if jdata:
+            data = json.loads(str(jdata.data(), encoding="utf-8"))
+            if "type" in data and data["type"] == "plugin":
+                plugin_name = data["name"]
+                e.accept()
+        if plugin_name:
+            print("enter")
+            node_type = None
+            if " " in plugin_name:
+                plugin_name, node_type = plugin_name.split(" ")
+            psetup = {"type": plugin_name}
+            if node_type:
+                psetup["node_type"] = node_type
+            unum = 0
+            while f"{plugin_name}{unum}" in self.scene.parent.plugin_uids:
+                unum += 1
+            self.scene.parent.plugins.load_plugin(unum, psetup, self.scene.parent.config)
+            plugin_instance = self.scene.parent.plugins.plugin_instances[-1]
+            if not node_type:
+                if "node_type" in plugin_instance.OPTIONS:
+                    option_data = plugin_instance.OPTIONS["node_type"]
+                    node_type = self.scene.parent.dialog_select("Plugin node select", option_data["options"])
+                    if node_type:
+                        plugin_instance.plugin_setup["node_type"] = node_type
+            plugin_instance.setup()
+            if plugin_instance.IMAGES:
+                plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
+            insert_position = self.mapToScene(pos.x(), pos.y())
+            plugin_instance.plugin_setup["pos"] = [insert_position.x(), insert_position.y()]
+            self.scene.parent.config["plugins"].append(plugin_instance.plugin_setup)
+            self.scene.parent.redraw()
+            self.scene.parent.snapshot()
 
     def save_png(self, filename):
         pixmap = self.grab(QRect(QPoint(0, 0), QSize(-1, -1)))
