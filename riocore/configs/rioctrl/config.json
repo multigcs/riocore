@@ -11,12 +11,21 @@
                     "modifier": [
                         {
                             "type": "onerror",
-                            "invert": true
+                            "invert": true,
+                            "pos": [
+                                550.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
             },
-            "frequency": 1.0
+            "frequency": 1.0,
+            "uid": "blink0",
+            "pos": [
+                850.0,
+                100.0
+            ]
         },
         {
             "type": "blink",
@@ -26,12 +35,21 @@
                     "modifier": [
                         {
                             "type": "onerror",
-                            "invert": false
+                            "invert": false,
+                            "pos": [
+                                550.0,
+                                165.0
+                            ]
                         }
                     ]
                 }
             },
-            "frequency": 2.0
+            "frequency": 2.0,
+            "uid": "blink1",
+            "pos": [
+                850.0,
+                165.0
+            ]
         },
         {
             "type": "bitout",
@@ -40,7 +58,12 @@
                 "bit": {
                     "pin": "SlotControl:EN"
                 }
-            }
+            },
+            "uid": "bitout0",
+            "pos": [
+                850.0,
+                230.0
+            ]
         },
         {
             "type": "w5500",
@@ -65,8 +88,77 @@
                 }
             },
             "gw": "192.168.66.1",
-            "ip": "192.168.66.49"
+            "ip": "192.168.66.49",
+            "uid": "w55000",
+            "pos": [
+                850.0,
+                295.0
+            ]
+        },
+        {
+            "type": "rioctrl_io",
+            "uid": "rioctrl_io0",
+            "pos": [
+                600.0,
+                390.0
+            ],
+            "pins": {
+                "out": {
+                    "pin": "SA:S5"
+                },
+                "in": {
+                    "pin": "SA:S4"
+                },
+                "sclk": {
+                    "pin": "SA:S2"
+                },
+                "SLOT:PT0": {
+                    "pin": "SF:S3"
+                },
+                "SLOT:PT1": {
+                    "pin": "SF:S2"
+                },
+                "SLOT:PT2": {
+                    "pin": "SF:S0"
+                },
+                "SLOT:PT3": {
+                    "pin": "SE:S7"
+                },
+                "SLOT:PT4": {
+                    "pin": "SF:S11"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "proximity",
+            "pos": [
+                870.0,
+                490.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "rioctrl_io0:PT:PT1"
+                }
+            }
         }
     ],
-    "protocol": "UDP"
+    "protocol": "UDP",
+    "flow": {
+        "view": {
+            "scale": 1.97,
+            "pos": [
+                1137,
+                581
+            ]
+        },
+        "board": {
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0
+        }
+    }
 }
