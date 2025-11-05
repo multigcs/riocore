@@ -1,0 +1,14 @@
+RIO - Mesa
+
+Configuration: tests/unit/data/full/Mesa.json
+
+FPGA:
+  Family: UNKNOWN
+  Type: UNKNOWN
+
+Plugins:
+  breakout (1x)
+  mesa (5x)
+  gpioin (3x)
+  gpioout (2x)
+

@@ -1,0 +1,355 @@
+# JSON-Config
+```
+{
+    "name": "Mesa",
+    "flow": {
+        "view": {
+            "scale": 1.4069364161849711,
+            "pos": [
+                393.9190751445087,
+                -658.0
+            ]
+        },
+        "board": {
+            "pos": [
+                540.0,
+                1390.0
+            ],
+            "rotate": -90
+        },
+        "hal": {
+            "misc": [
+                1640.0,
+                310.0
+            ],
+            "joint.0": [
+                1640.0,
+                400.0
+            ],
+            "joint.1": [
+                1640.0,
+                180.0
+            ],
+            "joint.2": [
+                1640.0,
+                50.0
+            ],
+            "spindle.0": [
+                1640.0,
+                -40.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                860.0,
+                -270.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "mesa0:P1:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "mesa0:P1:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "mesa0:P1:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "mesa0:P1:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "mesa0:P1:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "mesa0:P1:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "mesa0:P1:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "mesa0:P1:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "mesa0:P1:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "mesa0:P1:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "mesa0:P1:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "mesa0:P1:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "mesa0:P1:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "mesa0:P1:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "mesa0:P1:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "mesa0:P1:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "mesa0:P1:P17"
+                }
+            }
+        },
+        {
+            "type": "mesa",
+            "node_type": "board",
+            "pos": [
+                410.0,
+                -270.0
+            ],
+            "rotate": 90,
+            "uid": "mesa0",
+            "board": "7c81_5abobx3d"
+        },
+        {
+            "type": "mesa",
+            "node_type": "stepper",
+            "pos": [
+                1340.0,
+                220.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:X:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:X:dir"
+                }
+            },
+            "image": "servo42",
+            "rotate": 180,
+            "is_joint": true,
+            "uid": "mesa1",
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 230.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "home_latch_vel": -1.0
+            }
+        },
+        {
+            "type": "mesa",
+            "node_type": "stepper",
+            "pos": [
+                1340.0,
+                20.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Y:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Y:dir"
+                }
+            },
+            "image": "servo42",
+            "rotate": 180,
+            "name": "",
+            "is_joint": true,
+            "uid": "mesa2",
+            "joint": {
+                "scale": 800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 160.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "home_offset": 0.0,
+                "home_latch_vel": -1.0
+            }
+        },
+        {
+            "type": "mesa",
+            "node_type": "stepper",
+            "pos": [
+                1340.0,
+                -180.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                }
+            },
+            "rotate": 180,
+            "name": "",
+            "is_joint": true,
+            "uid": "mesa3",
+            "image": "servo42",
+            "joint": {
+                "scale": -1600.0,
+                "max_velocity": 15.0,
+                "min_limit": -32.0,
+                "max_limit": 0.0,
+                "home": 0.0,
+                "home_search_vel": 10.0,
+                "home_final_vel": 20.0,
+                "home_latch_vel": 1.0
+            }
+        },
+        {
+            "type": "mesa",
+            "node_type": "pwm",
+            "pins": {
+                "pwm": {
+                    "pin": "china-bob5x0:PWM:analog"
+                }
+            },
+            "uid": "mesapwmgen0",
+            "pos": [
+                1010.0,
+                -400.0
+            ],
+            "image": "spindle500w",
+            "rotate": 0
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                880.0,
+                                330.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "gpioin0",
+            "pos": [
+                1020.0,
+                350.0
+            ],
+            "image": "proximity",
+            "rotate": 0,
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "home-x"
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                880.0,
+                                300.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "gpioin1",
+            "pos": [
+                1020.0,
+                280.0
+            ],
+            "image": "proximity",
+            "rotate": 0,
+            "name": "home-y",
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                880.0,
+                                270.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "gpioin2",
+            "pos": [
+                1020.0,
+                210.0
+            ],
+            "image": "proximity",
+            "rotate": 0,
+            "name": "home-z",
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:RELAIS:out"
+                }
+            },
+            "uid": "gpioout2",
+            "pos": [
+                760.0,
+                -450.0
+            ],
+            "image": "relay",
+            "rotate": 180,
+            "name": "spindle-on",
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpiooutgpioout",
+            "pos": [
+                1320.0,
+                -260.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            },
+            "name": "enable"
+        }
+    ],
+    "boardcfg": ""
+}
+```
