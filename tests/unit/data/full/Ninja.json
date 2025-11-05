@@ -4,7 +4,7 @@
         "view": {
             "scale": 1.2933049946865036,
             "pos": [
-                351.1190223166843,
+                361.1190223166843,
                 -606.0
             ]
         },
@@ -39,6 +39,69 @@
         }
     },
     "plugins": [
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                860.0,
+                -270.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "ninja0:PAR:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "ninja0:PAR:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "ninja0:PAR:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "ninja0:PAR:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "ninja0:PAR:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "ninja0:PAR:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "ninja0:PAR:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "ninja0:PAR:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "ninja0:PAR:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "ninja0:PAR:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "ninja0:PAR:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "ninja0:PAR:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "ninja0:PAR:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "ninja0:PAR:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "ninja0:PAR:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "ninja0:PAR:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "ninja0:PAR:P17"
+                }
+            }
+        },
         {
             "type": "ninja",
             "node_type": "board",
@@ -309,17 +372,5 @@
             ]
         }
     ],
-    "boardcfg": "",
-    "breakouts": [
-        {
-            "breakout": "china-bob5x",
-            "name": "china-bob5x0",
-            "pos": [
-                860.0,
-                -270.0
-            ],
-            "rotate": 0,
-            "slot": "ninja0:PAR"
-        }
-    ]
+    "boardcfg": ""
 }

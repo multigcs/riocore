@@ -1,6 +1,8 @@
 // ### base ###
 IO_LOC "sysclk_in" 52;
 
+// ### china-bob5x0 ###
+
 // ### w55000 ###
 IO_LOC "PINOUT_W55000_MOSI" 32;
 IO_PORT "PINOUT_W55000_MOSI" DRIVE=4;

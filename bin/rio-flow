@@ -1180,14 +1180,7 @@ class NodeViewer(QGraphicsView):
                         self.scene.parent.connect_breakout(target_node)
 
                     elif target_port.startswith("SLOT:"):
-                        # target_name = target_node.name
                         slot = source_port.split(":")[0]
-                        # remove all old wires
-                        # for subitem in self.scene.items():
-                        #    if isinstance(subitem, NodeEdge):
-                        #        if subitem.etype == f"breakout:{target_name}":
-                        #            self.scene.removeItem(subitem)
-                        # connect all main wires
                         self.scene.parent.connect_slot(source_node, slot, target_node, target_port)
 
                     else:
@@ -1231,10 +1224,6 @@ class NodeViewer(QGraphicsView):
                             color = Qt.GlobalColor.green
                             if color_idx >= 0 and color_idx < len(colors):
                                 color = colors[color_idx]
-
-                            # print(source_node, source_port, target_node, target_port)
-                            # {source_node.name}:
-
                             edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
                             self.scene.addItem(edge)
 
@@ -1309,6 +1298,7 @@ class NodeViewer(QGraphicsView):
                     self.scene.parent.drawingtab.pininfo.setPlainText("\n".join(info_text))
                     self.scene.parent.info.setText(f"{hovername} - {port}")
                     tootltip.append(self.scene.hover.name)
+                    tootltip.append(f"{'Pin':10s}: {port}")
 
                     if pinfo.get("comment2") and not pinfo.get("comment"):
                         pinfo["comment"] = pinfo["comment2"]
@@ -1881,16 +1871,25 @@ class Window(QMainWindow):
         if "hal" not in self.config["flow"]:
             self.config["flow"]["hal"] = {}
 
+        # upgrade: breakouts -> plugins
+        for bn, breakout in enumerate(list(self.config.get("breakouts", []))):
+            bpdict = {
+                "type": "breakout",
+                "node_type": breakout["breakout"],
+                "uid": breakout["name"],
+                "pos": breakout.get("pos", (0, 0)),
+                "rotate": breakout.get("rotate", 0),
+                "slotcfg": (breakout["slot"], "SLOT"),
+                "pins": {},
+            }
+            self.config["plugins"].insert(0, bpdict)
+            del self.config["breakouts"][bn]
+
         self.nesting_all()
         self.optionstab.update(self.config)
         self.redraw()
         self.fit_view()
         self.cfg_check()
-
-    # def rotate(self, item):
-    #     self.cfg_save()
-    #     if not self.snapshots or self.config != self.snapshots[-1]:
-    #        self.snapshots.append(copy.deepcopy(self.config))
 
     def snapshot(self):
         self.cfg_save()
@@ -2246,6 +2245,11 @@ class Window(QMainWindow):
                 elif not ptype and plugin_instance.TYPE not in first:
                     py += self.insert_plugin(plugin_instance, py)
 
+        # connect plugins
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                self.connect_plugin(item)
+
         # connect breakouts
         for item in self.scene.items():
             if isinstance(item, BreakoutNode):
@@ -2505,10 +2509,112 @@ class Window(QMainWindow):
 
     def connect_slot(self, source_node, slot, target_node, target_port):
         color_n = 0
-        for port_name, port_data in source_node.ports.items():
-            target_port = f"SLOT:{port_name.split(':')[-1]}"
+        if source_node is None:
+            source_node = self.bnode
+            # return
+        for source_port, port_data in source_node.ports.items():
+            if ":" in source_port and source_port.split(":")[0] != slot:
+                continue
+            target_port = f"SLOT:{source_port.split(':')[-1]}"
             if target_port in target_node.ports:
-                edge = NodeEdge(self.scene, f"breakout:{target_node.name}", source_node, port_name, target_node, target_port, color=colors[color_n])
+                self.scene.disconnect_port(source_node, source_port)
+                self.scene.disconnect_port(target_node, target_port)
+                edge = NodeEdge(self.scene, f"breakout:{target_node.name}", source_node, source_port, target_node, target_port, color=colors[color_n])
+                self.scene.addItem(edge)
+                color_n += 1
+
+                # update type/comment
+                if source_node.ports and target_node.ports:
+                    target_type = target_node.ports[target_port].get("type")
+                    if "BREAKOUT" in target_type:
+                        source_type = source_node.ports[source_port].get("type")
+                        source_comment = source_node.ports[source_port].get("comment", "")
+                        source_direction = source_node.ports[source_port].get("direction", "all")
+                        target_node.ports[target_port]["type"] = source_type
+                        for port, data in target_node.ports.items():
+                            if "PASSTHROUGH" in data.get("type") and target_port == data.get("source"):
+                                if source_comment:
+                                    data["type"] = source_type
+                                    if source_comment:
+                                        data["comment2"] = source_comment
+                                    if data["direction"] == "all":
+                                        data["direction"] = source_direction
+                                    elif data["direction"] != source_direction and source_direction != "all":
+                                        riocore.log(f"ERROR: wrong pin-directions: {source_node.name} {source_port} ({source_direction}) <> {target_node.name} {target_port} ({data['direction']})")
+                                        print(source_direction, data["direction"])
+
+    def connect_plugin(self, pnode):
+        plugin_instance = pnode.plugin_instance
+        plugin_setup = plugin_instance.plugin_setup
+
+        # workaround - reconnect slot pins after loading
+        slotcfg = plugin_setup.get("slotcfg")
+        if slotcfg:
+            source, target = slotcfg
+            source_name, slot = source.split(":", 1)
+            source_node = self.plugin_by_name(source_name)
+            self.scene.parent.connect_slot(source_node, slot, pnode, target)
+            del plugin_instance.plugin_setup["slotcfg"]
+
+        color_n = 0
+        if plugin_setup.get("pins"):
+            pin_types = {}
+            for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                expansion = None
+                pindata = plugin_setup.get("pins", {}).get(pin)
+                if pindata is None or "pin" not in pindata or not pindata["pin"]:
+                    continue
+                if ":" in pindata["pin"] and len(pindata["pin"].split(":")) == 3:
+                    splitted = pindata["pin"].split(":")
+                    bpin = ":".join(splitted[1:])
+                    node_name = splitted[0]
+                    bnode = self.breakout_by_name(node_name)
+                    if not bnode:
+                        bnode = self.plugin_by_name(node_name)
+                    if not bnode:
+                        for item in self.scene.items():
+                            prefix = ""
+                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base" and item.name == node_name:
+                                bnode = item
+                    if not bnode:
+                        continue
+                    last_con = (bnode, bpin)
+
+                else:
+                    if pindata["pin"][-1] == "]":
+                        prefix = pindata["pin"].split("_")[0]
+                        for item in self.scene.items():
+                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "expansion" and item.name.upper() == prefix:
+                                expansion = item
+                    if expansion:
+                        epin = pindata["pin"]
+                        last_con = (expansion, epin)
+                    else:
+                        last_con = (self.bnode, pindata["pin"])
+
+                if pin_defaults.get("edge") == "target":
+                    pin_types[pin] = ""
+
+                if pindata.get("modifier"):
+                    if pin_defaults["direction"] == "input":
+                        modifiers = pindata.get("modifier", [])
+                    else:
+                        modifiers = list(reversed(pindata.get("modifier", [])))
+                    for pmn, modifier in enumerate(modifiers):
+                        pos_x = 100
+                        pos_y = 100
+                        if modifier.get("pos"):
+                            pos_x = modifier["pos"][0]
+                            pos_y = modifier["pos"][1]
+                        mnode = ModifierNode(self.scene, pos_x, pos_y, modifier)
+                        self.scene.addItem(mnode)
+                        # if preselect:
+                        #    mnode.setSelected(True)
+                        edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])
+                        self.scene.addItem(edge)
+                        last_con = (mnode, "out")
+
+                edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], pnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
 
@@ -2633,6 +2739,8 @@ class Window(QMainWindow):
         return None
 
     def insert_plugin(self, plugin_instance, py=100):
+        ph = 0
+
         plugin_config = plugin_instance.plugin_setup
         if "pos" in plugin_config:
             hx = plugin_config["pos"][0]
@@ -2651,108 +2759,6 @@ class Window(QMainWindow):
         if preselect:
             del plugin_instance.plugin_setup["preselect"]
             pnode.setSelected(True)
-
-        py = hy
-        ph = 0
-        color_n = 0
-        if plugin_config.get("pins"):
-            pin_types = {}
-            # for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
-            #    if pin_defaults.get("type") == "PASSTHROUGH":
-            #        print(pin, pin_defaults)
-
-            for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                expansion = None
-                pindata = plugin_config.get("pins", {}).get(pin)
-                if pindata is None or "pin" not in pindata or not pindata["pin"]:
-                    continue
-                if ":" in pindata["pin"] and len(pindata["pin"].split(":")) == 3:
-                    splitted = pindata["pin"].split(":")
-                    bpin = ":".join(splitted[1:])
-                    node_name = splitted[0]
-                    bnode = self.breakout_by_name(node_name)
-                    if not bnode:
-                        bnode = self.plugin_by_name(node_name)
-                    if not bnode:
-                        for item in self.scene.items():
-                            prefix = ""
-                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base" and item.name == node_name:
-                                bnode = item
-                    if not bnode:
-                        continue
-                    last_con = (bnode, bpin)
-                else:
-                    if pindata["pin"][-1] == "]":
-                        prefix = pindata["pin"].split("_")[0]
-                        for item in self.scene.items():
-                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "expansion" and item.name.upper() == prefix:
-                                expansion = item
-                    if expansion:
-                        epin = pindata["pin"]
-                        last_con = (expansion, epin)
-                    else:
-                        last_con = (self.bnode, pindata["pin"])
-
-                if pin_defaults.get("edge") == "target":
-                    pin_types[pin] = ""
-
-                if pindata.get("modifier"):
-                    if pin_defaults["direction"] == "input":
-                        modifiers = pindata.get("modifier", [])
-                    else:
-                        modifiers = list(reversed(pindata.get("modifier", [])))
-                    for pmn, modifier in enumerate(modifiers):
-                        pos_x = 550 + pmn * 140
-                        pos_y = py + ph
-                        if modifier.get("pos"):
-                            pos_x = modifier["pos"][0]
-                            pos_y = modifier["pos"][1]
-                        mnode = ModifierNode(self.scene, pos_x, pos_y, modifier)
-                        self.scene.addItem(mnode)
-                        if preselect:
-                            mnode.setSelected(True)
-                        edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])
-                        self.scene.addItem(edge)
-                        last_con = (mnode, "out")
-                    ph += 25
-
-                edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], pnode, pin, color=colors[color_n])
-                self.scene.addItem(edge)
-                color_n += 1
-
-        for signal_name, signal in plugin_config.get("signals", {}).items():
-            if signal_name not in plugin_instance.SIGNALS:
-                continue
-            halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-            if halname not in self.halpins:
-                self.halpins[halname] = {
-                    "type": "",
-                    "target": "",
-                    "source": (pnode, signal_name),
-                }
-            net = signal.get("net")
-            if net:
-                self.halpins[halname]["type"] = "net"
-                self.halpins[halname]["target"] = net
-            setp = signal.get("setp")
-            if setp:
-                self.halpins[halname]["type"] = "setp"
-                self.halpins[halname]["target"] = setp
-
-        is_joint = plugin_config.get("is_joint")
-        if plugin_instance.SIGNALS and is_joint:
-            for signal_name, signal in plugin_instance.SIGNALS.items():
-                halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-                if is_joint and signal_name in {"velocity", "position", "position-cmd", "position-fb", "position-scale"}:
-                    if halname not in self.halpins:
-                        self.halpins[halname] = {
-                            "type": "",
-                            "target": "",
-                            "source": (pnode, signal_name),
-                        }
-                    self.halpins[halname]["type"] = "joint"
-                    self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
-            self.joints += 1
 
         self.update_passthrough()
 

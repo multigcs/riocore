@@ -13,8 +13,8 @@
                             "type": "onerror",
                             "invert": true,
                             "pos": [
-                                10.0,
-                                580.0
+                                110.0,
+                                500.0
                             ]
                         }
                     ]
@@ -23,8 +23,8 @@
             "frequency": 1.0,
             "uid": "blink0",
             "pos": [
-                850.0,
-                100.0
+                140.0,
+                580.0
             ]
         },
         {
@@ -37,8 +37,8 @@
                             "type": "onerror",
                             "invert": false,
                             "pos": [
-                                550.0,
-                                165.0
+                                -70.0,
+                                520.0
                             ]
                         }
                     ]
@@ -47,22 +47,8 @@
             "frequency": 2.0,
             "uid": "blink1",
             "pos": [
-                850.0,
-                165.0
-            ]
-        },
-        {
-            "type": "bitout",
-            "name": "SlotEN",
-            "pins": {
-                "bit": {
-                    "pin": "SlotControl:EN"
-                }
-            },
-            "uid": "bitout0",
-            "pos": [
-                850.0,
-                230.0
+                -110.0,
+                570.0
             ]
         },
         {
@@ -533,10 +519,10 @@
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 2.36,
+            "scale": 1.24,
             "pos": [
-                991,
-                603
+                -202,
+                -242
             ]
         },
         "board": {

@@ -524,6 +524,7 @@ void rtapi_app_exit(void) {
 
 
 
+
 long modbus0_last_rx = 0;
 uint8_t modbus0_signal_active = 0;
 uint8_t modbus0_signal_next = 0;

@@ -2,10 +2,10 @@
     "name": "Mesa",
     "flow": {
         "view": {
-            "scale": 1.29,
+            "scale": 1.4069364161849711,
             "pos": [
-                273,
-                -606
+                393.9190751445087,
+                -658.0
             ]
         },
         "board": {
@@ -39,6 +39,69 @@
         }
     },
     "plugins": [
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                860.0,
+                -270.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "mesa0:P1:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "mesa0:P1:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "mesa0:P1:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "mesa0:P1:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "mesa0:P1:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "mesa0:P1:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "mesa0:P1:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "mesa0:P1:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "mesa0:P1:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "mesa0:P1:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "mesa0:P1:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "mesa0:P1:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "mesa0:P1:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "mesa0:P1:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "mesa0:P1:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "mesa0:P1:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "mesa0:P1:P17"
+                }
+            }
+        },
         {
             "type": "mesa",
             "node_type": "board",
@@ -285,17 +348,5 @@
             "name": "enable"
         }
     ],
-    "boardcfg": "",
-    "breakouts": [
-        {
-            "breakout": "china-bob5x",
-            "name": "china-bob5x0",
-            "pos": [
-                860.0,
-                -270.0
-            ],
-            "rotate": 0,
-            "slot": "mesa0:P1"
-        }
-    ]
+    "boardcfg": ""
 }

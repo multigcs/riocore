@@ -1,0 +1,323 @@
+{
+    "comment": "rpi-db25hat",
+    "main": {
+        "P3": {
+            "pos": [
+                42,
+                550.7
+            ]
+        },
+        "P5": {
+            "pos": [
+                42,
+                525.4
+            ]
+        },
+        "P7": {
+            "pos": [
+                42,
+                500.1
+            ]
+        },
+        "P8": {
+            "pos": [
+                17,
+                500.1
+            ]
+        },
+        "P10": {
+            "pos": [
+                17,
+                474.8
+            ]
+        },
+        "P11": {
+            "pos": [
+                42,
+                449.5
+            ]
+        },
+        "P12": {
+            "pos": [
+                17,
+                449.5
+            ]
+        },
+        "P13": {
+            "pos": [
+                42,
+                424.2
+            ]
+        },
+        "P15": {
+            "pos": [
+                42,
+                398.9
+            ]
+        },
+        "P16": {
+            "pos": [
+                17,
+                398.90000000000003
+            ]
+        },
+        "P18": {
+            "pos": [
+                17,
+                373.59999999999997
+            ]
+        },
+        "P19": {
+            "pos": [
+                42,
+                348.29999999999995
+            ]
+        },
+        "P21": {
+            "pos": [
+                42,
+                323.0
+            ]
+        },
+        "P22": {
+            "pos": [
+                17,
+                323.0
+            ]
+        },
+        "P23": {
+            "pos": [
+                42,
+                297.7
+            ]
+        },
+        "P24": {
+            "pos": [
+                17,
+                297.7
+            ]
+        },
+        "P26": {
+            "pos": [
+                17,
+                272.4
+            ]
+        },
+        "P29": {
+            "pos": [
+                42,
+                221.8
+            ]
+        },
+        "P31": {
+            "pos": [
+                42,
+                196.5
+            ]
+        },
+        "P32": {
+            "pos": [
+                17,
+                196.5
+            ]
+        },
+        "P33": {
+            "pos": [
+                42,
+                171.2
+            ]
+        },
+        "P35": {
+            "pos": [
+                42,
+                145.89999999999998
+            ]
+        },
+        "P36": {
+            "pos": [
+                17,
+                145.89999999999986
+            ]
+        },
+        "P37": {
+            "pos": [
+                42,
+                120.59999999999991
+            ]
+        },
+        "P38": {
+            "pos": [
+                17,
+                120.59999999999991
+            ]
+        },
+        "P40": {
+            "pos": [
+                17,
+                95.29999999999995
+            ]
+        }
+    },
+    "slots": [
+        {
+            "name": "DB25",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "P1": {
+                    "pin": "P12",
+                    "comment": "PWM",
+                    "pos": [
+                        568,
+                        200
+                    ],
+                    "direction": "output"
+                },
+                "P2": {
+                    "pin": "P21",
+                    "comment": "XSTEP",
+                    "pos": [
+                        568,
+                        222
+                    ],
+                    "direction": "output"
+                },
+                "P3": {
+                    "pin": "P19",
+                    "comment": "XDIR",
+                    "pos": [
+                        568,
+                        244
+                    ],
+                    "direction": "output"
+                },
+                "P4": {
+                    "pin": "P23",
+                    "comment": "YSTEP",
+                    "pos": [
+                        568,
+                        266
+                    ],
+                    "direction": "output"
+                },
+                "P5": {
+                    "pin": "P29",
+                    "comment": "YDIR",
+                    "pos": [
+                        568,
+                        288
+                    ],
+                    "direction": "output"
+                },
+                "P6": {
+                    "pin": "P31",
+                    "comment": "ZSTEP",
+                    "pos": [
+                        568,
+                        310
+                    ],
+                    "direction": "output"
+                },
+                "P7": {
+                    "pin": "P35",
+                    "comment": "ZDIR",
+                    "pos": [
+                        568,
+                        332
+                    ],
+                    "direction": "output"
+                },
+                "P8": {
+                    "pin": "P11",
+                    "comment": "ASTEP",
+                    "pos": [
+                        568,
+                        354
+                    ],
+                    "direction": "output"
+                },
+                "P9": {
+                    "pin": "P16",
+                    "comment": "ADIR",
+                    "pos": [
+                        568,
+                        376
+                    ],
+                    "direction": "output"
+                },
+                "P10": {
+                    "pin": "P22",
+                    "comment": "LIMIT1",
+                    "pos": [
+                        568,
+                        398
+                    ],
+                    "direction": "input"
+                },
+                "P11": {
+                    "pin": "P24",
+                    "comment": "LIMIT2",
+                    "pos": [
+                        568,
+                        420
+                    ],
+                    "direction": "input"
+                },
+                "P12": {
+                    "pin": "P26",
+                    "comment": "LIMIT3",
+                    "pos": [
+                        568,
+                        442
+                    ],
+                    "direction": "input"
+                },
+                "P13": {
+                    "pin": "P32",
+                    "comment": "LIMIT4",
+                    "pos": [
+                        568,
+                        464
+                    ],
+                    "direction": "input"
+                },
+                "P14": {
+                    "pin": "P37",
+                    "comment": "ALLEN",
+                    "pos": [
+                        590,
+                        200
+                    ],
+                    "direction": "output"
+                },
+                "P15": {
+                    "pin": "P33",
+                    "comment": "LIMIT5",
+                    "pos": [
+                        590,
+                        222
+                    ],
+                    "direction": "input"
+                },
+                "P16": {
+                    "pin": "P13",
+                    "comment": "BSTEP",
+                    "pos": [
+                        590,
+                        244
+                    ],
+                    "direction": "output"
+                },
+                "P17": {
+                    "pin": "P18",
+                    "comment": "BDIR",
+                    "pos": [
+                        590,
+                        266
+                    ],
+                    "direction": "output"
+                }
+            }
+        }
+    ]
+}

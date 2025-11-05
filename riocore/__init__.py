@@ -539,62 +539,30 @@ class Project:
                 for exp_pin in plugin_instance.expansion_outputs():
                     source = f"{plugin_instance.instances_name}:{exp_pin}"
                     expansion_mapping[source] = exp_pin
-            elif plugin_instance.TYPE == "base":
+            else:
                 for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
+                    if "pin" not in gpio_data:
+                        continue
                     source = f"{plugin_instance.instances_name}:{gpio_pin}"
                     self.pin_mapping[source] = gpio_data["pin"]
 
-            for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
-                if gpio_data.get("type") == "PASSTHROUGH":
-                    source = f"{plugin_instance.instances_name}:{gpio_pin}"
-                    target = plugin_instance.PINDEFAULTS[gpio_data["source"]].get("pin")
-                    if target:
-                        self.pin_mapping[source] = plugin_instance.PINDEFAULTS[gpio_data["source"]].get("pin")
+        # breakout plugins
+        for n in range(5):
+            for plugin_instance in self.plugin_instances:
+                for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
+                    if "source" in gpio_data:
+                        source = f"{plugin_instance.instances_name}:{gpio_pin}"
+                        target = plugin_instance.PINDEFAULTS[gpio_data["source"]]
+                        if target:
+                            target_pin = plugin_instance.plugin_setup.get("pins", {}).get(gpio_data["source"], {}).get("pin")
+                            self.pin_mapping[source] = self.pin_mapping.get(target_pin, target_pin)
 
-            for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
-                if "source" in gpio_data:
-                    source = f"{plugin_instance.instances_name}:{gpio_pin}"
-                    target = plugin_instance.PINDEFAULTS[gpio_data["source"]]
-                    if target:
-                        target_pin = plugin_instance.plugin_setup.get("pins", {}).get(gpio_data["source"], {}).get("pin")
-                        self.pin_mapping[source] = self.pin_mapping.get(target_pin, target_pin)
-
-        for plugin_instance in self.plugin_instances:
-            for pin, pdata in plugin_instance.pins().items():
-                source_pin = pdata.get("pin")
-                target_pin = expansion_mapping.get(source_pin)
-                if target_pin:
-                    plugin_instance.plugin_setup["pins"][pin]["pin"] = target_pin
-
-        # resolve all mappings
-        for _tn in range(5):
-            unmapped = ""
-            for breakout_data in self.config["jdata"].get("breakouts", []):
-                breakout = breakout_data.get("breakout")
-                bslot_name = breakout_data.get("slot")
-                breakout_name = breakout_data.get("name")
-                breakout_path = self.get_path(os.path.join("breakouts", breakout, "breakout.json"))
-                breakoutJsonStr = open(breakout_path, "r").read()
-                breakout_defaults = json.loads(breakoutJsonStr)
-                for slot in breakout_defaults["slots"]:
-                    slot_name = slot["name"]
-                    for pin_name, pin_data in slot["pins"].items():
-                        target = f"{bslot_name}:{pin_data['pin']}"
-                        if target in self.pin_mapping:
-                            self.pin_mapping[f"{breakout_name}:{slot_name}:{pin_name}"] = self.pin_mapping[target]
-                        else:
-                            unmapped = target
-            if unmapped == "":
-                break
-        if unmapped:
-            log(f"ERROR: unmapped breakout ports: {unmapped}")
-
-        # cleaning unmapped pins
+        # cleaning slot-pins (breakout-pins)
         for plugin_instance in self.plugin_instances:
             for pin_name in list(plugin_instance.PINDEFAULTS):
-                if ":" in pin_name and pin_name.startswith("SLOT:"):
-                    if pin_name in plugin_instance.PINDEFAULTS:
-                        del plugin_instance.PINDEFAULTS[pin_name]
+                ptype = plugin_instance.PINDEFAULTS[pin_name].get("type", [])
+                if "BREAKOUT" in ptype:
+                    del plugin_instance.PINDEFAULTS[pin_name]
 
         # update plugin pins
         for plugin in self.config["plugins"]:

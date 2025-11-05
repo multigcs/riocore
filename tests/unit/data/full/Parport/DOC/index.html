@@ -70,6 +70,7 @@ body {font-family: Arial;}
 ## Plugins
 | Type | Info | Instance | Image |
 | --- | --- | --- | --- |
+| [breakout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/breakout/README.md) | 5Axis China-BOB | china-bob5x0 | <img src="breakout.png" height="48"> |
 | [pwmgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/pwmgen/README.md) | software PWM/PDM generation | pwmgen0 | <img src="pwmgen.png" height="48"> |
 | [stepgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepgen/README.md) | software step pulse generation | stepgen0, stepgen1, stepgen2 | <img src="stepgen.png" height="48"> |
 | [gpioout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioout/README.md) | gpio output | gpioout0, gpioout1 | <img src="gpioout.png" height="48"> |
@@ -135,7 +136,7 @@ body {font-family: Arial;}
         "view": {
             "scale": 1.0201173512154234,
             "pos": [
-                -345.14249790444256,
+                -335.14249790444256,
                 -280.0
             ]
         },
@@ -170,6 +171,69 @@ body {font-family: Arial;}
         }
     },
     "plugins": [
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                240.0,
+                0.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "parport0:DB25:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "parport0:DB25:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "parport0:DB25:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "parport0:DB25:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "parport0:DB25:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "parport0:DB25:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "parport0:DB25:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "parport0:DB25:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "parport0:DB25:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "parport0:DB25:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "parport0:DB25:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "parport0:DB25:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "parport0:DB25:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "parport0:DB25:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "parport0:DB25:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "parport0:DB25:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "parport0:DB25:P17"
+                }
+            }
+        },
         {
             "type": "pwmgen",
             "pins": {
@@ -523,18 +587,6 @@ body {font-family: Arial;}
             "name": "pport"
         }
     ],
-    "breakouts": [
-        {
-            "slot": "parport0:DB25",
-            "breakout": "china-bob5x",
-            "name": "china-bob5x0",
-            "pos": [
-                240.0,
-                0.0
-            ],
-            "rotate": 0
-        }
-    ],
     "linuxcnc": {
         "ini": {
             "DISPLAY": {
@@ -543,7 +595,6 @@ body {font-family: Arial;}
         }
     }
 }
-
 ```
 
 </github-md>

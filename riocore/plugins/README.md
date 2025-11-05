@@ -26,6 +26,7 @@
 |  | [bitin](bitin/README.md) | single input pin | <img src="bitin/image.png" height="48"> |  |
 |  | [bitout](bitout/README.md) | singe bit output pin | <img src="bitout/image.png" height="48"> |  |
 |  | [blink](blink/README.md) | blinking output pin | <img src="blink/image.png" height="48"> |  |
+|  | [breakout](breakout/README.md) | 5Axis China-BOB | <img src="breakout/image.png" height="48"> |  |
 |  | [caliper](caliper/README.md) | reading position from cheap calipers | <img src="caliper/image.png" height="48"> |  |
 |  | [counter](counter/README.md) | pulse counter input | <img src="counter/image.png" height="48"> |  |
 |  | [demux](demux/README.md) | binary demultiplexer | <img src="demux/image.png" height="48"> |  |

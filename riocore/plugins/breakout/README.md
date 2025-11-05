@@ -1,124 +1,190 @@
-# ninja
+# breakout
 
 <img align="right" width="320" src="image.png">
 
-**stepgen-ninja**
-
-ninja
-
-Keywords: stepgen pwm ninja board pico w5500
-
-URL: https://github.com/atrex66/stepper-ninja
+**5Axis China-BOB**
 
 ## Pins:
 *FPGA-pins*
-### IO:LED:
+### SLOT:P1:
 
  * direction: all
+ * optional: True
 
-### IO:GP15:
-
- * direction: all
-
-### IO:GP14:
+### SLOT:P2:
 
  * direction: all
+ * optional: True
 
-### IO:GP13:
-
- * direction: all
-
-### IO:GP12:
+### SLOT:P3:
 
  * direction: all
+ * optional: True
 
-### IO:GP11:
-
- * direction: all
-
-### IO:GP10:
+### SLOT:P4:
 
  * direction: all
+ * optional: True
 
-### IO:GP9:
-
- * direction: all
-
-### IO:GP8:
+### SLOT:P5:
 
  * direction: all
+ * optional: True
 
-### IO:GP7:
-
- * direction: all
-
-### IO:GP6:
+### SLOT:P6:
 
  * direction: all
+ * optional: True
 
-### IO:GP5:
-
- * direction: all
-
-### IO:GP4:
+### SLOT:P7:
 
  * direction: all
+ * optional: True
 
-### IO:GP3:
-
- * direction: all
-
-### IO:GP2:
+### SLOT:P8:
 
  * direction: all
+ * optional: True
 
-### IO:GP1:
-
- * direction: all
-
-### IO:GP0:
+### SLOT:P9:
 
  * direction: all
+ * optional: True
 
-### IO:GP16:
-
- * direction: all
-
-### IO:GP17:
+### SLOT:P10:
 
  * direction: all
+ * optional: True
 
-### IO:GP18:
-
- * direction: all
-
-### IO:GP19:
+### SLOT:P11:
 
  * direction: all
+ * optional: True
 
-### IO:GP20:
-
- * direction: all
-
-### IO:GP21:
+### SLOT:P12:
 
  * direction: all
+ * optional: True
 
-### IO:GP22:
-
- * direction: all
-
-### IO:GP26:
+### SLOT:P13:
 
  * direction: all
+ * optional: True
 
-### IO:GP27:
-
- * direction: all
-
-### IO:GP28:
+### SLOT:P14:
 
  * direction: all
+ * optional: True
+
+### SLOT:P15:
+
+ * direction: all
+ * optional: True
+
+### SLOT:P16:
+
+ * direction: all
+ * optional: True
+
+### SLOT:P17:
+
+ * direction: all
+ * optional: True
+
+### OPTO:in0:
+
+ * direction: input
+ * optional: True
+
+### OPTO:in1:
+
+ * direction: input
+ * optional: True
+
+### OPTO:in2:
+
+ * direction: input
+ * optional: True
+
+### OPTO:in3:
+
+ * direction: input
+ * optional: True
+
+### OPTO:in4:
+
+ * direction: input
+ * optional: True
+
+### RELAIS:out:
+
+ * direction: output
+ * optional: True
+
+### PWM:analog:
+
+ * direction: output
+ * optional: True
+
+### PWM:digital:
+
+ * direction: output
+ * optional: True
+
+### B:dir:
+
+ * direction: output
+ * optional: True
+
+### B:step:
+
+ * direction: output
+ * optional: True
+
+### ALL:en:
+
+ * direction: output
+ * optional: True
+
+### A:dir:
+
+ * direction: output
+ * optional: True
+
+### A:step:
+
+ * direction: output
+ * optional: True
+
+### Z:dir:
+
+ * direction: output
+ * optional: True
+
+### Z:step:
+
+ * direction: output
+ * optional: True
+
+### Y:dir:
+
+ * direction: output
+ * optional: True
+
+### Y:step:
+
+ * direction: output
+ * optional: True
+
+### X:dir:
+
+ * direction: output
+ * optional: True
+
+### X:step:
+
+ * direction: output
+ * optional: True
 
 
 ## Options:
@@ -130,46 +196,10 @@ name of this plugin instance
  * default: 
 
 ### node_type:
-instance type
-
- * type: select
- * default: board
-
-### board:
 board type
 
  * type: select
- * default: w5500-evb-pico
-
-### mac:
-MAC-Address
-
- * type: str
- * default: 00:08:DC:12:34:56
-
-### ip:
-IP-Address
-
- * type: str
- * default: 192.168.0.177
-
-### mask:
-Network-Mask
-
- * type: str
- * default: 255.255.255.0
-
-### gw:
-Gateway IP-Address
-
- * type: str
- * default: 192.168.10.1
-
-### port:
-UDP-Port
-
- * type: int
- * default: 8888
+ * default: china-bob5x
 
 
 ## Signals:
@@ -183,88 +213,115 @@ UDP-Port
 ## Basic-Example:
 ```
 {
-    "type": "ninja",
+    "type": "breakout",
     "pins": {
-        "IO:LED": {
+        "SLOT:P1": {
             "pin": "0"
         },
-        "IO:GP15": {
+        "SLOT:P2": {
             "pin": "1"
         },
-        "IO:GP14": {
+        "SLOT:P3": {
             "pin": "2"
         },
-        "IO:GP13": {
+        "SLOT:P4": {
             "pin": "3"
         },
-        "IO:GP12": {
+        "SLOT:P5": {
             "pin": "4"
         },
-        "IO:GP11": {
+        "SLOT:P6": {
             "pin": "5"
         },
-        "IO:GP10": {
+        "SLOT:P7": {
             "pin": "6"
         },
-        "IO:GP9": {
+        "SLOT:P8": {
             "pin": "7"
         },
-        "IO:GP8": {
+        "SLOT:P9": {
             "pin": "8"
         },
-        "IO:GP7": {
+        "SLOT:P10": {
             "pin": "9"
         },
-        "IO:GP6": {
+        "SLOT:P11": {
             "pin": "10"
         },
-        "IO:GP5": {
+        "SLOT:P12": {
             "pin": "11"
         },
-        "IO:GP4": {
+        "SLOT:P13": {
             "pin": "12"
         },
-        "IO:GP3": {
+        "SLOT:P14": {
             "pin": "13"
         },
-        "IO:GP2": {
+        "SLOT:P15": {
             "pin": "14"
         },
-        "IO:GP1": {
+        "SLOT:P16": {
             "pin": "15"
         },
-        "IO:GP0": {
+        "SLOT:P17": {
             "pin": "16"
         },
-        "IO:GP16": {
+        "OPTO:in0": {
             "pin": "17"
         },
-        "IO:GP17": {
+        "OPTO:in1": {
             "pin": "18"
         },
-        "IO:GP18": {
+        "OPTO:in2": {
             "pin": "19"
         },
-        "IO:GP19": {
+        "OPTO:in3": {
             "pin": "20"
         },
-        "IO:GP20": {
+        "OPTO:in4": {
             "pin": "21"
         },
-        "IO:GP21": {
+        "RELAIS:out": {
             "pin": "22"
         },
-        "IO:GP22": {
+        "PWM:analog": {
             "pin": "23"
         },
-        "IO:GP26": {
+        "PWM:digital": {
             "pin": "24"
         },
-        "IO:GP27": {
+        "B:dir": {
             "pin": "25"
         },
-        "IO:GP28": {
+        "B:step": {
             "pin": "26"
+        },
+        "ALL:en": {
+            "pin": "27"
+        },
+        "A:dir": {
+            "pin": "28"
+        },
+        "A:step": {
+            "pin": "29"
+        },
+        "Z:dir": {
+            "pin": "30"
+        },
+        "Z:step": {
+            "pin": "31"
+        },
+        "Y:dir": {
+            "pin": "32"
+        },
+        "Y:step": {
+            "pin": "33"
+        },
+        "X:dir": {
+            "pin": "34"
+        },
+        "X:step": {
+            "pin": "35"
         }
     }
 }
@@ -273,17 +330,11 @@ UDP-Port
 ## Full-Example:
 ```
 {
-    "type": "ninja",
+    "type": "breakout",
     "name": "",
-    "node_type": "board",
-    "board": "w5500-evb-pico",
-    "mac": "00:08:DC:12:34:56",
-    "ip": "192.168.0.177",
-    "mask": "255.255.255.0",
-    "gw": "192.168.10.1",
-    "port": 8888,
+    "node_type": "china-bob5x",
     "pins": {
-        "IO:LED": {
+        "SLOT:P1": {
             "pin": "0",
             "modifiers": [
                 {
@@ -291,7 +342,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP15": {
+        "SLOT:P2": {
             "pin": "1",
             "modifiers": [
                 {
@@ -299,7 +350,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP14": {
+        "SLOT:P3": {
             "pin": "2",
             "modifiers": [
                 {
@@ -307,7 +358,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP13": {
+        "SLOT:P4": {
             "pin": "3",
             "modifiers": [
                 {
@@ -315,7 +366,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP12": {
+        "SLOT:P5": {
             "pin": "4",
             "modifiers": [
                 {
@@ -323,7 +374,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP11": {
+        "SLOT:P6": {
             "pin": "5",
             "modifiers": [
                 {
@@ -331,7 +382,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP10": {
+        "SLOT:P7": {
             "pin": "6",
             "modifiers": [
                 {
@@ -339,7 +390,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP9": {
+        "SLOT:P8": {
             "pin": "7",
             "modifiers": [
                 {
@@ -347,7 +398,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP8": {
+        "SLOT:P9": {
             "pin": "8",
             "modifiers": [
                 {
@@ -355,7 +406,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP7": {
+        "SLOT:P10": {
             "pin": "9",
             "modifiers": [
                 {
@@ -363,7 +414,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP6": {
+        "SLOT:P11": {
             "pin": "10",
             "modifiers": [
                 {
@@ -371,7 +422,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP5": {
+        "SLOT:P12": {
             "pin": "11",
             "modifiers": [
                 {
@@ -379,7 +430,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP4": {
+        "SLOT:P13": {
             "pin": "12",
             "modifiers": [
                 {
@@ -387,7 +438,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP3": {
+        "SLOT:P14": {
             "pin": "13",
             "modifiers": [
                 {
@@ -395,7 +446,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP2": {
+        "SLOT:P15": {
             "pin": "14",
             "modifiers": [
                 {
@@ -403,7 +454,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP1": {
+        "SLOT:P16": {
             "pin": "15",
             "modifiers": [
                 {
@@ -411,7 +462,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP0": {
+        "SLOT:P17": {
             "pin": "16",
             "modifiers": [
                 {
@@ -419,47 +470,62 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP16": {
+        "OPTO:in0": {
             "pin": "17",
             "modifiers": [
                 {
+                    "type": "debounce"
+                },
+                {
                     "type": "invert"
                 }
             ]
         },
-        "IO:GP17": {
+        "OPTO:in1": {
             "pin": "18",
             "modifiers": [
                 {
+                    "type": "debounce"
+                },
+                {
                     "type": "invert"
                 }
             ]
         },
-        "IO:GP18": {
+        "OPTO:in2": {
             "pin": "19",
             "modifiers": [
                 {
+                    "type": "debounce"
+                },
+                {
                     "type": "invert"
                 }
             ]
         },
-        "IO:GP19": {
+        "OPTO:in3": {
             "pin": "20",
             "modifiers": [
                 {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP20": {
-            "pin": "21",
-            "modifiers": [
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
             ]
         },
-        "IO:GP21": {
+        "OPTO:in4": {
+            "pin": "21",
+            "modifiers": [
+                {
+                    "type": "debounce"
+                },
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "RELAIS:out": {
             "pin": "22",
             "modifiers": [
                 {
@@ -467,7 +533,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP22": {
+        "PWM:analog": {
             "pin": "23",
             "modifiers": [
                 {
@@ -475,7 +541,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP26": {
+        "PWM:digital": {
             "pin": "24",
             "modifiers": [
                 {
@@ -483,7 +549,7 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP27": {
+        "B:dir": {
             "pin": "25",
             "modifiers": [
                 {
@@ -491,8 +557,80 @@ UDP-Port
                 }
             ]
         },
-        "IO:GP28": {
+        "B:step": {
             "pin": "26",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "ALL:en": {
+            "pin": "27",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "A:dir": {
+            "pin": "28",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "A:step": {
+            "pin": "29",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Z:dir": {
+            "pin": "30",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Z:step": {
+            "pin": "31",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Y:dir": {
+            "pin": "32",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Y:step": {
+            "pin": "33",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "X:dir": {
+            "pin": "34",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "X:step": {
+            "pin": "35",
             "modifiers": [
                 {
                     "type": "invert"

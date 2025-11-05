@@ -18,6 +18,7 @@ Tangbob with one 5x china BOB
 ## Plugins
 | Type | Info | Instance | Image |
 | --- | --- | --- | --- |
+| [breakout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/breakout/README.md) | 5Axis China-BOB | china-bob5x0 | <img src="breakout.png" height="48"> |
 | [w5500](https://github.com/multigcs/riocore/blob/main/riocore/plugins/w5500/README.md) | udp interface for host comunication | w55000 | <img src="w5500.png" height="48"> |
 | [wled](https://github.com/multigcs/riocore/blob/main/riocore/plugins/wled/README.md) | ws2812b interface | wled0 | <img src="wled.png" height="48"> |
 | [modbus](https://github.com/multigcs/riocore/blob/main/riocore/plugins/modbus/README.md) | generic modbus plugin | modbus0 | <img src="modbus.png" height="48"> |

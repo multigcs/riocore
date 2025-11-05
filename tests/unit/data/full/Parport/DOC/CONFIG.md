@@ -15,6 +15,7 @@
 ## Plugins
 | Type | Info | Instance | Image |
 | --- | --- | --- | --- |
+| [breakout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/breakout/README.md) | 5Axis China-BOB | china-bob5x0 | <img src="breakout.png" height="48"> |
 | [pwmgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/pwmgen/README.md) | software PWM/PDM generation | pwmgen0 | <img src="pwmgen.png" height="48"> |
 | [stepgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepgen/README.md) | software step pulse generation | stepgen0, stepgen1, stepgen2 | <img src="stepgen.png" height="48"> |
 | [gpioout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioout/README.md) | gpio output | gpioout0, gpioout1 | <img src="gpioout.png" height="48"> |

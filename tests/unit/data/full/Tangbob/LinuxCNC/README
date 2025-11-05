@@ -15,6 +15,7 @@ FPGA:
   Type: GW1NR-LV9QN88PC6/I5
 
 Plugins:
+  breakout (1x)
   w5500 (1x)
   wled (1x)
   modbus (1x)

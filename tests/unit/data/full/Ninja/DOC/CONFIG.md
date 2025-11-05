@@ -15,6 +15,7 @@
 ## Plugins
 | Type | Info | Instance | Image |
 | --- | --- | --- | --- |
+| [breakout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/breakout/README.md) | 5Axis China-BOB | china-bob5x0 | <img src="breakout.png" height="48"> |
 | [ninja](https://github.com/multigcs/riocore/blob/main/riocore/plugins/ninja/README.md) | stepgen-ninja | ninja0, ninja1, ninja2, ninja3, ninjapwmgen0 | <img src="ninja.png" height="48"> |
 | [gpioin](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioin/README.md) | gpio input | gpioin0, gpioin1, gpioin2 | <img src="gpioin.png" height="48"> |
 | [gpioout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioout/README.md) | gpio output | gpioout2, gpioout3, gpiooutgpioout | <img src="gpioout.png" height="48"> |

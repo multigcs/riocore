@@ -6,6 +6,69 @@
     "protocol": "UDP",
     "plugins": [
         {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                570.0,
+                210.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "LEFT:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "LEFT:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "LEFT:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "LEFT:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "LEFT:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "LEFT:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "LEFT:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "LEFT:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "LEFT:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "LEFT:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "LEFT:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "LEFT:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "LEFT:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "LEFT:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "LEFT:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "LEFT:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "LEFT:P17"
+                }
+            }
+        },
+        {
             "type": "w5500",
             "pins": {
                 "mosi": {
@@ -301,7 +364,7 @@
         "view": {
             "scale": 1.3940435280641466,
             "pos": [
-                -233.81214203894615,
+                -223.81214203894615,
                 2.0
             ]
         },
@@ -339,18 +402,6 @@
             "rotate": 0
         }
     },
-    "breakouts": [
-        {
-            "slot": "Tangbob:LEFT",
-            "breakout": "china-bob5x",
-            "name": "china-bob5x0",
-            "pos": [
-                570.0,
-                210.0
-            ],
-            "rotate": 0
-        }
-    ],
     "linuxcnc": {
         "ini": {
             "EMCMOT": {

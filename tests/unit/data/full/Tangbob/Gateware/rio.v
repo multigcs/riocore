@@ -180,6 +180,11 @@ module rio (
         end
     end
 
+    // Name: china-bob5x0 (breakout)
+    breakout china-bob5x0 (
+        .clk(sysclk)
+    );
+
     // Name: w55000 (w5500)
     wire PINOUT_W55000_MOSI_RAW;
     wire PINOUT_W55000_SCLK_RAW;
