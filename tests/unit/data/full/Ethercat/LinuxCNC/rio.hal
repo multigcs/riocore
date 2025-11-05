@@ -1,0 +1,134 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=1
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# ethercat component
+loadusr -W lcec_conf ethercat-conf.xml
+loadrt lcec
+loadrt cia402 count=1
+
+# read
+addf lcec.read-all servo-thread
+addf cia402.0.read-all servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+# write
+addf cia402.0.write-all servo-thread
+addf lcec.write-all servo-thread
+
+#################################################################################
+# &iocontrol.0.user-enable-out --> iocontrol.0.emc-enable-in
+#################################################################################
+net estop-out                      <= iocontrol.0.user-enable-out
+net estop-out                      => iocontrol.0.emc-enable-in
+
+#################################################################################
+# iocontrol.0.tool-prep-number --> hal_manualtoolchange.number
+#################################################################################
+net tool-prep-number               <= iocontrol.0.tool-prep-number
+# net tool-prep-number               => hal_manualtoolchange.number (in postgui)
+
+#################################################################################
+# iocontrol.0.tool-change --> hal_manualtoolchange.change
+#################################################################################
+net tool-change                    <= iocontrol.0.tool-change
+# net tool-change                    => hal_manualtoolchange.change (in postgui)
+
+#################################################################################
+# hal_manualtoolchange.changed --> iocontrol.0.tool-changed
+#################################################################################
+# net tool-changed                   <= hal_manualtoolchange.changed (in postgui)
+net tool-changed                   => iocontrol.0.tool-changed
+
+#################################################################################
+# iocontrol.0.tool-prepare --> iocontrol.0.tool-prepared
+#################################################################################
+net tool-prepared                  <= iocontrol.0.tool-prepare
+net tool-prepared                  => iocontrol.0.tool-prepared
+
+#################################################################################
+# pyvcp.halui.mdi-command-00 --> halui.mdi-command-00
+#################################################################################
+# net sig_pyvcp_halui_mdi-command-00 <= pyvcp.halui.mdi-command-00 (in postgui)
+net sig_pyvcp_halui_mdi-command-00 => halui.mdi-command-00
+
+#################################################################################
+# lcec.0.ethercat1.limit-neg --> pyvcp.lcec.0.ethercat1.limit-neg
+#################################################################################
+net sig_lcec_0_ethercat1_limit-neg <= lcec.0.ethercat1.limit-neg
+# net sig_lcec_0_ethercat1_limit-neg => pyvcp.lcec.0.ethercat1.limit-neg (in postgui)
+
+#################################################################################
+# lcec.0.ethercat1.limit-pos --> pyvcp.lcec.0.ethercat1.limit-pos
+#################################################################################
+net sig_lcec_0_ethercat1_limit-pos <= lcec.0.ethercat1.limit-pos
+# net sig_lcec_0_ethercat1_limit-pos => pyvcp.lcec.0.ethercat1.limit-pos (in postgui)
+
+#################################################################################
+# lcec.0.ethercat1.home-switch --> pyvcp.lcec.0.ethercat1.home-switch
+#################################################################################
+net sig_lcec_0_ethercat1_home-switch <= lcec.0.ethercat1.home-switch
+# net sig_lcec_0_ethercat1_home-switch => pyvcp.lcec.0.ethercat1.home-switch (in postgui)
+
+#################################################################################
+# lcec.0.ethercat1.din1 --> pyvcp.lcec.0.ethercat1.din1
+#################################################################################
+net sig_lcec_0_ethercat1_din1      <= lcec.0.ethercat1.din1
+# net sig_lcec_0_ethercat1_din1      => pyvcp.lcec.0.ethercat1.din1 (in postgui)
+
+#################################################################################
+# lcec.0.ethercat1.din2 --> pyvcp.lcec.0.ethercat1.din2
+#################################################################################
+net sig_lcec_0_ethercat1_din2      <= lcec.0.ethercat1.din2
+# net sig_lcec_0_ethercat1_din2      => pyvcp.lcec.0.ethercat1.din2 (in postgui)
+
+#################################################################################
+# lcec.0.ethercat1.din3 --> pyvcp.lcec.0.ethercat1.din3
+#################################################################################
+net sig_lcec_0_ethercat1_din3      <= lcec.0.ethercat1.din3
+# net sig_lcec_0_ethercat1_din3      => pyvcp.lcec.0.ethercat1.din3 (in postgui)
+
+#################################################################################
+# lcec.0.ethercat1.din4 --> pyvcp.lcec.0.ethercat1.din4
+#################################################################################
+net sig_lcec_0_ethercat1_din4      <= lcec.0.ethercat1.din4
+# net sig_lcec_0_ethercat1_din4      => pyvcp.lcec.0.ethercat1.din4 (in postgui)
+
+#################################################################################
+# joint-0
+#################################################################################
+setp cia402.0.pos-scale            [JOINT_0]SCALE_OUT
+net j0statusword                   <= lcec.0.ethercat1.status-word
+net j0drv-pos                      <= lcec.0.ethercat1.pos-actual
+net j0control                      <= cia402.0.controlword
+net j0target-pos                   <= cia402.0.drv-target-position
+net j0pos-cmd                      <= joint.0.motor-pos-cmd
+net j0pos-fb                       <= cia402.0.pos-fb
+net j0enable                       <= joint.0.amp-enable-out
+net j0fault                        <= cia402.0.drv-fault
+net j0statusword                   => cia402.0.statusword
+net j0drv-pos                      => cia402.0.drv-actual-position
+net j0control                      => lcec.0.ethercat1.control-word
+net j0target-pos                   => lcec.0.ethercat1.target-position
+net j0pos-cmd                      => cia402.0.pos-cmd
+net j0pos-fb                       => joint.0.motor-pos-fb
+net j0enable                       => cia402.0.enable
+net j0fault                        => joint.0.amp-fault-in
+
+#################################################################################
+# setp
+#################################################################################
+setp cia402.0.csp-mode                1
+
+#################################################################################
+# preformated
+#################################################################################
