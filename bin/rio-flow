@@ -580,10 +580,10 @@ class PluginNode(MyNode):
                 prefix = f"{self.plugin_instance.instances_name.upper()}_"
                 for exansion_pin in self.plugin_instance.expansion_outputs():
                     title = exansion_pin.replace(prefix, "")
-                    self.ports[f"{exansion_pin}"] = {"direction": "output", "title": title, "type": "expansion", "edge": "source"}
+                    self.ports[f"{exansion_pin}"] = {"direction": "output", "title": title, "type": "FPGA", "edge": "source"}
                 for exansion_pin in self.plugin_instance.expansion_inputs():
                     title = exansion_pin.replace(prefix, "")
-                    self.ports[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "expansion", "edge": "source"}
+                    self.ports[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "FPGA", "edge": "source"}
 
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()

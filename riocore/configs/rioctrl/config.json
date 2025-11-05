@@ -100,7 +100,7 @@
             "uid": "rioctrl_io0",
             "pos": [
                 600.0,
-                390.0
+                400.0
             ],
             "pins": {
                 "out": {
@@ -126,6 +126,9 @@
                 },
                 "SLOT:PT4": {
                     "pin": "SF:S11"
+                },
+                "load": {
+                    "pin": "SE:S8"
                 }
             }
         },
@@ -142,15 +145,30 @@
                     "pin": "rioctrl_io0:PT:PT1"
                 }
             }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
+            "pos": [
+                870.0,
+                560.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "rioctrl_io0:RIOCTRL_IO0_INPUT[0]"
+                }
+            },
+            "name": ""
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.97,
+            "scale": 2.36,
             "pos": [
-                1137,
-                581
+                991,
+                603
             ]
         },
         "board": {
