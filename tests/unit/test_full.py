@@ -27,6 +27,12 @@ def test_generator():
         if not os.path.exists(f"tests/unit/data/full/{target}"):
             shutil.copytree(f"tests/unit/output/{target}", f"tests/unit/data/full/{target}")
 
+        # cleanup files
+        os.system(f'test -e tests/unit/data/full/{target}/Firmware/*/Makefile && sed -i "s|TOOLCHAIN_PATH .*| TOOLCHAIN_PATH|g" tests/unit/data/full/{target}/Firmware/*/Makefile')
+        os.system(f'test -e tests/unit/output/{target}/Firmware/*/Makefile && sed -i "s|TOOLCHAIN_PATH .*| TOOLCHAIN_PATH|g" tests/unit/output/{target}/Firmware/*/Makefile')
+        os.system(f'rm -rf tests/unit/data/full/{target}/Gateware/Makefile')
+        os.system(f'rm -rf tests/unit/output/{target}/Gateware/Makefile')
+
         ret = os.system(f"diff -r tests/unit/data/full/{target}/ tests/unit/output/{target}/")
         assert ret == 0
 

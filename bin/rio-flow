@@ -545,7 +545,7 @@ class PluginNode(MyNode):
             if not edge_type:
                 pin_data["edge"] = "target"
             pin_type = pin_data.get("type")
-            if not pin_type:
+            if pin_type is None:
                 pin_data["type"] = "FPGA"
             self.ports[pin_name] = pin_data
 
@@ -580,10 +580,10 @@ class PluginNode(MyNode):
                 prefix = f"{self.plugin_instance.instances_name.upper()}_"
                 for exansion_pin in self.plugin_instance.expansion_outputs():
                     title = exansion_pin.replace(prefix, "")
-                    self.ports[f"{exansion_pin}"] = {"direction": "output", "title": title, "type": "expansion", "edge": "source"}
+                    self.ports[f"{exansion_pin}"] = {"direction": "output", "title": title, "type": "FPGA", "edge": "source"}
                 for exansion_pin in self.plugin_instance.expansion_inputs():
                     title = exansion_pin.replace(prefix, "")
-                    self.ports[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "expansion", "edge": "source"}
+                    self.ports[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "FPGA", "edge": "source"}
 
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
@@ -1038,6 +1038,57 @@ class NodeViewer(QGraphicsView):
         self.mouse_selection_start = None
         self.mouse_selection_end = None
         self.scene.insert_position = None
+        self.setAcceptDrops(True)
+
+    def dragMoveEvent(self, e):
+        jdata = e.mimeData().data("text/json")
+        if jdata:
+            data = json.loads(str(jdata.data(), encoding="utf-8"))
+            if "type" in data and data["type"] == "plugin":
+                e.accept()
+
+    def dragEnterEvent(self, e):
+        jdata = e.mimeData().data("text/json")
+        if jdata:
+            data = json.loads(str(jdata.data(), encoding="utf-8"))
+            if "type" in data and data["type"] == "plugin":
+                e.accept()
+
+    def dropEvent(self, e):
+        plugin_name = None
+        pos = e.pos()
+        jdata = e.mimeData().data("text/json")
+        if jdata:
+            data = json.loads(str(jdata.data(), encoding="utf-8"))
+            if "type" in data and data["type"] == "plugin":
+                plugin_name = data["name"]
+                e.accept()
+        if plugin_name:
+            node_type = None
+            if " " in plugin_name:
+                plugin_name, node_type = plugin_name.split(" ")
+            psetup = {"type": plugin_name}
+            if node_type:
+                psetup["node_type"] = node_type
+            unum = 0
+            while f"{plugin_name}{unum}" in self.scene.parent.plugin_uids:
+                unum += 1
+            self.scene.parent.plugins.load_plugin(unum, psetup, self.scene.parent.config)
+            plugin_instance = self.scene.parent.plugins.plugin_instances[-1]
+            if not node_type:
+                if "node_type" in plugin_instance.OPTIONS:
+                    option_data = plugin_instance.OPTIONS["node_type"]
+                    node_type = self.scene.parent.dialog_select("Plugin node select", option_data["options"])
+                    if node_type:
+                        plugin_instance.plugin_setup["node_type"] = node_type
+            plugin_instance.setup()
+            if plugin_instance.IMAGES:
+                plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
+            insert_position = self.mapToScene(pos.x(), pos.y())
+            plugin_instance.plugin_setup["pos"] = [insert_position.x(), insert_position.y()]
+            self.scene.parent.config["plugins"].append(plugin_instance.plugin_setup)
+            self.scene.parent.redraw()
+            self.scene.parent.snapshot()
 
     def save_png(self, filename):
         pixmap = self.grab(QRect(QPoint(0, 0), QSize(-1, -1)))
@@ -1128,6 +1179,17 @@ class NodeViewer(QGraphicsView):
                         target_node.breakout_setup["slot"] = f"{source_node.name}:{slot}"
                         self.scene.parent.connect_breakout(target_node)
 
+                    elif target_port.startswith("SLOT:"):
+                        # target_name = target_node.name
+                        slot = source_port.split(":")[0]
+                        # remove all old wires
+                        # for subitem in self.scene.items():
+                        #    if isinstance(subitem, NodeEdge):
+                        #        if subitem.etype == f"breakout:{target_name}":
+                        #            self.scene.removeItem(subitem)
+                        # connect all main wires
+                        self.scene.parent.connect_slot(source_node, slot, target_node, target_port)
+
                     else:
                         # check type and dir
                         types = source_node.ports.get(source_port, {}).get("type", "")
@@ -1169,18 +1231,23 @@ class NodeViewer(QGraphicsView):
                             color = Qt.GlobalColor.green
                             if color_idx >= 0 and color_idx < len(colors):
                                 color = colors[color_idx]
+
+                            # print(source_node, source_port, target_node, target_port)
+                            # {source_node.name}:
+
                             edge = NodeEdge(self.scene, "", source_node, source_port, target_node, target_port, color=color)
                             self.scene.addItem(edge)
 
                     # clear selection
                     self.scene.selection_source = (None, None)
                     self.scene.selection_target = (None, None)
-                    self.scene.parent.update_halpins_from_edges()
+                    # self.scene.parent.update_halpins_from_edges()
 
         self.mouse_pos = event.pos()
         self.button_pressed = 0
 
         # update config
+        self.scene.parent.update_passthrough()
         self.scene.parent.config["flow"]["view"]["scale"] = round(self.getZoom(), 2)
         self.scene.parent.config["flow"]["view"]["pos"] = (self.horizontalScrollBar().value(), self.verticalScrollBar().value())
         self.scene.parent.snapshot()
@@ -1213,9 +1280,6 @@ class NodeViewer(QGraphicsView):
                             item.setSelected(True)
                         else:
                             item.setSelected(False)
-
-                # prevent drawing errors
-                # self.scene.update()
 
         elif self.button_pressed in [Qt.MiddleButton]:
             offset = self.mouse_pos - event.pos()
@@ -1931,7 +1995,8 @@ class Window(QMainWindow):
                         if source:
                             if isinstance(source[0], BreakoutNode):
                                 plugin_setup["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
-                            elif isinstance(source[0], PluginNode) and source[0].plugin_instance.TYPE == "base":
+                            # elif isinstance(source[0], PluginNode) and source[0].plugin_instance.TYPE == "base":
+                            elif isinstance(source[0], PluginNode):
                                 plugin_setup["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
                             else:
                                 plugin_setup["pins"][port]["pin"] = source[1]
@@ -2421,6 +2486,32 @@ class Window(QMainWindow):
         self.scene.addItem(mnode)
         return hy
 
+    def update_passthrough(self):
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                for port_name, port_data in item.ports.items():
+                    if port_data.get("type") == "PASSTHROUGH":
+                        modifiers = {}
+                        source = self.get_source(item, port_data["source"], modifiers)
+                        if not source:
+                            continue
+                        source_data = source[0].ports.get(source[1])
+                        if not source_data:
+                            continue
+                        port_data["type"] = source_data["type"]
+                        comment = source_data.get("comment")
+                        if comment:
+                            port_data["comment2"] = comment
+
+    def connect_slot(self, source_node, slot, target_node, target_port):
+        color_n = 0
+        for port_name, port_data in source_node.ports.items():
+            target_port = f"SLOT:{port_name.split(':')[-1]}"
+            if target_port in target_node.ports:
+                edge = NodeEdge(self.scene, f"breakout:{target_node.name}", source_node, port_name, target_node, target_port, color=colors[color_n])
+                self.scene.addItem(edge)
+                color_n += 1
+
     def connect_breakout(self, mnode):
         breakout_config = mnode.breakout_setup
         slot_node = None
@@ -2535,6 +2626,12 @@ class Window(QMainWindow):
                 return item
         return None
 
+    def plugin_by_name(self, plugin_name):
+        for item in self.scene.items():
+            if isinstance(item, PluginNode) and item.name == plugin_name:
+                return item
+        return None
+
     def insert_plugin(self, plugin_instance, py=100):
         plugin_config = plugin_instance.plugin_setup
         if "pos" in plugin_config:
@@ -2559,21 +2656,27 @@ class Window(QMainWindow):
         ph = 0
         color_n = 0
         if plugin_config.get("pins"):
+            pin_types = {}
+            # for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
+            #    if pin_defaults.get("type") == "PASSTHROUGH":
+            #        print(pin, pin_defaults)
+
             for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
                 expansion = None
                 pindata = plugin_config.get("pins", {}).get(pin)
                 if pindata is None or "pin" not in pindata or not pindata["pin"]:
                     continue
-
                 if ":" in pindata["pin"] and len(pindata["pin"].split(":")) == 3:
                     splitted = pindata["pin"].split(":")
                     bpin = ":".join(splitted[1:])
-                    breakout_name = splitted[0]
-                    bnode = self.breakout_by_name(breakout_name)
+                    node_name = splitted[0]
+                    bnode = self.breakout_by_name(node_name)
+                    if not bnode:
+                        bnode = self.plugin_by_name(node_name)
                     if not bnode:
                         for item in self.scene.items():
                             prefix = ""
-                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base" and item.name == breakout_name:
+                            if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base" and item.name == node_name:
                                 bnode = item
                     if not bnode:
                         continue
@@ -2584,12 +2687,14 @@ class Window(QMainWindow):
                         for item in self.scene.items():
                             if isinstance(item, PluginNode) and item.plugin_instance.TYPE == "expansion" and item.name.upper() == prefix:
                                 expansion = item
-
                     if expansion:
                         epin = pindata["pin"]
                         last_con = (expansion, epin)
                     else:
                         last_con = (self.bnode, pindata["pin"])
+
+                if pin_defaults.get("edge") == "target":
+                    pin_types[pin] = ""
 
                 if pindata.get("modifier"):
                     if pin_defaults["direction"] == "input":
@@ -2610,6 +2715,7 @@ class Window(QMainWindow):
                         self.scene.addItem(edge)
                         last_con = (mnode, "out")
                     ph += 25
+
                 edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], pnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
@@ -2647,6 +2753,9 @@ class Window(QMainWindow):
                     self.halpins[halname]["type"] = "joint"
                     self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
             self.joints += 1
+
+        self.update_passthrough()
+
         ph = max(ph, pnode.height) + 5
         return ph
 

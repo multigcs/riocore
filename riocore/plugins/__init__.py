@@ -517,9 +517,9 @@ class PluginBase:
             if pin_config.get("edge") == "source":
                 continue
 
-            if pin_name.upper() in self.plugin_setup["pins"]:
-                riocore.log(f"WARNING: please use lowercase for pinnames: {pin_name} ({self.instances_name})")
-                self.plugin_setup["pins"][pin_name] = self.plugin_setup["pins"][pin_name.upper()]
+            # if pin_name.upper() in self.plugin_setup["pins"]:
+            #    riocore.log(f"WARNING: please use lowercase for pinnames: {pin_name} ({self.instances_name})")
+            #    self.plugin_setup["pins"][pin_name] = self.plugin_setup["pins"][pin_name.upper()]
 
             if pin_name in self.plugin_setup["pins"]:
                 pins[pin_name] = pin_config.copy()
@@ -757,6 +757,8 @@ class PluginBase:
         }
         pn = 0
         for pin_name, pin_setup in self.PINDEFAULTS.items():
+            if pin_setup.get("type") == "PASSTHROUGH":
+                continue
             default = pin_setup.get("default")
             if default is not None:
                 basic_config["pins"][pin_name] = {"pin": f"{default}"}

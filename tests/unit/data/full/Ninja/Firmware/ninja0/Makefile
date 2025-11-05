@@ -1,6 +1,6 @@
 
 
-TOOLCHAIN_PATH := /mnt/data2/src/riocore/riocore/toolchains
+ TOOLCHAIN_PATH
 PICO_SDK_PATH := $(TOOLCHAIN_PATH)/pico-sdk
 NINJA_SRC_PATH := $(TOOLCHAIN_PATH)/stepper-ninja
 

@@ -21,8 +21,11 @@ class Simulator:
         self.config = self.project.config.copy()
         jdata = self.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
-        self.simulator_path = os.path.join(self.project.config["output_path"], "Simulator")
-        os.makedirs(self.simulator_path, exist_ok=True)
+        if self.project.config["output_path"]:
+            self.simulator_path = os.path.join(self.project.config["output_path"], "Simulator")
+            os.makedirs(self.simulator_path, exist_ok=True)
+        else:
+            return
         machinetype = linuxcnc_config.get("machinetype", "mill")
 
         if machinetype in {"melfa"} and os.path.isdir(self.webots_home):

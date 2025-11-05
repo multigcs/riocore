@@ -105,7 +105,7 @@ def test_generator_ini(config, target, protocol, ip, home_sequence, ini_values):
             assert False
 
 
-def test_generade_all():
+def test_generate_all():
     for config in glob.glob("riocore/configs/*/config.json"):
         print("###################")
         print(config)

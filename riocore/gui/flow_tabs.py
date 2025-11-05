@@ -1,4 +1,5 @@
 import os
+import json
 import subprocess
 import glob
 from PyQt5.QtCore import QTimer, Qt
@@ -6,7 +7,8 @@ from PyQt5.QtCore import QTimer, Qt
 import copy
 from functools import partial
 
-from PyQt5.QtGui import QPixmap, QStandardItemModel, QColor
+from PyQt5.QtCore import QMimeData
+from PyQt5.QtGui import QPixmap, QStandardItemModel, QColor, QDrag
 from PyQt5.QtWidgets import (
     QWidgetItem,
     QSpacerItem,
@@ -47,6 +49,21 @@ def cleanLayout(layout):
         else:
             cleanLayout(item.layout())
         layout.removeItem(item)
+
+
+class DragLabel(QLabel):
+    def __init__(self, title):
+        super().__init__(title)
+        self.title = title
+
+    def mouseMoveEvent(self, e):
+        if e.buttons() == Qt.LeftButton:
+            drag = QDrag(self)
+            mime = QMimeData()
+            jdata = json.dumps({"type": "plugin", "name": self.title})
+            mime.setData("text/json", jdata.encode())
+            drag.setMimeData(mime)
+            drag.exec_(Qt.MoveAction)
 
 
 class TabBuilder:
@@ -321,8 +338,10 @@ class TabDrawing:
             item = QTableWidgetItem()
             item.setFlags(Qt.ItemFlag.ItemIsEnabled)
             self.plugin_table.setItem(row, 0, item)
+
             label = QLabel(ptype.title())
             label.setStyleSheet("QLabel { background-color: gray; color: white; font-size:14px; qproperty-alignment: AlignCenter;}")
+
             self.plugin_table.setCellWidget(row, 0, label)
             row += 1
             for plugin_data in plugins:
@@ -330,8 +349,12 @@ class TabDrawing:
                     continue
                 self.plugin_table.setRowCount(row + 1)
                 plugin_name = plugin_data["name"]
-                item = QTableWidgetItem(plugin_name)
+                item = QTableWidgetItem()
                 item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+
+                label = DragLabel(plugin_name)
+                self.plugin_table.setCellWidget(row, 0, label)
+
                 self.plugin_table.setItem(row, 0, item)
                 row += 1
 
@@ -378,6 +401,7 @@ class TabAxis:
                 plugin_instance = None
                 plugin_setup = {}
                 plugin_instance_home = None
+                plugin_instance_encoder = jdata.get("feedback_instance")
                 plugin_setup_home = {}
                 for item in self.parent.scene.items():
                     if hasattr(item, "plugin_instance"):
@@ -403,10 +427,15 @@ class TabAxis:
                     if plugin_setup_home:
                         home_sw = plugin_instance_home.instances_name
 
+                    encoder = " --- "
+                    if plugin_instance_encoder:
+                        encoder = plugin_instance_encoder.instances_name
+
                     text = []
                     text.append(f"Mode: {position_mode}")
                     text.append(f"Plugin-Name: {plugin_instance.instances_name}")
                     text.append(f"Home-Switch: {home_sw}")
+                    text.append(f"Feedback: {encoder}")
                     text.append(f"Max-Velocity: {max_velocity * 60:0.2f} units/min")
                     max_freq = abs(max_velocity * scale)
                     if max_freq > 1500:
@@ -420,15 +449,22 @@ class TabAxis:
                         plugin_setup["joint"] = {}
                     joint_setup = plugin_setup["joint"]
 
-                    for key in ("scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
+                    for key in ("scale_in", "scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
                         if f"{joint}_{key}" in self.widgets:
-                            self.widgets[f"{joint}_{key}"].update(joint_setup)
+                            # if key == "scale_in":
+                            #    self.widgets[f"{joint}_{key}"].update(plugin_setup_encoder)
+                            # else:
+                            #    self.widgets[f"{joint}_{key}"].update(joint_setup)
+                            self.widgets[f"{joint}_{key}"].update()
                     for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
                         if f"{joint}_{key}" in self.widgets:
                             self.widgets[f"{joint}_{key}"].update(joint_setup)
 
-                    if plugin_setup_home:
+                    if plugin_instance_home:
                         signature.append("h")
+
+                    if plugin_instance_encoder:
+                        signature.append("e")
 
         if signature != self.signature:
             self.reload(config)
@@ -650,7 +686,8 @@ class TabAxis:
                 plugin_instance = None
                 plugin_setup = {}
                 plugin_instance_home = None
-                plugin_setup_home = {}
+                plugin_instance_encoder = jdata.get("feedback_instance")
+                plugin_setup_encoder = jdata.get("feedback_setup")
                 for item in self.parent.scene.items():
                     if hasattr(item, "plugin_instance"):
                         if item.plugin_instance.plugin_setup["uid"] == jdata["instance"].plugin_setup["uid"]:
@@ -660,7 +697,6 @@ class TabAxis:
                         signal = item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
                         if signal == f"joint.{joint}.home-sw-in":
                             plugin_instance_home = item.plugin_instance
-                            plugin_setup_home = plugin_instance_home.plugin_setup
 
                 if "joint" not in plugin_setup:
                     plugin_setup["joint"] = {}
