@@ -2207,10 +2207,15 @@ if __name__ == "__main__":
                                     feedback_signal = feedback_halname.split(".")[-1]
                                     sub_signals_setup = sub_instance.plugin_setup.get("signals", {})
                                     feedback_scale = float(sub_signals_setup.get(feedback_signal, {}).get("scale", 1.0))
+                                    if "signals" not in sub_instance.plugin_setup:
+                                        sub_instance.plugin_setup["signals"] = {}
+                                    if feedback_signal not in sub_instance.plugin_setup["signals"]:
+                                        sub_instance.plugin_setup["signals"][feedback_signal] = {}
                                     joint_data["feedback_name"] = fb_plugin_name
                                     joint_data["feedback_halname"] = feedback_halname
                                     joint_data["feedback_signal"] = fb_signal_name
                                     joint_data["feedback_instance"] = sub_instance
+                                    joint_data["feedback_setup"] = sub_instance.plugin_setup["signals"][feedback_signal]
                                     joint_data["SCALE_IN"] = feedback_scale
                                     found = True
                                     break

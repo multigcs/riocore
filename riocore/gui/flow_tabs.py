@@ -401,6 +401,7 @@ class TabAxis:
                 plugin_instance = None
                 plugin_setup = {}
                 plugin_instance_home = None
+                plugin_instance_encoder = jdata.get("feedback_instance")
                 plugin_setup_home = {}
                 for item in self.parent.scene.items():
                     if hasattr(item, "plugin_instance"):
@@ -427,10 +428,15 @@ class TabAxis:
                     if plugin_setup_home:
                         home_sw = plugin_instance_home.instances_name
 
+                    encoder = " --- "
+                    if plugin_instance_encoder:
+                        encoder = plugin_instance_encoder.instances_name
+
                     text = []
                     text.append(f"Mode: {position_mode}")
                     text.append(f"Plugin-Name: {plugin_instance.instances_name}")
                     text.append(f"Home-Switch: {home_sw}")
+                    text.append(f"Feedback: {encoder}")
                     text.append(f"Max-Velocity: {max_velocity * 60:0.2f} units/min")
                     max_freq = abs(max_velocity * scale)
                     if max_freq > 1500:
@@ -444,15 +450,22 @@ class TabAxis:
                         plugin_setup["joint"] = {}
                     joint_setup = plugin_setup["joint"]
 
-                    for key in ("scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
+                    for key in ("scale_in", "scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
                         if f"{joint}_{key}" in self.widgets:
-                            self.widgets[f"{joint}_{key}"].update(joint_setup)
+                            # if key == "scale_in":
+                            #    self.widgets[f"{joint}_{key}"].update(plugin_setup_encoder)
+                            # else:
+                            #    self.widgets[f"{joint}_{key}"].update(joint_setup)
+                            self.widgets[f"{joint}_{key}"].update()
                     for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
                         if f"{joint}_{key}" in self.widgets:
                             self.widgets[f"{joint}_{key}"].update(joint_setup)
 
-                    if plugin_setup_home:
+                    if plugin_instance_home:
                         signature.append("h")
+
+                    if plugin_instance_encoder:
+                        signature.append("e")
 
         if signature != self.signature:
             self.reload(config)
@@ -674,7 +687,8 @@ class TabAxis:
                 plugin_instance = None
                 plugin_setup = {}
                 plugin_instance_home = None
-                plugin_setup_home = {}
+                plugin_instance_encoder = jdata.get("feedback_instance")
+                plugin_setup_encoder = jdata.get("feedback_setup")
                 for item in self.parent.scene.items():
                     if hasattr(item, "plugin_instance"):
                         if item.plugin_instance.plugin_setup["uid"] == jdata["instance"].plugin_setup["uid"]:
@@ -684,7 +698,6 @@ class TabAxis:
                         signal = item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
                         if signal == f"joint.{joint}.home-sw-in":
                             plugin_instance_home = item.plugin_instance
-                            plugin_setup_home = plugin_instance_home.plugin_setup
 
                 if plugin_setup:
                     if "joint" not in plugin_setup:
@@ -701,16 +714,28 @@ class TabAxis:
                     row.addWidget(info, stretch=1)
 
                     joint_edits = QVBoxLayout()
-                    for key in ("scale", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
-                        options = riocore.halpins.JOINT_OPTIONS[key]
+
+                    keys = ["scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"]
+                    if plugin_instance_encoder:
+                        keys = ["scale_in", "scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"]
+
+                    for key in keys:
+                        options = riocore.halpins.JOINT_OPTIONS[{"scale_in": "scale", "scale_out": "scale"}.get(key, key)]
                         unit = options.get("unit", "")
                         dkey = key.upper()
-                        if key == "scale":
-                            dkey = "SCALE_OUT"
                         default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(dkey)
                         if default:
                             options["default"] = default
-                        widget = self.parent.edit_item(joint_setup, key, options)
+
+                        ekey = key
+                        if ekey == "scale_out":
+                            ekey = "scale"
+                        if ekey == "scale_in":
+                            ekey = "scale"
+                            widget = self.parent.edit_item(plugin_setup_encoder, ekey, options)
+                        else:
+                            widget = self.parent.edit_item(joint_setup, ekey, options)
+
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)
                         ulabel.setStyleSheet("QLabel{font-size:12px;}")
@@ -718,7 +743,7 @@ class TabAxis:
                         erow.addWidget(QLabel(key.title()), stretch=2)
                         erow.addWidget(widget, stretch=4)
 
-                        if key == "scale":
+                        if key in {"scale_in", "scale_out"}:
                             text = "INV."
                             button = QPushButton(text)
                             width = button.fontMetrics().boundingRect(text).width()
@@ -734,6 +759,12 @@ class TabAxis:
                     button = QPushButton("joint-plugin")
                     button.clicked.connect(partial(jedit, plugin_instance))
                     brow.addWidget(button)
+
+                    if plugin_instance_encoder:
+                        button = QPushButton("encoder-plugin")
+                        button.clicked.connect(partial(jedit, plugin_instance_encoder))
+                        brow.addWidget(button)
+
                     button = QPushButton("scale-calc")
                     button.clicked.connect(partial(self.scale_calc, f"{joint}_scale"))
                     brow.addWidget(button)
@@ -765,11 +796,12 @@ class TabAxis:
                         erow.addWidget(ulabel, stretch=1)
                         home_edits.addLayout(erow)
                     button = QPushButton("home-plugin")
-                    if plugin_setup_home:
+                    if plugin_instance_home:
                         self.signature.append("h")
                         button.clicked.connect(partial(jedit, plugin_instance_home))
                     else:
                         button.setEnabled(False)
+
                     brow = QHBoxLayout()
                     brow.addWidget(button)
                     button = QPushButton("home-helper")
@@ -777,6 +809,9 @@ class TabAxis:
                     brow.addWidget(button)
                     home_edits.addLayout(brow)
                     row.addLayout(home_edits, stretch=2)
+
+                    if plugin_instance_encoder:
+                        self.signature.append("e")
 
                     axis_box_joints.addLayout(row)
 
