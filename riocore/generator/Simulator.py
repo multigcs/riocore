@@ -15,14 +15,14 @@ class Simulator:
         self.webots_home = os.path.join("usr", "local", "webots")
         self.webots = False
         self.glsim = False
-        self.simulator_path = os.path.join(project.config["output_path"], "Simulator")
-        os.makedirs(self.simulator_path, exist_ok=True)
         project.config["riocore_path"] = riocore_path
 
     def generator(self, generate_pll=True):
         self.config = self.project.config.copy()
         jdata = self.config["jdata"]
         linuxcnc_config = jdata.get("linuxcnc", {})
+        self.simulator_path = os.path.join(self.project.config["output_path"], "Simulator")
+        os.makedirs(self.simulator_path, exist_ok=True)
         machinetype = linuxcnc_config.get("machinetype", "mill")
 
         if machinetype in {"melfa"} and os.path.isdir(self.webots_home):

@@ -117,6 +117,11 @@ class Plugin(PluginBase):
             enable_halname = f"{prefix}.enable"
             scale_halname = f"{prefix}.velocity-scale"
             feedback_scale_halname = f"{prefix}.position-scale"
+
+            if joint_data.get("feedback_halname"):
+                feedback_halname = joint_data["feedback_halname"]
+                feedback_scale_halname = joint_data["feedback_scale_halname"]
+
             parent.halg.joint_add(
                 parent,
                 axis_name,

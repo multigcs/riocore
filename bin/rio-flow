@@ -80,7 +80,7 @@ max_size = 99999
 
 # generate different colors with different styles
 colors = []
-cn = 7
+cn = 15
 for s in (Qt.SolidLine, Qt.DashLine, Qt.DotLine, Qt.DashDotLine, Qt.DashDotDotLine):
     o = 0
     for i in range(0, cn):

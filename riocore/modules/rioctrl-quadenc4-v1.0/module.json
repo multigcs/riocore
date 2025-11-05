@@ -3,7 +3,7 @@
   "plugins": [
     {
       "name": "encoder-0",
-      "type": "quadencoderz",
+      "type": "quadencoder",
       "pins": {
         "a": {
           "pin": "S2"
@@ -14,12 +14,11 @@
         "z": {
           "pin": "S0"
         }
-      },
-      "is_joint": true
+      }
     },
     {
       "name": "encoder-1",
-      "type": "quadencoderz",
+      "type": "quadencoder",
       "pins": {
         "a": {
           "pin": "S5"
@@ -30,12 +29,11 @@
         "z": {
           "pin": "S3"
         }
-      },
-      "is_joint": true
+      }
     },
     {
       "name": "encoder-2",
-      "type": "quadencoderz",
+      "type": "quadencoder",
       "pins": {
         "a": {
           "pin": "S8"
@@ -46,12 +44,11 @@
         "z": {
           "pin": "S6"
         }
-      },
-      "is_joint": true
+      }
     },
     {
       "name": "encoder-3",
-      "type": "quadencoderz",
+      "type": "quadencoder",
       "pins": {
         "a": {
           "pin": "S11"
@@ -62,8 +59,7 @@
         "z": {
           "pin": "S9"
         }
-      },
-      "is_joint": true
+      }
     }
   ]
 }

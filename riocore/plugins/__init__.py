@@ -363,6 +363,7 @@ class PluginBase:
             default = True
             if "pwm" in self.NAME:
                 default = False
+
             if "is_joint" not in self.OPTIONS:
                 NEW_OPTIONS["is_joint"] = {
                     "type": bool,

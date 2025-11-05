@@ -1,7 +1,7 @@
 {
     "name": "rioctrl",
     "boardcfg": "rioctrl",
-    "flashcmd": "openFPGALoader -c dirtyJtag --write-flash --unprotect-flash rio.bit",
+    "flashcmd": "sudo /opt/oss-cad-suite/bin//openFPGALoader -c dirtyJtag --write-flash --unprotect-flash rio.bit",
     "plugins": [
         {
             "type": "blink",
@@ -11,12 +11,21 @@
                     "modifier": [
                         {
                             "type": "onerror",
-                            "invert": true
+                            "invert": true,
+                            "pos": [
+                                10.0,
+                                580.0
+                            ]
                         }
                     ]
                 }
             },
-            "frequency": 1.0
+            "frequency": 1.0,
+            "uid": "blink0",
+            "pos": [
+                190.0,
+                560.0
+            ]
         },
         {
             "type": "blink",
@@ -26,12 +35,21 @@
                     "modifier": [
                         {
                             "type": "onerror",
-                            "invert": false
+                            "invert": false,
+                            "pos": [
+                                10.0,
+                                650.0
+                            ]
                         }
                     ]
                 }
             },
-            "frequency": 2.0
+            "frequency": 2.0,
+            "uid": "blink1",
+            "pos": [
+                190.0,
+                630.0
+            ]
         },
         {
             "type": "bitout",
@@ -40,7 +58,12 @@
                 "bit": {
                     "pin": "SlotControl:EN"
                 }
-            }
+            },
+            "uid": "bitout0",
+            "pos": [
+                190.0,
+                710.0
+            ]
         },
         {
             "type": "w5500",
@@ -64,9 +87,464 @@
                     "pin": "SPI:INT"
                 }
             },
-            "gw": "192.168.66.1",
-            "ip": "192.168.66.49"
+            "gw": "192.168.11.1",
+            "ip": "192.168.11.194",
+            "uid": "w55000",
+            "pos": [
+                -30.0,
+                210.0
+            ],
+            "image": "w5500mini",
+            "rotate": 90
+        },
+        {
+            "type": "shiftreg",
+            "name": "shiftout",
+            "bits": 16,
+            "uid": "shiftreg0",
+            "pins": {
+                "out": {
+                    "pin": "SC:S0"
+                },
+                "in": {
+                    "pin": "SC:S6"
+                },
+                "sclk": {
+                    "pin": "SC:S1"
+                },
+                "load": {
+                    "pin": "SC:S2"
+                }
+            },
+            "pos": [
+                730.0,
+                340.0
+            ]
+        },
+        {
+            "type": "shiftreg",
+            "name": "shiftin",
+            "bits": 16,
+            "uid": "shiftreg1",
+            "pins": {
+                "in": {
+                    "pin": "SC:S3"
+                },
+                "out": {
+                    "pin": "SC:S7"
+                },
+                "sclk": {
+                    "pin": "SC:S4"
+                },
+                "load": {
+                    "pin": "SC:S5"
+                }
+            },
+            "pos": [
+                730.0,
+                40.0
+            ]
+        },
+        {
+            "name": "joint-0",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir0",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "step": {
+                    "pin": "SB:S9"
+                },
+                "dir": {
+                    "pin": "SB:S10"
+                },
+                "en": {
+                    "pin": "SB:S11"
+                }
+            },
+            "pos": [
+                460.0,
+                530.0
+            ],
+            "joint": {
+                "feedback": "encoder-0:position",
+                "pid_p": 500.0,
+                "pid_i": 15.0,
+                "pid_d": 2.0,
+                "scale": 2000.0
+            }
+        },
+        {
+            "name": "joint-1",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir1",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "step": {
+                    "pin": "SB:S6"
+                },
+                "dir": {
+                    "pin": "SB:S7"
+                },
+                "en": {
+                    "pin": "SB:S8"
+                }
+            },
+            "pos": [
+                460.0,
+                690.0
+            ]
+        },
+        {
+            "name": "joint-2",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir2",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "step": {
+                    "pin": "SB:S3"
+                },
+                "dir": {
+                    "pin": "SB:S4"
+                },
+                "en": {
+                    "pin": "SB:S5"
+                }
+            },
+            "pos": [
+                460.0,
+                610.0
+            ]
+        },
+        {
+            "name": "joint-3",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir3",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "step": {
+                    "pin": "SB:S0"
+                },
+                "dir": {
+                    "pin": "SB:S1"
+                },
+                "en": {
+                    "pin": "SB:S2"
+                }
+            },
+            "pos": [
+                460.0,
+                770.0
+            ]
+        },
+        {
+            "name": "encoder-0",
+            "type": "quadencoderz",
+            "uid": "quadencoderz0",
+            "signals": {
+                "indexenable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "indexout": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": "",
+                    "scale": -2000.0
+                },
+                "rps": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "rpm": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "a": {
+                    "pin": "SA:S11"
+                },
+                "b": {
+                    "pin": "SA:S10"
+                },
+                "z": {
+                    "pin": "SA:S9",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                230.0,
+                                -100.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                420.0,
+                -210.0
+            ]
+        },
+        {
+            "name": "encoder-1",
+            "type": "quadencoderz",
+            "uid": "quadencoderz1",
+            "signals": {
+                "indexenable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "indexout": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "rps": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "rpm": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "a": {
+                    "pin": "SA:S8"
+                },
+                "b": {
+                    "pin": "SA:S7"
+                },
+                "z": {
+                    "pin": "SA:S6",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                230.0,
+                                -40.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                420.0,
+                -50.0
+            ]
+        },
+        {
+            "name": "encoder-2",
+            "type": "quadencoderz",
+            "uid": "quadencoderz2",
+            "signals": {
+                "indexenable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "indexout": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "rps": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "rpm": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "a": {
+                    "pin": "SA:S5"
+                },
+                "b": {
+                    "pin": "SA:S4"
+                },
+                "z": {
+                    "pin": "SA:S3",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                230.0,
+                                -70.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                420.0,
+                -130.0
+            ]
+        },
+        {
+            "name": "encoder-3",
+            "type": "quadencoderz",
+            "uid": "quadencoderz3",
+            "signals": {
+                "indexenable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "indexout": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "rps": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "rpm": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pins": {
+                "a": {
+                    "pin": "SA:S2"
+                },
+                "b": {
+                    "pin": "SA:S1"
+                },
+                "z": {
+                    "pin": "SA:S0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                230.0,
+                                -10.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "pos": [
+                420.0,
+                30.0
+            ]
         }
     ],
-    "protocol": "UDP"
+    "protocol": "UDP",
+    "flow": {
+        "view": {
+            "scale": 1.02,
+            "pos": [
+                -654,
+                -269
+            ]
+        },
+        "board": {
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0
+        }
+    }
 }

@@ -2084,7 +2084,7 @@ if __name__ == "__main__":
 
         axis_config = {}
         for plugin_instance in project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint"):
+            if plugin_instance.plugin_setup.get("is_joint", False):
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if axis_name:
                     if axis_name not in axis_config:
@@ -2092,7 +2092,7 @@ if __name__ == "__main__":
                     axis_config[axis_name]["joints"].append({"instance": plugin_instance})
 
         for plugin_instance in project.plugin_instances:
-            if plugin_instance.plugin_setup.get("is_joint"):
+            if plugin_instance.plugin_setup.get("is_joint", False):
                 axis_name = plugin_instance.plugin_setup.get("axis")
                 if not axis_name:
                     for name in axis_names:
@@ -2209,6 +2209,7 @@ if __name__ == "__main__":
                                     feedback_scale = float(sub_signals_setup.get(feedback_signal, {}).get("scale", 1.0))
                                     joint_data["feedback_name"] = fb_plugin_name
                                     joint_data["feedback_halname"] = feedback_halname
+                                    joint_data["feedback_scale_halname"] = f"{feedback_halname}-scale"
                                     joint_data["feedback_signal"] = fb_signal_name
                                     joint_data["feedback_instance"] = sub_instance
                                     joint_data["SCALE_IN"] = feedback_scale
