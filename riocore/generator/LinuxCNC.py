@@ -1691,6 +1691,8 @@ if __name__ == "__main__":
         pins = []
         for plugin_instance in self.project.plugin_instances:
             for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
+                if name.startswith("SLOT:"):
+                    continue
                 pin = psetup.get("pin")
                 rawpin = pin
                 # filter unconfigured pins

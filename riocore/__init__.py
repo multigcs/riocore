@@ -547,9 +547,17 @@ class Project:
             for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
                 if gpio_data.get("type") == "PASSTHROUGH":
                     source = f"{plugin_instance.instances_name}:{gpio_pin}"
-                    target = plugin_instance.pins()[gpio_data["source"]].get("pin")
+                    target = plugin_instance.PINDEFAULTS[gpio_data["source"]].get("pin")
                     if target:
-                        self.pin_mapping[source] = plugin_instance.pins()[gpio_data["source"]].get("pin")
+                        self.pin_mapping[source] = plugin_instance.PINDEFAULTS[gpio_data["source"]].get("pin")
+
+            for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
+                if "source" in gpio_data:
+                    source = f"{plugin_instance.instances_name}:{gpio_pin}"
+                    target = plugin_instance.PINDEFAULTS[gpio_data["source"]]
+                    if target:
+                        target_pin = plugin_instance.plugin_setup.get("pins", {}).get(gpio_data["source"], {}).get("pin")
+                        self.pin_mapping[source] = self.pin_mapping.get(target_pin, target_pin)
 
         for plugin_instance in self.plugin_instances:
             for pin, pdata in plugin_instance.pins().items():
@@ -584,8 +592,9 @@ class Project:
         # cleaning unmapped pins
         for plugin_instance in self.plugin_instances:
             for pin_name in list(plugin_instance.PINDEFAULTS):
-                if ":" in pin_name:
-                    del plugin_instance.PINDEFAULTS[pin_name]
+                if ":" in pin_name and pin_name.startswith("SLOT:"):
+                    if pin_name in plugin_instance.PINDEFAULTS:
+                        del plugin_instance.PINDEFAULTS[pin_name]
 
         # update plugin pins
         for plugin in self.config["plugins"]:

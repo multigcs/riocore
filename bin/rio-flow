@@ -1179,6 +1179,17 @@ class NodeViewer(QGraphicsView):
                         target_node.breakout_setup["slot"] = f"{source_node.name}:{slot}"
                         self.scene.parent.connect_breakout(target_node)
 
+                    elif target_port.startswith("SLOT:"):
+                        # target_name = target_node.name
+                        slot = source_port.split(":")[0]
+                        # remove all old wires
+                        # for subitem in self.scene.items():
+                        #    if isinstance(subitem, NodeEdge):
+                        #        if subitem.etype == f"breakout:{target_name}":
+                        #            self.scene.removeItem(subitem)
+                        # connect all main wires
+                        self.scene.parent.connect_slot(source_node, slot, target_node, target_port)
+
                     else:
                         # check type and dir
                         types = source_node.ports.get(source_port, {}).get("type", "")
@@ -2491,6 +2502,15 @@ class Window(QMainWindow):
                         comment = source_data.get("comment")
                         if comment:
                             port_data["comment2"] = comment
+
+    def connect_slot(self, source_node, slot, target_node, target_port):
+        color_n = 0
+        for port_name, port_data in source_node.ports.items():
+            target_port = f"SLOT:{port_name.split(':')[-1]}"
+            if target_port in target_node.ports:
+                edge = NodeEdge(self.scene, f"breakout:{target_node.name}", source_node, port_name, target_node, target_port, color=colors[color_n])
+                self.scene.addItem(edge)
+                color_n += 1
 
     def connect_breakout(self, mnode):
         breakout_config = mnode.breakout_setup
