@@ -111,7 +111,7 @@ class Plugin(PluginBase):
             joint_n = joint_data["num"]
             pid_num = joint_n
             signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_")
-            prefix = f"rio.{signal_prefix}"
+            prefix = signal_prefix
             cmd_halname = f"{prefix}.velocity"
             feedback_halname = f"{prefix}.position"
             enable_halname = f"{prefix}.enable"

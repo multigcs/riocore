@@ -1,6 +1,5 @@
 {
     "name": "Mesa7c81",
-    "boardcfg": "Mesa7c81",
     "async": true,
     "protocol": "UDP",
     "c_defines": {
@@ -32,22 +31,22 @@
         "net": [
             {
                 "comment": "if main-power > 3.6kw, disable motion",
-                "source": "rio.mb1.power < 3600.0",
+                "source": "fpga0.mb1.power < 3600.0",
                 "target": "&motion.enable"
             },
             {
                 "comment": "if waterflow < 3Hz, disable motion",
-                "source": "rio.waterflow.frequency > 3.0",
+                "source": "fpga0.waterflow.frequency > 3.0",
                 "target": "&motion.enable"
             },
             {
                 "comment": "if spindle not at speed for 5sec, disable motion",
-                "source": "delay(rio.mb0.spindle_at_speed, 0, 5)",
+                "source": "delay(fpga0.mb0.spindle_at_speed, 0, 5)",
                 "target": "&motion.enable"
             },
             {
                 "comment": "if spindle-current > 4A for 2sec, disable motion",
-                "source": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
+                "source": "delay((fpga0.mb0.spindle_ampere < 4.0), 0, 2)",
                 "target": "&motion.enable"
             }
         ],
@@ -85,6 +84,19 @@
     },
     "plugins": [
         {
+            "type": "fpga",
+            "node_type": "Mesa7c81",
+            "toolchain": "ise",
+            "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                -1900.0,
+                580.0
+            ],
+            "rotate": 90
+        },
+        {
             "type": "breakout",
             "node_type": "china-bob5x",
             "uid": "bob1",
@@ -95,55 +107,55 @@
             "rotate": 180,
             "pins": {
                 "SLOT:P1": {
-                    "pin": "B:P1"
+                    "pin": "board0:B:P1"
                 },
                 "SLOT:P2": {
-                    "pin": "B:P2"
+                    "pin": "board0:B:P2"
                 },
                 "SLOT:P3": {
-                    "pin": "B:P3"
+                    "pin": "board0:B:P3"
                 },
                 "SLOT:P4": {
-                    "pin": "B:P4"
+                    "pin": "board0:B:P4"
                 },
                 "SLOT:P5": {
-                    "pin": "B:P5"
+                    "pin": "board0:B:P5"
                 },
                 "SLOT:P6": {
-                    "pin": "B:P6"
+                    "pin": "board0:B:P6"
                 },
                 "SLOT:P7": {
-                    "pin": "B:P7"
+                    "pin": "board0:B:P7"
                 },
                 "SLOT:P8": {
-                    "pin": "B:P8"
+                    "pin": "board0:B:P8"
                 },
                 "SLOT:P9": {
-                    "pin": "B:P9"
+                    "pin": "board0:B:P9"
                 },
                 "SLOT:P10": {
-                    "pin": "B:P10"
+                    "pin": "board0:B:P10"
                 },
                 "SLOT:P11": {
-                    "pin": "B:P11"
+                    "pin": "board0:B:P11"
                 },
                 "SLOT:P12": {
-                    "pin": "B:P12"
+                    "pin": "board0:B:P12"
                 },
                 "SLOT:P13": {
-                    "pin": "B:P13"
+                    "pin": "board0:B:P13"
                 },
                 "SLOT:P14": {
-                    "pin": "B:P14"
+                    "pin": "board0:B:P14"
                 },
                 "SLOT:P15": {
-                    "pin": "B:P15"
+                    "pin": "board0:B:P15"
                 },
                 "SLOT:P16": {
-                    "pin": "B:P16"
+                    "pin": "board0:B:P16"
                 },
                 "SLOT:P17": {
-                    "pin": "B:P17"
+                    "pin": "board0:B:P17"
                 }
             }
         },
@@ -151,7 +163,7 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:L0",
+                    "pin": "board0:LED:L0",
                     "modifier": [
                         {
                             "type": "onerror",
@@ -533,13 +545,13 @@
             "rx_buffersize": 96,
             "pins": {
                 "rx": {
-                    "pin": "MODBUS1:RX"
+                    "pin": "board0:MODBUS1:RX"
                 },
                 "tx": {
-                    "pin": "MODBUS1:TX"
+                    "pin": "board0:MODBUS1:TX"
                 },
                 "tx_enable": {
-                    "pin": "MODBUS1:TX_EN",
+                    "pin": "board0:MODBUS1:TX_EN",
                     "modifier": [
                         {
                             "type": "invert",
@@ -722,13 +734,13 @@
             "rx_buffersize": 96,
             "pins": {
                 "rx": {
-                    "pin": "MODBUS0:RX"
+                    "pin": "board0:MODBUS0:RX"
                 },
                 "tx": {
-                    "pin": "MODBUS0:TX"
+                    "pin": "board0:MODBUS0:TX"
                 },
                 "tx_enable": {
-                    "pin": "MODBUS0:TX_EN",
+                    "pin": "board0:MODBUS0:TX_EN",
                     "modifier": [
                         {
                             "type": "invert",
@@ -899,7 +911,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P17",
+                    "pin": "board0:C:P17",
                     "modifier": [
                         {
                             "type": "invert",
@@ -923,7 +935,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P14",
+                    "pin": "board0:C:P14",
                     "pull": "",
                     "modifier": [
                         {
@@ -958,7 +970,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P15",
+                    "pin": "board0:C:P15",
                     "pull": ""
                 }
             },
@@ -980,7 +992,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P16",
+                    "pin": "board0:C:P16",
                     "modifier": [
                         {
                             "type": "invert",
@@ -1018,7 +1030,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "rio.mb1.power < 3600.0",
+                    "net": "fpga0.mb1.power < 3600.0",
                     "setp": "",
                     "display": {
                         "section": "status",
@@ -1043,7 +1055,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "rio.waterflow.frequency > 3.0",
+                    "net": "fpga0.waterflow.frequency > 3.0",
                     "setp": "",
                     "display": {
                         "title": "Waterflow",
@@ -1069,7 +1081,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "delay(rio.mb0.spindle_at_speed, 0, 5)",
+                    "net": "delay(fpga0.mb0.spindle_at_speed, 0, 5)",
                     "setp": "",
                     "display": {
                         "section": "status",
@@ -1094,7 +1106,7 @@
             "type": "signal",
             "signals": {
                 "value": {
-                    "net": "delay((rio.mb0.spindle_ampere < 4.0), 0, 2)",
+                    "net": "delay((fpga0.mb0.spindle_ampere < 4.0), 0, 2)",
                     "setp": "",
                     "display": {
                         "section": "status",
@@ -1119,7 +1131,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P1",
+                    "pin": "board0:C:P1",
                     "pull": "",
                     "modifier": [
                         {
@@ -1158,7 +1170,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P2",
+                    "pin": "board0:C:P2",
                     "pull": "",
                     "modifier": [
                         {
@@ -1197,7 +1209,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P3",
+                    "pin": "board0:C:P3",
                     "modifier": [
                         {
                             "type": "debounce",
@@ -1235,7 +1247,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "C:P4",
+                    "pin": "board0:C:P4",
                     "modifier": [
                         {
                             "type": "debounce",
@@ -1273,7 +1285,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "C:P5",
+                    "pin": "board0:C:P5",
                     "modifier": [
                         {
                             "type": "invert",
@@ -1304,7 +1316,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "C:P6",
+                    "pin": "board0:C:P6",
                     "modifier": [
                         {
                             "type": "invert",
@@ -1335,7 +1347,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "C:P7",
+                    "pin": "board0:C:P7",
                     "modifier": [
                         {
                             "type": "onerror",
@@ -1373,7 +1385,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "C:P8",
+                    "pin": "board0:C:P8",
                     "modifier": [
                         {
                             "type": "invert",
@@ -1405,7 +1417,7 @@
             "type": "freqin",
             "pins": {
                 "freq": {
-                    "pin": "C:P9",
+                    "pin": "board0:C:P9",
                     "modifier": [
                         {
                             "type": "debounce",
@@ -1494,19 +1506,19 @@
             "type": "w5500",
             "pins": {
                 "sclk": {
-                    "pin": "SPI:SCLK"
+                    "pin": "board0:SPI:SCLK"
                 },
                 "sel": {
-                    "pin": "SPI:SEL"
+                    "pin": "board0:SPI:SEL"
                 },
                 "miso": {
-                    "pin": "SPI:MOSI"
+                    "pin": "board0:SPI:MOSI"
                 },
                 "mosi": {
-                    "pin": "SPI:MISO"
+                    "pin": "board0:SPI:MISO"
                 },
                 "rst": {
-                    "pin": "RPI:GPIO25"
+                    "pin": "board0:RPI:GPIO25"
                 }
             },
             "uid": "w55000",
@@ -1524,10 +1536,10 @@
     "flow": {
         "view": {
             "pos": [
-                -807,
-                -63
+                -2339.0,
+                31.831034482758582
             ],
-            "scale": 0.28
+            "scale": 0.8206896551724138
         },
         "board": {
             "pos": [

@@ -10,13 +10,13 @@ import sys
 import traceback
 
 # from .generator.EtherCat import EtherCat
-from .generator.Simulator import Simulator
+# from .generator.Simulator import Simulator
 from .generator.LinuxCNC import LinuxCNC
 
-from riocore.generator.rosbridge import rosbridge
-from riocore.generator.mqttbridge import mqttbridge
-from riocore.generator.easycat import easycat
-from riocore.generator.jslib import jslib
+# from riocore.generator.rosbridge import rosbridge
+# from riocore.generator.mqttbridge import mqttbridge
+# from riocore.generator.easycat import easycat
+# from riocore.generator.jslib import jslib
 from riocore.generator.documentation import documentation
 
 riocore_path = os.path.dirname(__file__)
@@ -550,7 +550,6 @@ class Project:
                     if "pin" not in gpio_data:
                         continue
                     source = f"{plugin_instance.instances_name}:{gpio_pin}"
-                    self.pin_mapping[source] = gpio_data["pin"]
 
         # breakout plugins
         for n in range(5):
@@ -578,7 +577,7 @@ class Project:
 
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
-        self.generator_simulator = Simulator(self)
+        # self.generator_simulator = Simulator(self)
 
         # check names
         varnames = {}
@@ -1036,18 +1035,20 @@ class Project:
             plugin_instance.convert2signals()
 
     def generator(self, preview=False):
-        protocol = self.config["jdata"].get("protocol", "SPI")
+        # protocol = self.config["jdata"].get("protocol", "SPI")
         self.generator_linuxcnc.generator(preview=preview)
-
+        """
         if not preview:
-            if protocol == "UDP":
-                self.generator_simulator.generator()
+            #if protocol == "UDP":
+            #    self.generator_simulator.generator()
             if protocol == "ETHERCAT":
                 easycat(self)
             else:
-                rosbridge(self)
-                mqttbridge(self)
-                jslib(self)
+                pass
+                # rosbridge(self)
+                # mqttbridge(self)
+                # jslib(self)
+        """
         documentation(self)
 
         if self.config["json_file"]:

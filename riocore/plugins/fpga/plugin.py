@@ -120,7 +120,7 @@ class Plugin(PluginBase):
                 }
 
         self.fpga_num = 0
-        self.hal_prefix = "rio"
+        self.hal_prefix = "fpga0"
 
         toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain"))
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
@@ -130,7 +130,14 @@ class Plugin(PluginBase):
         self.jdata["sysclk_pin"] = self.jdata["clock"].get("pin")
 
     def update_system_setup(self, parent):
+        # TODO: per instance
         self.system_setup["speed"] = self.jdata["speed"]
+
+    def update_prefixes(cls, parent, instances):
+        for instance in instances:
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                plugin_instance = connected_pin["instance"]
+                plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
 
     def hal(self, parent):
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
@@ -178,7 +185,8 @@ class Plugin(PluginBase):
                         del pin_config["pin"]
             cls.generator(parent)
 
-            component(parent.project)
+            parent.project.config["speed"] = instance.jdata["speed"]
+            component(parent.project, prefix=instance.hal_prefix)
 
     def generator(cls, parent, generate_pll=True):
         os.makedirs(cls.jdata["output_path"], exist_ok=True)
@@ -899,15 +907,15 @@ class component(cbase):
         "LICENSE": "GPL v2",
     }
 
-    def __init__(self, project):
+    def __init__(self, project, prefix):
         self.project = project
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         os.makedirs(self.component_path, exist_ok=True)
-        output = self.mainc(project)
+        output = self.mainc(project, prefix=prefix)
         open(os.path.join(self.component_path, "riocomp.c"), "w").write("\n".join(output))
 
     def vinit(self, vname, vtype, halstr=None, vdir="input"):
         vtype = {"bool": "bit"}.get(vtype, vtype)
         direction = {"output": "IN", "input": "OUT", "inout": "IO"}.get(vdir, vdir)
-        return f'    if (retval = hal_pin_{vtype}_newf(HAL_{direction}, &(data->{vname}), comp_id, "%s.{halstr}", prefix) != 0) error_handler(retval);'
+        return f'    if (retval = hal_pin_{vtype}_newf(HAL_{direction}, &(data->{vname}), comp_id, "{halstr}") != 0) error_handler(retval);'

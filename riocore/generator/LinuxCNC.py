@@ -175,6 +175,9 @@ class LinuxCNC:
     SHORTENER = {
         "input": "in",
         "output": "out",
+        "spindle": "spl",
+        "lower": "lo",
+        "limit": "lim",
         "encoder": "enc",
         "enable": "en",
         "duty": "sty",
@@ -200,7 +203,7 @@ class LinuxCNC:
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
-        self.hal_prefix = "rio"
+        self.hal_prefix = "nrio"
 
         # expand shortener mapping
         for plugin_instance in self.project.plugin_instances:
@@ -233,7 +236,7 @@ class LinuxCNC:
         if machinetype in {"melfa", "melfa_nogl", "puma"}:
             self.project.axis_names = "XYZABC"
 
-        self.project.axis_dict = self.create_axis_config(self.project, f"{self.hal_prefix}.")
+        self.project.axis_dict = self.create_axis_config(self.project)
         num_joints = 0
         for _axis, values in self.project.axis_dict.items():
             num_joints += len(values["joints"])
@@ -882,7 +885,7 @@ class LinuxCNC:
             self.halg.fmt_add_top("")
             self.halg.fmt_add_top("addf charge-pump servo-thread")
             for output in outputs:
-                self.halg.net_add("charge-pump.out-4", f"rio.{output}")
+                self.halg.net_add("charge-pump.out-4", f"{self.hal_prefix}.{output}")
 
         if "wcomp" in self.rio_functions:
             self.halg.fmt_add("")
@@ -1326,7 +1329,7 @@ if __name__ == "__main__":
                 for halname in halnames:
                     haltitles[halname] = prefix.title()
 
-        def vcp_add(signal_config, prefix, widgets, errors=False):
+        def vcp_add(signal_config, widgets, errors=False):
             halname = signal_config["halname"]
             netname = signal_config["netname"]
             direction = signal_config["direction"]
@@ -1458,7 +1461,6 @@ if __name__ == "__main__":
                         "section": section,
                         "group": group,
                         "direction": direction,
-                        "prefix": prefix,
                         "boolean": boolean,
                         "virtual": virtual,
                         "halname": halname,
@@ -1477,10 +1479,7 @@ if __name__ == "__main__":
             for signal_name, signal_config in plugin_instance.signals().items():
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "position-scale", "position-fb", "velocity", "position-cmd", "enable", "dty"}:
                     continue
-                hal_prefix = f"{self.hal_prefix}."
-                if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa", "ninja", "remora", "fpga"}:
-                    hal_prefix = ""
-                vcp_add(signal_config, hal_prefix, widgets)
+                vcp_add(signal_config, widgets)
 
         tablist = []
         for tab in vcp_sections:
@@ -1582,7 +1581,6 @@ if __name__ == "__main__":
                 for widget in widgets[tab][group]:
                     section = widget["section"]
                     direction = widget["direction"]
-                    prefix = widget["prefix"]
                     boolean = widget["boolean"]
                     virtual = widget["virtual"]
                     group = widget["group"]
@@ -1611,7 +1609,7 @@ if __name__ == "__main__":
                     # string len shortener
                     def short_str(halname):
                         for string, short in self.SHORTENER.items():
-                            if len(halname) <= 47:
+                            if len(halname) < 47 - len(self.gui_prefix):
                                 break
                             halname = halname.replace(string, short)
                         return halname
@@ -1619,7 +1617,7 @@ if __name__ == "__main__":
                     # max = 47 characters
                     halname_short = short_str(halname)
                     halname_full = f"{self.gui_prefix}.{halname_short}"
-                    if len(halname_full) > 47:
+                    if len(halname_short) >= 47 - len(self.gui_prefix):
                         riocore.log(f"ERROR: halname too long (>47): {halname_short} ({halname_full})")
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname_short, setup=displayconfig)
 
@@ -1664,15 +1662,15 @@ if __name__ == "__main__":
                             gui_pinname = f"lowpass_{halname}.out"
 
                     if dtype == "multilabel" and not boolean:
-                        self.halg.net_add(f"{prefix}{halname}-u32-abs", f"demux_{halname}.sel-u32")
+                        self.halg.net_add(f"{halname}-u32-abs", f"demux_{halname}.sel-u32")
                     elif virtual and direction == "input":
                         self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
                     elif virtual and direction == "output":
                         self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
                     elif netname or setp or direction == "input":
-                        self.halg.net_add(f"{prefix}{halname}", gui_pinname)
+                        self.halg.net_add(f"{halname}", gui_pinname)
                     elif direction == "output":
-                        self.halg.net_add(gui_pinname, f"{prefix}{halname}")
+                        self.halg.net_add(gui_pinname, halname)
 
                 if group:
                     gui_gen.draw_vbox_end()
@@ -1749,7 +1747,8 @@ if __name__ == "__main__":
                     direction = signal_config["direction"]
                     userconfig = signal_config.get("userconfig", {})
                     boolean = signal_config.get("bool")
-                    halpin_info[f"{self.hal_prefix}.{halname}"] = {
+                    # halpin_info[f"{self.hal_prefix}.{halname}"] = {
+                    halpin_info[halname] = {
                         "direction": direction,
                         "boolean": boolean,
                     }
@@ -1849,9 +1848,9 @@ if __name__ == "__main__":
                         found_voltage = signal_config["halname"]
 
                 if found_error_count and found_ampere and found_voltage:
-                    # self.halg.net_add(f"rio.{found_error_count}-s32", "qtdragon.spindle-modbus-errors")
-                    self.halg.net_add(f"rio.{found_ampere}", "qtdragon.spindle-amps")
-                    self.halg.net_add(f"rio.{found_voltage}", "qtdragon.spindle-volts")
+                    # self.halg.net_add(f"{found_error_count}-s32", "qtdragon.spindle-modbus-errors")
+                    self.halg.net_add(found_ampere, "qtdragon.spindle-amps")
+                    self.halg.net_add(found_voltage, "qtdragon.spindle-volts")
                     break
 
         self.mqtt_publisher = []
@@ -2026,8 +2025,6 @@ if __name__ == "__main__":
                     rprefix = ""
                     if virtual:
                         rprefix = "riov."
-                    elif plugin_instance.PLUGIN_TYPE == "gateware":
-                        rprefix = "rio."
                     if scale and not virtual:
                         self.halg.setp_add(f"{rprefix}{halname}-scale", scale)
                     if offset and not virtual:
@@ -2061,7 +2058,7 @@ if __name__ == "__main__":
         if not found_user_anbale:
             self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "user-enable-out")
 
-    def create_axis_config(self, project, prefix="rio."):
+    def create_axis_config(self, project, prefix=""):
         linuxcnc_config = project.config["jdata"].get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype")
         axis_names = "XYZACBUVW"
