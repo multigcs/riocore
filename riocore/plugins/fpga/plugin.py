@@ -71,15 +71,25 @@ class Plugin(PluginBase):
             return
 
         board_file = os.path.join(os.path.dirname(__file__), f"{node_type}.json")
-        jdata = json.loads(open(board_file, "r").read())
-        self.jdata = jdata
+        self.jdata = json.loads(open(board_file, "r").read())
+
+        if self.jdata.get("toolchains"):
+            self.OPTIONS.update(
+                {
+                    "toolchain": {
+                        "default": self.jdata.get("toolchain"),
+                        "type": "select",
+                        "options": self.jdata["toolchains"],
+                    }
+                }
+            )
 
         self.IMAGE = f"{node_type}.png"
         self.IMAGE_SHOW = True
-        self.DESCRIPTION = jdata.get("comment", "")
-        self.INFO = jdata.get("description", "")
+        self.DESCRIPTION = self.jdata.get("comment", "")
+        self.INFO = self.jdata.get("description", "")
         self.PINDEFAULTS = {}
-        for slot in jdata["slots"]:
+        for slot in self.jdata["slots"]:
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 if isinstance(pin_data, str):
@@ -97,6 +107,8 @@ class Plugin(PluginBase):
         self.fpga_num = 0
         self.hal_prefix = "rio"
 
+        toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain"))
+        self.jdata["toolchain"] = toolchain
         self.jdata["speed"] = int(self.jdata["clock"].get("speed"))
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
         self.jdata["sysclk_pin"] = self.jdata["clock"]["pin"]
@@ -180,9 +192,8 @@ class Plugin(PluginBase):
             )
 
         parent.generate_pll = generate_pll
-        parent.toolchain = cls.jdata["toolchain"]
-        riocore.log(f"loading toolchain {parent.toolchain}")
-        parent.toolchain_generator = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{parent.toolchain}").Toolchain(cls.jdata)
+        riocore.log(f"loading toolchain {cls.jdata['toolchain']}")
+        cls.jdata["toolchain_generator"] = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{cls.jdata['toolchain']}").Toolchain(cls.jdata)
 
         for plugin_instance in parent.project.plugin_instances:
             if plugin_instance.PLUGIN_TYPE != "gateware":
@@ -219,7 +230,7 @@ class Plugin(PluginBase):
         globals_data = []
         globals_data.append(f'localparam FPGA_FAMILY = "{cls.jdata.get("family", "UNKNOWN")}";')
         globals_data.append(f'localparam FPGA_TYPE = "{cls.jdata.get("type", "UNKNOWN")}";')
-        globals_data.append(f'localparam TOOLCHAIN = "{parent.toolchain}";')
+        globals_data.append(f'localparam TOOLCHAIN = "{cls.jdata["toolchain"]}";')
         globals_data.append("")
         if cls.jdata.get("family", "UNKNOWN") in {"ice40"}:
             globals_data.append("`define DSP_CALC")
@@ -326,7 +337,7 @@ class Plugin(PluginBase):
                     else:
                         riocore.log(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
 
-        parent.toolchain_generator.generate(cls.jdata["output_path"])
+        cls.jdata["toolchain_generator"].generate(cls.jdata["output_path"])
 
     def top(cls, parent):
         output = []
@@ -511,8 +522,8 @@ class Plugin(PluginBase):
         speed = cls.jdata["speed"]
         if osc_clock and float(osc_clock) != float(speed):
             if parent.generate_pll:
-                if hasattr(parent.toolchain_generator, "pll"):
-                    parent.toolchain_generator.pll(float(osc_clock), float(speed))
+                if hasattr(cls.jdata["toolchain_generator"], "pll"):
+                    cls.jdata["toolchain_generator"].pll(float(osc_clock), float(speed))
                 else:
                     riocore.log(f"WARNING: can not generate pll for this platform: set speed to: {speed} Hz")
                     cls.jdata["speed"] = speed
