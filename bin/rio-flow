@@ -46,7 +46,6 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 import riocore
 
 from riocore.gui.loader import ConfigLoader
-from riocore.gui.tab_json import TabJson
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.flow_tabs import (
@@ -54,6 +53,7 @@ from riocore.gui.flow_tabs import (
     TabOptions,
     TabDrawing,
     TabBuilder,
+    TabJson,
 )
 from riocore.gui.widgets import (
     edit_file,
@@ -703,85 +703,6 @@ class SubNode(MyNode):
         return False
 
 
-class ModuleNode(MyNode):
-    border_color = QColor(150, 250, 150)
-
-    def __init__(self, scene, x, y, module_config, sysconfig):
-        super().__init__(scene, x, y)
-        self.sysconfig = sysconfig
-        self.module_config = module_config
-        self.flow_cfg = self.module_config
-        self.module_name = self.module_config["module"]
-        self.module_setup = self.module_config["setup"]
-        self.module_path = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.json"))
-        self.module_image = self.scene.parent.get_path(os.path.join("modules", self.module_name, "module.png"))
-        self.name = self.module_name
-        self.slot = self.module_config.get("slot", "")
-
-        moduleJsonStr = open(self.module_path, "r").read()
-        self.jdata = json.loads(moduleJsonStr)
-
-        self.width = grid(250)
-        self.height = grid(50)
-        self.setZValue(9)
-        self.reload()
-
-    def reload(self):
-        self.jdata["base"] = {}
-        self.jdata["main"] = {}
-
-        self.ports = {}
-        self.plugin_uids = []
-        self.plugins = riocore.Plugins()
-        for plugin_id, plugin_config in enumerate(self.jdata.get("plugins", [])):
-            uid = plugin_config.get("uid")
-            if not uid:
-                uid_prefix = plugin_config["type"]
-                unum = 0
-                while f"{uid_prefix}{unum}" in self.plugin_uids:
-                    unum += 1
-                uid = f"{uid_prefix}{unum}"
-                plugin_config["uid"] = uid
-            self.plugin_uids.append(uid)
-            self.plugins.load_plugin(plugin_id, plugin_config, self.sysconfig)
-
-            for pin_name, pin_data in plugin_config.get("pins", {}).items():
-                edge_type = pin_data.get("edge")
-                if not edge_type:
-                    pin_data["edge"] = "target"
-                pin_type = pin_data.get("type")
-                if not pin_type:
-                    pin_data["type"] = "FPGA"
-
-                pin = pin_data.get("pin")
-                if pin:
-                    self.ports[pin] = pin_data
-                    self.jdata["base"][pin] = pin_data
-
-        for plugin_instance in self.plugins.plugin_instances:
-            plugin_name = plugin_instance.instances_name
-            if show_signals:
-                for pin_name, pin_data in plugin_instance.SIGNALS.items():
-                    edge_type = pin_data.get("edge")
-                    if not edge_type:
-                        pin_data["edge"] = "source"
-                    pin_type = pin_data.get("type")
-                    if not pin_type:
-                        pin_data["type"] = "SIGNAL"
-                    pin_title = pin_data.get("title")
-                    if not pin_title:
-                        pin_data["title"] = pin_name
-                    pin_data["title"] = f"{plugin_name} - {pin_data['title']}"
-                    self.ports[f"{plugin_name}:sig_{pin_name}"] = pin_data
-
-    def delete(self):
-        # remove module from cfg
-        for pn, module in enumerate(self.scene.parent.config["modules"]):
-            if module == self.module_config:
-                self.scene.parent.config["modules"].pop(pn)
-        return True
-
-
 class ModifierNode(MyNode):
     port_top = 7
     port_bottom = 8
@@ -955,29 +876,7 @@ class NodeViewer(QGraphicsView):
             target_port = self.scene.selection_target[1]
             if source_node and source_port and target_node and target_port:
                 if source_node != target_node:
-                    if isinstance(target_node, ModuleNode) and ":" in source_port:
-                        module_name = target_node.name
-                        slot = source_port.split(":")[0]
-                        # remove all old wires
-                        for subitem in self.scene.items():
-                            if isinstance(subitem, NodeEdge):
-                                if subitem.etype == f"module:{module_name}":
-                                    self.scene.removeItem(subitem)
-                        # connect all main wires
-                        color_n = 0
-                        for plugin_instance in target_node.plugins.plugin_instances:
-                            for pin, pin_data in plugin_instance.pins().items():
-                                pin = pin_data.get("pin")
-                                if pin:
-                                    bpin = f"{slot}:{pin}"
-                                    edge = NodeEdge(self.scene, f"module:{module_name}", source_node, bpin, target_node, pin, color=colors[color_n])
-                                    self.scene.addItem(edge)
-                                    color_n += 1
-
-                        # target_node.module_config["slot"] = f"{source_node.name}:{slot}"
-                        target_node.module_config["slot"] = f"{slot}"
-
-                    elif target_port.startswith("SLOT:"):
+                    if target_port.startswith("SLOT:"):
                         slot = source_port.split(":")[0]
                         self.scene.parent.connect_slot(source_node, slot, target_node, target_port)
 
@@ -1341,7 +1240,7 @@ class Window(QMainWindow):
         # self.tabwidget.setTabPosition(QTabWidget.West)
         self.tabwidget.addTab(self.drawingtab.widget(), "Drawing")
         self.tabwidget.addTab(self.axistab.widget(), "Axis/Joints")
-        self.tabwidget.addTab(self.optionstab.widget(), "Options")
+        self.tabwidget.addTab(self.optionstab.widget(), "LinuxCNC")
         self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
         self.tabwidget.addTab(self.buildertab.widget(), "Builder")
 
@@ -1464,7 +1363,7 @@ class Window(QMainWindow):
     def toolbar(self):
         toolbar = QToolBar("Main ToolBar")
         self.addToolBar(toolbar)
-        toolbar.setIconSize(QSize(16, 16))
+        toolbar.setIconSize(QSize(24, 24))
 
         icon = self.style().standardIcon(QStyle.SP_DialogOpenButton)
         load_action = QAction(icon, "&Load", self)
@@ -1570,18 +1469,6 @@ class Window(QMainWindow):
                 return False
         return True
 
-    def get_boardpath(self, board):
-        pathes = [
-            f"{board}.json",
-            os.path.join(riocore_path, "boards", f"{board}.json"),
-            os.path.join(riocore_path, "boards", board, "board.json"),
-        ]
-        for path in pathes:
-            if os.path.exists(path):
-                return path
-        riocore.log(f"can not find board: {board}")
-        return
-
     def struct_clean(self, data):
         # removing empty lists and dicts
         for key in list(data):
@@ -1605,12 +1492,6 @@ class Window(QMainWindow):
     def clean_config(self, config_unclean, flow=False):
         config = copy.deepcopy(config_unclean)
         # cleanup
-        for module in config.get("modules", []):
-            for name, setup in module.get("setup", {}).items():
-                continue
-                for pin, pin_setup in setup.get("pins", {}).items():
-                    if "pin_mapped" in pin_setup:
-                        del pin_setup["pin_mapped"]
         for plugin in config.get("plugins", []):
             for name, plugin_config in plugin.get("config", {}).items():
                 if "instance" in plugin_config:
@@ -1678,7 +1559,7 @@ class Window(QMainWindow):
         board_name = self.config.get("boardcfg")
         board_uid = "board0"
         if board_name:
-            boardpath = self.get_boardpath(board_name)
+            boardpath = os.path.join(riocore_path, "plugins", "fpga", f"{board_name}.json")
             riocore.log(f"INFO: converting board {boardpath} into plugin")
             data = open(boardpath, "r").read()
             board = json.loads(data)
@@ -2019,14 +1900,6 @@ class Window(QMainWindow):
         py = 100
         if "plugins" not in self.config:
             self.config["plugins"] = []
-        if "modules" not in self.config:
-            self.config["modules"] = []
-
-        # loading modules
-        for module_id, module_config in enumerate(self.config.get("modules", [])):
-            if "setup" not in module_config:
-                self.config["modules"][module_id]["setup"] = {}
-            py += self.insert_module(module_config, py)
 
         # loading plugins
         self.plugin_uids = []
@@ -2409,73 +2282,6 @@ class Window(QMainWindow):
                 edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], pnode, pin, color=colors[color_n])
                 self.scene.addItem(edge)
                 color_n += 1
-
-    def insert_module(self, module_config, py=100):
-        if "pos" in module_config:
-            hx = module_config["pos"][0]
-            hy = module_config["pos"][1]
-        elif self.scene.insert_position is not None:
-            hx = self.scene.insert_position.x()
-            hy = self.scene.insert_position.y()
-            self.scene.insert_position = None
-        else:
-            hx = 850
-            hy = py
-        mnode = ModuleNode(self.scene, hx, hy, module_config, self.config)
-        slot = module_config["slot"]
-        module_name = module_config["module"]
-
-        color_n = 0
-        for plugin_instance in mnode.plugins.plugin_instances:
-            plugin_name = plugin_instance.instances_name
-            for pin, pin_data in plugin_instance.pins().items():
-                pin = pin_data.get("pin")
-                if pin:
-                    bpin = f"{slot}:{pin}"
-                    edge = NodeEdge(self.scene, f"module:{module_name}", self.bnode, bpin, mnode, pin, color=colors[color_n])
-                    self.scene.addItem(edge)
-                    color_n += 1
-
-            plugin_config = plugin_instance.plugin_setup
-            signals = plugin_config.get("signals")
-            if signals:
-                for signal_name, signal in signals.items():
-                    halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-                    if halname not in self.halpins:
-                        self.halpins[halname] = {
-                            "type": "",
-                            "target": "",
-                            "source": (mnode, f"{plugin_name}:{signal_name}"),
-                        }
-                    net = signal.get("net")
-                    if net:
-                        self.halpins[halname]["type"] = "net"
-                        self.halpins[halname]["target"] = net
-                    setp = signal.get("setp")
-                    if setp:
-                        self.halpins[halname]["type"] = "setp"
-                        self.halpins[halname]["target"] = setp
-
-            is_joint = plugin_config.get("is_joint")
-            if plugin_instance.SIGNALS and is_joint:
-                for signal_name, signal in plugin_instance.SIGNALS.items():
-                    halname = f"rio.{plugin_instance.signal_prefix}.{signal_name}"
-                    if is_joint and signal_name in {"velocity", "position", "position-cmd", "position-fb", "position-scale"}:
-                        if halname not in self.halpins:
-                            self.halpins[halname] = {
-                                "type": "",
-                                "target": "",
-                                "source": (mnode, signal_name),
-                            }
-                        self.halpins[halname]["type"] = "joint"
-                        self.halpins[halname]["target"] = f"joint.{self.joints}.{signal_name}"
-                self.joints += 1
-
-        self.scene.addItem(mnode)
-
-        ph = 260
-        ph = max(ph, mnode.height) + 5
-        return ph
 
     def plugin_by_name(self, plugin_name):
         for item in self.scene.items():
