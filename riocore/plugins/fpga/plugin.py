@@ -84,6 +84,17 @@ class Plugin(PluginBase):
                 }
             )
 
+        self.OPTIONS.update(
+            {
+                "speed": {
+                    "default": int(self.jdata["clock"].get("speed")),
+                    "type": int,
+                    "min": 1000000,
+                    "max": 500000000,
+                }
+            }
+        )
+
         self.IMAGE = f"{node_type}.png"
         self.IMAGE_SHOW = True
         self.DESCRIPTION = self.jdata.get("comment", "")
@@ -108,8 +119,9 @@ class Plugin(PluginBase):
         self.hal_prefix = "rio"
 
         toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain"))
+        speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.jdata["toolchain"] = toolchain
-        self.jdata["speed"] = int(self.jdata["clock"].get("speed"))
+        self.jdata["speed"] = speed
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
         self.jdata["sysclk_pin"] = self.jdata["clock"]["pin"]
 
