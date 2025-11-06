@@ -9,7 +9,7 @@ import subprocess
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
+        self.gateware_path = self.config["output_path"]
         self.riocore_path = config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("icestorm", "")
         if self.toolchain_path:
@@ -46,9 +46,9 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         if self.toolchain_path:
             prefix = self.toolchain_path[0] + os.sep
 
-        if self.config["jdata"]["family"] == "ecp5":
+        if self.config["family"] == "ecp5":
             result = subprocess.check_output(f'{prefix}ecppll -f "{os.path.join(self.gateware_path, "pll.v")}" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}', shell=True)
-        elif self.config["jdata"]["type"] == "up5k":
+        elif self.config["type"] == "up5k":
             result = subprocess.check_output(f'{prefix}icepll -p -m -f "{os.path.join(self.gateware_path, "pll.v")}" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}', shell=True)
             achieved = re.findall(r"F_PLLOUT:\s*(\d*\.\d*)\s*MHz \(achieved\)", result.decode())
             if achieved:

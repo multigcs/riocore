@@ -529,6 +529,10 @@ class Project:
         self.load_config(configuration, output_path)
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
 
+        for plugin_instance in self.plugin_instances:
+            if hasattr(plugin_instance, "update_system_setup"):
+                plugin_instance.update_system_setup(self)
+
         # expansion mapping after plugin load
         expansion_mapping = {}
         for plugin_instance in self.plugin_instances:

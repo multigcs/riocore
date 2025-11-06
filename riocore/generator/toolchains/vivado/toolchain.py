@@ -8,7 +8,7 @@ import subprocess
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
+        self.gateware_path = self.config["output_path"]
         self.riocore_path = config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("vivado", "")
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):
@@ -26,7 +26,7 @@ class Toolchain:
         return info
 
     def pll(self, clock_in, clock_out):
-        if self.config["jdata"]["family"] == "xc7":
+        if self.config["family"] == "xc7":
             if float(clock_out) == 125000000.0 and float(clock_in) == 100000000.0:
                 result = subprocess.check_output(
                     f"{self.riocore_path}/files/vivado-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",

@@ -9,7 +9,7 @@ import subprocess
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
+        self.gateware_path = self.config["output_path"]
         self.riocore_path = config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("ise", "")
         if self.toolchain_path and not self.toolchain_path.endswith("lin64"):
@@ -56,7 +56,7 @@ class Toolchain:
         verilogs = " ".join(self.config["verilog_files"])
 
         # CClk | jtagclk
-        startupClk = self.config["jdata"]["clock"].get("startup", "jtagclk")
+        startupClk = self.config["clock"].get("startup", "jtagclk")
 
         makefile_data = []
         makefile_data.append("")

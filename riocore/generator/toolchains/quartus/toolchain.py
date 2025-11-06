@@ -37,7 +37,7 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         return info
 
     def pll(self, clock_in, clock_out):
-        if self.config["jdata"]["family"] in {"MAX 10", "Cyclone 10 LP", "Cyclone IV E"}:
+        if self.config["family"] in {"MAX 10", "Cyclone 10 LP", "Cyclone IV E"}:
             pll_cmd = f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'"
             if self.toolchain_path:
                 pll_cmd += f" '{self.toolchain_path}'"
@@ -173,8 +173,8 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
-        clock_speed = self.config["jdata"]["clock"]["speed"]
-        osc_speed = self.config["jdata"]["clock"].get("osc", clock_speed)
+        clock_speed = self.config["clock"]["speed"]
+        osc_speed = self.config["clock"].get("osc", clock_speed)
         osc_name = "sysclk_in"
 
         sdc_data = []

@@ -97,6 +97,13 @@ class Plugin(PluginBase):
         self.fpga_num = 0
         self.hal_prefix = "rio"
 
+        self.jdata["speed"] = int(self.jdata["clock"].get("speed"))
+        self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
+        self.jdata["sysclk_pin"] = self.jdata["clock"]["pin"]
+
+    def update_system_setup(self, parent):
+        self.system_setup["speed"] = self.jdata["speed"]
+
     def hal(self, parent):
         parent.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
@@ -131,12 +138,9 @@ class Plugin(PluginBase):
         for instance in instances:
             gateware_path = os.path.join(parent.project.config["output_path"], "Gateware", instance.instances_name)
             instance.jdata["name"] = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            instance.jdata["riocore_path"] = riocore_path
             instance.jdata["json_path"] = parent.project.config["json_path"]
+            instance.jdata["riocore_path"] = riocore_path
             instance.jdata["output_path"] = gateware_path
-            instance.jdata["speed"] = int(instance.jdata["clock"].get("speed"))
-            instance.jdata["osc_clock"] = int(instance.jdata["clock"].get("osc_clock", instance.jdata["speed"]))
-            instance.jdata["sysclk_pin"] = instance.jdata["clock"]["pin"]
 
             # clean None pins
             for plugin_instance in parent.project.plugin_instances:
@@ -504,8 +508,8 @@ class Plugin(PluginBase):
         output.append("")
 
         osc_clock = cls.jdata["osc_clock"]
-        if osc_clock:
-            speed = cls.jdata["speed"]
+        speed = cls.jdata["speed"]
+        if osc_clock and float(osc_clock) != float(speed):
             if parent.generate_pll:
                 if hasattr(parent.toolchain_generator, "pll"):
                     parent.toolchain_generator.pll(float(osc_clock), float(speed))
