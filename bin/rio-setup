@@ -742,7 +742,7 @@ class WinForm(QWidget):
 
         boards_path = self.get_path("boards")
         modules_path = self.get_path("modules")
-        breakouts_path = self.get_path("breakouts")
+        breakouts_path = ""
 
         self.interfaces = []
         for path in sorted(glob.glob(os.path.join(riocore_path, "interfaces", "*"))):

@@ -111,6 +111,9 @@ class TabBuilder:
         if self.block:
             print("wait to finish already running command")
             return
+        if not self.parent.save_check():
+            # cancel pressed
+            return
         self.block = True
 
         generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
@@ -122,6 +125,9 @@ class TabBuilder:
     def generator_run_build(self):
         if self.block:
             print("wait to finish already running command")
+            return
+        if not self.parent.save_check():
+            # cancel pressed
             return
         self.block = True
 

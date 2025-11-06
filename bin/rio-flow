@@ -17,6 +17,7 @@ from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QRect, QSize, QTimer
 from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
 from PyQt5.QtWidgets import (
     QDialogButtonBox,
+    QMessageBox,
     QFileDialog,
     QStyle,
     QMainWindow,
@@ -1637,6 +1638,9 @@ class Window(QMainWindow):
         subprocess.run(f"open {index_html} &", shell=True, close_fds=True)
 
     def generator_run(self):
+        if not self.save_check():
+            # cancel pressed
+            return
         project = self.generate()
         start_sh = os.path.join(project.config["output_path"], "LinuxCNC", "start.sh")
         cmd = f"/bin/sh {start_sh}"
@@ -1760,8 +1764,27 @@ class Window(QMainWindow):
 
         return toolbar
 
+    def closeEvent(self, event):
+        if self.save_check():
+            event.accept()
+        else:
+            event.ignore()
+
     def exit(self):
-        exit(0)
+        if self.save_check():
+            exit(0)
+
+    def save_check(self):
+        if not self.cfg_check():
+            confirmation = QMessageBox.question(self, "Confirmation", "Save configuration ?", QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if confirmation == QMessageBox.Yes:
+                self.json_save()
+                return True
+            elif confirmation == QMessageBox.No:
+                return True
+            else:
+                return False
+        return True
 
     def get_boardpath(self, board):
         pathes = [
@@ -1900,8 +1923,9 @@ class Window(QMainWindow):
         self.jsontab.update(flow=True)
         if self.jsontab.found_diffs:
             self.tabwidget.tabBar().setTabTextColor(3, QColor(255, 0, 0))
-        else:
-            self.tabwidget.tabBar().setTabTextColor(3, QColor(0, 0, 0))
+            return False
+        self.tabwidget.tabBar().setTabTextColor(3, QColor(0, 0, 0))
+        return True
 
     def undo(self):
         if len(self.snapshots) > 1:
