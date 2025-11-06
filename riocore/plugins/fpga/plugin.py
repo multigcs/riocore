@@ -59,6 +59,12 @@ class Plugin(PluginBase):
                 ],
                 "description": "board type",
             },
+            "protocol": {
+                "default": "SPI",
+                "type": "select",
+                "options": ["SPI", "UDP", "UART", "FTDI", "CH341", "SHM"],
+                "description": "communication protocol",
+            },
             "simulation": {
                 "default": False,
                 "type": bool,
@@ -67,9 +73,6 @@ class Plugin(PluginBase):
         }
 
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        # if not self.plugin_setup.get("node_type"):
-        #    return
-
         board_file = os.path.join(os.path.dirname(__file__), f"{node_type}.json")
         self.jdata = json.loads(open(board_file, "r").read())
 
@@ -130,7 +133,6 @@ class Plugin(PluginBase):
         self.system_setup["speed"] = self.jdata["speed"]
 
     def hal(self, parent):
-        parent.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
         parent.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
         parent.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
@@ -150,7 +152,7 @@ class Plugin(PluginBase):
             else:
                 output.append(f"setp {instance.hal_prefix}.sys-simulation 0")
             output.append("")
-            output.append("addf rio.readwrite servo-thread")
+            output.append(f"addf {instance.hal_prefix}.readwrite servo-thread#")
         return "\n".join(output)
 
     def builder(self, config, command):

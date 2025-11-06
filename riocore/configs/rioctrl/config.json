@@ -170,10 +170,11 @@
             ],
             "joint": {
                 "feedback": "encoder-0:position",
-                "pid_p": 500.0,
-                "pid_i": 15.0,
-                "pid_d": 2.0,
-                "scale": 2000.0
+                "pid_p": 250.0,
+                "pid_i": 50.0,
+                "pid_d": 5.0,
+                "scale": 500.0,
+                "max_velocity": 200.0
             }
         },
         {
@@ -309,7 +310,7 @@
                     "net": "",
                     "function": "",
                     "setp": "",
-                    "scale": -2000.0
+                    "scale": -500.0
                 },
                 "rps": {
                     "net": "",
@@ -514,15 +515,33 @@
                 420.0,
                 30.0
             ]
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "pos": [
+                -10.0,
+                50.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "SlotControl:EN"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "halui.machine.is-on"
+                }
+            }
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.24,
+            "scale": 1.159047619047619,
             "pos": [
-                -202,
-                -242
+                -501.2952380952381,
+                -268.0
             ]
         },
         "board": {
@@ -531,6 +550,16 @@
                 220.0
             ],
             "rotate": 0
+        }
+    },
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "MAX_LINEAR_VELOCITY": 300.0
+            },
+            "TRAJ": {
+                "MAX_LINEAR_VELOCITY": 300.0
+            }
         }
     }
 }
