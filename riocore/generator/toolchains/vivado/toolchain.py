@@ -14,8 +14,8 @@ class Toolchain:
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):
             self.toolchain_path = os.path.join(self.toolchain_path, "bin")
         self.toolchain_source = os.path.join(self.riocore_path, "generator", "toolchains", "vivado")
-        self.armcore = self.config["board_data"].get("armcore", False)
-        self.clock = int(self.config["board_data"]["clock"]["speed"])
+        self.armcore = self.config.get("armcore", False)
+        self.clock = int(self.config["speed"])
 
     def info(cls):
         info = {

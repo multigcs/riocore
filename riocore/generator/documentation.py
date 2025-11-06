@@ -92,25 +92,17 @@ class documentation:
     def config_md(self):
         output = [f"# {self.project.config['name']}"]
         jdata = self.project.config["jdata"]
-        boardcfg = jdata.get("boardcfg", "")
-        board_link = f"[{boardcfg}](https://github.com/multigcs/riocore/blob/main/riocore/boards/{boardcfg}/README.md)"
 
         flow_path = os.path.join(self.doc_path, "flow.png")
+        img_path = ""
         if os.path.exists(flow_path):
             image = '<img align="right" height="320" src="flow.png">'
             output.append(image)
-        else:
-            img_path = os.path.join(riocore_path, "boards", boardcfg, "board.png")
-            if os.path.exists(img_path):
-                target = os.path.join(self.doc_path, "board.png")
-                shutil.copy(img_path, target)
-                image = '<img align="right" height="320" src="board.png">'
-                output.append(image)
 
         output.append(jdata.get("description", ""))
         output.append("")
-        output.append(f"* Board: {board_link}")
-        output.append(f"* Config-Path: {self.project.config['json_file']}")
+        if self.project.config["json_file"]:
+            output.append(f"* Config-Path: {self.project.config['json_file']}")
         output.append(f"* Output-Path: {self.project.config['output_path']}")
         if self.toolchain:
             output.append(f"* Toolchain: {self.toolchain}")
@@ -263,17 +255,6 @@ class documentation:
                 self.expansion_pins.append(pin)
             for pin in plugin_instance.expansion_inputs():
                 self.expansion_pins.append(pin)
-
-        self.slots = self.project.config["board_data"].get("slots", []) + self.project.config["jdata"].get("slots", [])
-        for slot in self.slots:
-            slot_name = slot.get("name")
-            slot_pins = slot.get("pins", {})
-            for pin_name, pin in slot_pins.items():
-                if isinstance(pin, dict):
-                    pin = pin["pin"]
-                pin_id = f"{slot_name}:{pin_name}"
-                self.pinmapping[pin_id] = pin
-                self.pinmapping_rev[pin] = pin_id
 
         output = ["# Pins"]
         output.append("| Plugin | ID | Name | Board | Alias |")

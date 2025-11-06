@@ -8,7 +8,6 @@ from lxml import etree
 
 template = {
     "name": "Parport",
-    "_boardcfg": "",
     "plugins": [],
     "flow": {
         "view": {

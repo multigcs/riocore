@@ -61,6 +61,11 @@ class Plugins:
                 if "node_type" in plugin_instance.OPTIONS:
                     option_data = plugin_instance.OPTIONS["node_type"]
                     for option in option_data["options"]:
+                        plugin_instance.plugin_setup["node_type"] = option
+                        plugin_instance.setup()
+                        description = copy.deepcopy(plugin_instance.DESCRIPTION)
+                        info = copy.deepcopy(plugin_instance.INFO)
+                        keywords = copy.deepcopy(plugin_instance.KEYWORDS) + option
                         plugins.append({"name": f"{plugin_name} {option}", "path": plugin_path, "description": description, "info": info, "keywords": keywords, "ptype": plugin_instance.PLUGIN_TYPE})
                 else:
                     plugins.append({"name": plugin_name, "path": plugin_path, "description": description, "info": info, "keywords": keywords, "ptype": plugin_instance.PLUGIN_TYPE})
@@ -602,7 +607,7 @@ class Project:
         name = jdata.get("name")
         output = [f"RIO - {name}"]
         output.append("")
-        for name in ("description", "boardcfg", "gui", "protocol"):
+        for name in ("description", "gui", "protocol"):
             value = jdata.get(name)
             if value:
                 output.append(f"{name.title()}: {value}")
@@ -654,19 +659,8 @@ class Project:
         log(f"path not found: {path} or {os.path.join(riocore_path, path)}")
         exit(1)
 
-    def get_boardpath(self, board):
-        if not board:
-            return None
-        pathes = [f"{board}.json", os.path.join(riocore_path, "boards", f"{board}.json"), os.path.join(riocore_path, "boards", board, "board.json")]
-        for path in pathes:
-            if os.path.exists(path):
-                return path
-        log(f"can not find board: {board}")
-        return None
-
     def load_config(self, configuration, output_path=None):
         project = {}
-        project["boardcfg_path"] = ""
         project["json_path"] = ""
 
         if output_path is None:
@@ -709,27 +703,6 @@ class Project:
             project["json_path"] = os.path.dirname(configuration)
 
         project["plugins"] = copy.deepcopy(project["jdata"].get("plugins", []))
-        project["board_data"] = {
-            "name": "UNKNOWN",
-        }
-
-        # loading board data
-        board = project["jdata"].get("boardcfg")
-        board_file = self.get_boardpath(board)
-        if board and board_file:
-            bdata = open(board_file, "r").read()
-            project["boardcfg_path"] = os.path.dirname(board_file)
-            project["board_data"] = json.loads(bdata)
-            if "name" in project["board_data"]:
-                project["board"] = project["board_data"]["name"]
-            for key, value in project["board_data"].items():
-                if key not in project["jdata"]:
-                    project["jdata"][key] = value
-            if "flashcmd" in project["jdata"]:
-                project["flashcmd"] = project["jdata"]["flashcmd"]
-
-            # adding invisible plugins
-            project["plugins"] += project["board_data"].get("plugins", [])
 
         self.pin_mapping = {}
 
@@ -741,74 +714,8 @@ class Project:
             mdata = open(path, "r").read()
             project["modules"][module] = json.loads(mdata)
 
-        # import module data
-        bname = project["board_data"]["name"]
-        for slot_n, slot in enumerate(project["jdata"].get("slots", [])):
-            spins = slot["pins"]
-            slotname = slot.get("name", f"slot{slot_n}")
-            for spin, spin_data in spins.items():
-                if isinstance(spin_data, str):
-                    spin_data = {"pin": spin_data}
-                self.pin_mapping[f"{slotname}:{spin}"] = spin_data["pin"]
-                self.pin_mapping[f"{bname}:{slotname}:{spin}"] = spin_data["pin"]
-
-            modules = []
-            # check old config style
-            if "module" in slot:
-                module = slot.get("module")
-                ssetup = slot.get("setup")
-                log(f"WARNING: found old config style for slot modules, please update: {module}")
-                modules.append(
-                    {
-                        "slot": slotname,
-                        "module": module,
-                        "setup": ssetup,
-                    }
-                )
-
-            # check new config style
-            modules += project["jdata"].get("modules", {})
-
-            # merge modules
-            for modulesetup in modules:
-                if modulesetup.get("slot") != slotname:
-                    continue
-                module = modulesetup.get("module", [])
-                ssetup = modulesetup.get("setup", {})
-                if module in project["modules"]:
-                    module_data = copy.deepcopy(project["modules"][module])
-                    if "enable" in module_data:
-                        project["enable"] = module_data["enable"]
-                        project["enable"]["pin"] = slot["pins"][module_data["enable"]["pin"]]
-                    if "plugins" in module_data:
-                        for jn, msetup in enumerate(module_data.get("plugins", [])):
-                            msetup_name = msetup.get("name")
-                            if msetup_name and msetup_name in ssetup:
-                                self.setup_merge(ssetup[msetup_name], msetup)
-                            else:
-                                ssetup[msetup_name] = copy.deepcopy(msetup)
-                            # rewrite pins
-                            for pname, pin in ssetup.get(msetup_name, {}).get("pins", {}).items():
-                                if "pin" in pin:
-                                    if "[" in pin["pin"]:
-                                        realpin = pin["pin"]
-                                        if isinstance(realpin, dict):
-                                            realpin = realpin["pin"]
-                                    else:
-                                        realpin = spins[pin["pin"]]
-                                        if isinstance(realpin, dict):
-                                            realpin = realpin["pin"]
-                                ssetup[msetup_name]["pins"][pname]["pin"] = realpin
-                            module_data["plugins"][jn] = ssetup[msetup_name]
-                        # merge into jdata
-                        project["plugins"] += module_data["plugins"]
-                else:
-                    log(f"ERROR: module {module} not found")
-                    exit(1)
-
         self.config = project
         self.config["pin_mapping"] = self.pin_mapping
-        self.config["board_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
         self.config["speed"] = int(project["jdata"].get("clock", {}).get("speed", 1))

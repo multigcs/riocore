@@ -1,7 +1,6 @@
 import os
 import json
 import subprocess
-import glob
 from PyQt5.QtCore import QTimer, Qt
 
 import copy
@@ -178,18 +177,6 @@ class TabBuilder:
         button.clicked.connect(self.generator_run)
         self.left.addWidget(button)
 
-        if self.parent.board and self.parent.board.get("name"):
-            self.left.addWidget(QLabel(""))
-            self.left.addWidget(QLabel(self.parent.board.get("name")))
-
-            button = QPushButton("Gateware build")
-            button.clicked.connect(self.generator_run_build)
-            self.left.addWidget(button)
-
-            button = QPushButton("Gateware flash")
-            button.clicked.connect(partial(self.make, "load"))
-            self.left.addWidget(button)
-
         for item in self.parent.scene.items():
             if hasattr(item, "plugin_instance"):
                 plugin_instance = item.plugin_instance
@@ -328,15 +315,19 @@ class TabDrawing:
         plugins = []
         for plugin_data in self.plugins.list(True):
             plugin_name = plugin_data["name"]
+
             if not filter_string:
                 plugins.append(plugin_data)
-            elif filter_string in plugin_name:
+                continue
+            filter_string = filter_string.lower()
+
+            if filter_string in plugin_name.lower():
                 plugins.append(plugin_data)
-            elif filter_string in plugin_data["description"]:
+            elif filter_string in plugin_data["description"].lower():
                 plugins.append(plugin_data)
-            elif filter_string in plugin_data["info"]:
+            elif filter_string in plugin_data["info"].lower():
                 plugins.append(plugin_data)
-            elif filter_string in plugin_data["keywords"]:
+            elif filter_string in plugin_data["keywords"].lower():
                 plugins.append(plugin_data)
 
         ptypes = set()
@@ -1077,39 +1068,7 @@ class TabOptions:
         self.treeview.expandAll()
 
     def load(self):
-        boards_path = self.get_path("boards")
-        self.boards = [""]
-        for path in sorted(glob.glob(os.path.join(boards_path, "*", "board.json"))):
-            self.boards.append(path.split(os.sep)[-2].replace(".json", ""))
-        for path in sorted(glob.glob(os.path.join(boards_path, "*.json"))):
-            self.boards.append(path.split(os.sep)[-1].replace(".json", ""))
-
         self.interfaces = []
-        for path in sorted(glob.glob(os.path.join(riocore_path, "interfaces", "*"))):
-            self.interfaces.append(path.split(os.sep)[-1])
-
-        toolchain = self.parent.board.get("toolchain")
-        toolchains = self.parent.board.get("toolchains", [toolchain])
-
-        options = {
-            "name": {"type": str},
-            "description": {"type": str},
-            "boardcfg": {"type": "select", "options": self.boards},
-        }
-        options.update(
-            {
-                "toolchain": {"type": "select", "options": toolchains, "default": toolchain},
-                "protocol": {"type": "select", "options": self.interfaces, "default": "SPI"},
-            }
-        )
-        for key, var_setup in options.items():
-            row = QHBoxLayout()
-            self.layout_misc.addLayout(row)
-            row.addWidget(QLabel(key.title()), stretch=1)
-            item = self.parent.edit_item(self.config, key, var_setup, cb=self.updated)
-            row.addWidget(item, stretch=1)
-            self.items[key] = {"item2": item}
-        self.layout_misc.addStretch()
 
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}

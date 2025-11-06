@@ -67,8 +67,8 @@ class Plugin(PluginBase):
         }
 
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        if not self.plugin_setup.get("node_type"):
-            return
+        # if not self.plugin_setup.get("node_type"):
+        #    return
 
         board_file = os.path.join(os.path.dirname(__file__), f"{node_type}.json")
         self.jdata = json.loads(open(board_file, "r").read())
@@ -99,6 +99,7 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = True
         self.DESCRIPTION = self.jdata.get("comment", "")
         self.INFO = self.jdata.get("description", "")
+        self.KEYWORDS = f"{node_type} board fpga gateware"
         self.PINDEFAULTS = {}
         for slot in self.jdata["slots"]:
             slot_name = slot["name"]
@@ -123,7 +124,7 @@ class Plugin(PluginBase):
         self.jdata["toolchain"] = toolchain
         self.jdata["speed"] = speed
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
-        self.jdata["sysclk_pin"] = self.jdata["clock"]["pin"]
+        self.jdata["sysclk_pin"] = self.jdata["clock"].get("pin")
 
     def update_system_setup(self, parent):
         self.system_setup["speed"] = self.jdata["speed"]

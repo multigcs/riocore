@@ -12,11 +12,20 @@
                     "pin": "OUT1:BIT",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout0",
+            "pos": [
+                850.0,
+                100.0
+            ]
         },
         {
             "type": "bitout",
@@ -26,11 +35,20 @@
                     "pin": "OUT2:BIT",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout1",
+            "pos": [
+                850.0,
+                165.0
+            ]
         },
         {
             "type": "bitout",
@@ -39,11 +57,20 @@
                     "pin": "OUT3:BIT",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout2",
+            "pos": [
+                850.0,
+                230.0
+            ]
         },
         {
             "type": "bitout",
@@ -52,11 +79,20 @@
                     "pin": "OUT4:BIT",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout3",
+            "pos": [
+                850.0,
+                295.0
+            ]
         },
         {
             "type": "bitout",
@@ -65,11 +101,20 @@
                     "pin": "OUT5:BIT",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitout4",
+            "pos": [
+                850.0,
+                360.0
+            ]
         },
         {
             "type": "bitin",
@@ -80,7 +125,11 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
@@ -89,7 +138,12 @@
                 "bit": {
                     "net": "joint.0.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin0",
+            "pos": [
+                850.0,
+                425.0
+            ]
         },
         {
             "type": "bitin",
@@ -100,7 +154,11 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
@@ -109,7 +167,12 @@
                 "bit": {
                     "net": "joint.1.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin1",
+            "pos": [
+                850.0,
+                490.0
+            ]
         },
         {
             "type": "bitin",
@@ -120,7 +183,11 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
@@ -129,7 +196,12 @@
                 "bit": {
                     "net": "joint.2.home-sw-in"
                 }
-            }
+            },
+            "uid": "bitin2",
+            "pos": [
+                850.0,
+                555.0
+            ]
         },
         {
             "type": "bitin",
@@ -140,7 +212,11 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
@@ -149,7 +225,12 @@
                 "bit": {
                     "net": "motion.probe-input"
                 }
-            }
+            },
+            "uid": "bitin3",
+            "pos": [
+                850.0,
+                620.0
+            ]
         },
         {
             "type": "bitin",
@@ -159,11 +240,20 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitin4",
+            "pos": [
+                850.0,
+                685.0
+            ]
         },
         {
             "type": "bitin",
@@ -173,11 +263,20 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitin5",
+            "pos": [
+                850.0,
+                750.0
+            ]
         },
         {
             "type": "bitin",
@@ -187,11 +286,20 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitin6",
+            "pos": [
+                850.0,
+                815.0
+            ]
         },
         {
             "type": "bitin",
@@ -201,11 +309,20 @@
                     "pull": "up",
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                100.0,
+                                100.0
+                            ]
                         }
                     ]
                 }
-            }
+            },
+            "uid": "bitin7",
+            "pos": [
+                850.0,
+                880.0
+            ]
         },
         {
             "type": "stepdir",
@@ -218,7 +335,12 @@
                     "pin": "JOINT1:DIR"
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "uid": "stepdir0",
+            "pos": [
+                850.0,
+                945.0
+            ]
         },
         {
             "type": "stepdir",
@@ -231,7 +353,12 @@
                     "pin": "JOINT2:DIR"
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "uid": "stepdir1",
+            "pos": [
+                850.0,
+                1020.0
+            ]
         },
         {
             "type": "stepdir",
@@ -244,7 +371,12 @@
                     "pin": "JOINT3:DIR"
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "uid": "stepdir2",
+            "pos": [
+                850.0,
+                1095.0
+            ]
         },
         {
             "type": "stepdir",
@@ -256,7 +388,12 @@
                     "pin": "JOINT4:DIR"
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "uid": "stepdir3",
+            "pos": [
+                850.0,
+                1170.0
+            ]
         },
         {
             "type": "stepdir",
@@ -268,7 +405,12 @@
                     "pin": "JOINT5:DIR"
                 }
             },
-            "is_joint": true
+            "is_joint": true,
+            "uid": "stepdir4",
+            "pos": [
+                850.0,
+                1245.0
+            ]
         },
         {
             "type": "spi",
@@ -285,7 +427,12 @@
                 "sel": {
                     "pin": "SPI:SEL"
                 }
-            }
+            },
+            "uid": "spi0",
+            "pos": [
+                850.0,
+                1320.0
+            ]
         },
         {
             "type": "pwmout",
@@ -307,7 +454,28 @@
                 "enable": {
                     "net": "spindle.0.on"
                 }
-            }
+            },
+            "uid": "pwmout0",
+            "pos": [
+                850.0,
+                1405.0
+            ]
         }
-    ]
+    ],
+    "flow": {
+        "view": {
+            "scale": 0.38036363636363635,
+            "pos": [
+                -128.32727272727274,
+                13.0
+            ]
+        },
+        "board": {
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0
+        }
+    }
 }
