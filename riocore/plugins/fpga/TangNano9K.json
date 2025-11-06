@@ -1,0 +1,544 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K - cheap GW1NR-9 Devboard",
+    "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchains": [
+        "gowin",
+        "icestorm"
+    ],
+    "toolchain": "gowin",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "slots": [
+        {
+            "name": "PIN",
+            "pins": {
+                "63": {
+                    "pin": "63",
+                    "pos": [
+                        28.0,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "86": {
+                    "pin": "86",
+                    "pos": [
+                        57.29,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "85": {
+                    "pin": "85",
+                    "pos": [
+                        86.58,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "84": {
+                    "pin": "84",
+                    "pos": [
+                        115.87,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "83": {
+                    "pin": "83",
+                    "pos": [
+                        145.16,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "82": {
+                    "pin": "82",
+                    "pos": [
+                        174.45,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "81": {
+                    "pin": "81",
+                    "pos": [
+                        203.74,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "80": {
+                    "pin": "80",
+                    "pos": [
+                        233.03,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "79": {
+                    "pin": "79",
+                    "pos": [
+                        262.32,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "1.8V only",
+                    "direction": "all"
+                },
+                "77": {
+                    "pin": "77",
+                    "pos": [
+                        291.61,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "76": {
+                    "pin": "76",
+                    "pos": [
+                        320.9,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "75": {
+                    "pin": "75",
+                    "pos": [
+                        350.19,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                },
+                "74": {
+                    "pin": "74",
+                    "pos": [
+                        379.48,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                },
+                "73": {
+                    "pin": "73",
+                    "pos": [
+                        408.77,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                },
+                "72": {
+                    "pin": "72",
+                    "pos": [
+                        438.06,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                },
+                "71": {
+                    "pin": "71",
+                    "pos": [
+                        467.35,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                },
+                "70": {
+                    "pin": "70",
+                    "pos": [
+                        496.64,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                },
+                "48": {
+                    "pin": "48",
+                    "pos": [
+                        555.22,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "49": {
+                    "pin": "49",
+                    "pos": [
+                        584.51,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "31": {
+                    "pin": "31",
+                    "pos": [
+                        613.8,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "32": {
+                    "pin": "32",
+                    "pos": [
+                        643.09,
+                        18.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "38": {
+                    "pin": "38",
+                    "pos": [
+                        28.0,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "37": {
+                    "pin": "37",
+                    "pos": [
+                        57.29,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "36": {
+                    "pin": "36",
+                    "pos": [
+                        86.58,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "39": {
+                    "pin": "39",
+                    "pos": [
+                        115.87,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "25": {
+                    "pin": "25",
+                    "pos": [
+                        145.16,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "26": {
+                    "pin": "26",
+                    "pos": [
+                        174.45,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "27": {
+                    "pin": "27",
+                    "pos": [
+                        203.74,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "28": {
+                    "pin": "28",
+                    "pos": [
+                        233.03,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "29": {
+                    "pin": "29",
+                    "pos": [
+                        262.32,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "30": {
+                    "pin": "30",
+                    "pos": [
+                        291.61,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "33": {
+                    "pin": "33",
+                    "pos": [
+                        320.9,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "34": {
+                    "pin": "34",
+                    "pos": [
+                        350.19,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "40": {
+                    "pin": "40",
+                    "pos": [
+                        379.48,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "35": {
+                    "pin": "35",
+                    "pos": [
+                        408.77,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "41": {
+                    "pin": "41",
+                    "pos": [
+                        438.06,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "42": {
+                    "pin": "42",
+                    "pos": [
+                        467.35,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "51": {
+                    "pin": "51",
+                    "pos": [
+                        496.64,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "53": {
+                    "pin": "53",
+                    "pos": [
+                        525.9300000000001,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "54": {
+                    "pin": "54",
+                    "pos": [
+                        555.22,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "55": {
+                    "pin": "55",
+                    "pos": [
+                        584.51,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "56": {
+                    "pin": "56",
+                    "pos": [
+                        613.8,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "57": {
+                    "pin": "57",
+                    "pos": [
+                        643.09,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "68": {
+                    "pin": "68",
+                    "pos": [
+                        672.38,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                },
+                "69": {
+                    "pin": "69",
+                    "pos": [
+                        701.67,
+                        318.0
+                    ],
+                    "rotate": true,
+                    "comment": "HDMI-Filter",
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "10",
+                    "pos": [
+                        206,
+                        120
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "11",
+                    "pos": [
+                        206,
+                        140
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "13",
+                    "pos": [
+                        206,
+                        160
+                    ],
+                    "direction": "output"
+                },
+                "L4": {
+                    "pin": "14",
+                    "pos": [
+                        206,
+                        180
+                    ],
+                    "direction": "output"
+                },
+                "L5": {
+                    "pin": "15",
+                    "pos": [
+                        206,
+                        200
+                    ],
+                    "direction": "output"
+                },
+                "L6": {
+                    "pin": "16",
+                    "pos": [
+                        206,
+                        220
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "over USB",
+            "pins": {
+                "RX": {
+                    "pin": "18",
+                    "pos": [
+                        20,
+                        150
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "17",
+                    "pos": [
+                        20,
+                        170
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "SW",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "S1": {
+                    "pin": "3",
+                    "pos": [
+                        38,
+                        62
+                    ],
+                    "direction": "input"
+                },
+                "S2": {
+                    "pin": "4",
+                    "pos": [
+                        38,
+                        276
+                    ],
+                    "direction": "input"
+                }
+            }
+        }
+    ]
+}

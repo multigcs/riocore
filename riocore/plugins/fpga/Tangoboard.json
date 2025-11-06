@@ -1,0 +1,590 @@
+{
+    "name": "Tangoboard",
+    "description": "based on TangNano9k",
+    "url": "https://github.com/multigcs/LinuxCNC-RIO/tree/main/configs/Tangoboard",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "pinimage": "board.png",
+    "toolchains": ["gowin", "icestorm"],
+    "toolchain": "gowin",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "10",
+                    "pos": [
+                        360,
+                        245
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "11",
+                    "pos": [
+                        360,
+                        260
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "13",
+                    "pos": [
+                        360,
+                        275
+                    ],
+                    "direction": "output"
+                },
+                "L4": {
+                    "pin": "14",
+                    "pos": [
+                        360,
+                        290
+                    ],
+                    "direction": "output"
+                },
+                "L5": {
+                    "pin": "15",
+                    "pos": [
+                        360,
+                        305
+                    ],
+                    "direction": "output"
+                },
+                "L6": {
+                    "pin": "16",
+                    "pos": [
+                        360,
+                        320
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "UART",
+            "default": "",
+            "pins": {
+                "RX": {
+                    "pin": "16",
+                    "pos": [
+                        260,
+                        275
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "17",
+                    "pos": [
+                        260,
+                        300
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "PMOD1",
+            "comment": "PMOD1 8pin",
+            "rect": [385, 375, 110, 50],
+            "pins": {
+                "P4": {
+                    "pin": "30",
+                    "pos": [
+                        410,
+                        382
+                    ]
+                },
+                "P3": {
+                    "pin": "34",
+                    "pos": [
+                        430,
+                        382
+                    ]
+                },
+                "P2": {
+                    "pin": "35",
+                    "pos": [
+                        450,
+                        382
+                    ]
+                },
+                "P1": {
+                    "pin": "42",
+                    "pos": [
+                        470,
+                        382
+                    ]
+                },
+                "P10": {
+                    "pin": "33",
+                    "pos": [
+                        410,
+                        400
+                    ]
+                },
+                "P9": {
+                    "pin": "40",
+                    "pos": [
+                        430,
+                        400
+                    ]
+                },
+                "P8": {
+                    "pin": "41",
+                    "pos": [
+                        450,
+                        400
+                    ]
+                },
+                "P7": {
+                    "pin": "51",
+                    "pos": [
+                        470,
+                        400
+                    ]
+                }
+            }
+        },
+        {
+            "name": "I2C",
+            "comment": "I2C",
+            "default": "",
+            "pins": {
+                "SCL": {
+                    "pin": "68",
+                    "pos": [
+                        550,
+                        400
+                    ]
+                },
+                "SDA": {
+                    "pin": "69",
+                    "pos": [
+                        581,
+                        400
+                    ]
+                }
+            }
+        },
+        {
+            "name": "SPI",
+            "comment": "SPI",
+            "default": "spi",
+            "pins": {
+                "SEL": {
+                    "pin": "32",
+                    "pos": [
+                        740,
+                        240
+                    ]
+                },
+                "SCLK": {
+                    "pin": "31",
+                    "pos": [
+                        740,
+                        255
+                    ]
+                },
+                "MISO": {
+                    "pin": "49",
+                    "pos": [
+                        740,
+                        270
+                    ]
+                },
+                "MOSI": {
+                    "pin": "48",
+                    "pos": [
+                        740,
+                        285
+                    ]
+                }
+            }
+        },
+        {
+            "name": "OUT1",
+            "comment": "OUT1",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "38",
+                    "pos": [
+                        40,
+                        435
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "OUT2",
+            "comment": "OUT2",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "37",
+                    "pos": [
+                        40,
+                        355
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "OUT3",
+            "comment": "OUT3",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "36",
+                    "pos": [
+                        40,
+                        275
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "OUT4",
+            "comment": "OUT4",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "39",
+                    "pos": [
+                        40,
+                        195
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "OUT5",
+            "comment": "OUT5",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "25",
+                    "pos": [
+                        40,
+                        115
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "IN1",
+            "comment": "IN1",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "26",
+                    "pos": [
+                        105,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN2",
+            "comment": "IN2",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "27",
+                    "pos": [
+                        190,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN3",
+            "comment": "IN3",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "28",
+                    "pos": [
+                        275,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN4",
+            "comment": "IN4",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "29",
+                    "pos": [
+                        360,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN5",
+            "comment": "IN5",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "53",
+                    "pos": [
+                        445,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN6",
+            "comment": "IN6",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "54",
+                    "pos": [
+                        535,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN7",
+            "comment": "IN7",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "55",
+                    "pos": [
+                        620,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "IN8",
+            "comment": "IN8",
+            "default": "",
+            "pins": {
+                "BIT": {
+                    "pin": "56",
+                    "pos": [
+                        700,
+                        500
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "JOINT1",
+            "comment": "JOINT1",
+            "default": "stepdir",
+            "pins": {
+                "STEP": {
+                    "pin": "63",
+                    "pos": [
+                        95,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "86",
+                    "pos": [
+                        145,
+                        55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT2",
+            "comment": "JOINT2",
+            "default": "stepdir",
+            "pins": {
+                "STEP": {
+                    "pin": "85",
+                    "pos": [
+                        200,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "84",
+                    "pos": [
+                        250,
+                        55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT3",
+            "comment": "JOINT3",
+            "default": "stepdir",
+            "pins": {
+                "STEP": {
+                    "pin": "83",
+                    "pos": [
+                        305,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "82",
+                    "pos": [
+                        355,
+                        55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT4",
+            "comment": "JOINT4",
+            "default": "stepdir",
+            "pins": {
+                "STEP": {
+                    "pin": "81",
+                    "pos": [
+                        420,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "80",
+                    "pos": [
+                        470,
+                        55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "JOINT5",
+            "comment": "JOINT5",
+            "default": "stepdir",
+            "pins": {
+                "STEP": {
+                    "pin": "79",
+                    "pos": [
+                        530,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "77",
+                    "pos": [
+                        580,
+                        55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "AUX",
+            "comment": "AUX",
+            "default": "pwmout",
+            "pins": {
+                "PWM": {
+                    "pin": "76",
+                    "pos": [
+                        660,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "75",
+                    "pos": [
+                        690,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "EN": {
+                    "pin": "74",
+                    "pos": [
+                        720,
+                        55
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "PMOD2",
+            "comment": "PMOD2 4pin",
+            "default": "",
+            "rect": [485, 155, 110, 25],
+            "pins": {
+                "P1": {
+                    "pin": "72",
+                    "pos": [
+                        490,
+                        160
+                    ]
+                },
+                "P2": {
+                    "pin": "71",
+                    "pos": [
+                        507,
+                        160
+                    ]
+                },
+                "P3": {
+                    "pin": "70",
+                    "pos": [
+                        524,
+                        160
+                    ]
+                },
+                "P4": {
+                    "pin": "57",
+                    "pos": [
+                        541,
+                        160
+                    ]
+                }
+            }
+        }
+    ]
+}

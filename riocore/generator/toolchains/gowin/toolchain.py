@@ -9,8 +9,8 @@ import subprocess
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
-        self.riocore_path = config["riocore_path"]
+        self.gateware_path = self.config["output_path"]
+        self.riocore_path = self.config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("gowin", "")
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):
             self.toolchain_path = os.path.join(self.toolchain_path, "bin")
@@ -39,7 +39,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         return info
 
     def pll(self, clock_in, clock_out):
-        if self.config["jdata"]["family"] == "GW1N-9C":
+        if self.config["family"] == "GW1N-9C":
             result = subprocess.check_output(
                 f"python3 {os.path.join(self.riocore_path, 'files', 'gowin-pll.py')} -d 'GW1NR-9 C6/I5' -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}",
                 shell=True,

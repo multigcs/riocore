@@ -1826,7 +1826,6 @@ class Window(QMainWindow):
         # upgrade: breakouts -> plugins
         for bn, breakout in enumerate(list(self.config.get("breakouts", []))):
             slot = breakout["slot"]
-            print(slot)
             if ":" not in slot:
                 slot = f"board:{slot}"
             bpdict = {

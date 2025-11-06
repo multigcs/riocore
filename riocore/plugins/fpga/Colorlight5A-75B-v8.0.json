@@ -1,0 +1,44 @@
+{
+    "name": "Colorlight5A-75B-v8.0",
+    "description": "Lattice ECP5 board",
+    "url": "https://github.com/q3k/chubby75/blob/master/5a-75b/hardware_V8.0.md",
+    "comment": "> [!WARNING]\n> Networking Interfaces are not supported by RIO\n> Pins can only be used as output without hardware modifications",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA256",
+    "flashcmd": "openFPGALoader -c usb-blaster -m rio.bit",
+    "transport": "SPI",
+    "clock": {
+        "speed": "25000000",
+        "pin": "P6"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "1": {
+                    "pin": "T6",
+                    "pos": [
+                        65,
+                        65
+                    ]
+                }
+            }
+        },
+        {
+            "name": "BUTTON",
+            "comment": "BUTTON",
+            "pins": {
+                "1": {
+                    "pin": "R7",
+                    "pos": [
+                        65,
+                        25
+                    ]
+                }
+            }
+        }
+    ]
+}

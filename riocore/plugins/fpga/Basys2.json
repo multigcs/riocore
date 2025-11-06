@@ -1,0 +1,470 @@
+{
+    "name": "Basys2",
+    "description": "Digilent - Basys2",
+    "url": "https://digilent.com/reference/programmable-logic/basys-2/start",
+    "pinimage": "board.png",
+    "toolchain": "ise",
+    "family": "xc3",
+    "type": "xc3s100e-4-cp132",
+    "package": "vq100",
+    "flashcmd": "djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit",
+    "clock": {
+        "speed": "50000000",
+        "startup": "jtagclk",
+        "pin": "B8"
+    },
+    "slots": [
+        {
+            "name": "LEDS",
+            "comment": "LEDS",
+            "pins": {
+                "LED1": {
+                    "pin": "M5",
+                    "pos": [
+                        470,
+                        390
+                    ],
+                    "direction": "output"
+                },
+                "LED2": {
+                    "pin": "M11",
+                    "pos": [
+                        417,
+                        390
+                    ],
+                    "direction": "output"
+                },
+                "LED3": {
+                    "pin": "P7",
+                    "pos": [
+                        365,
+                        390
+                    ],
+                    "direction": "output"
+                },
+                "LED4": {
+                    "pin": "P6",
+                    "pos": [
+                        310,
+                        390
+                    ],
+                    "direction": "output"
+                },
+                "LED5": {
+                    "pin": "N5",
+                    "pos": [
+                        259,
+                        390
+                    ],
+                    "direction": "output"
+                },
+                "LED6": {
+                    "pin": "N4",
+                    "pos": [
+                        205,
+                        390
+                    ],
+                    "direction": "output"
+                },
+                "LED7": {
+                    "pin": "P4",
+                    "pos": [
+                        152,
+                        390
+                    ],
+                    "direction": "output"
+                },
+                "LED8": {
+                    "pin": "G1",
+                    "pos": [
+                        101,
+                        390
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "BUTTONS",
+            "comment": "BUTTONS",
+            "pins": {
+                "BTN1": {
+                    "pin": "G12",
+                    "pos": [
+                        716,
+                        480
+                    ],
+                    "direction": "input"
+                },
+                "BTN2": {
+                    "pin": "C11",
+                    "pos": [
+                        655,
+                        480
+                    ],
+                    "direction": "input"
+                },
+                "BTN3": {
+                    "pin": "M4",
+                    "pos": [
+                        593,
+                        480
+                    ],
+                    "direction": "input"
+                },
+                "BTN4": {
+                    "pin": "A7",
+                    "pos": [
+                        532,
+                        480
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "SWITCHES",
+            "comment": "SWITCHES",
+            "pins": {
+                "SW1": {
+                    "pin": "P11",
+                    "pos": [
+                        470,
+                        470
+                    ],
+                    "direction": "input"
+                },
+                "SW2": {
+                    "pin": "L3",
+                    "pos": [
+                        417,
+                        470
+                    ],
+                    "direction": "input"
+                },
+                "SW3": {
+                    "pin": "K3",
+                    "pos": [
+                        365,
+                        470
+                    ],
+                    "direction": "input"
+                },
+                "SW4": {
+                    "pin": "B4",
+                    "pos": [
+                        310,
+                        470
+                    ],
+                    "direction": "input"
+                },
+                "SW5": {
+                    "pin": "G3",
+                    "pos": [
+                        259,
+                        470
+                    ],
+                    "direction": "input"
+                },
+                "SW6": {
+                    "pin": "F3",
+                    "pos": [
+                        205,
+                        470
+                    ],
+                    "direction": "input"
+                },
+                "SW7": {
+                    "pin": "E2",
+                    "pos": [
+                        152,
+                        470
+                    ],
+                    "direction": "input"
+                },
+                "SW8": {
+                    "pin": "N3",
+                    "pos": [
+                        101,
+                        470
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "PMOD_JA",
+            "comment": "PMOD JA",
+            "pins": {
+                "P1": {
+                    "pin": "B2",
+                    "rotate": true,
+                    "pos": [
+                        95,
+                        67
+                    ]
+                },
+                "P2": {
+                    "pin": "A3",
+                    "rotate": true,
+                    "pos": [
+                        115,
+                        67
+                    ]
+                },
+                "P3": {
+                    "pin": "J3",
+                    "rotate": true,
+                    "pos": [
+                        135,
+                        67
+                    ]
+                },
+                "P4": {
+                    "pin": "B5",
+                    "rotate": true,
+                    "pos": [
+                        155,
+                        67
+                    ]
+                }
+            }
+        },
+        {
+            "name": "PMOD_JB",
+            "comment": "PMOD JB",
+            "pins": {
+                "P1": {
+                    "pin": "C6",
+                    "rotate": true,
+                    "pos": [
+                        270,
+                        67
+                    ]
+                },
+                "P2": {
+                    "pin": "B6",
+                    "rotate": true,
+                    "pos": [
+                        290,
+                        67
+                    ]
+                },
+                "P3": {
+                    "pin": "C5",
+                    "rotate": true,
+                    "pos": [
+                        310,
+                        67
+                    ]
+                },
+                "P4": {
+                    "pin": "B7",
+                    "rotate": true,
+                    "pos": [
+                        330,
+                        67
+                    ]
+                }
+            }
+        },
+        {
+            "name": "PMOD_JC",
+            "comment": "PMOD JC",
+            "pins": {
+                "P1": {
+                    "pin": "A9",
+                    "rotate": true,
+                    "pos": [
+                        440,
+                        67
+                    ]
+                },
+                "P2": {
+                    "pin": "B9",
+                    "rotate": true,
+                    "pos": [
+                        460,
+                        67
+                    ]
+                },
+                "P3": {
+                    "pin": "A10",
+                    "rotate": true,
+                    "pos": [
+                        480,
+                        67
+                    ]
+                },
+                "P4": {
+                    "pin": "C9",
+                    "rotate": true,
+                    "pos": [
+                        500,
+                        67
+                    ]
+                }
+            }
+        },
+        {
+            "name": "PMOD_JD",
+            "comment": "PMOD JD",
+            "pins": {
+                "P1": {
+                    "pin": "C12",
+                    "rotate": true,
+                    "pos": [
+                        610,
+                        67
+                    ]
+                },
+                "P2": {
+                    "pin": "A13",
+                    "rotate": true,
+                    "pos": [
+                        630,
+                        67
+                    ]
+                },
+                "P3": {
+                    "pin": "C13",
+                    "rotate": true,
+                    "pos": [
+                        650,
+                        67
+                    ]
+                },
+                "P4": {
+                    "pin": "D12",
+                    "rotate": true,
+                    "pos": [
+                        670,
+                        67
+                    ]
+                }
+            }
+        },
+        {
+            "name": "7SEG",
+            "comment": "7segment Display",
+            "pos": [
+                557,
+                363
+            ],
+            "pins": {
+                "EN1": {
+                    "pin": "F12",
+                    "direction": "output",
+                    "pos": [
+                        760,
+                        420
+                    ]
+                },
+                "EN2": {
+                    "pin": "J12",
+                    "direction": "output",
+                    "pos": [
+                        700,
+                        420
+                    ]
+                },
+                "EN3": {
+                    "pin": "M13",
+                    "direction": "output",
+                    "pos": [
+                        640,
+                        420
+                    ]
+                },
+                "EN4": {
+                    "pin": "K14",
+                    "direction": "output",
+                    "pos": [
+                        580,
+                        420
+                    ]
+                },
+                "A": {
+                    "pin": "L14",
+                    "direction": "output",
+                    "pos": [
+                        770,
+                        377
+                    ]
+                },
+                "B": {
+                    "pin": "H12",
+                    "direction": "output",
+                    "pos": [
+                        750,
+                        377
+                    ]
+                },
+                "C": {
+                    "pin": "N14",
+                    "direction": "output",
+                    "pos": [
+                        730,
+                        377
+                    ]
+                },
+                "D": {
+                    "pin": "N11",
+                    "direction": "output",
+                    "pos": [
+                        710,
+                        377
+                    ]
+                },
+                "E": {
+                    "pin": "P12",
+                    "direction": "output",
+                    "pos": [
+                        690,
+                        377
+                    ]
+                },
+                "F": {
+                    "pin": "L13",
+                    "direction": "output",
+                    "pos": [
+                        670,
+                        377
+                    ]
+                },
+                "G": {
+                    "pin": "M12",
+                    "direction": "output",
+                    "pos": [
+                        650,
+                        377
+                    ]
+                },
+                "DP": {
+                    "pin": "N13",
+                    "direction": "output",
+                    "pos": [
+                        630,
+                        377
+                    ]
+                }
+            }
+        },
+        {
+            "name": "PS2",
+            "comment": "PS2",
+            "pos": [
+                20,
+                142
+            ],
+            "pins": {
+                "CLOCK": {
+                    "pin": "B1"
+                },
+                "DATA": {
+                    "pin": "C3"
+                }
+            }
+        }
+    ]
+}

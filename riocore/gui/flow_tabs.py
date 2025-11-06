@@ -196,15 +196,15 @@ class TabBuilder:
                 if not plugin_instance.BUILDER:
                     continue
 
-                ninja = QVBoxLayout()
-                self.left.addLayout(ninja)
-                ninja.addWidget(QLabel(""))
-                ninja.addWidget(QLabel(plugin_instance.title))
+                vbox = QVBoxLayout()
+                self.left.addLayout(vbox)
+                vbox.addWidget(QLabel(""))
+                vbox.addWidget(QLabel(plugin_instance.title))
 
                 for command in plugin_instance.BUILDER:
                     button = QPushButton(command.title())
                     button.clicked.connect(partial(self.bulder_run, plugin_instance, command))
-                    ninja.addWidget(button)
+                    vbox.addWidget(button)
 
         self.left.addStretch()
 
@@ -247,10 +247,10 @@ class TabDrawing:
         plugin_vbox.addWidget(self.search_text)
         plugin_vbox.addWidget(self.plugin_table)
 
+        self.pluginlist = {}
+
         def plugin_select(idx):
-            if not self.plugin_table.item(idx, 0):
-                return
-            self.plugin_name_selected = self.plugin_table.item(idx, 0).text()
+            self.plugin_name_selected = self.pluginlist[idx]
             self.plugin_info(self.plugin_name_selected)
 
         def plugin_update(misc):
@@ -364,6 +364,7 @@ class TabDrawing:
                 item.setFlags(Qt.ItemFlag.ItemIsEnabled)
 
                 label = DragLabel(plugin_name)
+                self.pluginlist[row] = plugin_name
                 self.plugin_table.setCellWidget(row, 0, label)
 
                 self.plugin_table.setItem(row, 0, item)

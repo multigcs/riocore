@@ -1,0 +1,299 @@
+{
+    "name": "TangPrimer25K",
+    "description": "TangPrimer25K-Devboard on Dev-Board",
+    "url": "https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html",
+    "type": "GW5A-LV25MG121NC1/I0",
+    "family": "GW5A-25A",
+    "toolchains": ["gowin", "icestorm"],
+    "toolchain": "gowin",
+    "package": "PG256",
+    "clock": {
+        "speed": "50000000",
+        "pin": "E2"
+    },
+    "slots": [
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "G1": {
+                    "pin": "E8",
+                    "pos": [
+                        153,
+                        110
+                    ],
+                    "direction": "output"
+                },
+                "G2": {
+                    "pin": "D7",
+                    "pos": [
+                        153,
+                        130
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "BUTTON",
+            "comment": "BUTTON",
+            "pins": {
+                "S1": {
+                    "pin": "H11",
+                    "pos": [
+                        720,
+                        90
+                    ],
+                    "direction": "input"
+                },
+                "S2": {
+                    "pin": "H10",
+                    "pos": [
+                        720,
+                        145
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "UART2USB",
+            "default": "uart",
+            "pins": {
+                "TX": {
+                    "pin": "C3",
+                    "pos": [
+                        720,
+                        230
+                    ],
+                    "direction": "output"
+                },
+                "RX": {
+                    "pin": "B3",
+                    "pos": [
+                        720,
+                        250
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "PMOD1",
+            "rect": [
+                70, 320, 140, 60
+            ],
+            "pins": {
+                "P10": {
+                    "pin": "J5",
+                    "pos": [
+                        78,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "H7",
+                    "pos": [
+                        111,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "G8",
+                    "pos": [
+                        146,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "G5",
+                    "pos": [
+                        178,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "H5",
+                    "pos": [
+                        78,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "H8",
+                    "pos": [
+                        111,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "G7",
+                    "pos": [
+                        146,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P1": {
+                    "pin": "F5",
+                    "pos": [
+                        178,
+                        330
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "PMOD2",
+            "rect": [
+                352, 320, 140, 60
+            ],
+            "pins": {
+                "P10": {
+                    "pin": "K5",
+                    "pos": [
+                        360,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "L11",
+                    "pos": [
+                        395,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "E10",
+                    "pos": [
+                        428,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "A10",
+                    "pos": [
+                        460,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "L5",
+                    "pos": [
+                        360,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "K11",
+                    "pos": [
+                        395,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "E11",
+                    "pos": [
+                        420,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P1": {
+                    "pin": "A11",
+                    "pos": [
+                        460,
+                        330
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "PMOD3",
+            "rect": [
+                634, 320, 140, 60
+            ],
+            "pins": {
+                "P10": {
+                    "pin": "C10",
+                    "pos": [
+                        642,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "B10",
+                    "pos": [
+                        675,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "D10",
+                    "pos": [
+                        711,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "G10",
+                    "pos": [
+                        742,
+                        355
+                    ],
+                    "direction": "all"
+                },
+                "P4": {
+                    "pin": "C11",
+                    "pos": [
+                        642,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P3": {
+                    "pin": "B11",
+                    "pos": [
+                        675,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P2": {
+                    "pin": "D11",
+                    "pos": [
+                        711,
+                        330
+                    ],
+                    "direction": "all"
+                },
+                "P1": {
+                    "pin": "G11",
+                    "pos": [
+                        742,
+                        330
+                    ],
+                    "direction": "all"
+                }
+            }
+        }
+    ]
+}
