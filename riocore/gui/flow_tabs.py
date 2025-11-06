@@ -157,6 +157,11 @@ class TabBuilder:
             return
         self.block = True
 
+        if not self.parent.save_check():
+            # cancel pressed
+            return
+        self.generator_run()
+
         cmd = plugin_instance.builder(self.parent.config, command)
         self.output.setPlainText(f"running cmd; {cmd}...")
         print(f"running cmd; {cmd}...")
