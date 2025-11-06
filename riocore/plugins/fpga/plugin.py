@@ -97,6 +97,13 @@ class Plugin(PluginBase):
         self.fpga_num = 0
         self.hal_prefix = "rio"
 
+    def hal(self, parent):
+        parent.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
+        parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
+        parent.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
+        parent.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
+        parent.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
+
     def component_loader(cls, instances):
         output = []
         for instance in instances:
@@ -111,6 +118,7 @@ class Plugin(PluginBase):
             else:
                 output.append(f"setp {instance.hal_prefix}.sys-simulation 0")
             output.append("")
+            output.append("addf rio.readwrite servo-thread")
         return "\n".join(output)
 
     def builder(self, config, command):

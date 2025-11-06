@@ -1807,8 +1807,6 @@ if __name__ == "__main__":
             self.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
             self.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
             self.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
-        else:
-            self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "estop-out")
 
         wcomps = {}
         for axis_name, axis_config in self.project.axis_dict.items():
@@ -2076,6 +2074,13 @@ if __name__ == "__main__":
                             self.halg.net_add(f"{rprefix}{halname}", f"{self.hal_prefix}.{halname}")
                         else:
                             self.halg.net_add(f"{self.hal_prefix}.{halname}", f"{rprefix}{halname}")
+
+        found_user_anbale = False
+        for value in self.halg.signals_out.values():
+            if "iocontrol.0.user-enable-out" in value["expression"]:
+                found_user_anbale = True
+        if not found_user_anbale:
+            self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "user-enable-out")
 
     def create_axis_config(self, project, prefix="rio."):
         linuxcnc_config = project.config["jdata"].get("linuxcnc", {})
