@@ -64,11 +64,6 @@ class documentation:
                         output_pos -= 1
                     self.iface_out.append([variable_name, size, hal_name])
 
-        self.toolchain = self.project.config["toolchain"]
-
-        if self.toolchain:
-            self.interface_md()
-
         self.halgraph_png()
         self.config_md()
         self.pins_md()
@@ -104,10 +99,6 @@ class documentation:
         if self.project.config["json_file"]:
             output.append(f"* Config-Path: {self.project.config['json_file']}")
         output.append(f"* Output-Path: {self.project.config['output_path']}")
-        if self.toolchain:
-            output.append(f"* Toolchain: {self.toolchain}")
-            output.append(f"* Protocol: {jdata.get('protocol', '')}")
-
         output.append("")
 
         output.append("## Axis/Joints")

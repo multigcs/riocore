@@ -9,11 +9,8 @@ from struct import pack, unpack
 import sys
 import traceback
 
-from .generator.Gateware import Gateware
-
 # from .generator.EtherCat import EtherCat
 from .generator.Simulator import Simulator
-from .generator.Firmware import Firmware
 from .generator.LinuxCNC import LinuxCNC
 
 from riocore.generator.rosbridge import rosbridge
@@ -581,16 +578,7 @@ class Project:
 
         self.calc_buffersize()
         self.generator_linuxcnc = LinuxCNC(self)
-        if self.config["toolchain"]:
-            self.generator_gateware = Gateware(self)
-            # self.generator_ethercat = EtherCat(self)
-            self.generator_simulator = Simulator(self)
-            self.generator_firmware = Firmware(self)
-        else:
-            self.generator_gateware = None
-            # self.generator_ethercat = None
-            self.generator_simulator = None
-            self.generator_firmware = None
+        self.generator_simulator = Simulator(self)
 
         # check names
         varnames = {}
@@ -629,13 +617,6 @@ class Project:
             output.append(f"  Target-IP: {ip}")
             output.append(f"  Target-Port: {dst_port}")
             output.append("")
-
-        output.append("FPGA:")
-        for name in ("toolchain", "family", "type"):
-            value = self.config.get(name)
-            if value:
-                output.append(f"  {name.title()}: {value}")
-        output.append("")
 
         output.append("Plugins:")
         plugins = {}
@@ -718,15 +699,6 @@ class Project:
         self.config["pin_mapping"] = self.pin_mapping
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
         self.config["name"] = project["jdata"]["name"]
-        self.config["speed"] = int(project["jdata"].get("clock", {}).get("speed", 1))
-        self.config["osc_clock"] = int(project["jdata"].get("clock", {}).get("osc", 0))
-        self.config["sysclk_pin"] = project["jdata"].get("clock", {}).get("pin")
-        self.config["error_pin"] = project["jdata"].get("error", {}).get("pin")
-        self.config["toolchain"] = project["jdata"].get("toolchain")
-        self.config["family"] = project["jdata"].get("family", "UNKNOWN")
-        self.config["type"] = project["jdata"].get("type", "UNKNOWN")
-        self.config["package"] = project["jdata"].get("package", "UNKNOWN")
-        self.config["timing_model"] = project["jdata"].get("timing_model", "UNKNOWN")
         self.config["json_path"] = project["json_path"]
 
     def setup_merge(self, setup, defaults):
@@ -1065,20 +1037,9 @@ class Project:
 
     def generator(self, preview=False):
         protocol = self.config["jdata"].get("protocol", "SPI")
-        toolchain = self.config.get("toolchain")
-        generate_pll = True
-        if toolchain == "platformio":
-            self.generator_firmware.generator()
-        else:
-            if preview:
-                generate_pll = False
-            if self.generator_gateware:
-                self.generator_gateware.generator(generate_pll=generate_pll)
-            # if self.generator_ethercat:
-            #     self.generator_ethercat.generator()
         self.generator_linuxcnc.generator(preview=preview)
 
-        if toolchain and not preview:
+        if not preview:
             if protocol == "UDP":
                 self.generator_simulator.generator()
             if protocol == "ETHERCAT":

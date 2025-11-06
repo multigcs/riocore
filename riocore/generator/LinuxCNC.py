@@ -8,7 +8,6 @@ import stat
 import riocore
 from riocore import halpins
 from riocore.generator.hal import hal_generator
-from riocore.generator.component import component
 from riocore.generator.pyvcp import pyvcp
 from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
@@ -341,8 +340,6 @@ class LinuxCNC:
             self.cfglink()
         self.startscript()
         self.readme()
-        if self.project.config["toolchain"]:
-            component(self.project)
         self.hal()
         self.riof()
         self.misc()
@@ -1737,7 +1734,6 @@ if __name__ == "__main__":
 
     def hal(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
-        simulation = linuxcnc_config.get("simulation", False)
         gui = linuxcnc_config.get("gui", "axis")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
@@ -1781,16 +1777,6 @@ if __name__ == "__main__":
             if hasattr(plugin_instance, "update_pins"):
                 plugin_instance.update_pins(self)
 
-        if self.project.config["toolchain"]:
-            self.halg.fmt_add_top("loadrt rio")
-            self.halg.fmt_add_top("")
-            self.halg.fmt_add_top("# if you need to test rio without hardware, set it to 1")
-            if simulation:
-                self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 1")
-            else:
-                self.halg.fmt_add_top(f"setp {self.hal_prefix}.sys-simulation 0")
-            self.halg.fmt_add_top("")
-
         num_pids = self.num_joints
         self.halg.fmt_add_top("# pid controller")
         self.halg.fmt_add_top(f"loadrt pid num_chan={num_pids}")
@@ -1800,13 +1786,6 @@ if __name__ == "__main__":
 
         self.halg.fmt_add_top("addf motion-command-handler servo-thread")
         self.halg.fmt_add_top("addf motion-controller servo-thread")
-
-        if self.project.config["toolchain"]:
-            self.halg.fmt_add_top(f"addf {self.hal_prefix}.readwrite servo-thread")
-            self.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
-            self.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
-            self.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
-            self.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
 
         wcomps = {}
         for axis_name, axis_config in self.project.axis_dict.items():

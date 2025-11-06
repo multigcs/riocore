@@ -742,28 +742,12 @@ class GuiPlugins:
             # self.parent.display()
 
     def add_plugin(self, pin_id, slot_name=None):
-        # boardcfg = self.parent.config.get("boardcfg")
-        # toolchain = self.parent.board.get("toolchain")
-        # family = self.parent.board.get("family")
         plugin_needs = {}
         plugin_list = self.parent.plugins.list()
         plugin_infos = {}
         for plugin in plugin_list:
             plugins = riocore.Plugins()
             plugins.load_plugins({"plugins": [{"type": plugin["name"]}]})
-
-            # limit_boards = plugins.plugin_instances[0].LIMITATIONS.get("boards")
-            # if limit_boards and boardcfg not in limit_boards:
-            #    continue
-
-            # limit_toolchains = plugins.plugin_instances[0].LIMITATIONS.get("toolchains")
-            # if limit_toolchains and toolchain not in limit_toolchains:
-            #    continue
-
-            # limit_family = plugins.plugin_instances[0].LIMITATIONS.get("family")
-            # if limit_family and family not in limit_family:
-            #    continue
-
             plugin_needs[plugin["name"]] = {
                 "inputs": 0,
                 "outputs": 0,
