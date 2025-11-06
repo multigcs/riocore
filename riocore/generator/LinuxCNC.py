@@ -203,7 +203,7 @@ class LinuxCNC:
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
-        self.hal_prefix = "nrio"
+        self.hal_prefix = "xxxx"
 
         # expand shortener mapping
         for plugin_instance in self.project.plugin_instances:
