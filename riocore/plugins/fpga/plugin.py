@@ -152,7 +152,7 @@ class Plugin(PluginBase):
             else:
                 output.append(f"setp {instance.hal_prefix}.sys-simulation 0")
             output.append("")
-            output.append(f"addf {instance.hal_prefix}.readwrite servo-thread#")
+            output.append(f"addf {instance.hal_prefix}.readwrite servo-thread")
         return "\n".join(output)
 
     def builder(self, config, command):
