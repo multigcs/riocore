@@ -68,6 +68,8 @@ class GuiPlugins:
                 continue
             if pin_defaults.get("edge") == "source":
                 continue
+            if pin_defaults.get("pintype") in {"PASSTHROUGH"}:
+                continue
 
             if pin_name not in plugin_config["pins"]:
                 plugin_config["pins"][pin_name] = {}

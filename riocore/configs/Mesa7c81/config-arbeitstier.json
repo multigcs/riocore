@@ -8,18 +8,6 @@
     },
     "_flashcmd": "./spiflash.sh rio-2048.bin",
     "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 rio.bit -f",
-    "breakouts": [
-        {
-            "slot": "B",
-            "breakout": "china-bob5x",
-            "name": "bob1",
-            "pos": [
-                -2510.0,
-                540.0
-            ],
-            "rotate": 180
-        }
-    ],
     "linuxcnc": {
         "_debug_info": true,
         "_gui": "axis",
@@ -96,6 +84,69 @@
         ]
     },
     "plugins": [
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "bob1",
+            "pos": [
+                -2510.0,
+                540.0
+            ],
+            "rotate": 180,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "B:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "B:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "B:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "B:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "B:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "B:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "B:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "B:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "B:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "B:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "B:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "B:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "B:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "B:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "B:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "B:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "B:P17"
+                }
+            }
+        },
         {
             "type": "blink",
             "pins": {
@@ -1473,10 +1524,10 @@
     "flow": {
         "view": {
             "pos": [
-                -2749,
-                179
+                -807,
+                -63
             ],
-            "scale": 0.96
+            "scale": 0.28
         },
         "board": {
             "pos": [

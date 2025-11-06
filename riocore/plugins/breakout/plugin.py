@@ -9,7 +9,7 @@ class Plugin(PluginBase):
         self.INFO = "breakout boards"
         self.KEYWORDS = ""
         self.DESCRIPTION = ""
-        # self.TYPE = "breakout"
+        self.PLUGIN_TYPE = "breakout"
         self.PINDEFAULTS = {}
         self.OPTIONS = {
             "node_type": {
@@ -32,10 +32,18 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = True
         self.INFO = jdata.get("comment", "")
         for pin, data in jdata["main"].items():
-            self.PINDEFAULTS[f"SLOT:{pin}"] = {"direction": "all", "edge": "target", "optional": True, "type": ["BREAKOUT"], "pos": data["pos"]}
+            self.PINDEFAULTS[f"SLOT:{pin}"] = {"direction": "all", "edge": "target", "optional": True, "pintype": "BREAKOUT", "type": ["BREAKOUT"], "pos": data["pos"]}
         for slot in jdata["slots"]:
             slot_name = slot["name"]
             for pin, data in slot["pins"].items():
                 source = data["pin"]
                 direction = data.get("direction", "all")
-                self.PINDEFAULTS[f"{slot_name}:{pin}"] = {"source": f"SLOT:{source}", "direction": direction, "edge": "source", "type": ["PASSTHROUGH"], "optional": True, "pos": data["pos"]}
+                self.PINDEFAULTS[f"{slot_name}:{pin}"] = {
+                    "source": f"SLOT:{source}",
+                    "direction": direction,
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": True,
+                    "pos": data["pos"],
+                }
