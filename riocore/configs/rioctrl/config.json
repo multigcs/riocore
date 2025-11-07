@@ -96,54 +96,6 @@
             "rotate": 90
         },
         {
-            "type": "shiftreg",
-            "name": "shiftout",
-            "bits": 16,
-            "uid": "shiftreg0",
-            "pins": {
-                "out": {
-                    "pin": "board0:SC:S0"
-                },
-                "in": {
-                    "pin": "board0:SC:S6"
-                },
-                "sclk": {
-                    "pin": "board0:SC:S1"
-                },
-                "load": {
-                    "pin": "board0:SC:S2"
-                }
-            },
-            "pos": [
-                730.0,
-                350.0
-            ]
-        },
-        {
-            "type": "shiftreg",
-            "name": "shiftin",
-            "bits": 16,
-            "uid": "shiftreg1",
-            "pins": {
-                "in": {
-                    "pin": "board0:SC:S3"
-                },
-                "out": {
-                    "pin": "board0:SC:S7"
-                },
-                "sclk": {
-                    "pin": "board0:SC:S4"
-                },
-                "load": {
-                    "pin": "board0:SC:S5"
-                }
-            },
-            "pos": [
-                730.0,
-                50.0
-            ]
-        },
-        {
             "name": "joint-0",
             "type": "stepdir",
             "is_joint": true,
@@ -177,8 +129,8 @@
                 }
             },
             "pos": [
-                460.0,
-                530.0
+                480.0,
+                720.0
             ],
             "joint": {
                 "feedback": "encoder-0:position",
@@ -223,8 +175,8 @@
                 }
             },
             "pos": [
-                460.0,
-                690.0
+                480.0,
+                880.0
             ]
         },
         {
@@ -261,8 +213,8 @@
                 }
             },
             "pos": [
-                460.0,
-                610.0
+                480.0,
+                800.0
             ]
         },
         {
@@ -299,8 +251,8 @@
                 }
             },
             "pos": [
-                460.0,
-                770.0
+                480.0,
+                960.0
             ]
         },
         {
@@ -551,18 +503,56 @@
             "node_type": "rioctrl-shiftio",
             "uid": "breakout0",
             "pos": [
-                1010.0,
-                90.0
-            ]
+                550.0,
+                220.0
+            ],
+            "pins": {
+                "SLOT:S0": {
+                    "pin": "board0:SC:S0"
+                },
+                "SLOT:S1": {
+                    "pin": "board0:SC:S1"
+                },
+                "SLOT:S2": {
+                    "pin": "board0:SC:S2"
+                },
+                "SLOT:S3": {
+                    "pin": "board0:SC:S3"
+                },
+                "SLOT:S4": {
+                    "pin": "board0:SC:S4"
+                },
+                "SLOT:S5": {
+                    "pin": "board0:SC:S5"
+                },
+                "SLOT:S6": {
+                    "pin": "board0:SC:S6"
+                },
+                "SLOT:S7": {
+                    "pin": "board0:SC:S7"
+                },
+                "SLOT:S8": {
+                    "pin": "board0:SC:S8"
+                },
+                "SLOT:S9": {
+                    "pin": "board0:SC:S9"
+                },
+                "SLOT:S10": {
+                    "pin": "board0:SC:S10"
+                },
+                "SLOT:S11": {
+                    "pin": "board0:SC:S11"
+                }
+            }
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.1514285714285715,
+            "scale": 1.12,
             "pos": [
-                -273.90999999999997,
-                -266.0
+                -576.75,
+                -229.0
             ]
         },
         "board": {
