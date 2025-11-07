@@ -594,10 +594,11 @@ class hal_generator:
                 if data["target"] == target and not pin.startswith("func."):
                     component = pin.split(".", 1)[0]
                     if component in self.POSTGUI_COMPONENTS:
-                        section.append(f"# net {data['signal']:30s} <= {pin} (in postgui)")
+                        #section.append(f"# net {data['signal']:30s} <= {pin} (in postgui)")
                         postgui_data.append(f"net {data['signal']:30s} <= {pin}")
                     elif component in self.VIRTUAL_COMPONENTS:
-                        section.append(f"# net {data['signal']:30s} <= {pin} (virtual pin)")
+                        pass
+                        #section.append(f"# net {data['signal']:30s} <= {pin} (virtual pin)")
                     else:
                         section.append(f"net {data['signal']:30s} <= {pin}")
 
@@ -633,10 +634,11 @@ class hal_generator:
                         if signal.startswith("j"):
                             continue
                         if component in self.POSTGUI_COMPONENTS:
-                            section.append(f"# net {signal:30s} => {pin} (in postgui)")
+                            #section.append(f"# net {signal:30s} => {pin} (in postgui)")
                             postgui_data.append(f"net {signal:30s} => {pin}")
                         elif component in self.VIRTUAL_COMPONENTS:
-                            section.append(f"# net {signal:30s} => {pin} (virtual pin)")
+                            pass
+                            #section.append(f"# net {signal:30s} => {pin} (virtual pin)")
                         else:
                             section.append(f"net {signal:30s} => {pin}")
             if section:
