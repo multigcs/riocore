@@ -369,37 +369,6 @@
             ],
             "simulation": true,
             "protocol": "UDP"
-        },
-        {
-            "type": "fpga",
-            "node_type": "CYC1000",
-            "uid": "fpga1",
-            "pos": [
-                260.0,
-                950.0
-            ],
-            "protocol": "UDP",
-            "simulation": true
-        },
-        {
-            "type": "bitin",
-            "uid": "bitin3",
-            "image": "proximity",
-            "pos": [
-                730.0,
-                960.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "fpga1:PMOD:P7"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": ""
-                }
-            },
-            "name": "other-fpga"
         }
     ],
     "flow": {
