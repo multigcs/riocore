@@ -551,23 +551,28 @@ class Project:
                         continue
                     source = f"{plugin_instance.instances_name}:{gpio_pin}"
 
-        # breakout plugins
         for n in range(5):
+            # breakout plugins
             for plugin_instance in self.plugin_instances:
                 for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
                     if "source" in gpio_data:
                         source = f"{plugin_instance.instances_name}:{gpio_pin}"
+                        if gpio_data["source"] not in plugin_instance.PINDEFAULTS:
+                            continue
                         target = plugin_instance.PINDEFAULTS[gpio_data["source"]]
                         if target:
                             target_pin = plugin_instance.plugin_setup.get("pins", {}).get(gpio_data["source"], {}).get("pin")
                             self.pin_mapping[source] = self.pin_mapping.get(target_pin, target_pin)
 
-        # cleaning slot-pins (breakout-pins)
-        for plugin_instance in self.plugin_instances:
-            for pin_name in list(plugin_instance.PINDEFAULTS):
-                ptype = plugin_instance.PINDEFAULTS[pin_name].get("type", [])
-                if "BREAKOUT" in ptype:
-                    del plugin_instance.PINDEFAULTS[pin_name]
+        for n in range(5):
+            # cleaning slot-pins (breakout-pins)
+            for plugin_instance in self.plugin_instances:
+                for pin_name in list(plugin_instance.PINDEFAULTS):
+                    if pin_name not in plugin_instance.PINDEFAULTS:
+                        continue
+                    ptype = plugin_instance.PINDEFAULTS[pin_name].get("type", [])
+                    if "BREAKOUT" in ptype:
+                        del plugin_instance.PINDEFAULTS[pin_name]
 
         # update plugin pins
         for plugin in self.config["plugins"]:

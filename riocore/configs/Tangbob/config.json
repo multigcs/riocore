@@ -368,14 +368,37 @@
                 220.0
             ],
             "simulation": true
+        },
+        {
+            "type": "ninja",
+            "node_type": "board",
+            "uid": "ninja0",
+            "pos": [
+                260.0,
+                50.0
+            ]
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout0",
+            "image": "relay",
+            "pos": [
+                700.0,
+                10.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ninja0:IO:GP28"
+                }
+            }
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.39,
+            "scale": 0.89,
             "pos": [
-                -216,
-                2
+                38,
+                -6
             ]
         },
         "hal": {

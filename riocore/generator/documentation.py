@@ -236,7 +236,11 @@ class documentation:
         self.expansion_pins = []
         self.pinmapping = {}
         self.pinmapping_rev = {}
+
         for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.PINDEFAULTS.items():
+                if "pin" in pin_config:
+                    self.pinmapping[f"{plugin_instance.instances_name}:{pin_name}"] = pin_config["pin"]
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]

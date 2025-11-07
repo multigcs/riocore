@@ -120,7 +120,7 @@ class Plugin(PluginBase):
                 }
 
         self.fpga_num = 0
-        self.hal_prefix = "fpga0"
+        self.hal_prefix = ""
 
         toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain"))
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
@@ -134,10 +134,20 @@ class Plugin(PluginBase):
         self.system_setup["speed"] = self.jdata["speed"]
 
     def update_prefixes(cls, parent, instances):
+        fnum = 0
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                instance.hal_prefix = instance.instances_name
                 plugin_instance = connected_pin["instance"]
                 plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
+                fnum += 1
+
+    def update_pins(self, parent):
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            psetup = connected_pin["setup"]
+            pin = connected_pin["pin"]
+            if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin]:
+                psetup["pin"] = self.PINDEFAULTS[pin]["pin"]
 
     def hal(self, parent):
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
@@ -183,12 +193,12 @@ class Plugin(PluginBase):
                 for pin_name, pin_config in plugin_instance.plugin_setup.get("pins", {}).items():
                     if "pin" in pin_config and not pin_config["pin"]:
                         del pin_config["pin"]
-            cls.generator(parent)
+            cls.generator(parent, instance.hal_prefix)
 
             parent.project.config["speed"] = instance.jdata["speed"]
             component(parent.project, prefix=instance.hal_prefix)
 
-    def generator(cls, parent, generate_pll=True):
+    def generator(cls, parent, hal_prefix, generate_pll=True):
         os.makedirs(cls.jdata["output_path"], exist_ok=True)
 
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")

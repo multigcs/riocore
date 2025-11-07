@@ -255,7 +255,8 @@ class Plugin(PluginBase):
                 pin = connected_pin["pin"]
                 direction = connected_pin["direction"]
                 inverted = connected_pin["inverted"]
-                upin = f"GP{int(pin[2:]):02d}"
+                upin = self.PINDEFAULTS[pin]["pin"].split(":", 1)[1]
+                gpin = upin.replace("GP0", "GP").lower()
                 if name == "step":
                     self.stepgen_steps.append(upin)
                 elif name == "dir":
@@ -275,14 +276,14 @@ class Plugin(PluginBase):
                         self.encoder_z_pins.append("high")
                 elif direction == "output":
                     self.output_pins.append(upin)
-                    psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.output.{pin.lower()}"
+                    psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.output.{gpin}"
                 elif direction == "input":
                     self.input_pins.append(upin)
                     self.input_pullups.append("1")
                     if inverted:
-                        psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.input.{pin.lower()}-not"
+                        psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.input.{gpin}-not"
                     else:
-                        psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.input.{pin.lower()}"
+                        psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.input.{gpin}"
 
     def component_loader(cls, instances):
         output = []
