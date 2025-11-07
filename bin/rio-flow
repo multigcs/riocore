@@ -1936,6 +1936,8 @@ class Window(QMainWindow):
             if isinstance(item, PluginNode):
                 self.connect_plugin(item)
 
+        self.update_passthrough()
+
         # connect ethercat bus by idx
         ethercat_ids = {}
         for item in self.scene.items():
@@ -2160,7 +2162,7 @@ class Window(QMainWindow):
         for item in self.scene.items():
             if isinstance(item, PluginNode):
                 for port_name, port_data in item.ports.items():
-                    if port_data.get("type") == "PASSTHROUGH":
+                    if "PASSTHROUGH" in port_data.get("type"):
                         modifiers = {}
                         source = self.get_source(item, port_data["source"], modifiers)
                         if not source:
@@ -2208,7 +2210,6 @@ class Window(QMainWindow):
                                         data["direction"] = source_direction
                                     elif data["direction"] != source_direction and source_direction != "all":
                                         riocore.log(f"ERROR: wrong pin-directions: {source_node.name} {source_port} ({source_direction}) <> {target_node.name} {target_port} ({data['direction']})")
-                                        print(source_direction, data["direction"])
 
     def connect_plugin(self, pnode):
         plugin_instance = pnode.plugin_instance
@@ -2273,8 +2274,6 @@ class Window(QMainWindow):
                             pos_y = modifier["pos"][1]
                         mnode = ModifierNode(self.scene, pos_x, pos_y, modifier)
                         self.scene.addItem(mnode)
-                        # if preselect:
-                        #    mnode.setSelected(True)
                         edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])
                         self.scene.addItem(edge)
                         last_con = (mnode, "out")
@@ -2310,8 +2309,6 @@ class Window(QMainWindow):
         if preselect:
             del plugin_instance.plugin_setup["preselect"]
             pnode.setSelected(True)
-
-        self.update_passthrough()
 
         ph = max(ph, pnode.height) + 5
         return ph
@@ -2438,7 +2435,9 @@ class Window(QMainWindow):
 
     def get_source(self, node, port, modifiers):
         for item in self.scene.items():
-            if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
+            if not isinstance(item, NodeEdge):
+                continue
+            if item._target_node == node and item._target_port == port:
                 if isinstance(item._source_node, ModifierNode):
                     modifiers.append(item._source_node.modifier)
                     source = self.get_source(item._source_node, "in", modifiers)

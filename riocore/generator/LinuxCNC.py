@@ -22,7 +22,7 @@ class LinuxCNC:
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
         "MIN_LIMIT": -500,
-        "MAX_LIMIT":    500,
+        "MAX_LIMIT": 500,
         "MIN_FERROR": 0.01,
         "FERROR": 2.0,
         "BACKLASH": 0.0,
