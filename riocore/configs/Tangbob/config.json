@@ -396,7 +396,7 @@
             },
             "signals": {
                 "bit": {
-                    "net": "joint.0.home-sw-in"
+                    "net": ""
                 }
             },
             "name": "other-fpga"
