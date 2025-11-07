@@ -323,6 +323,7 @@ class PluginBase:
         self.plugin_id = plugin_id
         self.duration = 0
         self.timestamp = 0
+        self.master = None
         self.plugin_setup = plugin_setup
 
         if "uid" not in self.plugin_setup:

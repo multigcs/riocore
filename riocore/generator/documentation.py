@@ -17,13 +17,14 @@ class documentation:
 
         self.iface_in = []
         self.iface_out = []
-        output_pos = self.project.buffer_size
+        # output_pos = self.project.buffer_size
 
         size = 32
         self.iface_out.append(["RX_HEADER", size])
         self.iface_in.append(["TX_HEADER", size])
         self.iface_in.append(["TIMESTAMP", size])
 
+        """
         if self.project.multiplexed_input:
             variable_name = "MULTIPLEXED_INPUT_VALUE"
             size = self.project.multiplexed_input_size
@@ -35,13 +36,13 @@ class documentation:
         if self.project.multiplexed_output:
             variable_name = "MULTIPLEXED_OUTPUT_VALUE"
             size = self.project.multiplexed_output_size
-            for bit_num in range(0, size, 8):
-                output_pos -= 8
+            #for bit_num in range(0, size, 8):
+            #    output_pos -= 8
             self.iface_out.append([variable_name, size])
             variable_name = "MULTIPLEXED_OUTPUT_ID"
             size = 8
-            for bit_num in range(0, size, 8):
-                output_pos -= 8
+            #for bit_num in range(0, size, 8):
+            #    output_pos -= 8
             self.iface_out.append([variable_name, size])
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
@@ -56,13 +57,17 @@ class documentation:
             elif data_config["direction"] == "output":
                 if not data_config.get("expansion"):
                     if size >= 8:
-                        for bit_num in range(0, size, 8):
-                            output_pos -= 8
+                        #for bit_num in range(0, size, 8):
+                        #    output_pos -= 8
+                        pass
                     elif size > 1:
-                        output_pos -= size
+                        #output_pos -= size
+                        pass
                     else:
-                        output_pos -= 1
+                        #output_pos -= 1
+                        pass
                     self.iface_out.append([variable_name, size, hal_name])
+        """
 
         self.halgraph_png()
         self.config_md()

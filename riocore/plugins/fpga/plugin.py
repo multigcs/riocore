@@ -122,12 +122,16 @@ class Plugin(PluginBase):
         self.fpga_num = 0
         self.hal_prefix = ""
 
-        toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain"))
+        toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain")) or self.jdata.get("toolchain")
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
+        protocol = self.plugin_setup.get("protocol", self.option_default("protocol"))
+        self.jdata["protocol"] = protocol
         self.jdata["toolchain"] = toolchain
         self.jdata["speed"] = speed
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
         self.jdata["sysclk_pin"] = self.jdata["clock"].get("pin")
+
+        self.master = self
 
     def update_system_setup(self, parent):
         # TODO: per instance
@@ -148,6 +152,7 @@ class Plugin(PluginBase):
             pin = connected_pin["pin"]
             if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin]:
                 psetup["pin"] = self.PINDEFAULTS[pin]["pin"]
+            connected_pin["instance"].master = self.instances_name
 
     def hal(self, parent):
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
@@ -155,13 +160,19 @@ class Plugin(PluginBase):
         parent.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
         parent.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
 
+    def start_sh(self, parent):
+        # self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
+        # self.component_path = f"{self.base_path}"
+        # os.path.join(self.component_path, f"riocomp-{self.instances_name}.c")
+        return f'sudo halcompile --install "$DIRNAME/riocomp-{self.instances_name}.c"\n'
+
     def component_loader(cls, instances):
         output = []
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             simulation = instance.plugin_setup.get("simulation", instance.option_default("simulation"))
             output.append(f"# fpga board {node_type}")
-            output.append("loadrt rio")
+            output.append(f"loadrt riocomp-{instance.instances_name}")
             output.append("")
             output.append("# if you need to test rio without hardware, set it to 1")
             if simulation:
@@ -193,19 +204,30 @@ class Plugin(PluginBase):
                 for pin_name, pin_config in plugin_instance.plugin_setup.get("pins", {}).items():
                     if "pin" in pin_config and not pin_config["pin"]:
                         del pin_config["pin"]
-            cls.generator(parent, instance.hal_prefix)
 
+            # gateware
+            instance.gateware = gateware(parent, instance)
+            instance.gateware.generator()
+
+            # linuxcnc-component
             parent.project.config["speed"] = instance.jdata["speed"]
-            component(parent.project, prefix=instance.hal_prefix)
+            component(parent.project, instance=instance)
 
-    def generator(cls, parent, hal_prefix, generate_pll=True):
-        os.makedirs(cls.jdata["output_path"], exist_ok=True)
+
+class gateware:
+    def __init__(self, parent, instance):
+        self.parent = parent
+        self.instance = instance
+        self.jdata = instance.jdata
+
+    def generator(self, generate_pll=True):
+        os.makedirs(self.jdata["output_path"], exist_ok=True)
 
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
         if os.path.isfile(toolchains_json_path):
-            cls.jdata["toolchains_json"] = json.loads(open(toolchains_json_path, "r").read())
-            if cls.jdata["toolchains_json"]:
-                for toolchain, path in cls.jdata["toolchains_json"].items():
+            self.jdata["toolchains_json"] = json.loads(open(toolchains_json_path, "r").read())
+            if self.jdata["toolchains_json"]:
+                for toolchain, path in self.jdata["toolchains_json"].items():
                     if path and not os.path.isdir(path):
                         riocore.log(f"WARNING: toolchains.json: path for '{toolchain}' not found: {path}")
         else:
@@ -224,48 +246,48 @@ class Plugin(PluginBase):
                 )
             )
 
-        parent.generate_pll = generate_pll
-        riocore.log(f"loading toolchain {cls.jdata['toolchain']}")
-        cls.jdata["toolchain_generator"] = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{cls.jdata['toolchain']}").Toolchain(cls.jdata)
+        self.parent.generate_pll = generate_pll
+        riocore.log(f"loading toolchain {self.jdata['toolchain']}")
+        self.jdata["toolchain_generator"] = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{self.jdata['toolchain']}").Toolchain(self.jdata)
 
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
-            plugin_instance.post_setup(parent.project)
+            plugin_instance.post_setup(self.parent.project)
 
-        parent.expansion_pins = []
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        self.parent.expansion_pins = []
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for pin in plugin_instance.expansion_outputs():
-                parent.expansion_pins.append(pin)
+                self.parent.expansion_pins.append(pin)
             for pin in plugin_instance.expansion_inputs():
-                parent.expansion_pins.append(pin)
+                self.parent.expansion_pins.append(pin)
 
-        parent.virtual_pins = []
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        self.parent.virtual_pins = []
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
-                    if pinname not in parent.virtual_pins:
-                        parent.virtual_pins.append(pinname)
+                    if pinname not in self.parent.virtual_pins:
+                        self.parent.virtual_pins.append(pinname)
 
-        parent.verilogs = []
-        parent.linked_pins = []
-        cls.globals(parent)
-        cls.top(parent)
-        cls.makefile(parent)
+        self.parent.verilogs = []
+        self.parent.linked_pins = []
+        self.globals()
+        self.top()
+        self.makefile()
 
-    def globals(cls, parent):
+    def globals(self):
         # create globals.v for compatibility functions
         globals_data = []
-        globals_data.append(f'localparam FPGA_FAMILY = "{cls.jdata.get("family", "UNKNOWN")}";')
-        globals_data.append(f'localparam FPGA_TYPE = "{cls.jdata.get("type", "UNKNOWN")}";')
-        globals_data.append(f'localparam TOOLCHAIN = "{cls.jdata["toolchain"]}";')
+        globals_data.append(f'localparam FPGA_FAMILY = "{self.jdata.get("family", "UNKNOWN")}";')
+        globals_data.append(f'localparam FPGA_TYPE = "{self.jdata.get("type", "UNKNOWN")}";')
+        globals_data.append(f'localparam TOOLCHAIN = "{self.jdata["toolchain"]}";')
         globals_data.append("")
-        if cls.jdata.get("family", "UNKNOWN") in {"ice40"}:
+        if self.jdata.get("family", "UNKNOWN") in {"ice40"}:
             globals_data.append("`define DSP_CALC")
         globals_data.append("")
         globals_data.append("// replacement for $clog2")
@@ -278,29 +300,29 @@ class Plugin(PluginBase):
         globals_data.append("  end")
         globals_data.append("endfunction")
         globals_data.append("")
-        open(os.path.join(cls.jdata["output_path"], "globals.v"), "w").write("\n".join(globals_data))
-        parent.verilogs.append("globals.v")
+        open(os.path.join(self.jdata["output_path"], "globals.v"), "w").write("\n".join(globals_data))
+        self.parent.verilogs.append("globals.v")
 
-    def makefile(cls, parent):
-        flashcmd = cls.jdata.get("flashcmd")
+    def makefile(self):
+        flashcmd = self.jdata.get("flashcmd")
         if flashcmd:
-            if flashcmd.startswith("./") and parent.jdata["json_path"]:
+            if flashcmd.startswith("./") and self.parent.jdata["json_path"]:
                 flashcmd_script = flashcmd.split()[0].replace("./", "")
-                json_path = parent.jdata["json_path"]
+                json_path = self.parent.jdata["json_path"]
                 flashcmd_script_path = os.path.join(json_path, flashcmd_script)
                 riocore.log(flashcmd_script_path)
                 if os.path.isfile(flashcmd_script_path):
-                    target = os.path.join(cls.jdata["output_path"], flashcmd_script)
+                    target = os.path.join(self.jdata["output_path"], flashcmd_script)
                     shutil.copy(flashcmd_script_path, target)
                     os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for verilog in plugin_instance.gateware_files():
-                if verilog in parent.verilogs:
+                if verilog in self.parent.verilogs:
                     continue
-                parent.verilogs.append(verilog)
+                self.parent.verilogs.append(verilog)
                 ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, verilog)
                 if not os.path.isfile(ipv_path):
                     # fallback to shared files
@@ -308,78 +330,151 @@ class Plugin(PluginBase):
                 if not os.path.isfile(ipv_path):
                     riocore.log(f"ERROR: can not found verilog file: {verilog}")
                     exit(1)
-                target = os.path.join(cls.jdata["output_path"], verilog)
+                target = os.path.join(self.jdata["output_path"], verilog)
                 shutil.copy(ipv_path, target)
 
             for verilog, data in plugin_instance.gateware_virtual_files().items():
-                if verilog in parent.verilogs:
+                if verilog in self.parent.verilogs:
                     continue
                 if not verilog.endswith(".mem"):
-                    parent.verilogs.append(verilog)
-                target = os.path.join(cls.jdata["output_path"], verilog)
+                    self.parent.verilogs.append(verilog)
+                target = os.path.join(self.jdata["output_path"], verilog)
                 open(target, "w").write(data)
 
         for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v", "oneshot.v", "delay.v"):
-            parent.verilogs.append(extrafile)
+            self.parent.verilogs.append(extrafile)
             source = os.path.join(riocore_path, "files", "verilog", extrafile)
-            target = os.path.join(cls.jdata["output_path"], extrafile)
+            target = os.path.join(self.jdata["output_path"], extrafile)
             shutil.copy(source, target)
-        parent.verilogs.append("rio.v")
-        cls.jdata["verilog_files"] = parent.verilogs
-        cls.jdata["pinlists"] = {}
-        cls.jdata["pinlists"]["base"] = {}
-        cls.jdata["pinlists"]["base"]["sysclk_in"] = {"direction": "input", "pull": None, "pin": cls.jdata["sysclk_pin"], "varname": "sysclk_in"}
+        self.parent.verilogs.append("rio.v")
+        self.jdata["verilog_files"] = self.parent.verilogs
+        self.jdata["pinlists"] = {}
+        self.jdata["pinlists"]["base"] = {}
+        self.jdata["pinlists"]["base"]["sysclk_in"] = {"direction": "input", "pull": None, "pin": self.jdata["sysclk_pin"], "varname": "sysclk_in"}
 
-        cls.jdata["timing_constraints"] = {}
-        cls.jdata["timing_constraints_instance"] = {}
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        self.jdata["timing_constraints"] = {}
+        self.jdata["timing_constraints_instance"] = {}
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for key, value in plugin_instance.timing_constraints().items():
                 if ":" in key:
                     pre, post = key.split(":")
                     pname = f"{pre}_{plugin_instance.instances_name}_{post}".upper()
-                    cls.jdata["timing_constraints"][pname] = value
+                    self.jdata["timing_constraints"][pname] = value
                 else:
-                    cls.jdata["timing_constraints_instance"][f"{plugin_instance.instances_name}.{key}"] = value
+                    self.jdata["timing_constraints_instance"][f"{plugin_instance.instances_name}.{key}"] = value
 
-        parent.pinmapping = {}
-        parent.pinmapping_rev = {}
-        parent.slots = cls.jdata.get("board_data", {}).get("slots", []) + cls.jdata.get("slots", [])
-        for slot in parent.slots:
+        self.parent.pinmapping = {}
+        self.parent.pinmapping_rev = {}
+        self.parent.slots = self.jdata.get("board_data", {}).get("slots", []) + self.jdata.get("slots", [])
+        for slot in self.parent.slots:
             slot_name = slot.get("name")
             slot_pins = slot.get("pins", {})
             for pin_name, pin in slot_pins.items():
                 if isinstance(pin, dict):
                     pin = pin["pin"]
                 pin_id = f"{slot_name}:{pin_name}"
-                parent.pinmapping[pin_id] = pin
-                parent.pinmapping_rev[pin] = pin_id
+                self.parent.pinmapping[pin_id] = pin
+                self.parent.pinmapping_rev[pin] = pin_id
 
         pinnames = {}
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
-            cls.jdata["pinlists"][plugin_instance.instances_name] = {}
+            self.jdata["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] not in parent.expansion_pins and pin_config["pin"] not in parent.virtual_pins and pin_config["varname"] not in parent.linked_pins:
-                    pin_config["pin"] = parent.pinmapping.get(pin_config["pin"], pin_config["pin"])
-                    cls.jdata["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
+                if (
+                    "pin" in pin_config
+                    and pin_config["pin"] not in self.parent.expansion_pins
+                    and pin_config["pin"] not in self.parent.virtual_pins
+                    and pin_config["varname"] not in self.parent.linked_pins
+                ):
+                    pin_config["pin"] = self.parent.pinmapping.get(pin_config["pin"], pin_config["pin"])
+                    self.jdata["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
                     if pin_config["pin"] not in pinnames:
                         pinnames[pin_config["pin"]] = plugin_instance.instances_name
                     else:
                         riocore.log(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
 
-        cls.jdata["toolchain_generator"].generate(cls.jdata["output_path"])
+        self.jdata["toolchain_generator"].generate(self.jdata["output_path"])
 
-    def top(cls, parent):
+    def get_interface_data(self):
+        interface_data = []
+        for size in sorted(self.interface_sizes, reverse=True):
+            for plugin_instance in self.parent.project.plugin_instances:
+                if plugin_instance.master != self.instance.instances_name:
+                    continue
+                for data_name, data_config in plugin_instance.interface_data().items():
+                    if data_config["size"] == size:
+                        interface_data.append([size, plugin_instance, data_name, data_config])
+        return interface_data
+
+    def calc_buffersize(self):
+        self.timestamp_size = 32
+        self.header_size = 32
+        self.input_size = 0
+        self.output_size = 0
+        self.interface_sizes = set()
+        self.multiplexed_input = 0
+        self.multiplexed_input_size = 0
+        self.multiplexed_output = 0
+        self.multiplexed_output_size = 0
+        self.multiplexed_output_id = 0
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
+                continue
+            for data_name, data_config in plugin_instance.interface_data().items():
+                self.interface_sizes.add(data_config["size"])
+                variable_size = data_config["size"]
+                multiplexed = data_config.get("multiplexed", False)
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
+                if data_config["direction"] == "input":
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_input += 1
+                            self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
+                            if self.multiplexed_input_size < 8:
+                                self.multiplexed_input_size = 8
+                        else:
+                            self.input_size += variable_size
+                elif data_config["direction"] == "output":
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_output += 1
+                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
+                            if self.multiplexed_output_size < 8:
+                                self.multiplexed_output_size = 8
+                        else:
+                            self.output_size += variable_size
+
+        if self.multiplexed_input:
+            self.input_size += self.multiplexed_input_size + 8
+        if self.multiplexed_output:
+            self.output_size += self.multiplexed_output_size + 8
+
+        self.input_size = self.input_size + self.header_size + self.timestamp_size
+        self.output_size = self.output_size + self.header_size
+        self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
+        self.buffer_bytes = self.buffer_size // 8
+        # self.config["buffer_size"] = self.buffer_size
+
+        # log("# PC->FPGA", self.output_size)
+        # log("# FPGA->PC", self.input_size)
+        # log("# MAX", self.buffer_size)
+
+    def top(self):
+        self.calc_buffersize()
+
         output = []
         input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
         input_variables_list += ["timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]"]
         output_variables_list = []
-        parent.iface_in = []
-        parent.iface_out = []
-        output_pos = parent.project.buffer_size
+        self.parent.iface_in = []
+        self.parent.iface_out = []
+        output_pos = self.buffer_size
 
         variable_name = "header_rx"
         size = 32
@@ -387,37 +482,37 @@ class Plugin(PluginBase):
         for bit_num in range(0, size, 8):
             pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
             output_pos -= 8
-        output_variables_list.append(f"// PC -> FPGA ({parent.project.output_size} + FILL)")
+        output_variables_list.append(f"// PC -> FPGA ({self.output_size} + FILL)")
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-        parent.iface_out.append(["RX_HEADER", size])
-        parent.iface_in.append(["TX_HEADER", size])
-        parent.iface_in.append(["TITMESTAMP", size])
+        self.parent.iface_out.append(["RX_HEADER", size])
+        self.parent.iface_in.append(["TX_HEADER", size])
+        self.parent.iface_in.append(["TITMESTAMP", size])
 
-        if parent.project.multiplexed_input:
+        if self.multiplexed_input:
             variable_name = "MULTIPLEXED_INPUT_VALUE"
-            size = parent.project.multiplexed_input_size
+            size = self.multiplexed_input_size
             pack_list = []
             for bit_num in range(0, size, 8):
                 pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
-            parent.iface_in.append([variable_name, size])
+            self.parent.iface_in.append([variable_name, size])
             variable_name = "MULTIPLEXED_INPUT_ID"
             size = 8
             pack_list = []
             for bit_num in range(0, size, 8):
                 pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
             input_variables_list.append(f"{', '.join(pack_list)}")
-            parent.iface_in.append([variable_name, size])
+            self.parent.iface_in.append([variable_name, size])
 
-        if parent.project.multiplexed_output:
+        if self.multiplexed_output:
             variable_name = "MULTIPLEXED_OUTPUT_VALUE"
-            size = parent.project.multiplexed_output_size
+            size = self.multiplexed_output_size
             pack_list = []
             for bit_num in range(0, size, 8):
                 pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-            parent.iface_out.append([variable_name, size])
+            self.parent.iface_out.append([variable_name, size])
             variable_name = "MULTIPLEXED_OUTPUT_ID"
             size = 8
             pack_list = []
@@ -425,9 +520,11 @@ class Plugin(PluginBase):
                 pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
                 output_pos -= 8
             output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-            parent.iface_out.append([variable_name, size])
+            self.parent.iface_out.append([variable_name, size])
 
-        for size, plugin_instance, data_name, data_config in parent.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            if plugin_instance.master != self.instance.instances_name:
+                continue
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -441,7 +538,7 @@ class Plugin(PluginBase):
                     else:
                         pack_list.append(f"{variable_name}")
                     input_variables_list.append(f"{', '.join(pack_list)}")
-                    parent.iface_in.append([variable_name, size])
+                    self.parent.iface_in.append([variable_name, size])
             elif data_config["direction"] == "output":
                 if not data_config.get("expansion"):
                     pack_list = []
@@ -456,14 +553,14 @@ class Plugin(PluginBase):
                         pack_list.append(f"rx_data[{output_pos - 1}]")
                         output_pos -= 1
                     output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-                    parent.iface_out.append([variable_name, size])
+                    self.parent.iface_out.append([variable_name, size])
 
-        if parent.project.buffer_size > parent.project.input_size:
-            diff = parent.project.buffer_size - parent.project.input_size
+        if self.buffer_size > self.input_size:
+            diff = self.buffer_size - self.input_size
             input_variables_list.append(f"{diff}'d0")
 
-        diff = parent.project.buffer_size - parent.project.output_size
-        if parent.project.buffer_size > parent.project.output_size:
+        diff = self.buffer_size - self.output_size
+        if self.buffer_size > self.output_size:
             output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
 
         if output_pos != diff:
@@ -473,32 +570,31 @@ class Plugin(PluginBase):
         arguments_list = ["input sysclk_in"]
         existing_pins = {}
         double_pins = {}
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] not in parent.expansion_pins and pin_config["pin"] not in parent.virtual_pins:
+                if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins and pin_config["pin"] not in self.parent.virtual_pins:
                     if pin_config["pin"] in existing_pins:
                         double_pins[pin_config["pin"]] = pin_config["varname"]
-
                     else:
                         arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
                         existing_pins[pin_config["pin"]] = pin_config["varname"]
 
         output.append("/*")
-        output.append(f"    ######### {cls.jdata['name']} #########")
+        output.append(f"    ######### {self.jdata['name']} #########")
         output.append("")
         output.append("")
         for key in ("toolchain", "family", "type", "package"):
-            value = cls.jdata[key]
+            value = self.jdata[key]
             output.append(f"    {key.title():10}: {value}")
-        output.append(f"    Clock     : {(cls.jdata['speed'] / 1000000)} Mhz")
+        output.append(f"    Clock     : {(self.jdata['speed'] / 1000000)} Mhz")
         output.append("")
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] not in parent.expansion_pins:
+                if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
                     pull = f"PULL{pin_config.get('pull').upper()}" if pin_config.get("pull") else ""
                     if pin_config["direction"] == "input":
                         output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pull}")
@@ -513,8 +609,8 @@ class Plugin(PluginBase):
         output.append("")
         output.append("module rio (")
 
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             if plugin_instance.PASSTHROUGH:
                 output.append(f"        // {plugin_instance.instances_name}")
@@ -531,14 +627,14 @@ class Plugin(PluginBase):
         output.append(f"        {arguments_string}")
         output.append("    );")
         output.append("")
-        output.append(f"    localparam BUFFER_SIZE = 16'd{parent.project.buffer_size}; // {parent.project.buffer_size // 8} bytes")
+        output.append(f"    localparam BUFFER_SIZE = 16'd{self.buffer_size}; // {self.buffer_size // 8} bytes")
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
         output.append("    wire INTERFACE_SYNC;")
 
         error_signals = ["INTERFACE_TIMEOUT"]
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for data_name, interface_setup in plugin_instance.interface_data().items():
                 error_on = interface_setup.get("error_on")
@@ -551,28 +647,28 @@ class Plugin(PluginBase):
         output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
         output.append("")
 
-        osc_clock = cls.jdata["osc_clock"]
-        speed = cls.jdata["speed"]
+        osc_clock = self.jdata["osc_clock"]
+        speed = self.jdata["speed"]
         if osc_clock and float(osc_clock) != float(speed):
-            if parent.generate_pll:
-                if hasattr(cls.jdata["toolchain_generator"], "pll"):
-                    cls.jdata["toolchain_generator"].pll(float(osc_clock), float(speed))
+            if self.parent.generate_pll:
+                if hasattr(self.jdata["toolchain_generator"], "pll"):
+                    self.jdata["toolchain_generator"].pll(float(osc_clock), float(speed))
                 else:
                     riocore.log(f"WARNING: can not generate pll for this platform: set speed to: {speed} Hz")
-                    cls.jdata["speed"] = speed
+                    self.jdata["speed"] = speed
             else:
                 riocore.log("INFO: preview-mode / no pll generated")
 
-            if cls.jdata["family"] == "Trion":
+            if self.jdata["family"] == "Trion":
                 output.append("    wire sysclk;")
                 output.append("    assign sysclk = sysclk_in;")
             else:
-                parent.verilogs.append("pll.v")
+                self.parent.verilogs.append("pll.v")
                 output.append("    wire sysclk;")
                 output.append("    wire locked;")
-                if cls.jdata["family"] == "MAX 10":
+                if self.jdata["family"] == "MAX 10":
                     output.append("    pll mypll(.inclk0(sysclk_in), .c0(sysclk), .locked(locked));")
-                elif cls.jdata["family"] == "xc7":
+                elif self.jdata["family"] == "xc7":
                     output.append("    wire sysclk25;")
                     output.append("    wire reset;")
                     output.append("    pll mypll(.clock_in(sysclk_in), .clock_out(sysclk), .clock25_out(sysclk25), .locked(locked), .reset(reset));")
@@ -583,7 +679,7 @@ class Plugin(PluginBase):
             output.append("    assign sysclk = sysclk_in;")
         output.append("")
 
-        sysclk_speed = cls.jdata["speed"]
+        sysclk_speed = self.jdata["speed"]
         output.append("    reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};")
         output.append("    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);")
         output.append("")
@@ -625,20 +721,20 @@ class Plugin(PluginBase):
                         riocore.log(f"ERROR: can not share input pin with output pin: {existing_pins[pin]} -> {pin} -> {varname}")
                     else:
                         riocore.log(f"WARNING: input pin ({pin}) assigned to multiple plugins: {varname} / {existing_pins[pin]}")
-                    parent.linked_pins.append(varname)
+                    self.parent.linked_pins.append(varname)
                 else:
                     riocore.log(f"ERROR: can not assign output pin to multiple plugins: {varname} / {existing_pins[pin]} -> {pin}")
 
         # virtual pins
-        for pin in parent.virtual_pins:
+        for pin in self.parent.virtual_pins:
             pinname = pin.replace(":", "_")
             output.append(f"    wire {pinname};")
 
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
-                if "pin" in pin_config and pin_config["pin"] in parent.virtual_pins:
+                if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
                     pinname = pin_config["pin"].replace(":", "_")
                     if pin_config["direction"] == "output":
                         output.append(f"    wire {pin_config['varname']};")
@@ -648,15 +744,15 @@ class Plugin(PluginBase):
                         output.append(f"    assign {pin_config['varname']} = {pinname}; // {pin_config['direction']}")
 
         # multiplexing
-        if parent.project.multiplexed_input:
-            output.append(f"    reg [{parent.project.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE = 0;")
+        if self.multiplexed_input:
+            output.append(f"    reg [{self.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE = 0;")
             output.append("    reg [7:0] MULTIPLEXED_INPUT_ID = 0;")
-        if parent.project.multiplexed_output:
-            output.append(f"    wire [{parent.project.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
+        if self.multiplexed_output:
+            output.append(f"    wire [{self.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for data_name, data_config in plugin_instance.interface_data().items():
                 if not data_config.get("expansion"):
@@ -679,7 +775,7 @@ class Plugin(PluginBase):
         output_variables_string = "\n    ".join(output_variables_list)
         output.append(f"    {output_variables_string}")
         output.append("")
-        output.append(f"    // FPGA -> PC ({parent.project.input_size} + FILL)")
+        output.append(f"    // FPGA -> PC ({self.input_size} + FILL)")
         output.append("    assign tx_data = {")
         input_variables_string = ",\n        ".join(input_variables_list)
         output.append(f"        {input_variables_string}")
@@ -687,8 +783,8 @@ class Plugin(PluginBase):
         output.append("")
 
         # gateware_defines
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             define_string = "\n    ".join(plugin_instance.gateware_defines())
             if define_string:
@@ -697,38 +793,38 @@ class Plugin(PluginBase):
 
         # expansion assignments
         used_expansion_outputs = []
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config:
-                    if pin_config["pin"] in parent.expansion_pins:
+                    if pin_config["pin"] in self.parent.expansion_pins:
                         output.append(f"    wire {pin_config['varname']};")
 
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config:
-                    if pin_config["pin"] in parent.expansion_pins:
+                    if pin_config["pin"] in self.parent.expansion_pins:
                         if pin_config["direction"] == "input":
                             output.append(f"    assign {pin_config['varname']} = {pin_config['pin']};")
                         elif pin_config["direction"] == "output":
                             used_expansion_outputs.append(pin_config["pin"])
 
-        if parent.expansion_pins:
+        if self.parent.expansion_pins:
             output_exp = []
             # update expansion output pins
-            for plugin_instance in parent.project.plugin_instances:
+            for plugin_instance in self.parent.project.plugin_instances:
                 if plugin_instance.PLUGIN_TYPE != "gateware":
                     continue
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config:
-                        if pin_config["pin"] in parent.expansion_pins:
+                        if pin_config["pin"] in self.parent.expansion_pins:
                             if pin_config["direction"] == "output":
                                 output_exp.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
             # set expansion output pins without driver
-            for plugin_instance in parent.project.plugin_instances:
+            for plugin_instance in self.parent.project.plugin_instances:
                 if plugin_instance.PLUGIN_TYPE != "gateware":
                     continue
                 for data_name, data_config in plugin_instance.interface_data().items():
@@ -756,16 +852,18 @@ class Plugin(PluginBase):
                 output += output_exp
                 output.append("    end")
 
-        if parent.project.multiplexed_input:
+        if self.multiplexed_input:
             output.append("    always @(posedge sysclk) begin")
             output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
-            output.append(f"            if (MULTIPLEXED_INPUT_ID < {parent.project.multiplexed_input - 1}) begin")
+            output.append(f"            if (MULTIPLEXED_INPUT_ID < {self.multiplexed_input - 1}) begin")
             output.append("                MULTIPLEXED_INPUT_ID = MULTIPLEXED_INPUT_ID + 1'd1;")
             output.append("            end else begin")
             output.append("                MULTIPLEXED_INPUT_ID = 0;")
             output.append("            end")
             mpid = 0
-            for size, plugin_instance, data_name, data_config in parent.project.get_interface_data():
+            for size, plugin_instance, data_name, data_config in self.get_interface_data():
+                if plugin_instance.master != self.instance.instances_name:
+                    continue
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
@@ -782,10 +880,12 @@ class Plugin(PluginBase):
             output.append("        end")
             output.append("    end")
 
-        if parent.project.multiplexed_output:
+        if self.multiplexed_output:
             output.append("    always @(posedge sysclk) begin")
             mpid = 0
-            for size, plugin_instance, data_name, data_config in parent.project.get_interface_data():
+            for size, plugin_instance, data_name, data_config in self.get_interface_data():
+                if plugin_instance.master != self.instance.instances_name:
+                    continue
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
                     continue
@@ -799,8 +899,8 @@ class Plugin(PluginBase):
             output.append("    end")
 
         varmapping = {}
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             for signal, signal_config in plugin_instance.SIGNALS.items():
                 if signal in plugin_instance.INTERFACE:
@@ -808,8 +908,8 @@ class Plugin(PluginBase):
                     varmapping[f"{signal_config['signal_prefix']}:{signal}"] = iface["variable"]
 
         # gateware instances
-        for plugin_instance in parent.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE != "gateware":
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
             if not plugin_instance.gateware_instances():
                 continue
@@ -860,22 +960,22 @@ class Plugin(PluginBase):
         output.append("")
         output.append("endmodule")
         output.append("")
-        riocore.log(f"writing gateware to: {cls.jdata['output_path']}")
-        open(os.path.join(cls.jdata["output_path"], "rio.v"), "w").write("\n".join(output))
+        riocore.log(f"writing gateware to: {self.jdata['output_path']}")
+        open(os.path.join(self.jdata["output_path"], "rio.v"), "w").write("\n".join(output))
 
         # write hash of rio.v to filesystem
-        hash_file_compiled = os.path.join(cls.jdata["output_path"], "hash_compiled.txt")
+        hash_file_compiled = os.path.join(self.jdata["output_path"], "hash_compiled.txt")
         hash_compiled = ""
         if os.path.isfile(hash_file_compiled):
             hash_compiled = open(hash_file_compiled, "r").read()
 
-        hash_file_flashed = os.path.join(cls.jdata["output_path"], "hash_flashed.txt")
+        hash_file_flashed = os.path.join(self.jdata["output_path"], "hash_flashed.txt")
         hash_flashed = ""
         if os.path.isfile(hash_file_flashed):
             hash_flashed = open(hash_file_flashed, "r").read()
 
         hash_md5 = hashlib.md5()
-        with open(os.path.join(cls.jdata["output_path"], "rio.v"), "rb") as f:
+        with open(os.path.join(self.jdata["output_path"], "rio.v"), "rb") as f:
             for chunk in iter(lambda: f.read(4096), b""):
                 hash_md5.update(chunk)
         hash_new = hash_md5.hexdigest()
@@ -884,7 +984,7 @@ class Plugin(PluginBase):
             riocore.log("!!! gateware changed: needs to be build and flash |||")
         elif hash_flashed != hash_new:
             riocore.log("!!! gateware changed: needs to flash |||")
-        hash_file_new = os.path.join(cls.jdata["output_path"], "hash_new.txt")
+        hash_file_new = os.path.join(self.jdata["output_path"], "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
 
 
@@ -917,13 +1017,14 @@ class component(cbase):
         "LICENSE": "GPL v2",
     }
 
-    def __init__(self, project, prefix):
+    def __init__(self, project, instance):
+        self.instance = instance
         self.project = project
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         os.makedirs(self.component_path, exist_ok=True)
-        output = self.mainc(project, prefix=prefix)
-        open(os.path.join(self.component_path, "riocomp.c"), "w").write("\n".join(output))
+        output = self.mainc(project, instance=instance)
+        open(os.path.join(self.component_path, f"riocomp-{instance.instances_name}.c"), "w").write("\n".join(output))
 
     def vinit(self, vname, vtype, halstr=None, vdir="input"):
         vtype = {"bool": "bit"}.get(vtype, vtype)

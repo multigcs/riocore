@@ -367,38 +367,47 @@
                 120.0,
                 220.0
             ],
+            "simulation": true,
+            "protocol": "UDP"
+        },
+        {
+            "type": "fpga",
+            "node_type": "CYC1000",
+            "uid": "fpga1",
+            "pos": [
+                260.0,
+                950.0
+            ],
+            "protocol": "UDP",
             "simulation": true
         },
         {
-            "type": "ninja",
-            "node_type": "board",
-            "uid": "ninja0",
+            "type": "bitin",
+            "uid": "bitin3",
+            "image": "proximity",
             "pos": [
-                260.0,
-                50.0
-            ]
-        },
-        {
-            "type": "gpioout",
-            "uid": "gpioout0",
-            "image": "relay",
-            "pos": [
-                700.0,
-                10.0
+                730.0,
+                960.0
             ],
             "pins": {
                 "bit": {
-                    "pin": "ninja0:IO:GP28"
+                    "pin": "fpga1:PMOD:P7"
                 }
-            }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "other-fpga"
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.89,
+            "scale": 0.47,
             "pos": [
-                38,
-                -6
+                -88,
+                -16
             ]
         },
         "hal": {

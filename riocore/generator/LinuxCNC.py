@@ -278,6 +278,11 @@ class LinuxCNC:
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
 
+        for plugin_instance in self.project.plugin_instances:
+            if hasattr(plugin_instance, "start_sh"):
+                output.append(f"### {plugin_instance.NAME} ({plugin_instance.instances_name}) ###")
+                output.append(plugin_instance.start_sh(self))
+
         if self.gui_type == "qtvcp":
             # we need sudo to copy the vcp stuff to qtvcp-panels
             output.append("sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/")
