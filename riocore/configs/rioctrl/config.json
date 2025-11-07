@@ -1,20 +1,32 @@
 {
     "name": "rioctrl",
-    "boardcfg": "rioctrl",
     "flashcmd": "sudo /opt/oss-cad-suite/bin//openFPGALoader -c dirtyJtag --write-flash --unprotect-flash rio.bit",
     "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "rioctrl",
+            "toolchain": "icestorm",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0
+        },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:ERR",
+                    "pin": "board0:LED:ERR",
                     "modifier": [
                         {
                             "type": "onerror",
                             "invert": true,
                             "pos": [
-                                110.0,
-                                500.0
+                                160.0,
+                                580.0
                             ]
                         }
                     ]
@@ -23,15 +35,15 @@
             "frequency": 1.0,
             "uid": "blink0",
             "pos": [
-                140.0,
-                580.0
+                180.0,
+                630.0
             ]
         },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:OK",
+                    "pin": "board0:LED:OK",
                     "modifier": [
                         {
                             "type": "onerror",
@@ -47,30 +59,30 @@
             "frequency": 2.0,
             "uid": "blink1",
             "pos": [
-                -110.0,
-                570.0
+                -50.0,
+                620.0
             ]
         },
         {
             "type": "w5500",
             "pins": {
                 "mosi": {
-                    "pin": "SPI:MOSI"
+                    "pin": "board0:SPI:MOSI"
                 },
                 "miso": {
-                    "pin": "SPI:MISO"
+                    "pin": "board0:SPI:MISO"
                 },
                 "sclk": {
-                    "pin": "SPI:SCLK"
+                    "pin": "board0:SPI:SCLK"
                 },
                 "sel": {
-                    "pin": "SPI:SEL"
+                    "pin": "board0:SPI:SEL"
                 },
                 "rst": {
-                    "pin": "SPI:RST"
+                    "pin": "board0:SPI:RST"
                 },
                 "int": {
-                    "pin": "SPI:INT"
+                    "pin": "board0:SPI:INT"
                 }
             },
             "gw": "192.168.11.1",
@@ -90,21 +102,21 @@
             "uid": "shiftreg0",
             "pins": {
                 "out": {
-                    "pin": "SC:S0"
+                    "pin": "board0:SC:S0"
                 },
                 "in": {
-                    "pin": "SC:S6"
+                    "pin": "board0:SC:S6"
                 },
                 "sclk": {
-                    "pin": "SC:S1"
+                    "pin": "board0:SC:S1"
                 },
                 "load": {
-                    "pin": "SC:S2"
+                    "pin": "board0:SC:S2"
                 }
             },
             "pos": [
                 730.0,
-                340.0
+                350.0
             ]
         },
         {
@@ -114,21 +126,21 @@
             "uid": "shiftreg1",
             "pins": {
                 "in": {
-                    "pin": "SC:S3"
+                    "pin": "board0:SC:S3"
                 },
                 "out": {
-                    "pin": "SC:S7"
+                    "pin": "board0:SC:S7"
                 },
                 "sclk": {
-                    "pin": "SC:S4"
+                    "pin": "board0:SC:S4"
                 },
                 "load": {
-                    "pin": "SC:S5"
+                    "pin": "board0:SC:S5"
                 }
             },
             "pos": [
                 730.0,
-                40.0
+                50.0
             ]
         },
         {
@@ -155,13 +167,13 @@
             },
             "pins": {
                 "step": {
-                    "pin": "SB:S9"
+                    "pin": "board0:SB:S9"
                 },
                 "dir": {
-                    "pin": "SB:S10"
+                    "pin": "board0:SB:S10"
                 },
                 "en": {
-                    "pin": "SB:S11"
+                    "pin": "board0:SB:S11"
                 }
             },
             "pos": [
@@ -201,13 +213,13 @@
             },
             "pins": {
                 "step": {
-                    "pin": "SB:S6"
+                    "pin": "board0:SB:S6"
                 },
                 "dir": {
-                    "pin": "SB:S7"
+                    "pin": "board0:SB:S7"
                 },
                 "en": {
-                    "pin": "SB:S8"
+                    "pin": "board0:SB:S8"
                 }
             },
             "pos": [
@@ -239,13 +251,13 @@
             },
             "pins": {
                 "step": {
-                    "pin": "SB:S3"
+                    "pin": "board0:SB:S3"
                 },
                 "dir": {
-                    "pin": "SB:S4"
+                    "pin": "board0:SB:S4"
                 },
                 "en": {
-                    "pin": "SB:S5"
+                    "pin": "board0:SB:S5"
                 }
             },
             "pos": [
@@ -277,13 +289,13 @@
             },
             "pins": {
                 "step": {
-                    "pin": "SB:S0"
+                    "pin": "board0:SB:S0"
                 },
                 "dir": {
-                    "pin": "SB:S1"
+                    "pin": "board0:SB:S1"
                 },
                 "en": {
-                    "pin": "SB:S2"
+                    "pin": "board0:SB:S2"
                 }
             },
             "pos": [
@@ -325,13 +337,13 @@
             },
             "pins": {
                 "a": {
-                    "pin": "SA:S11"
+                    "pin": "board0:SA:S11"
                 },
                 "b": {
-                    "pin": "SA:S10"
+                    "pin": "board0:SA:S10"
                 },
                 "z": {
-                    "pin": "SA:S9",
+                    "pin": "board0:SA:S9",
                     "modifier": [
                         {
                             "type": "invert",
@@ -381,13 +393,13 @@
             },
             "pins": {
                 "a": {
-                    "pin": "SA:S8"
+                    "pin": "board0:SA:S8"
                 },
                 "b": {
-                    "pin": "SA:S7"
+                    "pin": "board0:SA:S7"
                 },
                 "z": {
-                    "pin": "SA:S6",
+                    "pin": "board0:SA:S6",
                     "modifier": [
                         {
                             "type": "invert",
@@ -437,13 +449,13 @@
             },
             "pins": {
                 "a": {
-                    "pin": "SA:S5"
+                    "pin": "board0:SA:S5"
                 },
                 "b": {
-                    "pin": "SA:S4"
+                    "pin": "board0:SA:S4"
                 },
                 "z": {
-                    "pin": "SA:S3",
+                    "pin": "board0:SA:S3",
                     "modifier": [
                         {
                             "type": "invert",
@@ -493,13 +505,13 @@
             },
             "pins": {
                 "a": {
-                    "pin": "SA:S2"
+                    "pin": "board0:SA:S2"
                 },
                 "b": {
-                    "pin": "SA:S1"
+                    "pin": "board0:SA:S1"
                 },
                 "z": {
-                    "pin": "SA:S0",
+                    "pin": "board0:SA:S0",
                     "modifier": [
                         {
                             "type": "invert",
@@ -520,12 +532,12 @@
             "type": "bitout",
             "uid": "bitout0",
             "pos": [
-                -10.0,
-                50.0
+                -100.0,
+                350.0
             ],
             "pins": {
                 "bit": {
-                    "pin": "SlotControl:EN"
+                    "pin": "board0:SlotControl:EN"
                 }
             },
             "signals": {
@@ -533,15 +545,24 @@
                     "net": "halui.machine.is-on"
                 }
             }
+        },
+        {
+            "type": "breakout",
+            "node_type": "rioctrl-shiftio",
+            "uid": "breakout0",
+            "pos": [
+                1010.0,
+                90.0
+            ]
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.159047619047619,
+            "scale": 1.1514285714285715,
             "pos": [
-                -501.2952380952381,
-                -268.0
+                -273.90999999999997,
+                -266.0
             ]
         },
         "board": {

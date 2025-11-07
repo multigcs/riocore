@@ -20,6 +20,7 @@ class Plugin(PluginBase):
                     "db25-1205",
                     "rpi-db25hat",
                     "rio-icebreaker3x",
+                    "rioctrl-shiftio",
                 ],
                 "description": "board type",
             },

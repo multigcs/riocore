@@ -22,7 +22,7 @@ class LinuxCNC:
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
         "MIN_LIMIT": -500,
-        "MAX_LIMIT": 1500,
+        "MAX_LIMIT":    500,
         "MIN_FERROR": 0.01,
         "FERROR": 2.0,
         "BACKLASH": 0.0,
@@ -1717,6 +1717,8 @@ if __name__ == "__main__":
                 for modifier in psetup.get("modifier", []):
                     if modifier["type"] == "invert":
                         inverted = 1 - inverted
+                if name not in plugin_instance.PINDEFAULTS:
+                    continue
                 direction = plugin_instance.PINDEFAULTS[name]["direction"]
                 reset = plugin_instance.PINDEFAULTS[name].get("reset", False)
                 pins.append(
