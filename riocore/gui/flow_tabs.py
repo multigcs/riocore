@@ -76,102 +76,115 @@ class TabBuilder:
         self.builder_tab.setLayout(builder_tab_layout)
 
         self.left = QVBoxLayout()
-
         self.right = QVBoxLayout()
-        self.output = QPlainTextEdit("")
-        self.right.addWidget(self.output, stretch=1)
-        self.right.addStretch()
 
         builder_tab_layout.addLayout(self.left, stretch=1)
         builder_tab_layout.addLayout(self.right, stretch=4)
 
-        self.compile_sub = None
+        self.compile_sub = {}
+        self.output = {}
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(300)
 
     def runTimer(self):
-        if self.compile_sub is not None:
-            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(255, 0, 0))
+        running = False
+        if "generator" in self.compile_sub:
             logdata = open("/tmp/buildlog", "r").read()
-
-            if self.output.verticalScrollBar().maximum() == self.output.verticalScrollBar().value():
-                self.output.setPlainText(logdata)
-                self.output.verticalScrollBar().setValue(self.output.verticalScrollBar().maximum())
-
-            if self.compile_sub.poll() is not None:
-                self.compile_sub = None
+            if self.output["generator"].verticalScrollBar().maximum() == self.output["generator"].verticalScrollBar().value():
+                self.output["generator"].setPlainText(logdata)
+                self.output["generator"].verticalScrollBar().setValue(self.output["generator"].verticalScrollBar().maximum())
+            if self.compile_sub["generator"].poll() is not None:
+                del self.compile_sub["generator"]
                 self.block = False
-                self.output.appendPlainText("...done")
+                self.output["generator"].appendPlainText("...done")
                 print("...done")
-                self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(0, 0, 0))
+            else:
+                running = True
+
+        for item in self.parent.scene.items():
+            if hasattr(item, "plugin_instance"):
+                plugin_instance = item.plugin_instance
+                if not plugin_instance.BUILDER:
+                    continue
+                if plugin_instance.instances_name in self.compile_sub:
+                    logdata = open(f"/tmp/buildlog-{plugin_instance.instances_name}", "r").read()
+                    if self.output[plugin_instance.instances_name].verticalScrollBar().maximum() == self.output[plugin_instance.instances_name].verticalScrollBar().value():
+                        self.output[plugin_instance.instances_name].setPlainText(logdata)
+                        self.output[plugin_instance.instances_name].verticalScrollBar().setValue(self.output[plugin_instance.instances_name].verticalScrollBar().maximum())
+                    if self.compile_sub[plugin_instance.instances_name].poll() is not None:
+                        del self.compile_sub[plugin_instance.instances_name]
+                        self.block = False
+                        self.output[plugin_instance.instances_name].appendPlainText("...done")
+                        print("...done")
+                    else:
+                        running = True
+        if running:
+            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(255, 0, 0))
+            self.block = True
+        else:
+            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(0, 0, 0))
+            self.block = False
 
     def generator_run(self):
-        if self.block:
+        if "generator" in self.compile_sub:
             print("wait to finish already running command")
             return
-        if not self.parent.save_check():
-            # cancel pressed
-            return
-        self.block = True
 
         generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
         cmd = f"{generator_path} {self.parent.config_file}"
-        self.output.setPlainText(f"running cmd; {cmd}...")
+        self.output["generator"].setPlainText(f"running cmd; {cmd}...")
         print(f"running cmd: {cmd}...")
-        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
+        self.compile_sub["generator"] = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
 
     def generator_run_build(self):
-        if self.block:
+        if "generator" in self.compile_sub:
             print("wait to finish already running command")
             return
         if not self.parent.save_check():
             # cancel pressed
             return
-        self.block = True
 
         generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
         cmd = f"{generator_path} -b {self.parent.config_file}"
-        self.output.setPlainText(f"running cmd; {cmd}...")
+        self.output["generator"].setPlainText(f"running cmd; {cmd}...")
         print(f"running cmd: {cmd}...")
-        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
-
-    def make(self, command):
-        if self.block:
-            print("wait to finish already running command")
-            return
-        self.block = True
-
-        project = riocore.Project(copy.deepcopy(self.parent.config))
-        print(project.config["output_path"], command)
-        buid_dir = os.path.join(project.config["output_path"], "Gateware")
-        cmd = f"(cd {buid_dir} && make {command})"
-        self.output.setPlainText(f"running cmd; {cmd}...")
-        print(f"running cmd; {cmd}...")
-        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
+        self.compile_sub["generator"] = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
 
     def bulder_run(self, plugin_instance, command):
-        if self.block:
+        if plugin_instance.instances_name in self.compile_sub:
             print("wait to finish already running command")
             return
-        self.block = True
 
         if not self.parent.save_check():
             # cancel pressed
             return
-        self.generator_run()
 
         cmd = plugin_instance.builder(self.parent.config, command)
-        self.output.setPlainText(f"running cmd; {cmd}...")
+        self.output[plugin_instance.instances_name].setPlainText(f"running cmd; {cmd}...")
         print(f"running cmd; {cmd}...")
-        self.compile_sub = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
+        self.compile_sub[plugin_instance.instances_name] = subprocess.Popen(f"{cmd} > /tmp/buildlog-{plugin_instance.instances_name} 2>&1", shell=True, close_fds=True)
+
+    def update_right(self):
+        cleanLayout(self.right)
+        self.output = {}
+
+        self.output["generator"] = QPlainTextEdit("--- plugin_instance.instances_name ---")
+        self.right.addWidget(self.output["generator"], stretch=1)
+
+        for item in self.parent.scene.items():
+            if hasattr(item, "plugin_instance"):
+                plugin_instance = item.plugin_instance
+                if not plugin_instance.BUILDER:
+                    continue
+
+                self.output[plugin_instance.instances_name] = QPlainTextEdit("--- plugin_instance.instances_name ---")
+                self.right.addWidget(self.output[plugin_instance.instances_name], stretch=1)
+
+        self.right.addStretch()
 
     def update_left(self):
-        if self.block:
-            print("wait to finish already running command")
-            return
-
         cleanLayout(self.left)
 
         button = QPushButton("Generate files")
@@ -197,7 +210,12 @@ class TabBuilder:
         self.left.addStretch()
 
     def update(self):
+        if self.block:
+            print("wait to finish already running command")
+            return
+
         self.update_left()
+        self.update_right()
 
     def widget(self):
         return self.builder_tab

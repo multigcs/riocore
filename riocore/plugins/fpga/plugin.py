@@ -1018,12 +1018,13 @@ class component(cbase):
     }
 
     def __init__(self, project, instance):
-        self.instance = instance
         self.project = project
+        self.instance = instance
+        self.prefix = instance.hal_prefix
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         os.makedirs(self.component_path, exist_ok=True)
-        output = self.mainc(project, instance=instance)
+        output = self.mainc()
         open(os.path.join(self.component_path, f"riocomp-{instance.instances_name}.c"), "w").write("\n".join(output))
 
     def vinit(self, vname, vtype, halstr=None, vdir="input"):
