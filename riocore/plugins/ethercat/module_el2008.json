@@ -1,0 +1,60 @@
+{
+    "pins": {
+        "OUT:O0": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-0",
+            "pos": [17, 217]
+        },
+        "OUT:O1": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-1",
+            "pos": [50, 217]
+        },
+        "OUT:O2": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-2",
+            "pos": [17, 322]
+        },
+        "OUT:O3": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-3",
+            "pos": [50, 322]
+        },
+        "OUT:O4": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-4",
+            "pos": [17, 437]
+        },
+        "OUT:O5": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-5",
+            "pos": [50, 437]
+        },
+        "OUT:O6": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-6",
+            "pos": [17, 552]
+        },
+        "OUT:O7": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-7",
+            "pos": [50, 552]
+        }
+    }
+}

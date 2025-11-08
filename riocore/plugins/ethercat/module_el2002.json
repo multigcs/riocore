@@ -1,0 +1,18 @@
+{
+    "pins": {
+        "OUT:O0": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-0",
+            "pos": [17, 217]
+        },
+        "OUT:O1": {
+            "direction": "output",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-1",
+            "pos": [50, 217]
+        }
+    }
+}

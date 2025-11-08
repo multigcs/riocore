@@ -1,0 +1,60 @@
+{
+    "pins": {
+        "IN:I0": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-0",
+            "pos": [17, 217]
+        },
+        "IN:I1": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-1",
+            "pos": [50, 217]
+        },
+        "IN:I2": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-2",
+            "pos": [17, 322]
+        },
+        "IN:I3": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-3",
+            "pos": [50, 322]
+        },
+        "IN:I4": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-4",
+            "pos": [17, 437]
+        },
+        "IN:I5": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-5",
+            "pos": [50, 437]
+        },
+        "IN:I6": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-6",
+            "pos": [17, 552]
+        },
+        "IN:I7": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "din-7",
+            "pos": [50, 552]
+        }
+    }
+}
