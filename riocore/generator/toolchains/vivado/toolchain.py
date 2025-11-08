@@ -143,7 +143,8 @@ class Toolchain:
 
             bitfileName = "rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit"
             makefile_data.append("")
-            makefile_data.append("all: clean rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit")
+            makefile_data.append("all: build")
+            makefile_data.append("build: clean rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit")
             makefile_data.append("")
             makefile_data.append("clean:")
             makefile_data.append("	rm -rf rio-rtl")
@@ -162,7 +163,8 @@ class Toolchain:
             makefile_data.append(f"VERILOGS := {verilogs}")
             makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
             makefile_data.append("")
-            makefile_data.append("all: build/$(PROJECT).bit")
+            makefile_data.append("all: build")
+            makefile_data.append("build: build/$(PROJECT).bit")
             makefile_data.append("")
             makefile_data.append("$(PROJECT).tcl: pins.xdc $(VERILOGS)")
             makefile_data.append('	@echo "set outputDir ./build" > $(PROJECT).tcl')

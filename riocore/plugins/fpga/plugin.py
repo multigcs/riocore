@@ -24,7 +24,7 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "fpga"
-        self.BUILDER = ["clean", "all", "load"]
+        self.BUILDER = ["clean", "build", "load"]
         self.URL = ""
         self.OPTIONS = {
             "node_type": {
@@ -134,11 +134,11 @@ class Plugin(PluginBase):
 
         self.master = self.instances_name
 
-        self.SUB_PLUGINS = self.jdata.get("plugins", [])
-
-    # TODO: per instance / or remove
-    # def update_system_setup(self, parent):
-    #    self.system_setup["speed"] = self.jdata["speed"]
+        puid = self.plugin_setup.get("uid")
+        self.SUB_PLUGINS = []
+        for spn, sub_plugin in enumerate(self.jdata.get("plugins", [])):
+            sub_plugin["uid"] = f"{puid}-{spn}"
+            self.SUB_PLUGINS.append(sub_plugin)
 
     def update_prefixes(cls, parent, instances):
         for instance in instances:
@@ -154,7 +154,6 @@ class Plugin(PluginBase):
             pin = connected_pin["pin"]
             if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin]:
                 psetup["pin"] = self.PINDEFAULTS[pin]["pin"]
-                # print(psetup["pin"])
 
     def hal(self, parent):
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
@@ -163,9 +162,6 @@ class Plugin(PluginBase):
         parent.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
 
     def start_sh(self, parent):
-        # self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
-        # self.component_path = f"{self.base_path}"
-        # os.path.join(self.component_path, f"riocomp-{self.instances_name}.c")
         return f'sudo halcompile --install "$DIRNAME/riocomp-{self.instances_name}.c"\n'
 
     def component_loader(cls, instances):
@@ -198,6 +194,7 @@ class Plugin(PluginBase):
             instance.jdata["json_path"] = parent.project.config["json_path"]
             instance.jdata["riocore_path"] = riocore_path
             instance.jdata["output_path"] = gateware_path
+            instance.BUILDER_PATH = gateware_path
 
             # clean None pins
             for plugin_instance in parent.project.plugin_instances:
@@ -207,12 +204,13 @@ class Plugin(PluginBase):
                     if "pin" in pin_config and not pin_config["pin"]:
                         del pin_config["pin"]
 
+            parent.project.config["speed"] = instance.jdata["speed"]
+
             # gateware
             instance.gateware = gateware(parent, instance)
             instance.gateware.generator()
 
             # linuxcnc-component
-            parent.project.config["speed"] = instance.jdata["speed"]
             component(parent.project, instance=instance)
 
 
@@ -913,9 +911,9 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name:
                 continue
-            if plugin_instance.master == self.instance.instances_name:
-                continue
             if not plugin_instance.gateware_instances():
+                continue
+            if plugin_instance.instances_name == self.instance.instances_name:
                 continue
             output.append("")
             output.append(f"    // Name: {plugin_instance.plugin_setup.get('name', plugin_instance.instances_name)} ({plugin_instance.NAME})")

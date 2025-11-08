@@ -126,46 +126,66 @@ if args.config:
         output_path = "Output"
         if args.output:
             output_path = args.output
-        gateware_path = os.path.join(output_path, config_name, "Gateware")
         startsh_path = os.path.join(output_path, config_name, "LinuxCNC", "start.sh")
         simulatorsh_path = os.path.join(output_path, config_name, "Simulator", "start.sh")
 
         if args.build:
-            cmd = f"(cd {gateware_path} && make clean all)"
-            print("")
-            print("running:")
-            print(f"  {cmd}")
-            if sys.platform.startswith("win"):
-                print(f"  cd {os.getcwd()}")
-            print("")
-            ret = os.system(cmd)
-            if ret != 0:
-                print(f"ERROR: code {ret}")
-                sys.exit(1)
+            for plugin_instance in project.plugin_instances:
+                if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                    gateware_path = os.path.join(output_path, config_name, "Gateware")
+                    arguments = []
+                    for element in plugin_instance.BUILDER:
+                        if element in ["clean", "build"]:
+                            arguments.append(element)
+                    cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
+                    print("")
+                    print("running:")
+                    print(f"  {cmd}")
+                    if sys.platform.startswith("win"):
+                        print(f"  cd {os.getcwd()}")
+                    print("")
+                    ret = os.system(cmd)
+                    if ret != 0:
+                        print(f"ERROR: code {ret}")
+                        sys.exit(1)
         if args.flash:
-            cmd = f"(cd {gateware_path} && make load)"
-            print("")
-            print("running:")
-            print(f"  {cmd}")
-            if sys.platform.startswith("win"):
-                print(f"  cd {os.getcwd()}")
-            print("")
-            ret = os.system(cmd)
-            if ret != 0:
-                print(f"ERROR: code {ret}")
-                sys.exit(1)
+            for plugin_instance in project.plugin_instances:
+                if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                    gateware_path = os.path.join(output_path, config_name, "Gateware")
+                    arguments = []
+                    for element in plugin_instance.BUILDER:
+                        if element in ["load"]:
+                            arguments.append(element)
+                    cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
+                    print("")
+                    print("running:")
+                    print(f"  {cmd}")
+                    if sys.platform.startswith("win"):
+                        print(f"  cd {os.getcwd()}")
+                    print("")
+                    ret = os.system(cmd)
+                    if ret != 0:
+                        print(f"ERROR: code {ret}")
+                        sys.exit(1)
         if args.ram:
-            cmd = f"(cd {gateware_path} && make sload)"
-            print("")
-            print("running:")
-            print(f"  {cmd}")
-            if sys.platform.startswith("win"):
-                print(f"  cd {os.getcwd()}")
-            print("")
-            ret = os.system(cmd)
-            if ret != 0:
-                print(f"ERROR: code {ret}")
-                sys.exit(1)
+            for plugin_instance in project.plugin_instances:
+                if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                    gateware_path = os.path.join(output_path, config_name, "Gateware")
+                    arguments = []
+                    for element in plugin_instance.BUILDER:
+                        if element in ["sload"]:
+                            arguments.append(element)
+                    cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
+                    print("")
+                    print("running:")
+                    print(f"  {cmd}")
+                    if sys.platform.startswith("win"):
+                        print(f"  cd {os.getcwd()}")
+                    print("")
+                    ret = os.system(cmd)
+                    if ret != 0:
+                        print(f"ERROR: code {ret}")
+                        sys.exit(1)
         if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
             if args.udpsim:
                 cmd = f"sh {simulatorsh_path}"

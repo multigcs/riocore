@@ -24,6 +24,9 @@ class Plugin(PluginBase):
                     "Master",
                     "Servo/Stepper",
                     "GPIOs",
+                    "ek1100",
+                    "el1008",
+                    "el2008",
                 ],
                 "description": "Type",
             },
@@ -51,6 +54,177 @@ class Plugin(PluginBase):
                     "type": "ETHERCAT",
                 },
             }
+
+        elif node_type == "ek1100":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "ek1100.png"
+
+            self.PINDEFAULTS = {
+                "in": {
+                    "direction": "all",
+                    "edge": "target",
+                    "type": "ETHERCAT",
+                    "pos": (70, 165),
+                },
+                "out": {
+                    "direction": "all",
+                    "edge": "source",
+                    "type": "ETHERCAT",
+                    "pos": (70, 355),
+                },
+            }
+
+            self.OPTIONS.update(
+                {
+                    "modules": {
+                        "default": "",
+                        "type": str,
+                        "description": "list of slave modules",
+                    },
+                }
+            )
+            modules = self.plugin_setup.get("modules", self.option_default("modules")).strip()
+
+            px = 263
+            self.SUB_PLUGINS = []
+            puid = self.plugin_setup.get("uid")
+            for mn, module in enumerate(modules.split()):
+                mn = str(mn)
+                if "sub" not in self.plugin_setup:
+                    self.plugin_setup["sub"] = {}
+
+                if mn not in self.plugin_setup["sub"]:
+                    self.plugin_setup["sub"][mn] = {"type": "ethercat", "node_type": module, "uid": f"{puid}-{mn}", "rpos": [px, 0.0], "idx": -2}
+                self.plugin_setup["sub"][mn]["node_type"] = module
+                self.plugin_setup["sub"][mn]["rpos"] = [px, 0.0]
+                self.plugin_setup["sub"][mn]["uid"] = f"{puid}-{mn}"
+                self.SUB_PLUGINS.append(self.plugin_setup["sub"][mn])
+                px += 75
+
+        elif node_type == "el1008":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "el1008.png"
+            self.PINDEFAULTS = {
+                "IN:I0": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-0",
+                    "pos": (17, 217),
+                },
+                "IN:I1": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-1",
+                    "pos": (50, 217),
+                },
+                "IN:I2": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-2",
+                    "pos": (17, 322),
+                },
+                "IN:I3": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-3",
+                    "pos": (50, 322),
+                },
+                "IN:I4": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-4",
+                    "pos": (17, 437),
+                },
+                "IN:I5": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-5",
+                    "pos": (50, 437),
+                },
+                "IN:I6": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-6",
+                    "pos": (17, 552),
+                },
+                "IN:I7": {
+                    "direction": "input",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "din-7",
+                    "pos": (50, 552),
+                },
+            }
+
+        elif node_type == "el2008":
+            self.IMAGE_SHOW = True
+            self.IMAGE = "el2008.png"
+            self.PINDEFAULTS = {
+                "OUT:O0": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-0",
+                    "pos": (17, 217),
+                },
+                "OUT:O1": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-1",
+                    "pos": (50, 217),
+                },
+                "OUT:O2": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-2",
+                    "pos": (17, 322),
+                },
+                "OUT:O3": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-3",
+                    "pos": (50, 322),
+                },
+                "OUT:O4": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-4",
+                    "pos": (17, 437),
+                },
+                "OUT:O5": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-5",
+                    "pos": (50, 437),
+                },
+                "OUT:O6": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-6",
+                    "pos": (17, 552),
+                },
+                "OUT:O7": {
+                    "direction": "output",
+                    "edge": "source",
+                    "type": "GPIO",
+                    "pin": "dout-7",
+                    "pos": (50, 552),
+                },
+            }
+
         elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
             self.IMAGES = ["ethercatservo"]
@@ -155,6 +329,13 @@ class Plugin(PluginBase):
                 instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
                 cia402_num += 1
 
+    def update_pins(self, parent):
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            psetup = connected_pin["setup"]
+            pin = connected_pin["pin"]
+            if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin]:
+                psetup["pin"] = f"{self.PREFIX}.{self.PINDEFAULTS[pin]['pin']}"
+
     def extra_files(cls, parent, instances):
         output = []
         output.append("<masters>")
@@ -166,6 +347,8 @@ class Plugin(PluginBase):
             if idx < 0 or node_type == "Master":
                 # only connected slaves
                 continue
+            elif node_type in {"ek1100", "el2008", "el1008"}:
+                output.append(f'    <slave idx="{idx}" type="{node_type.upper()}" name="{instance.plugin_setup["uid"]}"/>')
             elif node_type == "Servo/Stepper":
                 vid = instance.plugin_setup.get("vid", instance.option_default("vid"))
                 pid = instance.plugin_setup.get("pid", instance.option_default("pid"))

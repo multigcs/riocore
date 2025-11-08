@@ -134,7 +134,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append(f"PACKAGE   := {self.config['package']}")
         makefile_data.append(f"VERILOGS  := {verilogs}")
         makefile_data.append("")
-        makefile_data.append(f"all: {bitfileName}")
+        makefile_data.append("all: build")
+        makefile_data.append(f"build: {bitfileName}")
         makefile_data.append("")
         if self.config["type"] == "up5k":
             makefile_data.append("$(PROJECT).json: $(VERILOGS)")

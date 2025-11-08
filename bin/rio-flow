@@ -408,7 +408,10 @@ class MyNode(QGraphicsItem):
         pos_x = pos.x()
         pos_y = pos.y()
 
-        self.flow_cfg["pos"] = (pos_x, pos_y)
+        if hasattr(self, "plugin_instance") and self.plugin_instance.SUB_OF:
+            pass
+        else:
+            self.flow_cfg["pos"] = (pos_x, pos_y)
         if self.pixmap:
             painter.drawPixmap(0, 0, self.pixmap)
             painter.setRenderHint(QPainter.Antialiasing)
@@ -1712,11 +1715,21 @@ class Window(QMainWindow):
                     else:
                         parents = []
                         master = self.get_parents(item, "in", parents)
-                        bus_idx = len(parents) - 1
+
+                        bus_idx = -1
+                        for parent in parents:
+                            bus_idx += 1 + len(parent.plugin_instance.SUB_ITEMS)
+
                         if master is None:
                             # if no master than not connected
                             bus_idx = -2
+
                         plugin_setup["idx"] = bus_idx
+
+                        for sub_instance in plugin_instance.SUB_ITEMS:
+                            bus_idx += 1
+                            sub_instance.plugin_setup["idx"] = bus_idx
+
                 else:
                     for port, pin_data in plugin_instance.PINDEFAULTS.items():
                         if "pins" not in plugin_setup:
@@ -1750,7 +1763,7 @@ class Window(QMainWindow):
         for item in self.scene.items():
             if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
                 if isinstance(item._source_node, PluginNode) and item._source_node.plugin_instance.plugin_setup.get("type") == "ethercat":
-                    parents.append(item._source_node.name)
+                    parents.append(item._source_node)
                     if item._source_node.plugin_instance.plugin_setup.get("node_type", "Master") == "Master":
                         # this is the master node
                         return item._source_node
@@ -1937,12 +1950,7 @@ class Window(QMainWindow):
                 plugin_instance.SUB_ITEMS = []
 
                 for sub_plugin_id, sub_plugin_config in enumerate(plugin_instance.SUB_PLUGINS):
-                    sub_uid_prefix = sub_plugin_config["type"]
-                    unum = 0
-                    while f"{sub_uid_prefix}{unum}" in self.plugin_uids:
-                        unum += 1
-                    sub_uid = f"{sub_uid_prefix}{unum}"
-                    sub_plugin_config["uid"] = sub_uid
+                    uid = sub_plugin_config["uid"]
                     self.plugin_uids.append(uid)
                     self.plugins.load_plugin(sub_plugin_id, sub_plugin_config, self.config)
                     if self.plugins.plugin_instances:

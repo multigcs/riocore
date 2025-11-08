@@ -288,6 +288,7 @@ class PluginBase:
         self.IMAGES = []
         self.IMAGE_SHOW = False
         self.BUILDER = []
+        self.BUILDER_PATH = ""
         self.SIGNALS = {}
         self.PREFIX = ""
         self.COMPONENT = ""

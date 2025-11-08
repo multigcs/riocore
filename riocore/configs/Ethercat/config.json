@@ -6,8 +6,8 @@
             "node_type": "Master",
             "uid": "ethercat0",
             "pos": [
-                0.0,
-                0.0
+                20.0,
+                50.0
             ],
             "idx": -1
         },
@@ -22,14 +22,105 @@
                 -30.0
             ],
             "idx": 0
+        },
+        {
+            "type": "ethercat",
+            "node_type": "ek1100",
+            "uid": "ethercat2",
+            "pos": [
+                390.0,
+                20.0
+            ],
+            "idx": 1,
+            "modules": "el1008 el2008",
+            "sub": {
+                "0": {
+                    "type": "ethercat",
+                    "node_type": "el1008",
+                    "uid": "ethercat2-0",
+                    "rpos": [
+                        263,
+                        0.0
+                    ],
+                    "idx": 2
+                },
+                "1": {
+                    "type": "ethercat",
+                    "node_type": "el2008",
+                    "uid": "ethercat2-1",
+                    "rpos": [
+                        338,
+                        0.0
+                    ],
+                    "idx": 3
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin0",
+            "image": "proximity",
+            "pos": [
+                700.0,
+                -10.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-0:IN:I0"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout0",
+            "image": "relay",
+            "pos": [
+                700.0,
+                130.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-1:OUT:O0"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout1",
+            "image": "relay",
+            "pos": [
+                700.0,
+                280.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-1:OUT:O1"
+                }
+            },
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin1",
+            "image": "proximity",
+            "pos": [
+                700.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-0:IN:I1"
+                }
+            },
+            "name": ""
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.67,
+            "scale": 2.1636363636363636,
             "pos": [
-                -675,
-                -137
+                18.0,
+                -155.83636363636367
             ]
         }
     }
