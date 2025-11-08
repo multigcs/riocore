@@ -570,16 +570,6 @@ class PluginNode(MyNode):
                 self.load_image(image)
                 # self.plugin_instance.IMAGE_SHOW = False
 
-        if hasattr(self, "plugin_instance"):
-            if self.plugin_instance.TYPE == "expansion":
-                prefix = f"{self.plugin_instance.instances_name.upper()}_"
-                for exansion_pin in self.plugin_instance.expansion_outputs():
-                    title = exansion_pin.replace(prefix, "")
-                    self.ports[f"{exansion_pin}"] = {"direction": "output", "title": title, "type": "FPGA", "edge": "source"}
-                for exansion_pin in self.plugin_instance.expansion_inputs():
-                    title = exansion_pin.replace(prefix, "")
-                    self.ports[f"{exansion_pin}"] = {"direction": "input", "title": title, "type": "FPGA", "edge": "source"}
-
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
             for device, ports in devices.items():

@@ -131,20 +131,19 @@ class Plugin(PluginBase):
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
         self.jdata["sysclk_pin"] = self.jdata["clock"].get("pin")
 
-        self.master = self
+        self.master = self.instances_name
 
+    # TODO: per instance / or remove
     def update_system_setup(self, parent):
-        # TODO: per instance
         self.system_setup["speed"] = self.jdata["speed"]
 
     def update_prefixes(cls, parent, instances):
-        fnum = 0
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 instance.hal_prefix = instance.instances_name
                 plugin_instance = connected_pin["instance"]
                 plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
-                fnum += 1
+                connected_pin["instance"].master = instance.instances_name
 
     def update_pins(self, parent):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
@@ -152,7 +151,7 @@ class Plugin(PluginBase):
             pin = connected_pin["pin"]
             if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin]:
                 psetup["pin"] = self.PINDEFAULTS[pin]["pin"]
-            connected_pin["instance"].master = self.instances_name
+                # print(psetup["pin"])
 
     def hal(self, parent):
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
@@ -910,6 +909,8 @@ class gateware:
         # gateware instances
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name:
+                continue
+            if plugin_instance.master == self.instance.instances_name:
                 continue
             if not plugin_instance.gateware_instances():
                 continue

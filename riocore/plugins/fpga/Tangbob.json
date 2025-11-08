@@ -17,6 +17,8 @@
         "_speed": "32400000",
         "pin": "52"
     },
+    "plugins": [
+    },
     "slots": [
         {
             "name": "LED",
