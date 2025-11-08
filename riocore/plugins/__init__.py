@@ -315,6 +315,7 @@ class PluginBase:
         self.JOINT_OPTIONS = []
         self.SYNC = None
         self.ERROR = None
+        self.SUB_PLUGINS = []
         self.OPTIONS = {}
         self.PASSTHROUGH = {}
         self.PLUGIN_CONFIG = False

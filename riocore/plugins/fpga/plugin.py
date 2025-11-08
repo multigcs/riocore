@@ -116,6 +116,7 @@ class Plugin(PluginBase):
                     "type": ["FPGA"],
                     "pin": pin_data["pin"],
                     "pos": pin_data.get("pos", (0, 0)),
+                    "visible": pin_data.get("visible", True),
                     "direction": pin_data.get("direction", "all"),
                 }
 
@@ -133,9 +134,11 @@ class Plugin(PluginBase):
 
         self.master = self.instances_name
 
+        self.SUB_PLUGINS = self.jdata.get("plugins", [])
+
     # TODO: per instance / or remove
-    def update_system_setup(self, parent):
-        self.system_setup["speed"] = self.jdata["speed"]
+    # def update_system_setup(self, parent):
+    #    self.system_setup["speed"] = self.jdata["speed"]
 
     def update_prefixes(cls, parent, instances):
         for instance in instances:

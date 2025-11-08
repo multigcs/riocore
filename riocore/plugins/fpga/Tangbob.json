@@ -18,6 +18,31 @@
         "pin": "52"
     },
     "plugins": [
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                }
+            },
+            "uid": "w55000",
+            "rpos": [
+                528.0,
+                406.0
+            ],
+            "image": "w5500mini",
+            "rotate": 0,
+            "ip": "192.168.11.194"
+        }
     ],
     "slots": [
         {
@@ -187,6 +212,7 @@
                         712,
                         515
                     ],
+                    "visible": false,
                     "direction": "all"
                 },
                 "SCLK": {
@@ -195,6 +221,7 @@
                         712,
                         494
                     ],
+                    "visible": false,
                     "direction": "all"
                 },
                 "SEL": {
@@ -203,6 +230,7 @@
                         712,
                         476
                     ],
+                    "visible": false,
                     "direction": "all"
                 },
                 "MISO": {
@@ -211,6 +239,7 @@
                         533,
                         452
                     ],
+                    "visible": false,
                     "direction": "all"
                 }
             }

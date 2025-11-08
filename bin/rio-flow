@@ -328,6 +328,8 @@ class MyNode(QGraphicsItem):
         for port in self.ports:
             if not self.ports[port].get("pos"):
                 continue
+            if self.ports[port].get("visible") is False:
+                continue
             pos_x = self.ports[port]["pos"][0] // 2
             pos_y = self.ports[port]["pos"][1] // 2
             pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
@@ -401,6 +403,7 @@ class MyNode(QGraphicsItem):
         painter.fillRect(QRectF(px - size / 2, py - size / 2, size, size), Qt.GlobalColor.black)
 
     def paint(self, painter, option, widget):
+        self.master_pos()
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
@@ -428,6 +431,8 @@ class MyNode(QGraphicsItem):
         painted_ports = []
         for port_name, port_data in self.ports.items():
             if not port_data.get("pos"):
+                continue
+            if port_data.get("visible") is False:
                 continue
             pos_x = port_data["pos"][0] // 2
             pos_y = port_data["pos"][1] // 2
@@ -511,6 +516,9 @@ class MyNode(QGraphicsItem):
         if hasattr(self, "reload"):
             self.reload()
 
+    def master_pos(self):
+        pass
+
 
 class PluginNode(MyNode):
     border_color = QColor(150, 250, 150)
@@ -521,7 +529,22 @@ class PluginNode(MyNode):
         self.flow_cfg = self.plugin_instance.plugin_setup
         self.reload()
 
+    def master_node(self):
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                if item.plugin_instance == self.plugin_instance.SUB_OF:
+                    return item
+        return None
+
+    def master_pos(self):
+        if master_node := self.master_node():
+            if rpos := self.flow_cfg.get("rpos"):
+                mpos = master_node.pos()
+                self.setPos(mpos.x() + rpos[0] / 2, mpos.y() + rpos[1] / 2)
+
     def reload(self):
+        self.master_pos()
+
         pos = self.pos()
         pos_x = pos.x()
         pos_y = pos.y()
@@ -1910,16 +1933,37 @@ class Window(QMainWindow):
                 plugin_instance = self.plugins.plugin_instances[-1]
                 pluginlist.append(plugin_instance)
 
+                plugin_instance.SUB_OF = None
+                plugin_instance.SUB_ITEMS = []
+
+                for sub_plugin_id, sub_plugin_config in enumerate(plugin_instance.SUB_PLUGINS):
+                    sub_uid_prefix = sub_plugin_config["type"]
+                    unum = 0
+                    while f"{sub_uid_prefix}{unum}" in self.plugin_uids:
+                        unum += 1
+                    sub_uid = f"{sub_uid_prefix}{unum}"
+                    sub_plugin_config["uid"] = sub_uid
+                    self.plugin_uids.append(uid)
+                    self.plugins.load_plugin(sub_plugin_id, sub_plugin_config, self.config)
+                    if self.plugins.plugin_instances:
+                        sub_plugin_instance = self.plugins.plugin_instances[-1]
+                        sub_plugin_instance.SUB_OF = plugin_instance
+                        sub_plugin_instance.SUB_ITEMS = []
+                        for pin_name, pin_data in sub_plugin_instance.plugin_setup.get("pins", {}).items():
+                            pin_data["pin"] = f"{uid}:{pin_data['pin']}"
+                            sub_plugin_instance.PINDEFAULTS[pin_name]["visible"] = False
+                        pluginlist.append(sub_plugin_instance)
+
         self.drawingtab.plugin_search(plugins=self.plugins)
 
         # load base and expansion plugins first
         first = ["base", "expansion"]
         for ptype in first + [""]:
             for plugin_instance in pluginlist:
-                if plugin_instance.TYPE == ptype:
+                if plugin_instance.TYPE == ptype or (not ptype and plugin_instance.TYPE not in first):
                     py += self.insert_plugin(plugin_instance, py)
-                elif not ptype and plugin_instance.TYPE not in first:
-                    py += self.insert_plugin(plugin_instance, py)
+                    if plugin_instance.SUB_OF:
+                        plugin_instance.SUB_OF.SUB_ITEMS.append(plugin_instance)
 
         # connect plugins
         for item in self.scene.items():
