@@ -189,6 +189,7 @@ class Plugins:
                 # adding sub-plugins
                 for sub_plugin_config in plugin_instance.SUB_PLUGINS:
                     config["plugins"].append(sub_plugin_config)
+                    sub_plugin_config["parent"] = plugin_instance
                     sub_plugin_instance = self.load_plugin(plugin_id, sub_plugin_config, system_setup=system_setup)
                     if not sub_plugin_instance:
                         exit(1)

@@ -1699,80 +1699,30 @@ class Window(QMainWindow):
 
     def cfg_save(self):
         # update config by drawing/edges
-        ethercat_node_found = False
-        ethercat_master_found = False
         for item in self.scene.items():
             if isinstance(item, PluginNode):
                 plugin_instance = item.plugin_instance
                 plugin_setup = plugin_instance.plugin_setup
-                ptype = plugin_setup.get("type")
-                if ptype == "ethercat":
-                    ethercat_node_found = True
-                    if plugin_setup.get("node_type", "Master") == "Master":
-                        # the master node
-                        plugin_setup["idx"] = -1
-                        ethercat_master_found = True
-                    else:
-                        parents = []
-                        master = self.get_parents(item, "in", parents)
-
-                        bus_idx = -1
-                        for parent in parents:
-                            bus_idx += 1 + len(parent.plugin_instance.SUB_ITEMS)
-
-                        if master is None:
-                            # if no master than not connected
-                            bus_idx = -2
-
-                        plugin_setup["idx"] = bus_idx
-
-                        for sub_instance in plugin_instance.SUB_ITEMS:
-                            bus_idx += 1
-                            sub_instance.plugin_setup["idx"] = bus_idx
-
-                else:
-                    for port, pin_data in plugin_instance.PINDEFAULTS.items():
-                        if "pins" not in plugin_setup:
-                            plugin_setup["pins"] = {}
-                        if port not in plugin_setup["pins"]:
-                            plugin_setup["pins"][port] = {}
-
-                        modifiers = []
-                        source = self.get_source(item, port, modifiers)
-                        if source:
-                            if isinstance(source[0], PluginNode):
-                                plugin_setup["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
-                            else:
-                                plugin_setup["pins"][port]["pin"] = source[1]
-
-                            if pin_data["direction"] == "input":
-                                plugin_setup["pins"][port]["modifier"] = list(reversed(modifiers))
-                            else:
-                                plugin_setup["pins"][port]["modifier"] = list(modifiers)
-
+                for port, pin_data in plugin_instance.PINDEFAULTS.items():
+                    if "pins" not in plugin_setup:
+                        plugin_setup["pins"] = {}
+                    if port not in plugin_setup["pins"]:
+                        plugin_setup["pins"][port] = {}
+                    modifiers = []
+                    source = self.get_source(item, port, modifiers)
+                    if source:
+                        if isinstance(source[0], PluginNode):
+                            plugin_setup["pins"][port]["pin"] = f"{source[0].name}:{source[1]}"
                         else:
-                            if plugin_setup.get("pins") and port in plugin_setup["pins"]:
-                                del plugin_setup["pins"][port]
-
-        if ethercat_node_found and not ethercat_master_found:
-            riocore.log("ERROR: no Ethercat-Master found in config")
-
-        self.cfg_check()
-
-    def get_parents(self, node, port, parents):
-        for item in self.scene.items():
-            if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
-                if isinstance(item._source_node, PluginNode) and item._source_node.plugin_instance.plugin_setup.get("type") == "ethercat":
-                    parents.append(item._source_node)
-                    if item._source_node.plugin_instance.plugin_setup.get("node_type", "Master") == "Master":
-                        # this is the master node
-                        return item._source_node
+                            plugin_setup["pins"][port]["pin"] = source[1]
+                        if pin_data["direction"] == "input":
+                            plugin_setup["pins"][port]["modifier"] = list(reversed(modifiers))
+                        else:
+                            plugin_setup["pins"][port]["modifier"] = list(modifiers)
                     else:
-                        source = self.get_parents(item._source_node, "in", parents)
-                        return source
-                else:
-                    return (item._source_node, item._source_port)
-        return None
+                        if plugin_setup.get("pins") and port in plugin_setup["pins"]:
+                            del plugin_setup["pins"][port]
+        self.cfg_check()
 
     def display(self):
         self.redraw()
@@ -1979,19 +1929,6 @@ class Window(QMainWindow):
                 self.connect_plugin(item)
 
         self.update_passthrough()
-
-        # connect ethercat bus by idx
-        ethercat_ids = {}
-        for item in self.scene.items():
-            if isinstance(item, PluginNode) and item.plugin_instance.plugin_setup.get("type") == "ethercat":
-                idx = item.plugin_instance.plugin_setup.get("idx", -2)
-                ethercat_ids[idx] = item
-        for idx, item in ethercat_ids.items():
-            if idx > -1 and idx - 1 in ethercat_ids:
-                source = ethercat_ids[idx - 1]
-                edge = NodeEdge(self.scene, "bus", source, "out", item, "in", color=colors[0])
-                self.scene.addItem(edge)
-
         self.axistab.update(self.config)
         self.optionstab.update(self.config)
         self.buildertab.update()

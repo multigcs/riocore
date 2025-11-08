@@ -1,4 +1,7 @@
 import os
+import json
+
+import riocore
 from riocore.plugins import PluginBase
 
 
@@ -23,19 +26,12 @@ class Plugin(PluginBase):
                 "options": [
                     "Master",
                     "Servo/Stepper",
-                    "GPIOs",
+                    "GPIO",
                     "ek1100",
                     "el1008",
                     "el2008",
                 ],
                 "description": "Type",
-            },
-            "idx": {
-                "default": -2,
-                "type": int,
-                "min": -2,
-                "max": 255,
-                "description": "bus-index",
             },
         }
 
@@ -45,7 +41,7 @@ class Plugin(PluginBase):
             self.IMAGE_SHOW = True
             self.IMAGE = "image.png"
             self.PINDEFAULTS = {
-                "out": {
+                "BUS:out": {
                     "pin": f"{self.instances_name}:master",
                     "comment": "ethercat-master",
                     "pos": [100, 110],
@@ -60,20 +56,19 @@ class Plugin(PluginBase):
             self.IMAGE = "ek1100.png"
 
             self.PINDEFAULTS = {
-                "in": {
+                "BUS:in": {
                     "direction": "all",
                     "edge": "target",
                     "type": "ETHERCAT",
                     "pos": (70, 165),
                 },
-                "out": {
+                "BUS:out": {
                     "direction": "all",
                     "edge": "source",
                     "type": "ETHERCAT",
                     "pos": (70, 355),
                 },
             }
-
             self.OPTIONS.update(
                 {
                     "modules": {
@@ -84,7 +79,6 @@ class Plugin(PluginBase):
                 }
             )
             modules = self.plugin_setup.get("modules", self.option_default("modules")).strip()
-
             px = 263
             self.SUB_PLUGINS = []
             puid = self.plugin_setup.get("uid")
@@ -92,138 +86,14 @@ class Plugin(PluginBase):
                 mn = str(mn)
                 if "sub" not in self.plugin_setup:
                     self.plugin_setup["sub"] = {}
-
                 if mn not in self.plugin_setup["sub"]:
-                    self.plugin_setup["sub"][mn] = {"type": "ethercat", "node_type": module, "uid": f"{puid}-{mn}", "rpos": [px, 0.0], "idx": -2}
+                    self.plugin_setup["sub"][mn] = {"type": "ethercat", "node_type": module, "uid": f"{puid}-{mn}", "rpos": [px, 0.0]}
+                print(mn, self.plugin_setup["sub"][mn])
                 self.plugin_setup["sub"][mn]["node_type"] = module
                 self.plugin_setup["sub"][mn]["rpos"] = [px, 0.0]
                 self.plugin_setup["sub"][mn]["uid"] = f"{puid}-{mn}"
                 self.SUB_PLUGINS.append(self.plugin_setup["sub"][mn])
                 px += 75
-
-        elif node_type == "el1008":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "el1008.png"
-            self.PINDEFAULTS = {
-                "IN:I0": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-0",
-                    "pos": (17, 217),
-                },
-                "IN:I1": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-1",
-                    "pos": (50, 217),
-                },
-                "IN:I2": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-2",
-                    "pos": (17, 322),
-                },
-                "IN:I3": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-3",
-                    "pos": (50, 322),
-                },
-                "IN:I4": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-4",
-                    "pos": (17, 437),
-                },
-                "IN:I5": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-5",
-                    "pos": (50, 437),
-                },
-                "IN:I6": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-6",
-                    "pos": (17, 552),
-                },
-                "IN:I7": {
-                    "direction": "input",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "din-7",
-                    "pos": (50, 552),
-                },
-            }
-
-        elif node_type == "el2008":
-            self.IMAGE_SHOW = True
-            self.IMAGE = "el2008.png"
-            self.PINDEFAULTS = {
-                "OUT:O0": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-0",
-                    "pos": (17, 217),
-                },
-                "OUT:O1": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-1",
-                    "pos": (50, 217),
-                },
-                "OUT:O2": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-2",
-                    "pos": (17, 322),
-                },
-                "OUT:O3": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-3",
-                    "pos": (50, 322),
-                },
-                "OUT:O4": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-4",
-                    "pos": (17, 437),
-                },
-                "OUT:O5": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-5",
-                    "pos": (50, 437),
-                },
-                "OUT:O6": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-6",
-                    "pos": (17, 552),
-                },
-                "OUT:O7": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "GPIO",
-                    "pin": "dout-7",
-                    "pos": (50, 552),
-                },
-            }
 
         elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
@@ -249,12 +119,12 @@ class Plugin(PluginBase):
                 }
             )
             self.PINDEFAULTS = {
-                "in": {
+                "BUS:in": {
                     "direction": "all",
                     "edge": "target",
                     "type": "ETHERCAT",
                 },
-                "out": {
+                "BUS:out": {
                     "direction": "all",
                     "edge": "source",
                     "type": "ETHERCAT",
@@ -287,12 +157,12 @@ class Plugin(PluginBase):
                     }
         elif node_type == "GPIO":
             self.PINDEFAULTS = {
-                "in": {
+                "BUS:in": {
                     "direction": "input",
                     "edge": "target",
                     "type": "ETHERCAT",
                 },
-                "out": {
+                "BUS:out": {
                     "direction": "output",
                     "edge": "source",
                     "type": "ETHERCAT",
@@ -304,19 +174,17 @@ class Plugin(PluginBase):
                     "direction": "input",
                     "bool": True,
                 }
+
+        elif os.path.exists(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json")):
+            json_data = json.loads(open(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json"), "r").read())
+            self.IMAGE_SHOW = True
+            self.IMAGE = f"module_{node_type}.png"
+            self.PINDEFAULTS = json_data["pins"]
+
         else:
-            self.PINDEFAULTS = {
-                "in": {
-                    "direction": "input",
-                    "edge": "target",
-                    "type": "ETHERCAT",
-                },
-                "out": {
-                    "direction": "output",
-                    "edge": "source",
-                    "type": "ETHERCAT",
-                },
-            }
+            riocore.log(f"ethercat: node_type not found: {node_type}")
+            exit(1)
+
         self.PREFIX_CIA402 = ""
 
     def update_prefixes(cls, parent, instances):
@@ -333,27 +201,60 @@ class Plugin(PluginBase):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
             psetup = connected_pin["setup"]
             pin = connected_pin["pin"]
-            if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin]:
+            if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin] and not pin.startswith("BUS:"):
                 psetup["pin"] = f"{self.PREFIX}.{self.PINDEFAULTS[pin]['pin']}"
 
     def extra_files(cls, parent, instances):
         output = []
         output.append("<masters>")
         servo_period = parent.project.config["jdata"].get("linuxcnc", {}).get("ini", {}).get("EMCMOT", {}).get("SERVO_PERIOD", 1000000)
-        output.append(f'  <master idx="0" appTimePeriod="{servo_period}" refClockSyncCycles="1">')
-        for num, instance in enumerate(instances):
+
+        master = None
+        for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            idx = instance.plugin_setup.get("idx", instance.option_default("idx"))
-            if idx < 0 or node_type == "Master":
-                # only connected slaves
-                continue
-            elif node_type in {"ek1100", "el2008", "el1008"}:
+            if node_type == "Master":
+                master = instance
+        if not master:
+            print("no master found")
+            exit(1)
+
+        last = master.instances_name
+        found_next = True
+        bus_list = []
+        while found_next:
+            found_next = False
+            for instance in instances:
+                if instance in bus_list:
+                    continue
+                node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+                sub_parent = instance.plugin_setup.get("parent")
+                if sub_parent and sub_parent.instances_name == last:
+                    bus_list.append(instance)
+                    found_next = True
+                    break
+                elif instance.plugin_setup.get("pins", {}).get("BUS:in", {}).get("pin") == f"{last}:BUS:out":
+                    bus_list.append(instance)
+                    found_next = True
+                    last = instance.instances_name
+                    break
+
+        output.append(f'  <master idx="0" appTimePeriod="{servo_period}" refClockSyncCycles="1">')
+        for idx, instance in enumerate(bus_list):
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            if node_type in {"ek1100", "el2008", "el1008"}:
                 output.append(f'    <slave idx="{idx}" type="{node_type.upper()}" name="{instance.plugin_setup["uid"]}"/>')
             elif node_type == "Servo/Stepper":
                 vid = instance.plugin_setup.get("vid", instance.option_default("vid"))
                 pid = instance.plugin_setup.get("pid", instance.option_default("pid"))
                 din = instance.plugin_setup.get("din", instance.option_default("din"))
-                output.append(f'    <slave idx="{idx}" type="generic" vid="{vid}" pid="{pid}" configPdos="true" name="{instance.title}">')
+
+                extra_atrributes = []
+                if vid:
+                    extra_atrributes.append(f'vid="{vid}"')
+                if pid:
+                    extra_atrributes.append(f'pid="{pid}"')
+
+                output.append(f'    <slave idx="{idx}" type="generic" {" ".join(extra_atrributes)} configPdos="true" name="{instance.title}">')
                 output.append('      <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="25000"/>')
                 output.append('      <watchdog divider="2498" intervals="1000"/>')
                 output.append('      <syncManager idx="2" dir="out">')
