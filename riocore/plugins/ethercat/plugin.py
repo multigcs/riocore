@@ -88,7 +88,6 @@ class Plugin(PluginBase):
                     self.plugin_setup["sub"] = {}
                 if mn not in self.plugin_setup["sub"]:
                     self.plugin_setup["sub"][mn] = {"type": "ethercat", "node_type": module, "uid": f"{puid}-{mn}", "rpos": [px, 0.0]}
-                print(mn, self.plugin_setup["sub"][mn])
                 self.plugin_setup["sub"][mn]["node_type"] = module
                 self.plugin_setup["sub"][mn]["rpos"] = [px, 0.0]
                 self.plugin_setup["sub"][mn]["uid"] = f"{puid}-{mn}"
@@ -247,13 +246,11 @@ class Plugin(PluginBase):
                 vid = instance.plugin_setup.get("vid", instance.option_default("vid"))
                 pid = instance.plugin_setup.get("pid", instance.option_default("pid"))
                 din = instance.plugin_setup.get("din", instance.option_default("din"))
-
                 extra_atrributes = []
                 if vid:
                     extra_atrributes.append(f'vid="{vid}"')
                 if pid:
                     extra_atrributes.append(f'pid="{pid}"')
-
                 output.append(f'    <slave idx="{idx}" type="generic" {" ".join(extra_atrributes)} configPdos="true" name="{instance.title}">')
                 output.append('      <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="25000"/>')
                 output.append('      <watchdog divider="2498" intervals="1000"/>')
