@@ -18,7 +18,7 @@
         "pin": "52"
     },
     "plugins": [
-    },
+    ],
     "slots": [
         {
             "name": "LED",
