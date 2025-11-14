@@ -70,6 +70,7 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 dev_mode = False
 show_signals = False
+show_signals = True
 grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)
@@ -446,7 +447,10 @@ class MyNode(QGraphicsItem):
                 if selected:
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red)
                 else:
-                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow)
+                    if port_data.get("type") == "SIGNAL":
+                        self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.green)
+                    else:
+                        self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow)
             painted_ports.append(key)
 
             if not self.pixmap:

@@ -34,7 +34,7 @@ class Plugin(PluginBase):
                 "description": "Type",
             },
         }
-
+        self.json_data = None
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "Master":
             self.TYPE = "base"
@@ -96,7 +96,8 @@ class Plugin(PluginBase):
 
         elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
-            self.IMAGES = ["ethercatservo"]
+            self.IMAGE = "ethercat-servo.png"
+            self.IMAGE_SHOW = True
             self.JOINT_MODE = "position"
             self.OPTIONS.update(
                 {
@@ -122,11 +123,13 @@ class Plugin(PluginBase):
                     "direction": "all",
                     "edge": "target",
                     "type": "ETHERCAT",
+                    "pos": [95, 270],
                 },
                 "BUS:out": {
                     "direction": "all",
                     "edge": "source",
                     "type": "ETHERCAT",
+                    "pos": [170, 270],
                 },
             }
             self.SIGNALS = {
@@ -134,25 +137,39 @@ class Plugin(PluginBase):
                     "direction": "output",
                     "absolute": False,
                     "description": "set position",
+                    "pos": [25, 700],
                 },
                 "position-fb": {
                     "direction": "input",
                     "unit": "steps",
                     "absolute": False,
                     "description": "position feedback",
+                    "pos": [25, 730],
                 },
                 "position-scale": {
                     "direction": "output",
                     "absolute": False,
                     "description": "steps / unit",
+                    "pos": [25, 760],
                 },
             }
             din = self.plugin_setup.get("din", self.option_default("din"))
             if din:
-                for pin in ("limit-neg", "limit-pos", "home-switch", "din1", "din2", "din3", "din4"):
+                for pn, pin in enumerate(
+                    (
+                        "limit-neg",
+                        "limit-pos",
+                        "home-switch",
+                        "din1",
+                        "din2",
+                        "din3",
+                        "din4",
+                    )
+                ):
                     self.SIGNALS[f"{pin}"] = {
                         "direction": "input",
                         "bool": True,
+                        "pos": [25, 370 + pn * 30],
                     }
         elif node_type == "GPIO":
             self.PINDEFAULTS = {
@@ -175,10 +192,20 @@ class Plugin(PluginBase):
                 }
 
         elif os.path.exists(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json")):
-            json_data = json.loads(open(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json"), "r").read())
+            self.json_data = json.loads(open(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json"), "r").read())
             self.IMAGE_SHOW = True
             self.IMAGE = f"module_{node_type}.png"
-            self.PINDEFAULTS = json_data["pins"]
+            self.PINDEFAULTS = {}
+            self.SIGNALS = {}
+            for pin_name, pin_data in self.json_data["pins"].items():
+                if pin_data["type"] == "SIGNAL":
+                    self.SIGNALS[pin_name] = pin_data
+                else:
+                    self.PINDEFAULTS[pin_name] = pin_data
+
+            for option_name, option_data in self.json_data.get("options", {}).items():
+                option_data["type"] = {"float": float, "bool": bool}.get(option_data["type"], option_data["type"])
+                self.OPTIONS[option_name] = option_data
 
         else:
             riocore.log(f"ethercat: node_type not found: {node_type}")
@@ -191,7 +218,7 @@ class Plugin(PluginBase):
         lcec_num = 0
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            instance.PREFIX = f"lcec.{lcec_num}.{instance.title}"
+            instance.PREFIX = f"lcec.{lcec_num}.{instance.instances_name}"
             if node_type == "Servo/Stepper":
                 instance.PREFIX_CIA402 = f"cia402.{cia402_num}"
                 cia402_num += 1
@@ -240,7 +267,7 @@ class Plugin(PluginBase):
         output.append(f'  <master idx="0" appTimePeriod="{servo_period}" refClockSyncCycles="1">')
         for idx, instance in enumerate(bus_list):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            if node_type in {"ek1100", "el2008", "el1008"}:
+            if node_type in {"ek1100", "el2008", "el1008", "el4002"}:
                 output.append(f'    <slave idx="{idx}" type="{node_type.upper()}" name="{instance.plugin_setup["uid"]}"/>')
             elif node_type == "Servo/Stepper":
                 vid = instance.plugin_setup.get("vid", instance.option_default("vid"))
@@ -251,7 +278,7 @@ class Plugin(PluginBase):
                     extra_atrributes.append(f'vid="{vid}"')
                 if pid:
                     extra_atrributes.append(f'pid="{pid}"')
-                output.append(f'    <slave idx="{idx}" type="generic" {" ".join(extra_atrributes)} configPdos="true" name="{instance.title}">')
+                output.append(f'    <slave idx="{idx}" type="generic" {" ".join(extra_atrributes)} configPdos="true" name="{instance.instances_name}">')
                 output.append('      <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="25000"/>')
                 output.append('      <watchdog divider="2498" intervals="1000"/>')
                 output.append('      <syncManager idx="2" dir="out">')
@@ -285,7 +312,7 @@ class Plugin(PluginBase):
                 output.append("      </syncManager>")
                 output.append("    </slave>")
             elif node_type == "GPIO":
-                output.append(f'    <slave idx="{idx}" type="generic" vid="00001337" pid="000004d2" configPdos="true" name="{instance.title}">')
+                output.append(f'    <slave idx="{idx}" type="generic" vid="00001337" pid="000004d2" configPdos="true" name="{instance.instances_name}">')
                 output.append('      <dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="25000"/>')
                 output.append('      <watchdog divider="2498" intervals="1000"/>')
                 output.append('      <syncManager idx="1" dir="in">')
@@ -295,6 +322,8 @@ class Plugin(PluginBase):
                 output.append("        </pdo>")
                 output.append("      </syncManager>")
                 output.append("    </slave>")
+            else:
+                output.append(f'    <slave idx="{idx}" type="generic" name="{instance.plugin_setup["uid"]}"/>')
 
         output.append("  </master>")
         output.append("</masters>")
@@ -352,3 +381,7 @@ class Plugin(PluginBase):
                 parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname
             )
             parent.halg.setp_add(f"{cia402}.csp-mode", "1")
+        elif self.json_data:
+            for option_name, option_data in self.json_data.get("options", {}).items():
+                option_value = self.plugin_setup.get(option_name, self.option_default(option_name))
+                parent.halg.setp_add(f"{lcec}.{option_name}", option_value)

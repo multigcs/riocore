@@ -1,0 +1,99 @@
+{
+    "options": {
+        "aout-0-absmode": {
+            "type": "bool",
+            "default": false,
+            "comment": ""
+        },
+        "aout-0-min-dc": {
+            "type": "float",
+            "default": -1.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        },
+        "aout-0-max-dc": {
+            "type": "float",
+            "default": 1.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        },
+        "aout-0-offset": {
+            "type": "float",
+            "default": 0.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        },
+        "aout-0-scale": {
+            "type": "float",
+            "default": 1.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        },
+        "aout-1-absmode": {
+            "type": "bool",
+            "default": false,
+            "comment": ""
+        },
+        "aout-1-min-dc": {
+            "type": "float",
+            "default": -1.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        },
+        "aout-1-max-dc": {
+            "type": "float",
+            "default": 1.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        },
+        "aout-1-offset": {
+            "type": "float",
+            "default": 0.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        },
+        "aout-1-scale": {
+            "type": "float",
+            "default": 1.0,
+            "min": -999999,
+            "max": 999999,
+            "comment": ""
+        }
+    },
+
+    "pins": {
+        "aout-0-value": {
+            "direction": "output",
+            "edge": "source",
+            "type": "SIGNAL",
+            "min": 0.0,
+            "max": 10.0,
+            "pos": [17, 217]
+        },
+        "aout-0-enable": {
+            "direction": "output",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "aout-1-value": {
+            "direction": "output",
+            "edge": "source",
+            "type": "SIGNAL",
+            "min": 0.0,
+            "max": 10.0,
+            "pos": [50, 217]
+        },
+        "aout-1-enable": {
+            "direction": "output",
+            "type": "SIGNAL",
+            "bool": true
+        }
+    }
+}

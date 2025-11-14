@@ -424,21 +424,22 @@ class GuiPlugins:
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
 
-            if "source" not in signal_defaults and not signal_defaults.get("bool"):
-                signal_cols.addWidget(QLabel("Scale"), stretch=1)
-                signal_setup["scale"] = {"type": float, "default": 1.0}
-                signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "scale", signal_setup["scale"], cb=update), stretch=4)
+            if plugin_instance.PLUGIN_TYPE == "gateware":
+                if "source" not in signal_defaults and not signal_defaults.get("bool"):
+                    signal_cols.addWidget(QLabel("Scale"), stretch=1)
+                    signal_setup["scale"] = {"type": float, "default": 1.0}
+                    signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "scale", signal_setup["scale"], cb=update), stretch=4)
 
-                signal_cols.addWidget(QLabel("Offset"), stretch=1)
-                signal_setup["offset"] = {"type": float, "default": 0.0}
-                signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
+                    signal_cols.addWidget(QLabel("Offset"), stretch=1)
+                    signal_setup["offset"] = {"type": float, "default": 0.0}
+                    signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
 
-            if not signal_defaults.get("bool") and signal_direction == "input":
-                signal_cols = QHBoxLayout()
-                signal_rows.addLayout(signal_cols)
-                signal_cols.addWidget(QLabel("AVG-Filter"), stretch=1)
-                signal_setup["filters"] = {"type": "avgfilter", "default": 0}
-                signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "filters", signal_setup["filters"], cb=update), stretch=5)
+                if not signal_defaults.get("bool") and signal_direction == "input":
+                    signal_cols = QHBoxLayout()
+                    signal_rows.addLayout(signal_cols)
+                    signal_cols.addWidget(QLabel("AVG-Filter"), stretch=1)
+                    signal_setup["filters"] = {"type": "avgfilter", "default": 0}
+                    signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "filters", signal_setup["filters"], cb=update), stretch=5)
 
             display_frame = QGroupBox()
             display_frame.setTitle("Display")

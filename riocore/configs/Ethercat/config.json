@@ -60,72 +60,14 @@
                     "pin": "ethercat1:BUS:out"
                 }
             }
-        },
-        {
-            "type": "gpioin",
-            "uid": "gpioin0",
-            "image": "proximity",
-            "pos": [
-                700.0,
-                -10.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "ethercat2-0:IN:I0"
-                }
-            }
-        },
-        {
-            "type": "gpioout",
-            "uid": "gpioout0",
-            "image": "relay",
-            "pos": [
-                700.0,
-                130.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "ethercat2-1:OUT:O0"
-                }
-            }
-        },
-        {
-            "type": "gpioout",
-            "uid": "gpioout1",
-            "image": "relay",
-            "pos": [
-                700.0,
-                280.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "ethercat2-1:OUT:O1"
-                }
-            },
-            "name": ""
-        },
-        {
-            "type": "gpioin",
-            "uid": "gpioin1",
-            "image": "proximity",
-            "pos": [
-                700.0,
-                60.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "ethercat2-0:IN:I1"
-                }
-            },
-            "name": ""
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.66,
+            "scale": 2.16,
             "pos": [
-                -21,
-                -74
+                18,
+                -155
             ]
         }
     }
