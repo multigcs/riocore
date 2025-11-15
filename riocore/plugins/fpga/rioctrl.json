@@ -11,6 +11,37 @@
     "speed": "100000000",
     "pin": "A7"
   },
+    "plugins": [
+        {
+            "type": "w5500",
+            "pins": {
+                "mosi": {
+                    "pin": "SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "SPI:SEL"
+                },
+                "rst": {
+                    "pin": "SPI:RST"
+                }
+            },
+            "gw": "192.168.11.1",
+            "ip": "192.168.11.194",
+            "uid": "w5500",
+            "image": "w5500mini",
+            "rpos": [
+                0.0,
+                60.0
+            ],
+            "rotate": 90
+        }
+    ],
   "slots": [
     {
       "name": "LED",

@@ -25,8 +25,8 @@
                             "type": "onerror",
                             "invert": true,
                             "pos": [
-                                160.0,
-                                580.0
+                                60.0,
+                                700.0
                             ]
                         }
                     ]
@@ -35,8 +35,8 @@
             "frequency": 1.0,
             "uid": "blink0",
             "pos": [
-                180.0,
-                630.0
+                190.0,
+                680.0
             ]
         },
         {
@@ -49,8 +49,8 @@
                             "type": "onerror",
                             "invert": false,
                             "pos": [
-                                -70.0,
-                                520.0
+                                60.0,
+                                780.0
                             ]
                         }
                     ]
@@ -59,41 +59,9 @@
             "frequency": 2.0,
             "uid": "blink1",
             "pos": [
-                -50.0,
-                620.0
+                190.0,
+                760.0
             ]
-        },
-        {
-            "type": "w5500",
-            "pins": {
-                "mosi": {
-                    "pin": "board0:SPI:MOSI"
-                },
-                "miso": {
-                    "pin": "board0:SPI:MISO"
-                },
-                "sclk": {
-                    "pin": "board0:SPI:SCLK"
-                },
-                "sel": {
-                    "pin": "board0:SPI:SEL"
-                },
-                "rst": {
-                    "pin": "board0:SPI:RST"
-                },
-                "int": {
-                    "pin": "board0:SPI:INT"
-                }
-            },
-            "gw": "192.168.11.1",
-            "ip": "192.168.11.194",
-            "uid": "w55000",
-            "pos": [
-                -30.0,
-                210.0
-            ],
-            "image": "w5500mini",
-            "rotate": 90
         },
         {
             "name": "joint-0",
@@ -119,7 +87,16 @@
             },
             "pins": {
                 "step": {
-                    "pin": "board0:SB:S9"
+                    "pin": "board0:SB:S9",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                430.0,
+                                800.0
+                            ]
+                        }
+                    ]
                 },
                 "dir": {
                     "pin": "board0:SB:S10"
@@ -129,17 +106,18 @@
                 }
             },
             "pos": [
-                480.0,
+                610.0,
                 720.0
             ],
             "joint": {
                 "feedback": "encoder-0:position",
-                "pid_p": 250.0,
-                "pid_i": 50.0,
-                "pid_d": 5.0,
-                "scale": 500.0,
+                "pid_p": 320.0,
+                "pid_i": 100.0,
+                "pid_d": 1.0,
+                "scale": 2000.0,
                 "max_velocity": 200.0
-            }
+            },
+            "pulse_len": 1.0
         },
         {
             "name": "joint-1",
@@ -165,7 +143,16 @@
             },
             "pins": {
                 "step": {
-                    "pin": "board0:SB:S6"
+                    "pin": "board0:SB:S6",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                430.0,
+                                860.0
+                            ]
+                        }
+                    ]
                 },
                 "dir": {
                     "pin": "board0:SB:S7"
@@ -175,9 +162,10 @@
                 }
             },
             "pos": [
-                480.0,
+                610.0,
                 880.0
-            ]
+            ],
+            "pulse_len": 1.0
         },
         {
             "name": "joint-2",
@@ -203,7 +191,16 @@
             },
             "pins": {
                 "step": {
-                    "pin": "board0:SB:S3"
+                    "pin": "board0:SB:S3",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                430.0,
+                                830.0
+                            ]
+                        }
+                    ]
                 },
                 "dir": {
                     "pin": "board0:SB:S4"
@@ -213,9 +210,10 @@
                 }
             },
             "pos": [
-                480.0,
+                610.0,
                 800.0
-            ]
+            ],
+            "pulse_len": 1.0
         },
         {
             "name": "joint-3",
@@ -241,7 +239,16 @@
             },
             "pins": {
                 "step": {
-                    "pin": "board0:SB:S0"
+                    "pin": "board0:SB:S0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                430.0,
+                                890.0
+                            ]
+                        }
+                    ]
                 },
                 "dir": {
                     "pin": "board0:SB:S1"
@@ -251,9 +258,10 @@
                 }
             },
             "pos": [
-                480.0,
+                610.0,
                 960.0
-            ]
+            ],
+            "pulse_len": 1.0
         },
         {
             "name": "encoder-0",
@@ -274,7 +282,7 @@
                     "net": "",
                     "function": "",
                     "setp": "",
-                    "scale": -500.0
+                    "scale": -2000.0
                 },
                 "rps": {
                     "net": "",
@@ -310,7 +318,8 @@
             "pos": [
                 420.0,
                 -210.0
-            ]
+            ],
+            "quad_type": 0
         },
         {
             "name": "encoder-1",
@@ -365,8 +374,9 @@
             },
             "pos": [
                 420.0,
-                -50.0
-            ]
+                -10.0
+            ],
+            "quad_type": 0
         },
         {
             "name": "encoder-2",
@@ -421,8 +431,9 @@
             },
             "pos": [
                 420.0,
-                -130.0
-            ]
+                -110.0
+            ],
+            "quad_type": 0
         },
         {
             "name": "encoder-3",
@@ -477,8 +488,9 @@
             },
             "pos": [
                 420.0,
-                30.0
-            ]
+                90.0
+            ],
+            "quad_type": 0
         },
         {
             "type": "bitout",
@@ -497,62 +509,15 @@
                     "net": "halui.machine.is-on"
                 }
             }
-        },
-        {
-            "type": "breakout",
-            "node_type": "rioctrl-shiftio",
-            "uid": "breakout0",
-            "pos": [
-                550.0,
-                220.0
-            ],
-            "pins": {
-                "SLOT:S0": {
-                    "pin": "board0:SC:S0"
-                },
-                "SLOT:S1": {
-                    "pin": "board0:SC:S1"
-                },
-                "SLOT:S2": {
-                    "pin": "board0:SC:S2"
-                },
-                "SLOT:S3": {
-                    "pin": "board0:SC:S3"
-                },
-                "SLOT:S4": {
-                    "pin": "board0:SC:S4"
-                },
-                "SLOT:S5": {
-                    "pin": "board0:SC:S5"
-                },
-                "SLOT:S6": {
-                    "pin": "board0:SC:S6"
-                },
-                "SLOT:S7": {
-                    "pin": "board0:SC:S7"
-                },
-                "SLOT:S8": {
-                    "pin": "board0:SC:S8"
-                },
-                "SLOT:S9": {
-                    "pin": "board0:SC:S9"
-                },
-                "SLOT:S10": {
-                    "pin": "board0:SC:S10"
-                },
-                "SLOT:S11": {
-                    "pin": "board0:SC:S11"
-                }
-            }
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.12,
+            "scale": 0.78,
             "pos": [
-                -576.75,
-                -229.0
+                -279,
+                -367
             ]
         },
         "board": {

@@ -472,16 +472,22 @@ class TabAxis:
                         plugin_setup["joint"] = {}
                     joint_setup = plugin_setup["joint"]
 
-                    for key in ("scale_in", "scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"):
+                    for key in (
+                        "scale_in",
+                        "scale_out",
+                        "max_velocity",
+                        "max_acceleration",
+                        "min_limit",
+                        "max_limit",
+                        "home_sequence",
+                        "home",
+                        "home_offset",
+                        "home_search_vel",
+                        "home_latch_vel",
+                        "home_final_vel",
+                    ):
                         if f"{joint}_{key}" in self.widgets:
-                            # if key == "scale_in":
-                            #    self.widgets[f"{joint}_{key}"].update(plugin_setup_encoder)
-                            # else:
-                            #    self.widgets[f"{joint}_{key}"].update(joint_setup)
                             self.widgets[f"{joint}_{key}"].update()
-                    for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
-                        if f"{joint}_{key}" in self.widgets:
-                            self.widgets[f"{joint}_{key}"].update(joint_setup)
 
                     if plugin_instance_home:
                         signature.append("h")
@@ -710,13 +716,21 @@ class TabAxis:
                 plugin_setup = {}
                 plugin_instance_home = None
                 plugin_instance_encoder = jdata.get("feedback_instance")
-                plugin_setup_encoder = jdata.get("feedback_setup")
+                plugin_setup_encoder = {}
                 for item in self.parent.scene.items():
                     if hasattr(item, "plugin_instance"):
                         if item.plugin_instance.plugin_setup["uid"] == jdata["instance"].plugin_setup["uid"]:
                             plugin_instance = item.plugin_instance
                             plugin_setup = plugin_instance.plugin_setup
 
+                        if plugin_instance_encoder and item.plugin_instance.plugin_setup["uid"] == plugin_instance_encoder.plugin_setup["uid"]:
+                            plugin_instance_encoder = item.plugin_instance
+                            feedback_signal = jdata.get("feedback_signal")
+                            if "signals" not in plugin_instance_encoder.plugin_setup:
+                                plugin_instance_encoder.plugin_setup["signals"] = {}
+                            if feedback_signal not in plugin_instance_encoder.plugin_setup["signals"]:
+                                plugin_instance_encoder.plugin_setup["signals"][feedback_signal] = {}
+                            plugin_setup_encoder = plugin_instance_encoder.plugin_setup["signals"][feedback_signal]
                         signal = item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
                         if signal == f"joint.{joint}.home-sw-in":
                             plugin_instance_home = item.plugin_instance
@@ -739,7 +753,7 @@ class TabAxis:
 
                     keys = ["scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"]
                     if plugin_instance_encoder:
-                        keys = ["scale_in", "scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"]
+                        keys = ["scale_in"] + keys
 
                     for key in keys:
                         options = riocore.halpins.JOINT_OPTIONS[{"scale_in": "scale", "scale_out": "scale"}.get(key, key)]
@@ -750,12 +764,12 @@ class TabAxis:
                             options["default"] = default
 
                         ekey = key
-                        if ekey == "scale_out":
-                            ekey = "scale"
                         if ekey == "scale_in":
                             ekey = "scale"
                             widget = self.parent.edit_item(plugin_setup_encoder, ekey, options)
                         else:
+                            if ekey == "scale_out":
+                                ekey = "scale"
                             widget = self.parent.edit_item(joint_setup, ekey, options)
 
                         self.widgets[f"{joint}_{key}"] = widget

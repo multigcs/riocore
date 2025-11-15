@@ -131,13 +131,12 @@ class Plugin(PluginBase):
         self.jdata["speed"] = speed
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
         self.jdata["sysclk_pin"] = self.jdata["clock"].get("pin")
-
         self.master = self.instances_name
 
-        puid = self.plugin_setup.get("uid")
         self.SUB_PLUGINS = []
         for spn, sub_plugin in enumerate(self.jdata.get("plugins", [])):
-            sub_plugin["uid"] = f"{puid}-{spn}"
+            if "uid" not in sub_plugin:
+                sub_plugin["uid"] = f"{sub_plugin['type']}{spn}"
             self.SUB_PLUGINS.append(sub_plugin)
 
     def update_prefixes(cls, parent, instances):
