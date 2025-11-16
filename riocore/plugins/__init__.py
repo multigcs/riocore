@@ -250,6 +250,22 @@ class PluginImages:
         }
         return setup
 
+    def stepstick(self):
+        setup = {
+            "image": "stepstick.png",
+            "pins": [
+                (140, 35),
+                (140, 10),
+                (140, 186),
+            ],
+            "signals": [
+                (70, 10),
+                (70, 35),
+                (70, 55),
+            ],
+        }
+        return setup
+
     def ethercatservo(self):
         setup = {
             "image": "ethercat-servo.png",
