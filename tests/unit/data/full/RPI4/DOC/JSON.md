@@ -1,6 +1,7 @@
+# JSON-Config
+```
 {
-    "name": "RasperryGPIO",
-    "syncto": "cnc@192.168.10.246:/home/cnc/RPI/",
+    "name": "RPI4",
     "flow": {
         "view": {
             "scale": 1.09,
@@ -462,3 +463,5 @@
         }
     ]
 }
+
+```

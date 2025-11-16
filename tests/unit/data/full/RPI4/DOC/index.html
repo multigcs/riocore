@@ -1,6 +1,134 @@
+
+<html>
+<header>
+<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>
+</header>
+<body>
+<div class="tab">
+  <button class="tablinks" onclick="openSection(event, 'CONFIG')">CONFIG</button>
+  <button class="tablinks" onclick="openSection(event, 'PINS')">PINS</button>
+  <button class="tablinks" onclick="openSection(event, 'SIGNALS')">SIGNALS</button>
+  <button class="tablinks" onclick="openSection(event, 'LINUXCNC')">LINUXCNC</button>
+  <button class="tablinks" onclick="openSection(event, 'JSON')">JSON</button>
+</div>
+<div id="CONFIG" class="tabcontent">
+<github-md>
+# RPI4
+
+
+* Config-Path: tests/unit/data/full/RPI4.json
+* Output-Path: tests/unit/output/RPI4
+
+## Axis/Joints
+| Axis | Joint | Plugin | Home-Seq. |
+| --- | --- | --- | --- |
+| X | 0 | stepgen0 ([stepgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepgen/README.md)) | 2 | 
+| Y | 1 | stepgen1 ([stepgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepgen/README.md)) | 2 | 
+| Z | 2 | stepgen2 ([stepgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepgen/README.md)) | 1 | 
+
+## Plugins
+| Type | Info | Instance | Image |
+| --- | --- | --- | --- |
+| [breakout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/breakout/README.md) | rpi-db25hat | rpi-db25hat0, china-bob5x0 | <img src="breakout.png" height="48"> |
+| [stepgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepgen/README.md) | software step pulse generation | stepgen0, stepgen1, stepgen2 | <img src="stepgen.png" height="48"> |
+| [gpioout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioout/README.md) | gpio output | gpioout0, gpioout1 | <img src="gpioout.png" height="48"> |
+| [gpioin](https://github.com/multigcs/riocore/blob/main/riocore/plugins/gpioin/README.md) | gpio input | gpioin0, gpioin1, gpioin2, gpioin3, gpioin4 | <img src="gpioin.png" height="48"> |
+| [pwmgen](https://github.com/multigcs/riocore/blob/main/riocore/plugins/pwmgen/README.md) | software PWM/PDM generation | pwmgen0 | <img src="pwmgen.png" height="48"> |
+| [rpigpio](https://github.com/multigcs/riocore/blob/main/riocore/plugins/rpigpio/README.md) | gpio support | rpigpio0 | <img src="rpigpio.png" height="48"> |
+
+</github-md>
+</div>
+<div id="PINS" class="tabcontent">
+<github-md>
+# Pins
+| Plugin | ID | Name | Board | Alias |
+| --- | --- | --- | --- | --- |
+| stepgen | stepgen0 | step | hal_gpio.SPI_MISO-out |  |
+|  |  | dir | hal_gpio.SPI_MOSI-out |  |
+|  | stepgen1 | step | hal_gpio.SPI_SCLK-out |  |
+|  |  | dir | hal_gpio.GPIO5-out |  |
+|  | stepgen2 | step | hal_gpio.GPIO6-out |  |
+|  |  | dir | hal_gpio.GPIO19-out |  |
+| gpioout | gpioout0 | bit | hal_gpio.GPIO26-out |  |
+|  | gpioout1 | bit | hal_gpio.GPIO24-out |  |
+| gpioin | gpioin0 | bit | hal_gpio.GPIO25-in |  |
+|  | gpioin1 | bit | hal_gpio.SPI_CE0_N-in |  |
+|  | gpioin2 | bit | hal_gpio.SPI_CE1_N-in |  |
+|  | gpioin3 | bit | hal_gpio.GPIO12-in |  |
+|  | gpioin4 | bit | hal_gpio.GPIO13-in |  |
+| pwmgen | pwmgen0 | pwm | hal_gpio.GPIO18-out |  |
+|  |  | dir | - |  |
+
+</github-md>
+</div>
+<div id="SIGNALS" class="tabcontent">
+<github-md>
+# Signals
+| Plugin | ID | Name | Dir | Hal-Pin | Type | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| gpioout | gpioout0 | hal_gpio.GPIO26-out | <- | halui.machine.is-on | net |  |
+| gpioin | gpioin0 | hal_gpio.GPIO25-in | -> | joint.0.home-sw-in | net |  |
+|  | gpioin1 | hal_gpio.SPI_CE0_N-in | -> | joint.1.home-sw-in | net |  |
+|  | gpioin2 | hal_gpio.SPI_CE1_N-in | -> | joint.2.home-sw-in | net |  |
+|  | gpioin4 | hal_gpio.GPIO13-in | -> | motion.probe-input | net |  |
+| pwmgen | pwmgen0 | pwmgen.0.value | <- | spindle.0.speed-out | net |  |
+|  |  | pwmgen.0.enable | <- | spindle.0.on | net |  |
+
+</github-md>
+</div>
+<div id="LINUXCNC" class="tabcontent">
+<github-md>
+# LinuxCNC
+## Hal-Graph
+![halgraph](./halgraph.png)
+</github-md>
+</div>
+<div id="JSON" class="tabcontent">
+<github-md>
+# JSON-Config
+```
 {
-    "name": "RasperryGPIO",
-    "syncto": "cnc@192.168.10.246:/home/cnc/RPI/",
+    "name": "RPI4",
     "flow": {
         "view": {
             "scale": 1.09,
@@ -462,3 +590,26 @@
         }
     ]
 }
+
+```
+
+</github-md>
+</div>
+</body>
+<script>
+function openSection(evt, sectionName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sectionName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+openSection(event, 'CONFIG');
+</script>
+</html>

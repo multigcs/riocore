@@ -1,0 +1,243 @@
+<pyvcp>
+  <tabs>
+    <names>['Status', 'Inputs', 'Outputs']</names>
+    <vbox>
+      <labelframe text="MDI-Commands">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <vbox>
+          <labelframe text="Zero">
+            <relief>GROOVE</relief>
+            <font>("Helvetica", 10)</font>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-00"</halpin>
+                <text>"X"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-01"</halpin>
+                <text>"Y"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-02"</halpin>
+                <text>"Z"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+            </hbox>
+          </labelframe>
+          <labelframe text="Touch">
+            <relief>GROOVE</relief>
+            <font>("Helvetica", 10)</font>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-03"</halpin>
+                <text>"Touch-Z"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <hbox>
+                <boxexpand expand="yes"/>
+                <boxfill fill="both"/>
+                <boxanchor anchor="e"/>
+                <led>
+                  <halpin>"probe-input"</halpin>
+                  <size>16</size>
+                  <on_color>"yellow"</on_color>
+                  <off_color>"red"</off_color>
+                  <anchor>"e"</anchor>
+                  <width>16</width>
+                </led>
+              </hbox>
+            </hbox>
+          </labelframe>
+        </vbox>
+      </labelframe>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"home_x-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"hal_gpio.GPIO25-in"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"home_y-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"hal_gpio.SPI_CE0_N-in"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"home_z-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"hal_gpio.SPI_CE1_N-in"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"estop-bit "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"hal_gpio.GPIO12-in"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"probe-bit "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"hal_gpio.GPIO13-in"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"enable-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"hal_gpio.GPIO26-out"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"spindle-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"pwmgen.0.value"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"spindle-enable"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"pwmgen.0.enable"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout1-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"hal_gpio.GPIO24-out"</halpin>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+    </vbox>
+  </tabs>
+</pyvcp>
