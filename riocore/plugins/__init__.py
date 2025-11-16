@@ -389,7 +389,7 @@ class PluginBase:
             }
             image = self.plugin_setup.get("image", self.option_default("image"))
             self.plugin_images = PluginImages()
-            if image:
+            if image and not image.endswith(".png"):
                 if hasattr(self.plugin_images, image):
                     image_setup = getattr(self.plugin_images, image)()
                     self.IMAGE_SHOW = True

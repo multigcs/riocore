@@ -45,6 +45,11 @@ class Plugin(PluginBase):
                     "bool": True,
                 }
 
+        image = self.plugin_setup.get("image")
+        if image == "wled1.png":
+            self.IMAGE = image
+            self.IMAGE_SHOW = True
+
     def cfg_info(self):
         num_leds = self.plugin_setup.get("leds", 1)
         level = self.plugin_setup.get("level", 127)

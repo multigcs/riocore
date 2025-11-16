@@ -1198,7 +1198,6 @@ class TabOptions:
             "vcp_type": {"type": "select", "options": ["auto", "pyvcp", "qtvcp", "gladevcp"], "default": "auto", "help_text": "vcp type, depends on the gui"},
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
             "debug_info": {"type": bool, "help_text": "Displays some debug infos in VCP", "default": False},
-            "simulation": {"type": bool, "help_text": "Enables the board simulator / no hardware needed", "default": False},
         }.items():
             row = QHBoxLayout()
             vbox.addLayout(row)

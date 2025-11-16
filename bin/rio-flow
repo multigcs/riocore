@@ -1520,6 +1520,16 @@ class Window(QMainWindow):
         for nnum, net in enumerate(config.get("linuxcnc", {}).get("net", [])):
             if not net.get("source") or not net.get("target"):
                 config["linuxcnc"]["net"].pop(nnum)
+
+        # clean some fixed options from sub plugins
+        for plugin in config.get("plugins", []):
+            if "sub" not in plugin:
+                continue
+            for sub_uid, sub_config in plugin["sub"].items():
+                for fixed_option in ("image", "rpos", "type", "pins", "rotate", "uid"):
+                    if fixed_option in sub_config:
+                        del sub_config[fixed_option]
+
         if flow:
             for item in config.get("breakouts", []):
                 if "pos" in config["breakouts"]:
@@ -1905,6 +1915,17 @@ class Window(QMainWindow):
 
                 for sub_plugin_id, sub_plugin_config in enumerate(plugin_instance.SUB_PLUGINS):
                     uid = sub_plugin_config["uid"]
+                    if "sub" not in plugin_config:
+                        plugin_config["sub"] = {}
+                    if uid not in plugin_config["sub"]:
+                        plugin_config["sub"][uid] = {}
+
+                    # force overwrite some fixed options / add missing options
+                    for option_name, option_data in sub_plugin_config.items():
+                        if option_name not in plugin_config["sub"][uid] or option_name in {"image", "rpos", "type", "pins", "rotate", "uid"}:
+                            plugin_config["sub"][uid][option_name] = sub_plugin_config[option_name]
+                    sub_plugin_config = plugin_config["sub"][uid]
+
                     self.plugin_uids.append(uid)
                     self.plugins.load_plugin(sub_plugin_id, sub_plugin_config, self.config)
                     if self.plugins.plugin_instances:

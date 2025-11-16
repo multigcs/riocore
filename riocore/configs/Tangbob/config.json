@@ -69,61 +69,6 @@
             }
         },
         {
-            "type": "w5500",
-            "pins": {
-                "mosi": {
-                    "pin": "fpga0:SPI:MOSI"
-                },
-                "miso": {
-                    "pin": "fpga0:SPI:MISO"
-                },
-                "sclk": {
-                    "pin": "fpga0:SPI:SCLK"
-                },
-                "sel": {
-                    "pin": "fpga0:SPI:SEL"
-                }
-            },
-            "uid": "w55000",
-            "pos": [
-                380.0,
-                510.0
-            ],
-            "image": "w5500mini",
-            "rotate": 0,
-            "ip": "192.168.11.194"
-        },
-        {
-            "type": "wled",
-            "pins": {
-                "data": {
-                    "pin": "fpga0:WLED:DATA"
-                }
-            },
-            "signals": {
-                "0_green": {
-                    "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused",
-                    "setp": ""
-                },
-                "0_red": {
-                    "net": "axisui.error",
-                    "setp": ""
-                },
-                "0_blue": {
-                    "net": "halui.mode.is-auto",
-                    "setp": ""
-                }
-            },
-            "uid": "wled0",
-            "pos": [
-                -90.0,
-                420.0
-            ],
-            "image": "wled",
-            "rotate": 180,
-            "leds": 3
-        },
-        {
             "type": "modbus",
             "pins": {
                 "tx": {
@@ -138,8 +83,8 @@
             },
             "uid": "modbus0",
             "pos": [
-                130.0,
-                620.0
+                180.0,
+                630.0
             ]
         },
         {
@@ -183,8 +128,8 @@
             ],
             "sub_pos": {
                 "dev-lm75_0(0x48)": [
-                    330.3766088621519,
-                    727.0547228632354
+                    330.0,
+                    730.0
                 ]
             }
         },
@@ -367,16 +312,56 @@
                 120.0,
                 220.0
             ],
-            "simulation": true,
-            "protocol": "UDP"
+            "simulation": false,
+            "protocol": "UDP",
+            "sub": {
+                "w5500": {
+                    "ip": "192.168.11.191"
+                },
+                "wled": {
+                    "signals": {
+                        "0_green": {
+                            "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused",
+                            "setp": ""
+                        },
+                        "0_red": {
+                            "net": "axisui.error",
+                            "setp": ""
+                        },
+                        "0_blue": {
+                            "net": "halui.mode.is-auto",
+                            "setp": ""
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "image": "relay",
+            "pos": [
+                700.0,
+                20.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:RELAIS:out"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.47,
+            "scale": 1.65,
             "pos": [
-                -88,
-                -16
+                -10,
+                109
             ]
         },
         "hal": {

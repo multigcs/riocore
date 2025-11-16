@@ -20,6 +20,7 @@
     "plugins": [
         {
             "type": "w5500",
+            "uid": "w5500",
             "pins": {
                 "mosi": {
                     "pin": "SPI:MOSI"
@@ -41,6 +42,21 @@
             "image": "w5500mini",
             "rotate": 0,
             "ip": "192.168.11.194"
+        },
+        {
+            "type": "wled",
+            "pins": {
+                "data": {
+                    "pin": "WLED:DATA"
+                }
+            },
+            "uid": "wled",
+            "rpos": [
+                130.0,
+                405.0
+            ],
+            "image": "wled1.png",
+            "rotate": 180
         }
     ],
     "slots": [
