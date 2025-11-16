@@ -1,3 +1,5 @@
+# JSON-Config
+```
 {
     "name": "Mesa",
     "syncto": "cnc@192.168.10.86:/home/cnc/Mesa/",
@@ -351,3 +353,5 @@
     ],
     "boardcfg": ""
 }
+
+```

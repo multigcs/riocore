@@ -1,0 +1,21 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_hm2_7c81_0_pwmgen_00_value-f <= pyvcp.hm2_7c81.0.pwmgen.00.value-f
+net sig_pyvcp_hm2_7c81_0_pwmgen_00_enable <= pyvcp.hm2_7c81.0.pwmgen.00.enable
+net sig_pyvcp_hm2_7c81_0_gpio_001_out    <= pyvcp.hm2_7c81.0.gpio.001.out
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net sig_hm2_7c81_0_gpio_013_in_not       => pyvcp.hm2_7c81.0.gpio.013.in_not
+net sig_hm2_7c81_0_gpio_014_in_not       => pyvcp.hm2_7c81.0.gpio.014.in_not
+net sig_hm2_7c81_0_gpio_015_in_not       => pyvcp.hm2_7c81.0.gpio.015.in_not
+net sig_spindle_0_on                     => pyvcp.hm2_7c81.0.gpio.007.out
+
+#################################################################################
+# setp
+#################################################################################
+

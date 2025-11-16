@@ -1,0 +1,181 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=3
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# mesa
+loadrt hostmot2
+loadrt hm2_spix spi_probe=1 spiclk_rate=21250 config="num_encoders=0 num_pwmgens=1 num_stepgens=3"
+setp hm2_7c81.0.led.CR01 1
+setp hm2_7c81.0.led.CR02 1
+setp hm2_7c81.0.led.CR03 1
+setp hm2_7c81.0.led.CR04 1
+setp hm2_7c81.0.watchdog.timeout_ns 50000000
+setp hm2_7c81.0.dpll.01.timer-us -50
+setp hm2_7c81.0.stepgen.timer-number 1
+
+# read
+addf hm2_7c81.0.read servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+# write
+addf hm2_7c81.0.write servo-thread
+
+#################################################################################
+# iocontrol
+#################################################################################
+net user-enable-out                      => iocontrol.0.emc-enable-in
+net tool-change                          <= iocontrol.0.tool-change
+net tool-changed                         => iocontrol.0.tool-changed
+net tool-prep-number                     <= iocontrol.0.tool-prep-number
+net tool-prepared                        <= iocontrol.0.tool-prepare
+net tool-prepared                        => iocontrol.0.tool-prepared
+net user-enable-out                      <= iocontrol.0.user-enable-out
+
+#################################################################################
+# hm2_7c81
+#################################################################################
+net sig_pyvcp_hm2_7c81_0_gpio_001_out    => hm2_7c81.0.gpio.001.out
+net sig_spindle_0_on                     => hm2_7c81.0.gpio.007.out
+net sig_hm2_7c81_0_gpio_013_in_not       <= hm2_7c81.0.gpio.013.in_not
+net sig_hm2_7c81_0_gpio_014_in_not       <= hm2_7c81.0.gpio.014.in_not
+net sig_hm2_7c81_0_gpio_015_in_not       <= hm2_7c81.0.gpio.015.in_not
+
+net sig_pyvcp_hm2_7c81_0_pwmgen_00_enable => hm2_7c81.0.pwmgen.00.enable
+net sig_pyvcp_hm2_7c81_0_pwmgen_00_value-f => hm2_7c81.0.pwmgen.00.value
+
+#################################################################################
+# spindle
+#################################################################################
+net sig_spindle_0_on                     <= spindle.0.on
+
+#################################################################################
+# joint
+#################################################################################
+net sig_hm2_7c81_0_gpio_013_in_not       => joint.0.home-sw-in
+net sig_hm2_7c81_0_gpio_014_in_not       => joint.1.home-sw-in
+net sig_hm2_7c81_0_gpio_015_in_not       => joint.2.home-sw-in
+
+#################################################################################
+# halui
+#################################################################################
+net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02
+
+#################################################################################
+# joint-0
+#################################################################################
+setp hm2_7c81.0.stepgen.00.dirsetup      [JOINT_0]MESA_DIRSETUP
+setp hm2_7c81.0.stepgen.00.dirhold       [JOINT_0]MESA_DIRHOLD
+setp hm2_7c81.0.stepgen.00.steplen       [JOINT_0]MESA_STEPLEN
+setp hm2_7c81.0.stepgen.00.stepspace     [JOINT_0]MESA_STEPSPACE
+setp hm2_7c81.0.stepgen.00.maxvel        [JOINT_0]MESA_STEPGEN_MAXVEL
+setp hm2_7c81.0.stepgen.00.maxaccel      [JOINT_0]MESA_STEPGEN_MAXACCEL
+setp hm2_7c81.0.stepgen.00.position-scale [JOINT_0]SCALE_OUT
+setp pid.0.Pgain                         [JOINT_0]P
+setp pid.0.Igain                         [JOINT_0]I
+setp pid.0.Dgain                         [JOINT_0]D
+setp pid.0.bias                          [JOINT_0]BIAS
+setp pid.0.FF0                           [JOINT_0]FF0
+setp pid.0.FF1                           [JOINT_0]FF1
+setp pid.0.FF2                           [JOINT_0]FF2
+setp pid.0.deadband                      [JOINT_0]DEADBAND
+setp pid.0.maxoutput                     [JOINT_0]MAXOUTPUT
+net j0vel-cmd                            <= pid.0.output
+net j0pos-cmd                            <= joint.0.motor-pos-cmd
+net j0motor-pos-fb                       <= hm2_7c81.0.stepgen.00.position-fb
+net j0enable                             <= joint.0.amp-enable-out
+net j0vel-cmd                            => hm2_7c81.0.stepgen.00.velocity-cmd
+net j0pos-cmd                            => pid.0.command
+net j0motor-pos-fb                       => joint.0.motor-pos-fb
+net j0motor-pos-fb                       => pid.0.feedback
+net j0enable                             => pid.0.enable
+net j0enable                             => hm2_7c81.0.stepgen.00.enable
+
+#################################################################################
+# joint-1
+#################################################################################
+setp hm2_7c81.0.stepgen.01.dirsetup      [JOINT_1]MESA_DIRSETUP
+setp hm2_7c81.0.stepgen.01.dirhold       [JOINT_1]MESA_DIRHOLD
+setp hm2_7c81.0.stepgen.01.steplen       [JOINT_1]MESA_STEPLEN
+setp hm2_7c81.0.stepgen.01.stepspace     [JOINT_1]MESA_STEPSPACE
+setp hm2_7c81.0.stepgen.01.maxvel        [JOINT_1]MESA_STEPGEN_MAXVEL
+setp hm2_7c81.0.stepgen.01.maxaccel      [JOINT_1]MESA_STEPGEN_MAXACCEL
+setp hm2_7c81.0.stepgen.01.position-scale [JOINT_1]SCALE_OUT
+setp pid.1.Pgain                         [JOINT_1]P
+setp pid.1.Igain                         [JOINT_1]I
+setp pid.1.Dgain                         [JOINT_1]D
+setp pid.1.bias                          [JOINT_1]BIAS
+setp pid.1.FF0                           [JOINT_1]FF0
+setp pid.1.FF1                           [JOINT_1]FF1
+setp pid.1.FF2                           [JOINT_1]FF2
+setp pid.1.deadband                      [JOINT_1]DEADBAND
+setp pid.1.maxoutput                     [JOINT_1]MAXOUTPUT
+net j1vel-cmd                            <= pid.1.output
+net j1pos-cmd                            <= joint.1.motor-pos-cmd
+net j1motor-pos-fb                       <= hm2_7c81.0.stepgen.01.position-fb
+net j1enable                             <= joint.1.amp-enable-out
+net j1vel-cmd                            => hm2_7c81.0.stepgen.01.velocity-cmd
+net j1pos-cmd                            => pid.1.command
+net j1motor-pos-fb                       => joint.1.motor-pos-fb
+net j1motor-pos-fb                       => pid.1.feedback
+net j1enable                             => pid.1.enable
+net j1enable                             => hm2_7c81.0.stepgen.01.enable
+
+#################################################################################
+# joint-2
+#################################################################################
+setp hm2_7c81.0.stepgen.02.dirsetup      [JOINT_2]MESA_DIRSETUP
+setp hm2_7c81.0.stepgen.02.dirhold       [JOINT_2]MESA_DIRHOLD
+setp hm2_7c81.0.stepgen.02.steplen       [JOINT_2]MESA_STEPLEN
+setp hm2_7c81.0.stepgen.02.stepspace     [JOINT_2]MESA_STEPSPACE
+setp hm2_7c81.0.stepgen.02.maxvel        [JOINT_2]MESA_STEPGEN_MAXVEL
+setp hm2_7c81.0.stepgen.02.maxaccel      [JOINT_2]MESA_STEPGEN_MAXACCEL
+setp hm2_7c81.0.stepgen.02.position-scale [JOINT_2]SCALE_OUT
+setp pid.2.Pgain                         [JOINT_2]P
+setp pid.2.Igain                         [JOINT_2]I
+setp pid.2.Dgain                         [JOINT_2]D
+setp pid.2.bias                          [JOINT_2]BIAS
+setp pid.2.FF0                           [JOINT_2]FF0
+setp pid.2.FF1                           [JOINT_2]FF1
+setp pid.2.FF2                           [JOINT_2]FF2
+setp pid.2.deadband                      [JOINT_2]DEADBAND
+setp pid.2.maxoutput                     [JOINT_2]MAXOUTPUT
+net j2vel-cmd                            <= pid.2.output
+net j2pos-cmd                            <= joint.2.motor-pos-cmd
+net j2motor-pos-fb                       <= hm2_7c81.0.stepgen.02.position-fb
+net j2enable                             <= joint.2.amp-enable-out
+net j2vel-cmd                            => hm2_7c81.0.stepgen.02.velocity-cmd
+net j2pos-cmd                            => pid.2.command
+net j2motor-pos-fb                       => joint.2.motor-pos-fb
+net j2motor-pos-fb                       => pid.2.feedback
+net j2enable                             => pid.2.enable
+net j2enable                             => hm2_7c81.0.stepgen.02.enable
+
+#################################################################################
+# setp
+#################################################################################
+setp hm2_7c81.0.gpio.001.is_output          1
+setp hm2_7c81.0.gpio.007.is_output          1
+setp hm2_7c81.0.pwmgen.00.scale             100
+setp hm2_7c81.0.stepgen.00.control-type     1
+setp hm2_7c81.0.stepgen.00.step_type        0
+setp hm2_7c81.0.stepgen.01.control-type     1
+setp hm2_7c81.0.stepgen.01.step_type        0
+setp hm2_7c81.0.stepgen.02.control-type     1
+setp hm2_7c81.0.stepgen.02.step_type        0
+
+#################################################################################
+# preformated
+#################################################################################
