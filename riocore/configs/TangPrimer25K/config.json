@@ -1,55 +1,240 @@
 {
     "name": "TangPrimer25K",
     "description": "TangPrimer25K",
-    "boardcfg": "TangPrimer25K",
     "protocol": "UDP",
     "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "TangPrimer25K",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                0.0,
+                0.0
+            ],
+            "rotate": 0
+        },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:G1",
+                    "pin": "board0:LED:G1",
                     "modifier": [
                         {
                             "type": "onerror",
-                            "invert": true
-                        },
-                        {
-                            "type": "invert"
+                            "invert": true,
+                            "pos": [
+                                -40.0,
+                                -70.0
+                            ]
                         }
                     ]
                 }
             },
-            "name": "status"
+            "name": "status",
+            "uid": "blink0",
+            "pos": [
+                90.0,
+                -60.0
+            ],
+            "image": "smdled"
         },
         {
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LED:G2"
+                    "pin": "board0:LED:G2"
                 }
             },
-            "name": "LED"
+            "name": "LED",
+            "uid": "bitout0",
+            "pos": [
+                90.0,
+                -30.0
+            ],
+            "image": "smdled"
         },
         {
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "BUTTON:S1",
+                    "pin": "board0:BUTTON:S1",
                     "pull": "down"
                 }
             },
-            "name": "SW1"
+            "name": "SW1",
+            "uid": "bitin0",
+            "pos": [
+                330.0,
+                30.0
+            ],
+            "image": "smdbutton"
         },
         {
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "BUTTON:S2",
+                    "pin": "board0:BUTTON:S2",
                     "pull": "down"
                 }
             },
-            "name": "SW2"
+            "name": "SW2",
+            "uid": "bitin1",
+            "pos": [
+                330.0,
+                60.0
+            ],
+            "image": "smdbutton"
+        },
+        {
+            "type": "breakout",
+            "node_type": "rio-icebreaker3x",
+            "uid": "breakout0",
+            "pos": [
+                -20.0,
+                170.0
+            ],
+            "rotate": -90,
+            "pins": {
+                "PMODA:P4": {
+                    "pin": "board0:PMOD2:P4"
+                },
+                "PMODA:P3": {
+                    "pin": "board0:PMOD2:P3"
+                },
+                "PMODA:P2": {
+                    "pin": "board0:PMOD2:P2"
+                },
+                "PMODA:P1": {
+                    "pin": "board0:PMOD2:P1"
+                },
+                "PMODA:P10": {
+                    "pin": "board0:PMOD2:P10"
+                },
+                "PMODA:P9": {
+                    "pin": "board0:PMOD2:P9"
+                },
+                "PMODA:P8": {
+                    "pin": "board0:PMOD2:P8"
+                },
+                "PMODA:P7": {
+                    "pin": "board0:PMOD2:P7"
+                },
+                "PMODB:P4": {
+                    "pin": "board0:PMOD1:P4"
+                },
+                "PMODB:P3": {
+                    "pin": "board0:PMOD1:P3"
+                },
+                "PMODB:P2": {
+                    "pin": "board0:PMOD1:P2"
+                },
+                "PMODB:P1": {
+                    "pin": "board0:PMOD1:P1"
+                },
+                "PMODB:P10": {
+                    "pin": "board0:PMOD1:P10"
+                },
+                "PMODB:P9": {
+                    "pin": "board0:PMOD1:P9"
+                },
+                "PMODB:P8": {
+                    "pin": "board0:PMOD1:P8"
+                },
+                "PMODB:P7": {
+                    "pin": "board0:PMOD1:P7"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepstick",
+            "pos": [
+                -150.0,
+                480.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "breakout0:J0:dir"
+                },
+                "step": {
+                    "pin": "breakout0:J0:step"
+                },
+                "en": {
+                    "pin": "breakout0:ALL:enable"
+                }
+            },
+            "rotate": -90
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "is_joint": true,
+            "image": "stepstick",
+            "pos": [
+                -150.0,
+                390.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "breakout0:J1:step"
+                },
+                "dir": {
+                    "pin": "breakout0:J1:dir"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "is_joint": true,
+            "image": "stepstick",
+            "pos": [
+                -150.0,
+                300.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "breakout0:J2:dir"
+                },
+                "step": {
+                    "pin": "breakout0:J2:step"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "w5500",
+            "uid": "w55000",
+            "image": "w5500",
+            "pos": [
+                260.0,
+                210.0
+            ],
+            "pins": {
+                "sclk": {
+                    "pin": "board0:PMOD3:P1"
+                },
+                "sel": {
+                    "pin": "board0:PMOD3:P2"
+                },
+                "mosi": {
+                    "pin": "board0:PMOD3:P3"
+                },
+                "miso": {
+                    "pin": "board0:PMOD3:P4"
+                }
+            },
+            "ip": "192.168.11.194",
+            "gw": "192.168.11.1",
+            "rotate": 90
         }
     ],
     "modules": [
@@ -184,5 +369,14 @@
                 }
             }
         }
-    ]
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.78,
+            "pos": [
+                -556,
+                -182
+            ]
+        }
+    }
 }
