@@ -187,19 +187,20 @@ class Plugins:
                 plugin_id += 1
 
                 # adding sub-plugins
-                for sub_plugin_config in plugin_instance.SUB_PLUGINS:
-                    # update options
-                    for key, value in plugin_config.get("sub", {}).get(sub_plugin_config["uid"], {}).items():
-                        sub_plugin_config[key] = value
+                if hasattr(plugin_instance, "SUB_PLUGINS"):
+                    for sub_plugin_config in plugin_instance.SUB_PLUGINS:
+                        # update options
+                        for key, value in plugin_config.get("sub", {}).get(sub_plugin_config["uid"], {}).items():
+                            sub_plugin_config[key] = value
 
-                    config["plugins"].append(sub_plugin_config)
-                    sub_plugin_config["parent"] = plugin_instance
-                    sub_plugin_instance = self.load_plugin(plugin_id, sub_plugin_config, system_setup=system_setup)
-                    if not sub_plugin_instance:
-                        exit(1)
-                    for pin_name, pin_data in sub_plugin_instance.plugin_setup.get("pins", {}).items():
-                        pin_data["pin"] = f"{plugin_config['uid']}:{pin_data['pin']}"
-                    plugin_id += 1
+                        config["plugins"].append(sub_plugin_config)
+                        sub_plugin_config["parent"] = plugin_instance
+                        sub_plugin_instance = self.load_plugin(plugin_id, sub_plugin_config, system_setup=system_setup)
+                        if not sub_plugin_instance:
+                            exit(1)
+                        for pin_name, pin_data in sub_plugin_instance.plugin_setup.get("pins", {}).items():
+                            pin_data["pin"] = f"{plugin_config['uid']}:{pin_data['pin']}"
+                        plugin_id += 1
 
             return self.plugin_instances
         return []
