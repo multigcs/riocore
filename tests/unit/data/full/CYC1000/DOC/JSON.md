@@ -1,0 +1,159 @@
+# JSON-Config
+```
+{
+    "name": "CYC1000",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "CYC1000",
+            "toolchain": "quartus",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                340.0,
+                200.0
+            ],
+            "rotate": 90
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "board0:LED:D1"
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                540.0,
+                230.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "board0:SW:S1",
+                    "pull": "up"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                540.0,
+                190.0
+            ],
+            "image": "smdbutton",
+            "rotate": 0
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "board0:LED:D2"
+                }
+            },
+            "uid": "bitout0",
+            "pos": [
+                540.0,
+                250.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "board0:LED:D3"
+                }
+            },
+            "uid": "bitout1",
+            "pos": [
+                540.0,
+                270.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "board0:LED:D4"
+                },
+                "dir": {
+                    "pin": "board0:LED:D5"
+                },
+                "en": {
+                    "pin": "board0:LED:D6"
+                }
+            },
+            "uid": "pwmout0",
+            "pos": [
+                530.0,
+                290.0
+            ],
+            "image": "led"
+        },
+        {
+            "type": "w5500",
+            "uid": "w55000",
+            "image": "w5500",
+            "pos": [
+                550.0,
+                580.0
+            ],
+            "pins": {
+                "sclk": {
+                    "pin": "board0:PMOD:P1"
+                },
+                "sel": {
+                    "pin": "board0:PMOD:P2"
+                },
+                "mosi": {
+                    "pin": "board0:PMOD:P3"
+                },
+                "miso": {
+                    "pin": "board0:PMOD:P4"
+                }
+            },
+            "rotate": 0,
+            "ip": "192.168.11.194",
+            "gw": "192.168.11.1"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                610.0,
+                290.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "board0:LED:D7"
+                },
+                "step": {
+                    "pin": "board0:LED:D8"
+                }
+            }
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.62,
+            "pos": [
+                -43,
+                283
+            ]
+        },
+        "board": {
+            "pos": [
+                340.0,
+                200.0
+            ],
+            "rotate": 90
+        }
+    }
+}
+```

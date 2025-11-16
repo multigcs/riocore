@@ -1,0 +1,93 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=1
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# fpga board CYC1000
+loadrt riocomp-board0
+
+# if you need to test rio without hardware, set it to 1
+setp board0.sys-simulation 0
+
+# read
+addf board0.readwrite servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+# write
+
+#################################################################################
+# iocontrol
+#################################################################################
+net sig_board0_sys-status                => iocontrol.0.emc-enable-in
+net tool-change                          <= iocontrol.0.tool-change
+net tool-changed                         => iocontrol.0.tool-changed
+net tool-prep-number                     <= iocontrol.0.tool-prep-number
+net tool-prepared                        <= iocontrol.0.tool-prepare
+net tool-prepared                        => iocontrol.0.tool-prepared
+net user-enable-out                      <= iocontrol.0.user-enable-out
+net user-request-enable                  <= iocontrol.0.user-request-enable
+
+#################################################################################
+# board0
+#################################################################################
+net sig_board0_bitin0_bit                <= board0.bitin0.bit
+
+net sig_pyvcp_board0_bitout0_bit         => board0.bitout0.bit
+net sig_pyvcp_board0_bitout1_bit         => board0.bitout1.bit
+
+net sig_halui_machine_is-on              => board0.machine-on
+
+net sig_pyvcp_board0_pwmout0_dty-f       => board0.pwmout0.dty
+net sig_pyvcp_board0_pwmout0_enable      => board0.pwmout0.enable
+
+net user-enable-out                      => board0.sys-enable
+net user-request-enable                  => board0.sys-enable-request
+net sig_board0_sys-status                <= board0.sys-status
+
+#################################################################################
+# halui
+#################################################################################
+net sig_halui_machine_is-on              <= halui.machine.is-on
+
+net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
+
+#################################################################################
+# joint-0
+#################################################################################
+setp board0.stepdir0.velocity-scale      [JOINT_0]SCALE_OUT
+setp board0.stepdir0.position-scale      [JOINT_0]SCALE_IN
+setp pid.0.Pgain                         [JOINT_0]P
+setp pid.0.Igain                         [JOINT_0]I
+setp pid.0.Dgain                         [JOINT_0]D
+setp pid.0.bias                          [JOINT_0]BIAS
+setp pid.0.FF0                           [JOINT_0]FF0
+setp pid.0.FF1                           [JOINT_0]FF1
+setp pid.0.FF2                           [JOINT_0]FF2
+setp pid.0.deadband                      [JOINT_0]DEADBAND
+setp pid.0.maxoutput                     [JOINT_0]MAXOUTPUT
+net j0vel-cmd                            <= pid.0.output
+net j0pos-cmd                            <= joint.0.motor-pos-cmd
+net j0motor-pos-fb                       <= board0.stepdir0.position
+net j0enable                             <= joint.0.amp-enable-out
+net j0vel-cmd                            => board0.stepdir0.velocity
+net j0pos-cmd                            => pid.0.command
+net j0motor-pos-fb                       => joint.0.motor-pos-fb
+net j0motor-pos-fb                       => pid.0.feedback
+net j0enable                             => pid.0.enable
+net j0enable                             => board0.stepdir0.enable
+
+#################################################################################
+# setp
+#################################################################################
+
+#################################################################################
+# preformated
+#################################################################################

@@ -1,0 +1,300 @@
+
+<html>
+<header>
+<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>
+</header>
+<body>
+<div class="tab">
+  <button class="tablinks" onclick="openSection(event, 'CONFIG')">CONFIG</button>
+  <button class="tablinks" onclick="openSection(event, 'PINS')">PINS</button>
+  <button class="tablinks" onclick="openSection(event, 'SIGNALS')">SIGNALS</button>
+  <button class="tablinks" onclick="openSection(event, 'LINUXCNC')">LINUXCNC</button>
+  <button class="tablinks" onclick="openSection(event, 'JSON')">JSON</button>
+</div>
+<div id="CONFIG" class="tabcontent">
+<github-md>
+# CYC1000
+
+
+* Config-Path: tests/unit/data/full/CYC1000.json
+* Output-Path: tests/unit/output/CYC1000
+
+## Axis/Joints
+| Axis | Joint | Plugin | Home-Seq. |
+| --- | --- | --- | --- |
+| X | 0 | stepdir0 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 0 | 
+
+## Plugins
+| Type | Info | Instance | Image |
+| --- | --- | --- | --- |
+| [fpga](https://github.com/multigcs/riocore/blob/main/riocore/plugins/fpga/README.md) | TEI0003 | board0 | - |
+| [blink](https://github.com/multigcs/riocore/blob/main/riocore/plugins/blink/README.md) | blinking output pin | blink0 | <img src="blink.png" height="48"> |
+| [bitin](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitin/README.md) | single input pin | bitin0 | <img src="bitin.png" height="48"> |
+| [bitout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitout/README.md) | singe bit output pin | bitout0, bitout1 | <img src="bitout.png" height="48"> |
+| [pwmout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/pwmout/README.md) | pwm output | pwmout0 | <img src="pwmout.png" height="48"> |
+| [w5500](https://github.com/multigcs/riocore/blob/main/riocore/plugins/w5500/README.md) | udp interface for host comunication | w55000 | <img src="w5500.png" height="48"> |
+| [stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md) | step/dir output for stepper drivers | stepdir0 | <img src="stepdir.png" height="48"> |
+
+</github-md>
+</div>
+<div id="PINS" class="tabcontent">
+<github-md>
+# Pins
+| Plugin | ID | Name | Board | Alias |
+| --- | --- | --- | --- | --- |
+| blink | blink0 | led | PIN_M6 |  |
+| bitin | bitin0 | bit | PIN_N6 |  |
+| bitout | bitout0 | bit | PIN_T4 |  |
+|  | bitout1 | bit | PIN_T3 |  |
+| pwmout | pwmout0 | pwm | PIN_R3 |  |
+|  |  | dir | PIN_T2 |  |
+|  |  | en | PIN_R4 |  |
+| w5500 | w55000 | mosi | PIN_F16 |  |
+|  |  | miso | PIN_D16 |  |
+|  |  | sclk | PIN_F13 |  |
+|  |  | sel | PIN_F15 |  |
+|  |  | rst | - |  |
+|  |  | intr | - |  |
+| stepdir | stepdir0 | step | PIN_N3 |  |
+|  |  | dir | PIN_N5 |  |
+|  |  | en | - |  |
+
+</github-md>
+</div>
+<div id="SIGNALS" class="tabcontent">
+<github-md>
+# Signals
+| Plugin | ID | Name | Dir | Hal-Pin | Type | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+
+</github-md>
+</div>
+<div id="LINUXCNC" class="tabcontent">
+<github-md>
+# LinuxCNC
+## Hal-Graph
+![halgraph](./halgraph.png)
+</github-md>
+</div>
+<div id="JSON" class="tabcontent">
+<github-md>
+# JSON-Config
+```
+{
+    "name": "CYC1000",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "CYC1000",
+            "toolchain": "quartus",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                340.0,
+                200.0
+            ],
+            "rotate": 90
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "board0:LED:D1"
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                540.0,
+                230.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "board0:SW:S1",
+                    "pull": "up"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                540.0,
+                190.0
+            ],
+            "image": "smdbutton",
+            "rotate": 0
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "board0:LED:D2"
+                }
+            },
+            "uid": "bitout0",
+            "pos": [
+                540.0,
+                250.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "board0:LED:D3"
+                }
+            },
+            "uid": "bitout1",
+            "pos": [
+                540.0,
+                270.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "pwmout",
+            "pins": {
+                "pwm": {
+                    "pin": "board0:LED:D4"
+                },
+                "dir": {
+                    "pin": "board0:LED:D5"
+                },
+                "en": {
+                    "pin": "board0:LED:D6"
+                }
+            },
+            "uid": "pwmout0",
+            "pos": [
+                530.0,
+                290.0
+            ],
+            "image": "led"
+        },
+        {
+            "type": "w5500",
+            "uid": "w55000",
+            "image": "w5500",
+            "pos": [
+                550.0,
+                580.0
+            ],
+            "pins": {
+                "sclk": {
+                    "pin": "board0:PMOD:P1"
+                },
+                "sel": {
+                    "pin": "board0:PMOD:P2"
+                },
+                "mosi": {
+                    "pin": "board0:PMOD:P3"
+                },
+                "miso": {
+                    "pin": "board0:PMOD:P4"
+                }
+            },
+            "rotate": 0,
+            "ip": "192.168.11.194",
+            "gw": "192.168.11.1"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                610.0,
+                290.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "board0:LED:D7"
+                },
+                "step": {
+                    "pin": "board0:LED:D8"
+                }
+            }
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.62,
+            "pos": [
+                -43,
+                283
+            ]
+        },
+        "board": {
+            "pos": [
+                340.0,
+                200.0
+            ],
+            "rotate": 90
+        }
+    }
+}
+```
+
+</github-md>
+</div>
+</body>
+<script>
+function openSection(evt, sectionName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sectionName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+openSection(event, 'CONFIG');
+</script>
+</html>

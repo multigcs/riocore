@@ -1,0 +1,13 @@
+RIO - CYC1000
+
+Configuration: tests/unit/data/full/CYC1000.json
+
+Plugins:
+  fpga (1x)
+  blink (1x)
+  bitin (1x)
+  bitout (2x)
+  pwmout (1x)
+  w5500 (1x)
+  stepdir (1x)
+

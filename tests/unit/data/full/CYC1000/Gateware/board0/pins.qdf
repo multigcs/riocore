@@ -1,0 +1,51 @@
+
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.0-V LVTTL"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+
+### base ###
+set_location_assignment PIN_M2 -to sysclk_in
+set_instance_assignment -name IO_STANDARD "3.0-V LVTTL" -to sysclk_in
+
+### board0 ###
+
+### blink0 ###
+set_location_assignment PIN_M6 -to PINOUT_BLINK0_LED
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_BLINK0_LED
+
+### bitin0 ###
+set_location_assignment PIN_N6 -to PININ_BITIN0_BIT
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PININ_BITIN0_BIT
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PININ_BITIN0_BIT
+
+### bitout0 ###
+set_location_assignment PIN_T4 -to PINOUT_BITOUT0_BIT
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_BITOUT0_BIT
+
+### bitout1 ###
+set_location_assignment PIN_T3 -to PINOUT_BITOUT1_BIT
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_BITOUT1_BIT
+
+### pwmout0 ###
+set_location_assignment PIN_R3 -to PINOUT_PWMOUT0_PWM
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_PWMOUT0_PWM
+set_location_assignment PIN_T2 -to PINOUT_PWMOUT0_DIR
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_PWMOUT0_DIR
+set_location_assignment PIN_R4 -to PINOUT_PWMOUT0_EN
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_PWMOUT0_EN
+
+### w55000 ###
+set_location_assignment PIN_F16 -to PINOUT_W55000_MOSI
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_W55000_MOSI
+set_location_assignment PIN_D16 -to PININ_W55000_MISO
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PININ_W55000_MISO
+set_location_assignment PIN_F13 -to PINOUT_W55000_SCLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_W55000_SCLK
+set_location_assignment PIN_F15 -to PINOUT_W55000_SEL
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_W55000_SEL
+
+### stepdir0 ###
+set_location_assignment PIN_N3 -to PINOUT_STEPDIR0_STEP
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_STEPDIR0_STEP
+set_location_assignment PIN_N5 -to PINOUT_STEPDIR0_DIR
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PINOUT_STEPDIR0_DIR
