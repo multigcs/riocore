@@ -9,7 +9,7 @@ import subprocess
 class Toolchain:
     def __init__(self, config):
         self.config = config
-        self.gateware_path = os.path.join(self.config["output_path"], "Gateware")
+        self.gateware_path = self.config["output_path"]
         self.riocore_path = config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("quartus", "")
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):
@@ -38,7 +38,7 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
 
     def pll(self, clock_in, clock_out):
         if self.config["family"] in {"MAX 10", "Cyclone 10 LP", "Cyclone IV E"}:
-            pll_cmd = f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'"
+            pll_cmd = f"{self.riocore_path}/files/quartus-pll.sh \"{self.config['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'"
             if self.toolchain_path:
                 pll_cmd += f" '{self.toolchain_path}'"
             result = subprocess.check_output(pll_cmd, shell=True)
@@ -158,11 +158,16 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
         makefile_data.append("	rm -rf db incremental_db")
         makefile_data.append("	rm -f smart.log *.rpt *.sof *.chg *.qsf *.qpf *.summary *.smsg *.pin *.jdi")
         makefile_data.append("")
-        makefile_data.append("load: $(PROJECT).svf")
-        makefile_data.append("	# openFPGALoader -v -c usb-blaster -m $(PROJECT).svf -f")
-        makefile_data.append("	openFPGALoader -v -c usb-blaster -m $(PROJECT).rbf -f")
+        flashcmd = self.config.get("flashcmd")
+        if flashcmd:
+            makefile_data.append("load:")
+            makefile_data.append(f"	{flashcmd}")
+        else:
+            makefile_data.append("load:")
+            makefile_data.append("	# openFPGALoader -v -c usb-blaster -m $(PROJECT).svf -f")
+            makefile_data.append("	openFPGALoader -v -c usb-blaster -m $(PROJECT).rbf -f")
         makefile_data.append("")
-        makefile_data.append("sload: $(PROJECT).svf")
+        makefile_data.append("sload:")
         makefile_data.append("	openFPGALoader -v -c usb-blaster -m $(PROJECT).rbf")
         makefile_data.append("")
         makefile_data.append("qpload:")

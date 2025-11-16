@@ -2,6 +2,7 @@
     "name": "CYC1000",
     "description": "TEI0003",
     "url": "https://wiki.trenz-electronic.de/display/PD/TEI0003+Getting+Started",
+    "flashcmd": "openFPGALoader -v -b cyc1000 -m rio.rbf -f",
     "toolchain": "quartus",
     "family": "Cyclone 10 LP",
     "type": "10CL025YU256C8G",

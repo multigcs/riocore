@@ -1,18 +1,30 @@
 {
     "name": "CYC1000",
-    "boardcfg": "CYC1000",
     "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "CYC1000",
+            "toolchain": "quartus",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                340.0,
+                200.0
+            ],
+            "rotate": 90
+        },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:D1"
+                    "pin": "board0:LED:D1"
                 }
             },
             "uid": "blink0",
             "pos": [
                 540.0,
-                250.0
+                230.0
             ],
             "image": "smdled"
         },
@@ -20,14 +32,14 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SW:S1",
+                    "pin": "board0:SW:S1",
                     "pull": "up"
                 }
             },
             "uid": "bitin0",
             "pos": [
                 540.0,
-                210.0
+                190.0
             ],
             "image": "smdbutton",
             "rotate": 0
@@ -36,13 +48,13 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LED:D2"
+                    "pin": "board0:LED:D2"
                 }
             },
             "uid": "bitout0",
             "pos": [
                 540.0,
-                270.0
+                250.0
             ],
             "image": "smdled"
         },
@@ -50,13 +62,13 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LED:D3"
+                    "pin": "board0:LED:D3"
                 }
             },
             "uid": "bitout1",
             "pos": [
                 540.0,
-                290.0
+                270.0
             ],
             "image": "smdled"
         },
@@ -64,80 +76,73 @@
             "type": "pwmout",
             "pins": {
                 "pwm": {
-                    "pin": "LED:D4"
+                    "pin": "board0:LED:D4"
                 },
                 "dir": {
-                    "pin": "LED:D5"
+                    "pin": "board0:LED:D5"
                 },
                 "en": {
-                    "pin": "LED:D6"
+                    "pin": "board0:LED:D6"
                 }
             },
             "uid": "pwmout0",
             "pos": [
-                540.0,
-                360.0
-            ]
-        },
-        {
-            "type": "freqout",
-            "pins": {
-                "freq": {
-                    "pin": "LED:D7"
-                }
-            },
-            "uid": "freqout0",
-            "pos": [
-                540.0,
-                310.0
+                530.0,
+                290.0
             ],
-            "image": "smdled"
-        },
-        {
-            "type": "freqout",
-            "pins": {
-                "freq": {
-                    "pin": "LED:D8"
-                }
-            },
-            "uid": "freqout1",
-            "pos": [
-                540.0,
-                330.0
-            ],
-            "image": "smdled"
+            "image": "led"
         },
         {
             "type": "w5500",
             "uid": "w55000",
-            "image": "w5500mini",
+            "image": "w5500",
             "pos": [
-                380.0,
-                630.0
+                550.0,
+                580.0
             ],
             "pins": {
-                "mosi": {
-                    "pin": "PMOD:P7"
-                },
-                "miso": {
-                    "pin": "PMOD:P8"
-                },
                 "sclk": {
-                    "pin": "PMOD:P9"
+                    "pin": "board0:PMOD:P1"
                 },
                 "sel": {
-                    "pin": "PMOD:P10"
+                    "pin": "board0:PMOD:P2"
+                },
+                "mosi": {
+                    "pin": "board0:PMOD:P3"
+                },
+                "miso": {
+                    "pin": "board0:PMOD:P4"
                 }
             },
-            "rotate": 0
+            "rotate": 0,
+            "ip": "192.168.11.194",
+            "gw": "192.168.11.1"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                610.0,
+                290.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "board0:LED:D7"
+                },
+                "step": {
+                    "pin": "board0:LED:D8"
+                }
+            }
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.78,
+            "scale": 1.62,
             "pos": [
-                78,
-                34
+                -43,
+                283
             ]
         },
         "board": {
