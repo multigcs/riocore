@@ -571,6 +571,13 @@ class Project:
                             target_pin = plugin_instance.plugin_setup.get("pins", {}).get(gpio_data["source"], {}).get("pin")
                             self.pin_mapping[source] = self.pin_mapping.get(target_pin, target_pin)
 
+        for plugin_instance in self.plugin_instances:
+            for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
+                target = gpio_data.get("pin")
+                if target:
+                    source = f"{plugin_instance.instances_name}:{gpio_pin}"
+                    self.pin_mapping[source] = target
+
         for n in range(5):
             # cleaning slot-pins (breakout-pins)
             for plugin_instance in self.plugin_instances:
@@ -582,10 +589,11 @@ class Project:
                         del plugin_instance.PINDEFAULTS[pin_name]
 
         # update plugin pins
-        for plugin in self.config["plugins"]:
-            for pin_name, pin_data in plugin.get("pins", {}).items():
-                if "pin" in pin_data and pin_data["pin"] in self.pin_mapping:
-                    pin_data["pin"] = self.pin_mapping[pin_data["pin"]]
+        for n in range(5):
+            for plugin in self.config["plugins"]:
+                for pin_name, pin_data in plugin.get("pins", {}).items():
+                    if "pin" in pin_data and pin_data["pin"] in self.pin_mapping:
+                        pin_data["pin"] = self.pin_mapping[pin_data["pin"]]
 
         self.generator_linuxcnc = LinuxCNC(self)
 

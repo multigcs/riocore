@@ -3,10 +3,10 @@
     "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 0.44,
+            "scale": 2.45,
             "pos": [
-                -71,
-                -134
+                -23,
+                -205
             ]
         },
         "board": {

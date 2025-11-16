@@ -114,7 +114,7 @@ class Plugin(PluginBase):
                     "optional": True,
                     "pintype": "FPGA",
                     "type": ["FPGA"],
-                    "pin": pin_data["pin"],
+                    "pin": f"{self.instances_name}:{pin_data['pin']}",
                     "pos": pin_data.get("pos", (0, 0)),
                     "visible": pin_data.get("visible", True),
                     "direction": pin_data.get("direction", "all"),
@@ -151,8 +151,7 @@ class Plugin(PluginBase):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
             psetup = connected_pin["setup"]
             pin = connected_pin["pin"]
-            if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin]:
-                psetup["pin"] = self.PINDEFAULTS[pin]["pin"]
+            psetup["pin"] = pin
 
     def hal(self, parent):
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")

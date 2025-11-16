@@ -1,7 +1,6 @@
 # Parport
 
 
-* Board: [](https://github.com/multigcs/riocore/blob/main/riocore/boards//README.md)
 * Config-Path: tests/unit/data/full/Parport.json
 * Output-Path: tests/unit/output/Parport
 

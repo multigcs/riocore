@@ -2,10 +2,6 @@ RIO - Parport
 
 Configuration: tests/unit/data/full/Parport.json
 
-FPGA:
-  Family: UNKNOWN
-  Type: UNKNOWN
-
 Plugins:
   breakout (1x)
   pwmgen (1x)
