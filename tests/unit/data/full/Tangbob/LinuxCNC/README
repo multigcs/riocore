@@ -1,0 +1,22 @@
+RIO - Tangbob
+
+Description: Tangbob with one 5x china BOB
+Protocol: UDP
+Configuration: tests/unit/data/full/Tangbob.json
+
+UDP-Configuration:
+  Target-IP: 192.168.11.191
+  Target-Port: 2390
+
+Plugins:
+  breakout (1x)
+  modbus (1x)
+  blink (1x)
+  i2cbus (1x)
+  stepdir (3x)
+  bitin (3x)
+  fpga (1x)
+  bitout (1x)
+  w5500 (1x)
+  wled (1x)
+

@@ -1,0 +1,574 @@
+
+<html>
+<header>
+<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>
+</header>
+<body>
+<div class="tab">
+  <button class="tablinks" onclick="openSection(event, 'CONFIG')">CONFIG</button>
+  <button class="tablinks" onclick="openSection(event, 'PINS')">PINS</button>
+  <button class="tablinks" onclick="openSection(event, 'SIGNALS')">SIGNALS</button>
+  <button class="tablinks" onclick="openSection(event, 'LINUXCNC')">LINUXCNC</button>
+  <button class="tablinks" onclick="openSection(event, 'JSON')">JSON</button>
+</div>
+<div id="CONFIG" class="tabcontent">
+<github-md>
+# Tangbob
+Tangbob with one 5x china BOB
+
+* Config-Path: tests/unit/data/full/Tangbob.json
+* Output-Path: tests/unit/output/Tangbob
+
+## Axis/Joints
+| Axis | Joint | Plugin | Home-Seq. |
+| --- | --- | --- | --- |
+| X | 0 | stepdir0 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 2 | 
+| Y | 1 | stepdir1 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 2 | 
+| Z | 2 | stepdir2 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 1 | 
+
+## Plugins
+| Type | Info | Instance | Image |
+| --- | --- | --- | --- |
+| [breakout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/breakout/README.md) | 5Axis China-BOB | china-bob5x0 | <img src="breakout.png" height="48"> |
+| [modbus](https://github.com/multigcs/riocore/blob/main/riocore/plugins/modbus/README.md) | generic modbus plugin | modbus0 | <img src="modbus.png" height="48"> |
+| [blink](https://github.com/multigcs/riocore/blob/main/riocore/plugins/blink/README.md) | blinking output pin | blink0 | <img src="blink.png" height="48"> |
+| [i2cbus](https://github.com/multigcs/riocore/blob/main/riocore/plugins/i2cbus/README.md) | I2C-Bus | i2cbus0 | <img src="i2cbus.png" height="48"> |
+| [stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md) | step/dir output for stepper drivers | stepdir0, stepdir1, stepdir2 | <img src="stepdir.png" height="48"> |
+| [bitin](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitin/README.md) | single input pin | bitin0, bitin1, bitin2 | <img src="bitin.png" height="48"> |
+| [fpga](https://github.com/multigcs/riocore/blob/main/riocore/plugins/fpga/README.md) | TangNano9K - cheap GW1NR-9 Devboard | fpga0 | - |
+| [w5500](https://github.com/multigcs/riocore/blob/main/riocore/plugins/w5500/README.md) | udp interface for host comunication | w5500 | <img src="w5500.png" height="48"> |
+| [wled](https://github.com/multigcs/riocore/blob/main/riocore/plugins/wled/README.md) | ws2812b interface | wled | <img src="wled.png" height="48"> |
+| [bitout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitout/README.md) | singe bit output pin | bitout0 | <img src="bitout.png" height="48"> |
+
+</github-md>
+</div>
+<div id="PINS" class="tabcontent">
+<github-md>
+# Pins
+| Plugin | ID | Name | Board | Alias |
+| --- | --- | --- | --- | --- |
+| modbus | modbus0 | tx | 57 |  |
+|  |  | rx | 69 |  |
+|  |  | tx_enable | 68 |  |
+| blink | blink0 | led | 16 |  |
+| i2cbus | i2cbus0 | sda | 56 |  |
+|  |  | scl | 55 |  |
+| stepdir | stepdir0 | step | 41 |  |
+|  |  | dir | 40 |  |
+|  |  | en | 42 |  |
+|  | stepdir1 | step | 33 |  |
+|  |  | dir | 29 |  |
+|  |  | en | - |  |
+|  | stepdir2 | step | 28 |  |
+|  |  | dir | 27 |  |
+|  |  | en | - |  |
+| bitin | bitin0 | bit | 39 |  |
+|  | bitin1 | bit | 36 |  |
+|  | bitin2 | bit | 37 |  |
+| w5500 | w5500 | mosi | 32 |  |
+|  |  | miso | 48 |  |
+|  |  | sclk | 31 |  |
+|  |  | sel | 49 |  |
+|  |  | rst | - |  |
+|  |  | intr | - |  |
+| wled | wled | data | 54 |  |
+| bitout | bitout0 | bit | 30 |  |
+
+</github-md>
+</div>
+<div id="SIGNALS" class="tabcontent">
+<github-md>
+# Signals
+| Plugin | ID | Name | Dir | Hal-Pin | Type | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| bitin | bitin0 | fpga0.bitin0.bit | -> | joint.0.home-sw-in | net |  |
+|  | bitin1 | fpga0.bitin1.bit | -> | joint.1.home-sw-in | net |  |
+|  | bitin2 | fpga0.bitin2.bit | -> | joint.2.home-sw-in | net |  |
+| wled | wled | fpga0.wled.0_green | <- | (!halui.mode.is-auto and !axisui.error) or halui.program.is-paused | net |  |
+|  |  | fpga0.wled.0_blue | <- | halui.mode.is-auto | net |  |
+|  |  | fpga0.wled.0_red | <- | axisui.error | net |  |
+| bitout | bitout0 | fpga0.bitout0.bit | <- | spindle.0.on | net |  |
+
+</github-md>
+</div>
+<div id="LINUXCNC" class="tabcontent">
+<github-md>
+# LinuxCNC
+## Hal-Graph
+![halgraph](./halgraph.png)
+</github-md>
+</div>
+<div id="JSON" class="tabcontent">
+<github-md>
+# JSON-Config
+```
+{
+    "name": "Tangbob",
+    "boardcfg": "",
+    "description": "Tangbob with one 5x china BOB",
+    "_async": true,
+    "protocol": "UDP",
+    "plugins": [
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                570.0,
+                210.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "fpga0:LEFT:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "fpga0:LEFT:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "fpga0:LEFT:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "fpga0:LEFT:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "fpga0:LEFT:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "fpga0:LEFT:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "fpga0:LEFT:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "fpga0:LEFT:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "fpga0:LEFT:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "fpga0:LEFT:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "fpga0:LEFT:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "fpga0:LEFT:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "fpga0:LEFT:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "fpga0:LEFT:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "fpga0:LEFT:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "fpga0:LEFT:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "fpga0:LEFT:P17"
+                }
+            }
+        },
+        {
+            "type": "modbus",
+            "pins": {
+                "tx": {
+                    "pin": "fpga0:MODBUS:TX"
+                },
+                "rx": {
+                    "pin": "fpga0:MODBUS:RX"
+                },
+                "tx_enable": {
+                    "pin": "fpga0:MODBUS:TX_ENABLE"
+                }
+            },
+            "uid": "modbus0",
+            "pos": [
+                180.0,
+                630.0
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "fpga0:LED:L6"
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                340.0,
+                190.0
+            ],
+            "image": "led",
+            "rotate": 0
+        },
+        {
+            "type": "i2cbus",
+            "pins": {
+                "sda": {
+                    "pin": "fpga0:I2C:sda"
+                },
+                "scl": {
+                    "pin": "fpga0:I2C:scl"
+                }
+            },
+            "uid": "i2cbus0",
+            "config": {
+                "devices": {
+                    "lm75_0": {
+                        "type": "lm75",
+                        "address": "0x48",
+                        "subbus": "none"
+                    }
+                }
+            },
+            "pos": [
+                80.0,
+                730.0
+            ],
+            "sub_pos": {
+                "dev-lm75_0(0x48)": [
+                    330.0,
+                    730.0
+                ]
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "image": "stepper",
+            "pos": [
+                980.0,
+                540.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:X:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:X:dir"
+                },
+                "en": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 230.0,
+                "home_search_vel": -10.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 20.0
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "image": "stepper",
+            "pos": [
+                980.0,
+                280.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Y:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Y:dir"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": 800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 160.0,
+                "home_search_vel": -10.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 20.0
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "image": "stepper",
+            "pos": [
+                980.0,
+                20.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -1600.0,
+                "max_velocity": 15.0,
+                "min_limit": -32.0,
+                "max_limit": 0.0,
+                "home_search_vel": 10.0,
+                "home_latch_vel": 1.0,
+                "home_final_vel": 10.0
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "proximity",
+            "pos": [
+                730.0,
+                830.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                610.0,
+                                810.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "home-x"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
+            "pos": [
+                730.0,
+                760.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                610.0,
+                                780.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            },
+            "name": "home-y"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "proximity",
+            "pos": [
+                730.0,
+                690.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                610.0,
+                                750.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            },
+            "name": "home-z"
+        },
+        {
+            "type": "fpga",
+            "node_type": "Tangbob",
+            "uid": "fpga0",
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "simulation": false,
+            "protocol": "UDP",
+            "sub": {
+                "w5500": {
+                    "ip": "192.168.11.191"
+                },
+                "wled": {
+                    "signals": {
+                        "0_green": {
+                            "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused",
+                            "setp": ""
+                        },
+                        "0_red": {
+                            "net": "axisui.error",
+                            "setp": ""
+                        },
+                        "0_blue": {
+                            "net": "halui.mode.is-auto",
+                            "setp": ""
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "image": "relay",
+            "pos": [
+                700.0,
+                20.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:RELAIS:out"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.65,
+            "pos": [
+                -10,
+                109
+            ]
+        },
+        "hal": {
+            "misc": [
+                825.3287543995666,
+                397.0547228632355
+            ],
+            "spindle.0": [
+                833.8458862272005,
+                191.1069909269338
+            ],
+            "joint.3": [
+                833.8408785714018,
+                103.12258752610734
+            ],
+            "joint.2": [
+                829.9458670383008,
+                7.735890104503483
+            ],
+            "joint.1": [
+                832.5425413937016,
+                -87.65080731710029
+            ],
+            "joint.0": [
+                839.034227282204,
+                -186.93251627180555
+            ]
+        },
+        "board": {
+            "pos": [
+                -170.0,
+                -240.0
+            ],
+            "rotate": 0
+        }
+    },
+    "linuxcnc": {
+        "ini": {
+            "EMCMOT": {
+                "SERVO_PERIOD": 500000
+            }
+        }
+    }
+}
+```
+
+</github-md>
+</div>
+</body>
+<script>
+function openSection(evt, sectionName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sectionName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+openSection(event, 'CONFIG');
+</script>
+</html>

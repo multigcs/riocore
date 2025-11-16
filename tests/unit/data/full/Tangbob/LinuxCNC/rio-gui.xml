@@ -1,0 +1,245 @@
+<pyvcp>
+  <tabs>
+    <names>['Status', 'Inputs', 'Outputs']</names>
+    <vbox>
+      <labelframe text="MDI-Commands">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <vbox>
+          <labelframe text="Zero">
+            <relief>GROOVE</relief>
+            <font>("Helvetica", 10)</font>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-00"</halpin>
+                <text>"X"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-01"</halpin>
+                <text>"Y"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-02"</halpin>
+                <text>"Z"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+            </hbox>
+          </labelframe>
+        </vbox>
+      </labelframe>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"modbus0-temperature"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.modbus0.temperature"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"i2cbus0-lm75_0_temp"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.i2cbus0.lm75_0_temp"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"i2cbus0-lm75_0_valid"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.i2cbus0.lm75_0_valid"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"home-x-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.bitin0.bit"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"home-y-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.bitin1.bit"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"home-z-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.bitin2.bit"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"wled-0_green"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.wled.0_green"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"wled-0_blue"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.wled.0_blue"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"wled-0_red"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.wled.0_red"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"bitout0-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.bitout0.bit"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+    </vbox>
+  </tabs>
+</pyvcp>
