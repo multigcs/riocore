@@ -1,0 +1,122 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=3
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# stepgen-ninja
+loadrt stepgen-ninja ip_address="192.168.0.177:8888"
+
+# read
+addf stepgen-ninja.0.watchdog-process servo-thread
+addf stepgen-ninja.0.process-send servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+# write
+addf stepgen-ninja.0.process-recv servo-thread
+
+loadrt conv_s32_u32 names=func.conv_s32_u32-1
+addf func.conv_s32_u32-1 servo-thread
+
+#################################################################################
+# iocontrol
+#################################################################################
+net user-enable-out                      => iocontrol.0.emc-enable-in
+net tool-change                          <= iocontrol.0.tool-change
+net tool-changed                         => iocontrol.0.tool-changed
+net tool-prep-number                     <= iocontrol.0.tool-prep-number
+net tool-prepared                        <= iocontrol.0.tool-prepare
+net tool-prepared                        => iocontrol.0.tool-prepared
+net user-enable-out                      <= iocontrol.0.user-enable-out
+
+#################################################################################
+# stepgen-ninja
+#################################################################################
+net sig_stepgen-ninja_0_input_gp10-not   <= stepgen-ninja.0.input.gp10-not
+net sig_stepgen-ninja_0_input_gp8-not    <= stepgen-ninja.0.input.gp8-not
+net sig_stepgen-ninja_0_input_gp9-not    <= stepgen-ninja.0.input.gp9-not
+
+net sig_pyvcp_stepgen-ninja_0_output_gp25 => stepgen-ninja.0.output.gp25
+net sig_spindle_0_on                     => stepgen-ninja.0.output.gp26
+net sig_pyvcp_stepgen-ninja_0_output_gp29 => stepgen-ninja.0.output.gp29
+
+net func_conv_s32_u32-1_out              => stepgen-ninja.0.pwm.0.duty
+net sig_pyvcp_stepgen-ninja_0_pwm_0_enable => stepgen-ninja.0.pwm.0.enable
+
+#################################################################################
+# spindle
+#################################################################################
+net sig_spindle_0_on                     <= spindle.0.on
+
+#################################################################################
+# func
+#################################################################################
+net sig_pyvcp_stepgen-ninja_0_pwm_0_duty-i => func.conv_s32_u32-1.in
+net func_conv_s32_u32-1_out              <= func.conv_s32_u32-1.out
+
+#################################################################################
+# joint
+#################################################################################
+net sig_stepgen-ninja_0_input_gp8-not    => joint.0.home-sw-in
+net sig_stepgen-ninja_0_input_gp9-not    => joint.1.home-sw-in
+net sig_stepgen-ninja_0_input_gp10-not   => joint.2.home-sw-in
+
+#################################################################################
+# halui
+#################################################################################
+net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02
+
+#################################################################################
+# joint-0
+#################################################################################
+setp stepgen-ninja.0.stepgen.0.step-scale [JOINT_0]SCALE_OUT
+net j0pos-cmd                            <= joint.0.motor-pos-cmd
+net j0enable                             <= joint.0.amp-enable-out
+net j0pos-cmd                            => stepgen-ninja.0.stepgen.0.command
+net j0pos-cmd                            => joint.0.motor-pos-fb
+net j0enable                             => stepgen-ninja.0.stepgen.0.enable
+
+#################################################################################
+# joint-1
+#################################################################################
+setp stepgen-ninja.0.stepgen.1.step-scale [JOINT_1]SCALE_OUT
+net j1pos-cmd                            <= joint.1.motor-pos-cmd
+net j1enable                             <= joint.1.amp-enable-out
+net j1pos-cmd                            => stepgen-ninja.0.stepgen.1.command
+net j1pos-cmd                            => joint.1.motor-pos-fb
+net j1enable                             => stepgen-ninja.0.stepgen.1.enable
+
+#################################################################################
+# joint-2
+#################################################################################
+setp stepgen-ninja.0.stepgen.2.step-scale [JOINT_2]SCALE_OUT
+net j2pos-cmd                            <= joint.2.motor-pos-cmd
+net j2enable                             <= joint.2.amp-enable-out
+net j2pos-cmd                            => stepgen-ninja.0.stepgen.2.command
+net j2pos-cmd                            => joint.2.motor-pos-fb
+net j2enable                             => stepgen-ninja.0.stepgen.2.enable
+
+#################################################################################
+# setp
+#################################################################################
+setp stepgen-ninja.0.pwm.0.frequency        10000
+setp stepgen-ninja.0.pwm.0.max-scale        100
+setp stepgen-ninja.0.pwm.0.min-limit        0
+setp stepgen-ninja.0.stepgen.0.mode         False
+setp stepgen-ninja.0.stepgen.1.mode         False
+setp stepgen-ninja.0.stepgen.2.mode         False
+
+#################################################################################
+# preformated
+#################################################################################

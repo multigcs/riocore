@@ -1,0 +1,22 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_stepgen-ninja_0_pwm_0_duty-i <= pyvcp.stepgen-ninja.0.pwm.0.duty-i
+net sig_pyvcp_stepgen-ninja_0_pwm_0_enable <= pyvcp.stepgen-ninja.0.pwm.0.enable
+net sig_pyvcp_stepgen-ninja_0_output_gp25 <= pyvcp.stepgen-ninja.0.output.gp25
+net sig_pyvcp_stepgen-ninja_0_output_gp29 <= pyvcp.stepgen-ninja.0.output.gp29
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net sig_stepgen-ninja_0_input_gp8-not    => pyvcp.stepgen-ninja.0.input.gp8-not
+net sig_stepgen-ninja_0_input_gp9-not    => pyvcp.stepgen-ninja.0.input.gp9-not
+net sig_stepgen-ninja_0_input_gp10-not   => pyvcp.stepgen-ninja.0.input.gp10-not
+net sig_spindle_0_on                     => pyvcp.stepgen-ninja.0.output.gp26
+
+#################################################################################
+# setp
+#################################################################################
+

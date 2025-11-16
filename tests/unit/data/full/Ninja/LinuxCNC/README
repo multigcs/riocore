@@ -1,0 +1,10 @@
+RIO - Ninja
+
+Configuration: tests/unit/data/full/Ninja.json
+
+Plugins:
+  breakout (1x)
+  ninja (5x)
+  gpioin (3x)
+  gpioout (3x)
+
