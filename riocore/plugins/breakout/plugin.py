@@ -58,19 +58,24 @@ class Plugin(PluginBase):
         self.IMAGE = f"{node_type}.png"
         self.IMAGE_SHOW = True
         self.INFO = jdata.get("comment", "")
-        for pin, data in jdata["main"].items():
+        for pin, data in jdata.get("main", {}).items():
             self.PINDEFAULTS[f"SLOT:{pin}"] = {"direction": "all", "edge": "target", "optional": True, "pintype": "BREAKOUT", "type": ["BREAKOUT"], "pos": data["pos"]}
+
         for slot in jdata["slots"]:
             slot_name = slot["name"]
             for pin, data in slot["pins"].items():
-                source = data["pin"]
-                direction = data.get("direction", "all")
-                self.PINDEFAULTS[f"{slot_name}:{pin}"] = {
-                    "source": f"SLOT:{source}",
-                    "direction": direction,
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": True,
-                    "pos": data["pos"],
-                }
+                if "edge" in data:
+                    # new style
+                    self.PINDEFAULTS[f"{slot_name}:{pin}"] = data
+                else:
+                    source = data["pin"]
+                    direction = data.get("direction", "all")
+                    self.PINDEFAULTS[f"{slot_name}:{pin}"] = {
+                        "source": f"SLOT:{source}",
+                        "direction": direction,
+                        "edge": "source",
+                        "pintype": "PASSTHROUGH",
+                        "type": ["PASSTHROUGH"],
+                        "optional": True,
+                        "pos": data["pos"],
+                    }

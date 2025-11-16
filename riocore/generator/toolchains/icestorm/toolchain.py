@@ -137,24 +137,28 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append("all: build")
         makefile_data.append(f"build: {bitfileName}")
         makefile_data.append("")
+        # yosys_logging = "-q -l yosys.log"
+        # nextpnr_logging = "-q -l nextpnr.log"
+        yosys_logging = "-l yosys.log"
+        nextpnr_logging = "-l nextpnr.log"
         if self.config["type"] == "up5k":
             makefile_data.append("$(PROJECT).json: $(VERILOGS)")
-            makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -dsp -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
+            makefile_data.append(f"	yosys {yosys_logging} -p 'synth_$(FAMILY) -dsp -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         elif self.config["type"] == "gatemate":
             makefile_data.append("net/$(PROJECT).v: $(VERILOGS)")
             makefile_data.append("	mkdir -p net/")
-            makefile_data.append("	yosys -q -l yosys.log -p 'read_verilog $(VERILOGS) ; synth_$(FAMILY) -top $(TOP) -nomx8 -json $(PROJECT).json -vlog net/$(PROJECT).v'")
+            makefile_data.append(f"	yosys {yosys_logging} -p 'read_verilog $(VERILOGS) ; synth_$(FAMILY) -top $(TOP) -nomx8 -json $(PROJECT).json -vlog net/$(PROJECT).v'")
         elif family in {"gowin", "himbaechel"}:
             makefile_data.append("$(PROJECT).json: $(VERILOGS)")
-            makefile_data.append("	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
+            makefile_data.append(f"	yosys {yosys_logging} -p 'synth_gowin -noalu -nowidelut -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         else:
             makefile_data.append("$(PROJECT).json: $(VERILOGS)")
-            makefile_data.append("	yosys -q -l yosys.log -p 'synth_$(FAMILY) -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
+            makefile_data.append(f"	yosys {yosys_logging} -p 'synth_$(FAMILY) -top $(TOP) -json $(PROJECT).json' $(VERILOGS)")
         makefile_data.append("")
         if family == "ecp5":
             makefile_data.append("$(PROJECT).config: $(PROJECT).json pins.lpf")
             makefile_data.append(
-                "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
+                f"	nextpnr-$(FAMILY) {nextpnr_logging} --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
             )
             makefile_data.append('	@echo ""')
             makefile_data.append(f"	@{cmd_loggrep}")
@@ -183,11 +187,11 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
             if family == "himbaechel":
                 makefile_data.append(
-                    "	nextpnr-himbaechel -q -l nextpnr.log --timing-allow-fail --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${DEVICE_FAMILY}"
+                    f"	nextpnr-himbaechel {nextpnr_logging} --timing-allow-fail --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${{DEVICE_FAMILY}}"
                 )
             else:
                 makefile_data.append(
-                    "	nextpnr-gowin -q -l nextpnr.log --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
+                    f"	nextpnr-gowin {nextpnr_logging} --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
                 )
             makefile_data.append('	@echo ""')
             makefile_data.append(f"	@{cmd_loggrep}")
@@ -203,7 +207,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
             makefile_data.append(
-                "	nextpnr-$(FAMILY) -q -l nextpnr.log --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
+                f"	nextpnr-$(FAMILY) {nextpnr_logging} --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
             )
             makefile_data.append('	@echo ""')
             makefile_data.append(f"	@{cmd_loggrep}")
@@ -227,26 +231,26 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append("")
         flashcmd = self.config.get("flashcmd")
         if flashcmd:
-            makefile_data.append(f"load: {bitfileName}")
+            makefile_data.append("load:")
             makefile_data.append(f"	{flashcmd}")
         else:
             if board and board.startswith("TangNano"):
-                makefile_data.append("load: $(PROJECT).fs")
+                makefile_data.append("load:")
                 makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs -f")
             elif board and board == "Tangoboard":
-                makefile_data.append("load: $(PROJECT).fs")
+                makefile_data.append("load:")
                 makefile_data.append("	openFPGALoader -b tangnano9k $(PROJECT).fs -f")
             else:
-                makefile_data.append(f"load: {bitfileName}")
+                makefile_data.append("load:")
                 makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
             makefile_data.append(f"	{cmd_cp} hash_new.txt hash_flashed.txt")
             makefile_data.append("")
 
             if board and board.startswith("TangNano"):
-                makefile_data.append("sload: $(PROJECT).fs")
+                makefile_data.append("sload:")
                 makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs")
             elif board and board == "Tangoboard":
-                makefile_data.append("sload: $(PROJECT).fs")
+                makefile_data.append("sload:")
                 makefile_data.append("	openFPGALoader -b tangnano9k $(PROJECT).fs")
             makefile_data.append(f"	{cmd_cp} hash_new.txt hash_flashed.txt")
 

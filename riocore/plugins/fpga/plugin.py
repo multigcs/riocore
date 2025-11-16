@@ -645,8 +645,9 @@ class gateware:
         output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
         output.append("")
 
-        osc_clock = self.jdata["osc_clock"]
-        speed = self.jdata["speed"]
+        osc_clock = self.jdata["clock"].get("osc")
+        speed = self.jdata["clock"].get("speed")
+
         if osc_clock and float(osc_clock) != float(speed):
             if self.parent.generate_pll:
                 if hasattr(self.jdata["toolchain_generator"], "pll"):

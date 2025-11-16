@@ -1,326 +1,413 @@
 {
     "comment": "icebreaker 3axis pmod",
-    "main": {
-        "P1": {
-            "pos": [
-                21,
-                375
-            ]
-        },
-        "P2": {
-            "pos": [
-                21,
-                394
-            ]
-        },
-        "P3": {
-            "pos": [
-                21,
-                413
-            ]
-        },
-        "P4": {
-            "pos": [
-                21,
-                432
-            ]
-        },
-        "P5": {
-            "pos": [
-                21,
-                451
-            ]
-        },
-        "P6": {
-            "pos": [
-                21,
-                470
-            ]
-        },
-        "P7": {
-            "pos": [
-                21,
-                489
-            ]
-        },
-        "P8": {
-            "pos": [
-                21,
-                508
-            ]
-        },
-        "P9": {
-            "pos": [
-                21,
-                527
-            ]
-        },
-        "P10": {
-            "pos": [
-                21,
-                546
-            ]
-        },
-        "P11": {
-            "pos": [
-                21,
-                565
-            ]
-        },
-        "P12": {
-            "pos": [
-                21,
-                584
-            ]
-        },
-        "P13": {
-            "pos": [
-                21,
-                603
-            ]
-        },
-        "P14": {
-            "pos": [
-                40,
-                375
-            ]
-        },
-        "P15": {
-            "pos": [
-                40,
-                394
-            ]
-        },
-        "P16": {
-            "pos": [
-                40,
-                413
-            ]
-        },
-        "P17": {
-            "pos": [
-                40,
-                432
-            ]
-        }
-    },
     "slots": [
         {
-            "name": "OPTO",
+            "name": "PMODB",
             "comment": "",
             "default": "",
             "pins": {
-                "in0": {
-                    "pin": "P10",
+                "P4": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
                     "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
+                        710.5,
+                        134.5
+                    ]
                 },
-                "in1": {
-                    "pin": "P11",
+                "P3": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
                     "pos": [
-                        257,
-                        771
-                    ],
-                    "direction": "input"
+                        710.5,
+                        157.0
+                    ]
                 },
-                "in2": {
-                    "pin": "P12",
+                "P2": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
                     "pos": [
-                        302,
-                        771
-                    ],
-                    "direction": "input"
+                        710.5,
+                        179.5
+                    ]
                 },
-                "in3": {
-                    "pin": "P13",
+                "P1": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
                     "pos": [
-                        347,
-                        771
-                    ],
-                    "direction": "input"
+                        710.5,
+                        202.0
+                    ]
                 },
-                "in4": {
-                    "pin": "P15",
+                "P10": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
                     "pos": [
-                        392,
-                        771
-                    ],
-                    "direction": "input"
+                        734.0,
+                        134.5
+                    ]
+                },
+                "P9": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        734.0,
+                        157.0
+                    ]
+                },
+                "P8": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        734.0,
+                        179.5
+                    ]
+                },
+                "P7": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        734.0,
+                        202.0
+                    ]
                 }
             }
         },
+
         {
-            "name": "RELAIS",
+            "name": "PMODA",
             "comment": "",
-            "default": "bitout",
+            "default": "",
             "pins": {
-                "out": {
-                    "pin": "P17",
-                    "comment": "shared with B dir",
+                "P4": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
                     "pos": [
-                        190,
-                        28
-                    ],
-                    "direction": "output"
+                        710.5,
+                        360.5
+                    ]
+                },
+                "P3": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        710.5,
+                        383.0
+                    ]
+                },
+                "P2": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        710.5,
+                        405.5
+                    ]
+                },
+                "P1": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        710.5,
+                        428.0
+                    ]
+                },
+                "P10": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        734.0,
+                        360.5
+                    ]
+                },
+                "P9": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        734.0,
+                        383.0
+                    ]
+                },
+                "P8": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        734.0,
+                        405.5
+                    ]
+                },
+                "P7": {
+                    "direction": "all",
+                    "edge": "target",
+                    "optional": true,
+                    "pintype": "BREAKOUT",
+                    "type": ["BREAKOUT"],
+                    "pos": [
+                        734.0,
+                        428.0
+                    ]
                 }
             }
         },
         {
-            "name": "PWM",
+            "name": "INPUT",
             "comment": "",
-            "default": "pwmout",
+            "default": "",
             "pins": {
-                "analog": {
-                    "pin": "P1",
+                "IN0": {
+                    "source": "PMODB:P4",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
                     "pos": [
-                        327,
-                        28
+                        95,
+                        75
+                    ],
+                    "direction": "input"
+                },
+                "IN1": {
+                    "source": "PMODB:P2",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        160,
+                        75
+                    ],
+                    "direction": "input"
+                },
+                "IN2": {
+                    "source": "PMODB:P3",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        230,
+                        75
+                    ],
+                    "direction": "input"
+                },
+                "IN3": {
+                    "source": "PMODB:P10",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        300,
+                        75
+                    ],
+                    "direction": "input"
+                },
+                "IN4": {
+                    "source": "PMODB:P9",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        370,
+                        75
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+
+
+        {
+            "name": "OUTPUT",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "OUT0": {
+                    "source": "PMODB:P7",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        300,
+                        190
                     ],
                     "direction": "output"
                 },
-                "digital": {
-                    "pin": "P1",
+                "OUT1": {
+                    "source": "PMODB:P1",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
                     "pos": [
-                        592,
-                        223
+                        370,
+                        190
                     ],
                     "direction": "output"
                 }
             }
         },
+
         {
-            "name": "B",
+            "name": "J0",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "dir": {
-                    "pin": "P17",
+                "step": {
+                    "source": "PMODA:P4",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
                     "pos": [
-                        592,
-                        268
+                        207,
+                        338
                     ],
-                    "comment": "shared with relais",
                     "direction": "output"
                 },
-                "step": {
-                    "pin": "P16",
+                "dir": {
+                    "source": "PMODA:P10",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
                     "pos": [
-                        592,
-                        313
+                        207,
+                        310
                     ],
                     "direction": "output"
                 }
             }
         },
+
+        {
+            "name": "J1",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "source": "PMODA:P3",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        390,
+                        338
+                    ],
+                    "direction": "output"
+                },
+                "dir": {
+                    "source": "PMODA:P9",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        390,
+                        310
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+
+        {
+            "name": "J2",
+            "comment": "",
+            "default": "stepdir",
+            "pins": {
+                "step": {
+                    "source": "PMODA:P2",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        570,
+                        338
+                    ],
+                    "direction": "output"
+                },
+                "dir": {
+                    "source": "PMODA:P8",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
+                    "pos": [
+                        570,
+                        310
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+
         {
             "name": "ALL",
             "comment": "",
             "default": "stepdir",
             "pins": {
-                "en": {
-                    "pin": "P14",
+                "enable": {
+                    "source": "PMODA:P1",
+                    "edge": "source",
+                    "pintype": "PASSTHROUGH",
+                    "type": ["PASSTHROUGH"],
+                    "optional": true,
                     "pos": [
-                        592,
-                        358
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "A",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P9",
-                    "pos": [
-                        592,
-                        403
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P8",
-                    "pos": [
-                        592,
-                        448
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "Z",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P7",
-                    "pos": [
-                        592,
-                        493
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P6",
-                    "pos": [
-                        592,
-                        538
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "Y",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P5",
-                    "pos": [
-                        592,
-                        583
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P4",
-                    "pos": [
-                        592,
-                        628
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "X",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P3",
-                    "pos": [
-                        592,
-                        673
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P2",
-                    "pos": [
-                        592,
-                        718
+                        207,
+                        487
                     ],
                     "direction": "output"
                 }
             }
         }
+
     ]
 }

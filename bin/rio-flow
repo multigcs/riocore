@@ -70,7 +70,6 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 dev_mode = False
 show_signals = False
-show_signals = True
 grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)
@@ -896,7 +895,7 @@ class NodeViewer(QGraphicsView):
             target_port = self.scene.selection_target[1]
             if source_node and source_port and target_node and target_port:
                 if source_node != target_node:
-                    if target_port.startswith("SLOT:"):
+                    if target_port.startswith("SLOT:") or "BREAKOUT" in target_node.ports.get(target_port, {}).get("type"):
                         slot = source_port.split(":")[0]
                         self.scene.parent.connect_slot(source_node, slot, target_node, target_port)
 
@@ -2184,10 +2183,11 @@ class Window(QMainWindow):
         if source_node is None:
             source_node = self.bnode
             # return
+        target_slot = target_port.split(":")[0]
         for source_port, port_data in source_node.ports.items():
             if ":" in source_port and source_port.split(":")[0] != slot:
                 continue
-            target_port = f"SLOT:{source_port.split(':')[-1]}"
+            target_port = f"{target_slot}:{source_port.split(':')[-1]}"
             if target_port in target_node.ports:
                 self.scene.disconnect_port(source_node, source_port)
                 self.scene.disconnect_port(target_node, target_port)
