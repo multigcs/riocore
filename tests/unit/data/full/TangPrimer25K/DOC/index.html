@@ -1,0 +1,531 @@
+
+<html>
+<header>
+<script src="https://cdn.jsdelivr.net/gh/MarketingPipeline/Markdown-Tag/markdown-tag-commonmark.js"></script>
+<style>
+body {font-family: Arial;}
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>
+</header>
+<body>
+<div class="tab">
+  <button class="tablinks" onclick="openSection(event, 'CONFIG')">CONFIG</button>
+  <button class="tablinks" onclick="openSection(event, 'PINS')">PINS</button>
+  <button class="tablinks" onclick="openSection(event, 'SIGNALS')">SIGNALS</button>
+  <button class="tablinks" onclick="openSection(event, 'LINUXCNC')">LINUXCNC</button>
+  <button class="tablinks" onclick="openSection(event, 'JSON')">JSON</button>
+</div>
+<div id="CONFIG" class="tabcontent">
+<github-md>
+# TangPrimer25K
+TangPrimer25K
+
+* Config-Path: tests/unit/data/full/TangPrimer25K.json
+* Output-Path: tests/unit/output/TangPrimer25K
+
+## Axis/Joints
+| Axis | Joint | Plugin | Home-Seq. |
+| --- | --- | --- | --- |
+| X | 0 | stepdir0 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 0 | 
+| Y | 1 | stepdir1 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 0 | 
+| Z | 2 | stepdir2 ([stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md)) | 0 | 
+
+## Plugins
+| Type | Info | Instance | Image |
+| --- | --- | --- | --- |
+| [fpga](https://github.com/multigcs/riocore/blob/main/riocore/plugins/fpga/README.md) | TangPrimer25K-Devboard on Dev-Board | board0 | - |
+| [blink](https://github.com/multigcs/riocore/blob/main/riocore/plugins/blink/README.md) | blinking output pin | blink0 | <img src="blink.png" height="48"> |
+| [bitout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitout/README.md) | singe bit output pin | bitout0 | <img src="bitout.png" height="48"> |
+| [bitin](https://github.com/multigcs/riocore/blob/main/riocore/plugins/bitin/README.md) | single input pin | bitin0, bitin1 | <img src="bitin.png" height="48"> |
+| [breakout](https://github.com/multigcs/riocore/blob/main/riocore/plugins/breakout/README.md) | icebreaker 3axis pmod | breakout0 | <img src="breakout.png" height="48"> |
+| [stepdir](https://github.com/multigcs/riocore/blob/main/riocore/plugins/stepdir/README.md) | step/dir output for stepper drivers | stepdir0, stepdir1, stepdir2 | <img src="stepdir.png" height="48"> |
+| [w5500](https://github.com/multigcs/riocore/blob/main/riocore/plugins/w5500/README.md) | udp interface for host comunication | w55000 | <img src="w5500.png" height="48"> |
+
+</github-md>
+</div>
+<div id="PINS" class="tabcontent">
+<github-md>
+# Pins
+| Plugin | ID | Name | Board | Alias |
+| --- | --- | --- | --- | --- |
+| blink | blink0 | led | E8 |  |
+| bitout | bitout0 | bit | D7 |  |
+| bitin | bitin0 | bit | H11 |  |
+|  | bitin1 | bit | H10 |  |
+| stepdir | stepdir0 | step | L5 |  |
+|  |  | dir | K5 |  |
+|  |  | en | A11 |  |
+|  | stepdir1 | step | K11 |  |
+|  |  | dir | L11 |  |
+|  |  | en | - |  |
+|  | stepdir2 | step | E11 |  |
+|  |  | dir | E10 |  |
+|  |  | en | - |  |
+| w5500 | w55000 | mosi | B11 |  |
+|  |  | miso | C11 |  |
+|  |  | sclk | G11 |  |
+|  |  | sel | D11 |  |
+|  |  | rst | - |  |
+|  |  | intr | - |  |
+
+</github-md>
+</div>
+<div id="SIGNALS" class="tabcontent">
+<github-md>
+# Signals
+| Plugin | ID | Name | Dir | Hal-Pin | Type | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+
+</github-md>
+</div>
+<div id="LINUXCNC" class="tabcontent">
+<github-md>
+# LinuxCNC
+## Hal-Graph
+![halgraph](./halgraph.png)
+</github-md>
+</div>
+<div id="JSON" class="tabcontent">
+<github-md>
+# JSON-Config
+```
+{
+    "name": "TangPrimer25K",
+    "description": "TangPrimer25K",
+    "protocol": "UDP",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "TangPrimer25K",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                0.0,
+                0.0
+            ],
+            "rotate": 0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "board0:LED:G1",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true,
+                            "pos": [
+                                -40.0,
+                                -70.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "name": "status",
+            "uid": "blink0",
+            "pos": [
+                90.0,
+                -60.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "bitout",
+            "pins": {
+                "bit": {
+                    "pin": "board0:LED:G2"
+                }
+            },
+            "name": "LED",
+            "uid": "bitout0",
+            "pos": [
+                90.0,
+                -30.0
+            ],
+            "image": "smdled"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "board0:BUTTON:S1",
+                    "pull": "down"
+                }
+            },
+            "name": "SW1",
+            "uid": "bitin0",
+            "pos": [
+                330.0,
+                30.0
+            ],
+            "image": "smdbutton"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "board0:BUTTON:S2",
+                    "pull": "down"
+                }
+            },
+            "name": "SW2",
+            "uid": "bitin1",
+            "pos": [
+                330.0,
+                60.0
+            ],
+            "image": "smdbutton"
+        },
+        {
+            "type": "breakout",
+            "node_type": "rio-icebreaker3x",
+            "uid": "breakout0",
+            "pos": [
+                -20.0,
+                170.0
+            ],
+            "rotate": -90,
+            "pins": {
+                "PMODA:P4": {
+                    "pin": "board0:PMOD2:P4"
+                },
+                "PMODA:P3": {
+                    "pin": "board0:PMOD2:P3"
+                },
+                "PMODA:P2": {
+                    "pin": "board0:PMOD2:P2"
+                },
+                "PMODA:P1": {
+                    "pin": "board0:PMOD2:P1"
+                },
+                "PMODA:P10": {
+                    "pin": "board0:PMOD2:P10"
+                },
+                "PMODA:P9": {
+                    "pin": "board0:PMOD2:P9"
+                },
+                "PMODA:P8": {
+                    "pin": "board0:PMOD2:P8"
+                },
+                "PMODA:P7": {
+                    "pin": "board0:PMOD2:P7"
+                },
+                "PMODB:P4": {
+                    "pin": "board0:PMOD1:P4"
+                },
+                "PMODB:P3": {
+                    "pin": "board0:PMOD1:P3"
+                },
+                "PMODB:P2": {
+                    "pin": "board0:PMOD1:P2"
+                },
+                "PMODB:P1": {
+                    "pin": "board0:PMOD1:P1"
+                },
+                "PMODB:P10": {
+                    "pin": "board0:PMOD1:P10"
+                },
+                "PMODB:P9": {
+                    "pin": "board0:PMOD1:P9"
+                },
+                "PMODB:P8": {
+                    "pin": "board0:PMOD1:P8"
+                },
+                "PMODB:P7": {
+                    "pin": "board0:PMOD1:P7"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepstick",
+            "pos": [
+                -150.0,
+                480.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "breakout0:J0:dir"
+                },
+                "step": {
+                    "pin": "breakout0:J0:step"
+                },
+                "en": {
+                    "pin": "breakout0:ALL:enable"
+                }
+            },
+            "rotate": -90
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "is_joint": true,
+            "image": "stepstick",
+            "pos": [
+                -150.0,
+                390.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "breakout0:J1:step"
+                },
+                "dir": {
+                    "pin": "breakout0:J1:dir"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "is_joint": true,
+            "image": "stepstick",
+            "pos": [
+                -150.0,
+                300.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "breakout0:J2:dir"
+                },
+                "step": {
+                    "pin": "breakout0:J2:step"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "w5500",
+            "uid": "w55000",
+            "image": "w5500",
+            "pos": [
+                260.0,
+                210.0
+            ],
+            "pins": {
+                "sclk": {
+                    "pin": "board0:PMOD3:P1"
+                },
+                "sel": {
+                    "pin": "board0:PMOD3:P2"
+                },
+                "mosi": {
+                    "pin": "board0:PMOD3:P3"
+                },
+                "miso": {
+                    "pin": "board0:PMOD3:P4"
+                }
+            },
+            "ip": "192.168.11.194",
+            "gw": "192.168.11.1",
+            "rotate": 90
+        }
+    ],
+    "modules": [
+        {
+            "slot": "PMOD3",
+            "module": "w5500_pmod",
+            "setup": {
+                "w5500": {
+                    "name": "w5500",
+                    "type": "w5500",
+                    "mac": "AA:AF:FA:CC:E3:1C",
+                    "ip": "192.168.10.195",
+                    "port": 2390
+                }
+            }
+        },
+        {
+            "slot": "PMOD2",
+            "module": "icebreaker3x_a",
+            "setup": {
+                "axis1": {
+                    "name": "axis1",
+                    "type": "stepdir",
+                    "is_joint": true
+                },
+                "axis2": {
+                    "name": "axis2",
+                    "type": "stepdir",
+                    "is_joint": true
+                },
+                "axis3": {
+                    "name": "axis3",
+                    "type": "stepdir",
+                    "is_joint": true
+                },
+                "enable": {
+                    "name": "enable",
+                    "type": "bitout",
+                    "pins": {
+                        "bit": {
+                            "modifier": [
+                                {
+                                    "type": "onerror"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "slot": "PMOD1",
+            "module": "icebreaker3x_b",
+            "setup": {
+                "out1": {
+                    "name": "out1",
+                    "type": "bitout"
+                },
+                "out2": {
+                    "name": "out2",
+                    "type": "bitout"
+                },
+                "in1": {
+                    "name": "in1",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "in2": {
+                    "name": "in2",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "in3": {
+                    "name": "in3",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "in4": {
+                    "name": "in4",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "in5": {
+                    "name": "in5",
+                    "type": "bitin",
+                    "pins": {
+                        "bit": {
+                            "pull": "up",
+                            "modifier": [
+                                {
+                                    "type": "invert"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.78,
+            "pos": [
+                -556,
+                -182
+            ]
+        }
+    }
+}
+```
+
+</github-md>
+</div>
+</body>
+<script>
+function openSection(evt, sectionName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(sectionName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+openSection(event, 'CONFIG');
+</script>
+</html>

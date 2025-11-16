@@ -1,0 +1,47 @@
+
+# Toolchain: Gowin
+
+PROJECT  := rio
+TOP      := rio
+FAMILY   := GW5A-25A
+FAMILY_GOWIN := GW5A-25A
+DEVICE   := GW5A-LV25MG121NC1/I0
+CLK_SPEED := 50.0
+VERILOGS := globals.v blink.v stepdir.v w5500.v debouncer.v toggle.v pwmmod.v oneshot.v delay.v rio.v
+
+all: build
+build: impl/pnr/project.fs
+
+clean:
+	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl
+
+$(PROJECT).tcl: pins.cst $(VERILOGS)
+	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl
+	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done
+	@echo "add_file rio.sdc" >> $(PROJECT).tcl
+	@echo "add_file pins.cst" >> $(PROJECT).tcl
+	@echo "set_option -top_module $(TOP)" >> $(PROJECT).tcl
+	@echo "set_option -verilog_std v2001" >> $(PROJECT).tcl
+	@echo "set_option -vhdl_std vhd2008" >> $(PROJECT).tcl
+	@echo "set_option -use_sspi_as_gpio 1" >> $(PROJECT).tcl
+	@echo "set_option -use_mspi_as_gpio 1" >> $(PROJECT).tcl
+	@echo "set_option -use_done_as_gpio 1" >> $(PROJECT).tcl
+	@echo "set_option -use_ready_as_gpio 1" >> $(PROJECT).tcl
+	@echo "set_option -use_reconfign_as_gpio 1" >> $(PROJECT).tcl
+	@echo "set_option -use_i2c_as_gpio 1" >> $(PROJECT).tcl
+	@echo "set_option -use_cpu_as_gpio 1" >> $(PROJECT).tcl
+	@echo "run all" >> $(PROJECT).tcl
+
+impl/pnr/project.fs: $(PROJECT).tcl
+	gw_sh $(PROJECT).tcl
+	cp -v hash_new.txt hash_compiled.txt
+	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt
+
+load:
+	openFPGALoader -b tangprimer25k impl/pnr/project.fs -f
+	cp -v hash_new.txt hash_flashed.txt
+
+sload:
+	openFPGALoader -b tangprimer25k impl/pnr/project.fs
+	cp -v hash_new.txt hash_flashed.txt
+

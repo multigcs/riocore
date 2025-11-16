@@ -1,0 +1,19 @@
+RIO - TangPrimer25K
+
+Description: TangPrimer25K
+Protocol: UDP
+Configuration: tests/unit/data/full/TangPrimer25K.json
+
+UDP-Configuration:
+  Target-IP: 192.168.11.194
+  Target-Port: 2390
+
+Plugins:
+  fpga (1x)
+  blink (1x)
+  bitout (1x)
+  bitin (2x)
+  breakout (1x)
+  stepdir (3x)
+  w5500 (1x)
+
