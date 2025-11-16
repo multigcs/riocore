@@ -255,30 +255,29 @@ class Plugin(PluginBase):
                 pin = connected_pin["pin"]
                 direction = connected_pin["direction"]
                 inverted = connected_pin["inverted"]
-                upin = self.PINDEFAULTS[pin]["pin"].split(":", 1)[1]
-                gpin = upin.replace("GP0", "GP").lower()
+                gpin = pin.replace("GP0", "GP").lower()
                 if name == "step":
-                    self.stepgen_steps.append(upin)
+                    self.stepgen_steps.append(pin)
                 elif name == "dir":
-                    self.stepgen_dirs.append(upin)
+                    self.stepgen_dirs.append(pin)
                     self.stepgen_dir_inverts.append("0")
                 elif name == "pwm":
-                    self.pwm_pins.append(upin)
+                    self.pwm_pins.append(pin)
                     self.pwm_inverts.append("0")
                 elif name == "a":
-                    self.encoder_a_pins.append(upin)
+                    self.encoder_a_pins.append(pin)
                 elif name == "b":
-                    self.encoder_b_pins.append(upin)
+                    self.encoder_b_pins.append(pin)
                 elif name == "z":
                     if inverted:
                         self.encoder_z_pins.append("low")
                     else:
                         self.encoder_z_pins.append("high")
                 elif direction == "output":
-                    self.output_pins.append(upin)
+                    self.output_pins.append(pin)
                     psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.output.{gpin}"
                 elif direction == "input":
-                    self.input_pins.append(upin)
+                    self.input_pins.append(pin)
                     self.input_pullups.append("1")
                     if inverted:
                         psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.input.{gpin}-not"

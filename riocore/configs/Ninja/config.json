@@ -2,10 +2,10 @@
     "name": "Ninja",
     "flow": {
         "view": {
-            "scale": 0.56,
+            "scale": 1.28,
             "pos": [
-                226,
-                -275
+                349,
+                -603
             ]
         },
         "board": {
@@ -362,14 +362,6 @@
                 }
             },
             "name": "enable"
-        },
-        {
-            "type": "halinput",
-            "uid": "halinputhalinput",
-            "pos": [
-                530.0,
-                220.0
-            ]
         }
     ],
     "boardcfg": ""
