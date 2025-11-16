@@ -6,6 +6,11 @@
 
 gpio support for Raspberry PI4/5 and maybe other boards
 
+gpio modes:
+* rpi5: hal_gpio: gpioinfo shows GPIO7 for GPIO7
+* rpi4: hal_gpio: gpioinfo shows SPI_CE1_N for GPIO7
+* pi_gpio: hal_pi_gpio: no invert support, not for rpi5
+
 Keywords: rpi gpio raspberry rpi4 rpi5
 
 ## Pins:
@@ -123,6 +128,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### mode:
+gpio mode (rpi5: gpioinfo shows GPIO7 / rpi4: gpioinfo shows SPI_CE1_N for GPIO7)
+
+ * type: select
+ * default: rpi5
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -224,6 +235,7 @@ name of this plugin instance
 {
     "type": "rpigpio",
     "name": "",
+    "mode": "rpi5",
     "pins": {
         "GPIO:P3": {
             "pin": "0",

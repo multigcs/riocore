@@ -458,7 +458,7 @@
                 130.0
             ],
             "rotate": 180,
-            "mode": "rpi4"
+            "mode": "pi_gpio"
         }
     ]
 }

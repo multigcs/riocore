@@ -4,6 +4,7 @@
 | --- | :---: | --- | :---: | :---: |
 | Interfaces | [arty_mii](arty_mii/README.md) | udp interface for host comunication - Arty7-35t only | <img src="arty_mii/image.png" height="48"> | Experimental  |
 |  | [axi](axi/README.md) | axi interface for armcore comunication | <img src="axi/image.png" height="48"> | Experimental  |
+|  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |  |
 |  | [rmii](rmii/README.md) | rmii udp interface | <img src="rmii/image.png" height="48"> | Experimental  |
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |  |
 |  | [spi_prog](spi_prog/README.md) | spi interface for host comunication and flash programming | <img src="spi_prog/image.png" height="48"> |  |
@@ -35,6 +36,7 @@
 |  | [encoder](encoder/README.md) | software counting of quadrature encoder signals | <img src="encoder/image.png" height="48"> | GPIO  |
 |  | [flipflop_in](flipflop_in/README.md) | flipflop input | <img src="flipflop_in/image.png" height="48"> |  |
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |  |
+|  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |  |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |  |
 |  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> | GPIO  |
@@ -68,11 +70,10 @@
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | Experimental  |
 | Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
-|  | [rioctrl_io](rioctrl_io/README.md) | Expansion to add I/O's via shiftregister's | <img src="rioctrl_io/image.png" height="48"> |  |
 |  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
 | Misc | [ethercat](ethercat/README.md) | experimental ethercat plugin | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
-|  | [fpga](fpga/README.md) | fpga board |  |  |
+|  | [fpga](fpga/README.md) | TangNano9K - cheap GW1NR-9 Devboard |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
 |  | [mesa](mesa/README.md) | mesa | <img src="mesa/image.png" height="48"> |  |

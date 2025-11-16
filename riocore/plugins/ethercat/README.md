@@ -12,7 +12,7 @@ Keywords: stepper servo master
 
 ## Pins:
 *FPGA-pins*
-### out:
+### BUS:out:
 
  * direction: all
 
@@ -31,14 +31,6 @@ Type
  * type: select
  * default: Master
 
-### idx:
-bus-index
-
- * type: int
- * min: -2
- * max: 255
- * default: -2
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -53,7 +45,7 @@ bus-index
 {
     "type": "ethercat",
     "pins": {
-        "out": {
+        "BUS:out": {
             "pin": "0"
         }
     }
@@ -66,9 +58,8 @@ bus-index
     "type": "ethercat",
     "name": "",
     "node_type": "Master",
-    "idx": -2,
     "pins": {
-        "out": {
+        "BUS:out": {
             "pin": "0",
             "modifiers": [
                 {
