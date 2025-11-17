@@ -102,6 +102,10 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         },
                     }
                 )
+                self.BUILDER = [
+                    f"readhmid: {board} (/dev/spidev0.0)",
+                    f"flash: {board} (/dev/spidev0.0)",
+                ]
             else:
                 self.OPTIONS.update(
                     {
@@ -112,6 +116,8 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         },
                     }
                 )
+                ip_address = self.plugin_setup.get("ip_address", self.option_default("ip_address"))
+                self.BUILDER = [f"readhmid: {board} ({ip_address})", f"flash: {board} ({ip_address})"]
 
             self.TYPE = "base"
             self.IMAGE_SHOW = True
@@ -313,6 +319,20 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 "pwm": {"direction": "output", "edge": "target", "type": "MESAPwmPwm"},
             }
 
+    def builder(self, config, command):
+        board = self.plugin_setup.get("board", self.option_default("board"))
+        board_type = board.split("_")[0]
+        bitfile = os.path.join(os.path.dirname(__file__), "mesapins", board_type, f"{board}.bit")
+        if board_type in {"7c80", "7c81"}:
+            addr = "/dev/spidev0.0 --spi"
+        else:
+            addr = self.plugin_setup.get("ip_address", self.option_default("ip_address"))
+        if command.startswith("flash:"):
+            cmd = f"sudo mesaflash --device {board_type} --addr {addr} --write {bitfile}"
+        else:
+            cmd = f"sudo mesaflash --device {board_type} --addr {addr} --readhmid"
+        return cmd
+
     def update_prefixes(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
@@ -361,15 +381,15 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
 
                 output.append("# mesa")
-                if board_type == "7i92":
-                    ip_address = instance.plugin_setup.get("ip_address", instance.option_default("ip_address"))
-                    output.append("loadrt hostmot2")
-                    output.append(f'loadrt hm2_eth board_ip="{ip_address}" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
-                else:
+                if board_type in {"7c80", "7c81"}:
                     spiclk_rate = instance.plugin_setup.get("spiclk_rate", instance.option_default("spiclk_rate"))
                     component = "hm2_spix"
                     output.append("loadrt hostmot2")
                     output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
+                else:
+                    ip_address = instance.plugin_setup.get("ip_address", instance.option_default("ip_address"))
+                    output.append("loadrt hostmot2")
+                    output.append(f'loadrt hm2_eth board_ip="{ip_address}" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
 
                 output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
                 output.append(f"setp {instance.hm2_prefix}.led.CR02 1")

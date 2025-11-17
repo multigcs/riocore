@@ -170,7 +170,7 @@ class TabBuilder:
         cleanLayout(self.right)
         self.output = {}
 
-        self.output["generator"] = QPlainTextEdit("--- plugin_instance.instances_name ---")
+        self.output["generator"] = QPlainTextEdit("--- generator ---")
         self.right.addWidget(self.output["generator"], stretch=1)
 
         for item in self.parent.scene.items():
@@ -179,7 +179,7 @@ class TabBuilder:
                 if not plugin_instance.BUILDER:
                     continue
 
-                self.output[plugin_instance.instances_name] = QPlainTextEdit("--- plugin_instance.instances_name ---")
+                self.output[plugin_instance.instances_name] = QPlainTextEdit(f"--- {plugin_instance.instances_name} ---")
                 self.right.addWidget(self.output[plugin_instance.instances_name], stretch=1)
 
         self.right.addStretch()
@@ -203,7 +203,7 @@ class TabBuilder:
                 vbox.addWidget(QLabel(plugin_instance.title))
 
                 for command in plugin_instance.BUILDER:
-                    button = QPushButton(command.title())
+                    button = QPushButton(command)
                     button.clicked.connect(partial(self.bulder_run, plugin_instance, command))
                     vbox.addWidget(button)
 
