@@ -1,6 +1,5 @@
 {
     "name": "Mesa",
-    "syncto": "cnc@192.168.10.86:/home/cnc/Mesa/",
     "flow": {
         "view": {
             "scale": 1.3285714285714285,

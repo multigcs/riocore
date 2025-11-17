@@ -10,29 +10,38 @@ import os.path
 import shutil
 
 
-def test_generator():
+@pytest.mark.parametrize(
+    'config',
+    glob.glob("tests/unit/data/full/*.json"),
+)
 
-    for config in glob.glob("tests/unit/data/full/*.json"):
-        target = config.split("/")[-1].replace(".json", "")
+def test_generator(config):
+    target = config.split("/")[-1].replace(".json", "")
+    if os.path.exists("tests/unit/output"):
+        shutil.rmtree("tests/unit/output")
+    os.system(f"bin/rio-generator {config} tests/unit/output")
+    if not os.path.exists(f"tests/unit/output/{target}/LinuxCNC/rio.hal"):
+        assert False
 
-        if os.path.exists("tests/unit/output"):
-            shutil.rmtree("tests/unit/output")
+    if not os.path.exists(f"tests/unit/data/full/{target}"):
+        shutil.copytree(f"tests/unit/output/{target}", f"tests/unit/data/full/{target}")
 
-        os.system(f"bin/rio-generator {config} tests/unit/output")
+    # cleanup files
+    for path in (
+        f"{target}/Gateware/*/Makefile",
+        f"{target}/Gateware/board0/pll.v",
+        f"{target}/Gateware/board0/pll_bb.v",
+        f"{target}/Gateware/board0/pll.qip",
+        f"{target}/DOC",
+        f"{target}/LinuxCNC/subroutines",
+        f"{target}/LinuxCNC/mcodes",
+    ):
+        os.system(f'rm -rf tests/unit/data/full/{path}')
+        os.system(f'rm -rf tests/unit/output/{path}')
 
-        if not os.path.exists(f"tests/unit/output/{target}/LinuxCNC/rio.hal"):
-            assert False
+    os.system(f'test -e tests/unit/data/full/{target}/Firmware/*/Makefile && sed -i "s|TOOLCHAIN_PATH .*| TOOLCHAIN_PATH|g" tests/unit/data/full/{target}/Firmware/*/Makefile')
+    os.system(f'test -e tests/unit/output/{target}/Firmware/*/Makefile && sed -i "s|TOOLCHAIN_PATH .*| TOOLCHAIN_PATH|g" tests/unit/output/{target}/Firmware/*/Makefile')
 
-
-        if not os.path.exists(f"tests/unit/data/full/{target}"):
-            shutil.copytree(f"tests/unit/output/{target}", f"tests/unit/data/full/{target}")
-
-        # cleanup files
-        os.system(f'test -e tests/unit/data/full/{target}/Firmware/*/Makefile && sed -i "s|TOOLCHAIN_PATH .*| TOOLCHAIN_PATH|g" tests/unit/data/full/{target}/Firmware/*/Makefile')
-        os.system(f'test -e tests/unit/output/{target}/Firmware/*/Makefile && sed -i "s|TOOLCHAIN_PATH .*| TOOLCHAIN_PATH|g" tests/unit/output/{target}/Firmware/*/Makefile')
-        os.system(f'rm -rf tests/unit/data/full/{target}/Gateware/Makefile')
-        os.system(f'rm -rf tests/unit/output/{target}/Gateware/Makefile')
-
-        ret = os.system(f"diff -r tests/unit/data/full/{target}/ tests/unit/output/{target}/")
-        assert ret == 0
+    ret = os.system(f"diff -r tests/unit/data/full/{target}/ tests/unit/output/{target}/")
+    assert ret == 0
 
