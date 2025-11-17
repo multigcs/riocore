@@ -1,4 +1,5 @@
 import os
+import glob
 import json
 from riocore.plugins import PluginBase
 
@@ -19,14 +20,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "mesa"
         self.URL = "https://github.com/atrex66/stepper-mesa"
-        self.JOINT_DEFAULTS = {
-            "MESA_DIRSETUP": 2000,
-            "MESA_DIRHOLD": 2000,
-            "MESA_STEPLEN": 2000,
-            "MESA_STEPSPACE": 2000,
-            "MESA_STEPGEN_MAXVEL": 100,
-            "MESA_STEPGEN_MAXACCEL": 1000,
-        }
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
@@ -44,51 +37,78 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         self.SIGNALS = {}
 
         if node_type == "board":
+            board_list = []
+            for json_file in glob.glob(os.path.join(os.path.dirname(__file__), "*.json")):
+                board_name = json_file.split("/")[-1][:-5]
+                for pin_file in glob.glob(os.path.join(os.path.dirname(__file__), "mesapins", board_name, "*.pin")):
+                    board_list.append(pin_file.split("/")[-1][:-4].lower())
+
             self.OPTIONS.update(
                 {
                     "board": {
                         "default": "7c81_5abobx3d",
                         "type": "select",
-                        "options": [
-                            "7c81_5abobx2d",
-                            "7c81_5abobx3d",
-                            "7i92_5ABOBx2D",
-                            "7i92_G540x2D",
-                        ],
+                        "options": board_list,
                         "description": "card configuration",
                     },
+                }
+            )
+
+            board = self.plugin_setup.get("board", self.option_default("board"))
+            board_type = board.split("_")[0]
+
+            posfile = os.path.join(os.path.dirname(__file__), f"{board_type}.json")
+            board_pins = json.loads(open(posfile, "r").read())
+            pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board_type, f"{board}.pin")
+            pindata = open(pinfile, "r").read()
+
+            max_pwms = 0
+            max_encoders = 0
+            max_stepgens = 0
+            max_serials = 0
+            for line in pindata.split("\n"):
+                if " of QCount in configuration" in line:
+                    max_encoders = int(line.split()[2])
+                elif " of StepGen in configuration" in line:
+                    max_stepgens = int(line.split()[2])
+                elif " of PWM in configuration" in line:
+                    max_pwms = int(line.split()[2])
+                elif " of SSerial in configuration" in line:
+                    max_serials = int(line.split()[2])
+            # MuxedQCount, MuxedQCountSel, SSR, SSI, PktUARTRXm PktUARTTX, PWMGen, Transformer, InMux, OutM, InM
+
+            self.OPTIONS.update(
+                {
                     "num_pwms": {
                         "default": 1,
                         "type": int,
                         "min": 0,
-                        "max": 10,
+                        "max": max_pwms,
                         "description": "number of pwm's",
                     },
                     "num_encoders": {
                         "default": 0,
                         "type": int,
                         "min": 0,
-                        "max": 10,
+                        "max": max_encoders,
                         "description": "number of encoder's",
                     },
                     "num_stepgens": {
                         "default": 3,
                         "type": int,
                         "min": 0,
-                        "max": 10,
+                        "max": max_stepgens,
                         "description": "number of stepgen's",
                     },
                     "num_serials": {
                         "default": 0,
                         "type": int,
                         "min": 0,
-                        "max": 10,
+                        "max": max_serials,
                         "description": "number of serial's",
                     },
                 }
             )
-            board = self.plugin_setup.get("board", self.option_default("board"))
-            board_type = board.split("_")[0]
 
             if board_type in {"7c80", "7c81"}:
                 self.OPTIONS.update(
@@ -129,10 +149,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             num_stepgens = self.plugin_setup.get("num_stepgens", self.option_default("num_stepgens"))
             num_serials = self.plugin_setup.get("num_serials", self.option_default("num_serials"))
 
-            posfile = os.path.join(os.path.dirname(__file__), f"{board_type}.json")
-            board_pins = json.loads(open(posfile, "r").read())
-            pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board_type, f"{board}.pin")
-            pindata = open(pinfile, "r").read()
             pin_n = 0
             slot = None
             for line in pindata.split("\n"):
@@ -192,20 +208,27 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             "type": ptype,
                         }
 
-            # print(self.PINDEFAULTS)
             self.instance_num = 0
             self.hm2_prefix = f"hm2_{board_type}.{self.instance_num}"
 
         elif node_type == "stepper":
             self.TYPE = "joint"
-            self.JOINT_OPTIONS = ["MESA_DIRSETUP", "MESA_DIRHOLD", "MESA_STEPLEN", "MESA_STEPSPACE", "MESA_STEPGEN_MAXVEL", "MESA_STEPGEN_MAXACCEL"]
+            self.JOINT_DEFAULTS = {
+                "MESA_DIRSETUP": 2000,
+                "MESA_DIRHOLD": 2000,
+                "MESA_STEPLEN": 2000,
+                "MESA_STEPSPACE": 2000,
+                "MESA_STEPGEN_MAXVEL": 100,
+                "MESA_STEPGEN_MAXACCEL": 1000,
+            }
+            self.JOINT_OPTIONS = list(self.JOINT_DEFAULTS)
             mode = self.plugin_setup.get("mode", self.option_default("mode"))
             if mode:
                 self.JOINT_TYPE = "velocity"
             else:
                 self.JOINT_TYPE = "position"
             self.IMAGE_SHOW = True
-            self.IMAGES = ["stepper", "servo42"]
+            self.IMAGES = ["stepper", "servo42", "stepstick"]
             self.SIGNALS = {
                 "velocity": {
                     "direction": "output",
@@ -316,7 +339,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 },
             }
             self.PINDEFAULTS = {
-                "pwm": {"direction": "output", "edge": "target", "type": "MESAPwmPwm"},
+                "pwm": {"direction": "output", "edge": "target", "type": ["MESAPwmPwm", "MESAPWMPWM"]},
             }
 
     def builder(self, config, command):

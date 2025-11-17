@@ -252,11 +252,11 @@ class edit_int(QSpinBox):
         self.no_update = False
         if help_text:
             self.setToolTip(help_text)
-        if vmin:
+        if vmin is not None:
             self.setMinimum(vmin)
         else:
             self.setMinimum(-99999999)
-        if vmax:
+        if vmax is not None:
             self.setMaximum(vmax)
         else:
             self.setMaximum(99999999)
