@@ -300,7 +300,6 @@ class PluginBase:
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.IMAGE = ""
-        self.SHORTENER = {}
         self.IMAGES = []
         self.IMAGE_SHOW = False
         self.BUILDER = []
@@ -308,6 +307,7 @@ class PluginBase:
         self.SIGNALS = {}
         self.PREFIX = ""
         self.COMPONENT = ""
+        self.JOINT_DEFAULTS = {}
         self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
         self.VERILOGS = []

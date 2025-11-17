@@ -16,6 +16,13 @@ If higher rates are needed, a hardware step generator is a better choice."""
         self.PLUGIN_TYPE = "gpio"
         self.JOINT_TYPE = "position"
         self.JOINT_OPTIONS = ["STEPGEN_MAXACCEL", "STEPGEN_STEPLEN", "STEPGEN_STEPSPACE", "STEPGEN_DIRHOLD", "STEPGEN_DIRSETUP"]
+        self.JOINT_DEFAULTS = {
+            "STEPGEN_MAXACCEL": 2000.0,
+            "STEPGEN_STEPLEN": 1,
+            "STEPGEN_STEPSPACE": 0,
+            "STEPGEN_DIRHOLD": 35000,
+            "STEPGEN_DIRSETUP": 35000,
+        }
         self.ORIGIN = ""
         self.OPTIONS = {
             "mode": {

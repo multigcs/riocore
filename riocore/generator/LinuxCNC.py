@@ -46,19 +46,8 @@ class LinuxCNC:
         "MAX_LIMIT": 1500.0,
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
-        "STEPGEN_MAXACCEL": 2000.0,
-        "STEPGEN_STEPLEN": 1,
-        "STEPGEN_STEPSPACE": 0,
-        "STEPGEN_DIRHOLD": 35000,
-        "STEPGEN_DIRSETUP": 35000,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
-        "MESA_DIRSETUP": 2000,
-        "MESA_DIRHOLD": 2000,
-        "MESA_STEPLEN": 2000,
-        "MESA_STEPSPACE": 2000,
-        "MESA_STEPGEN_MAXVEL": 100,
-        "MESA_STEPGEN_MAXACCEL": 1000,
         "HOME_SEARCH_VEL": -30.0,
         "HOME_LATCH_VEL": 5.0,
         "HOME_FINAL_VEL": 100.0,
@@ -204,10 +193,10 @@ class LinuxCNC:
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
 
-        # expand shortener mapping
+        # expand JOINT_DEFAULTS
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.SHORTENER:
-                self.SHORTENER.update(plugin_instance.SHORTENER)
+            if plugin_instance.JOINT_DEFAULTS:
+                self.JOINT_DEFAULTS.update(plugin_instance.JOINT_DEFAULTS)
 
         # update_prefixes for multiple used components
         components = {}

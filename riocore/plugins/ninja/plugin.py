@@ -19,10 +19,6 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "ninja"
         self.URL = "https://github.com/atrex66/stepper-ninja"
-        self.SHORTENER = {
-            "latched": "lt",
-            "ninja": "nja",
-        }
         self.OPTIONS = {
             "node_type": {
                 "default": "board",

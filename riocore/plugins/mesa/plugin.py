@@ -19,6 +19,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "mesa"
         self.URL = "https://github.com/atrex66/stepper-mesa"
+        self.JOINT_DEFAULTS = {
+            "MESA_DIRSETUP": 2000,
+            "MESA_DIRHOLD": 2000,
+            "MESA_STEPLEN": 2000,
+            "MESA_STEPSPACE": 2000,
+            "MESA_STEPGEN_MAXVEL": 100,
+            "MESA_STEPGEN_MAXACCEL": 1000,
+        }
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
