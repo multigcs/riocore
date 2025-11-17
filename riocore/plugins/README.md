@@ -72,11 +72,13 @@
 | Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
 |  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
-| Misc | [ethercat](ethercat/README.md) | experimental ethercat plugin | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
+| Misc | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> | GPIO  |
+|  | [camjog](camjog/README.md) | gui component to jog via camera image | <img src="camjog/image.png" height="48"> | GPIO  |
+|  | [ethercat](ethercat/README.md) | experimental ethercat plugin | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
 |  | [fpga](fpga/README.md) | TangNano9K - cheap GW1NR-9 Devboard |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
-|  | [mesa](mesa/README.md) | mesa | <img src="mesa/image.png" height="48"> |  |
+|  | [mesa](mesa/README.md) | support for mesa-cards with hm2 firmware | <img src="mesa/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> | GPIO  |
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> | GPIO  |

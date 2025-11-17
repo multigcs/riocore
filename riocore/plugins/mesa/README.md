@@ -2,9 +2,10 @@
 
 <img align="right" width="320" src="image.png">
 
-**mesa**
+**support for mesa-cards with hm2 firmware**
 
-mesa
+## flashing 7i92
+mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/mesact_firmware/7i92/7i92_G540x2D.bit
 
 Keywords: stepgen pwm mesa board hm2
 
@@ -237,14 +238,6 @@ card configuration
  * type: select
  * default: 7c81_5abobx3d
 
-### spiclk_rate:
-spiclk_rate
-
- * type: int
- * min: 10000
- * max: 1000000
- * default: 21250
-
 ### num_pwms:
 number of pwm's
 
@@ -276,6 +269,14 @@ number of serial's
  * min: 0
  * max: 10
  * default: 0
+
+### spiclk_rate:
+spiclk_rate
+
+ * type: int
+ * min: 10000
+ * max: 1000000
+ * default: 21250
 
 
 ## Signals:
@@ -455,11 +456,11 @@ number of serial's
     "name": "",
     "node_type": "board",
     "board": "7c81_5abobx3d",
-    "spiclk_rate": 21250,
     "num_pwms": 1,
     "num_encoders": 0,
     "num_stepgens": 3,
     "num_serials": 0,
+    "spiclk_rate": 21250,
     "pins": {
         "P1:P1": {
             "pin": "0",
