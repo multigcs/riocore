@@ -1,0 +1,178 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=3
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# stepgen component for 3 joint(s)
+loadrt stepgen step_type=0,0,0
+
+# pwmgen component for 1 output(s)
+loadrt pwmgen output_type=1
+
+# load hal_pi_gpio
+#   GPIO5  | hal_pi_gpio.pin-29-out | 0x8
+#   GPIO6  | hal_pi_gpio.pin-31-out | 0x10
+#   GPIO7  | hal_pi_gpio.pin-26-in  | 0x20
+#   GPIO8  | hal_pi_gpio.pin-24-in  | 0x40
+#   GPIO9  | hal_pi_gpio.pin-21-out | 0x80
+#   GPIO10 | hal_pi_gpio.pin-19-out | 0x100
+#   GPIO11 | hal_pi_gpio.pin-23-out | 0x200
+#   GPIO12 | hal_pi_gpio.pin-32-in  | 0x400
+#   GPIO13 | hal_pi_gpio.pin-33-in  | 0x800
+#   GPIO18 | hal_pi_gpio.pin-12-out | 0x10000
+#   GPIO19 | hal_pi_gpio.pin-35-out | 0x20000
+#   GPIO24 | hal_pi_gpio.pin-18-out | 0x400000
+#   GPIO25 | hal_pi_gpio.pin-22-in  | 0x800000
+#   GPIO26 | hal_pi_gpio.pin-37-out | 0x1000000
+loadrt hal_pi_gpio dir=0x1430398 exclude=0x23cf007
+
+# read
+addf hal_pi_gpio.read base-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf stepgen.make-pulses base-thread
+addf stepgen.capture-position servo-thread
+addf stepgen.update-freq servo-thread
+addf pwmgen.make-pulses base-thread
+addf pwmgen.update servo-thread
+# write
+addf hal_pi_gpio.write base-thread
+
+#################################################################################
+# iocontrol
+#################################################################################
+net user-enable-out                      => iocontrol.0.emc-enable-in
+net tool-change                          <= iocontrol.0.tool-change
+net tool-changed                         => iocontrol.0.tool-changed
+net tool-prep-number                     <= iocontrol.0.tool-prep-number
+net tool-prepared                        <= iocontrol.0.tool-prepare
+net tool-prepared                        => iocontrol.0.tool-prepared
+net user-enable-out                      <= iocontrol.0.user-enable-out
+
+#################################################################################
+# pwmgen
+#################################################################################
+net sig_spindle_0_on                     => pwmgen.0.enable
+net sig_pwmgen_0_pwm                     <= pwmgen.0.pwm
+net sig_spindle_0_speed-out              => pwmgen.0.value
+
+#################################################################################
+# halui
+#################################################################################
+net sig_halui_machine_is-on              <= halui.machine.is-on
+
+net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02
+net sig_pyvcp_halui_mdi-command-03       => halui.mdi-command-03
+
+#################################################################################
+# hal_pi_gpio
+#################################################################################
+net sig_pwmgen_0_pwm                     => hal_pi_gpio.pin-12-out
+net sig_pyvcp_hal_pi_gpio_pin-18-out     => hal_pi_gpio.pin-18-out
+net sig_hal_pi_gpio_pin-22-in            <= hal_pi_gpio.pin-22-in
+net sig_hal_pi_gpio_pin-24-in            <= hal_pi_gpio.pin-24-in
+net sig_hal_pi_gpio_pin-26-in            <= hal_pi_gpio.pin-26-in
+net sig_hal_pi_gpio_pin-32-in            <= hal_pi_gpio.pin-32-in
+net sig_hal_pi_gpio_pin-33-in            <= hal_pi_gpio.pin-33-in
+net sig_halui_machine_is-on              => hal_pi_gpio.pin-37-out
+
+#################################################################################
+# spindle
+#################################################################################
+net sig_spindle_0_on                     <= spindle.0.on
+net sig_spindle_0_speed-out              <= spindle.0.speed-out
+
+#################################################################################
+# joint
+#################################################################################
+net sig_hal_pi_gpio_pin-22-in            => joint.0.home-sw-in
+net sig_hal_pi_gpio_pin-24-in            => joint.1.home-sw-in
+net sig_hal_pi_gpio_pin-26-in            => joint.2.home-sw-in
+
+#################################################################################
+# motion
+#################################################################################
+net sig_hal_pi_gpio_pin-33-in            => motion.probe-input
+
+#################################################################################
+# joint-0
+#################################################################################
+setp stepgen.0.dirsetup                  [JOINT_0]STEPGEN_DIRSETUP
+setp stepgen.0.dirhold                   [JOINT_0]STEPGEN_DIRHOLD
+setp stepgen.0.steplen                   [JOINT_0]STEPGEN_STEPLEN
+setp stepgen.0.stepspace                 [JOINT_0]STEPGEN_STEPSPACE
+setp stepgen.0.maxaccel                  [JOINT_0]STEPGEN_MAXACCEL
+setp stepgen.0.position-scale            [JOINT_0]SCALE_OUT
+net j0step-pin                           <= stepgen.0.step
+net j0dir-pin                            <= stepgen.0.dir
+net j0pos-cmd                            <= joint.0.motor-pos-cmd
+net j0enable                             <= joint.0.amp-enable-out
+net j0step-pin                           => hal_pi_gpio.pin-21-out
+net j0dir-pin                            => hal_pi_gpio.pin-19-out
+net j0pos-cmd                            => stepgen.0.position-cmd
+net j0pos-cmd                            => joint.0.motor-pos-fb
+net j0enable                             => stepgen.0.enable
+
+#################################################################################
+# joint-1
+#################################################################################
+setp stepgen.1.dirsetup                  [JOINT_1]STEPGEN_DIRSETUP
+setp stepgen.1.dirhold                   [JOINT_1]STEPGEN_DIRHOLD
+setp stepgen.1.steplen                   [JOINT_1]STEPGEN_STEPLEN
+setp stepgen.1.stepspace                 [JOINT_1]STEPGEN_STEPSPACE
+setp stepgen.1.maxaccel                  [JOINT_1]STEPGEN_MAXACCEL
+setp stepgen.1.position-scale            [JOINT_1]SCALE_OUT
+net j1step-pin                           <= stepgen.1.step
+net j1dir-pin                            <= stepgen.1.dir
+net j1pos-cmd                            <= joint.1.motor-pos-cmd
+net j1enable                             <= joint.1.amp-enable-out
+net j1step-pin                           => hal_pi_gpio.pin-23-out
+net j1dir-pin                            => hal_pi_gpio.pin-29-out
+net j1pos-cmd                            => stepgen.1.position-cmd
+net j1pos-cmd                            => joint.1.motor-pos-fb
+net j1enable                             => stepgen.1.enable
+
+#################################################################################
+# joint-2
+#################################################################################
+setp stepgen.2.dirsetup                  [JOINT_2]STEPGEN_DIRSETUP
+setp stepgen.2.dirhold                   [JOINT_2]STEPGEN_DIRHOLD
+setp stepgen.2.steplen                   [JOINT_2]STEPGEN_STEPLEN
+setp stepgen.2.stepspace                 [JOINT_2]STEPGEN_STEPSPACE
+setp stepgen.2.maxaccel                  [JOINT_2]STEPGEN_MAXACCEL
+setp stepgen.2.position-scale            [JOINT_2]SCALE_OUT
+net j2step-pin                           <= stepgen.2.step
+net j2dir-pin                            <= stepgen.2.dir
+net j2pos-cmd                            <= joint.2.motor-pos-cmd
+net j2enable                             <= joint.2.amp-enable-out
+net j2step-pin                           => hal_pi_gpio.pin-31-out
+net j2dir-pin                            => hal_pi_gpio.pin-35-out
+net j2pos-cmd                            => stepgen.2.position-cmd
+net j2pos-cmd                            => joint.2.motor-pos-fb
+net j2enable                             => stepgen.2.enable
+
+#################################################################################
+# setp
+#################################################################################
+setp pwmgen.0.dither-pwm                    0
+setp pwmgen.0.max-dc                        1.0
+setp pwmgen.0.min-dc                        0.0
+setp pwmgen.0.offset                        0.0
+setp pwmgen.0.pwm-freq                      100
+setp pwmgen.0.scale                         100.0
+
+#################################################################################
+# preformated
+#################################################################################

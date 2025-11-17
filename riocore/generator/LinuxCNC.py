@@ -1987,17 +1987,6 @@ if __name__ == "__main__":
             if hasattr(plugin_instance, "hal"):
                 plugin_instance.hal(self)
 
-        # TODO: needed ?
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE in {"gpio", "mesa"}:
-                if plugin_instance.NAME in {"stepgen", "mesastepgen"} and plugin_instance.plugin_setup.get("is_joint", False) is True:
-                    # ignore, is set by the axis/joint generator
-                    continue
-                jprefix = plugin_instance.PREFIX
-                for name, psetup in plugin_instance.plugin_setup.get("pins", {}).items():
-                    if plugin_instance.NAME not in {"gpioout", "gpioin", "ethercat"} and "pin" in psetup:
-                        self.halg.net_add(f"{jprefix}.{name}", psetup["pin"])
-
         # TODO: can be removed if all addons moved to plugins
         # generate special hal entries for each addon
         for addon_name, addon in self.addons.items():

@@ -44,4 +44,5 @@ def test_generator(config):
 
     ret = os.system(f"diff -r tests/unit/data/full/{target}/ tests/unit/output/{target}/")
     assert ret == 0
+    os.system(f'rm -rf tests/unit/output/{target}')
 

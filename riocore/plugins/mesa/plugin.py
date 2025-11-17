@@ -1,4 +1,5 @@
 import os
+import json
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -8,8 +9,11 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "mesa"
         self.COMPONENT = "mesa"
-        self.INFO = "mesa"
-        self.DESCRIPTION = "mesa"
+        self.INFO = "support for mesa-cards with hm2 firmware"
+        self.DESCRIPTION = """
+## flashing 7i92
+mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/mesact_firmware/7i92/7i92_G540x2D.bit
+        """
         self.KEYWORDS = "stepgen pwm mesa board hm2"
         self.TYPE = "base"
         self.IMAGE_SHOW = False
@@ -28,202 +32,95 @@ class Plugin(PluginBase):
                 "description": "instance type",
             },
         }
-
-        extra_options = {
-            "board": {
-                "board": {
-                    "default": "7c81_5abobx3d",
-                    "type": "select",
-                    "options": [
-                        "7c81_5abobx2d",
-                        "7c81_5abobx3d",
-                        "7i92_5ABOBx2D",
-                    ],
-                    "description": "card configuration",
-                },
-                "spiclk_rate": {
-                    "default": 21250,
-                    "type": int,
-                    "min": 10000,
-                    "max": 1000000,
-                    "description": "spiclk_rate",
-                },
-                "num_pwms": {
-                    "default": 1,
-                    "type": int,
-                    "min": 0,
-                    "max": 10,
-                    "description": "number of pwm's",
-                },
-                "num_encoders": {
-                    "default": 0,
-                    "type": int,
-                    "min": 0,
-                    "max": 10,
-                    "description": "number of encoder's",
-                },
-                "num_stepgens": {
-                    "default": 3,
-                    "type": int,
-                    "min": 0,
-                    "max": 10,
-                    "description": "number of stepgen's",
-                },
-                "num_serials": {
-                    "default": 0,
-                    "type": int,
-                    "min": 0,
-                    "max": 10,
-                    "description": "number of serial's",
-                },
-            },
-            "stepper": {},
-            "encoder": {
-                "scale": {
-                    "default": 80,
-                    "type": int,
-                    "min": 1,
-                    "max": 1000000,
-                    "description": "encoder scale",
-                },
-            },
-            "pwm": {
-                "frequency": {
-                    "default": 10000,
-                    "type": int,
-                    "min": 1907,
-                    "max": 1000000,
-                    "description": "pwm frequency",
-                },
-                "scale": {
-                    "default": 100,
-                    "type": int,
-                    "min": 1,
-                    "max": 100000,
-                    "description": "max pwm value",
-                },
-                "min_limit": {
-                    "default": 0,
-                    "type": int,
-                    "min": 0,
-                    "max": 100000,
-                    "description": "min pwm value",
-                },
-            },
-        }
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        self.OPTIONS.update(extra_options[node_type])
         self.SIGNALS = {}
 
         if node_type == "board":
+            self.OPTIONS.update(
+                {
+                    "board": {
+                        "default": "7c81_5abobx3d",
+                        "type": "select",
+                        "options": [
+                            "7c81_5abobx2d",
+                            "7c81_5abobx3d",
+                            "7i92_5ABOBx2D",
+                            "7i92_G540x2D",
+                        ],
+                        "description": "card configuration",
+                    },
+                    "num_pwms": {
+                        "default": 1,
+                        "type": int,
+                        "min": 0,
+                        "max": 10,
+                        "description": "number of pwm's",
+                    },
+                    "num_encoders": {
+                        "default": 0,
+                        "type": int,
+                        "min": 0,
+                        "max": 10,
+                        "description": "number of encoder's",
+                    },
+                    "num_stepgens": {
+                        "default": 3,
+                        "type": int,
+                        "min": 0,
+                        "max": 10,
+                        "description": "number of stepgen's",
+                    },
+                    "num_serials": {
+                        "default": 0,
+                        "type": int,
+                        "min": 0,
+                        "max": 10,
+                        "description": "number of serial's",
+                    },
+                }
+            )
             board = self.plugin_setup.get("board", self.option_default("board"))
             board_type = board.split("_")[0]
+
+            if board_type in {"7c80", "7c81"}:
+                self.OPTIONS.update(
+                    {
+                        "spiclk_rate": {
+                            "default": 21250,
+                            "type": int,
+                            "min": 10000,
+                            "max": 1000000,
+                            "description": "spiclk_rate",
+                        },
+                    }
+                )
+            else:
+                self.OPTIONS.update(
+                    {
+                        "ip_address": {
+                            "default": "10.10.10.10",
+                            "type": str,
+                            "description": "ip address",
+                        },
+                    }
+                )
+
             self.TYPE = "base"
             self.IMAGE_SHOW = True
             self.IMAGE = f"{board_type}.png"
-            board_pins = {
-                "7c81": {
-                    "P1:IO0": {"pos": [115, 59]},
-                    "P1:IO2": {"pos": [134, 59]},
-                    "P1:IO4": {"pos": [153, 59]},
-                    "P1:IO6": {"pos": [172, 59]},
-                    "P1:IO8": {"pos": [191, 59]},
-                    "P1:IO9": {"pos": [210, 59]},
-                    "P1:IO10": {"pos": [229, 59]},
-                    "P1:IO11": {"pos": [248, 59]},
-                    "P1:IO12": {"pos": [267, 59]},
-                    "P1:IO13": {"pos": [286, 59]},
-                    "P1:IO14": {"pos": [305, 59]},
-                    "P1:IO15": {"pos": [324, 59]},
-                    "P1:IO16": {"pos": [343, 59]},
-                    "P1:IO1": {"pos": [115, 40]},
-                    "P1:IO3": {"pos": [134, 40]},
-                    "P1:IO5": {"pos": [153, 40]},
-                    "P1:IO7": {"pos": [172, 40]},
-                    "P7:IO38": {"pos": [345, 733]},
-                    "P7:IO40": {"pos": [326, 733]},
-                    "P7:IO42": {"pos": [307, 733]},
-                    "P7:IO44": {"pos": [288, 733]},
-                    "P7:IO46": {"pos": [269, 733]},
-                    "P7:IO47": {"pos": [250, 733]},
-                    "P7:IO48": {"pos": [231, 733]},
-                    "P7:IO49": {"pos": [212, 733]},
-                    "P7:IO50": {"pos": [193, 733]},
-                    "P7:IO51": {"pos": [174, 733]},
-                    "P7:IO52": {"pos": [155, 733]},
-                    "P7:IO53": {"pos": [136, 733]},
-                    "P7:IO54": {"pos": [117, 733]},
-                    "P7:IO39": {"pos": [345, 752]},
-                    "P7:IO41": {"pos": [326, 752]},
-                    "P7:IO43": {"pos": [307, 752]},
-                    "P7:IO45": {"pos": [288, 752]},
-                    "P2:IO19": {"pos": [464, 59]},
-                    "P2:IO21": {"pos": [483, 59]},
-                    "P2:IO23": {"pos": [502, 59]},
-                    "P2:IO25": {"pos": [521, 59]},
-                    "P2:IO27": {"pos": [540, 59]},
-                    "P2:IO28": {"pos": [559, 59]},
-                    "P2:IO29": {"pos": [578, 59]},
-                    "P2:IO30": {"pos": [597, 59]},
-                    "P2:IO31": {"pos": [616, 59]},
-                    "P2:IO32": {"pos": [635, 59]},
-                    "P2:IO33": {"pos": [654, 59]},
-                    "P2:IO34": {"pos": [673, 59]},
-                    "P2:IO35": {"pos": [692, 59]},
-                    "P2:IO20": {"pos": [464, 40]},
-                    "P2:IO22": {"pos": [483, 40]},
-                    "P2:IO24": {"pos": [502, 40]},
-                    "P2:IO26": {"pos": [521, 40]},
-                },
-                "7i92": {
-                    "P2:IO0": {"pin": "P119", "pos": [125, 110]},
-                    "P2:IO2": {"pin": "P117", "pos": [144, 110]},
-                    "P2:IO4": {"pin": "P115", "pos": [163, 110]},
-                    "P2:IO6": {"pin": "P112", "pos": [182, 110]},
-                    "P2:IO8": {"pin": "P105", "pos": [201, 110]},
-                    "P2:IO9": {"pin": "P104", "pos": [220, 110]},
-                    "P2:IO10": {"pin": "P102", "pos": [239, 110]},
-                    "P2:IO11": {"pin": "P101", "pos": [258, 110]},
-                    "P2:IO12": {"pin": "P100", "pos": [277, 110]},
-                    "P2:IO13": {"pin": "P99", "pos": [296, 110]},
-                    "P2:IO14": {"pin": "P98", "pos": [315, 110]},
-                    "P2:IO15": {"pin": "P97", "pos": [334, 110]},
-                    "P2:IO16": {"pin": "P95", "pos": [353, 110]},
-                    "P2:IO1": {"pin": "P118", "pos": [125, 93]},
-                    "P2:IO3": {"pin": "P116", "pos": [144, 93]},
-                    "P2:IO5": {"pin": "P114", "pos": [163, 93]},
-                    "P2:IO7": {"pin": "P111", "pos": [182, 93]},
-                    "P1:IO17": {"pin": "P119", "pos": [125, 270]},
-                    "P1:IO19": {"pin": "P117", "pos": [144, 270]},
-                    "P1:IO21": {"pin": "P115", "pos": [163, 270]},
-                    "P1:IO23": {"pin": "P112", "pos": [182, 270]},
-                    "P1:IO25": {"pin": "P105", "pos": [201, 270]},
-                    "P1:IO26": {"pin": "P104", "pos": [220, 270]},
-                    "P1:IO27": {"pin": "P102", "pos": [239, 270]},
-                    "P1:IO28": {"pin": "P101", "pos": [258, 270]},
-                    "P1:IO29": {"pin": "P100", "pos": [277, 270]},
-                    "P1:IO30": {"pin": "P99", "pos": [296, 270]},
-                    "P1:IO31": {"pin": "P98", "pos": [315, 270]},
-                    "P1:IO32": {"pin": "P97", "pos": [334, 270]},
-                    "P1:IO33": {"pin": "P95", "pos": [353, 270]},
-                    "P1:IO18": {"pin": "P118", "pos": [125, 253]},
-                    "P1:IO20": {"pin": "P116", "pos": [144, 253]},
-                    "P1:IO22": {"pin": "P114", "pos": [163, 253]},
-                    "P1:IO24": {"pin": "P111", "pos": [182, 253]},
-                },
-            }
             self.PINDEFAULTS = {}
 
             num_pwms = self.plugin_setup.get("num_pwms", self.option_default("num_pwms"))
             num_encoders = self.plugin_setup.get("num_encoders", self.option_default("num_encoders"))
             num_stepgens = self.plugin_setup.get("num_stepgens", self.option_default("num_stepgens"))
             num_serials = self.plugin_setup.get("num_serials", self.option_default("num_serials"))
-            pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board_type, f"{board}.pin")
 
-            # print(pinfile)
+            posfile = os.path.join(os.path.dirname(__file__), f"{board_type}.json")
+            board_pins = json.loads(open(posfile, "r").read())
+            pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board_type, f"{board}.pin")
+            pindata = open(pinfile, "r").read()
             pin_n = 0
             slot = None
-            pindata = open(pinfile, "r").read()
             for line in pindata.split("\n"):
                 if line.startswith("IO Connections for "):
                     slot = line.split()[3].split("+")[0]
@@ -233,7 +130,7 @@ class Plugin(PluginBase):
                     pin_n += 1
                     io = line.split()[1]
 
-                    pos = board_pins[board_type].get(f"{slot}:IO{io}", {}).get("pos")
+                    pos = board_pins["pins"].get(f"{slot}:IO{io}", {}).get("pos")
                     func = line.split()[3].replace("None", "GPIO")
 
                     # filter unused pwm/encoder
@@ -317,7 +214,20 @@ class Plugin(PluginBase):
                 "step": {"direction": "output", "edge": "target", "type": "MESAStepGenStep"},
                 "dir": {"direction": "output", "edge": "target", "type": "MESAStepGenDir"},
             }
+
         elif node_type == "encoder":
+            self.OPTIONS.update(
+                {
+                    "scale": {
+                        "default": 80,
+                        "type": int,
+                        "min": 1,
+                        "max": 1000000,
+                        "description": "encoder scale",
+                    },
+                }
+            )
+
             self.TYPE = "io"
             self.IMAGE_SHOW = True
             self.IMAGE_SHOW = False
@@ -349,6 +259,32 @@ class Plugin(PluginBase):
             }
 
         elif node_type == "pwm":
+            self.OPTIONS.update(
+                {
+                    "frequency": {
+                        "default": 10000,
+                        "type": int,
+                        "min": 1907,
+                        "max": 1000000,
+                        "description": "pwm frequency",
+                    },
+                    "scale": {
+                        "default": 100,
+                        "type": int,
+                        "min": 1,
+                        "max": 100000,
+                        "description": "max pwm value",
+                    },
+                    "min_limit": {
+                        "default": 0,
+                        "type": int,
+                        "min": 0,
+                        "max": 100000,
+                        "description": "min pwm value",
+                    },
+                }
+            )
+
             self.TYPE = "io"
             self.IMAGE_SHOW = True
             self.IMAGES = ["spindle500w", "laser", "led"]
@@ -415,35 +351,28 @@ class Plugin(PluginBase):
                 num_pwms = instance.plugin_setup.get("num_pwms", instance.option_default("num_pwms"))
                 num_encoders = instance.plugin_setup.get("num_encoders", instance.option_default("num_encoders"))
                 num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
-                spiclk_rate = instance.plugin_setup.get("spiclk_rate", instance.option_default("spiclk_rate"))
 
                 output.append("# mesa")
-
                 if board_type == "7i92":
-                    ip_address = "192.168.1.121"
+                    ip_address = instance.plugin_setup.get("ip_address", instance.option_default("ip_address"))
                     output.append("loadrt hostmot2")
                     output.append(f'loadrt hm2_eth board_ip="{ip_address}" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
-                    output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
-                    output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
-                    output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
-                    output.append("")
-                    output.append(f"addf {instance.hm2_prefix}.read servo-thread")
-                    output.append(f"addf {instance.hm2_prefix}.write servo-thread")
-
                 else:
+                    spiclk_rate = instance.plugin_setup.get("spiclk_rate", instance.option_default("spiclk_rate"))
                     component = "hm2_spix"
                     output.append("loadrt hostmot2")
                     output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
-                    output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
-                    output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
-                    output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
-                    output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
-                    output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
-                    output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
-                    output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
-                    output.append("")
-                    output.append(f"addf {instance.hm2_prefix}.read servo-thread")
-                    output.append(f"addf {instance.hm2_prefix}.write servo-thread")
+
+                output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
+                output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
+                output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
+                output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
+                output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
+                output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
+                output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
+                output.append("")
+                output.append(f"addf {instance.hm2_prefix}.read servo-thread")
+                output.append(f"addf {instance.hm2_prefix}.write servo-thread")
 
         return "\n".join(output)
 
