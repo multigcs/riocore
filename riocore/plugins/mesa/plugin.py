@@ -409,25 +409,41 @@ class Plugin(PluginBase):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "board":
+                board = instance.plugin_setup.get("board", instance.option_default("board"))
+                board_type = board.split("_")[0]
+
                 num_pwms = instance.plugin_setup.get("num_pwms", instance.option_default("num_pwms"))
                 num_encoders = instance.plugin_setup.get("num_encoders", instance.option_default("num_encoders"))
                 num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
                 spiclk_rate = instance.plugin_setup.get("spiclk_rate", instance.option_default("spiclk_rate"))
 
                 output.append("# mesa")
-                component = "hm2_spix"
-                output.append("loadrt hostmot2")
-                output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
-                output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
-                output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
-                output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
-                output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
-                output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
-                output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
-                output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
-                output.append("")
-                output.append(f"addf {instance.hm2_prefix}.read servo-thread")
-                output.append(f"addf {instance.hm2_prefix}.write servo-thread")
+
+                if board_type == "7i92":
+                    ip_address = "192.168.1.121"
+                    output.append("loadrt hostmot2")
+                    output.append(f'loadrt hm2_eth board_ip="{ip_address}" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
+                    output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
+                    output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
+                    output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
+                    output.append("")
+                    output.append(f"addf {instance.hm2_prefix}.read servo-thread")
+                    output.append(f"addf {instance.hm2_prefix}.write servo-thread")
+
+                else:
+                    component = "hm2_spix"
+                    output.append("loadrt hostmot2")
+                    output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
+                    output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
+                    output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
+                    output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
+                    output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
+                    output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
+                    output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
+                    output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
+                    output.append("")
+                    output.append(f"addf {instance.hm2_prefix}.read servo-thread")
+                    output.append(f"addf {instance.hm2_prefix}.write servo-thread")
 
         return "\n".join(output)
 
