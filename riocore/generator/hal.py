@@ -428,6 +428,11 @@ class hal_generator:
     def net_add(self, input_pin, output_pin, signal_name=None):
         if not input_pin or not output_pin:
             return
+
+        # if input is a number, then use setp
+        if input_pin.replace(".", "").isnumeric():
+            return self.setp_add(output_pin, input_pin)
+
         # replace some command/operation words
         input_pin = input_pin.replace("!(", "not(")
         if output_pin[0] == "!":
