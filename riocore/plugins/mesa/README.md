@@ -243,7 +243,7 @@ number of pwm's
 
  * type: int
  * min: 0
- * max: 10
+ * max: 3
  * default: 1
 
 ### num_encoders:
@@ -251,7 +251,7 @@ number of encoder's
 
  * type: int
  * min: 0
- * max: 10
+ * max: 3
  * default: 0
 
 ### num_stepgens:
@@ -259,7 +259,7 @@ number of stepgen's
 
  * type: int
  * min: 0
- * max: 10
+ * max: 12
  * default: 3
 
 ### num_serials:
@@ -267,7 +267,7 @@ number of serial's
 
  * type: int
  * min: 0
- * max: 10
+ * max: 0
  * default: 0
 
 ### spiclk_rate:

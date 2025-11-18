@@ -70,6 +70,7 @@
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | Experimental  |
 | Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
+|  | [rioctrl_io](rioctrl_io/README.md) | Expansion to add I/O's via shiftregister's | <img src="rioctrl_io/image.png" height="48"> |  |
 |  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
 | Misc | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> | GPIO  |
