@@ -1,55 +1,38 @@
 {
     "name": "Tangbob",
-    "boardcfg": "Tangbob",
     "description": "Virtual-Signals with Axis and GladeVCP",
     "protocol": "UDP",
     "plugins": [
         {
-            "type": "w5500",
-            "pins": {
-                "mosi": {
-                    "pin": "SPI:MOSI"
-                },
-                "miso": {
-                    "pin": "SPI:MISO"
-                },
-                "sclk": {
-                    "pin": "SPI:SCLK"
-                },
-                "sel": {
-                    "pin": "SPI:SEL"
+            "type": "fpga",
+            "node_type": "Tangbob",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                0.0,
+                0.0
+            ],
+            "rotate": 0,
+            "sub": {
+                "w5500": {
+                    "ip": "192.168.11.194"
                 }
-            },
-            "uid": "w55000"
-        },
-        {
-            "type": "wled",
-            "pins": {
-                "data": {
-                    "pin": "WLED:DATA"
-                }
-            },
-            "signals": {
-                "0_green": {
-                    "net": "halui.mode.is-auto or halui.program.is-paused"
-                },
-                "0_red": {
-                    "net": ""
-                },
-                "0_blue": {
-                    "net": "halui.mode.is-auto"
-                }
-            },
-            "uid": "wled0"
+            }
         },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "10"
+                    "pin": "board0:10"
                 }
             },
-            "uid": "blink0"
+            "uid": "blink0",
+            "pos": [
+                540.0,
+                720.0
+            ]
         },
         {
             "type": "signal",
@@ -65,7 +48,11 @@
                     }
                 }
             },
-            "name": "Virt-Float-In1"
+            "name": "Virt-Float-In1",
+            "pos": [
+                540.0,
+                660.0
+            ]
         },
         {
             "type": "signal",
@@ -81,7 +68,11 @@
                     }
                 }
             },
-            "name": "Virt-Float-In2"
+            "name": "Virt-Float-In2",
+            "pos": [
+                540.0,
+                600.0
+            ]
         },
         {
             "type": "signal",
@@ -98,7 +89,11 @@
                 }
             },
             "dir": "output",
-            "name": "Virt-Float-Out1"
+            "name": "Virt-Float-Out1",
+            "pos": [
+                540.0,
+                540.0
+            ]
         },
         {
             "type": "signal",
@@ -116,7 +111,11 @@
             },
             "dir": "output",
             "name": "Virt-Float-Out2",
-            "uid": "signal2"
+            "uid": "signal2",
+            "pos": [
+                540.0,
+                480.0
+            ]
         },
         {
             "type": "signal",
@@ -130,7 +129,11 @@
             },
             "vtype": "bool",
             "name": "Virt-Bool-In1",
-            "uid": "signal3"
+            "uid": "signal3",
+            "pos": [
+                540.0,
+                420.0
+            ]
         },
         {
             "type": "signal",
@@ -144,7 +147,11 @@
             },
             "vtype": "bool",
             "name": "Virt-Bool-In2",
-            "uid": "signal4"
+            "uid": "signal4",
+            "pos": [
+                540.0,
+                360.0
+            ]
         },
         {
             "type": "signal",
@@ -158,7 +165,11 @@
             },
             "vtype": "bool",
             "name": "Virt-Bool-In3",
-            "uid": "signal5"
+            "uid": "signal5",
+            "pos": [
+                540.0,
+                300.0
+            ]
         },
         {
             "type": "signal",
@@ -174,7 +185,11 @@
             },
             "dir": "output",
             "vtype": "bool",
-            "name": "Virt-Bool-Out1"
+            "name": "Virt-Bool-Out1",
+            "pos": [
+                540.0,
+                240.0
+            ]
         },
         {
             "type": "signal",
@@ -191,7 +206,11 @@
             },
             "dir": "output",
             "vtype": "bool",
-            "name": "Virt-Bool-Out2"
+            "name": "Virt-Bool-Out2",
+            "pos": [
+                540.0,
+                180.0
+            ]
         },
         {
             "type": "signal",
@@ -208,7 +227,11 @@
             "dir": "output",
             "vtype": "bool",
             "name": "Virt-Bool-Out3",
-            "uid": "signal6"
+            "uid": "signal6",
+            "pos": [
+                540.0,
+                120.0
+            ]
         },
         {
             "type": "signal",
@@ -225,7 +248,11 @@
             "dir": "output",
             "vtype": "bool",
             "name": "Virt-Bool-Out4",
-            "uid": "signal7"
+            "uid": "signal7",
+            "pos": [
+                540.0,
+                60.0
+            ]
         },
         {
             "type": "signal",
@@ -242,7 +269,29 @@
             "dir": "output",
             "vtype": "bool",
             "name": "Virt-Bool-Out5",
-            "uid": "signal8"
+            "uid": "signal8",
+            "pos": [
+                540.0,
+                0.0
+            ]
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                300.0,
+                360.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "board0:RIGHT:P13"
+                },
+                "dir": {
+                    "pin": "board0:RIGHT:P12"
+                }
+            }
         }
     ],
     "modules": [
@@ -258,6 +307,15 @@
         "vcp_type": "gladevcp",
         "robojog": {
             "enable": true
+        }
+    },
+    "flow": {
+        "view": {
+            "scale": 0.88,
+            "pos": [
+                31,
+                152
+            ]
         }
     }
 }

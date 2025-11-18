@@ -6,13 +6,13 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	ruff format bin/rio* riocore/*.py riocore/gui/flexgui/flexgui riocore/chipdata riocore/configs riocore/files riocore/generator riocore/gui riocore/interfaces riocore/modules riocore/plugins
+	ruff format bin/rio* riocore/*.py riocore/gui/flexgui/flexgui riocore/configs riocore/files riocore/generator riocore/gui riocore/interfaces riocore/modules riocore/plugins
 
 check:
-	ruff check bin/rio* riocore/*.py riocore/gui/flexgui/flexgui riocore/chipdata riocore/configs riocore/files riocore/generator riocore/gui riocore/interfaces riocore/modules riocore/plugins
+	ruff check bin/rio* riocore/*.py riocore/gui/flexgui/flexgui riocore/configs riocore/files riocore/generator riocore/gui riocore/interfaces riocore/modules riocore/plugins
 
 check_fix:
-	ruff check --fix bin/rio* riocore/*.py riocore/gui/flexgui/flexgui riocore/chipdata riocore/configs riocore/files riocore/generator riocore/gui riocore/interfaces riocore/modules riocore/plugins
+	ruff check --fix bin/rio* riocore/*.py riocore/gui/flexgui/flexgui riocore/configs riocore/files riocore/generator riocore/gui riocore/interfaces riocore/modules riocore/plugins
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/

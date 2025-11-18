@@ -281,7 +281,7 @@ class PluginBase:
             for key in setup:
                 if key in self.plugin_setup:
                     setup[key] = self.plugin_setup[key]
-            signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_")
+            signal_prefix = (self.PREFIX or self.title or self.instances_name).replace(" ", "_")
             halname = f"{signal_prefix}.{name}"
             direction_short = setup["direction"].upper().replace("PUT", "")
             signals[name]["signal_prefix"] = signal_prefix

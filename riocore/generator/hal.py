@@ -54,7 +54,6 @@ class hal_generator:
         elif signal_name:
             if pin in self.inputs2signals:
                 if self.inputs2signals[pin]["signal"] != signal_name:
-                    print(pin, target)
                     print(f"ERROR: pin ({pin}) already exist as signal: {self.inputs2signals[pin]['signal']} (!= {signal_name})")
                     signal = self.inputs2signals[pin]["signal"]
                 else:
