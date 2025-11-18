@@ -42,7 +42,7 @@ class Plugin(PluginBase):
             self.IMAGE = "image.png"
             self.PINDEFAULTS = {
                 "BUS:out": {
-                    "pin": f"{self.instances_name}:master",
+                    "pin": f"{self.instances_name}:BUS:out",
                     "comment": "ethercat-master",
                     "pos": [100, 110],
                     "direction": "all",
@@ -252,6 +252,10 @@ class Plugin(PluginBase):
             for instance in instances:
                 if instance in bus_list:
                     continue
+                if last == instance.instances_name:
+                    # is master
+                    continue
+
                 node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
                 sub_parent = instance.plugin_setup.get("parent")
                 if sub_parent and sub_parent.instances_name == last:

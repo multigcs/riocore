@@ -34,25 +34,37 @@
                 390.0,
                 20.0
             ],
-            "modules": "el1008 el2008",
+            "modules": "el1008 el1008 el2008 el2008 el4002",
             "sub": {
                 "0": {
-                    "type": "ethercat",
-                    "node_type": "el1008",
-                    "uid": "ethercat2-0",
-                    "rpos": [
-                        263,
-                        0.0
-                    ]
+                    "node_type": "el1008"
                 },
                 "1": {
-                    "type": "ethercat",
-                    "node_type": "el2008",
-                    "uid": "ethercat2-1",
-                    "rpos": [
-                        338,
-                        0.0
-                    ]
+                    "node_type": "el1008"
+                },
+                "ethercat2-0": {
+                    "node_type": "el1008"
+                },
+                "ethercat2-1": {
+                    "node_type": "el2008"
+                },
+                "2": {
+                    "node_type": "el2008"
+                },
+                "3": {
+                    "node_type": "el2008"
+                },
+                "4": {
+                    "node_type": "el4002"
+                },
+                "ethercat2-2": {
+                    "node_type": "el2008"
+                },
+                "ethercat2-3": {
+                    "node_type": "el2008"
+                },
+                "ethercat2-4": {
+                    "node_type": "el4002"
                 }
             },
             "pins": {
@@ -64,10 +76,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 2.16,
+            "scale": 0.88,
             "pos": [
-                18,
-                -155
+                -228,
+                -97
             ]
         }
     }
