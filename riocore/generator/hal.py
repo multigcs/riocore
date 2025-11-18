@@ -224,80 +224,70 @@ class hal_generator:
         if "not" not in self.hal_calcs:
             self.hal_calcs["not"] = []
         self.hal_calcs["not"].append(fname)
-
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
         self.function_cache[fname] = f"{fname}.out"
         return f"{fname}.out"
 
-    def pin_abs(self, input_pin, target):
+    def pin_operation0args(self, operation, input_pin, target):
+        operations = {
+            "abs": ("abs", "in", "out"),
+            "toggle": ("toggle", "in", "out"),
+        }
+        if operation not in operations:
+            print(f"ERROR: operation '{operation}' not found")
+            return
+
+        in_name = operations[operation][1]
+        out_name = operations[operation][2]
+        operation = operations[operation][0]
+
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
-        fname = f"func.abs_{input_pin.replace('.', '_')}"
+        fname = f"func.{operation}_{input_pin.replace('.', '_')}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-        if "abs" not in self.hal_calcs:
-            self.hal_calcs["abs"] = []
-        self.hal_calcs["abs"].append(fname)
+        if operation not in self.hal_calcs:
+            self.hal_calcs[operation] = []
+        self.hal_calcs[operation].append(fname)
         input_signal = self.pin2signal(input_pin, target)
-        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-        self.function_cache[fname] = f"{fname}.out"
-        return f"{fname}.out"
+        self.outputs2signals[f"{fname}.{in_name}"] = {"signals": [input_signal], "target": target}
+        self.function_cache[fname] = f"{fname}.{out_name}"
+        return f"{fname}.{out_name}"
 
-    def pin_delay(self, input_pin, target, on, off):
+    def pin_operation2args(self, operation, input_pin, target, arg1, arg2):
+        operations = {
+            "limit": ("limit1", "min", "max", "in", "out"),
+            "delay": ("timedelay", "on-delay", "off-delay", "in", "out"),
+            "deadzone": ("deadzone", "center", "threshold", "in", "out"),
+        }
+        if operation not in operations:
+            print(f"ERROR: operation '{operation}' not found")
+            return
+
+        arg1_name = operations[operation][1]
+        arg2_name = operations[operation][2]
+        in_name = operations[operation][3]
+        out_name = operations[operation][4]
+        operation = operations[operation][0]
+
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
-        if "timedelay" not in self.hal_calcs:
-            self.hal_calcs["timedelay"] = []
-        fnum = len(self.hal_calcs["timedelay"]) + 1
-        fname = f"func.timedelay-{fnum}"
+        if operation not in self.hal_calcs:
+            self.hal_calcs[operation] = []
+        fnum = len(self.hal_calcs[operation]) + 1
+        fname = f"func.{operation}-{fnum}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-        self.hal_calcs["timedelay"].append(fname)
+        self.hal_calcs[operation].append(fname)
         input_signal = self.pin2signal(input_pin, target)
-        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-        self.setp_add(f"{fname}.on-delay", on)
-        self.setp_add(f"{fname}.off-delay", off)
-        self.function_cache[fname] = f"{fname}.out"
-        return f"{fname}.out"
-
-    def pin_limit(self, input_pin, target, lmin, lmax):
-        if target not in self.logic_ids:
-            self.logic_ids[target] = 0
-        self.logic_ids[target] += 1
-        if "limit1" not in self.hal_calcs:
-            self.hal_calcs["limit1"] = []
-        fnum = len(self.hal_calcs["limit1"]) + 1
-        fname = f"func.limit1-{fnum}"
-        if fname in self.function_cache:
-            return self.function_cache[fname]
-        self.hal_calcs["limit1"].append(fname)
-        input_signal = self.pin2signal(input_pin, target)
-        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-        self.setp_add(f"{fname}.min", lmin)
-        self.setp_add(f"{fname}.max", lmax)
-        self.function_cache[fname] = f"{fname}.out"
-        return f"{fname}.out"
-
-    def pin_deadzone(self, input_pin, target, center, threshold):
-        if target not in self.logic_ids:
-            self.logic_ids[target] = 0
-        self.logic_ids[target] += 1
-        if "deadzone" not in self.hal_calcs:
-            self.hal_calcs["deadzone"] = []
-        fnum = len(self.hal_calcs["deadzone"]) + 1
-        fname = f"func.deadzone-{fnum}"
-        if fname in self.function_cache:
-            return self.function_cache[fname]
-        self.hal_calcs["deadzone"].append(fname)
-        input_signal = self.pin2signal(input_pin, target)
-        self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
-        self.setp_add(f"{fname}.center", center)
-        self.setp_add(f"{fname}.threshold", threshold)
-        self.function_cache[fname] = f"{fname}.out"
-        return f"{fname}.out"
+        self.outputs2signals[f"{fname}.{in_name}"] = {"signals": [input_signal], "target": target}
+        self.setp_add(f"{fname}.{arg1_name}", arg1)
+        self.setp_add(f"{fname}.{arg2_name}", arg2)
+        self.function_cache[fname] = f"{fname}.{out_name}"
+        return f"{fname}.{out_name}"
 
     def pin_chargepump(self, divider):
         if divider:
@@ -369,14 +359,10 @@ class hal_generator:
                             new_pin = self.pin_not(inside[1:], output_pin)
                         elif function == "not":
                             new_pin = self.pin_not(inside, output_pin)
-                        elif function == "abs":
-                            new_pin = self.pin_abs(inside, output_pin)
-                        elif function == "delay":
-                            new_pin = self.pin_delay(inside, output_pin, function_params[0].strip(), function_params[1].strip())
-                        elif function == "limit":
-                            new_pin = self.pin_limit(inside, output_pin, function_params[0].strip(), function_params[1].strip())
-                        elif function == "deadzone":
-                            new_pin = self.pin_deadzone(inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function in {"abs", "toggle"}:
+                            new_pin = self.pin_operation0args(function, inside, output_pin)
+                        elif function in {"delay", "limit", "deadzone"}:
+                            new_pin = self.pin_operation2args(function, inside, output_pin, function_params[0].strip(), function_params[1].strip())
                         elif function == "chargepump":
                             new_pin = self.pin_chargepump(inside)
                         elif function == "conv":
