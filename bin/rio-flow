@@ -210,13 +210,9 @@ class MyNode(QGraphicsItem):
     info_size = 7
     text_scale = 1.8
     text_font = "Times"
-    text_color = QColor(220, 220, 220)
     title_color = QColor(255, 255, 255)
     info_color = QColor(200, 200, 200)
     port_size = 10
-    port_tsize = 9
-    port_toff_x = 2
-    port_toff_y = 2
     port_border = 2
     port_top = 40
     port_bottom = 10
