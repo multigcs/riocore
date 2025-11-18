@@ -214,12 +214,6 @@ if args.config:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
 
-    elif args.config[0].startswith("testbench:"):
-        plugin = args.config[0].split(":")[-1]
-        plugins = riocore.Plugins()
-        plugin_instance = plugins.load_plugin(plugin, {"type": plugin}, {"speed": 1000000, "jdata": {"clock": {"speed": 1000000}}})
-        plugins.testbench_builder(plugin, plugin_instance)
-
     elif args.config[0].startswith("plugininfo:"):
         plugin = args.config[0].split(":")[-1]
         plugins = riocore.Plugins()
