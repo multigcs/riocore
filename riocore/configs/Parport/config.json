@@ -3,10 +3,10 @@
     "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 2.45,
+            "scale": 1.0134115674769488,
             "pos": [
-                -23,
-                -205
+                -339.4283319362951,
+                -278.0
             ]
         },
         "board": {
@@ -237,7 +237,7 @@
                 "home_final_vel": 20.0,
                 "min_limit": -32.0,
                 "max_limit": 0.0,
-                "max_velocity": 15.0,
+                "max_velocity": 10.0,
                 "home_latch_vel": 1.0
             },
             "signals": {
@@ -374,17 +374,26 @@
             "type": "gpioin",
             "pins": {
                 "bit": {
-                    "pin": "china-bob5x0:OPTO:in4"
+                    "pin": "china-bob5x0:OPTO:in4",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                460.0,
+                                440.0
+                            ]
+                        }
+                    ]
                 }
             },
             "uid": "gpioin3",
             "pos": [
-                490.0,
-                440.0
+                600.0,
+                390.0
             ],
             "signals": {
                 "bit": {
-                    "net": "",
+                    "net": "iocontrol.0.emc-enable-in",
                     "setp": ""
                 }
             },
