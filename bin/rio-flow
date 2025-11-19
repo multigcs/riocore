@@ -425,7 +425,7 @@ class MyNode(QGraphicsItem):
                 painter.setClipPath(path)
                 painter.strokePath(path, painter.pen())
         else:
-            self.paintBg(painter, self.name)
+            self.paintBg(painter, self.title)
 
         painted_ports = []
         for port_name, port_data in self.ports.items():
