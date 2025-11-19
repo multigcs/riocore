@@ -101,7 +101,7 @@ class hal_generator:
             self.hal_logics[fname] = f"0x{personality:x}"
             for in_n in range(n_inputs):
                 input_pin = parts[in_n * 2]
-                if input_pin.replace(".", "").lstrip("-").isnumeric():
+                if input_pin.replace(".", "").lstrip("-").lstrip("-").isnumeric():
                     self.setp_add(f"{fname}.in-{in_n:02d}", input_pin)
                     continue
                 if input_pin[0] == "!":
@@ -126,10 +126,10 @@ class hal_generator:
             min_value = parts[2]
             max_value = min_value
             if etype == ">":
-                if min_value.replace(".", "").isnumeric():
+                if min_value.replace(".", "").lstrip("-").isnumeric():
                     max_value = str(float(min_value) + 0.001)
             elif etype == "<":
-                if min_value.replace(".", "").isnumeric():
+                if min_value.replace(".", "").lstrip("-").isnumeric():
                     min_value = str(float(min_value) - 0.001)
             elif etype == "<>":
                 if "," in min_value:
@@ -142,7 +142,7 @@ class hal_generator:
                 self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
             else:
                 self.outputs2signals[f"{fname}.in"]["signals"].append(input_signal)
-            if min_value.replace(".", "").isnumeric():
+            if min_value.replace(".", "").lstrip("-").isnumeric():
                 self.setp_add(f"{fname}.min", min_value)
             else:
                 input_signal = self.pin2signal(min_value, target)
@@ -150,7 +150,7 @@ class hal_generator:
                     self.outputs2signals[f"{fname}.min"] = {"signals": [input_signal], "target": target}
                 else:
                     self.outputs2signals[f"{fname}.min"]["signals"].append(input_signal)
-            if max_value.replace(".", "").isnumeric():
+            if max_value.replace(".", "").lstrip("-").isnumeric():
                 self.setp_add(f"{fname}.max", max_value)
             else:
                 input_signal = self.pin2signal(max_value, target)
@@ -166,7 +166,9 @@ class hal_generator:
             # pin1 / pin2
             personality = int_types[etype]
             if etype == "-":
-                fname = f"func.sub2_{new_signal}"
+                # for substraction, we use sum2 with gain = -1.0
+                fname = f"func.sub_{new_signal}"
+                self.setp_add(f"{fname}.gain1", -1.0)
             else:
                 fname = f"func.{int_types[etype]}_{new_signal}"
             if personality not in self.hal_calcs:
@@ -182,9 +184,6 @@ class hal_generator:
                     self.outputs2signals[f"{fname}.in{in_n}"] = {"signals": [input_signal], "target": target}
                 else:
                     self.outputs2signals[f"{fname}.in{in_n}"]["signals"].append(input_signal)
-
-                if etype == "-" and in_n == 1:
-                    self.outputs2signals[f"{fname}.gain{in_n}"] = {"signals": -1, "target": target}
 
             if etype.upper() == "S+":
                 output_pin = f"{fname}.out-s"
@@ -256,22 +255,30 @@ class hal_generator:
         self.function_cache[fname] = f"{fname}.{out_name}"
         return f"{fname}.{out_name}"
 
-    def pin_operation2args(self, operation, input_pin, target, arg1, arg2):
+    def pin_operation2args(self, opname, input_pin, target, args):
         operations = {
-            "limit": ("limit1", "min", "max", "in", "out"),
-            "delay": ("timedelay", "on-delay", "off-delay", "in", "out"),
-            "deadzone": ("deadzone", "center", "threshold", "in", "out"),
+            "abs": ("abs", (), "in", "out"),
+            "toggle": ("toggle", (), "in", "out"),
+            "limit": ("limit1", ("min", "max"), "in", "out"),
+            "delay": ("timedelay", ("on-delay", "off-delay"), "in", "out"),
+            "timedelay": ("timedelay", ("on-delay", "off-delay"), "in", "out"),
+            "deadzone": ("deadzone", ("center", "threshold"), "in", "out"),
+            "oneshot": ("oneshot", ("width", "rising", "falling"), "in", "out"),
+            "mux2": ("mux2", ("in0", "in1"), "sel", "out"),
+            "min": ("minmax", ("reset",), "in", "min"),
+            "max": ("minmax", ("reset",), "in", "max"),
         }
-        if operation not in operations:
-            print(f"ERROR: operation '{operation}' not found")
+        if opname not in operations:
+            print(f"ERROR: operation '{opname}' not found")
             return
-
-        arg1_name = operations[operation][1]
-        arg2_name = operations[operation][2]
-        in_name = operations[operation][3]
-        out_name = operations[operation][4]
-        operation = operations[operation][0]
-
+        operation = operations[opname][0]
+        arg_names = operations[opname][1]
+        in_name = operations[opname][2]
+        out_name = operations[opname][3]
+        if len(arg_names) != len(args):
+            print(f"ERROR: operation '{opname}' needs {len(arg_names) + 1} arguments")
+            print(f"ERROR:     {opname}(halpin, {', '.join(arg_names)})")
+            exit(1)
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
@@ -284,8 +291,8 @@ class hal_generator:
         self.hal_calcs[operation].append(fname)
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.{in_name}"] = {"signals": [input_signal], "target": target}
-        self.setp_add(f"{fname}.{arg1_name}", arg1)
-        self.setp_add(f"{fname}.{arg2_name}", arg2)
+        for arg_num, arg_name in enumerate(arg_names):
+            self.net_add(args[arg_num].strip(), f"{fname}.{arg_name}")
         self.function_cache[fname] = f"{fname}.{out_name}"
         return f"{fname}.{out_name}"
 
@@ -359,10 +366,8 @@ class hal_generator:
                             new_pin = self.pin_not(inside[1:], output_pin)
                         elif function == "not":
                             new_pin = self.pin_not(inside, output_pin)
-                        elif function in {"abs", "toggle"}:
-                            new_pin = self.pin_operation0args(function, inside, output_pin)
-                        elif function in {"delay", "limit", "deadzone"}:
-                            new_pin = self.pin_operation2args(function, inside, output_pin, function_params[0].strip(), function_params[1].strip())
+                        elif function in {"delay", "timedelay", "limit", "deadzone", "oneshot", "abs", "toggle", "mux2", "min", "max"}:
+                            new_pin = self.pin_operation2args(function, inside, output_pin, function_params)
                         elif function == "chargepump":
                             new_pin = self.pin_chargepump(inside)
                         elif function == "conv":
@@ -430,7 +435,7 @@ class hal_generator:
             return
 
         # if input is a number, then use setp
-        if input_pin.replace(".", "").isnumeric():
+        if input_pin.replace(".", "").lstrip("-").isnumeric():
             return self.setp_add(output_pin, input_pin)
 
         # replace some command/operation words
@@ -537,14 +542,23 @@ class hal_generator:
         hal_data.append("")
 
         # resolv all expressions
-        for output, data in self.signals_out.items():
-            cleaned_expression = data["expression"].replace("|", "").replace("&", "")
-            input_pin = self.brackets_parser(f"({cleaned_expression})", output)
-            input_signal = self.pin2signal(input_pin, output, data.get("name"))
-            if output in self.outputs2signals:
-                self.outputs2signals[output]["signals"].append(input_signal)
-            else:
-                self.outputs2signals[output] = {"signals": [input_signal], "target": output}
+        resolved = []
+        added = True
+        while added:
+            added = False
+            for output in list(self.signals_out):
+                if output in resolved:
+                    continue
+                added = True
+                resolved.append(output)
+                data = self.signals_out[output]
+                cleaned_expression = data["expression"].replace("|", "").replace("&", "")
+                input_pin = self.brackets_parser(f"({cleaned_expression})", output)
+                input_signal = self.pin2signal(input_pin, output, data.get("name"))
+                if output in self.outputs2signals:
+                    self.outputs2signals[output]["signals"].append(input_signal)
+                else:
+                    self.outputs2signals[output] = {"signals": [input_signal], "target": output}
 
         # combine and add functions
         func_names = []

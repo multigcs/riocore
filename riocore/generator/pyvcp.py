@@ -381,6 +381,8 @@ class pyvcp:
         display_unit = setup.get("unit")
         display_format = setup.get("format", "05d")
 
+        bar_height = setup.get("height")
+
         if display_unit and len(display_format) < 5:
             display_format = f"{display_format} {display_unit}"
 
@@ -393,9 +395,16 @@ class pyvcp:
         e_halpin = etree.Element("halpin")
         e_halpin.text = f'"{halpin}"'
         e_bar.append(e_halpin)
+
+        if bar_height:
+            e_bar_height = etree.Element("bar_height")
+            e_bar_height.text = str(int(bar_height))
+            e_bar.append(e_bar_height)
+
         e_min = etree.Element("min_")
         e_min.text = str(int(display_min))
         e_bar.append(e_min)
+
         e_max = etree.Element("max_")
         e_max.text = str(int(display_max))
         e_bar.append(e_max)

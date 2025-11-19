@@ -1657,9 +1657,9 @@ if __name__ == "__main__":
                     if dtype == "multilabel" and not boolean:
                         self.halg.net_add(f"{halname}-u32-abs", f"demux_{halname}.sel-u32")
                     elif virtual and direction == "input":
-                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_')}")
+                        self.halg.net_add(gui_pinname, f"riov.{halname}", f"sig_riov_{halname.replace('.', '_').replace('<', '-lt-').replace('>', '-gt-')}")
                     elif virtual and direction == "output":
-                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_')}")
+                        self.halg.net_add(f"riov.{halname}", gui_pinname, f"sig_riov_{halname.replace('.', '_').replace('<', '-lt-').replace('>', '-gt-')}")
                     elif netname or setp or direction == "input":
                         self.halg.net_add(f"{halname}", gui_pinname)
                     elif direction == "output":
