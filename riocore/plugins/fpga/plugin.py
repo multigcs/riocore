@@ -140,6 +140,14 @@ class Plugin(PluginBase):
             self.SUB_PLUGINS.append(sub_plugin)
 
     def update_prefixes(cls, parent, instances):
+        subs = {}
+        for instance in instances:
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                if connected_pin["instance"].NAME == "uartsub":
+                    subboard = connected_pin["instance"].plugin_setup.get("subboard")
+                    if subboard:
+                        subs[subboard] = instance.instances_name
+
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 instance.hal_prefix = instance.instances_name
@@ -148,10 +156,10 @@ class Plugin(PluginBase):
                 connected_pin["instance"].master = instance.instances_name
                 connected_pin["instance"].gmaster = instance.instances_name
 
-                # testing sub boards
-                # if instance.instances_name in {"fpga1", "fpga2"}:
-                #    plugin_instance.PREFIX = f"fpga0.{instance.hal_prefix}.{plugin_instance.instances_name}"
-                #    connected_pin["instance"].gmaster = "fpga0"
+                if subs.get(instance.instances_name):
+                    master = subs[instance.instances_name]
+                    plugin_instance.PREFIX = f"{master}.{instance.hal_prefix}.{plugin_instance.instances_name}"
+                    connected_pin["instance"].gmaster = master
 
     def update_pins(self, parent):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):

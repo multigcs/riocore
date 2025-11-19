@@ -1,0 +1,582 @@
+<pyvcp>
+  <tabs>
+    <names>['Status', 'Outputs', 'Float', 'Bool']</names>
+    <vbox>
+      <labelframe text="MDI-Commands">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <vbox>
+          <labelframe text="Zero">
+            <relief>GROOVE</relief>
+            <font>("Helvetica", 10)</font>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-00"</halpin>
+                <text>"X"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-01"</halpin>
+                <text>"Y"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-02"</halpin>
+                <text>"Z"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+            </hbox>
+          </labelframe>
+        </vbox>
+      </labelframe>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"wled-0_green"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"board0.wled.0_green"</halpin>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"wled-0_blue"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"board0.wled.0_blue"</halpin>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"wled-0_red"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"board0.wled.0_red"</halpin>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <scale>
+          <halpin>"Float1.value"</halpin>
+          <min_>-100</min_>
+          <max_>100</max_>
+          <resolution>0.1</resolution>
+          <orient>HORIZONTAL</orient>
+          <initval>0</initval>
+          <param_pin>1</param_pin>
+        </scale>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <scale>
+          <halpin>"Float2.value"</halpin>
+          <min_>-100</min_>
+          <max_>100</max_>
+          <resolution>0.1</resolution>
+          <orient>HORIZONTAL</orient>
+          <initval>0</initval>
+          <param_pin>1</param_pin>
+        </scale>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1-Limited-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"Float1-Limited.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>-100</min_>
+          <max_>100</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1-Deadzone-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"Float1-Deadzone.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>-100</min_>
+          <max_>100</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"abs-Float1-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"abs-Float1.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>0</min_>
+          <max_>100</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1+Float2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"Float1+Float2.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>-200</min_>
+          <max_>200</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1-Float2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"Float1-Float2.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>-200</min_>
+          <max_>200</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1*Float2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"Float1*Float2.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>-10000</min_>
+          <max_>10000</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1/5-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"Float1/5.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>-20</min_>
+          <max_>20</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1&lt;Float2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Float1-lt-Float2.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Float1&gt;Float2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Float1-gt-Float2.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"-20-gt-Float1-lt-20-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"-20-gt-Float1-lt-20.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <labelframe text="MinMax">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <vbox>
+          <hbox>
+            <boxexpand expand="yes"/>
+            <boxfill fill="both"/>
+            <boxanchor anchor="e"/>
+            <label>
+              <text>"Float1-Min-value"</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+              <width>15</width>
+            </label>
+            <bar>
+              <halpin>"Float1-Min.value"</halpin>
+              <bar_height>15</bar_height>
+              <min_>-100</min_>
+              <max_>100</max_>
+              <initval>0</initval>
+              <format>"05d"</format>
+              <bgcolor>"grey"</bgcolor>
+              <fillcolor>"red"</fillcolor>
+              <param_pin>1</param_pin>
+            </bar>
+          </hbox>
+          <hbox>
+            <boxexpand expand="yes"/>
+            <boxfill fill="both"/>
+            <boxanchor anchor="e"/>
+            <label>
+              <text>"Float1-Max-value"</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+              <width>15</width>
+            </label>
+            <bar>
+              <halpin>"Float1-Max.value"</halpin>
+              <bar_height>15</bar_height>
+              <min_>-100</min_>
+              <max_>100</max_>
+              <initval>0</initval>
+              <format>"05d"</format>
+              <bgcolor>"grey"</bgcolor>
+              <fillcolor>"red"</fillcolor>
+              <param_pin>1</param_pin>
+            </bar>
+          </hbox>
+          <hbox>
+            <boxexpand expand="yes"/>
+            <boxfill fill="both"/>
+            <boxanchor anchor="e"/>
+            <label>
+              <text>"Reset-value"</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+              <width>15</width>
+            </label>
+            <checkbutton>
+              <halpin>"Reset.value"</halpin>
+              <anchor>"e"</anchor>
+              <width>13</width>
+            </checkbutton>
+          </hbox>
+        </vbox>
+      </labelframe>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool1-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"Bool1.value"</halpin>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"Bool2.value"</halpin>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool1-inv-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Bool1-inv.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool1-and-Bool2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Bool1-and-Bool2.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool1-or-Bool2-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Bool1-or-Bool2.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool1-toggle-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Bool1-toggle.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool1-delay-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Bool1-delay.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Bool1-oneshot-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"Bool1-oneshot.value"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Mux-value "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <bar>
+          <halpin>"Mux.value"</halpin>
+          <bar_height>15</bar_height>
+          <min_>-100</min_>
+          <max_>100</max_>
+          <initval>0</initval>
+          <format>"05d"</format>
+          <bgcolor>"grey"</bgcolor>
+          <fillcolor>"red"</fillcolor>
+          <param_pin>1</param_pin>
+        </bar>
+      </hbox>
+    </vbox>
+  </tabs>
+</pyvcp>

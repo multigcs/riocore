@@ -1,0 +1,18 @@
+RIO - Virtual
+
+Description: Virtual-Signals with Axis and GladeVCP
+Protocol: UDP
+Configuration: tests/unit/data/full/Virtual.json
+
+UDP-Configuration:
+  Target-IP: 192.168.11.194
+  Target-Port: 2390
+
+Plugins:
+  fpga (1x)
+  breakout (1x)
+  stepdir (3x)
+  signal (24x)
+  w5500 (1x)
+  wled (1x)
+

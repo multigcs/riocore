@@ -1,0 +1,41 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_board0_wled_0_green        <= pyvcp.board0.wled.0_green
+net sig_pyvcp_board0_wled_0_blue         <= pyvcp.board0.wled.0_blue
+net sig_pyvcp_board0_wled_0_red          <= pyvcp.board0.wled.0_red
+net sig_riov_Float1_value                <= pyvcp.Float1.value-f
+net sig_riov_Float2_value                <= pyvcp.Float2.value-f
+net sig_riov_Reset_value                 <= pyvcp.Reset.value
+net sig_riov_Bool1_value                 <= pyvcp.Bool1.value
+net sig_riov_Bool2_value                 <= pyvcp.Bool2.value
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net func_limit1-1_out                    => pyvcp.Float1-Limited.value
+net func_deadzone-1_out                  => pyvcp.Float1-Deadzone.value
+net func_abs-1_out                       => pyvcp.abs-Float1.value
+net func_sum2_3_1_out                    => pyvcp.Float1+Float2.value
+net func_sub_4_1_out                     => pyvcp.Float1-Float2.value
+net func_mult2_5_1_out                   => pyvcp.Float1*Float2.value
+net func_div2_6_1_out                    => pyvcp.Float1/5.value
+net func_wcomp_under_9_1_under           => pyvcp.Float1-lt-Float2.value
+net func_wcomp_over_10_1_over            => pyvcp.Float1-gt-Float2.value
+net func_wcomp_out_11_1_out              => pyvcp.-20-gt-Float1-lt-20.value
+net func_minmax-1_min                    => pyvcp.Float1-Min.value
+net func_minmax-2_max                    => pyvcp.Float1-Max.value
+net func_not_riov_Bool1_value_out        => pyvcp.Bool1-inv.value
+net func_and_13_1_and                    => pyvcp.Bool1-and-Bool2.value
+net func_or_14_1_or                      => pyvcp.Bool1-or-Bool2.value
+net func_toggle-1_out                    => pyvcp.Bool1-toggle.value
+net func_timedelay-1_out                 => pyvcp.Bool1-delay.value
+net func_oneshot-1_out                   => pyvcp.Bool1-oneshot.value
+net func_mux2-1_out                      => pyvcp.Mux.value
+
+#################################################################################
+# setp
+#################################################################################
+
