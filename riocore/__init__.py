@@ -16,8 +16,8 @@ loginfo = []
 
 
 def log(text):
-    if text in loginfo:
-        return
+    # if text in loginfo:
+    #    return
     print(text)
     loginfo.append(text)
 

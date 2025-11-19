@@ -146,6 +146,12 @@ class Plugin(PluginBase):
                 plugin_instance = connected_pin["instance"]
                 plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
                 connected_pin["instance"].master = instance.instances_name
+                connected_pin["instance"].gmaster = instance.instances_name
+
+                # testing sub boards
+                # if instance.instances_name in {"fpga1", "fpga2"}:
+                #    plugin_instance.PREFIX = f"fpga0.{instance.hal_prefix}.{plugin_instance.instances_name}"
+                #    connected_pin["instance"].gmaster = "fpga0"
 
     def update_pins(self, parent):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
@@ -167,6 +173,12 @@ class Plugin(PluginBase):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             simulation = instance.plugin_setup.get("simulation", instance.option_default("simulation"))
+            protocol = instance.plugin_setup.get("protocol", instance.option_default("protocol"))
+
+            if protocol == "UART":
+                # is sub fpga
+                continue
+
             output.append(f"# fpga board {node_type}")
             output.append(f"loadrt riocomp-{instance.instances_name}")
             output.append("")
@@ -209,7 +221,9 @@ class Plugin(PluginBase):
             instance.gateware.generator()
 
             # linuxcnc-component
-            component(parent.project, instance=instance)
+            protocol = parent.project.config["protocol"] = instance.jdata["protocol"]
+            if protocol != "UART":
+                component(parent.project, instance=instance)
 
 
 class gateware:
@@ -219,8 +233,8 @@ class gateware:
         self.jdata = instance.jdata
 
     def generator(self, generate_pll=True):
+        riocore.log(f"{self.instance.instances_name}:")
         os.makedirs(self.jdata["output_path"], exist_ok=True)
-
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
         if os.path.isfile(toolchains_json_path):
             self.jdata["toolchains_json"] = json.loads(open(toolchains_json_path, "r").read())
@@ -245,17 +259,17 @@ class gateware:
             )
 
         self.parent.generate_pll = generate_pll
-        riocore.log(f"loading toolchain {self.jdata['toolchain']}")
+        riocore.log(f"  loading toolchain {self.jdata['toolchain']}")
         self.jdata["toolchain_generator"] = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{self.jdata['toolchain']}").Toolchain(self.jdata)
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             plugin_instance.post_setup(self.parent.project)
 
         self.parent.expansion_pins = []
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for pin in plugin_instance.expansion_outputs():
                 self.parent.expansion_pins.append(pin)
@@ -264,7 +278,7 @@ class gateware:
 
         self.parent.virtual_pins = []
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
@@ -315,7 +329,7 @@ class gateware:
                     os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for verilog in plugin_instance.gateware_files():
                 if verilog in self.parent.verilogs:
@@ -353,7 +367,7 @@ class gateware:
         self.jdata["timing_constraints"] = {}
         self.jdata["timing_constraints_instance"] = {}
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for key, value in plugin_instance.timing_constraints().items():
                 if ":" in key:
@@ -401,7 +415,7 @@ class gateware:
         interface_data = []
         for size in sorted(self.interface_sizes, reverse=True):
             for plugin_instance in self.parent.project.plugin_instances:
-                if plugin_instance.master != self.instance.instances_name:
+                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                     continue
                 for data_name, data_config in plugin_instance.interface_data().items():
                     if data_config["size"] == size:
@@ -420,7 +434,7 @@ class gateware:
         self.multiplexed_output_size = 0
         self.multiplexed_output_id = 0
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for data_name, data_config in plugin_instance.interface_data().items():
                 self.interface_sizes.add(data_config["size"])
@@ -462,6 +476,153 @@ class gateware:
         # log("# PC->FPGA", self.output_size)
         # log("# FPGA->PC", self.input_size)
         # log("# MAX", self.buffer_size)
+
+    def calc_buffersize_sub(self, subname):
+        self.header_size = 32
+        self.sub_input_size = 0
+        self.sub_output_size = 0
+        self.sub_interface_sizes = set()
+        self.sub_multiplexed_input = 0
+        self.sub_multiplexed_input_size = 0
+        self.sub_multiplexed_output = 0
+        self.sub_multiplexed_output_size = 0
+        self.sub_multiplexed_output_id = 0
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
+                continue
+            if plugin_instance.master != subname:
+                continue
+            for data_name, data_config in plugin_instance.interface_data().items():
+                self.sub_interface_sizes.add(data_config["size"])
+                variable_size = data_config["size"]
+                multiplexed = data_config.get("multiplexed", False)
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
+                if data_config["direction"] == "input":
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.sub_multiplexed_input += 1
+                            self.sub_multiplexed_input_size = (max(self.sub_multiplexed_input_size, variable_size) + 7) // 8 * 8
+                            if self.sub_multiplexed_input_size < 8:
+                                self.sub_multiplexed_input_size = 8
+                        else:
+                            self.sub_input_size += variable_size
+                elif data_config["direction"] == "output":
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.sub_multiplexed_output += 1
+                            self.sub_multiplexed_output_size = (max(self.sub_multiplexed_output_size, variable_size) + 7) // 8 * 8
+                            if self.sub_multiplexed_output_size < 8:
+                                self.sub_multiplexed_output_size = 8
+                        else:
+                            self.sub_output_size += variable_size
+
+        if self.sub_multiplexed_input:
+            self.sub_input_size += self.sub_multiplexed_input_size + 8
+        if self.sub_multiplexed_output:
+            self.sub_output_size += self.sub_multiplexed_output_size + 8
+
+        self.sub_input_size = self.sub_input_size + self.header_size
+        self.sub_output_size = self.sub_output_size + self.header_size
+        self.sub_buffer_size = (max(self.sub_input_size, self.sub_output_size) + 7) // 8 * 8
+        self.sub_buffer_bytes = self.sub_buffer_size // 8
+
+    def subcon(self, subname):
+        self.calc_buffersize_sub(subname)
+
+        output = []
+        input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
+        output_variables_list = []
+        self.parent.iface_in = []
+        self.parent.iface_out = []
+        output_pos = self.sub_buffer_size
+
+        variable_name = "header_rx"
+        size = 32
+        pack_list = []
+        for bit_num in range(0, size, 8):
+            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
+            output_pos -= 8
+        output_variables_list.append(f"// SUB -> FPGA ({self.sub_output_size} + FILL)")
+        output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+        self.parent.iface_out.append(["RX_HEADER", size])
+        self.parent.iface_in.append(["TX_HEADER", size])
+        self.parent.iface_in.append(["TITMESTAMP", size])
+
+        for size, plugin_instance, data_name, data_config in self.get_interface_data():
+            if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
+                continue
+            if plugin_instance.master != subname:
+                continue
+            multiplexed = data_config.get("multiplexed", False)
+            if multiplexed:
+                continue
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "input":
+                if not data_config.get("expansion"):
+                    pack_list = []
+                    if size >= 8:
+                        for bit_num in range(0, size, 8):
+                            pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
+                    else:
+                        pack_list.append(f"{variable_name}")
+                    input_variables_list.append(f"{', '.join(pack_list)}")
+                    self.parent.iface_in.append([variable_name, size])
+            elif data_config["direction"] == "output":
+                if not data_config.get("expansion"):
+                    pack_list = []
+                    if size >= 8:
+                        for bit_num in range(0, size, 8):
+                            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
+                            output_pos -= 8
+                    elif size > 1:
+                        pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - size}]")
+                        output_pos -= size
+                    else:
+                        pack_list.append(f"rx_data[{output_pos - 1}]")
+                        output_pos -= 1
+                    output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+                    self.parent.iface_out.append([variable_name, size])
+
+        if self.sub_buffer_size > self.sub_input_size:
+            diff = self.sub_buffer_size - self.sub_input_size
+            input_variables_list.append(f"{diff}'d0")
+
+        diff = self.sub_buffer_size - self.sub_output_size
+        if self.sub_buffer_size > self.sub_output_size:
+            output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
+
+        if output_pos != diff:
+            riocore.log(f"ERROR: wrong output buffer sizes: {output_pos} {diff}")
+            # exit(1)
+
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
+                continue
+            if plugin_instance.master != subname:
+                continue
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
+                    pinname = pin_config["pin"].replace(":", "_")
+                    if pin_config["direction"] == "output":
+                        output.append(f"    wire {pin_config['varname']};")
+                        output.append(f"    assign {pinname} = {pin_config['varname']}; // {pin_config['direction']}")
+                    elif pin_config["direction"] == "input":
+                        output.append(f"    wire {pin_config['varname']};")
+                        output.append(f"    assign {pin_config['varname']} = {pinname}; // {pin_config['direction']}")
+
+        output_variables_string = "\n    ".join(output_variables_list)
+        output.append(f"    {output_variables_string}")
+        output.append("")
+        output.append(f"    // FPGA -> SUB ({self.sub_input_size} + FILL)")
+        output.append("    assign tx_data = {")
+        input_variables_string = ",\n        ".join(input_variables_list)
+        output.append(f"        {input_variables_string}")
+        output.append("    };")
+        output.append("")
+
+        return output
 
     def top(self):
         self.calc_buffersize()
@@ -521,7 +682,7 @@ class gateware:
             self.parent.iface_out.append([variable_name, size])
 
         for size, plugin_instance, data_name, data_config in self.get_interface_data():
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
@@ -562,7 +723,7 @@ class gateware:
             output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
 
         if output_pos != diff:
-            riocore.log("ERROR: wrong buffer sizes")
+            riocore.log(f"ERROR: wrong output buffer sizes: {output_pos} {diff}")
             exit(1)
 
         arguments_list = ["input sysclk_in"]
@@ -632,7 +793,7 @@ class gateware:
 
         error_signals = ["INTERFACE_TIMEOUT"]
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for data_name, interface_setup in plugin_instance.interface_data().items():
                 error_on = interface_setup.get("error_on")
@@ -711,7 +872,7 @@ class gateware:
         output.append("")
 
         if double_pins:
-            output.append("// linking double used input pins")
+            output.append("    // linking double used input pins")
             for pin, varname in double_pins.items():
                 if varname.startswith("PININ_"):
                     output.append(f"    wire {varname};")
@@ -730,7 +891,7 @@ class gateware:
             output.append(f"    wire {pinname};")
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
@@ -751,7 +912,7 @@ class gateware:
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for data_name, data_config in plugin_instance.interface_data().items():
                 if not data_config.get("expansion"):
@@ -783,7 +944,7 @@ class gateware:
 
         # gateware_defines
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             define_string = "\n    ".join(plugin_instance.gateware_defines())
             if define_string:
@@ -793,7 +954,7 @@ class gateware:
         # expansion assignments
         used_expansion_outputs = []
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config:
@@ -801,7 +962,7 @@ class gateware:
                         output.append(f"    wire {pin_config['varname']};")
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config:
@@ -861,7 +1022,7 @@ class gateware:
             output.append("            end")
             mpid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data():
-                if plugin_instance.master != self.instance.instances_name:
+                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                     continue
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
@@ -883,7 +1044,7 @@ class gateware:
             output.append("    always @(posedge sysclk) begin")
             mpid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data():
-                if plugin_instance.master != self.instance.instances_name:
+                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                     continue
                 multiplexed = data_config.get("multiplexed", False)
                 if not multiplexed:
@@ -899,7 +1060,7 @@ class gateware:
 
         varmapping = {}
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal, signal_config in plugin_instance.SIGNALS.items():
                 if signal in plugin_instance.INTERFACE:
@@ -958,10 +1119,22 @@ class gateware:
             output += output_first
             output += output_last
 
+        sub_configs = set()
+        for plugin_instance in self.parent.project.plugin_instances:
+            if self.instance.instances_name == plugin_instance.gmaster and plugin_instance.gmaster != plugin_instance.master:
+                sub_configs.add(plugin_instance.master)
+
+        for sub_config in sub_configs:
+            output.append("")
+            output.append("")
+            output.append(f"    // #################### {sub_config} ####################")
+            output += self.subcon(sub_config)
+            output.append("    // ###############################################")
+
         output.append("")
         output.append("endmodule")
         output.append("")
-        riocore.log(f"writing gateware to: {self.jdata['output_path']}")
+        riocore.log(f"  writing gateware to: {self.jdata['output_path']}")
         open(os.path.join(self.jdata["output_path"], "rio.v"), "w").write("\n".join(output))
 
         # write hash of rio.v to filesystem
@@ -982,9 +1155,9 @@ class gateware:
         hash_new = hash_md5.hexdigest()
 
         if hash_compiled != hash_new:
-            riocore.log("!!! gateware changed: needs to be build and flash |||")
+            riocore.log("  !!! gateware changed: needs to be build and flash |||")
         elif hash_flashed != hash_new:
-            riocore.log("!!! gateware changed: needs to flash |||")
+            riocore.log("  !!! gateware changed: needs to flash |||")
         hash_file_new = os.path.join(self.jdata["output_path"], "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
 

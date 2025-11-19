@@ -45,7 +45,7 @@ class Plugin(PluginBase):
         instance_parameter = instance["parameter"]
         csum = self.plugin_setup.get("csum", self.OPTIONS["csum"]["default"])
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
-        instance_parameter["BUFFER_SIZE"] = self.system_setup["buffer_size"]
+        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
         instance_parameter["MSGID"] = "32'h74697277"
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
