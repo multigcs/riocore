@@ -1183,6 +1183,12 @@ class TabOptions:
         vbox = QVBoxLayout()
         hbox.addLayout(vbox, stretch=3)
 
+        row = QHBoxLayout()
+        vbox.addLayout(row)
+        row.addWidget(QLabel("Name"))
+        item = self.parent.edit_item(self.config, "name", {"type": str, "default": "Empty", "help_text": "config name"}, cb=self.updated)
+        row.addWidget(item)
+
         for key, var_setup in {
             "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
             "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the machine"},

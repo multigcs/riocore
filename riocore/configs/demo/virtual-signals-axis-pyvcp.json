@@ -1,5 +1,5 @@
 {
-    "name": "Tangbob",
+    "name": "Virtual",
     "description": "Virtual-Signals with Axis and GladeVCP",
     "protocol": "UDP",
     "plugins": [
@@ -19,7 +19,8 @@
                 "w5500": {
                     "ip": "192.168.11.194"
                 }
-            }
+            },
+            "simulation": true
         },
         {
             "type": "breakout",
@@ -647,9 +648,9 @@
     },
     "flow": {
         "view": {
-            "scale": 0.6,
+            "scale": 0.36,
             "pos": [
-                -672,
+                -349,
                 -25
             ]
         }
