@@ -325,9 +325,9 @@ def test_generator_abs():
 loadrt logic names=func.and_0.1 personality=0x102
 addf func.and_0.1 servo-thread
 
-loadrt abs names=func.abs_func_and_0_1_and,func.abs_rio_input1
-addf func.abs_func_and_0_1_and servo-thread
-addf func.abs_rio_input1 servo-thread
+loadrt abs names=func.abs-1,func.abs-2
+addf func.abs-1 servo-thread
+addf func.abs-2 servo-thread
 
 #################################################################################
 # rio
@@ -338,11 +338,10 @@ net sig_rio_input2                       <= rio.input2
 #################################################################################
 # func
 #################################################################################
-net func_and_0_1_and                     => func.abs_func_and_0_1_and.in
-net func_abs_func_and_0_1_and_out        <= func.abs_func_and_0_1_and.out
-
-net sig_rio_input1                       => func.abs_rio_input1.in
-net func_abs_rio_input1_out              <= func.abs_rio_input1.out
+net func_and_0_1_and                     => func.abs-1.in
+net func_abs-1_out                       <= func.abs-1.out
+net sig_rio_input1                       => func.abs-2.in
+net func_abs-2_out                       <= func.abs-2.out
 
 net func_and_0_1_and                     <= func.and_0.1.and
 net sig_rio_input1                       => func.and_0.1.in-00
@@ -351,8 +350,8 @@ net sig_rio_input2                       => func.and_0.1.in-01
 #################################################################################
 # hal
 #################################################################################
-net func_abs_func_and_0_1_and_out        => hal.output1
-net func_abs_rio_input1_out              => hal.output2
+net func_abs-1_out                       => hal.output1
+net func_abs-2_out                       => hal.output2
 
 #################################################################################
 # preformated

@@ -11,8 +11,8 @@
             "protocol": "UDP",
             "uid": "board0",
             "pos": [
-                -540.0,
-                350.0
+                -410.0,
+                630.0
             ],
             "rotate": 0,
             "sub": {
@@ -26,8 +26,8 @@
             "node_type": "china-bob5x",
             "uid": "breakout0",
             "pos": [
-                -50.0,
-                210.0
+                80.0,
+                490.0
             ],
             "pins": {
                 "SLOT:P1": {
@@ -89,8 +89,8 @@
             "is_joint": true,
             "image": "stepper",
             "pos": [
-                400.0,
-                680.0
+                530.0,
+                960.0
             ],
             "pins": {
                 "step": {
@@ -107,8 +107,8 @@
             "is_joint": true,
             "image": "stepper",
             "pos": [
-                400.0,
-                390.0
+                530.0,
+                670.0
             ],
             "pins": {
                 "step": {
@@ -126,8 +126,8 @@
             "is_joint": true,
             "image": "stepper",
             "pos": [
-                400.0,
-                110.0
+                530.0,
+                390.0
             ],
             "pins": {
                 "step": {
@@ -139,11 +139,6 @@
             },
             "name": ""
         },
-
-
-
-
-
         {
             "type": "signal",
             "name": "Float1",
@@ -158,7 +153,12 @@
                         "initval": 0.0
                     }
                 }
-            }
+            },
+            "uid": "signal0",
+            "pos": [
+                910.0,
+                800.0
+            ]
         },
         {
             "type": "signal",
@@ -174,10 +174,13 @@
                         "initval": 0.0
                     }
                 }
-            }
+            },
+            "uid": "signal1",
+            "pos": [
+                910.0,
+                680.0
+            ]
         },
-
-
         {
             "type": "signal",
             "name": "Float1-Limited",
@@ -193,7 +196,12 @@
                         "max": 100.0
                     }
                 }
-            }
+            },
+            "uid": "signal2",
+            "pos": [
+                910.0,
+                500.0
+            ]
         },
         {
             "type": "signal",
@@ -210,7 +218,12 @@
                         "max": 100.0
                     }
                 }
-            }
+            },
+            "uid": "signal3",
+            "pos": [
+                910.0,
+                1040.0
+            ]
         },
         {
             "type": "signal",
@@ -227,11 +240,13 @@
                         "max": 100.0
                     }
                 }
-            }
+            },
+            "uid": "signal4",
+            "pos": [
+                910.0,
+                320.0
+            ]
         },
-
-
-
         {
             "type": "signal",
             "name": "Float1+Float2",
@@ -247,7 +262,12 @@
                         "max": 200.0
                     }
                 }
-            }
+            },
+            "uid": "signal5",
+            "pos": [
+                910.0,
+                740.0
+            ]
         },
         {
             "type": "signal",
@@ -264,9 +284,13 @@
                         "max": 200.0
                     }
                 }
-            }
+            },
+            "uid": "signal6",
+            "pos": [
+                910.0,
+                560.0
+            ]
         },
-
         {
             "type": "signal",
             "name": "Float1*Float2",
@@ -282,9 +306,13 @@
                         "max": 10000.0
                     }
                 }
-            }
+            },
+            "uid": "signal7",
+            "pos": [
+                910.0,
+                380.0
+            ]
         },
-
         {
             "type": "signal",
             "name": "Float1/5",
@@ -300,10 +328,13 @@
                         "max": 20.0
                     }
                 }
-            }
+            },
+            "uid": "signal8",
+            "pos": [
+                910.0,
+                1220.0
+            ]
         },
-
-
         {
             "type": "signal",
             "name": "Float1-Min",
@@ -320,7 +351,12 @@
                         "max": 100.0
                     }
                 }
-            }
+            },
+            "uid": "signal9",
+            "pos": [
+                910.0,
+                1100.0
+            ]
         },
         {
             "type": "signal",
@@ -338,7 +374,12 @@
                         "max": 100.0
                     }
                 }
-            }
+            },
+            "uid": "signal10",
+            "pos": [
+                910.0,
+                860.0
+            ]
         },
         {
             "type": "signal",
@@ -352,13 +393,13 @@
                         "group": "MinMax"
                     }
                 }
-            }
+            },
+            "uid": "signal11",
+            "pos": [
+                910.0,
+                920.0
+            ]
         },
-
-
-
-
-
         {
             "type": "signal",
             "name": "Float1<Float2",
@@ -372,7 +413,12 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal12",
+            "pos": [
+                910.0,
+                1160.0
+            ]
         },
         {
             "type": "signal",
@@ -387,7 +433,12 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal13",
+            "pos": [
+                910.0,
+                440.0
+            ]
         },
         {
             "type": "signal",
@@ -402,10 +453,13 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal14",
+            "pos": [
+                910.0,
+                620.0
+            ]
         },
-
-
         {
             "type": "signal",
             "name": "Bool1",
@@ -417,7 +471,12 @@
                         "section": "bool"
                     }
                 }
-            }
+            },
+            "uid": "signal15",
+            "pos": [
+                910.0,
+                980.0
+            ]
         },
         {
             "type": "signal",
@@ -430,10 +489,9 @@
                         "section": "bool"
                     }
                 }
-            }
+            },
+            "uid": "signal16"
         },
-
-
         {
             "type": "signal",
             "name": "Bool1-inv",
@@ -447,7 +505,8 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal17"
         },
         {
             "type": "signal",
@@ -462,7 +521,8 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal18"
         },
         {
             "type": "signal",
@@ -477,7 +537,8 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal19"
         },
         {
             "type": "signal",
@@ -492,7 +553,8 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal20"
         },
         {
             "type": "signal",
@@ -507,7 +569,8 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal21"
         },
         {
             "type": "signal",
@@ -522,9 +585,9 @@
                         "type": "led"
                     }
                 }
-            }
+            },
+            "uid": "signal22"
         },
-
         {
             "type": "signal",
             "name": "Mux",
@@ -540,10 +603,9 @@
                         "max": 100.0
                     }
                 }
-            }
+            },
+            "uid": "signal23"
         }
-
-
     ],
     "linuxcnc": {
         "_debug_info": true,
@@ -553,10 +615,10 @@
     },
     "flow": {
         "view": {
-            "scale": 0.29,
+            "scale": 0.56,
             "pos": [
-                -323,
-                -57
+                -316,
+                9
             ]
         }
     }
