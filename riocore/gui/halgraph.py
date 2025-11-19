@@ -153,6 +153,7 @@ class HalGraph:
                         pin_strs.append(pin_str)
 
                 if html:
+                    title = title.replace("\\n", "<br/>")
                     label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td  bgcolor="black"><font color="white">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
                 else:
                     label = f"{title} | {'|'.join(pin_strs)} "
