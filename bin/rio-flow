@@ -2451,8 +2451,6 @@ class Window(QMainWindow):
 
 
 if __name__ == "__main__":
-    riocore.log("######## WIP - only for testing ########")
-
     app = QApplication(sys.argv)
     parser = argparse.ArgumentParser()
     parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
