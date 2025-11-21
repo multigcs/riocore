@@ -222,7 +222,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         halname = f"{self.instances_name}:gpio.{int(io):03d}"
                     else:
                         pinfunc = line.split()[5].split("/")[0]
-                        func_halname = func.replace("PWM", "pwmgen").lower()
+                        func_halname = func.lower().replace("qcount", "encoder").replace("pwm", "pwmgen")
                         channel = line.split()[4].replace("None", "GPIO")
                         direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
                         ptype = f"MESA{func}{pinfunc}-{channel}"
@@ -301,7 +301,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             self.IMAGES = ["generic", "encoder"]
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             self.SIGNALS = {
-                "raw-count": {
+                "rawcounts": {
                     "direction": "input",
                     "s32": True,
                 },
@@ -320,9 +320,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 },
             }
             self.PINDEFAULTS = {
-                "a": {"direction": "output", "edge": "target", "type": "MESAEncoderA"},
-                "b": {"direction": "output", "edge": "target", "type": "MESAEncoderB"},
-                "z": {"direction": "output", "edge": "target", "type": "MESAEncoderZ", "optional": True},
+                "a": {"direction": "input", "edge": "target", "type": "MESAQCountQuad-A"},
+                "b": {"direction": "input", "edge": "target", "type": "MESAQCountQuad-B"},
+                "z": {"direction": "input", "edge": "target", "type": "MESAQCountQuad-IDX", "optional": True},
             }
 
         elif node_type == "pwm":
@@ -430,6 +430,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 num_pwms = instance.plugin_setup.get("num_pwms", instance.option_default("num_pwms"))
                 num_encoders = instance.plugin_setup.get("num_encoders", instance.option_default("num_encoders"))
                 num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
+                # num_serials = instance.plugin_setup.get("num_serials", instance.option_default("num_serials"))
 
                 output.append("# mesa")
                 if boardname in {"7c80", "7c81"}:
