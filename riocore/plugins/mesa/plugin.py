@@ -53,6 +53,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     },
                 }
             )
+
+            board_old = self.plugin_setup.get("board")
+            if board_old:
+                print("INFO: update config")
+                self.plugin_setup["boardname"] = board_old.split("_")[0]
+                self.plugin_setup["firmware"] = board_old.split("_")[1]
+                del self.plugin_setup["board"]
+
             boardname = self.plugin_setup.get("boardname", self.option_default("boardname"))
             self.instance_num = 0
             self.hm2_prefix = f"hm2_{boardname}.{self.instance_num}"
