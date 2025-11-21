@@ -39,27 +39,45 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         if node_type == "board":
             board_list = []
             for json_file in glob.glob(os.path.join(os.path.dirname(__file__), "*.json")):
-                board_name = json_file.split("/")[-1][:-5]
-                for pin_file in glob.glob(os.path.join(os.path.dirname(__file__), "mesapins", board_name, "*.pin")):
-                    board_list.append(pin_file.split("/")[-1][:-4].lower())
-
+                board = json_file.split("/")[-1][:-5]
+                board_list.append(board)
             self.OPTIONS.update(
                 {
-                    "board": {
-                        "default": "7c81_5abobx3d",
+                    "boardname": {
+                        "default": "7c81",
                         "type": "select",
                         "options": board_list,
                         "description": "card configuration",
                     },
                 }
             )
+            boardname = self.plugin_setup.get("boardname", self.option_default("boardname"))
+            self.instance_num = 0
+            self.hm2_prefix = f"hm2_{boardname}.{self.instance_num}"
 
-            board = self.plugin_setup.get("board", self.option_default("board"))
-            board_type = board.split("_")[0]
+            fiirmware_list = []
+            for pin_file in glob.glob(os.path.join(os.path.dirname(__file__), "mesapins", boardname, "*.pin")):
+                fiirmware_list.append(pin_file.split("/")[-1][:-4].split("_", 1)[1].lower())
+            self.OPTIONS.update(
+                {
+                    "firmware": {
+                        "default": "5abobx3d",
+                        "type": "select",
+                        "options": fiirmware_list,
+                        "description": "firmware",
+                    },
+                }
+            )
+            firmware = self.plugin_setup.get("firmware", self.option_default("firmware"))
 
-            posfile = os.path.join(os.path.dirname(__file__), f"{board_type}.json")
+            posfile = os.path.join(os.path.dirname(__file__), f"{boardname}.json")
+            if not os.path.exists(posfile):
+                return
             board_pins = json.loads(open(posfile, "r").read())
-            pinfile = os.path.join(os.path.dirname(__file__), "mesapins", board_type, f"{board}.pin")
+
+            pinfile = os.path.join(os.path.dirname(__file__), "mesapins", boardname, f"{boardname}_{firmware}.pin")
+            if not os.path.exists(pinfile):
+                return
             pindata = open(pinfile, "r").read()
 
             max_pwms = 0
@@ -110,7 +128,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 }
             )
 
-            if board_type in {"7c80", "7c81"}:
+            if boardname in {"7c80", "7c81"}:
                 self.OPTIONS.update(
                     {
                         "spiclk_rate": {
@@ -141,7 +159,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             self.TYPE = "base"
             self.IMAGE_SHOW = True
-            self.IMAGE = f"{board_type}.png"
+            self.IMAGE = f"{boardname}.png"
             self.PINDEFAULTS = {}
 
             num_pwms = self.plugin_setup.get("num_pwms", self.option_default("num_pwms"))
@@ -207,9 +225,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             "edge": "source",
                             "type": ptype,
                         }
-
-            self.instance_num = 0
-            self.hm2_prefix = f"hm2_{board_type}.{self.instance_num}"
 
         elif node_type == "stepper":
             self.TYPE = "joint"
@@ -343,17 +358,17 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             }
 
     def builder(self, config, command):
-        board = self.plugin_setup.get("board", self.option_default("board"))
-        board_type = board.split("_")[0]
-        bitfile = os.path.join(os.path.dirname(__file__), "mesapins", board_type, f"{board}.bit")
-        if board_type in {"7c80", "7c81"}:
+        boardname = self.plugin_setup.get("boardname", self.option_default("boardname"))
+        firmware = self.plugin_setup.get("firmware", self.option_default("firmware"))
+        bitfile = os.path.join(os.path.dirname(__file__), "mesapins", boardname, f"{boardname}_{firmware}.bit")
+        if boardname in {"7c80", "7c81"}:
             addr = "/dev/spidev0.0 --spi"
         else:
             addr = self.plugin_setup.get("ip_address", self.option_default("ip_address"))
         if command.startswith("flash:"):
-            cmd = f"sudo mesaflash --device {board_type} --addr {addr} --write {bitfile}"
+            cmd = f"sudo mesaflash --device {boardname} --addr {addr} --write {bitfile}"
         else:
-            cmd = f"sudo mesaflash --device {board_type} --addr {addr} --readhmid"
+            cmd = f"sudo mesaflash --device {boardname} --addr {addr} --readhmid"
         return cmd
 
     def update_prefixes(cls, parent, instances):
@@ -396,15 +411,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             if node_type == "board":
-                board = instance.plugin_setup.get("board", instance.option_default("board"))
-                board_type = board.split("_")[0]
-
+                boardname = instance.plugin_setup.get("boardname", instance.option_default("boardname"))
                 num_pwms = instance.plugin_setup.get("num_pwms", instance.option_default("num_pwms"))
                 num_encoders = instance.plugin_setup.get("num_encoders", instance.option_default("num_encoders"))
                 num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
 
                 output.append("# mesa")
-                if board_type in {"7c80", "7c81"}:
+                if boardname in {"7c80", "7c81"}:
                     spiclk_rate = instance.plugin_setup.get("spiclk_rate", instance.option_default("spiclk_rate"))
                     component = "hm2_spix"
                     output.append("loadrt hostmot2")
