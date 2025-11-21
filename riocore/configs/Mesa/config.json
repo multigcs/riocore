@@ -3,10 +3,10 @@
     "_syncto": "cnc@192.168.10.86:/home/cnc/Mesa/",
     "flow": {
         "view": {
-            "scale": 0.78,
+            "scale": 0.51,
             "pos": [
-                908,
-                -240
+                459,
+                -151
             ]
         },
         "board": {
@@ -107,12 +107,13 @@
             "type": "mesa",
             "node_type": "board",
             "pos": [
-                1830.0,
-                60.0
+                1790.0,
+                70.0
             ],
             "rotate": -90,
             "uid": "mesa0",
-            "board": "7c81_5abobx3d"
+            "board": "7c81_5abobx3d",
+            "boardname": "7c81"
         },
         {
             "type": "mesa",

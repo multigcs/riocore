@@ -513,7 +513,14 @@ class GuiPlugins:
         plugin_instance = self.plugin_instance
         plugin_config = self.plugin_config
 
-        def update(arg):
+        def update(do_reload, arg):
+            if do_reload:
+                self.plugin_instance.setup()
+
+                self.reopen = True
+                self.dialog.close()
+                return
+
             plugin_instance.update_title()
             title_label.setText(plugin_instance.title)
             iname_label.setText(plugin_instance.instances_name)
@@ -551,12 +558,14 @@ class GuiPlugins:
             if unit:
                 title = f"{title} ({unit})"
             help_text = option_defaults.get("description", title)
+            do_reload = option_defaults.get("reload", False)
             option_row = QHBoxLayout()
             options.addLayout(option_row)
             option_label = QLabel(title)
             option_label.setToolTip(help_text)
             option_row.addWidget(option_label, stretch=3)
-            self.main_options[option_name] = self.parent.edit_item(plugin_config, option_name, option_defaults, cb=update)
+            ucb = partial(update, do_reload)
+            self.main_options[option_name] = self.parent.edit_item(plugin_config, option_name, option_defaults, cb=ucb)
             option_row.addWidget(self.main_options[option_name], stretch=3)
             option_row.addWidget(QLabel(option_defaults.get("unit", "")), stretch=1)
 
@@ -648,6 +657,7 @@ class GuiPlugins:
         self.pins_tab = None
         self.joint_tab = None
         self.signals_tab = None
+        self.reopen = False
 
         self.plugin_instance = plugin_instance
         plugin_config = plugin_instance.plugin_setup
@@ -715,7 +725,11 @@ class GuiPlugins:
             if hasattr(self.parent, "config_load"):
                 self.parent.config_load()
                 # self.parent.display()
-            return
+            return False
+
+        if self.reopen:
+            return True
+
         if not self.dialog.is_removed:
             for key in list(self.plugin_config.keys()):
                 if key not in self.plugin_config_backup:

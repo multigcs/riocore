@@ -19,7 +19,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "mesa"
-        self.URL = "https://github.com/atrex66/stepper-mesa"
+        self.URL = ""
         self.OPTIONS = {
             "node_type": {
                 "default": "board",
@@ -31,6 +31,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     "encoder",
                 ],
                 "description": "instance type",
+                "reload": True,
             },
         }
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
@@ -44,10 +45,11 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             self.OPTIONS.update(
                 {
                     "boardname": {
-                        "default": "7c81",
+                        "default": board_list[0],
                         "type": "select",
                         "options": board_list,
                         "description": "card configuration",
+                        "reload": True,
                     },
                 }
             )
@@ -57,14 +59,17 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             fiirmware_list = []
             for pin_file in glob.glob(os.path.join(os.path.dirname(__file__), "mesapins", boardname, "*.pin")):
-                fiirmware_list.append(pin_file.split("/")[-1][:-4].split("_", 1)[1].lower())
+                fiirmware_list.append(pin_file.split("/")[-1][:-4].split("_", 1)[1])
+            if not fiirmware_list:
+                fiirmware_list = [""]
             self.OPTIONS.update(
                 {
                     "firmware": {
-                        "default": "5abobx3d",
+                        "default": fiirmware_list[0],
                         "type": "select",
                         "options": fiirmware_list,
                         "description": "firmware",
+                        "reload": True,
                     },
                 }
             )
@@ -72,11 +77,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             posfile = os.path.join(os.path.dirname(__file__), f"{boardname}.json")
             if not os.path.exists(posfile):
+                print(f"ERROR: boardfile not found: {posfile}")
                 return
             board_pins = json.loads(open(posfile, "r").read())
 
             pinfile = os.path.join(os.path.dirname(__file__), "mesapins", boardname, f"{boardname}_{firmware}.pin")
             if not os.path.exists(pinfile):
+                print(f"ERROR: boardfile not found: {pinfile}")
                 return
             pindata = open(pinfile, "r").read()
 

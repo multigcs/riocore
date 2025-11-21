@@ -688,7 +688,10 @@ class PluginNode(MyNode):
             # self.reload()
             self.update()
 
-        self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None, pin_selected=pin_selected, signal_selected=signal_selected, cb=update)
+        while self.scene.parent.gui_plugins.edit_plugin(self.plugin_instance, None, pin_selected=pin_selected, signal_selected=signal_selected, cb=update):
+            # reload dialog (main option changes)
+            pass
+
         self.scene.parent.redraw()
         self.scene.parent.snapshot()
 
