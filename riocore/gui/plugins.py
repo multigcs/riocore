@@ -704,10 +704,18 @@ class GuiPlugins:
 
         right_layout = QVBoxLayout()
         plugin_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME)
-        image_path = os.path.join(plugin_path, "image.png")
+
+        if self.plugin_instance.IMAGE_SHOW and self.plugin_instance.IMAGE:
+            image_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)
+            if not os.path.isfile(image_path):
+                image_path = None
+
+        if not image_path:
+            image_path = os.path.join(plugin_path, "image.png")
+
         if os.path.isfile(image_path):
             ilabel = QLabel()
-            pixmap = QPixmap(image_path)
+            pixmap = QPixmap(image_path).scaled(400, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             ilabel.setPixmap(pixmap)
             right_layout.addWidget(ilabel)
             right_layout.addStretch()
