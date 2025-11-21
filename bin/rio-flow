@@ -70,6 +70,7 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 dev_mode = False
 show_signals = False
+edge_mode = 1
 grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)
@@ -138,25 +139,60 @@ class NodeEdge(QGraphicsPathItem):
         source_pos = self._source_node.port_pos(self._source_port)
         des_pos = self._target_node.port_pos(self._target_port)
         path = QPainterPath(source_pos)
-        xwidth = source_pos.x() - des_pos.x()
-        xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
-        yheight = abs(source_pos.y() - des_pos.y())
-        tangent = float(yheight) / xwidth * 0.1
-        tangent_s = float(yheight) / xwidth * 0.05
-        tangent *= xwidth
-        tangent_s *= xwidth
-        if xwidth > 0:
-            if xwidth > 20:
-                xwidth = 20
-            tangent += xwidth
-            tangent_s += xwidth
+        if edge_mode == 0:
+            xwidth = source_pos.x() - des_pos.x()
+            xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
+            yheight = abs(source_pos.y() - des_pos.y())
+            tangent = float(yheight) / xwidth * 0.1
+            tangent_s = float(yheight) / xwidth * 0.05
+            tangent *= xwidth
+            tangent_s *= xwidth
+            if xwidth > 0:
+                if xwidth > 20:
+                    xwidth = 20
+                tangent += xwidth
+                tangent_s += xwidth
+            else:
+                if tangent > 120:
+                    tangent = 120
+                if tangent_s > 20:
+                    tangent_s = 20
+            path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
+            self.setPath(path)
         else:
-            if tangent > 120:
-                tangent = 120
-            if tangent_s > 20:
-                tangent_s = 20
-        path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
-        self.setPath(path)
+            source_rect = self._source_node.boundingRect()
+            source_diff_right = (self._source_node.pos().x() + source_rect.width()) - source_pos.x()
+            source_diff_top = source_pos.y() - self._source_node.pos().y()
+            source_diff_left = source_pos.x() - self._source_node.pos().x()
+            source_diff_bottom = (self._source_node.pos().y() + source_rect.height()) - source_pos.y()
+            path.moveTo(source_pos)
+            shortest = min(source_diff_top, source_diff_right, source_diff_bottom, source_diff_left)
+
+            if source_diff_left == shortest:
+                diff_x = des_pos.x() - source_pos.x()
+                center_x = source_pos.x() + diff_x / 2
+                path.lineTo(center_x, source_pos.y())
+                path.lineTo(center_x, des_pos.y())
+            elif source_diff_bottom == shortest:
+                diff_x = des_pos.x() - source_pos.x()
+                diff_y = des_pos.y() - source_pos.y()
+                center_x = source_pos.x() + diff_x / 2
+                center_y = source_pos.y() + diff_y / 2
+                path.lineTo(source_pos.x(), center_y)
+                path.lineTo(des_pos.x(), center_y)
+            elif source_diff_top == shortest:
+                diff_x = des_pos.x() - source_pos.x()
+                center_x = source_pos.x() + diff_x / 2
+                path.lineTo(source_pos.x(), des_pos.y())
+                path.lineTo(center_x, des_pos.y())
+            else:
+                diff_x = des_pos.x() - source_pos.x()
+                center_x = source_pos.x() + diff_x / 2
+                path.lineTo(center_x, source_pos.y())
+                path.lineTo(center_x, des_pos.y())
+
+            path.lineTo(des_pos)
+            self.setPath(path)
 
     def mouseDoubleClickEvent(self, event):
         if self.etype == "pin":
