@@ -137,12 +137,13 @@ class NodeEdge(QGraphicsPathItem):
         if not self._source_node or not self._target_node:
             return
         source_pos = self._source_node.port_pos(self._source_port)
-        des_pos = self._target_node.port_pos(self._target_port)
+        target_port_pos = self._target_node.port_pos(self._target_port)
+        target_pos = target_port_pos
         path = QPainterPath(source_pos)
         if edge_mode == 0:
-            xwidth = source_pos.x() - des_pos.x()
+            xwidth = source_pos.x() - target_pos.x()
             xwidth = xwidth + 0.01 if xwidth == 0 else xwidth
-            yheight = abs(source_pos.y() - des_pos.y())
+            yheight = abs(source_pos.y() - target_pos.y())
             tangent = float(yheight) / xwidth * 0.1
             tangent_s = float(yheight) / xwidth * 0.05
             tangent *= xwidth
@@ -157,7 +158,7 @@ class NodeEdge(QGraphicsPathItem):
                     tangent = 120
                 if tangent_s > 20:
                     tangent_s = 20
-            path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(des_pos.x() - tangent, des_pos.y()), des_pos)
+            path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(target_pos.x() - tangent, target_pos.y()), target_pos)
             self.setPath(path)
         else:
             source_rect = self._source_node.boundingRect()
@@ -165,33 +166,48 @@ class NodeEdge(QGraphicsPathItem):
             source_diff_top = source_pos.y() - self._source_node.pos().y()
             source_diff_left = source_pos.x() - self._source_node.pos().x()
             source_diff_bottom = (self._source_node.pos().y() + source_rect.height()) - source_pos.y()
-            path.moveTo(source_pos)
             shortest = min(source_diff_top, source_diff_right, source_diff_bottom, source_diff_left)
 
+            target_rect = self._target_node.boundingRect()
+            target_diff_right = (self._target_node.pos().x() + target_rect.width()) - target_pos.x()
+            target_diff_top = target_pos.y() - self._target_node.pos().y()
+            target_diff_left = target_pos.x() - self._target_node.pos().x()
+            target_diff_bottom = (self._target_node.pos().y() + target_rect.height()) - target_pos.y()
+            target_shortest = min(target_diff_top, target_diff_right, target_diff_bottom, target_diff_left)
+
+            diff_x = target_pos.x() - source_pos.x()
+            center_x = source_pos.x() + diff_x / 2
+
+            path.moveTo(source_pos)
+            if target_diff_left == target_shortest:
+                if center_x < target_pos.x() - 20:
+                    target_pos = QPointF(center_x, target_pos.y())
+                else:
+                    target_pos = QPointF(target_pos.x() - 20, target_pos.y())
+            elif target_diff_bottom == target_shortest:
+                target_pos = QPointF(target_pos.x(), target_pos.y() + 20)
+            elif target_diff_top == target_shortest:
+                target_pos = QPointF(target_pos.x(), target_pos.y() - 20)
+            else:
+                target_pos = QPointF(target_pos.x() + 20, target_pos.y())
+
             if source_diff_left == shortest:
-                diff_x = des_pos.x() - source_pos.x()
-                center_x = source_pos.x() + diff_x / 2
                 path.lineTo(center_x, source_pos.y())
-                path.lineTo(center_x, des_pos.y())
+                path.lineTo(center_x, target_pos.y())
             elif source_diff_bottom == shortest:
-                diff_x = des_pos.x() - source_pos.x()
-                diff_y = des_pos.y() - source_pos.y()
-                center_x = source_pos.x() + diff_x / 2
+                diff_y = target_pos.y() - source_pos.y()
                 center_y = source_pos.y() + diff_y / 2
                 path.lineTo(source_pos.x(), center_y)
-                path.lineTo(des_pos.x(), center_y)
+                path.lineTo(target_pos.x(), center_y)
             elif source_diff_top == shortest:
-                diff_x = des_pos.x() - source_pos.x()
-                center_x = source_pos.x() + diff_x / 2
-                path.lineTo(source_pos.x(), des_pos.y())
-                path.lineTo(center_x, des_pos.y())
+                path.lineTo(source_pos.x(), target_pos.y())
+                path.lineTo(center_x, target_pos.y())
             else:
-                diff_x = des_pos.x() - source_pos.x()
-                center_x = source_pos.x() + diff_x / 2
                 path.lineTo(center_x, source_pos.y())
-                path.lineTo(center_x, des_pos.y())
+                path.lineTo(center_x, target_pos.y())
 
-            path.lineTo(des_pos)
+            path.lineTo(target_pos)
+            path.lineTo(target_port_pos)
             self.setPath(path)
 
     def mouseDoubleClickEvent(self, event):
