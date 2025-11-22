@@ -1,6 +1,9 @@
 import os
+import shutil
+import copy
 import glob
 import json
+import riocore
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -29,6 +32,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     "stepper",
                     "pwm",
                     "encoder",
+                    "esp32",
                 ],
                 "description": "instance type",
                 "reload": True,
@@ -37,7 +41,135 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         self.SIGNALS = {}
 
-        if node_type == "board":
+        if node_type == "esp32":
+            self.OPTIONS.update(
+                {
+                    "board": {
+                        "default": "esp32dev",
+                        "type": "select",
+                        "options": ["esp32dev", "wemos_d1_mini32"],
+                        "description": "esp32 board type",
+                    },
+                    "cardname": {
+                        "default": "9r01",
+                        "type": "select",
+                        "options": ["9r01", "9r02", "9r03", "9r04"],
+                        "description": "card name",
+                    },
+                    "upload_port": {
+                        "default": "/dev/ttyUSB0",
+                        "type": str,
+                        "description": "upload-port",
+                    },
+                },
+            )
+
+            board = self.plugin_setup.get("board", self.option_default("board"))
+
+            if board == "esp32dev":
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (235, 50 + 9 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (235, 50 + 8 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, 36, 39, 34, 35, 32, 33, 25, 26, 27, 14, 12, 13)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (10, 50 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((23, 22, -1, -1, 21, 19, 18, 5, -1, -1, 4, 2, 15)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (235, 50 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+
+            else:
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (240, 69 + 5 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (240, 69 + 4 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, -1, 39, 35, 33, 34, 14, -1, 9)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (12, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, 36, 26, 18, 19, 23, 5, 13, 10)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (36, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, -1, 22, 21, -1, -1, -1, -1, 15)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (240, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, 27, 25, 32, 12, 4, 0, 2)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (263, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+
+            self.IMAGE_SHOW = True
+            self.IMAGE = f"{board}.png"
+            self.BUILDER = [
+                "build",
+                "flash",
+            ]
+
+        elif node_type == "board":
             board_list = []
             for json_file in glob.glob(os.path.join(os.path.dirname(__file__), "*.json")):
                 board = json_file.split("/")[-1][:-5]
@@ -220,6 +352,12 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         direction = "all"
                         ptype = "GPIO"
                         halname = f"{self.instances_name}:gpio.{int(io):03d}"
+                    elif func.lower() == "sserial":
+                        pinfunc = line.split()[5][:-5]
+                        channel = f"{line.split()[4]}.{int(line.split()[5][-1]) - 1}"
+                        direction = "all"
+                        ptype = f"MESA{func}{pinfunc}-{channel}"
+                        halname = f"{self.instances_name}:SSERIAL.{channel}"
                     else:
                         pinfunc = line.split()[5].split("/")[0]
                         func_halname = func.lower().replace("qcount", "encoder").replace("pwm", "pwmgen")
@@ -373,18 +511,25 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             }
 
     def builder(self, config, command):
-        boardname = self.plugin_setup.get("boardname", self.option_default("boardname"))
-        firmware = self.plugin_setup.get("firmware", self.option_default("firmware"))
-        bitfile = os.path.join(os.path.dirname(__file__), "mesapins", boardname, f"{boardname}_{firmware}.bit")
-        if boardname in {"7c80", "7c81"}:
-            addr = "/dev/spidev0.0 --spi"
-        else:
-            addr = self.plugin_setup.get("ip_address", self.option_default("ip_address"))
-        if command.startswith("flash:"):
-            cmd = f"sudo mesaflash --device {boardname} --addr {addr} --write {bitfile}"
-        else:
-            cmd = f"sudo mesaflash --device {boardname} --addr {addr} --readhmid"
-        return cmd
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        if node_type == "board":
+            boardname = self.plugin_setup.get("boardname", self.option_default("boardname"))
+            firmware = self.plugin_setup.get("firmware", self.option_default("firmware"))
+            bitfile = os.path.join(os.path.dirname(__file__), "mesapins", boardname, f"{boardname}_{firmware}.bit")
+            if boardname in {"7c80", "7c81"}:
+                addr = "/dev/spidev0.0 --spi"
+            else:
+                addr = self.plugin_setup.get("ip_address", self.option_default("ip_address"))
+            if command.startswith("flash:"):
+                cmd = f"sudo mesaflash --device {boardname} --addr {addr} --write {bitfile}"
+            else:
+                cmd = f"sudo mesaflash --device {boardname} --addr {addr} --readhmid"
+            return cmd
+        elif node_type == "esp32":
+            project = riocore.Project(copy.deepcopy(config))
+            firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
+            cmd = f"cd {firmware_path} && pio run --target=upload"
+            return cmd
 
     def update_prefixes(cls, parent, instances):
         for instance in instances:
@@ -394,7 +539,18 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     rawpin = connected_pin["rawpin"]
                     plugin_instance = connected_pin["instance"]
                     suffix = ".".join(rawpin.split(":")[1].split(".")[:-1])
-                    plugin_instance.PREFIX = f"{instance.hm2_prefix}.{suffix}"
+                    if suffix.startswith("SSERIAL."):
+                        plugin_instance.PREFIX = f"{instance.hm2_prefix}"
+                        plugin_instance.SSERIAL_NUM = ".".join(rawpin.split(".")[-2:])
+                    else:
+                        plugin_instance.PREFIX = f"{instance.hm2_prefix}.{suffix}"
+
+            elif node_type == "esp32":
+                cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
+                for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                    rawpin = connected_pin["rawpin"]
+                    plugin_instance = connected_pin["instance"]
+                    plugin_instance.hm2_prefix = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
 
     def update_pins(self, parent):
         self.outputs = []
@@ -420,6 +576,33 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             self.output_inverts.append(f"{self.hm2_prefix}.{pin.lower()}")
                 else:
                     del psetup["pin"]
+
+        elif node_type == "esp32":
+            self.pins_input = []
+            self.pins_output = []
+
+            input_pin_n = 0
+            output_pin_n = 0
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+                psetup = connected_pin["setup"]
+                pin = connected_pin["pin"]
+                direction = connected_pin["direction"]
+                inverted = connected_pin["inverted"]
+                plugin_instance = connected_pin["instance"]
+                if direction == "input":
+                    self.pins_input.append(pin)
+                    if inverted:
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}-not"
+                    else:
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}"
+                    input_pin_n += 1
+                else:
+                    self.pins_output.append(pin)
+                    if inverted:
+                        self.output_inverts.append(f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}")
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
+                    output_pin_n += 1
+                # print("+##", connected_pin)
 
     def component_loader(cls, instances):
         output = []
@@ -463,10 +646,12 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 parent.halg.setp_add(f"{pin}.is_output", 1)
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}.invert_output", 1)
+        elif node_type == "esp32":
+            for pin in self.output_inverts:
+                parent.halg.setp_add(f"{pin}-invert", 1)
         elif node_type == "pwm":
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
-
         elif node_type == "encoder":
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
@@ -490,3 +675,159 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 )
                 parent.halg.setp_add(f"{self.PREFIX}.control-type", "1")
                 parent.halg.setp_add(f"{self.PREFIX}.step_type", "0")
+
+    def extra_files(cls, parent, instances):
+        for instance in instances:
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            if node_type == "esp32":
+                board = instance.plugin_setup.get("board", instance.option_default("board"))
+                cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
+                upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))
+
+                input_pin_n = 0
+                output_pin_n = 0
+                for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                    psetup = connected_pin["setup"]
+                    pin = connected_pin["pin"]
+                    direction = connected_pin["direction"]
+                    inverted = connected_pin["inverted"]
+                    plugin_instance = connected_pin["instance"]
+                    if direction == "input":
+                        if inverted:
+                            psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}-not"
+                        else:
+                            psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}"
+                        input_pin_n += 1
+                    else:
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
+                        output_pin_n += 1
+                    print("+##", connected_pin)
+
+                # create firmware stuff
+                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
+                os.makedirs(firmware_path, exist_ok=True)
+                os.makedirs(os.path.join(firmware_path, "src"), exist_ok=True)
+                os.makedirs(os.path.join(firmware_path, "lib"), exist_ok=True)
+                print(f"{instance.NAME}: create firmware structure: {firmware_path}")
+
+                output = []
+                source = os.path.join(os.path.dirname(__file__), "sserial", "TEMPLATE.ino")
+                for line in open(source, "r").read().split("\n"):
+                    if line.strip() == "//defines":
+                        output.append("#define SSerial Serial2")
+                        output.append("")
+                    elif line.strip() == "//ProcessDataOut":
+                        output.append("static struct ProcessDataOut {")
+                        output.append("  uint8_t input;")
+                        output.append("} pdata_out = {0x00000000};")
+                        output.append("")
+                    elif line.strip() == "//ProcessDataIn":
+                        output.append("static struct ProcessDataIn {")
+                        output.append("  uint8_t output;")
+                        output.append("} pdata_in = {0x00000000};")
+                        output.append("")
+                    elif line.strip() == "//CARD_NAME":
+                        output.append(f'static const char CARD_NAME[] = "{cardname}";')
+                        output.append("")
+                    elif line.strip() == "//PDD":
+                        output.append("  {")
+                        output.append("    .pdd = {")
+                        output.append("      .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                        output.append("      .DataSize      = 8,")
+                        output.append("      .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                        output.append("      .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                        output.append("      .ParamMin      = 0.0,")
+                        output.append("      .ParamMax      = 0.0,")
+                        output.append("      .ParamAddress  = PARAM_BASE_ADDRESS,")
+                        output.append('      "None\\0Output"')
+                        output.append("    }")
+                        output.append("  },")
+
+                        output.append("  {")
+                        output.append("    .pdd = {")
+                        output.append("      .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                        output.append("      .DataSize      = 8,")
+                        output.append("      .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                        output.append("      .DataDirection = LBP_PDD_DIRECTION_INPUT,")
+                        output.append("      .ParamMin      = 0.0,")
+                        output.append("      .ParamMax      = 0.0,")
+                        output.append("      .ParamAddress  = PARAM_BASE_ADDRESS + 1,")
+                        output.append('      "None\\0Input"')
+                        output.append("    }")
+                        output.append("  }")
+
+                        output.append("")
+
+                    elif line.strip() == "//PTOC":
+                        output.append("static const uint16_t PTOC[] = {")
+                        output.append("  PDD_BASE_ADDRESS+2*sizeof(LBP_PDD),")
+                        output.append("  PDD_BASE_ADDRESS+3*sizeof(LBP_PDD),")
+                        output.append("  0x0000")
+                        output.append("};")
+                        output.append("")
+                    elif line.strip() == "//GTOC":
+                        output.append("static const uint16_t GTOC[] = {")
+                        output.append("  PDD_BASE_ADDRESS,")
+                        output.append("  PDD_BASE_ADDRESS+1*sizeof(LBP_PDD),")
+                        output.append("  PDD_BASE_ADDRESS+2*sizeof(LBP_PDD),")
+                        output.append("  PDD_BASE_ADDRESS+3*sizeof(LBP_PDD),")
+                        output.append("  0x0000")
+                        output.append("};")
+                        output.append("")
+
+                    elif line.strip() == "//setup":
+                        for pin_num, pin in enumerate(instance.pins_output):
+                            output.append(f"  pinMode({pin}, OUTPUT);")
+
+                        for pin_num, pin in enumerate(instance.pins_input):
+                            output.append(f"  pinMode({pin}, INPUT_PULLUP);")
+                        output.append("")
+
+                    elif line.strip() == "//pdata_out.input":
+                        output.append("          pdata_out.input = 0;")
+                        for pin_num, pin in enumerate(instance.pins_input):
+                            output.append(f"          if (digitalRead({pin})) {{")
+                            output.append(f"            pdata_out.input |= (1<<{pin_num});")
+                            output.append("          }")
+                        output.append("          pdata_out.input = millis();")
+                        output.append("")
+
+                    elif line.strip() == "//pdata_in.output":
+                        for pin_num, pin in enumerate(instance.pins_output):
+                            output.append(f"          digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
+                        output.append("")
+
+                    else:
+                        output.append(line)
+
+                target = os.path.join(firmware_path, "src", "main.ino")
+                open(target, "w").write("\n".join(output))
+
+                output = [""]
+                output.append(f"[env:{board}]")
+                output.append("platform = espressif32")
+                output.append("framework = arduino")
+                output.append(f"board = {board}")
+                output.append("#upload_speed = 115200")
+                output.append("upload_speed = 500000")
+                output.append("monitor_speed = 115200")
+                output.append(f"upload_port = {upload_port}")
+                output.append("")
+                output.append("")
+                target = os.path.join(firmware_path, "platformio.ini")
+                open(target, "w").write("\n".join(output))
+
+                output = [""]
+                output.append("build:")
+                output.append("	pio run")
+                output.append("")
+                output.append("load:")
+                output.append("	pio run --target==upload")
+                output.append("")
+                target = os.path.join(firmware_path, "Makefile")
+                open(target, "w").write("\n".join(output))
+
+                for filename in ("LBP.cpp", "LBP.h"):
+                    source = os.path.join(os.path.dirname(__file__), "sserial", filename)
+                    target = os.path.join(firmware_path, "src", filename)
+                    shutil.copy(source, target)
