@@ -23,10 +23,7 @@
 */
 
 #include "LBP.h"
-
 #include <stdint.h>
-
-
 #pragma pack(push,1)
 
 //defines
@@ -161,7 +158,7 @@ void loop() {
             }
 
         } else if (cmd.Generic.CommandType == LBP_COMMAND_TYPE_RPC) {
-//pdata_in_next
+            //pdata_in_next
             while (!SSerial.available()) {
                 yield();
             }
@@ -190,9 +187,14 @@ void loop() {
             break;
 
             case LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA: {
-                uint8_t RESPONSE[DISCOVERY_DATA.RxSize+1]; // +1 for CRC
-                RESPONSE[0] = 0x00; // fault status
+                pdata_out.fault = 0;
                 //pdata_out.input
+                uint8_t RESPONSE[DISCOVERY_DATA.RxSize+1];
+                memcpy(RESPONSE, &pdata_out, sizeof(pdata_out));
+                RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
+                SSerial.write(RESPONSE, sizeof(RESPONSE));
+                SSerial.flush();
+
                 //pdata_in.output
                 //digitalWriteFast(LED_BUILTIN, (millis() & 0x100) ? HIGH : LOW);
             }
@@ -222,45 +224,45 @@ void loop() {
                     return;
                 }
 
-                // act
                 switch (cmd.value) {
-                case LBP_COMMAND_LOCAL_WRITE_STATUS: {
-                    const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
+                    case LBP_COMMAND_LOCAL_WRITE_STATUS: {
+                        const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
 
-                case LBP_COMMAND_LOCAL_WRITE_SW_MODE: {
-                    const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
+                    case LBP_COMMAND_LOCAL_WRITE_SW_MODE: {
+                        const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
 
-                case LBP_COMMAND_LOCAL_WRITE_CLEAR_FAULTS: {
-                    const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
+                    case LBP_COMMAND_LOCAL_WRITE_CLEAR_FAULTS: {
+                        const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
 
-                case LBP_COMMAND_LOCAL_WRITE_NVMEM_FLAG: {
-                    const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
+                    case LBP_COMMAND_LOCAL_WRITE_NVMEM_FLAG: {
+                        const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
 
-                case LBP_COMMAND_LOCAL_WRITE_COMMAND_TIMEOUT: {
-                    const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
+                    case LBP_COMMAND_LOCAL_WRITE_COMMAND_TIMEOUT: {
+                        const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
 
-                default:
-                    Serial.printf("   ***UNHANDLED*** LOCAL LBP WRITE COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                    default: {
+                        Serial.printf("   ***UNHANDLED*** LOCAL LBP WRITE COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                    }
                 }
             } else { // if (cmd.value < 0xE0)
                 while (!SSerial.available()) {

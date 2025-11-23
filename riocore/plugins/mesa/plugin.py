@@ -750,11 +750,12 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         output.append("")
 
                     elif line.strip() == "//ProcessDataOut":
+                        output.append("static struct ProcessDataOut {")
+                        output.append("uint8_t fault;")
                         if bits_in:
-                            output.append("static struct ProcessDataOut {")
                             output.append(f"    uint{int_size_in}_t input;")
-                            output.append("} pdata_out = {0x00000000};")
-                            output.append("")
+                        output.append("} pdata_out = {0x00000000};")
+                        output.append("")
                     elif line.strip() == "//ProcessDataIn":
                         if bits_out:
                             output.append("static struct ProcessDataIn {")
@@ -853,10 +854,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                                 output.append(f"                if (digitalRead({pin})) {{")
                                 output.append(f"                  pdata_out.input |= (1<<{pin_num});")
                                 output.append("                }")
-                            output.append("                memcpy(RESPONSE+1, &pdata_out, sizeof(pdata_out)); // +1 for skipping fault status")
-                        output.append("                RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);")
-                        output.append("                SSerial.write(RESPONSE, sizeof(RESPONSE));")
-                        output.append("                SSerial.flush();")
                         output.append("")
 
                     elif line.strip() == "//pdata_in.output":
