@@ -39,13 +39,9 @@ static const uint16_t  GTOC_BASE_ADDRESS = 0x1000; // arbitrary, not real locati
 static const uint16_t  PTOC_BASE_ADDRESS = 0x2000; // arbitrary, not real location in memory
 static const uint16_t   PDD_BASE_ADDRESS = 0x3000; // arbitrary, not real location in memory
 static const uint16_t PARAM_BASE_ADDRESS = 0x4000; // arbitrary, not real location in memory
-static const LBP_Discovery_Data DISCOVERY_DATA =
-{
-  .RxSize = sizeof(ProcessDataOut)+1, // +1 for the fault status, remote transmits
-  .TxSize = sizeof(ProcessDataIn), // remote receives
-  .ptoc   = PTOC_BASE_ADDRESS,
-  .gtoc   = GTOC_BASE_ADDRESS
-};
+
+//LBP_Discovery_Data
+
 static const LBP_PDD PDD[] =
 {
   {
@@ -223,18 +219,7 @@ void loop()
     }
     else if (cmd.Generic.CommandType == LBP_COMMAND_TYPE_RPC)
     {
-      uint8_t pdata_in_next[sizeof(pdata_in)];
-      if (cmd.value == LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA)
-      {
-        for (size_t i = 0; i < sizeof(pdata_in); i++) // sizeof(pdata_in) == DISCOVERY_DATA.TxSize
-        {
-          while (!SSerial.available()) {yield();}
-          const uint8_t c = SSerial.read();
-          crc = LBP_CalcNextCRC(c, crc);
-          VERB_PRINTF("Received: 0x%02X\r\n", static_cast<uint32_t>(c));
-          pdata_in_next[i] = c;
-        }
-      }
+//pdata_in_next
       while (!SSerial.available()) {yield();}
       const uint8_t lastByte = SSerial.read();
       //VERB_PRINTF("Received: 0x%02X\r\n", static_cast<uint32_t>(lastByte));
@@ -273,20 +258,8 @@ void loop()
           uint8_t RESPONSE[DISCOVERY_DATA.RxSize+1]; // +1 for CRC
           RESPONSE[0] = 0x00; // fault status
 
-//pdata_out.input
-
-          memcpy(RESPONSE+1, &pdata_out, sizeof(pdata_out)); // +1 for skipping fault status
-          RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-          SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-          SSERIAL_FLUSH();
-
-          memcpy(&pdata_in, pdata_in_next, sizeof(pdata_in));
-#ifdef SHOW_PDATA_IN
-          Serial.printf("P: 0x%08X, %i\r\n", pdata_in.output, Serial.available());
-#endif
-
-//pdata_in.output
-
+          //pdata_out.input
+          //pdata_in.output
           //digitalWriteFast(LED_BUILTIN, (millis() & 0x100) ? HIGH : LOW);
         }
         break;
