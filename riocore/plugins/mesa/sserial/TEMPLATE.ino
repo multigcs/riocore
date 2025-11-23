@@ -20,7 +20,6 @@
 * https://forum.linuxcnc.org/27-driver-boards/34445-custom-board-for-smart-serial-interface?start=10#110007
 * https://forum.linuxcnc.org/media/kunena/attachments/16679/sserial.h
 * https://forum.linuxcnc.org/media/kunena/attachments/16679/sserial.c
-*
 */
 
 #include "LBP.h"
@@ -86,19 +85,6 @@ struct LBP_State {
     .address = 0x0000
 };
 
-//#define SHOW_DEBUG
-//#define SHOW_VERBOSE
-//#define SHOW_PDATA_IN
-
-#if 0
-#define SSERIAL_FLUSH SSerial.flush
-#else
-#define SSERIAL_FLUSH(x) do {} while (0)
-#endif
-
-void SSERIAL_WRITE(const uint8_t *data, size_t len) {
-    SSerial.write(data, len);
-}
 
 void setup() {
     //pinMode(LED_BUILTIN, OUTPUT);
@@ -170,8 +156,8 @@ void loop() {
                 uint8_t RESPONSE[sizeof(uint64_t)+1];
                 memcpy(RESPONSE, src, readLength);
                 RESPONSE[readLength] = LBP_CalcCRC(RESPONSE, readLength);
-                SSERIAL_WRITE(RESPONSE, readLength+1);
-                SSERIAL_FLUSH();
+                SSerial.write(RESPONSE, readLength+1);
+                SSerial.flush();
             }
 
         } else if (cmd.Generic.CommandType == LBP_COMMAND_TYPE_RPC) {
@@ -189,8 +175,8 @@ void loop() {
                 uint8_t RESPONSE[sizeof(DISCOVERY_DATA)+1];
                 memcpy(RESPONSE, &DISCOVERY_DATA, sizeof(DISCOVERY_DATA));
                 RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                SSERIAL_FLUSH();
+                SSerial.write(RESPONSE, sizeof(RESPONSE));
+                SSerial.flush();
             }
             break;
 
@@ -198,8 +184,8 @@ void loop() {
                 uint8_t RESPONSE[sizeof(UNIT_NUMBER)+1];
                 memcpy(RESPONSE, &UNIT_NUMBER, sizeof(UNIT_NUMBER));
                 RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                SSERIAL_FLUSH();
+                SSerial.write(RESPONSE, sizeof(RESPONSE));
+                SSerial.flush();
             }
             break;
 
@@ -240,36 +226,36 @@ void loop() {
                 switch (cmd.value) {
                 case LBP_COMMAND_LOCAL_WRITE_STATUS: {
                     const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
                 case LBP_COMMAND_LOCAL_WRITE_SW_MODE: {
                     const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
                 case LBP_COMMAND_LOCAL_WRITE_CLEAR_FAULTS: {
                     const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
                 case LBP_COMMAND_LOCAL_WRITE_NVMEM_FLAG: {
                     const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
                 case LBP_COMMAND_LOCAL_WRITE_COMMAND_TIMEOUT: {
                     const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
@@ -291,16 +277,16 @@ void loop() {
                 case LBP_COMMAND_LOCAL_READ_LBP_STATUS: {
                     const uint8_t lbp_status = 0x00;
                     const uint8_t RESPONSE[] = {lbp_status, LBP_CalcNextCRC(lbp_status)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
                 case LBP_COMMAND_LOCAL_READ_CLEAR_FAULT_FLAG: {
                     const uint8_t fault_flag = 0x00;
                     const uint8_t RESPONSE[] = {fault_flag, LBP_CalcNextCRC(fault_flag)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
@@ -310,23 +296,23 @@ void loop() {
                 case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR3: {
                     uint8_t RESPONSE[] = {CARD_NAME[cmd.value - LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR0], 0x00};
                     RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
                 case LBP_COMMAND_LOCAL_READ_FAULT_DATA: {
                     const uint8_t fault_data = 0x00;
                     const uint8_t RESPONSE[] = {fault_data, LBP_CalcNextCRC(fault_data)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
                 case LBP_COMMAND_LOCAL_READ_COOKIE: {
                     const uint8_t RESPONSE[] = {LBP_COOKIE, LBP_CalcNextCRC(LBP_COOKIE)};
-                    SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));
-                    SSERIAL_FLUSH();
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
                 }
                 break;
 
