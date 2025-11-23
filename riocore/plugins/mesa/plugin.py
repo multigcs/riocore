@@ -752,13 +752,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     elif line.strip() == "//ProcessDataOut":
                         if bits_in:
                             output.append("static struct ProcessDataOut {")
-                            output.append(f"  uint{int_size_in}_t input;")
+                            output.append(f"    uint{int_size_in}_t input;")
                             output.append("} pdata_out = {0x00000000};")
                             output.append("")
                     elif line.strip() == "//ProcessDataIn":
                         if bits_out:
                             output.append("static struct ProcessDataIn {")
-                            output.append(f"  uint{int_size_out}_t output;")
+                            output.append(f"    uint{int_size_out}_t output;")
                             output.append("} pdata_in = {0x00000000};")
                             output.append("")
                     elif line.strip() == "//CARD_NAME":
@@ -767,32 +767,32 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     elif line.strip() == "//PDD":
                         offset = 0
                         if bits_out:
-                            output.append("  {")
-                            output.append("    .pdd = {")
-                            output.append("      .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                            output.append(f"      .DataSize      = {bits_out},")
-                            output.append("      .DataType      = LBP_PDD_DATA_TYPE_BITS,")
-                            output.append("      .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
-                            output.append("      .ParamMin      = 0.0,")
-                            output.append("      .ParamMax      = 0.0,")
-                            output.append("      .ParamAddress  = PARAM_BASE_ADDRESS,")
-                            output.append('      "None\\0Output"')
-                            output.append("    }")
-                            output.append("  },")
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append(f"            .DataSize      = {bits_out},")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append("            .ParamAddress  = PARAM_BASE_ADDRESS,")
+                            output.append('            "None\\0Output"')
+                            output.append("        }")
+                            output.append("    },")
                             offset += byte_size_out
                         if bits_in:
-                            output.append("  {")
-                            output.append("    .pdd = {")
-                            output.append("      .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                            output.append(f"      .DataSize      = {bits_in},")
-                            output.append("      .DataType      = LBP_PDD_DATA_TYPE_BITS,")
-                            output.append("      .DataDirection = LBP_PDD_DIRECTION_INPUT,")
-                            output.append("      .ParamMin      = 0.0,")
-                            output.append("      .ParamMax      = 0.0,")
-                            output.append(f"      .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
-                            output.append('      "None\\0Input"')
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append(f"            .DataSize      = {bits_in},")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_INPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                            output.append('            "None\\0Input"')
+                            output.append("        }")
                             output.append("    }")
-                            output.append("  }")
                             offset += byte_size_in
 
                         output.append("")
@@ -801,77 +801,71 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         output.append("static const uint16_t PTOC[] = {")
                         offset = 2
                         if bits_out:
-                            output.append(f"  PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
                         if bits_in:
-                            output.append(f"  PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
-                        output.append("  0x0000")
+                        output.append("    0x0000")
                         output.append("};")
                         output.append("")
                     elif line.strip() == "//GTOC":
                         output.append("static const uint16_t GTOC[] = {")
-                        output.append("  PDD_BASE_ADDRESS,")
+                        output.append("    PDD_BASE_ADDRESS,")
                         offset = 1
-                        output.append(f"  PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                        output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                         offset += 1
                         if bits_out:
-                            output.append(f"  PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
                         if bits_in:
-                            output.append(f"  PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
-                        output.append("  0x0000")
+                        output.append("    0x0000")
                         output.append("};")
                         output.append("")
 
                     elif line.strip() == "//setup":
                         for pin_num, pin in enumerate(instance.pins_output):
-                            output.append(f"  pinMode({pin}, OUTPUT);")
+                            output.append(f"    pinMode({pin}, OUTPUT);")
 
                         for pin_num, pin in enumerate(instance.pins_input):
-                            output.append(f"  pinMode({pin}, INPUT_PULLUP);")
+                            output.append(f"    pinMode({pin}, INPUT_PULLUP);")
                         output.append("")
 
                     elif line.strip() == "//pdata_in_next":
                         if bits_out:
-                            output.append("      uint8_t pdata_in_next[sizeof(pdata_in)];")
-                            output.append("      if (cmd.value == LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA)")
-                            output.append("      {")
-                            output.append("        for (size_t i = 0; i < sizeof(pdata_in); i++) // sizeof(pdata_in) == DISCOVERY_DATA.TxSize")
-                            output.append("        {")
-                            output.append("          while (!SSerial.available()) {yield();}")
-                            output.append("          const uint8_t c = SSerial.read();")
-                            output.append("          crc = LBP_CalcNextCRC(c, crc);")
-                            output.append('          VERB_PRINTF("Received: 0x%02X\\r\\n", static_cast<uint32_t>(c));')
-                            output.append("          pdata_in_next[i] = c;")
-                            output.append("        }")
-                            output.append("      }")
+                            output.append("            uint8_t pdata_in_next[sizeof(pdata_in)];")
+                            output.append("            if (cmd.value == LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA) {")
+                            output.append("                for (size_t i = 0; i < sizeof(pdata_in); i++) // sizeof(pdata_in) == DISCOVERY_DATA.TxSize {")
+                            output.append("                    while (!SSerial.available()) {yield();}")
+                            output.append("                    const uint8_t c = SSerial.read();")
+                            output.append("                    crc = LBP_CalcNextCRC(c, crc);")
+                            output.append('                    VERB_PRINTF("Received: 0x%02X\\r\\n", static_cast<uint32_t>(c));')
+                            output.append("                    pdata_in_next[i] = c;")
+                            output.append("                }")
+                            output.append("            }")
                             output.append("")
 
                     elif line.strip() == "//pdata_out.input":
                         if bits_in:
-                            output.append("          pdata_out.input = 0;")
+                            output.append("                pdata_out.input = 0;")
                             for pin_num, pin in enumerate(instance.pins_input):
-                                output.append(f"          if (digitalRead({pin})) {{")
-                                output.append(f"            pdata_out.input |= (1<<{pin_num});")
-                                output.append("          }")
-                            # output.append("          pdata_out.input = millis();")
-                            output.append("          memcpy(RESPONSE+1, &pdata_out, sizeof(pdata_out)); // +1 for skipping fault status")
-                        output.append("          RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);")
-                        output.append("          SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));")
-                        output.append("          SSERIAL_FLUSH();")
+                                output.append(f"                if (digitalRead({pin})) {{")
+                                output.append(f"                  pdata_out.input |= (1<<{pin_num});")
+                                output.append("                }")
+                            # output.append("                pdata_out.input = millis();")
+                            output.append("                memcpy(RESPONSE+1, &pdata_out, sizeof(pdata_out)); // +1 for skipping fault status")
+                        output.append("                RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);")
+                        output.append("                SSERIAL_WRITE(RESPONSE, sizeof(RESPONSE));")
+                        output.append("                SSERIAL_FLUSH();")
                         output.append("")
 
                     elif line.strip() == "//pdata_in.output":
                         if bits_out:
-                            output.append("          memcpy(&pdata_in, pdata_in_next, sizeof(pdata_in));")
-                            output.append("#ifdef SHOW_PDATA_IN")
-                            output.append('          Serial.printf("P: 0x%08X, %i\\r\\n", pdata_in.output, Serial.available());')
-                            output.append("#endif")
-
+                            output.append("                memcpy(&pdata_in, pdata_in_next, sizeof(pdata_in));")
                             for pin_num, pin in enumerate(instance.pins_output):
-                                output.append(f"          digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
+                                output.append(f"                digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
                             output.append("")
 
                     else:
