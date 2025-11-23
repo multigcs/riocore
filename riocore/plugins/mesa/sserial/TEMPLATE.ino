@@ -190,7 +190,7 @@ void loop() {
                 }
                 break;
                 default: {
-                    Serial.printf("   ***UNHANDLED*** LBP_COMMAND_TYPE_RPC: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                    Serial.printf("***UNHANDLED*** LBP_COMMAND_TYPE_RPC: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
                 }
             }
         } else if (cmd.Generic.CommandType == LBP_COMMAND_TYPE_LOCAL_READ_WRITE) {
@@ -244,7 +244,7 @@ void loop() {
                     }
                     break;
                     default: {
-                        Serial.printf("   ***UNHANDLED*** LOCAL LBP WRITE COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                        Serial.printf("***UNHANDLED*** LOCAL LBP WRITE COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
                     }
                 }
             } else { // if (cmd.value < 0xE0)
@@ -296,7 +296,7 @@ void loop() {
                     }
                     break;
                     default: {
-                        Serial.printf("   ***UNHANDLED*** LOCAL LBP READ COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                        Serial.printf("***UNHANDLED*** LOCAL LBP READ COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
                     }
                 }
             }
