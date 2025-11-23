@@ -837,11 +837,10 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         if bits_out:
                             output.append("            uint8_t pdata_in_next[sizeof(pdata_in)];")
                             output.append("            if (cmd.value == LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA) {")
-                            output.append("                for (size_t i = 0; i < sizeof(pdata_in); i++) // sizeof(pdata_in) == DISCOVERY_DATA.TxSize {")
+                            output.append("                for (size_t i = 0; i < sizeof(pdata_in); i++) {")
                             output.append("                    while (!SSerial.available()) {yield();}")
                             output.append("                    const uint8_t c = SSerial.read();")
                             output.append("                    crc = LBP_CalcNextCRC(c, crc);")
-                            output.append('                    VERB_PRINTF("Received: 0x%02X\\r\\n", static_cast<uint32_t>(c));')
                             output.append("                    pdata_in_next[i] = c;")
                             output.append("                }")
                             output.append("            }")
