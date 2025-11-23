@@ -27,7 +27,6 @@
 #pragma pack(push,1)
 
 //defines
-
 //ProcessDataOut
 //ProcessDataIn
 //CARD_NAME
@@ -39,7 +38,6 @@ static const uint16_t   PDD_BASE_ADDRESS = 0x3000; // arbitrary, not real locati
 static const uint16_t PARAM_BASE_ADDRESS = 0x4000; // arbitrary, not real location in memory
 
 //LBP_Discovery_Data
-
 static const LBP_PDD PDD[] = {
     {
         .md = {
@@ -59,7 +57,7 @@ static const LBP_PDD PDD[] = {
             "Input_Output"
         }
     },
-//PDD
+    //PDD
 };
 //PTOC
 //GTOC
@@ -82,10 +80,9 @@ struct LBP_State {
     .address = 0x0000
 };
 
-
 void setup() {
     //pinMode(LED_BUILTIN, OUTPUT);
-//setup
+    //setup
     Serial.begin(9600); // baudrate doesn't matter, full speed USB always
     SSerial.begin(2500000); // 2.5MBps for Mesa Smart Serial
 }
@@ -101,24 +98,20 @@ void loop() {
                     uint16_t address;
                     uint8_t bytes[2];
                 } addr;
-
                 // read LSB
                 while (!SSerial.available()) {
                     yield();
                 }
                 addr.bytes[0] = SSerial.read();
                 crc = LBP_CalcNextCRC(addr.bytes[0], crc);
-
                 // read MSB
                 while (!SSerial.available()) {
                     yield();
                 }
                 addr.bytes[1] = SSerial.read();
                 crc = LBP_CalcNextCRC(addr.bytes[1], crc);
-
                 lbp_state.address = addr.address;
             }
-
             if (cmd.ReadWrite.Write) {
                 while (!SSerial.available()) {
                     yield();
@@ -137,7 +130,6 @@ void loop() {
                     Serial.printf("<bad CRC>\r\n");
                     return;
                 }
-
                 const uint8_t readLength = 1 << cmd.ReadWrite.DataSize;
                 const void *src = NULL;
                 for (size_t i = 0; i < sizeof(VIRTUAL_MEMORY_MAP)/sizeof(VIRTUAL_MEMORY_MAP[0]); i++) {
@@ -168,40 +160,38 @@ void loop() {
                 return;
             }
             switch (cmd.value) {
-            case LBP_COMMAND_RPC_SMARTSERIAL_RPC_DISCOVERY: {
-                uint8_t RESPONSE[sizeof(DISCOVERY_DATA)+1];
-                memcpy(RESPONSE, &DISCOVERY_DATA, sizeof(DISCOVERY_DATA));
-                RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                SSerial.write(RESPONSE, sizeof(RESPONSE));
-                SSerial.flush();
-            }
-            break;
+                case LBP_COMMAND_RPC_SMARTSERIAL_RPC_DISCOVERY: {
+                    uint8_t RESPONSE[sizeof(DISCOVERY_DATA)+1];
+                    memcpy(RESPONSE, &DISCOVERY_DATA, sizeof(DISCOVERY_DATA));
+                    RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
+                }
+                break;
+                case LBP_COMMAND_RPC_SMARTSERIAL_UNIT_NUMBER: {
+                    uint8_t RESPONSE[sizeof(UNIT_NUMBER)+1];
+                    memcpy(RESPONSE, &UNIT_NUMBER, sizeof(UNIT_NUMBER));
+                    RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
+                }
+                break;
+                case LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA: {
+                    pdata_out.fault = 0;
+                    //pdata_out.input
+                    uint8_t RESPONSE[DISCOVERY_DATA.RxSize+1];
+                    memcpy(RESPONSE, &pdata_out, sizeof(pdata_out));
+                    RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
+                    SSerial.write(RESPONSE, sizeof(RESPONSE));
+                    SSerial.flush();
 
-            case LBP_COMMAND_RPC_SMARTSERIAL_UNIT_NUMBER: {
-                uint8_t RESPONSE[sizeof(UNIT_NUMBER)+1];
-                memcpy(RESPONSE, &UNIT_NUMBER, sizeof(UNIT_NUMBER));
-                RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                SSerial.write(RESPONSE, sizeof(RESPONSE));
-                SSerial.flush();
-            }
-            break;
-
-            case LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA: {
-                pdata_out.fault = 0;
-                //pdata_out.input
-                uint8_t RESPONSE[DISCOVERY_DATA.RxSize+1];
-                memcpy(RESPONSE, &pdata_out, sizeof(pdata_out));
-                RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                SSerial.write(RESPONSE, sizeof(RESPONSE));
-                SSerial.flush();
-
-                //pdata_in.output
-                //digitalWriteFast(LED_BUILTIN, (millis() & 0x100) ? HIGH : LOW);
-            }
-            break;
-
-            default:
-                Serial.printf("   ***UNHANDLED*** LBP_COMMAND_TYPE_RPC: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                    //pdata_in.output
+                    //digitalWriteFast(LED_BUILTIN, (millis() & 0x100) ? HIGH : LOW);
+                }
+                break;
+                default: {
+                    Serial.printf("   ***UNHANDLED*** LBP_COMMAND_TYPE_RPC: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                }
             }
         } else if (cmd.Generic.CommandType == LBP_COMMAND_TYPE_LOCAL_READ_WRITE) {
             if (cmd.value >= 0xE0) { // HACK check if it's a write command
@@ -214,7 +204,6 @@ void loop() {
                     param = static_cast<uint8_t>(SSerial.read());
                     crc = LBP_CalcNextCRC(param, crc);
                 }
-
                 while (!SSerial.available()) {
                     yield();
                 }
@@ -223,7 +212,6 @@ void loop() {
                     Serial.printf("<CRC bad>\r\n");
                     return;
                 }
-
                 switch (cmd.value) {
                     case LBP_COMMAND_LOCAL_WRITE_STATUS: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
@@ -231,35 +219,30 @@ void loop() {
                         SSerial.flush();
                     }
                     break;
-
                     case LBP_COMMAND_LOCAL_WRITE_SW_MODE: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
                         SSerial.write(RESPONSE, sizeof(RESPONSE));
                         SSerial.flush();
                     }
                     break;
-
                     case LBP_COMMAND_LOCAL_WRITE_CLEAR_FAULTS: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
                         SSerial.write(RESPONSE, sizeof(RESPONSE));
                         SSerial.flush();
                     }
                     break;
-
                     case LBP_COMMAND_LOCAL_WRITE_NVMEM_FLAG: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
                         SSerial.write(RESPONSE, sizeof(RESPONSE));
                         SSerial.flush();
                     }
                     break;
-
                     case LBP_COMMAND_LOCAL_WRITE_COMMAND_TIMEOUT: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
                         SSerial.write(RESPONSE, sizeof(RESPONSE));
                         SSerial.flush();
                     }
                     break;
-
                     default: {
                         Serial.printf("   ***UNHANDLED*** LOCAL LBP WRITE COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
                     }
@@ -273,53 +256,48 @@ void loop() {
                     Serial.printf("<CRC bad>\r\n");
                     return;
                 }
-
                 // respond
                 switch (cmd.value) {
-                case LBP_COMMAND_LOCAL_READ_LBP_STATUS: {
-                    const uint8_t lbp_status = 0x00;
-                    const uint8_t RESPONSE[] = {lbp_status, LBP_CalcNextCRC(lbp_status)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
-
-                case LBP_COMMAND_LOCAL_READ_CLEAR_FAULT_FLAG: {
-                    const uint8_t fault_flag = 0x00;
-                    const uint8_t RESPONSE[] = {fault_flag, LBP_CalcNextCRC(fault_flag)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
-
-                case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR0:
-                case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR1:
-                case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR2:
-                case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR3: {
-                    uint8_t RESPONSE[] = {CARD_NAME[cmd.value - LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR0], 0x00};
-                    RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
-
-                case LBP_COMMAND_LOCAL_READ_FAULT_DATA: {
-                    const uint8_t fault_data = 0x00;
-                    const uint8_t RESPONSE[] = {fault_data, LBP_CalcNextCRC(fault_data)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
-
-                case LBP_COMMAND_LOCAL_READ_COOKIE: {
-                    const uint8_t RESPONSE[] = {LBP_COOKIE, LBP_CalcNextCRC(LBP_COOKIE)};
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
-                }
-                break;
-
-                default:
-                    Serial.printf("   ***UNHANDLED*** LOCAL LBP READ COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                    case LBP_COMMAND_LOCAL_READ_LBP_STATUS: {
+                        const uint8_t lbp_status = 0x00;
+                        const uint8_t RESPONSE[] = {lbp_status, LBP_CalcNextCRC(lbp_status)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
+                    case LBP_COMMAND_LOCAL_READ_CLEAR_FAULT_FLAG: {
+                        const uint8_t fault_flag = 0x00;
+                        const uint8_t RESPONSE[] = {fault_flag, LBP_CalcNextCRC(fault_flag)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
+                    case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR0:
+                    case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR1:
+                    case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR2:
+                    case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR3: {
+                        uint8_t RESPONSE[] = {CARD_NAME[cmd.value - LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR0], 0x00};
+                        RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
+                    case LBP_COMMAND_LOCAL_READ_FAULT_DATA: {
+                        const uint8_t fault_data = 0x00;
+                        const uint8_t RESPONSE[] = {fault_data, LBP_CalcNextCRC(fault_data)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
+                    case LBP_COMMAND_LOCAL_READ_COOKIE: {
+                        const uint8_t RESPONSE[] = {LBP_COOKIE, LBP_CalcNextCRC(LBP_COOKIE)};
+                        SSerial.write(RESPONSE, sizeof(RESPONSE));
+                        SSerial.flush();
+                    }
+                    break;
+                    default: {
+                        Serial.printf("   ***UNHANDLED*** LOCAL LBP READ COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                    }
                 }
             }
         } else {

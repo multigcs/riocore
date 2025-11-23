@@ -849,18 +849,18 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
                     elif line.strip() == "//pdata_out.input":
                         if bits_in:
-                            output.append("                pdata_out.input = 0;")
+                            output.append("                    pdata_out.input = 0;")
                             for pin_num, pin in enumerate(instance.pins_input):
-                                output.append(f"                if (digitalRead({pin})) {{")
-                                output.append(f"                  pdata_out.input |= (1<<{pin_num});")
-                                output.append("                }")
+                                output.append(f"                    if (digitalRead({pin})) {{")
+                                output.append(f"                        pdata_out.input |= (1<<{pin_num});")
+                                output.append("                    }")
                         output.append("")
 
                     elif line.strip() == "//pdata_in.output":
                         if bits_out:
-                            output.append("                memcpy(&pdata_in, pdata_in_next, sizeof(pdata_in));")
+                            output.append("                    memcpy(&pdata_in, pdata_in_next, sizeof(pdata_in));")
                             for pin_num, pin in enumerate(instance.pins_output):
-                                output.append(f"                digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
+                                output.append(f"                    digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
                             output.append("")
 
                     else:
