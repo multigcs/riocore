@@ -550,7 +550,8 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                     rawpin = connected_pin["rawpin"]
                     plugin_instance = connected_pin["instance"]
-                    plugin_instance.hm2_prefix = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
+                    if hasattr(instance, "SSERIAL_NUM"):
+                        plugin_instance.hm2_prefix = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
 
     def update_pins(self, parent):
         self.outputs = []
@@ -584,11 +585,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             input_pin_n = 0
             output_pin_n = 0
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+                plugin_instance = connected_pin["instance"]
+                if not hasattr(plugin_instance, "hm2_prefix"):
+                    print(f"ERROR: no hm2_prefix found: {connected_pin}")
+                    continue
                 psetup = connected_pin["setup"]
                 pin = connected_pin["pin"]
                 direction = connected_pin["direction"]
                 inverted = connected_pin["inverted"]
-                plugin_instance = connected_pin["instance"]
                 if direction == "input":
                     self.pins_input.append(pin)
                     if inverted:
@@ -702,11 +706,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 input_pin_n = 0
                 output_pin_n = 0
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                    plugin_instance = connected_pin["instance"]
+                    if not hasattr(plugin_instance, "hm2_prefix"):
+                        print(f"ERROR: no hm2_prefix found: {connected_pin}")
+                        continue
                     psetup = connected_pin["setup"]
                     pin = connected_pin["pin"]
                     direction = connected_pin["direction"]
                     inverted = connected_pin["inverted"]
-                    plugin_instance = connected_pin["instance"]
                     if direction == "input":
                         if inverted:
                             psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}-not"
@@ -721,6 +728,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 # create firmware stuff
                 firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
                 os.makedirs(firmware_path, exist_ok=True)
+                instance.BUILDER_PATH = firmware_path
                 os.makedirs(os.path.join(firmware_path, "src"), exist_ok=True)
                 os.makedirs(os.path.join(firmware_path, "lib"), exist_ok=True)
                 print(f"  {instance.instances_name}: create firmware structure: {firmware_path}")
@@ -884,11 +892,19 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 open(target, "w").write("\n".join(output))
 
                 output = [""]
-                output.append("build:")
+                output.append("all: build")
+                output.append("")
+                output.append("~/.platformio/penv/bin/pio:")
+                output.append("	wget -O /tmp/__get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py")
+                output.append("	python3 /tmp/__get-platformio.py")
+                output.append("	rm -rf /tmp/__get-platformio.py")
+                output.append("")
+                output.append("build: ~/.platformio/penv/bin/pio")
                 output.append("	pio run")
                 output.append("")
-                output.append("load:")
+                output.append("load: ~/.platformio/penv/bin/pio")
                 output.append("	pio run --target==upload")
+                output.append("")
                 output.append("")
                 target = os.path.join(firmware_path, "Makefile")
                 open(target, "w").write("\n".join(output))

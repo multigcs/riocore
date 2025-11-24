@@ -92,10 +92,10 @@ uint8_t SSerialRead() {
     while (!SSerial.available()) {
         yield();
     }
-    return = SSerial.read();
+    return SSerial.read();
 }
 
-void SSerialWrite(uint8_t *data, size_t size) {
+void SSerialWrite(const uint8_t *data, const size_t size) {
     SSerial.write(data, size);
     SSerial.flush();
 }
