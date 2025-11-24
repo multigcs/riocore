@@ -495,3 +495,7 @@ class PluginImages:
     def flow(self):
         setup = {"image": "flow.png", "pins": [(100, 100)], "signals": [(175, 20), (175, 50)]}
         return setup
+
+    def encoder(self):
+        setup = {"image": "encoder.png", "pins": [(210, 27), (210, 51)], "signals": [(80, 75), (80, 100), (80, 50)]}
+        return setup
