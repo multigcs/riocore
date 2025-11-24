@@ -70,7 +70,7 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 dev_mode = False
 show_signals = False
-edge_mode = 1
+edge_mode = 0
 grid_auto = True
 grid_size = 10
 grid_color = QColor(150, 150, 150)

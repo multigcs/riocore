@@ -47,7 +47,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     "board": {
                         "default": "esp32dev",
                         "type": "select",
-                        "options": ["esp32dev", "wemos_d1_mini32", "pico"],
+                        "options": ["esp32dev", "wemos_d1_mini32", "pico", "8ch"],
                         "description": "board type",
                     },
                     "cardname": {
@@ -66,7 +66,99 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             board = self.plugin_setup.get("board", self.option_default("board"))
 
-            if board == "pico":
+            if board == "8ch":
+                relais_pins = (32, 33, 25, 26, 27, 14, 12, 13)
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (92 + 5 * 23, 360),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (92 + 5 * 23, 383),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, -1, 21, 19, 5, -1, 0, 15, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 360),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+                for pin_num, pin in enumerate((-1, 22, -1, -1, 18, -1, 4, 2, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 383),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+                for pin_num, pin in enumerate((-1, -1, -1, 35, 33, 26, 14, 13, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 644),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+                for pin_num, pin in enumerate((-1, -1, 34, 32, 25, 27, 12, -1, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 667),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+
+                self.SUB_PLUGINS = []
+                for spn, rpin in enumerate(relais_pins):
+                    self.SUB_PLUGINS.append({
+                        "type": "gpioout",
+                        "rpos": [
+                            410,
+                            15 + spn * 167
+                        ],
+                        "image": "relay_min",
+                        "rotate": 0,
+                        "uid": f"relay{spn}",
+                        "name": "",
+                        "signals": {
+                            "bit": {
+                                "net": ""
+                            }
+                        },
+                        "pins": {
+                            "bit": {
+                                "pin": f"IO:{rpin}"
+                            }
+                        }
+                    })
+
+
+            elif board == "pico":
                 self.PINDEFAULTS = {
                     "SSERIAL:RX": {
                         "pin": f"{self.instances_name}:RX",
@@ -785,6 +877,8 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 for line in open(source, "r").read().split("\n"):
                     if line.strip() == "//defines":
                         output.append(f"#define BOARD \"{board}\"")
+                        if board == "8ch":
+                            output.append("#define STATUS_LED 23")
                         if board == "pico":
                             output.append("#define SSerial Serial1")
                         else:
@@ -956,6 +1050,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 target = os.path.join(firmware_path, "src", "main.ino")
                 open(target, "w").write("\n".join(output))
 
+                if board == "8ch":
+                    board = "wemos_d1_mini32"
+
                 output = [""]
                 output.append(f"[env:{board}]")
                 output.append("framework = arduino")
@@ -985,7 +1082,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 output.append("	pio run")
                 output.append("")
                 output.append("load: ~/.platformio/penv/bin/pio")
-                output.append("	pio run --target==upload")
+                output.append("	pio run --target=upload")
                 output.append("")
                 output.append("")
                 target = os.path.join(firmware_path, "Makefile")

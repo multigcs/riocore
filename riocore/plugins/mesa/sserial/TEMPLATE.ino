@@ -81,7 +81,10 @@ struct LBP_State {
 };
 
 void setup() {
-    //pinMode(LED_BUILTIN, OUTPUT);
+#ifdef STATUS_LED
+    pinMode(STATUS_LED, OUTPUT);
+    digitalWrite(STATUS_LED, LOW);
+#endif
     //setup
     Serial.begin(9600); // baudrate doesn't matter, full speed USB always
     SSerial.begin(2500000); // 2.5MBps for Mesa Smart Serial
@@ -179,7 +182,9 @@ void loop() {
                     SSerialWrite(RESPONSE, sizeof(RESPONSE));
 
                     //pdata_in.output
-                    //digitalWriteFast(LED_BUILTIN, (millis() & 0x100) ? HIGH : LOW);
+#ifdef STATUS_LED
+                    digitalWrite(STATUS_LED, (millis() & 0x100) ? HIGH : LOW);
+#endif
                 }
                 break;
                 default: {

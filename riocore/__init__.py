@@ -409,6 +409,10 @@ class PluginImages:
         setup = {"image": "relay.png", "pins": [(15, 150)], "signals": [(355, 150)]}
         return setup
 
+    def relay_min(self):
+        setup = {"image": "relay_min.png", "pins": [(15, 150)], "signals": [(355, 150)]}
+        return setup
+
     def ssr(self):
         setup = {"image": "ssr.png", "pins": [(36, 36)], "signals": [(278, 40)]}
         return setup
@@ -497,5 +501,5 @@ class PluginImages:
         return setup
 
     def encoder(self):
-        setup = {"image": "encoder.png", "pins": [(210, 27), (210, 51)], "signals": [(80, 75), (80, 100), (80, 50)]}
+        setup = {"image": "encoder.png", "pins": [(210, 27), (210, 51), (210, 78)], "signals": [(80, 75), (80, 100), (80, 50)]}
         return setup
