@@ -87,15 +87,16 @@ void setup() {
 #endif
     //setup
     Serial.begin(9600); // baudrate doesn't matter, full speed USB always
+    while (!Serial);
     SSerial.begin(2500000); // 2.5MBps for Mesa Smart Serial
+    while (!SSerial);
+    SSerial.setTimeout(1);
 }
 
 uint8_t SSerialRead() {
-    // wait for next byte
-    while (!SSerial.available()) {
-        yield();
-    }
-    return SSerial.read();
+    uint8_t data = 0;
+    SSerial.readBytes(&data, 1);
+    return data;
 }
 
 void SSerialWrite(const uint8_t *data, const size_t size) {
