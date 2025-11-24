@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "gpio support over parallel port"
         self.DESCRIPTION = "PC parallel port used as gpio"
         self.KEYWORDS = "parport gpio"
+        self.BASETHREAD = True
         self.TYPE = "base"
         self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"

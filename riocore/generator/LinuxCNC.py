@@ -1749,9 +1749,9 @@ if __name__ == "__main__":
 
         components = {}
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.PLUGIN_TYPE == "gpio" or plugin_instance.COMPONENT:
-                if plugin_instance.PLUGIN_TYPE == "gpio":
-                    self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 25000
+            if plugin_instance.BASETHREAD:
+                self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 25000
+            if plugin_instance.COMPONENT:
                 if plugin_instance.COMPONENT not in components:
                     components[plugin_instance.COMPONENT] = []
                 components[plugin_instance.COMPONENT].append(plugin_instance)
@@ -1993,7 +1993,6 @@ if __name__ == "__main__":
                     rprefix = "rio"
                     if setp:
                         self.halg.setp_add(f"{rprefix}.{halname}", setp)
-
             else:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]

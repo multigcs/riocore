@@ -27,9 +27,9 @@
 #pragma pack(push,1)
 
 //defines
+//CARD_NAME
 //ProcessDataOut
 //ProcessDataIn
-//CARD_NAME
 
 static const uint32_t UNIT_NUMBER = 0x04030201;
 static const uint16_t  GTOC_BASE_ADDRESS = 0x1000; // arbitrary, not real location in memory
@@ -118,7 +118,7 @@ void loop() {
                 }
                 const uint8_t lastByte = SSerial.read();
                 if (lastByte != crc) {
-                    Serial.printf("<bad CRC>\r\n");
+                    Serial.println("<bad CRC>");
                     return;
                 }
             } else { // (!cmd.ReadWrite.Write)
@@ -127,7 +127,7 @@ void loop() {
                 }
                 const uint8_t lastByte = SSerial.read();
                 if (lastByte != crc) {
-                    Serial.printf("<bad CRC>\r\n");
+                    Serial.println("<bad CRC>");
                     return;
                 }
                 const uint8_t readLength = 1 << cmd.ReadWrite.DataSize;
@@ -139,7 +139,7 @@ void loop() {
                     }
                 }
                 if (!src) {
-                    Serial.printf("<invalid read address 0x%04X>\r\n", static_cast<uint32_t>(lbp_state.address));
+                    Serial.println("<invalid read address 0x%04X>");
                     return;
                 }
                 uint8_t RESPONSE[sizeof(uint64_t)+1];
@@ -156,7 +156,7 @@ void loop() {
             }
             const uint8_t lastByte = SSerial.read();
             if (lastByte != crc) {
-                Serial.printf("<CRC bad>\r\n");
+                Serial.println("<CRC bad>");
                 return;
             }
             switch (cmd.value) {
@@ -190,7 +190,7 @@ void loop() {
                 }
                 break;
                 default: {
-                    Serial.printf("***UNHANDLED*** LBP_COMMAND_TYPE_RPC: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                    Serial.println("***UNHANDLED*** LBP_COMMAND_TYPE_RPC: 0x%02X");
                 }
             }
         } else if (cmd.Generic.CommandType == LBP_COMMAND_TYPE_LOCAL_READ_WRITE) {
@@ -209,7 +209,7 @@ void loop() {
                 }
                 const uint8_t lastByte = SSerial.read();
                 if (lastByte != crc) {
-                    Serial.printf("<CRC bad>\r\n");
+                    Serial.println("<CRC bad>");
                     return;
                 }
                 switch (cmd.value) {
@@ -244,7 +244,7 @@ void loop() {
                     }
                     break;
                     default: {
-                        Serial.printf("***UNHANDLED*** LOCAL LBP WRITE COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                        Serial.println("***UNHANDLED*** LOCAL LBP WRITE COMMAND: 0x%02X");
                     }
                 }
             } else { // if (cmd.value < 0xE0)
@@ -253,7 +253,7 @@ void loop() {
                 }
                 const uint8_t lastByte = SSerial.read();
                 if (lastByte != crc) {
-                    Serial.printf("<CRC bad>\r\n");
+                    Serial.println("<CRC bad>");
                     return;
                 }
                 // respond
@@ -296,12 +296,12 @@ void loop() {
                     }
                     break;
                     default: {
-                        Serial.printf("***UNHANDLED*** LOCAL LBP READ COMMAND: 0x%02X\r\n", static_cast<uint32_t>(cmd.value));
+                        Serial.println("***UNHANDLED*** LOCAL LBP READ COMMAND: 0x%02X");
                     }
                 }
             }
         } else {
-            Serial.printf("unknown command %02X\r\n", static_cast<uint32_t>(cmd.value));
+            Serial.println("unknown command %02X");
         }
     }
 }

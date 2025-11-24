@@ -16,6 +16,7 @@ class PluginBase:
         self.SIGNALS = {}
         self.PREFIX = ""
         self.COMPONENT = ""
+        self.BASETHREAD = False
         self.JOINT_DEFAULTS = {}
         self.TIMING_CONSTRAINTS = {}
         self.DYNAMIC_SIGNALS = False
@@ -288,7 +289,6 @@ class PluginBase:
             signals[name]["signal_prefix"] = signal_prefix
             signals[name]["var_prefix"] = signal_prefix.replace(".", "_").replace("-", "_").upper()
             signals[name]["plugin_instance"] = self
-
             gpio_pin = self.plugin_setup.get("pins", {}).get(name, {}).get("pin")
             if self.NAME in {"gpioout", "gpioin"} and gpio_pin:
                 signals[name]["halname"] = gpio_pin

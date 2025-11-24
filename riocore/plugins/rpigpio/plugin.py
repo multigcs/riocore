@@ -15,6 +15,7 @@ gpio modes:
 
 """
         self.KEYWORDS = "rpi gpio raspberry rpi4 rpi5"
+        self.BASETHREAD = True
         self.TYPE = "base"
         self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"

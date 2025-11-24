@@ -47,8 +47,8 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     "board": {
                         "default": "esp32dev",
                         "type": "select",
-                        "options": ["esp32dev", "wemos_d1_mini32"],
-                        "description": "esp32 board type",
+                        "options": ["esp32dev", "wemos_d1_mini32", "pico"],
+                        "description": "board type",
                     },
                     "cardname": {
                         "default": "9r01",
@@ -66,7 +66,45 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             board = self.plugin_setup.get("board", self.option_default("board"))
 
-            if board == "esp32dev":
+            if board == "pico":
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (10, 23 + 1 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (10, 23 + 0 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, -1, -1, 2, 3, 4, 5, -1, 6, 7, 8, 9, -1, 10, 11, 12, 13, -1, 14, 15)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (10, 23 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, -1, -1, -1, -1, -1, 28, -1, 27, 26, -1, 22, -1, 21, 20, 19, 18, -1, 17, 16)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (177, 23 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+
+            elif board == "esp32dev":
                 self.PINDEFAULTS = {
                     "SSERIAL:RX": {
                         "pin": f"{self.instances_name}:RX",
@@ -166,7 +204,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             self.IMAGE = f"{board}.png"
             self.BUILDER = [
                 "build",
-                "flash",
+                "load",
             ]
 
         elif node_type == "board":
@@ -528,7 +566,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         elif node_type == "esp32":
             project = riocore.Project(copy.deepcopy(config))
             firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
-            cmd = f"cd {firmware_path} && pio run --target=upload"
+            cmd = f"cd {firmware_path} && make {command}"
             return cmd
 
     def update_prefixes(cls, parent, instances):
@@ -544,13 +582,16 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         plugin_instance.SSERIAL_NUM = ".".join(rawpin.split(".")[-2:])
                     else:
                         plugin_instance.PREFIX = f"{instance.hm2_prefix}.{suffix}"
-
             elif node_type == "esp32":
                 cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
+                pwm_n = 0
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                     rawpin = connected_pin["rawpin"]
                     plugin_instance = connected_pin["instance"]
                     plugin_instance.hm2_prefix = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
+                    if connected_pin["name"] == "pwm":
+                        plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}.pwm{pwm_n}"
+                        del plugin_instance.SIGNALS["enable"]
 
     def update_pins(self, parent):
         self.outputs = []
@@ -580,9 +621,10 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         elif node_type == "esp32":
             self.pins_input = []
             self.pins_output = []
-
+            self.pins_pwm = []
             input_pin_n = 0
             output_pin_n = 0
+            pwm_pin_n = 0
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
                 psetup = connected_pin["setup"]
                 pin = connected_pin["pin"]
@@ -597,12 +639,16 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}"
                     input_pin_n += 1
                 else:
-                    self.pins_output.append(pin)
-                    if inverted:
-                        self.output_inverts.append(f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}")
-                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
-                    output_pin_n += 1
-                # print("+##", connected_pin)
+                    if connected_pin["name"] == "pwm":
+                        self.pins_pwm.append(pin)
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.pwm-{pwm_pin_n:02d}"
+                        pwm_pin_n += 1
+                    else:
+                        self.pins_output.append(pin)
+                        if inverted:
+                            self.output_inverts.append(f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}")
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
+                        output_pin_n += 1
 
     def component_loader(cls, instances):
         output = []
@@ -650,8 +696,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}-invert", 1)
         elif node_type == "pwm":
-            scale = self.plugin_setup.get("scale", self.option_default("scale"))
-            parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
+            if self.PREFIX:
+                scale = self.plugin_setup.get("scale", self.option_default("scale"))
+                parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
         elif node_type == "encoder":
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
@@ -729,7 +776,11 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 source = os.path.join(os.path.dirname(__file__), "sserial", "TEMPLATE.ino")
                 for line in open(source, "r").read().split("\n"):
                     if line.strip() == "//defines":
-                        output.append("#define SSerial Serial2")
+                        output.append(f"#define BOARD \"{board}\"")
+                        if board == "pico":
+                            output.append("#define SSerial Serial1")
+                        else:
+                            output.append("#define SSerial Serial2")
                         output.append("")
 
                     elif line.strip() == "//LBP_Discovery_Data":
@@ -739,7 +790,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             output.append("  .RxSize = sizeof(ProcessDataOut)+1, // +1 for the fault status, remote transmits")
                         else:
                             output.append("  .RxSize = 1, // +1 for the fault status, remote transmits")
-                        if bits_out:
+                        if bits_out or instance.pins_pwm:
                             output.append("  .TxSize = sizeof(ProcessDataIn), // remote receives")
                         else:
                             output.append("  .TxSize = 0, // remote receives")
@@ -751,15 +802,18 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
                     elif line.strip() == "//ProcessDataOut":
                         output.append("static struct ProcessDataOut {")
-                        output.append("uint8_t fault;")
+                        output.append("    uint8_t fault;")
                         if bits_in:
                             output.append(f"    uint{int_size_in}_t input;")
                         output.append("} pdata_out = {0x00000000};")
                         output.append("")
                     elif line.strip() == "//ProcessDataIn":
-                        if bits_out:
+                        if bits_out or instance.pins_pwm:
                             output.append("static struct ProcessDataIn {")
-                            output.append(f"    uint{int_size_out}_t output;")
+                            for pwm_num, pwm in enumerate(instance.pins_pwm):
+                                output.append(f"    float pwm{pwm_num};")
+                            if bits_out:
+                                output.append(f"    uint{int_size_out}_t output;")
                             output.append("} pdata_in = {0x00000000};")
                             output.append("")
                     elif line.strip() == "//CARD_NAME":
@@ -767,6 +821,20 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         output.append("")
                     elif line.strip() == "//PDD":
                         offset = 0
+                        for pwm_num, pwm in enumerate(instance.pins_pwm):
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append("            .DataSize      = 32,")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_FLOAT,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                            output.append(f'            "None\\0Pwm{pwm_num}"')
+                            output.append("        }")
+                            output.append("    },")
+                            offset += 4
                         if bits_out:
                             output.append("    {")
                             output.append("        .pdd = {")
@@ -793,7 +861,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
                             output.append('            "None\\0Input"')
                             output.append("        }")
-                            output.append("    }")
+                            output.append("    },")
                             offset += byte_size_in
 
                         output.append("")
@@ -805,6 +873,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
                         if bits_in:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        for pwm in instance.pins_pwm:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
                         output.append("    0x0000")
@@ -822,20 +893,24 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         if bits_in:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
+                        for pwm in instance.pins_pwm:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
                         output.append("    0x0000")
                         output.append("};")
                         output.append("")
 
                     elif line.strip() == "//setup":
                         for pin_num, pin in enumerate(instance.pins_output):
-                            output.append(f"    pinMode({pin}, OUTPUT);")
-
+                            output.append(f"    pinMode({pin}, OUTPUT); // Output({pin_num:02d})")
                         for pin_num, pin in enumerate(instance.pins_input):
-                            output.append(f"    pinMode({pin}, INPUT_PULLUP);")
+                            output.append(f"    pinMode({pin}, INPUT_PULLUP); // Input({pin_num:02d})")
+                        for pin_num, pin in enumerate(instance.pins_pwm):
+                            output.append(f"    pinMode({pin}, OUTPUT); // PWM({pin_num})")
                         output.append("")
 
                     elif line.strip() == "//pdata_in_next":
-                        if bits_out:
+                        if bits_out or instance.pins_pwm:
                             output.append("            uint8_t pdata_in_next[sizeof(pdata_in)];")
                             output.append("            if (cmd.value == LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA) {")
                             output.append("                for (size_t i = 0; i < sizeof(pdata_in); i++) {")
@@ -857,10 +932,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         output.append("")
 
                     elif line.strip() == "//pdata_in.output":
-                        if bits_out:
+                        if bits_out or instance.pins_pwm:
                             output.append("                    memcpy(&pdata_in, pdata_in_next, sizeof(pdata_in));")
                             for pin_num, pin in enumerate(instance.pins_output):
                                 output.append(f"                    digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
+
+                            for pwm_num, pwm in enumerate(instance.pins_pwm):
+                                output.append(f"                    // pdata_in.pwm{pwm_num};")
+
                             output.append("")
 
                     else:
@@ -871,13 +950,16 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
                 output = [""]
                 output.append(f"[env:{board}]")
-                output.append("platform = espressif32")
                 output.append("framework = arduino")
                 output.append(f"board = {board}")
-                output.append("#upload_speed = 115200")
-                output.append("upload_speed = 500000")
-                output.append("monitor_speed = 115200")
-                output.append(f"upload_port = {upload_port}")
+                if board == "pico":
+                    output.append("platform = raspberrypi")
+                else:
+                    output.append("platform = espressif32")
+                    output.append("#upload_speed = 115200")
+                    output.append("upload_speed = 500000")
+                    output.append("monitor_speed = 115200")
+                    output.append(f"upload_port = {upload_port}")
                 output.append("")
                 output.append("")
                 target = os.path.join(firmware_path, "platformio.ini")
@@ -888,7 +970,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 output.append("	pio run")
                 output.append("")
                 output.append("load:")
-                output.append("	pio run --target==upload")
+                output.append("	pio run --target=upload")
                 output.append("")
                 target = os.path.join(firmware_path, "Makefile")
                 open(target, "w").write("\n".join(output))
