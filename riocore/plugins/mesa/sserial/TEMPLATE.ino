@@ -87,6 +87,19 @@ void setup() {
     SSerial.begin(2500000); // 2.5MBps for Mesa Smart Serial
 }
 
+uint8_t SSerialRead() {
+    // wait for next byte
+    while (!SSerial.available()) {
+        yield();
+    }
+    return = SSerial.read();
+}
+
+void SSerialWrite(uint8_t *data, size_t size) {
+    SSerial.write(data, size);
+    SSerial.flush();
+}
+
 void loop() {
     if (SSerial.available()) {
         LBP_Command cmd = {.value = static_cast<uint8_t>(SSerial.read())};
@@ -99,33 +112,20 @@ void loop() {
                     uint8_t bytes[2];
                 } addr;
                 // read LSB
-                while (!SSerial.available()) {
-                    yield();
-                }
-                addr.bytes[0] = SSerial.read();
+                addr.bytes[0] = SSerialRead();
                 crc = LBP_CalcNextCRC(addr.bytes[0], crc);
-                // read MSB
-                while (!SSerial.available()) {
-                    yield();
-                }
-                addr.bytes[1] = SSerial.read();
+                addr.bytes[1] = SSerialRead();
                 crc = LBP_CalcNextCRC(addr.bytes[1], crc);
                 lbp_state.address = addr.address;
             }
             if (cmd.ReadWrite.Write) {
-                while (!SSerial.available()) {
-                    yield();
-                }
-                const uint8_t lastByte = SSerial.read();
+                const uint8_t lastByte = SSerialRead();
                 if (lastByte != crc) {
                     Serial.printf("<bad CRC>\r\n");
                     return;
                 }
             } else { // (!cmd.ReadWrite.Write)
-                while (!SSerial.available()) {
-                    yield();
-                }
-                const uint8_t lastByte = SSerial.read();
+                const uint8_t lastByte = SSerialRead();
                 if (lastByte != crc) {
                     Serial.printf("<bad CRC>\r\n");
                     return;
@@ -145,16 +145,12 @@ void loop() {
                 uint8_t RESPONSE[sizeof(uint64_t)+1];
                 memcpy(RESPONSE, src, readLength);
                 RESPONSE[readLength] = LBP_CalcCRC(RESPONSE, readLength);
-                SSerial.write(RESPONSE, readLength+1);
-                SSerial.flush();
+                SSerialWrite(RESPONSE, readLength+1);
             }
 
         } else if (cmd.Generic.CommandType == LBP_COMMAND_TYPE_RPC) {
             //pdata_in_next
-            while (!SSerial.available()) {
-                yield();
-            }
-            const uint8_t lastByte = SSerial.read();
+            const uint8_t lastByte = SSerialRead();
             if (lastByte != crc) {
                 Serial.printf("<CRC bad>\r\n");
                 return;
@@ -164,16 +160,14 @@ void loop() {
                     uint8_t RESPONSE[sizeof(DISCOVERY_DATA)+1];
                     memcpy(RESPONSE, &DISCOVERY_DATA, sizeof(DISCOVERY_DATA));
                     RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
+                    SSerialWrite(RESPONSE, sizeof(RESPONSE));
                 }
                 break;
                 case LBP_COMMAND_RPC_SMARTSERIAL_UNIT_NUMBER: {
                     uint8_t RESPONSE[sizeof(UNIT_NUMBER)+1];
                     memcpy(RESPONSE, &UNIT_NUMBER, sizeof(UNIT_NUMBER));
                     RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
+                    SSerialWrite(RESPONSE, sizeof(RESPONSE));
                 }
                 break;
                 case LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA: {
@@ -182,8 +176,7 @@ void loop() {
                     uint8_t RESPONSE[DISCOVERY_DATA.RxSize+1];
                     memcpy(RESPONSE, &pdata_out, sizeof(pdata_out));
                     RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                    SSerial.write(RESPONSE, sizeof(RESPONSE));
-                    SSerial.flush();
+                    SSerialWrite(RESPONSE, sizeof(RESPONSE));
 
                     //pdata_in.output
                     //digitalWriteFast(LED_BUILTIN, (millis() & 0x100) ? HIGH : LOW);
@@ -198,16 +191,10 @@ void loop() {
                 uint8_t param = 0;
                 if (cmd.value != LBP_COMMAND_LOCAL_WRITE_RESET_LBP_PARSE) {
                     // skip parameter byte for now
-                    while (!SSerial.available()) {
-                        yield();
-                    }
-                    param = static_cast<uint8_t>(SSerial.read());
+                    param = static_cast<uint8_t>(SSerialRead());
                     crc = LBP_CalcNextCRC(param, crc);
                 }
-                while (!SSerial.available()) {
-                    yield();
-                }
-                const uint8_t lastByte = SSerial.read();
+                const uint8_t lastByte = SSerialRead();
                 if (lastByte != crc) {
                     Serial.printf("<CRC bad>\r\n");
                     return;
@@ -215,32 +202,27 @@ void loop() {
                 switch (cmd.value) {
                     case LBP_COMMAND_LOCAL_WRITE_STATUS: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_WRITE_SW_MODE: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_WRITE_CLEAR_FAULTS: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_WRITE_NVMEM_FLAG: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_WRITE_COMMAND_TIMEOUT: {
                         const uint8_t RESPONSE[] = {LBP_CalcNextCRC(0x00)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     default: {
@@ -248,10 +230,7 @@ void loop() {
                     }
                 }
             } else { // if (cmd.value < 0xE0)
-                while (!SSerial.available()) {
-                    yield();
-                }
-                const uint8_t lastByte = SSerial.read();
+                const uint8_t lastByte = SSerialRead();
                 if (lastByte != crc) {
                     Serial.printf("<CRC bad>\r\n");
                     return;
@@ -261,15 +240,13 @@ void loop() {
                     case LBP_COMMAND_LOCAL_READ_LBP_STATUS: {
                         const uint8_t lbp_status = 0x00;
                         const uint8_t RESPONSE[] = {lbp_status, LBP_CalcNextCRC(lbp_status)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_READ_CLEAR_FAULT_FLAG: {
                         const uint8_t fault_flag = 0x00;
                         const uint8_t RESPONSE[] = {fault_flag, LBP_CalcNextCRC(fault_flag)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR0:
@@ -278,21 +255,18 @@ void loop() {
                     case LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR3: {
                         uint8_t RESPONSE[] = {CARD_NAME[cmd.value - LBP_COMMAND_LOCAL_READ_CARD_NAME_CHAR0], 0x00};
                         RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_READ_FAULT_DATA: {
                         const uint8_t fault_data = 0x00;
                         const uint8_t RESPONSE[] = {fault_data, LBP_CalcNextCRC(fault_data)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     case LBP_COMMAND_LOCAL_READ_COOKIE: {
                         const uint8_t RESPONSE[] = {LBP_COOKIE, LBP_CalcNextCRC(LBP_COOKIE)};
-                        SSerial.write(RESPONSE, sizeof(RESPONSE));
-                        SSerial.flush();
+                        SSerialWrite(RESPONSE, sizeof(RESPONSE));
                     }
                     break;
                     default: {
