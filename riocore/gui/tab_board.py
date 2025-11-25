@@ -108,7 +108,7 @@ class TabBoard:
 
             for pin_id, pin in slot["pins"].items():
                 if isinstance(pin, dict):
-                    # check if pin is allready used
+                    # check if pin is already used
                     pkey = f"{slot_name}:{pin_id}"
 
                     bgcolor = "blue"

@@ -454,7 +454,7 @@ class Plugins:
                     initfile.append("        return instances")
                     initfile.append("")
                 if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_name, "plugin.py")):
-                    print(f"WARNING: file allready exsits: {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')}")
+                    print(f"WARNING: file already exists: {os.path.join(riocore_path, 'plugins', plugin_name, 'plugin.py')}")
                     print("\n".join(initfile))
                     print("")
                 else:
@@ -511,7 +511,7 @@ class Project:
                 if varname not in varnames:
                     varnames[varname] = plugin_instance.instances_name
                 else:
-                    print(f"ERROR: varname allready exist: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
+                    print(f"ERROR: varname already exists: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
 
     def info(self):
         jdata = self.config["jdata"]
