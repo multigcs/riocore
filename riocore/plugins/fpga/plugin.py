@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import stat
+import sys
 
 import riocore
 from riocore.generator.cbase import cbase
@@ -217,7 +218,7 @@ class Plugin(PluginBase):
             for plugin_instance in parent.project.plugin_instances:
                 if plugin_instance.PLUGIN_TYPE != "gateware":
                     continue
-                for pin_name, pin_config in plugin_instance.plugin_setup.get("pins", {}).items():
+                for pin_config in plugin_instance.plugin_setup.get("pins", {}).values():
                     if "pin" in pin_config and not pin_config["pin"]:
                         del pin_config["pin"]
 
@@ -287,7 +288,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
                     if pinname not in self.parent.virtual_pins:
@@ -348,7 +349,7 @@ class gateware:
                     ipv_path = os.path.join(riocore_path, "files", "verilog", verilog)
                 if not os.path.isfile(ipv_path):
                     riocore.log(f"ERROR: can not found verilog file: {verilog}")
-                    exit(1)
+                    sys.exit(1)
                 target = os.path.join(self.jdata["output_path"], verilog)
                 shutil.copy(ipv_path, target)
 
@@ -438,7 +439,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            for data_name, data_config in plugin_instance.interface_data().items():
+            for data_config in plugin_instance.interface_data().values():
                 self.interface_sizes.add(data_config["size"])
                 variable_size = data_config["size"]
                 multiplexed = data_config.get("multiplexed", False)
@@ -492,7 +493,7 @@ class gateware:
                 continue
             if plugin_instance.master != subname:
                 continue
-            for data_name, data_config in plugin_instance.interface_data().items():
+            for data_config in plugin_instance.interface_data().values():
                 self.sub_interface_sizes.add(data_config["size"])
                 variable_size = data_config["size"]
                 multiplexed = data_config.get("multiplexed", False)
@@ -593,14 +594,14 @@ class gateware:
 
         if output_pos != diff:
             riocore.log(f"ERROR: wrong output buffer sizes: {output_pos} {diff}")
-            # exit(1)
+            # sys.exit(1)
 
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
                 continue
             if plugin_instance.master != subname:
                 continue
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
                     pinname = pin_config["pin"].replace(":", "_")
                     if pin_config["direction"] == "output":
@@ -722,7 +723,7 @@ class gateware:
 
         if output_pos != diff:
             riocore.log(f"ERROR: wrong output buffer sizes: {output_pos} {diff}")
-            exit(1)
+            sys.exit(1)
 
         arguments_list = ["input sysclk_in"]
         existing_pins = {}
@@ -730,7 +731,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name:
                 continue
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins and pin_config["pin"] not in self.parent.virtual_pins:
                     if pin_config["pin"] in existing_pins:
                         double_pins[pin_config["pin"]] = pin_config["varname"]
@@ -750,7 +751,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name:
                 continue
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
                     pull = f"PULL{pin_config.get('pull').upper()}" if pin_config.get("pull") else ""
                     if pin_config["direction"] == "input":
@@ -793,7 +794,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            for data_name, interface_setup in plugin_instance.interface_data().items():
+            for interface_setup in plugin_instance.interface_data().values():
                 error_on = interface_setup.get("error_on")
                 if error_on is True:
                     error_signals.append(interface_setup["variable"])
@@ -891,7 +892,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
                     pinname = pin_config["pin"].replace(":", "_")
                     if pin_config["direction"] == "output":
@@ -912,7 +913,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            for data_name, data_config in plugin_instance.interface_data().items():
+            for data_config in plugin_instance.interface_data().values():
                 if not data_config.get("expansion"):
                     variable_name = data_config["variable"]
                     variable_size = data_config["size"]
@@ -953,7 +954,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config:
                     if pin_config["pin"] in self.parent.expansion_pins:
                         output.append(f"    wire {pin_config['varname']};")

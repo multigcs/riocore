@@ -113,7 +113,7 @@ module axi
         if ( S_AXI_ARESETN == 1'b0 ) begin
             axi_awready <= 1'b0;
             aw_en <= 1'b1;
-        end  else begin    
+        end  else begin
             if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en) begin
                 axi_awready <= 1'b1;
                 aw_en <= 1'b0;
@@ -123,30 +123,30 @@ module axi
             end else begin
                 axi_awready <= 1'b0;
             end
-        end 
-    end       
+        end
+    end
 
     always @( posedge S_AXI_ACLK ) begin
         if ( S_AXI_ARESETN == 1'b0 ) begin
             axi_awaddr <= 0;
-        end else begin    
+        end else begin
             if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en) begin
                 axi_awaddr <= S_AXI_AWADDR;
             end
-        end 
-    end       
+        end
+    end
 
     always @( posedge S_AXI_ACLK ) begin
         if ( S_AXI_ARESETN == 1'b0 ) begin
             axi_wready <= 1'b0;
-        end else begin    
+        end else begin
             if (~axi_wready && S_AXI_WVALID && S_AXI_AWVALID && aw_en ) begin
                 axi_wready <= 1'b1;
             end else begin
                 axi_wready <= 1'b0;
             end
-        end 
-    end       
+        end
+    end
 
     always @( posedge S_AXI_ACLK ) begin
         sync <= 0;
@@ -183,51 +183,51 @@ module axi
                 endcase
             end
         end
-    end    
+    end
 
     always @( posedge S_AXI_ACLK ) begin
         if ( S_AXI_ARESETN == 1'b0 ) begin
             axi_bvalid  <= 0;
             axi_bresp   <= 2'b0;
-        end else begin    
+        end else begin
             if (axi_awready && S_AXI_AWVALID && ~axi_bvalid && axi_wready && S_AXI_WVALID) begin
                 axi_bvalid <= 1'b1;
                 axi_bresp  <= 2'b0;
             end else begin
                 if (S_AXI_BREADY && axi_bvalid) begin
-                    axi_bvalid <= 1'b0; 
-                end  
+                    axi_bvalid <= 1'b0;
+                end
             end
         end
-    end   
+    end
 
     always @( posedge S_AXI_ACLK ) begin
         if ( S_AXI_ARESETN == 1'b0 ) begin
             axi_arready <= 1'b0;
             axi_araddr  <= 32'b0;
-        end else begin    
+        end else begin
             if (~axi_arready && S_AXI_ARVALID) begin
                 axi_arready <= 1'b1;
                 axi_araddr  <= S_AXI_ARADDR;
             end else begin
                 axi_arready <= 1'b0;
             end
-        end 
-    end       
+        end
+    end
 
     always @( posedge S_AXI_ACLK ) begin
         if ( S_AXI_ARESETN == 1'b0 ) begin
             axi_rvalid <= 0;
             axi_rresp  <= 0;
-        end else begin    
+        end else begin
             if (axi_arready && S_AXI_ARVALID && ~axi_rvalid) begin
                 axi_rvalid <= 1'b1;
                 axi_rresp  <= 2'b0;
             end else if (axi_rvalid && S_AXI_RREADY) begin
                 axi_rvalid <= 1'b0;
-            end                
+            end       
         end
-    end    
+    end
 
     always @(*) begin
         case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
@@ -254,12 +254,12 @@ module axi
     always @( posedge S_AXI_ACLK ) begin
         if ( S_AXI_ARESETN == 1'b0 ) begin
             axi_rdata  <= 0;
-        end else begin    
+        end else begin
             if (slv_reg_rden) begin
                 axi_rdata <= reg_data_out;
-            end   
+            end
         end
-    end    
+    end
 
 endmodule
 """

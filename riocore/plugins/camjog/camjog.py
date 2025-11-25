@@ -179,7 +179,7 @@ class MyImage(QLabel):
 
 class WinForm(QWidget):
     def __init__(self, parent=None):
-        super(WinForm, self).__init__(parent)
+        super().__init__(parent)
         parser = argparse.ArgumentParser()
         parser.add_argument("--xid", help="parent x window id", type=int)
         parser.add_argument("--video", help="video device id", type=int, default=-1)

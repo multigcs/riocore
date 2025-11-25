@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 import riocore
 from riocore.plugins import PluginBase
@@ -209,7 +210,7 @@ class Plugin(PluginBase):
 
         else:
             riocore.log(f"ethercat: node_type not found: {node_type}")
-            exit(1)
+            sys.exit(1)
 
         self.PREFIX_CIA402 = ""
 
@@ -242,7 +243,7 @@ class Plugin(PluginBase):
                 master = instance
         if not master:
             print("no master found")
-            exit(1)
+            sys.exit(1)
 
         last = master.instances_name
         found_next = True
@@ -384,6 +385,6 @@ class Plugin(PluginBase):
             parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname)
             parent.halg.setp_add(f"{cia402}.csp-mode", "1")
         elif self.json_data:
-            for option_name, option_data in self.json_data.get("options", {}).items():
+            for option_name in self.json_data.get("options", {}):
                 option_value = self.plugin_setup.get(option_name, self.option_default(option_name))
                 parent.halg.setp_add(f"{lcec}.{option_name}", option_value)
