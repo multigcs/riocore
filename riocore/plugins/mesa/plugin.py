@@ -32,7 +32,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     "stepper",
                     "pwm",
                     "encoder",
-                    "esp32",
+                    "sserial",
                 ],
                 "description": "instance type",
                 "reload": True,
@@ -41,7 +41,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         self.SIGNALS = {}
 
-        if node_type == "esp32":
+        if node_type == "sserial":
             self.OPTIONS.update(
                 {
                     "board": {
@@ -655,7 +655,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             else:
                 cmd = f"sudo mesaflash --device {boardname} --addr {addr} --readhmid"
             return cmd
-        elif node_type == "esp32":
+        elif node_type == "sserial":
             project = riocore.Project(copy.deepcopy(config))
             firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
             cmd = f"cd {firmware_path} && make {command}"
@@ -674,7 +674,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         plugin_instance.SSERIAL_NUM = ".".join(rawpin.split(".")[-2:])
                     else:
                         plugin_instance.PREFIX = f"{instance.hm2_prefix}.{suffix}"
-            elif node_type == "esp32":
+            elif node_type == "sserial":
                 cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
                 pwm_n = 0
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
@@ -711,7 +711,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 else:
                     del psetup["pin"]
 
-        elif node_type == "esp32":
+        elif node_type == "sserial":
             self.pins_input = []
             self.pins_output = []
             self.pins_pwm = []
@@ -788,7 +788,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 parent.halg.setp_add(f"{pin}.is_output", 1)
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}.invert_output", 1)
-        elif node_type == "esp32":
+        elif node_type == "sserial":
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}-invert", 1)
         elif node_type == "pwm":
@@ -822,7 +822,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
     def extra_files(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            if node_type == "esp32":
+            if node_type == "sserial":
                 board = instance.plugin_setup.get("board", instance.option_default("board"))
                 cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
                 upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))

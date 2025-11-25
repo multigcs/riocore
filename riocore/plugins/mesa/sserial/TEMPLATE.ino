@@ -2,6 +2,7 @@
 * Mesa SmartSerial (SSLBP) device template project
 *
 * Copyright (C) 2020 Forest Darling <fdarling@gmail.com>
+* Copyright (C) 2025 Oliver Dippel <o.dippel@gmx.de> - doing some changes
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
