@@ -1,0 +1,16 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_hm2_7i92_0_9r01_0_0_output-00 <= pyvcp.hm2_7i92.0.9r01.0.0.output-00
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net sig_hm2_7i92_0_9r01_0_0_input-00     => pyvcp.hm2_7i92.0.9r01.0.0.input-00
+
+#################################################################################
+# setp
+#################################################################################
+

@@ -1,0 +1,209 @@
+{
+    "name": "MesaSSerial",
+    "flow": {
+        "view": {
+            "scale": 0.55,
+            "pos": [
+                462,
+                -318
+            ]
+        },
+        "board": {
+            "pos": [
+                540.0,
+                1390.0
+            ],
+            "rotate": -90
+        },
+        "hal": {
+            "misc": [
+                1640.0,
+                310.0
+            ],
+            "joint.0": [
+                1640.0,
+                400.0
+            ],
+            "joint.1": [
+                1640.0,
+                180.0
+            ],
+            "joint.2": [
+                1640.0,
+                50.0
+            ],
+            "spindle.0": [
+                1640.0,
+                -40.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "mesa",
+            "node_type": "board",
+            "pos": [
+                1040.0,
+                -120.0
+            ],
+            "rotate": -90,
+            "uid": "mesa0",
+            "boardname": "7i92",
+            "firmware": "7i76x2D",
+            "num_serials": 1
+        },
+        {
+            "type": "mesa",
+            "node_type": "stepper",
+            "pos": [
+                720.0,
+                -300.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "mesa0:P2:P16"
+                },
+                "dir": {
+                    "pin": "mesa0:P2:P3"
+                }
+            },
+            "image": "servo42",
+            "rotate": 0,
+            "is_joint": true,
+            "uid": "mesa1",
+            "joint": {
+                "scale": 800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 230.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "home_latch_vel": -1.0
+            }
+        },
+        {
+            "type": "mesa",
+            "node_type": "stepper",
+            "pos": [
+                720.0,
+                -80.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "mesa0:P2:P15"
+                },
+                "dir": {
+                    "pin": "mesa0:P2:P2"
+                }
+            },
+            "image": "servo42",
+            "rotate": 0,
+            "name": "",
+            "is_joint": true,
+            "uid": "mesa2",
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 25.0,
+                "min_limit": 0.0,
+                "max_limit": 160.0,
+                "home": 0.0,
+                "home_search_vel": -10.0,
+                "home_final_vel": 20.0,
+                "home_offset": 0.0,
+                "home_latch_vel": -1.0
+            }
+        },
+        {
+            "type": "mesa",
+            "node_type": "stepper",
+            "pos": [
+                720.0,
+                140.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "mesa0:P2:P1"
+                },
+                "step": {
+                    "pin": "mesa0:P2:P14"
+                }
+            },
+            "rotate": 0,
+            "name": "",
+            "is_joint": true,
+            "uid": "mesa3",
+            "image": "servo42",
+            "joint": {
+                "scale": 1600.0,
+                "max_velocity": 15.0,
+                "min_limit": -32.0,
+                "max_limit": 0.0,
+                "home": 0.0,
+                "home_search_vel": 10.0,
+                "home_final_vel": 20.0,
+                "home_latch_vel": 1.0
+            }
+        },
+        {
+            "type": "mesa",
+            "node_type": "sserial",
+            "uid": "mesa5",
+            "pos": [
+                1550.0,
+                -110.0
+            ],
+            "pins": {
+                "SSERIAL:RX": {
+                    "pin": "mesa0:P2:P7"
+                },
+                "SSERIAL:TX": {
+                    "pin": "mesa0:P2:P8"
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "mesa5:IO:23"
+                }
+            },
+            "uid": "gpioin5",
+            "pos": [
+                1770.0,
+                -140.0
+            ],
+            "image": "proximity",
+            "rotate": 0,
+            "name": "",
+            "signals": {
+                "bit": {
+                    "net": ""
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "mesa5:IO:21"
+                }
+            },
+            "uid": "gpioout0",
+            "pos": [
+                1760.0,
+                -40.0
+            ],
+            "image": "relay",
+            "rotate": 0,
+            "name": "",
+            "signals": {
+                "bit": {
+                    "net": ""
+                }
+            }
+        }
+    ],
+    "boardcfg": ""
+}

@@ -1,0 +1,9 @@
+RIO - MesaSSerial
+
+Configuration: tests/unit/data/full/MesaSSerial.json
+
+Plugins:
+  mesa (5x)
+  gpioin (1x)
+  gpioout (1x)
+
